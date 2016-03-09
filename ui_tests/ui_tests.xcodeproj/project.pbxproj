@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B6C56D5F1C90474400CAC59D /* ui_mac_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56D5E1C90474400CAC59D /* ui_mac_tests.mm */; };
 		B6C56D951C90498300CAC59D /* yas_objc_container.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56D931C90498300CAC59D /* yas_objc_container.mm */; };
 		B6C56DB81C9049A500CAC59D /* yas_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6C56D971C9049A500CAC59D /* yas_base.cpp */; };
 		B6C56DB91C9049A500CAC59D /* yas_cf_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56D9B1C9049A500CAC59D /* yas_cf_utils.mm */; };
@@ -18,11 +17,16 @@
 		B6C56DBE1C9049A500CAC59D /* yas_operation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DAA1C9049A500CAC59D /* yas_operation.cpp */; };
 		B6C56DBF1C9049A500CAC59D /* yas_stl_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DB11C9049A500CAC59D /* yas_stl_utils.cpp */; };
 		B6C56DC01C9049A500CAC59D /* yas_version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DB61C9049A500CAC59D /* yas_version.cpp */; };
+		B6C56DC31C904CAC00CAC59D /* yas_ui_image.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DC11C904CAC00CAC59D /* yas_ui_image.mm */; };
+		B6C56DC51C9066EA00CAC59D /* yas_ui_image_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DC41C9066EA00CAC59D /* yas_ui_image_tests.mm */; };
+		B6C56DCA1C906AAB00CAC59D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6C56DC91C906AAB00CAC59D /* CoreGraphics.framework */; };
+		B6C56DCC1C90782300CAC59D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6C56DCB1C90782300CAC59D /* AppKit.framework */; };
+		B6C56DCE1C910CDA00CAC59D /* yas_ui_types.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DCD1C910CDA00CAC59D /* yas_ui_types.mm */; };
+		B6C56DD01C910E6500CAC59D /* yas_ui_types_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C56DCF1C910E6500CAC59D /* yas_ui_types_tests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B6C56D5B1C90474400CAC59D /* ui_mac_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ui_mac_tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6C56D5E1C90474400CAC59D /* ui_mac_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ui_mac_tests.mm; sourceTree = "<group>"; };
 		B6C56D601C90474400CAC59D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6C56D921C90498300CAC59D /* yas_objc_container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_container.h; sourceTree = "<group>"; };
 		B6C56D931C90498300CAC59D /* yas_objc_container.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_objc_container.mm; sourceTree = "<group>"; };
@@ -60,6 +64,14 @@
 		B6C56DB51C9049A500CAC59D /* yas_unless.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_unless.h; sourceTree = "<group>"; };
 		B6C56DB61C9049A500CAC59D /* yas_version.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_version.cpp; sourceTree = "<group>"; };
 		B6C56DB71C9049A500CAC59D /* yas_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_version.h; sourceTree = "<group>"; };
+		B6C56DC11C904CAC00CAC59D /* yas_ui_image.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_image.mm; sourceTree = "<group>"; };
+		B6C56DC21C904CAC00CAC59D /* yas_ui_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_image.h; sourceTree = "<group>"; };
+		B6C56DC41C9066EA00CAC59D /* yas_ui_image_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_image_tests.mm; sourceTree = "<group>"; };
+		B6C56DC71C90684D00CAC59D /* yas_ui_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_types.h; sourceTree = "<group>"; };
+		B6C56DC91C906AAB00CAC59D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		B6C56DCB1C90782300CAC59D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B6C56DCD1C910CDA00CAC59D /* yas_ui_types.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_types.mm; sourceTree = "<group>"; };
+		B6C56DCF1C910E6500CAC59D /* yas_ui_types_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_types_tests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +79,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6C56DCC1C90782300CAC59D /* AppKit.framework in Frameworks */,
+				B6C56DCA1C906AAB00CAC59D /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,9 +90,11 @@
 		B6C56D501C90470600CAC59D = {
 			isa = PBXGroup;
 			children = (
+				B6C56DCB1C90782300CAC59D /* AppKit.framework */,
+				B6C56DC91C906AAB00CAC59D /* CoreGraphics.framework */,
 				B6C56D961C9049A500CAC59D /* cpp_utils */,
-				B6C56D651C90477A00CAC59D /* ui */,
 				B6C56D911C90498300CAC59D /* objc_utils */,
+				B6C56D651C90477A00CAC59D /* ui */,
 				B6C56D5D1C90474400CAC59D /* ui_mac_tests */,
 				B6C56D5C1C90474400CAC59D /* Products */,
 			);
@@ -95,7 +111,8 @@
 		B6C56D5D1C90474400CAC59D /* ui_mac_tests */ = {
 			isa = PBXGroup;
 			children = (
-				B6C56D5E1C90474400CAC59D /* ui_mac_tests.mm */,
+				B6C56DC41C9066EA00CAC59D /* yas_ui_image_tests.mm */,
+				B6C56DCF1C910E6500CAC59D /* yas_ui_types_tests.mm */,
 				B6C56D601C90474400CAC59D /* Info.plist */,
 			);
 			path = ui_mac_tests;
@@ -104,6 +121,10 @@
 		B6C56D651C90477A00CAC59D /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				B6C56DC21C904CAC00CAC59D /* yas_ui_image.h */,
+				B6C56DC11C904CAC00CAC59D /* yas_ui_image.mm */,
+				B6C56DC71C90684D00CAC59D /* yas_ui_types.h */,
+				B6C56DCD1C910CDA00CAC59D /* yas_ui_types.mm */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -226,14 +247,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6C56DBB1C9049A500CAC59D /* yas_each_dictionary.cpp in Sources */,
+				B6C56DC51C9066EA00CAC59D /* yas_ui_image_tests.mm in Sources */,
 				B6C56DBD1C9049A500CAC59D /* yas_flex_ptr.cpp in Sources */,
+				B6C56DD01C910E6500CAC59D /* yas_ui_types_tests.mm in Sources */,
 				B6C56DB91C9049A500CAC59D /* yas_cf_utils.mm in Sources */,
+				B6C56DCE1C910CDA00CAC59D /* yas_ui_types.mm in Sources */,
 				B6C56DBE1C9049A500CAC59D /* yas_operation.cpp in Sources */,
 				B6C56DBC1C9049A500CAC59D /* yas_exception.cpp in Sources */,
+				B6C56DC31C904CAC00CAC59D /* yas_ui_image.mm in Sources */,
 				B6C56D951C90498300CAC59D /* yas_objc_container.mm in Sources */,
 				B6C56DC01C9049A500CAC59D /* yas_version.cpp in Sources */,
 				B6C56DB81C9049A500CAC59D /* yas_base.cpp in Sources */,
-				B6C56D5F1C90474400CAC59D /* ui_mac_tests.mm in Sources */,
 				B6C56DBA1C9049A500CAC59D /* yas_chain.cpp in Sources */,
 				B6C56DBF1C9049A500CAC59D /* yas_stl_utils.cpp in Sources */,
 			);
@@ -360,6 +384,7 @@
 				B6C56D631C90474400CAC59D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
