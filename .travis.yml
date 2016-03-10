@@ -1,0 +1,9 @@
+language: objective-c
+osx_image: xcode7.2
+branches:
+  only:
+    - master
+notifications:
+  email: false
+script:
+  - xcodebuild -project ui_tests/ui_tests.xcodeproj -scheme ui_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
