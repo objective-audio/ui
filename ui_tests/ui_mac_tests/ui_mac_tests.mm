@@ -18,4 +18,8 @@
     [super tearDown];
 }
 
+- (void)test_test {
+    XCTAssertTrue(true);
+}
+
 @end
