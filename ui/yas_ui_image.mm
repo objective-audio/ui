@@ -11,8 +11,8 @@ struct ui::image::impl : public base::impl {
     impl(uint_size const point_size, float const scale_factor)
         : point_size(point_size),
           scale_factor(scale_factor),
-          actual_size(uint_size{.width = static_cast<NSUInteger>(point_size.width * scale_factor),
-                                .height = static_cast<NSUInteger>(point_size.height * scale_factor)}) {
+          actual_size(uint_size{static_cast<UInt32>(point_size.width * scale_factor),
+                                static_cast<UInt32>(point_size.height * scale_factor)}) {
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGBitmapInfo bitmapInfo = static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast);
         bitmap_context = CGBitmapContextCreate(NULL, actual_size.width, actual_size.height, 8, actual_size.width * 4,
