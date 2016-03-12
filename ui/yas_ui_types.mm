@@ -30,3 +30,29 @@ MTLSize yas::to_mtl_size(ui::uint_size const size) {
 MTLRegion yas::to_mtl_region(ui::uint_region const region) {
     return MTLRegionMake2D(region.origin.x, region.origin.y, region.size.width, region.size.height);
 }
+
+#pragma mark -
+
+bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool operator!=(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
+    return lhs.x != rhs.x || lhs.y != rhs.y;
+}
+
+bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs) {
+    return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
+bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs) {
+    return lhs.width != rhs.width || lhs.height != rhs.height;
+}
+
+bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
+    return lhs.origin == rhs.origin && lhs.size == rhs.size;
+}
+
+bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
+    return lhs.origin != rhs.origin || lhs.size != rhs.size;
+}
