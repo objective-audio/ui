@@ -21,14 +21,67 @@ using namespace yas;
     [super tearDown];
 }
 
+- (void)test_to_mtl_origin {
+    ui::uint_origin origin{2, 5};
+
+    auto mtl_origin = to_mtl_origin(origin);
+
+    XCTAssertEqual(mtl_origin.x, 2);
+    XCTAssertEqual(mtl_origin.y, 5);
+    XCTAssertEqual(mtl_origin.z, 0);
+}
+
 - (void)test_to_mtl_size {
-    ui::uint_size size{.width = 3, .height = 17};
+    ui::uint_size size{3, 17};
 
     auto mtl_size = to_mtl_size(size);
 
-    XCTAssertEqual(mtl_size.width, size.width);
-    XCTAssertEqual(mtl_size.height, size.height);
+    XCTAssertEqual(mtl_size.width, 3);
+    XCTAssertEqual(mtl_size.height, 17);
     XCTAssertEqual(mtl_size.depth, 1);
+}
+
+- (void)test_to_mtl_region {
+    ui::uint_region region{4, 2, 38, 888};
+
+    auto mtl_region = to_mtl_region(region);
+
+    XCTAssertEqual(mtl_region.origin.x, 4);
+    XCTAssertEqual(mtl_region.origin.y, 2);
+    XCTAssertEqual(mtl_region.size.width, 38);
+    XCTAssertEqual(mtl_region.size.height, 888);
+
+    XCTAssertEqual(mtl_region.origin.z, 0);
+    XCTAssertEqual(mtl_region.size.depth, 1);
+}
+
+- (void)test_to_uint_origin {
+    MTLOrigin mtl_origin = MTLOriginMake(2, 5, 0);
+
+    auto origin = to_uint_origin(mtl_origin);
+
+    XCTAssertEqual(origin.x, 2);
+    XCTAssertEqual(origin.y, 5);
+}
+
+- (void)test_to_uint_size {
+    MTLSize mtl_size = MTLSizeMake(76, 9, 1);
+
+    auto size = to_uint_size(mtl_size);
+
+    XCTAssertEqual(size.width, 76);
+    XCTAssertEqual(size.height, 9);
+}
+
+- (void)test_to_uint_region {
+    MTLRegion mtl_region = MTLRegionMake2D(36, 100, 9, 32);
+
+    auto region = to_uint_region(mtl_region);
+
+    XCTAssertEqual(region.origin.x, 36);
+    XCTAssertEqual(region.origin.y, 100);
+    XCTAssertEqual(region.size.width, 9);
+    XCTAssertEqual(region.size.height, 32);
 }
 
 @end
