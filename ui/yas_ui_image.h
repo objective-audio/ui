@@ -16,12 +16,12 @@ namespace ui {
        public:
         class impl;
 
-        image(uint_size const point_size, float const scale_factor = 1.0);
+        image(uint_size const point_size, Float64 const scale_factor = 1.0);
         image(std::nullptr_t);
 
         uint_size point_size() const;
         uint_size actual_size() const;
-        float scale_factor() const;
+        Float64 scale_factor() const;
 
         const void *data() const;
         void *data();
