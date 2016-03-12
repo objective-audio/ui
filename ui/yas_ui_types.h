@@ -32,3 +32,12 @@ MTLOrigin to_mtl_origin(ui::uint_origin const);
 MTLSize to_mtl_size(ui::uint_size const);
 MTLRegion to_mtl_region(ui::uint_region const);
 }
+
+bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
+bool operator!=(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
+
+bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
+bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
+
+bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
+bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
