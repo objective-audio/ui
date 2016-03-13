@@ -59,6 +59,22 @@ using namespace yas;
     }
 }
 
+- (void)test_clear {
+    ui::image image{{.width = 2, .height = 2}};
+
+    image.draw([](auto const context) {
+        CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
+        CGContextFillRect(context, CGRectMake(0, 0, 2, 2));
+    });
+
+    image.clear();
+
+    UInt8 *data = static_cast<UInt8 *>(image.data());
+    for (auto &idx : each_index<std::size_t>{2 * 2 * 4}) {
+        XCTAssertEqual(data[idx], 0x00);
+    }
+}
+
 - (void)test_cast {
     ui::image image{{.width = 1, .height = 1}};
     base base = image;
