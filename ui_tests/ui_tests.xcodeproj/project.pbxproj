@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B617CD4E1C96EE4100B3A934 /* yas_protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B617CD4C1C96EE4100B3A934 /* yas_protocol.cpp */; };
 		B65BF8CE1C91B0CE00856B6A /* shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = B65BF8C51C91B0CE00856B6A /* shaders.metal */; };
 		B65BF8CF1C91B0CE00856B6A /* yas_ui_image.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65BF8C81C91B0CE00856B6A /* yas_ui_image.mm */; };
 		B65BF8D01C91B0CE00856B6A /* yas_ui_matrix.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65BF8C91C91B0CE00856B6A /* yas_ui_matrix.mm */; };
@@ -33,6 +34,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B617CD4B1C96EE4100B3A934 /* yas_protocol_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_protocol_private.h; sourceTree = "<group>"; };
+		B617CD4C1C96EE4100B3A934 /* yas_protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_protocol.cpp; sourceTree = "<group>"; };
+		B617CD4D1C96EE4100B3A934 /* yas_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_protocol.h; sourceTree = "<group>"; };
 		B65BF8C51C91B0CE00856B6A /* shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = shaders.metal; sourceTree = "<group>"; };
 		B65BF8C61C91B0CE00856B6A /* yas_ui_shared_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_shared_types.h; sourceTree = "<group>"; };
 		B65BF8C71C91B0CE00856B6A /* yas_ui_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_image.h; sourceTree = "<group>"; };
@@ -205,6 +209,9 @@
 				B6C56DAC1C9049A500CAC59D /* yas_operation_protocol.h */,
 				B6C56DAD1C9049A500CAC59D /* yas_property.h */,
 				B6C56DAE1C9049A500CAC59D /* yas_property_private.h */,
+				B617CD4B1C96EE4100B3A934 /* yas_protocol_private.h */,
+				B617CD4C1C96EE4100B3A934 /* yas_protocol.cpp */,
+				B617CD4D1C96EE4100B3A934 /* yas_protocol.h */,
 				B6C56DAF1C9049A500CAC59D /* yas_result.h */,
 				B6C56DB01C9049A500CAC59D /* yas_result_private.h */,
 				B6C56DB11C9049A500CAC59D /* yas_stl_utils.cpp */,
@@ -303,6 +310,7 @@
 				B6C56DBA1C9049A500CAC59D /* yas_chain.cpp in Sources */,
 				B6C56DBF1C9049A500CAC59D /* yas_stl_utils.cpp in Sources */,
 				B65BF8D11C91B0CE00856B6A /* yas_ui_types.mm in Sources */,
+				B617CD4E1C96EE4100B3A934 /* yas_protocol.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
