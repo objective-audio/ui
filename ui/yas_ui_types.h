@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <string>
 
 namespace yas {
 namespace ui {
@@ -22,6 +23,12 @@ namespace ui {
         uint_origin origin;
         uint_size size;
     };
+
+    enum class pivot {
+        left,
+        center,
+        right,
+    };
 }
 
 ui::uint_origin to_uint_origin(MTLOrigin const);
@@ -31,6 +38,8 @@ ui::uint_region to_uint_region(MTLRegion const);
 MTLOrigin to_mtl_origin(ui::uint_origin const);
 MTLSize to_mtl_size(ui::uint_size const);
 MTLRegion to_mtl_region(ui::uint_region const);
+
+std::string to_string(ui::pivot const &pivot);
 }
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);

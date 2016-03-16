@@ -13,6 +13,8 @@ typedef struct {
     float2 tex_coord;
 } vertex2d_t;
 
+typedef struct { vertex2d_t v[4]; } vertex2d_square_t;
+
 typedef struct {
     float4x4 matrix;
     float4 color;

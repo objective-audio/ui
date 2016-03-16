@@ -31,6 +31,17 @@ MTLRegion yas::to_mtl_region(ui::uint_region const region) {
     return MTLRegionMake2D(region.origin.x, region.origin.y, region.size.width, region.size.height);
 }
 
+std::string yas::to_string(ui::pivot const &pivot) {
+    switch (pivot) {
+        case ui::pivot::left:
+            return "left";
+        case ui::pivot::center:
+            return "center";
+        case ui::pivot::right:
+            return "right";
+    }
+}
+
 #pragma mark -
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
