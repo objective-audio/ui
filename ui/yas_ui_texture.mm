@@ -171,6 +171,14 @@ ui::texture::texture(uint_size const point_size, Float64 const scale_factor, MTL
 ui::texture::texture(std::nullptr_t) : super_class(nullptr) {
 }
 
+bool ui::texture::operator==(texture const &rhs) const {
+    return super_class::operator==(rhs);
+}
+
+bool ui::texture::operator!=(texture const &rhs) const {
+    return super_class::operator!=(rhs);
+}
+
 ui::texture::setup_result ui::texture::setup(id<MTLDevice> const device) {
     return impl_ptr<impl>()->setup(device);
 }

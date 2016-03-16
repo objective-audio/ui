@@ -18,8 +18,6 @@ namespace ui {
         using super_class = base;
 
        public:
-        class impl;
-
         enum class setup_error {
             unknown,
             create_texture_descriptor_failed,
@@ -42,6 +40,9 @@ namespace ui {
                 MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
         texture(std::nullptr_t);
 
+        bool operator==(texture const &) const;
+        bool operator!=(texture const &) const;
+
         setup_result setup(id<MTLDevice> const device);
 
         id<MTLSamplerState> mtl_sampler() const;
@@ -56,6 +57,8 @@ namespace ui {
 
         draw_image_result add_image(image const &image);
         draw_image_result replace_image(image const &image, uint_origin const actual_origin);
+
+        class impl;
     };
 }
 
