@@ -147,6 +147,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentsScale:(CGFloat)contentsScale {
     self.metalLayer.contentsScale = contentsScale;
+
+    [self _setNeedsUpdateDrawableSize];
 }
 
 - (CGFloat)contentsScale {
@@ -155,8 +157,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)draw {
     @autoreleasepool {
+        CGSize drawableSize = self.bounds.size;
+
+        if (drawableSize.width == 0 || drawableSize.height == 0) {
+            return;
+        }
+
         if (_needsUpdateDrawableSize) {
-            CGSize drawableSize = self.bounds.size;
             CGFloat const scale = self.layer.contentsScale;
 
             drawableSize.width *= scale;
