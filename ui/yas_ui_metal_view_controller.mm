@@ -33,9 +33,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)loadView {
-    auto view = [[YASMetalView alloc] initWithFrame:CGRectZero];
-    self.view = view;
-    yas_release(view);
+    if (self.nibName || self.nibBundle) {
+        [super loadView];
+    } else {
+        auto view = [[YASMetalView alloc] initWithFrame:CGRectZero];
+        self.view = view;
+        yas_release(view);
+    }
 }
 
 - (YASMetalView *)metalView {
