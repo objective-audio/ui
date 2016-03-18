@@ -171,7 +171,7 @@
 				B6C56D961C9049A500CAC59D /* cpp_utils */,
 				B6C56D911C90498300CAC59D /* objc_utils */,
 				B65BF8C01C91B0CE00856B6A /* ui */,
-				B6C56D5D1C90474400CAC59D /* ui_mac_tests */,
+				B6C56D5D1C90474400CAC59D /* ui_tests */,
 				B6C56D5C1C90474400CAC59D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -184,7 +184,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B6C56D5D1C90474400CAC59D /* ui_mac_tests */ = {
+		B6C56D5D1C90474400CAC59D /* ui_tests */ = {
 			isa = PBXGroup;
 			children = (
 				B6C56DC41C9066EA00CAC59D /* yas_ui_image_tests.mm */,
@@ -196,7 +196,7 @@
 				B617CD5B1C9A415A00B3A934 /* yas_ui_metal_view_controller_mac_tests.mm */,
 				B6C56D601C90474400CAC59D /* Info.plist */,
 			);
-			path = ui_mac_tests;
+			path = ui_tests;
 			sourceTree = "<group>";
 		};
 		B6C56D911C90498300CAC59D /* objc_utils */ = {
@@ -400,7 +400,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = ui_mac_tests/Info.plist;
+				INFOPLIST_FILE = ui_tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -440,7 +440,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = ui_mac_tests/Info.plist;
+				INFOPLIST_FILE = ui_tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
