@@ -97,6 +97,7 @@
 		B6F5019E1C9BFFD400A0B4A1 /* yas_ui_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_types.h; sourceTree = "<group>"; };
 		B6F5019F1C9BFFD400A0B4A1 /* yas_ui_types.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_types.mm; sourceTree = "<group>"; };
 		B6F501B41C9C009D00A0B4A1 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		B6F501BD1C9CF26F00A0B4A1 /* yas_objc_container_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_container_private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +200,7 @@
 		B6F5018E1C9BFFD400A0B4A1 /* objc_utils */ = {
 			isa = PBXGroup;
 			children = (
+				B6F501BD1C9CF26F00A0B4A1 /* yas_objc_container_private.h */,
 				B6F5018B1C9BFFD400A0B4A1 /* yas_objc_container.h */,
 				B6F5018C1C9BFFD400A0B4A1 /* yas_objc_container.mm */,
 				B6F5018D1C9BFFD400A0B4A1 /* yas_objc_macros.h */,

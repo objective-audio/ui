@@ -110,6 +110,7 @@
 		B6C56DCB1C90782300CAC59D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B6C56DCF1C910E6500CAC59D /* yas_ui_types_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_types_tests.mm; sourceTree = "<group>"; };
 		B6C56DE51C91A8A900CAC59D /* yas_ui_matrix_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_matrix_tests.mm; sourceTree = "<group>"; };
+		B6F501BC1C9CF26500A0B4A1 /* yas_objc_container_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_container_private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +203,7 @@
 		B6C56D911C90498300CAC59D /* objc_utils */ = {
 			isa = PBXGroup;
 			children = (
+				B6F501BC1C9CF26500A0B4A1 /* yas_objc_container_private.h */,
 				B6C56D921C90498300CAC59D /* yas_objc_container.h */,
 				B6C56D931C90498300CAC59D /* yas_objc_container.mm */,
 				B6C56D941C90498300CAC59D /* yas_objc_macros.h */,
