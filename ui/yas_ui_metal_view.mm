@@ -213,9 +213,10 @@ NS_ASSUME_NONNULL_BEGIN
     id<MTLTexture> attachmentTexture = colorAttachment.texture;
 
     if (_sampleCount > 1) {
-        if (!attachmentTexture || (attachmentTexture.width != drawableTexture.width) ||
-            (attachmentTexture.height != drawableTexture.height) || (attachmentTexture.sampleCount != _sampleCount)) {
-            @autoreleasepool {
+        @autoreleasepool {
+            if (!attachmentTexture || (attachmentTexture.width != drawableTexture.width) ||
+                (attachmentTexture.height != drawableTexture.height) ||
+                (attachmentTexture.sampleCount != _sampleCount)) {
                 MTLTextureDescriptor *desc =
                     [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm
                                                                        width:drawableTexture.width
@@ -229,9 +230,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                 attachmentTexture = yas_autorelease([self.device newTextureWithDescriptor:desc]);
             }
+
+            colorAttachment.texture = attachmentTexture;
         }
 
-        colorAttachment.texture = attachmentTexture;
         colorAttachment.resolveTexture = drawableTexture;
         colorAttachment.storeAction = MTLStoreActionMultisampleResolve;
     } else {

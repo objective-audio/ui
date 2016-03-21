@@ -43,7 +43,7 @@ namespace ui {
         bool operator==(texture const &) const;
         bool operator!=(texture const &) const;
 
-        setup_result setup(id<MTLDevice> const device);
+        setup_result setup_metal(id<MTLDevice> const device);
 
         id<MTLSamplerState> mtl_sampler() const;
         id<MTLTexture> mtl_texture() const;

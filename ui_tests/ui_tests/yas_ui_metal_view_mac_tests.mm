@@ -78,7 +78,6 @@
     YASMetalView *view = [[YASMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)];
     YASMetalViewTestDelegate *delegate = [[YASMetalViewTestDelegate alloc] init];
     view.delegate = delegate;
-    yas_release(delegate);
 
     [delegate reset];
 
@@ -96,6 +95,7 @@
 
     yas_release(view);
     yas_release(device);
+    yas_release(delegate);
 }
 
 @end

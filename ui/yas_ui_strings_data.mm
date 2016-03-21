@@ -23,11 +23,11 @@ using namespace yas;
 ui::strings_info::strings_info(std::size_t const word_count) : _squares(word_count), _width(0.0) {
 }
 
-vertex2d_square_t const &ui::strings_info::square(std::size_t const word_index) const {
+ui::vertex2d_square_t const &ui::strings_info::square(std::size_t const word_index) const {
     return _squares.at(word_index);
 }
 
-std::vector<vertex2d_square_t> const &ui::strings_info::squares() const {
+std::vector<ui::vertex2d_square_t> const &ui::strings_info::squares() const {
     return _squares;
 }
 
@@ -47,7 +47,7 @@ namespace ui {
         mutable_strings_info(std::size_t const word_size) : strings_info(word_size) {
         }
 
-        vertex2d_square_t &square(std::size_t const word_index) {
+        ui::vertex2d_square_t &square(std::size_t const word_index) {
             return _squares.at(word_index);
         }
 
@@ -160,7 +160,7 @@ struct ui::strings_data::impl : public base::impl {
         return std::move(strings_info);
     }
 
-    vertex2d_square_t &_square(std::string const &word) {
+    ui::vertex2d_square_t &_square(std::string const &word) {
         auto idx = words.find_first_of(word);
         if (idx == std::string::npos) {
             idx = 0;
@@ -201,7 +201,7 @@ struct ui::strings_data::impl : public base::impl {
     }
 
    private:
-    std::vector<vertex2d_square_t> _squares;
+    std::vector<ui::vertex2d_square_t> _squares;
     std::vector<CGSize> _advances;
 };
 
