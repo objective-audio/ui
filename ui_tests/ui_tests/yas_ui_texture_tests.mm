@@ -44,7 +44,7 @@ using namespace yas;
         return;
     }
 
-    auto setup_result = texture.setup(device);
+    auto setup_result = texture.setup_metal(device);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
