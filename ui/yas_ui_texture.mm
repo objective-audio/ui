@@ -24,7 +24,7 @@ struct ui::texture::impl : public base::impl {
           format(pixel_format) {
     }
 
-    setup_result setup(id<MTLDevice> const device) {
+    setup_result setup_metal(id<MTLDevice> const device) {
         @autoreleasepool {
             auto texture_desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
                                                                                    width:actual_size.width
@@ -179,8 +179,8 @@ bool ui::texture::operator!=(texture const &rhs) const {
     return super_class::operator!=(rhs);
 }
 
-ui::texture::setup_result ui::texture::setup(id<MTLDevice> const device) {
-    return impl_ptr<impl>()->setup(device);
+ui::texture::setup_result ui::texture::setup_metal(id<MTLDevice> const device) {
+    return impl_ptr<impl>()->setup_metal(device);
 }
 
 id<MTLSamplerState> ui::texture::mtl_sampler() const {
