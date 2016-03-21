@@ -7,6 +7,7 @@
 #include "yas_ui_shared_types.h"
 
 using namespace metal;
+using namespace yas;
 
 struct color_inout2d {
     float4 position[[position]];
@@ -14,8 +15,8 @@ struct color_inout2d {
     float2 tex_coord[[user(texturecoord)]];
 };
 
-vertex color_inout2d vertex2d(device vertex2d_t *vertex_array[[buffer(0)]],
-                              constant uniforms2d_t &uniforms[[buffer(1)]], unsigned int vid[[vertex_id]]) {
+vertex color_inout2d vertex2d(device ui::vertex2d_t *vertex_array[[buffer(0)]],
+                              constant ui::uniforms2d_t &uniforms[[buffer(1)]], unsigned int vid[[vertex_id]]) {
     color_inout2d out;
 
     float4 in_position = float4(float2(vertex_array[vid].position), 0.0, 1.0);
