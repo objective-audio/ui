@@ -2,16 +2,19 @@
 //  yas_ui_metal_view_controller.mm
 //
 
+#import "yas_objc_container.h"
 #import "yas_ui_metal_view.h"
 #import "yas_ui_metal_view_controller.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YASMetalViewController ()
+using namespace yas;
+
+@interface YASUIMetalViewController ()
 
 @end
 
-@implementation YASMetalViewController
+@implementation YASUIMetalViewController
 
 - (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -36,14 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.nibName || self.nibBundle) {
         [super loadView];
     } else {
-        auto view = [[YASMetalView alloc] initWithFrame:CGRectZero];
-        self.view = view;
-        yas_release(view);
+        auto view = make_container_move([[YASUIMetalView alloc] initWithFrame:CGRectZero]);
+        self.view = view.object();
     }
 }
 
-- (YASMetalView *)metalView {
-    return (YASMetalView *)self.view;
+- (YASUIMetalView *)metalView {
+    return (YASUIMetalView *)self.view;
 }
 
 #pragma mark -

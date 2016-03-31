@@ -4,40 +4,56 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import "yas_base.h"
+#import "yas_objc_container.h"
 #import "yas_ui_metal_view.h"
+#import "yas_ui_renderer_protocol.h"
 
-@interface YASMetalViewTestDelegate : NSObject <YASMetalViewDelegate>
+using namespace yas;
 
-@property (nonatomic) BOOL drawableSizeWillChangeCalled;
-@property (nonatomic) CGSize drawableSize;
-@property (nonatomic) BOOL drawInMetalViewCalled;
+namespace yas {
+namespace test {
+    struct dummy_renderer : public base {
+        struct impl : public base::impl, public ui::view_renderable::impl {
+            void view_configure(YASUIMetalView *const view) override {
+            }
 
-@end
+            void view_drawable_size_will_change(YASUIMetalView *const view, CGSize const size) override {
+                drawable_size_will_change_called = true;
+                drawable_size = size;
+            }
 
-@implementation YASMetalViewTestDelegate
+            void view_render(YASUIMetalView *const view) override {
+                render_called = true;
+            }
 
-- (void)reset {
-    self.drawableSizeWillChangeCalled = NO;
-    self.drawableSize = CGSizeZero;
-    self.drawInMetalViewCalled = NO;
+            void reset() {
+                drawable_size_will_change_called = false;
+                drawable_size = CGSizeZero;
+                render_called = false;
+            }
+
+            bool drawable_size_will_change_called;
+            CGSize drawable_size;
+            bool render_called;
+        };
+
+        dummy_renderer() : base(std::make_shared<impl>()) {
+        }
+
+        ui::view_renderable renderable() {
+            return ui::view_renderable{impl_ptr<ui::view_renderable::impl>()};
+        }
+    };
 }
-
-- (void)metalView:(YASMetalView *)view drawableSizeWillChange:(CGSize)size {
-    self.drawableSizeWillChangeCalled = YES;
-    self.drawableSize = size;
 }
-
-- (void)drawInMetalView:(YASMetalView *)view {
-    self.drawInMetalViewCalled = YES;
-}
-
-@end
 
 @interface yas_ui_metal_view_mac_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_metal_view_mac_tests
+@implementation yas_ui_metal_view_mac_tests {
+}
 
 - (void)setUp {
     [super setUp];
@@ -48,54 +64,52 @@
 }
 
 - (void)test_create {
-    auto device = MTLCreateSystemDefaultDevice();
+    auto device = make_container_move(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
 
-    YASMetalView *view = [[YASMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)];
+    auto view_container = make_container_move([[YASUIMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)]);
+    auto view = view_container.object();
 
-    XCTAssertNil(view.delegate);
+    XCTAssertFalse(view.renderer);
     XCTAssertNotNil(view.device);
-    XCTAssertEqualObjects(view.device, device);
+    XCTAssertEqualObjects(view.device, device.object());
     XCTAssertNotNil(view.currentDrawable);
     XCTAssertNil(view.renderPassDescriptor);
     XCTAssertEqual(view.sampleCount, 1);
     XCTAssertFalse(view.paused);
-
-    yas_release(view);
-    yas_release(device);
 }
 
-- (void)test_delegate {
-    auto device = MTLCreateSystemDefaultDevice();
+- (void)test_renderable {
+    auto device = make_container_move(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
 
-    YASMetalView *view = [[YASMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)];
-    YASMetalViewTestDelegate *delegate = [[YASMetalViewTestDelegate alloc] init];
-    view.delegate = delegate;
+    auto view_container = make_container_move([[YASUIMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)]);
+    auto view = view_container.object();
 
-    [delegate reset];
+    test::dummy_renderer renderer;
+    auto renderer_impl_ptr = renderer.impl_ptr<test::dummy_renderer::impl>();
+    view.renderer = renderer.renderable();
 
+    XCTAssertTrue(view.renderer);
+
+    renderer_impl_ptr->reset();
     [view draw];
 
-    XCTAssertTrue(delegate.drawableSizeWillChangeCalled);
-    XCTAssertTrue(CGSizeEqualToSize(delegate.drawableSize, CGSizeMake(512, 256)));
-    XCTAssertTrue(delegate.drawInMetalViewCalled);
+    XCTAssertTrue(renderer_impl_ptr->drawable_size_will_change_called);
+    XCTAssertTrue(CGSizeEqualToSize(renderer_impl_ptr->drawable_size, CGSizeMake(512, 256)));
+    XCTAssertTrue(renderer_impl_ptr->render_called);
 
-    [delegate reset];
+    renderer_impl_ptr->reset();
     [view draw];
 
-    XCTAssertFalse(delegate.drawableSizeWillChangeCalled);
-    XCTAssertTrue(delegate.drawInMetalViewCalled);
-
-    yas_release(view);
-    yas_release(device);
-    yas_release(delegate);
+    XCTAssertFalse(renderer_impl_ptr->drawable_size_will_change_called);
+    XCTAssertTrue(renderer_impl_ptr->render_called);
 }
 
 @end

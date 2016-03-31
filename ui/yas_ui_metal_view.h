@@ -5,6 +5,7 @@
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import "yas_objc_macros.h"
+#import "yas_ui_renderer_protocol.h"
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #elif TARGET_OS_MAC
@@ -13,11 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol YASMetalViewDelegate;
+@interface YASUIMetalView : yas_objc_view
 
-@interface YASMetalView : yas_objc_view
-
-@property (nonatomic, yas_weak_for_property) id<YASMetalViewDelegate> delegate;
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 @property (nonatomic, strong, readonly) id<CAMetalDrawable> currentDrawable;
 @property (nonatomic, strong, readonly, nullable) MTLRenderPassDescriptor *renderPassDescriptor;
@@ -25,16 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
 @property (nonatomic, assign) CGFloat contentsScale;
 
+- (void)setRenderer:(yas::ui::view_renderable)renderer;
+- (yas::ui::view_renderable)renderer;
+
 - (void)draw;
-
-@end
-
-@protocol YASMetalViewDelegate <NSObject>
-
-@optional
-
-- (void)metalView:(YASMetalView *)view drawableSizeWillChange:(CGSize)size;
-- (void)drawInMetalView:(YASMetalView *)view;
 
 @end
 

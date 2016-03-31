@@ -8,6 +8,7 @@
 #include <simd/simd.h>
 #include "yas_base.h"
 #include "yas_result.h"
+#include "yas_ui_metal_protocol.h"
 #include "yas_ui_types.h"
 
 namespace yas {
@@ -18,14 +19,6 @@ namespace ui {
         using super_class = base;
 
        public:
-        enum class setup_error {
-            unknown,
-            create_texture_descriptor_failed,
-            create_texture_failed,
-            create_sampler_descriptor_failed,
-            create_sampler_failed,
-        };
-
         enum class draw_image_error {
             unknown,
             image_is_null,
@@ -33,7 +26,6 @@ namespace ui {
             out_of_range,
         };
 
-        using setup_result = result<std::nullptr_t, setup_error>;
         using draw_image_result = result<uint_region, draw_image_error>;
 
         texture(uint_size const point_size, Float64 const scale_factor,
@@ -43,10 +35,8 @@ namespace ui {
         bool operator==(texture const &) const;
         bool operator!=(texture const &) const;
 
-        setup_result setup_metal(id<MTLDevice> const device);
-
-        id<MTLSamplerState> mtl_sampler() const;
-        id<MTLTexture> mtl_texture() const;
+        id<MTLSamplerState> sampler() const;
+        id<MTLTexture> mtlTexture() const;
         MTLTextureType target() const;
         uint_size point_size() const;
         uint_size actual_size() const;
@@ -58,6 +48,8 @@ namespace ui {
         draw_image_result add_image(image const &image);
         draw_image_result replace_image(image const &image, uint_origin const actual_origin);
 
+        ui::metal_object metal();
+
         class impl;
     };
 }
@@ -65,6 +57,5 @@ namespace ui {
 template <>
 ui::texture cast(base const &);
 
-std::string to_string(ui::texture::setup_error const);
 std::string to_string(ui::texture::draw_image_error const);
 }
