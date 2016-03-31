@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <simd/simd.h>
 #include <string>
 
 namespace yas {
@@ -38,6 +39,8 @@ ui::uint_region to_uint_region(MTLRegion const);
 MTLOrigin to_mtl_origin(ui::uint_origin const);
 MTLSize to_mtl_size(ui::uint_size const);
 MTLRegion to_mtl_region(ui::uint_region const);
+
+simd::float2 to_float2(CGPoint const &);
 
 std::string to_string(ui::pivot const &pivot);
 }

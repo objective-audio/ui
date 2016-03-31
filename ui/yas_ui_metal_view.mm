@@ -3,12 +3,25 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import "yas_objc_macros.h"
+#import "yas_objc_container.h"
 #import "yas_ui_metal_view.h"
+#import "yas_ui_renderer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YASMetalView ()
+using namespace yas;
+
+namespace yas {
+namespace ui {
+    namespace metal_view {
+        struct cpp_variables {
+            ui::view_renderable renderer{nullptr};
+        };
+    }
+}
+}
+
+@interface YASUIMetalView ()
 
 @property (nonatomic, strong, nullable) MTLRenderPassDescriptor *renderPassDescriptor;
 @property (nonatomic, strong, nullable) id<CAMetalDrawable> drawable;
@@ -21,9 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation YASMetalView {
+@implementation YASUIMetalView {
     BOOL _needsUpdateDrawableSize;
     BOOL _paused;
+
+    ui::metal_view::cpp_variables _cpp;
 }
 
 + (Class)layerClass {
@@ -61,9 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
     metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     metalLayer.contentsScale = 1.0;
 
-    auto device = MTLCreateSystemDefaultDevice();
-    metalLayer.device = device;
-    yas_release(device);
+    auto device = make_container_move(MTLCreateSystemDefaultDevice());
+    metalLayer.device = device.object();
 
     _paused = NO;
     _sampleCount = 1;
@@ -90,6 +104,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<MTLDevice>)device {
     return self.metalLayer.device;
+}
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
 }
 
 #if TARGET_OS_IPHONE
@@ -155,6 +173,15 @@ NS_ASSUME_NONNULL_BEGIN
     return self.metalLayer.contentsScale;
 }
 
+- (void)setRenderer:(yas::ui::view_renderable)renderer {
+    _cpp.renderer = renderer;
+    renderer.configure(self);
+}
+
+- (yas::ui::view_renderable)renderer {
+    return _cpp.renderer;
+}
+
 - (void)draw {
     @autoreleasepool {
         CGSize drawableSize = self.bounds.size;
@@ -169,8 +196,8 @@ NS_ASSUME_NONNULL_BEGIN
             drawableSize.width *= scale;
             drawableSize.height *= scale;
 
-            if ([_delegate respondsToSelector:@selector(metalView:drawableSizeWillChange:)]) {
-                [_delegate metalView:self drawableSizeWillChange:drawableSize];
+            if (_cpp.renderer) {
+                _cpp.renderer.drawable_size_will_change(self, drawableSize);
             }
 
             self.metalLayer.drawableSize = drawableSize;
@@ -180,8 +207,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self _updateRenderPassDescriptor];
 
-        if ([_delegate respondsToSelector:@selector(drawInMetalView:)]) {
-            [_delegate drawInMetalView:self];
+        if (_cpp.renderer) {
+            _cpp.renderer.render(self);
         }
 
         self.drawable = nil;
@@ -199,13 +226,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (_renderPassDescriptor == nil) {
         self.renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
 
-        MTLRenderPassColorAttachmentDescriptor *colorAttachment = [MTLRenderPassColorAttachmentDescriptor new];
+        auto color_attachment = make_container_move([MTLRenderPassColorAttachmentDescriptor new]);
+        auto colorAttachment = color_attachment.object();
         colorAttachment.loadAction = MTLLoadActionClear;
         colorAttachment.clearColor = MTLClearColorMake(0.0f, 0.0f, 0.0f, 1.0f);
 
         [_renderPassDescriptor.colorAttachments setObject:colorAttachment atIndexedSubscript:0];
-
-        yas_release(colorAttachment);
     }
 
     MTLRenderPassColorAttachmentDescriptor *colorAttachment =

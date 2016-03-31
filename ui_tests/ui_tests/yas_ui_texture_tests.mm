@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_objc_container.h"
 #import "yas_objc_macros.h"
 #import "yas_ui_image.h"
 #import "yas_ui_texture.h"
@@ -38,13 +39,13 @@ using namespace yas;
 - (void)test_add_image {
     ui::texture texture{{8, 8}, 1.0};
 
-    auto device = MTLCreateSystemDefaultDevice();
+    auto device = make_container_move(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
 
-    auto setup_result = texture.setup_metal(device);
+    auto setup_result = texture.metal().setup(device.object());
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -95,8 +96,6 @@ using namespace yas;
     } else {
         std::cout << "draw_image_error::" << to_string(result.error()) << std::endl;
     }
-
-    yas_release(device);
 }
 
 @end

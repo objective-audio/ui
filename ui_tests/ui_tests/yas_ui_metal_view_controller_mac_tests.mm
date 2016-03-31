@@ -9,7 +9,7 @@
 @interface yas_ui_metal_view_controller_mac_tests : XCTestCase
 
 @property (nonatomic, strong) NSWindow *window;
-@property (nonatomic, strong) YASMetalViewController *viewController;
+@property (nonatomic, strong) YASUIMetalViewController *viewController;
 
 @end
 
@@ -18,7 +18,7 @@
 - (void)setUp {
     [super setUp];
 
-    self.viewController = [[YASMetalViewController alloc] initWithNibName:nil bundle:nil];
+    self.viewController = [[YASUIMetalViewController alloc] initWithNibName:nil bundle:nil];
 
     self.window = [NSWindow windowWithContentViewController:self.viewController];
     self.window.styleMask = NSBorderlessWindowMask;
@@ -40,7 +40,7 @@
 
     auto metalView = viewController.metalView;
     XCTAssertNotNil(metalView);
-    XCTAssertEqualObjects([metalView class], [YASMetalView class]);
+    XCTAssertEqualObjects([metalView class], [YASUIMetalView class]);
 }
 
 - (void)test_set_frame {

@@ -12,11 +12,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YASMetalView;
+@class YASUIMetalView;
 
-@interface YASMetalViewController : yas_objc_view_controller
+@interface YASUIMetalViewController : yas_objc_view_controller
 
-@property (nonatomic, strong, readonly) YASMetalView *metalView;
+@property (nonatomic, strong, readonly) YASUIMetalView *metalView;
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
 
 - (void)initCommon NS_REQUIRES_SUPER;

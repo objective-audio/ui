@@ -31,6 +31,10 @@ MTLRegion yas::to_mtl_region(ui::uint_region const region) {
     return MTLRegionMake2D(region.origin.x, region.origin.y, region.size.width, region.size.height);
 }
 
+simd::float2 yas::to_float2(CGPoint const &point) {
+    return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
+}
+
 std::string yas::to_string(ui::pivot const &pivot) {
     switch (pivot) {
         case ui::pivot::left:

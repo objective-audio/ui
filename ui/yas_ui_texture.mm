@@ -14,7 +14,7 @@ namespace ui {
 }
 }
 
-struct ui::texture::impl : public base::impl {
+struct ui::texture::impl : public base::impl, public metal_object::impl {
     impl(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const pixel_format)
         : _draw_actual_padding(texture_draw_padding * scale_factor),
           point_size(point_size),
@@ -24,58 +24,63 @@ struct ui::texture::impl : public base::impl {
           format(pixel_format) {
     }
 
-    setup_result setup_metal(id<MTLDevice> const device) {
-        @autoreleasepool {
-            auto texture_desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
-                                                                                   width:actual_size.width
-                                                                                  height:actual_size.height
-                                                                               mipmapped:false];
+    ui::setup_metal_result setup(id<MTLDevice> const device) override {
+        if (![_device.object() isEqual:device]) {
+            _device.set_object(device);
+            texture_container.set_object(nil);
+            sampler_container.set_object(nil);
+        }
+
+        if (!texture_container) {
+            auto texture_desc = make_container<MTLTextureDescriptor *>([&format = format, &actual_size = actual_size] {
+                return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
+                                                                          width:actual_size.width
+                                                                         height:actual_size.height
+                                                                      mipmapped:false];
+            });
+
             if (!texture_desc) {
-                return setup_result{setup_error::create_texture_descriptor_failed};
+                return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
             }
 
-            target = texture_desc.textureType;
+            auto textureDesc = texture_desc.object();
 
-            auto texture = [device newTextureWithDescriptor:texture_desc];
+            target = textureDesc.textureType;
 
-            if (!texture) {
-                return setup_result{setup_error::create_texture_failed};
+            texture_container.move_object([device newTextureWithDescriptor:textureDesc]);
+
+            if (!texture_container) {
+                return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
+            }
+        }
+
+        if (!sampler_container) {
+            auto sampler_desc = make_container_move([MTLSamplerDescriptor new]);
+            if (!sampler_desc) {
+                return ui::setup_metal_result{setup_metal_error::create_sampler_descriptor_failed};
             }
 
-            texture_container.set_object(texture);
-            yas_release(texture);
+            auto samplerDesc = sampler_desc.object();
+
+            samplerDesc.minFilter = MTLSamplerMinMagFilterLinear;
+            samplerDesc.magFilter = MTLSamplerMinMagFilterLinear;
+            samplerDesc.mipFilter = MTLSamplerMipFilterNotMipmapped;
+            samplerDesc.maxAnisotropy = 1.0f;
+            samplerDesc.sAddressMode = MTLSamplerAddressModeClampToEdge;
+            samplerDesc.tAddressMode = MTLSamplerAddressModeClampToEdge;
+            samplerDesc.rAddressMode = MTLSamplerAddressModeClampToEdge;
+            samplerDesc.normalizedCoordinates = false;
+            samplerDesc.lodMinClamp = 0;
+            samplerDesc.lodMaxClamp = FLT_MAX;
+
+            sampler_container.move_object([device newSamplerStateWithDescriptor:samplerDesc]);
+
+            if (!sampler_container.object()) {
+                return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
+            }
         }
 
-        auto sampler_desc = [MTLSamplerDescriptor new];
-
-        if (!sampler_desc) {
-            return setup_result{setup_error::create_sampler_descriptor_failed};
-        }
-
-        sampler_desc.minFilter = MTLSamplerMinMagFilterLinear;
-        sampler_desc.magFilter = MTLSamplerMinMagFilterLinear;
-        sampler_desc.mipFilter = MTLSamplerMipFilterNotMipmapped;
-        sampler_desc.maxAnisotropy = 1.0f;
-        sampler_desc.sAddressMode = MTLSamplerAddressModeClampToEdge;
-        sampler_desc.tAddressMode = MTLSamplerAddressModeClampToEdge;
-        sampler_desc.rAddressMode = MTLSamplerAddressModeClampToEdge;
-        sampler_desc.normalizedCoordinates = false;
-        sampler_desc.lodMinClamp = 0;
-        sampler_desc.lodMaxClamp = FLT_MAX;
-
-        auto sampler = [device newSamplerStateWithDescriptor:sampler_desc];
-
-        yas_release(sampler_desc);
-
-        if (!sampler) {
-            return setup_result{setup_error::create_sampler_failed};
-        }
-
-        sampler_container.set_object(sampler);
-
-        yas_release(sampler);
-
-        return setup_result{nullptr};
+        return ui::setup_metal_result{nullptr};
     }
 
     draw_image_result add_image(image const &image) {
@@ -156,12 +161,15 @@ struct ui::texture::impl : public base::impl {
     MTLTextureType target = MTLTextureType2D;
     bool const has_alpha = false;
 
-    objc::container<> sampler_container;
-    objc::container<> texture_container;
+    objc::container<id<MTLSamplerState>> sampler_container;
+    objc::container<id<MTLTexture>> texture_container;
 
+   private:
     uint_origin _draw_actual_pos = uint_origin{texture_draw_padding, texture_draw_padding};
     UInt32 _max_line_height = 0;
     UInt32 const _draw_actual_padding;
+
+    objc::container<id<MTLDevice>> _device;
 };
 
 ui::texture::texture(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const format)
@@ -179,15 +187,11 @@ bool ui::texture::operator!=(texture const &rhs) const {
     return super_class::operator!=(rhs);
 }
 
-ui::texture::setup_result ui::texture::setup_metal(id<MTLDevice> const device) {
-    return impl_ptr<impl>()->setup_metal(device);
-}
-
-id<MTLSamplerState> ui::texture::mtl_sampler() const {
+id<MTLSamplerState> ui::texture::sampler() const {
     return impl_ptr<impl>()->sampler_container.object();
 }
 
-id<MTLTexture> ui::texture::mtl_texture() const {
+id<MTLTexture> ui::texture::mtlTexture() const {
     return impl_ptr<impl>()->texture_container.object();
 }
 
@@ -227,26 +231,15 @@ ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui
     return impl_ptr<impl>()->replace_image(image, actual_origin);
 }
 
+ui::metal_object ui::texture::metal() {
+    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+}
+
 template <>
 ui::texture yas::cast(base const &base) {
     ui::texture obj{nullptr};
     obj.set_impl_ptr(std::dynamic_pointer_cast<ui::texture::impl>(base.impl_ptr()));
     return obj;
-}
-
-std::string yas::to_string(ui::texture::setup_error const error) {
-    switch (error) {
-        case ui::texture::setup_error::create_texture_descriptor_failed:
-            return "create_texture_descriptor_failed";
-        case ui::texture::setup_error::create_texture_failed:
-            return "create_texture_failed";
-        case ui::texture::setup_error::create_sampler_descriptor_failed:
-            return "create_sampler_descriptor_failed";
-        case ui::texture::setup_error::create_sampler_failed:
-            return "create_sampler_failed";
-        default:
-            return "unknown";
-    }
 }
 
 std::string yas::to_string(ui::texture::draw_image_error const error) {
