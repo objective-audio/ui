@@ -49,6 +49,7 @@ namespace ui {
 
         std::vector<ui::action> actions() const;
         void insert_action(ui::action action);
+        void erase_action(ui::action const &action);
         void erase_action(ui::node const &target);
 
         ui::touch_manageable touch_manageable();
