@@ -64,7 +64,7 @@ using namespace yas;
     XCTAssertEqual(renderer.actions().size(), 1);
     XCTAssertEqual(renderer.actions().at(0), action2);
 
-    renderer.erase_action(target2);
+    renderer.erase_action(action2);
 
     XCTAssertEqual(renderer.actions().size(), 0);
 }

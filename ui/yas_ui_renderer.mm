@@ -74,6 +74,10 @@ class ui::node_renderer::impl : public renderer::impl {
             });
     }
 
+    void erase_action(ui::action const &action) {
+        _actions.erase(action);
+    }
+
     void erase_action(ui::node const &target) {
         erase_if(_actions, [&target](auto const &action) { return action.target() == target; });
     }
@@ -149,6 +153,10 @@ std::vector<ui::action> ui::node_renderer::actions() const {
 
 void ui::node_renderer::insert_action(ui::action action) {
     impl_ptr<impl>()->insert_action(std::move(action));
+}
+
+void ui::node_renderer::erase_action(ui::action const &action) {
+    impl_ptr<impl>()->erase_action(action);
 }
 
 void ui::node_renderer::erase_action(ui::node const &target) {
