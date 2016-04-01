@@ -4,7 +4,7 @@
 
 #include <simd/simd.h>
 #include "yas_each_index.h"
-#include "yas_objc_container.h"
+#include "yas_objc_ptr.h"
 #include "yas_observing.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_metal_view.h"
@@ -23,25 +23,25 @@ namespace ui {
 struct ui::renderer::impl::core {
     UInt32 sample_count = 4;
 
-    objc::container<id<MTLBuffer>> constant_buffers[inflight_buffer_count];
+    objc_ptr<id<MTLBuffer>> constant_buffers[inflight_buffer_count];
     UInt8 constant_buffer_index = 0;
 
     MTLPixelFormat depth_pixel_format = MTLPixelFormatInvalid;
     MTLPixelFormat stencil_pixel_format = MTLPixelFormatInvalid;
 
-    objc::container<id<MTLDevice>> device;
-    objc::container<id<MTLCommandQueue>> command_queue;
-    objc::container<id<MTLLibrary>> default_library;
+    objc_ptr<id<MTLDevice>> device;
+    objc_ptr<id<MTLCommandQueue>> command_queue;
+    objc_ptr<id<MTLLibrary>> default_library;
 
-    objc::container<dispatch_semaphore_t> inflight_semaphore;
+    objc_ptr<dispatch_semaphore_t> inflight_semaphore;
 
     UInt32 constant_buffer_offset = 0;
     simd::float4x4 projection_matrix;
 
-    objc::container<id<MTLRenderPipelineState>> multi_sample_pipeline_state;
-    objc::container<id<MTLRenderPipelineState>> multi_sample_pipeline_state_without_texture;
-    objc::container<id<MTLRenderPipelineState>> pipeline_state;
-    objc::container<id<MTLRenderPipelineState>> pipeline_state_without_texture;
+    objc_ptr<id<MTLRenderPipelineState>> multi_sample_pipeline_state;
+    objc_ptr<id<MTLRenderPipelineState>> multi_sample_pipeline_state_without_texture;
+    objc_ptr<id<MTLRenderPipelineState>> pipeline_state;
+    objc_ptr<id<MTLRenderPipelineState>> pipeline_state_without_texture;
 
     yas::subject<renderer> subject;
 };
@@ -65,10 +65,10 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     auto defaultLibrary = _core->default_library.object();
     auto device = _core->device.object();
 
-    auto fragment_program = make_container_move([defaultLibrary newFunctionWithName:@"fragment2d"]);
+    auto fragment_program = make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d"]);
     auto fragment_program_without_texture =
-        make_container_move([defaultLibrary newFunctionWithName:@"fragment2d_without_texture"]);
-    auto vertex_program = make_container_move([defaultLibrary newFunctionWithName:@"vertex2d"]);
+        make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_without_texture"]);
+    auto vertex_program = make_objc_ptr([defaultLibrary newFunctionWithName:@"vertex2d"]);
 
     auto fragmentProgram = fragment_program.object();
     auto fragmentProgramWithoutTexture = fragment_program_without_texture.object();
@@ -78,7 +78,7 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     assert(fragmentProgramWithoutTexture);
     assert(vertexProgram);
 
-    auto color_desc = make_container_move([MTLRenderPipelineColorAttachmentDescriptor new]);
+    auto color_desc = make_objc_ptr([MTLRenderPipelineColorAttachmentDescriptor new]);
     auto colorDesc = color_desc.object();
     colorDesc.pixelFormat = MTLPixelFormatBGRA8Unorm;
     colorDesc.blendingEnabled = YES;
@@ -89,7 +89,7 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     colorDesc.destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
     colorDesc.destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
 
-    auto pipeline_state_desc = make_container_move([MTLRenderPipelineDescriptor new]);
+    auto pipeline_state_desc = make_objc_ptr([MTLRenderPipelineDescriptor new]);
     auto pipelineStateDesc = pipeline_state_desc.object();
     pipelineStateDesc.sampleCount = _core->sample_count;
     pipelineStateDesc.vertexFunction = vertexProgram;
@@ -162,7 +162,7 @@ void ui::renderer::impl::view_render(YASUIMetalView *const view) {
 
     dispatch_semaphore_wait(_core->inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
-    auto command_buffer = make_container<id<MTLCommandBuffer>>([commandQueue = _core->command_queue.object()]() {
+    auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = _core->command_queue.object()]() {
         return [commandQueue commandBuffer];
     });
     auto commandBuffer = command_buffer.object();

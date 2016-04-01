@@ -3,7 +3,7 @@
 //
 
 #import "YASSampleMetalViewController.h"
-#import "yas_objc_container.h"
+#import "yas_objc_ptr.h"
 
 using namespace yas;
 
@@ -30,7 +30,7 @@ namespace sample {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    auto device = make_container_move(MTLCreateSystemDefaultDevice());
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     _cpp.renderer = ui::node_renderer{device.object()};
 
     ui::mesh mesh{4, 6, false};
@@ -63,7 +63,9 @@ namespace sample {
 
     [self startActions];
 
-    [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(startActions) userInfo:nil repeats:YES];
+    NSTimer *timer =
+        [NSTimer timerWithTimeInterval:3.0 target:self selector:@selector(startActions) userInfo:nil repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
 - (void)startActions {

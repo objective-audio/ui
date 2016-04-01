@@ -16,9 +16,9 @@ struct ui::encode_info::impl : public base::impl {
         pipe_line_state_without_texture = pipelineStateWithoutTexture;
     }
 
-    objc::container<MTLRenderPassDescriptor *> render_pass_descriptor;
-    objc::container<id<MTLRenderPipelineState>> pipe_line_state;
-    objc::container<id<MTLRenderPipelineState>> pipe_line_state_without_texture;
+    objc_ptr<MTLRenderPassDescriptor *> render_pass_descriptor;
+    objc_ptr<id<MTLRenderPipelineState>> pipe_line_state;
+    objc_ptr<id<MTLRenderPipelineState>> pipe_line_state_without_texture;
     std::vector<ui::mesh> meshes;
 };
 

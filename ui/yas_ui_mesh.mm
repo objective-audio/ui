@@ -2,7 +2,7 @@
 //  yas_ui_mesh.mm
 //
 
-#include "yas_objc_container.h"
+#include "yas_objc_ptr.h"
 #include "yas_ui_encode_info.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_renderer.h"
@@ -196,8 +196,8 @@ struct ui::mesh::impl : public base::impl, public renderable_mesh::impl, public 
 
     bool _needs_update_render_buffer = true;
     UInt32 _dynamic_buffer_index = 0;
-    objc::container<id<MTLBuffer>> _vertex_buffer;
-    objc::container<id<MTLBuffer>> _index_buffer;
+    objc_ptr<id<MTLBuffer>> _vertex_buffer;
+    objc_ptr<id<MTLBuffer>> _index_buffer;
     std::vector<ui::vertex2d_t> _vertices;
     std::vector<UInt16> _indices;
 
@@ -206,7 +206,7 @@ struct ui::mesh::impl : public base::impl, public renderable_mesh::impl, public 
     UInt32 _vertex_count;
     UInt32 _index_count;
 
-    objc::container<id<MTLDevice>> _device;
+    objc_ptr<id<MTLDevice>> _device;
 };
 
 #pragma mark - ui::mesh

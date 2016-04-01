@@ -3,7 +3,7 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import "yas_objc_container.h"
+#import "yas_objc_ptr.h"
 #import "yas_ui_metal_view.h"
 #import "yas_ui_renderer.h"
 
@@ -76,7 +76,7 @@ namespace ui {
     metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     metalLayer.contentsScale = 1.0;
 
-    auto device = make_container_move(MTLCreateSystemDefaultDevice());
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     metalLayer.device = device.object();
 
     _paused = NO;
@@ -226,7 +226,7 @@ namespace ui {
     if (_renderPassDescriptor == nil) {
         self.renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
 
-        auto color_attachment = make_container_move([MTLRenderPassColorAttachmentDescriptor new]);
+        auto color_attachment = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
         auto colorAttachment = color_attachment.object();
         colorAttachment.loadAction = MTLLoadActionClear;
         colorAttachment.clearColor = MTLClearColorMake(0.0f, 0.0f, 0.0f, 1.0f);

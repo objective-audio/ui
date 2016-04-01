@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_base.h"
-#import "yas_objc_container.h"
+#import "yas_objc_ptr.h"
 #import "yas_ui_metal_view.h"
 #import "yas_ui_renderer_protocol.h"
 
@@ -64,14 +64,14 @@ namespace test {
 }
 
 - (void)test_create {
-    auto device = make_container_move(MTLCreateSystemDefaultDevice());
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
 
-    auto view_container = make_container_move([[YASUIMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)]);
-    auto view = view_container.object();
+    auto view_object = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)]);
+    auto view = view_object.object();
 
     XCTAssertFalse(view.renderer);
     XCTAssertNotNil(view.device);
@@ -83,14 +83,14 @@ namespace test {
 }
 
 - (void)test_renderable {
-    auto device = make_container_move(MTLCreateSystemDefaultDevice());
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
 
-    auto view_container = make_container_move([[YASUIMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)]);
-    auto view = view_container.object();
+    auto view_object = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0, 0, 512, 256)]);
+    auto view = view_object.object();
 
     test::dummy_renderer renderer;
     auto renderer_impl_ptr = renderer.impl_ptr<test::dummy_renderer::impl>();
