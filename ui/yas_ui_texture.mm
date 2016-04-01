@@ -2,7 +2,7 @@
 //  yas_ui_texture.mm
 //
 
-#include "yas_objc_container.h"
+#include "yas_objc_ptr.h"
 #include "yas_ui_image.h"
 #include "yas_ui_texture.h"
 
@@ -27,12 +27,12 @@ struct ui::texture::impl : public base::impl, public metal_object::impl {
     ui::setup_metal_result setup(id<MTLDevice> const device) override {
         if (![_device.object() isEqual:device]) {
             _device.set_object(device);
-            texture_container.set_object(nil);
-            sampler_container.set_object(nil);
+            texture_object.set_object(nil);
+            sampler_object.set_object(nil);
         }
 
-        if (!texture_container) {
-            auto texture_desc = make_container<MTLTextureDescriptor *>([&format = format, &actual_size = actual_size] {
+        if (!texture_object) {
+            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = format, &actual_size = actual_size] {
                 return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
                                                                           width:actual_size.width
                                                                          height:actual_size.height
@@ -47,15 +47,15 @@ struct ui::texture::impl : public base::impl, public metal_object::impl {
 
             target = textureDesc.textureType;
 
-            texture_container.move_object([device newTextureWithDescriptor:textureDesc]);
+            texture_object.move_object([device newTextureWithDescriptor:textureDesc]);
 
-            if (!texture_container) {
+            if (!texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
             }
         }
 
-        if (!sampler_container) {
-            auto sampler_desc = make_container_move([MTLSamplerDescriptor new]);
+        if (!sampler_object) {
+            auto sampler_desc = make_objc_ptr([MTLSamplerDescriptor new]);
             if (!sampler_desc) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_descriptor_failed};
             }
@@ -73,9 +73,9 @@ struct ui::texture::impl : public base::impl, public metal_object::impl {
             samplerDesc.lodMinClamp = 0;
             samplerDesc.lodMaxClamp = FLT_MAX;
 
-            sampler_container.move_object([device newSamplerStateWithDescriptor:samplerDesc]);
+            sampler_object.move_object([device newSamplerStateWithDescriptor:samplerDesc]);
 
-            if (!sampler_container.object()) {
+            if (!sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
             }
         }
@@ -108,13 +108,13 @@ struct ui::texture::impl : public base::impl, public metal_object::impl {
             return draw_image_result{draw_image_error::image_is_null};
         }
 
-        if (!texture_container || !sampler_container) {
+        if (!texture_object || !sampler_object) {
             return draw_image_result{draw_image_error::no_setup};
         }
 
         auto region = uint_region{origin, image.actual_size()};
 
-        if (id<MTLTexture> texture = texture_container.object()) {
+        if (id<MTLTexture> texture = texture_object.object()) {
             [texture replaceRegion:to_mtl_region(region)
                        mipmapLevel:0
                          withBytes:image.data()
@@ -161,15 +161,15 @@ struct ui::texture::impl : public base::impl, public metal_object::impl {
     MTLTextureType target = MTLTextureType2D;
     bool const has_alpha = false;
 
-    objc::container<id<MTLSamplerState>> sampler_container;
-    objc::container<id<MTLTexture>> texture_container;
+    objc_ptr<id<MTLSamplerState>> sampler_object;
+    objc_ptr<id<MTLTexture>> texture_object;
 
    private:
     uint_origin _draw_actual_pos = uint_origin{texture_draw_padding, texture_draw_padding};
     UInt32 _max_line_height = 0;
     UInt32 const _draw_actual_padding;
 
-    objc::container<id<MTLDevice>> _device;
+    objc_ptr<id<MTLDevice>> _device;
 };
 
 ui::texture::texture(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const format)
@@ -188,11 +188,11 @@ bool ui::texture::operator!=(texture const &rhs) const {
 }
 
 id<MTLSamplerState> ui::texture::sampler() const {
-    return impl_ptr<impl>()->sampler_container.object();
+    return impl_ptr<impl>()->sampler_object.object();
 }
 
 id<MTLTexture> ui::texture::mtlTexture() const {
-    return impl_ptr<impl>()->texture_container.object();
+    return impl_ptr<impl>()->texture_object.object();
 }
 
 MTLTextureType ui::texture::target() const {

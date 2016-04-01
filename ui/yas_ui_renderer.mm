@@ -4,7 +4,7 @@
 
 #include <chrono>
 #include <unordered_set>
-#include "yas_objc_container.h"
+#include "yas_objc_ptr.h"
 #include "yas_ui_action.h"
 #include "yas_ui_encode_info.h"
 #include "yas_ui_node.h"
@@ -102,7 +102,7 @@ class ui::node_renderer::impl : public renderer::impl {
 
         for (auto &encode_info : render_info.all_encode_infos()) {
             auto renderPassDesc = encode_info.renderPassDescriptor();
-            auto render_encoder = make_container<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
+            auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
                 return [commandBuffer renderCommandEncoderWithDescriptor:renderPassDesc];
             });
 
@@ -129,7 +129,7 @@ class ui::node_renderer::impl : public renderer::impl {
     ui::node _root_node;
     std::unordered_set<ui::action> _actions;
 
-    objc::container<YASUIGestureRecognizer *> gesuture_recognizer;
+    objc_ptr<YASUIGestureRecognizer *> gesuture_recognizer;
 };
 
 ui::node_renderer::node_renderer(id<MTLDevice> const device) : super_class(std::make_shared<impl>(device)) {

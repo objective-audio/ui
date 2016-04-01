@@ -2,7 +2,7 @@
 //  yas_ui_metal_view_controller.mm
 //
 
-#import "yas_objc_container.h"
+#import "yas_objc_ptr.h"
 #import "yas_ui_metal_view.h"
 #import "yas_ui_metal_view_controller.h"
 
@@ -39,7 +39,7 @@ using namespace yas;
     if (self.nibName || self.nibBundle) {
         [super loadView];
     } else {
-        auto view = make_container_move([[YASUIMetalView alloc] initWithFrame:CGRectZero]);
+        auto view = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectZero]);
         self.view = view.object();
     }
 }

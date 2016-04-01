@@ -6,7 +6,7 @@
 
 #include <simd/simd.h>
 #include <vector>
-#include "yas_objc_container.h"
+#include "yas_objc_ptr.h"
 #include "yas_ui_mesh.h"
 
 class yas::ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
@@ -49,7 +49,6 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
    private:
     weak<ui::node_renderer> _node_renderer;
-    objc::container<id<MTLDevice>, objc::weak> _device;
 
     simd::float2 _position;
     Float32 _angle;

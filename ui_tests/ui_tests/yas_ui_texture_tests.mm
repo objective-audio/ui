@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_objc_container.h"
+#import "yas_objc_ptr.h"
 #import "yas_objc_macros.h"
 #import "yas_ui_image.h"
 #import "yas_ui_texture.h"
@@ -39,7 +39,7 @@ using namespace yas;
 - (void)test_add_image {
     ui::texture texture{{8, 8}, 1.0};
 
-    auto device = make_container_move(MTLCreateSystemDefaultDevice());
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
