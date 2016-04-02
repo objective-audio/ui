@@ -148,6 +148,7 @@ struct ui::one_shot_action::impl : public action::impl {
     time_point_t start_time = std::chrono::system_clock::now();
     double duration = 0.3;
     action_transform_f value_transformer;
+    action_completion_f completion_handler;
 };
 
 #pragma mark - one_shot_action
@@ -177,6 +178,12 @@ ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class
 
             impl_ptr->value_update(value);
 
+            if (finished) {
+                if (auto const &completion = impl_ptr->completion_handler) {
+                    completion();
+                }
+            }
+
             return finished;
         }
 
@@ -196,6 +203,10 @@ ui::action_transform_f const &ui::one_shot_action::value_transformer() const {
     return impl_ptr<impl>()->value_transformer;
 }
 
+ui::action_completion_f const &ui::one_shot_action::completion_handler() const {
+    return impl_ptr<impl>()->completion_handler;
+}
+
 void ui::one_shot_action::set_start_time(time_point_t time) {
     impl_ptr<impl>()->start_time = std::move(time);
 }
@@ -206,6 +217,10 @@ void ui::one_shot_action::set_duration(double const &duration) {
 
 void ui::one_shot_action::set_value_transformer(action_transform_f transformer) {
     impl_ptr<impl>()->value_transformer = std::move(transformer);
+}
+
+void ui::one_shot_action::set_completion_handler(action_completion_f handler) {
+    impl_ptr<impl>()->completion_handler = std::move(handler);
 }
 
 #pragma mark - translate_action

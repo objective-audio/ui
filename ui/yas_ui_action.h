@@ -16,6 +16,7 @@ namespace ui {
     using action_update_f = std::function<bool(time_point_t const &)>;
     using action_finish_f = std::function<void(void)>;
     using action_transform_f = std::function<float(float const)>;
+    using action_completion_f = std::function<void(void)>;
 
     struct updatable_action : public protocol {
         struct impl : protocol::impl {
@@ -63,10 +64,12 @@ namespace ui {
         time_point_t const &start_time() const;
         double duration() const;
         action_transform_f const &value_transformer() const;
+        action_completion_f const &completion_handler() const;
 
         void set_start_time(time_point_t);
         void set_duration(double const &);
         void set_value_transformer(action_transform_f);
+        void set_completion_handler(action_completion_f);
 
        protected:
         class impl;
