@@ -33,8 +33,16 @@ using namespace yas;
 
 - (void)test_create_null {
     ui::action action{nullptr};
+    ui::translate_action translate_action{nullptr};
+    ui::rotate_action rotate_action{nullptr};
+    ui::scale_action scale_action{nullptr};
+    ui::color_action color_action{nullptr};
 
     XCTAssertFalse(action);
+    XCTAssertFalse(translate_action);
+    XCTAssertFalse(rotate_action);
+    XCTAssertFalse(scale_action);
+    XCTAssertFalse(color_action);
 }
 
 - (void)test_create_one_shot_action {
@@ -80,11 +88,13 @@ using namespace yas;
     action.set_target(target);
     action.set_duration(10.0);
     action.set_value_transformer(ui::ease_out_transformer());
+    action.set_completion_handler([]() {});
     action.set_start_time(time);
 
     XCTAssertEqual(action.target(), target);
     XCTAssertEqual(action.duration(), 10.0);
     XCTAssertTrue(action.value_transformer());
+    XCTAssertTrue(action.completion_handler());
     XCTAssertEqual(action.start_time(), time);
 }
 
