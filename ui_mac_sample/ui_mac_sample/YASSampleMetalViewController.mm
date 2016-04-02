@@ -4,6 +4,7 @@
 
 #import "YASSampleMetalViewController.h"
 #import "yas_objc_ptr.h"
+#import "yas_property.h"
 
 using namespace yas;
 
@@ -55,56 +56,68 @@ namespace sample {
 
     _cpp.node = ui::node{};
     _cpp.node.set_mesh(mesh);
+    _cpp.node.set_color({1.0f, 0.6f, 0.0f, 1.0f});
 
     auto root_node = _cpp.renderer.root_node();
     root_node.add_sub_node(_cpp.node);
 
     [self.metalView setRenderer:_cpp.renderer.view_renderable()];
 
-    [self startActions];
+    ui::action action;
 
-    NSTimer *timer =
-        [NSTimer timerWithTimeInterval:3.0 target:self selector:@selector(startActions) userInfo:nil repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-}
+    property<ui::time_point_t> prev_time;
+    prev_time.set_value(std::chrono::system_clock::now());
 
-- (void)startActions {
-    ui::rotate_action rotate_action;
-    rotate_action.set_target(_cpp.node);
-    rotate_action.set_duration(3.0);
-    rotate_action.set_curve(ui::action_curve::ease_in_out);
-    rotate_action.set_start_angle(0.0f);
-    rotate_action.set_end_angle(360.0f);
-    rotate_action.set_shortest(false);
+    property<double> sum_duration;
+    sum_duration.set_value(0.0);
 
-    _cpp.renderer.insert_action(std::move(rotate_action));
+    action.set_update_handler([
+        prev_time = std::move(prev_time),
+        sum_duration = std::move(sum_duration),
+        weak_node = to_weak(_cpp.node),
+        weak_renderer = to_weak(_cpp.renderer)
+    ](ui::time_point_t const &now) mutable {
+        std::chrono::duration<double> duration = now - prev_time.value();
 
-    ui::scale_action scale_action;
-    scale_action.set_target(_cpp.node);
-    scale_action.set_duration(3.0);
-    scale_action.set_curve(ui::action_curve::ease_in_out);
-    scale_action.set_start_scale({0.5f, 2.0f});
-    scale_action.set_end_scale({1.0f, 1.0f});
+        if (auto node = weak_node.lock()) {
+            node.set_angle(fmodf(node.angle() + duration.count() * 100.0, 360.0f));
 
-    _cpp.renderer.insert_action(std::move(scale_action));
+            auto sum = sum_duration.value() + duration.count();
+            if (sum > 5.0) {
+                sum = fmod(sum, 5.0);
+                if (auto renderer = weak_renderer.lock()) {
+                    renderer.erase_action(node);
 
-    ui::color_action color_action;
-    color_action.set_target(_cpp.node);
-    color_action.set_duration(3.0);
-    color_action.set_curve(ui::action_curve::ease_in_out);
-    color_action.set_start_color({0.0f, 0.5f, 1.0f, 1.0f});
-    color_action.set_end_color({1.0f, 0.5f, 0.0f, 1.0f});
+                    ui::scale_action scale_action;
+                    scale_action.set_target(node);
+                    scale_action.set_duration(3.0);
+                    scale_action.set_value_transformer([](float const value) {
+                        auto const &transformer = ui::ease_out_transformer();
+                        return transformer(transformer(value));
+                    });
+                    scale_action.set_start_scale({3.0f, 3.0f});
+                    scale_action.set_end_scale({1.0f, 1.0f});
+                    renderer.insert_action(scale_action);
 
-    _cpp.renderer.insert_action(std::move(color_action));
+                    ui::color_action color_action;
+                    color_action.set_target(node);
+                    color_action.set_duration(3.0);
+                    color_action.set_value_transformer(ui::ease_out_transformer());
+                    color_action.set_start_color({0.0f, 0.6f, 1.0f, 1.0f});
+                    color_action.set_end_color({1.0f, 0.6f, 0.0f, 1.0f});
 
-    ui::translate_action translate_action;
-    translate_action.set_target(_cpp.node);
-    translate_action.set_duration(3.0);
-    translate_action.set_curve(ui::action_curve::ease_in_out);
-    translate_action.set_start_position({-50.0f, 0.0f});
-    translate_action.set_end_position({50.0f, 0.0f});
+                    renderer.insert_action(std::move(color_action));
+                }
+            }
+            sum_duration.set_value(sum);
+        }
 
-    _cpp.renderer.insert_action(std::move(translate_action));
+        prev_time.set_value(now);
+
+        return false;
+    });
+
+    _cpp.renderer.insert_action(action);
 }
 
 @end
