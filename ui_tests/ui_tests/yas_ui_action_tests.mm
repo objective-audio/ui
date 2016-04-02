@@ -25,6 +25,19 @@ using namespace yas;
 }
 
 - (void)test_create {
+    ui::action action;
+
+    XCTAssertFalse(action.target());
+    XCTAssertFalse(action.update_handler());
+}
+
+- (void)test_create_null {
+    ui::action action{nullptr};
+
+    XCTAssertFalse(action);
+}
+
+- (void)test_create_one_shot_action {
     ui::translate_action action;
 
     XCTAssertFalse(action.target());
@@ -38,12 +51,6 @@ using namespace yas;
     XCTAssertTrue((now + -100ms) < start_time);
 
     XCTAssertTrue(action.updatable());
-}
-
-- (void)test_create_null {
-    ui::translate_action action{nullptr};
-
-    XCTAssertFalse(action);
 }
 
 - (void)test_finished_handler {
@@ -336,6 +343,36 @@ using namespace yas;
     updatable.update(now + 1s);
 
     XCTAssertTrue(completed);
+}
+
+- (void)test_ease_in_transformer {
+    auto const &transformer = ui::ease_in_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertLessThan(transformer(0.25f), 0.25f);
+    XCTAssertLessThan(transformer(0.5f), 0.5f);
+    XCTAssertLessThan(transformer(0.75f), 0.75f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_out_transformer {
+    auto const &transformer = ui::ease_out_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertGreaterThan(transformer(0.25f), 0.25f);
+    XCTAssertGreaterThan(transformer(0.5f), 0.5f);
+    XCTAssertGreaterThan(transformer(0.75f), 0.75f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_in_out_transformer {
+    auto const &transformer = ui::ease_in_out_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertLessThan(transformer(0.25f), 0.25f);
+    XCTAssertEqual(transformer(0.5f), 0.5f);
+    XCTAssertGreaterThan(transformer(0.75f), 0.75f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
 }
 
 @end
