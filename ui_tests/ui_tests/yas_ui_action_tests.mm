@@ -29,7 +29,7 @@ using namespace yas;
 
     XCTAssertFalse(action.target());
     XCTAssertEqual(action.duration(), 0.3);
-    XCTAssertEqual(action.curve(), ui::action_curve::linear);
+    XCTAssertFalse(action.value_transformer());
 
     auto const &start_time = action.start_time();
     auto const now = std::chrono::system_clock::now();
@@ -72,12 +72,12 @@ using namespace yas;
 
     action.set_target(target);
     action.set_duration(10.0);
-    action.set_curve(ui::action_curve::ease_out);
+    action.set_value_transformer(ui::ease_out_transformer());
     action.set_start_time(time);
 
     XCTAssertEqual(action.target(), target);
     XCTAssertEqual(action.duration(), 10.0);
-    XCTAssertEqual(action.curve(), ui::action_curve::ease_out);
+    XCTAssertTrue(action.value_transformer());
     XCTAssertEqual(action.start_time(), time);
 }
 
@@ -311,13 +311,6 @@ using namespace yas;
     XCTAssertEqual(target.color()[1], 0.75f);
     XCTAssertEqual(target.color()[2], 0.5f);
     XCTAssertEqual(target.color()[3], 0.0f);
-}
-
-- (void)test_curve_to_string {
-    XCTAssertEqual(to_string(ui::action_curve::linear), "linear");
-    XCTAssertEqual(to_string(ui::action_curve::ease_in), "ease_in");
-    XCTAssertEqual(to_string(ui::action_curve::ease_out), "ease_out");
-    XCTAssertEqual(to_string(ui::action_curve::ease_in_out), "ease_in_out");
 }
 
 @end
