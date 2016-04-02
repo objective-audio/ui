@@ -313,4 +313,29 @@ using namespace yas;
     XCTAssertEqual(target.color()[3], 0.0f);
 }
 
+- (void)test_completion_handler {
+    ui::rotate_action action;
+    auto updatable = action.updatable();
+
+    bool completed = false;
+    action.set_completion_handler([&completed]() { completed = true; });
+    action.set_duration(1.0);
+
+    auto now = std::chrono::system_clock::now();
+
+    action.set_start_time(now);
+
+    updatable.update(now);
+
+    XCTAssertFalse(completed);
+
+    updatable.update(now + 500ms);
+
+    XCTAssertFalse(completed);
+
+    updatable.update(now + 1s);
+
+    XCTAssertTrue(completed);
+}
+
 @end
