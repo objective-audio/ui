@@ -14,6 +14,7 @@ namespace yas {
 namespace ui {
     class node;
     using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
+    using duration_t = std::chrono::duration<double>;
     using action_update_f = std::function<bool(time_point_t const &)>;
     using action_finish_f = std::function<void(void)>;
     using action_transform_f = std::function<float(float const)>;
@@ -42,11 +43,13 @@ namespace ui {
 
         ui::node target() const;
         time_point_t const &start_time() const;
+        double delay() const;
         action_update_f const &update_handler() const;
         action_completion_f const &completion_handler() const;
 
         void set_target(ui::node);
         void set_start_time(time_point_t);
+        void set_delay(double const);
         void set_update_handler(action_update_f);
         void set_completion_handler(action_completion_f);
 
