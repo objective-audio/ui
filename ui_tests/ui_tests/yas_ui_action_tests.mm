@@ -348,6 +348,58 @@ using namespace yas;
     XCTAssertTrue(completed);
 }
 
+- (void)test_create_parallel_action {
+    ui::parallel_action parallel_action;
+
+    XCTAssertEqual(parallel_action.actions().size(), 0);
+}
+
+- (void)test_parallel_action {
+    ui::parallel_action parallel_action;
+
+    auto now = std::chrono::system_clock::now();
+
+    ui::translate_action action1;
+    action1.set_start_time(now);
+    action1.set_duration(1.0);
+    parallel_action.insert_action(std::move(action1));
+
+    ui::rotate_action action2;
+    action2.set_start_time(now);
+    action2.set_duration(2.0);
+    parallel_action.insert_action(std::move(action2));
+
+    ui::scale_action action3;
+    action3.set_start_time(now);
+    action3.set_duration(3.0);
+    parallel_action.insert_action(std::move(action3));
+
+    XCTAssertEqual(parallel_action.actions().size(), 3);
+
+    XCTAssertFalse(parallel_action.updatable().update(now));
+    XCTAssertEqual(parallel_action.actions().size(), 3);
+
+    XCTAssertFalse(parallel_action.updatable().update(now + 999ms));
+    XCTAssertEqual(parallel_action.actions().size(), 3);
+
+    XCTAssertFalse(parallel_action.updatable().update(now + 1s));
+    XCTAssertEqual(parallel_action.actions().size(), 2);
+
+    XCTAssertFalse(parallel_action.updatable().update(now + 1999ms));
+    XCTAssertEqual(parallel_action.actions().size(), 2);
+
+    XCTAssertFalse(parallel_action.updatable().update(now + 2s));
+    XCTAssertEqual(parallel_action.actions().size(), 1);
+
+    XCTAssertFalse(parallel_action.updatable().update(now + 2999ms));
+    XCTAssertEqual(parallel_action.actions().size(), 1);
+
+    XCTAssertTrue(parallel_action.updatable().update(now + 3s));
+    XCTAssertEqual(parallel_action.actions().size(), 0);
+}
+
+#pragma mark - transformer
+
 - (void)test_ease_in_transformer {
     auto const &transformer = ui::ease_in_transformer();
 
