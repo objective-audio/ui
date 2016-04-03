@@ -6,6 +6,7 @@
 
 #include <simd/simd.h>
 #include <chrono>
+#include <vector>
 #include "yas_base.h"
 #include "yas_protocol.h"
 
@@ -20,14 +21,12 @@ namespace ui {
 
     struct updatable_action : public protocol {
         struct impl : protocol::impl {
-            virtual void update(time_point_t const &time) = 0;
-            virtual void set_finish_handler(action_finish_f &&) = 0;
+            virtual bool update(time_point_t const &time) = 0;
         };
 
         explicit updatable_action(std::shared_ptr<impl> &&);
 
-        void update(time_point_t const &time);
-        void set_finish_handler(action_finish_f);
+        bool update(time_point_t const &time);
     };
 
     action_transform_f const &ease_in_transformer();
@@ -139,6 +138,21 @@ namespace ui {
 
         void set_start_color(simd::float4);
         void set_end_color(simd::float4);
+
+        class impl;
+    };
+
+    class parallel_action : public action {
+        using super_class = action;
+
+       public:
+        parallel_action();
+        parallel_action(std::nullptr_t);
+
+        std::vector<action> actions() const;
+
+        void insert_action(action);
+        void erase_action(action const &);
 
         class impl;
     };

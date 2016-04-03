@@ -2,7 +2,9 @@
 //  yas_ui_action.mm
 //
 
+#include <unordered_set>
 #include "yas_each_index.h"
+#include "yas_stl_utils.h"
 #include "yas_ui_action.h"
 #include "yas_ui_node.h"
 
@@ -13,12 +15,8 @@ using namespace yas;
 ui::updatable_action::updatable_action(std::shared_ptr<impl> &&impl) : protocol(std::move(impl)) {
 }
 
-void ui::updatable_action::update(time_point_t const &time) {
-    impl_ptr<impl>()->update(time);
-}
-
-void ui::updatable_action::set_finish_handler(action_finish_f handler) {
-    impl_ptr<impl>()->set_finish_handler(std::move(handler));
+bool ui::updatable_action::update(time_point_t const &time) {
+    return impl_ptr<impl>()->update(time);
 }
 
 #pragma mark - action_utils
@@ -92,21 +90,15 @@ ui::action_transform_f const &ui::ease_in_out_transformer() {
 #pragma mark - action::impl
 
 struct ui::action::impl : public base::impl, public updatable_action::impl {
-    void update(time_point_t const &time) override {
-        if (update_handler && update_handler(time)) {
-            if (finish_handler) {
-                finish_handler();
-            }
+    bool update(time_point_t const &time) override {
+        if (update_handler) {
+            return update_handler(time);
         }
-    }
-
-    void set_finish_handler(action_finish_f &&handler) override {
-        finish_handler = std::move(handler);
+        return true;
     }
 
     weak<ui::node> target{nullptr};
     action_update_f update_handler;
-    action_finish_f finish_handler;
 };
 
 #pragma mark - action
@@ -179,8 +171,9 @@ ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class
             impl_ptr->value_update(value);
 
             if (finished) {
-                if (auto const &completion = impl_ptr->completion_handler) {
+                if (auto &completion = impl_ptr->completion_handler) {
                     completion();
+                    completion = nullptr;
                 }
             }
 
@@ -378,4 +371,48 @@ void ui::color_action::set_start_color(simd::float4 color) {
 
 void ui::color_action::set_end_color(simd::float4 color) {
     impl_ptr<impl>()->end_color = std::move(color);
+}
+
+#pragma mark - parallel_action::impl
+
+struct ui::parallel_action::impl : public action::impl {
+    impl() : actions() {
+    }
+
+    std::unordered_set<action> actions;
+};
+
+#pragma mark - parallel_action
+
+ui::parallel_action::parallel_action() : super_class(std::make_shared<impl>()) {
+    set_update_handler([weak_action = to_weak(*this)](time_point_t const &time) {
+        if (auto parallel_action = weak_action.lock()) {
+            auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;
+
+            for (auto &action : to_vector(actions)) {
+                if (action.updatable().update(time)) {
+                    actions.erase(action);
+                }
+            }
+
+            return actions.size() == 0;
+        }
+
+        return true;
+    });
+}
+
+ui::parallel_action::parallel_action(std::nullptr_t) : super_class(nullptr) {
+}
+
+std::vector<ui::action> ui::parallel_action::actions() const {
+    return to_vector(impl_ptr<impl>()->actions);
+}
+
+void ui::parallel_action::insert_action(action action) {
+    impl_ptr<impl>()->actions.emplace(std::move(action));
+}
+
+void ui::parallel_action::erase_action(action const &action) {
+    impl_ptr<impl>()->actions.erase(action);
 }
