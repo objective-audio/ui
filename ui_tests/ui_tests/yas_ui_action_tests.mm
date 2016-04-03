@@ -30,6 +30,14 @@ using namespace yas;
     XCTAssertFalse(action.target());
     XCTAssertFalse(action.update_handler());
     XCTAssertFalse(action.completion_handler());
+
+    auto const &start_time = action.start_time();
+    auto const now = std::chrono::system_clock::now();
+
+    XCTAssertTrue(start_time <= now);
+    XCTAssertTrue((now + -100ms) < start_time);
+
+    XCTAssertTrue(action.updatable());
 }
 
 - (void)test_create_action_null {
@@ -51,14 +59,6 @@ using namespace yas;
 
     XCTAssertEqual(action.duration(), 0.3);
     XCTAssertFalse(action.value_transformer());
-
-    auto const &start_time = action.start_time();
-    auto const now = std::chrono::system_clock::now();
-
-    XCTAssertTrue(start_time <= now);
-    XCTAssertTrue((now + -100ms) < start_time);
-
-    XCTAssertTrue(action.updatable());
 }
 
 - (void)test_updatable_finished {
@@ -76,12 +76,15 @@ using namespace yas;
 - (void)test_set_variables_to_action {
     ui::action action;
     ui::node target;
+    auto const time = std::chrono::system_clock::now();
 
     action.set_target(target);
+    action.set_start_time(time);
     action.set_update_handler([](auto const &time) { return false; });
     action.set_completion_handler([]() {});
 
     XCTAssertEqual(action.target(), target);
+    XCTAssertEqual(action.start_time(), time);
     XCTAssertTrue(action.update_handler());
     XCTAssertTrue(action.completion_handler());
 }
@@ -89,15 +92,12 @@ using namespace yas;
 - (void)test_set_variables_to_one_shot_action {
     ui::translate_action action;
     ui::node target;
-    auto const time = std::chrono::system_clock::now();
 
     action.set_duration(10.0);
     action.set_value_transformer(ui::ease_out_transformer());
-    action.set_start_time(time);
 
     XCTAssertEqual(action.duration(), 10.0);
     XCTAssertTrue(action.value_transformer());
-    XCTAssertEqual(action.start_time(), time);
 }
 
 - (void)test_set_variables_to_translate_action {
@@ -150,6 +150,19 @@ using namespace yas;
     XCTAssertEqual(action.end_color()[1], 0.8f);
     XCTAssertEqual(action.end_color()[2], 0.7f);
     XCTAssertEqual(action.end_color()[3], 0.6f);
+}
+
+- (void)test_start_time {
+    ui::action action;
+    auto updatable = action.updatable();
+
+    auto now = std::chrono::system_clock::now();
+
+    action.set_start_time(now + 1s);
+
+    XCTAssertFalse(updatable.update(now));
+    XCTAssertFalse(updatable.update(now + 999ms));
+    XCTAssertTrue(updatable.update(now + 1s));
 }
 
 - (void)test_update_translate_action {
@@ -407,6 +420,88 @@ using namespace yas;
 
     XCTAssertTrue(parallel_action.updatable().update(now + 3s));
     XCTAssertEqual(parallel_action.actions().size(), 0);
+}
+
+- (void)test_make_sequence {
+    ui::action first_action;
+    ui::rotate_action rotate_action;
+    ui::action end_action;
+    ui::scale_action scale_action;
+
+    bool first_completed = false;
+    bool rotate_completed = false;
+    bool end_completed = false;
+    bool scale_completed = false;
+    bool sequence_completed = false;
+
+    first_action.set_completion_handler([&first_completed] { first_completed = true; });
+    rotate_action.set_duration(1.0);
+    rotate_action.set_completion_handler([&rotate_completed] { rotate_completed = true; });
+    end_action.set_completion_handler([&end_completed] { end_completed = true; });
+    scale_action.set_duration(0.5);
+    scale_action.set_completion_handler([&scale_completed] { scale_completed = true; });
+
+    auto now = std::chrono::system_clock::now();
+
+    auto action_sequence = ui::make_action_sequence({first_action, rotate_action, end_action, scale_action}, now + 1s);
+    action_sequence.set_completion_handler([&sequence_completed] { sequence_completed = true; });
+    auto updatable = action_sequence.updatable();
+
+    XCTAssertFalse(updatable.update(now));
+
+    XCTAssertFalse(first_completed);
+    XCTAssertFalse(rotate_completed);
+    XCTAssertFalse(end_completed);
+    XCTAssertFalse(scale_completed);
+    XCTAssertFalse(sequence_completed);
+
+    XCTAssertFalse(updatable.update(now + 999ms));
+
+    XCTAssertFalse(first_completed);
+    XCTAssertFalse(rotate_completed);
+    XCTAssertFalse(end_completed);
+    XCTAssertFalse(scale_completed);
+    XCTAssertFalse(sequence_completed);
+
+    XCTAssertFalse(updatable.update(now + 1s));
+
+    XCTAssertTrue(first_completed);
+    XCTAssertFalse(rotate_completed);
+    XCTAssertFalse(end_completed);
+    XCTAssertFalse(scale_completed);
+    XCTAssertFalse(sequence_completed);
+
+    XCTAssertFalse(updatable.update(now + 1999ms));
+
+    XCTAssertTrue(first_completed);
+    XCTAssertFalse(rotate_completed);
+    XCTAssertFalse(end_completed);
+    XCTAssertFalse(scale_completed);
+    XCTAssertFalse(sequence_completed);
+
+    XCTAssertFalse(updatable.update(now + 2s));
+
+    XCTAssertTrue(first_completed);
+    XCTAssertTrue(rotate_completed);
+    XCTAssertTrue(end_completed);
+    XCTAssertFalse(scale_completed);
+    XCTAssertFalse(sequence_completed);
+
+    XCTAssertFalse(updatable.update(now + 2499ms));
+    
+    XCTAssertTrue(first_completed);
+    XCTAssertTrue(rotate_completed);
+    XCTAssertTrue(end_completed);
+    XCTAssertFalse(scale_completed);
+    XCTAssertFalse(sequence_completed);
+
+    XCTAssertTrue(updatable.update(now + 2500ms));
+    
+    XCTAssertTrue(first_completed);
+    XCTAssertTrue(rotate_completed);
+    XCTAssertTrue(end_completed);
+    XCTAssertTrue(scale_completed);
+    XCTAssertTrue(sequence_completed);
 }
 
 #pragma mark - transformer
