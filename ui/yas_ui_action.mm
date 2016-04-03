@@ -180,7 +180,7 @@ ui::one_shot_action::one_shot_action(std::nullptr_t) : super_class(nullptr) {
 }
 
 ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
-    set_update_handler([weak_action = to_weak(*this)](time_point_t const &time) {
+    set_update_handler([weak_action = to_weak(*this)](auto const &time) {
         if (auto action = weak_action.lock()) {
             auto impl_ptr = action.impl_ptr<one_shot_action::impl>();
 
@@ -397,7 +397,7 @@ struct ui::parallel_action::impl : public action::impl {
 #pragma mark - parallel_action
 
 ui::parallel_action::parallel_action() : super_class(std::make_shared<impl>()) {
-    set_update_handler([weak_action = to_weak(*this)](time_point_t const &time) {
+    set_update_handler([weak_action = to_weak(*this)](auto const &time) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;
 
