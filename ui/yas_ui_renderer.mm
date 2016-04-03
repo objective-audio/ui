@@ -62,21 +62,25 @@ class ui::node_renderer::impl : public renderer::impl {
     }
 
     void insert_action(ui::action action) {
-        _actions.insert(action);
+        _action.insert_action(action);
     }
 
     void erase_action(ui::action const &action) {
-        _actions.erase(action);
+        _action.erase_action(action);
     }
 
     void erase_action(ui::node const &target) {
-        erase_if(_actions, [&target](auto const &action) { return action.target() == target; });
+        for (auto const &action : _action.actions()) {
+            if (action.target() == target) {
+                _action.erase_action(action);
+            }
+        }
     }
 
     void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPassDesc) override {
         _root_node.metal().setup(device());
 
-        update_actions();
+        _action.updatable().update(std::chrono::system_clock::now());
 
         //        [gesuture_recognizer.object() clearTouchesIfNeeded];
 
@@ -111,20 +115,8 @@ class ui::node_renderer::impl : public renderer::impl {
         }
     }
 
-    void update_actions() {
-        auto const time = std::chrono::system_clock::now();
-
-        if (_actions.size() > 0) {
-            for (auto action : to_vector(_actions)) {
-                if (action.updatable().update(time)) {
-                    _actions.erase(action);
-                }
-            }
-        }
-    }
-
     ui::node _root_node;
-    std::unordered_set<ui::action> _actions;
+    ui::parallel_action _action;
 
     objc_ptr<YASUIGestureRecognizer *> gesuture_recognizer;
 };
@@ -141,7 +133,7 @@ ui::node const &ui::node_renderer::root_node() const {
 }
 
 std::vector<ui::action> ui::node_renderer::actions() const {
-    return to_vector(impl_ptr<impl>()->_actions);
+    return impl_ptr<impl>()->_action.actions();
 }
 
 void ui::node_renderer::insert_action(ui::action action) {
