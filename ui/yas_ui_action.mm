@@ -2,7 +2,9 @@
 //  yas_ui_action.mm
 //
 
+#include <unordered_set>
 #include "yas_each_index.h"
+#include "yas_stl_utils.h"
 #include "yas_ui_action.h"
 #include "yas_ui_node.h"
 
@@ -369,4 +371,48 @@ void ui::color_action::set_start_color(simd::float4 color) {
 
 void ui::color_action::set_end_color(simd::float4 color) {
     impl_ptr<impl>()->end_color = std::move(color);
+}
+
+#pragma mark - parallel_action::impl
+
+struct ui::parallel_action::impl : public action::impl {
+    impl() : actions() {
+    }
+
+    std::unordered_set<action> actions;
+};
+
+#pragma mark - parallel_action
+
+ui::parallel_action::parallel_action() : super_class(std::make_shared<impl>()) {
+    set_update_handler([weak_action = to_weak(*this)](time_point_t const &time) {
+        if (auto parallel_action = weak_action.lock()) {
+            auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;
+
+            for (auto &action : to_vector(actions)) {
+                if (action.updatable().update(time)) {
+                    actions.erase(action);
+                }
+            }
+
+            return actions.size() == 0;
+        }
+
+        return true;
+    });
+}
+
+ui::parallel_action::parallel_action(std::nullptr_t) : super_class(nullptr) {
+}
+
+std::vector<ui::action> ui::parallel_action::actions() const {
+    return to_vector(impl_ptr<impl>()->actions);
+}
+
+void ui::parallel_action::insert_action(action action) {
+    impl_ptr<impl>()->actions.emplace(std::move(action));
+}
+
+void ui::parallel_action::erase_action(action const &action) {
+    impl_ptr<impl>()->actions.erase(action);
 }
