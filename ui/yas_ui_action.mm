@@ -169,8 +169,9 @@ ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class
             impl_ptr->value_update(value);
 
             if (finished) {
-                if (auto const &completion = impl_ptr->completion_handler) {
+                if (auto &completion = impl_ptr->completion_handler) {
                     completion();
+                    completion = nullptr;
                 }
             }
 
