@@ -24,28 +24,19 @@ bool ui::updatable_action::update(time_point_t const &time) {
 namespace yas {
 namespace ui {
     namespace action_utils {
-        static bool _curve_setup_finished = false;
         static std::size_t constexpr _curve_frames = 256;
-        static float _ease_in_curve[_curve_frames + 1];
-        static float _ease_out_curve[_curve_frames + 1];
-        static float _ease_in_out_curve[_curve_frames + 1];
 
-        static void setup_curve() {
-            if (_curve_setup_finished) {
-                return;
+        static std::vector<float> make_curve_vector(std::function<float(float const)> const &func) {
+            static std::size_t constexpr vector_size = _curve_frames + 1;
+            std::vector<float> curve_vector;
+            curve_vector.reserve(vector_size);
+            for (auto const &i : each_index<std::size_t>(vector_size)) {
+                curve_vector.push_back(func((float)i / _curve_frames));
             }
-
-            for (auto const &i : each_index<std::size_t>(_curve_frames + 1)) {
-                float pos = (float)i / _curve_frames;
-                _ease_in_curve[i] = sinf((pos - 1.0f) * M_PI_2) + 1.0f;
-                _ease_out_curve[i] = sinf(pos * M_PI_2);
-                _ease_in_out_curve[i] = (sinf((pos * 2.0f - 1.0f) * M_PI_2) + 1.0f) * 0.5f;
-            }
-
-            _curve_setup_finished = true;
+            return curve_vector;
         }
 
-        static float _convert_value(float *ptr, float pos) {
+        static float convert_value(float *ptr, float pos) {
             float frame = pos * _curve_frames;
             SInt32 index = frame;
             float frac = frame - index;
@@ -59,30 +50,29 @@ namespace ui {
 
 ui::action_transform_f const &ui::ease_in_transformer() {
     static action_transform_f const _transformer = [](float const pos) {
-        return action_utils::_convert_value(action_utils::_ease_in_curve, pos);
+        static auto curve =
+            action_utils::make_curve_vector([](float const pos) { return sinf((pos - 1.0f) * M_PI_2) + 1.0f; });
+        return action_utils::convert_value(curve.data(), pos);
     };
-
-    action_utils::setup_curve();
 
     return _transformer;
 }
 
 ui::action_transform_f const &ui::ease_out_transformer() {
     static action_transform_f const _transformer = [](float const pos) {
-        return action_utils::_convert_value(action_utils::_ease_out_curve, pos);
+        static auto curve = action_utils::make_curve_vector([](float const pos) { return sinf(pos * M_PI_2); });
+        return action_utils::convert_value(curve.data(), pos);
     };
-
-    action_utils::setup_curve();
 
     return _transformer;
 }
 
 ui::action_transform_f const &ui::ease_in_out_transformer() {
     static action_transform_f const _transformer = [](float const pos) {
-        return action_utils::_convert_value(action_utils::_ease_in_out_curve, pos);
+        static auto curve = action_utils::make_curve_vector(
+            [](float const pos) { return (sinf((pos * 2.0f - 1.0f) * M_PI_2) + 1.0f) * 0.5f; });
+        return action_utils::convert_value(curve.data(), pos);
     };
-
-    action_utils::setup_curve();
 
     return _transformer;
 }
