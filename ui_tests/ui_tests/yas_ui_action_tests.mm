@@ -28,6 +28,7 @@ using namespace yas;
     ui::action action;
 
     XCTAssertFalse(action.target());
+    XCTAssertEqual(action.delay(), 0.0);
     XCTAssertFalse(action.update_handler());
     XCTAssertFalse(action.completion_handler());
 
@@ -42,16 +43,20 @@ using namespace yas;
 
 - (void)test_create_action_null {
     ui::action action{nullptr};
+    ui::one_shot_action one_shot_action{nullptr};
     ui::translate_action translate_action{nullptr};
     ui::rotate_action rotate_action{nullptr};
     ui::scale_action scale_action{nullptr};
     ui::color_action color_action{nullptr};
+    ui::parallel_action parallel_action{nullptr};
 
     XCTAssertFalse(action);
+    XCTAssertFalse(one_shot_action);
     XCTAssertFalse(translate_action);
     XCTAssertFalse(rotate_action);
     XCTAssertFalse(scale_action);
     XCTAssertFalse(color_action);
+    XCTAssertFalse(parallel_action);
 }
 
 - (void)test_create_one_shot_action {
@@ -80,11 +85,13 @@ using namespace yas;
 
     action.set_target(target);
     action.set_start_time(time);
+    action.set_delay(1.0);
     action.set_update_handler([](auto const &time) { return false; });
     action.set_completion_handler([]() {});
 
     XCTAssertEqual(action.target(), target);
     XCTAssertEqual(action.start_time(), time);
+    XCTAssertEqual(action.delay(), 1.0);
     XCTAssertTrue(action.update_handler());
     XCTAssertTrue(action.completion_handler());
 }
@@ -372,6 +379,45 @@ using namespace yas;
     XCTAssertTrue(completed);
 }
 
+- (void)test_aciton_with_delay {
+    ui::rotate_action action;
+    ui::node target;
+    auto updatable = action.updatable();
+
+    bool completed = false;
+
+    action.set_target(target);
+    action.set_completion_handler([&completed]() { completed = true; });
+    action.set_duration(1.0);
+    action.set_delay(2.0);
+    action.set_start_angle(0.0f);
+    action.set_end_angle(1.0f);
+
+    target.set_angle(2.0f);
+
+    auto now = std::chrono::system_clock::now();
+
+    action.set_start_time(now);
+
+    XCTAssertFalse(updatable.update(now));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 2.0f);
+
+    XCTAssertFalse(updatable.update(now + 1999ms));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 2.0f);
+
+    XCTAssertFalse(updatable.update(now + 2s));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 0.0f);
+
+    XCTAssertFalse(updatable.update(now + 2999ms));
+    XCTAssertFalse(completed);
+
+    XCTAssertTrue(updatable.update(now + 3000ms));
+    XCTAssertTrue(completed);
+}
+
 - (void)test_create_parallel_action {
     ui::parallel_action parallel_action;
 
@@ -488,7 +534,7 @@ using namespace yas;
     XCTAssertFalse(sequence_completed);
 
     XCTAssertFalse(updatable.update(now + 2499ms));
-    
+
     XCTAssertTrue(first_completed);
     XCTAssertTrue(rotate_completed);
     XCTAssertTrue(end_completed);
@@ -496,7 +542,7 @@ using namespace yas;
     XCTAssertFalse(sequence_completed);
 
     XCTAssertTrue(updatable.update(now + 2500ms));
-    
+
     XCTAssertTrue(first_completed);
     XCTAssertTrue(rotate_completed);
     XCTAssertTrue(end_completed);
