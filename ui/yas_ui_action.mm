@@ -84,7 +84,7 @@ ui::action_transform_f const &ui::ease_in_out_transformer() {
 
 struct ui::action::impl : public base::impl, public updatable_action::impl {
     bool update(time_point_t const &time) override {
-        if (time < start_time) {
+        if (time < start_time + delay) {
             return false;
         }
 
@@ -98,8 +98,13 @@ struct ui::action::impl : public base::impl, public updatable_action::impl {
         return finished;
     }
 
+    duration_t time_diff(time_point_t const &time) {
+        return time - start_time - delay;
+    }
+
     weak<ui::node> target{nullptr};
     time_point_t start_time = std::chrono::system_clock::now();
+    duration_t delay{0.0};
     action_update_f update_handler;
     action_completion_f completion_handler;
 };
@@ -123,6 +128,10 @@ std::chrono::time_point<std::chrono::system_clock> const &ui::action::start_time
     return impl_ptr<impl>()->start_time;
 }
 
+double ui::action::delay() const {
+    return impl_ptr<impl>()->delay.count();
+}
+
 ui::action_update_f const &ui::action::update_handler() const {
     return impl_ptr<impl>()->update_handler;
 }
@@ -137,6 +146,10 @@ void ui::action::set_target(ui::node target) {
 
 void ui::action::set_start_time(time_point_t time) {
     impl_ptr<impl>()->start_time = std::move(time);
+}
+
+void ui::action::set_delay(double const delay) {
+    impl_ptr<impl>()->delay = duration_t{delay};
 }
 
 void ui::action::set_update_handler(action_update_f handler) {
@@ -170,7 +183,7 @@ ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class
         if (auto action = weak_action.lock()) {
             auto impl_ptr = action.impl_ptr<one_shot_action::impl>();
 
-            std::chrono::duration<double> const time_diff = time - impl_ptr->start_time;
+            auto const time_diff = impl_ptr->time_diff(time);
             auto value = time_diff.count() / impl_ptr->duration;
             bool finished = false;
 
@@ -421,14 +434,16 @@ ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_p
     parallel_action sequence;
     sequence.set_start_time(start_time);
 
-    auto time = start_time;
+    duration_t delay{0.0};
 
     for (auto &action : actions) {
-        action.set_start_time(time);
+        action.set_start_time(start_time);
+        action.set_delay(delay.count());
+
         sequence.insert_action(action);
 
         if (auto one_shot_action = cast<ui::one_shot_action>(action)) {
-            time += std::chrono::milliseconds{int64_t(one_shot_action.duration() * 1000)};
+            delay += duration_cast<milliseconds>(duration_t{one_shot_action.duration()});
         }
     }
 
