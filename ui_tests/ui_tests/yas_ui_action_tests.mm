@@ -24,14 +24,15 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_create {
+- (void)test_create_action {
     ui::action action;
 
     XCTAssertFalse(action.target());
     XCTAssertFalse(action.update_handler());
+    XCTAssertFalse(action.completion_handler());
 }
 
-- (void)test_create_null {
+- (void)test_create_action_null {
     ui::action action{nullptr};
     ui::translate_action translate_action{nullptr};
     ui::rotate_action rotate_action{nullptr};
@@ -48,7 +49,6 @@ using namespace yas;
 - (void)test_create_one_shot_action {
     ui::translate_action action;
 
-    XCTAssertFalse(action.target());
     XCTAssertEqual(action.duration(), 0.3);
     XCTAssertFalse(action.value_transformer());
 
@@ -61,7 +61,7 @@ using namespace yas;
     XCTAssertTrue(action.updatable());
 }
 
-- (void)test_finished_handler {
+- (void)test_updatable_finished {
     ui::translate_action action;
     auto updatable_action = action.updatable();
     auto const start_time = std::chrono::system_clock::now();
@@ -74,20 +74,29 @@ using namespace yas;
 }
 
 - (void)test_set_variables_to_action {
+    ui::action action;
+    ui::node target;
+
+    action.set_target(target);
+    action.set_update_handler([](auto const &time) { return false; });
+    action.set_completion_handler([]() {});
+
+    XCTAssertEqual(action.target(), target);
+    XCTAssertTrue(action.update_handler());
+    XCTAssertTrue(action.completion_handler());
+}
+
+- (void)test_set_variables_to_one_shot_action {
     ui::translate_action action;
     ui::node target;
     auto const time = std::chrono::system_clock::now();
 
-    action.set_target(target);
     action.set_duration(10.0);
     action.set_value_transformer(ui::ease_out_transformer());
-    action.set_completion_handler([]() {});
     action.set_start_time(time);
 
-    XCTAssertEqual(action.target(), target);
     XCTAssertEqual(action.duration(), 10.0);
     XCTAssertTrue(action.value_transformer());
-    XCTAssertTrue(action.completion_handler());
     XCTAssertEqual(action.start_time(), time);
 }
 
@@ -108,9 +117,11 @@ using namespace yas;
 
     action.set_start_angle(1.0f);
     action.set_end_angle(2.0f);
+    action.set_shortest(true);
 
     XCTAssertEqual(action.start_angle(), 1.0f);
     XCTAssertEqual(action.end_angle(), 2.0f);
+    XCTAssertEqual(action.is_shortest(), true);
 }
 
 - (void)test_set_variables_to_scale_action {
