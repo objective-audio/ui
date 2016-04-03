@@ -9,6 +9,7 @@
 #include "yas_ui_node.h"
 
 using namespace yas;
+using namespace std::chrono;
 using namespace std::chrono_literals;
 
 #pragma mark - updatable_action
@@ -103,7 +104,7 @@ struct ui::action::impl : public base::impl, public updatable_action::impl {
     }
 
     weak<ui::node> target{nullptr};
-    time_point_t start_time = std::chrono::system_clock::now();
+    time_point_t start_time = system_clock::now();
     duration_t delay{0.0};
     action_update_f update_handler;
     action_completion_f completion_handler;
@@ -124,7 +125,7 @@ ui::node ui::action::target() const {
     return impl_ptr<impl>()->target.lock();
 }
 
-std::chrono::time_point<std::chrono::system_clock> const &ui::action::start_time() const {
+time_point<system_clock> const &ui::action::start_time() const {
     return impl_ptr<impl>()->start_time;
 }
 
