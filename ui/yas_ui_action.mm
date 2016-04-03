@@ -9,6 +9,7 @@
 #include "yas_ui_node.h"
 
 using namespace yas;
+using namespace std::chrono_literals;
 
 #pragma mark - updatable_action
 
@@ -83,18 +84,22 @@ ui::action_transform_f const &ui::ease_in_out_transformer() {
 
 struct ui::action::impl : public base::impl, public updatable_action::impl {
     bool update(time_point_t const &time) override {
-        if (update_handler) {
-            auto finished = update_handler(time);
-            if (finished && completion_handler) {
-                completion_handler();
-                completion_handler = nullptr;
-            }
-            return finished;
+        if (time < start_time) {
+            return false;
         }
-        return true;
+
+        auto const finished = update_handler ? update_handler(time) : true;
+
+        if (finished && completion_handler) {
+            completion_handler();
+            completion_handler = nullptr;
+        }
+
+        return finished;
     }
 
     weak<ui::node> target{nullptr};
+    time_point_t start_time = std::chrono::system_clock::now();
     action_update_f update_handler;
     action_completion_f completion_handler;
 };
@@ -114,6 +119,10 @@ ui::node ui::action::target() const {
     return impl_ptr<impl>()->target.lock();
 }
 
+std::chrono::time_point<std::chrono::system_clock> const &ui::action::start_time() const {
+    return impl_ptr<impl>()->start_time;
+}
+
 ui::action_update_f const &ui::action::update_handler() const {
     return impl_ptr<impl>()->update_handler;
 }
@@ -124,6 +133,10 @@ ui::action_completion_f const &ui::action::completion_handler() const {
 
 void ui::action::set_target(ui::node target) {
     impl_ptr<impl>()->target = target;
+}
+
+void ui::action::set_start_time(time_point_t time) {
+    impl_ptr<impl>()->start_time = std::move(time);
 }
 
 void ui::action::set_update_handler(action_update_f handler) {
@@ -143,7 +156,6 @@ ui::updatable_action ui::action::updatable() {
 struct ui::one_shot_action::impl : public action::impl {
     virtual void value_update(double const value) = 0;
 
-    time_point_t start_time = std::chrono::system_clock::now();
     double duration = 0.3;
     action_transform_f value_transformer;
 };
@@ -182,10 +194,6 @@ ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class
     });
 }
 
-std::chrono::time_point<std::chrono::system_clock> const &ui::one_shot_action::start_time() const {
-    return impl_ptr<impl>()->start_time;
-}
-
 double ui::one_shot_action::duration() const {
     return impl_ptr<impl>()->duration;
 }
@@ -194,11 +202,11 @@ ui::action_transform_f const &ui::one_shot_action::value_transformer() const {
     return impl_ptr<impl>()->value_transformer;
 }
 
-void ui::one_shot_action::set_start_time(time_point_t time) {
-    impl_ptr<impl>()->start_time = std::move(time);
-}
-
 void ui::one_shot_action::set_duration(double const &duration) {
+    if (duration < 0.0) {
+        throw "duration underflow";
+    }
+
     impl_ptr<impl>()->duration = duration;
 }
 
@@ -405,4 +413,24 @@ void ui::parallel_action::insert_action(action action) {
 
 void ui::parallel_action::erase_action(action const &action) {
     impl_ptr<impl>()->actions.erase(action);
+}
+
+#pragma mark -
+
+ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_point_t const &start_time) {
+    parallel_action sequence;
+    sequence.set_start_time(start_time);
+
+    auto time = start_time;
+
+    for (auto &action : actions) {
+        action.set_start_time(time);
+        sequence.insert_action(action);
+
+        if (auto one_shot_action = cast<ui::one_shot_action>(action)) {
+            time += std::chrono::milliseconds{int64_t(one_shot_action.duration() * 1000)};
+        }
+    }
+
+    return sequence;
 }

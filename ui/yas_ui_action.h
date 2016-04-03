@@ -41,10 +41,12 @@ namespace ui {
         action(std::nullptr_t);
 
         ui::node target() const;
+        time_point_t const &start_time() const;
         action_update_f const &update_handler() const;
         action_completion_f const &completion_handler() const;
 
         void set_target(ui::node);
+        void set_start_time(time_point_t);
         void set_update_handler(action_update_f);
         void set_completion_handler(action_completion_f);
 
@@ -62,17 +64,15 @@ namespace ui {
        public:
         one_shot_action(std::nullptr_t);
 
-        time_point_t const &start_time() const;
         double duration() const;
         action_transform_f const &value_transformer() const;
 
-        void set_start_time(time_point_t);
         void set_duration(double const &);
         void set_value_transformer(action_transform_f);
 
-       protected:
         class impl;
 
+       protected:
         one_shot_action(std::shared_ptr<impl> &&);
     };
 
@@ -156,6 +156,8 @@ namespace ui {
 
         class impl;
     };
+
+    parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &start_time);
 }
 }
 
