@@ -27,22 +27,24 @@ namespace ui {
         static std::size_t constexpr _curve_frames = 256;
 
         static std::vector<float> make_curve_vector(std::function<float(float const)> const &func) {
-            static std::size_t constexpr vector_size = _curve_frames + 1;
+            static std::size_t constexpr _vector_size = _curve_frames + 2;
             std::vector<float> curve_vector;
-            curve_vector.reserve(vector_size);
-            for (auto const &i : each_index<std::size_t>(vector_size)) {
-                curve_vector.push_back(func((float)i / _curve_frames));
+            curve_vector.reserve(_vector_size);
+            for (auto const &i : each_index<std::size_t>(_vector_size)) {
+                float const pos = float(i) / _curve_frames;
+                float val = (pos < 1.0f) ? func(pos) : 1.0f;
+                curve_vector.push_back(val);
             }
             return curve_vector;
         }
 
-        static float convert_value(float *ptr, float pos) {
-            float frame = pos * _curve_frames;
-            SInt32 index = frame;
-            float frac = frame - index;
-            float curVal = ptr[index];
-            float nextVal = ptr[index + 1];
-            return curVal + (nextVal - curVal) * frac;
+        static float convert_value(std::vector<float> const &vector, float pos) {
+            float const frame = pos * _curve_frames;
+            std::size_t const cur_index = frame;
+            float const cur_val = vector.at(cur_index);
+            float const next_val = vector.at(cur_index + 1);
+            float const frac = frame - cur_index;
+            return cur_val + (next_val - cur_val) * frac;
         }
     }
 }
@@ -52,7 +54,7 @@ ui::action_transform_f const &ui::ease_in_transformer() {
     static action_transform_f const _transformer = [](float const pos) {
         static auto curve =
             action_utils::make_curve_vector([](float const pos) { return sinf((pos - 1.0f) * M_PI_2) + 1.0f; });
-        return action_utils::convert_value(curve.data(), pos);
+        return action_utils::convert_value(curve, pos);
     };
 
     return _transformer;
@@ -61,7 +63,7 @@ ui::action_transform_f const &ui::ease_in_transformer() {
 ui::action_transform_f const &ui::ease_out_transformer() {
     static action_transform_f const _transformer = [](float const pos) {
         static auto curve = action_utils::make_curve_vector([](float const pos) { return sinf(pos * M_PI_2); });
-        return action_utils::convert_value(curve.data(), pos);
+        return action_utils::convert_value(curve, pos);
     };
 
     return _transformer;
@@ -71,7 +73,7 @@ ui::action_transform_f const &ui::ease_in_out_transformer() {
     static action_transform_f const _transformer = [](float const pos) {
         static auto curve = action_utils::make_curve_vector(
             [](float const pos) { return (sinf((pos * 2.0f - 1.0f) * M_PI_2) + 1.0f) * 0.5f; });
-        return action_utils::convert_value(curve.data(), pos);
+        return action_utils::convert_value(curve, pos);
     };
 
     return _transformer;
