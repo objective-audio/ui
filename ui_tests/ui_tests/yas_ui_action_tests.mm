@@ -65,19 +65,12 @@ using namespace yas;
     ui::translate_action action;
     auto updatable_action = action.updatable();
     auto const start_time = std::chrono::system_clock::now();
-    bool called = false;
 
     action.set_duration(1.0);
     action.set_start_time(start_time);
-    updatable_action.set_finish_handler([&called]() { called = true; });
 
-    updatable_action.update(start_time + 999ms);
-
-    XCTAssertFalse(called);
-
-    updatable_action.update(start_time + 1000ms);
-
-    XCTAssertTrue(called);
+    XCTAssertFalse(updatable_action.update(start_time + 999ms));
+    XCTAssertTrue(updatable_action.update(start_time + 1000ms));
 }
 
 - (void)test_set_variables_to_action {

@@ -20,14 +20,12 @@ namespace ui {
 
     struct updatable_action : public protocol {
         struct impl : protocol::impl {
-            virtual void update(time_point_t const &time) = 0;
-            virtual void set_finish_handler(action_finish_f &&) = 0;
+            virtual bool update(time_point_t const &time) = 0;
         };
 
         explicit updatable_action(std::shared_ptr<impl> &&);
 
-        void update(time_point_t const &time);
-        void set_finish_handler(action_finish_f);
+        bool update(time_point_t const &time);
     };
 
     action_transform_f const &ease_in_transformer();

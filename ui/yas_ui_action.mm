@@ -13,12 +13,8 @@ using namespace yas;
 ui::updatable_action::updatable_action(std::shared_ptr<impl> &&impl) : protocol(std::move(impl)) {
 }
 
-void ui::updatable_action::update(time_point_t const &time) {
-    impl_ptr<impl>()->update(time);
-}
-
-void ui::updatable_action::set_finish_handler(action_finish_f handler) {
-    impl_ptr<impl>()->set_finish_handler(std::move(handler));
+bool ui::updatable_action::update(time_point_t const &time) {
+    return impl_ptr<impl>()->update(time);
 }
 
 #pragma mark - action_utils
@@ -92,21 +88,15 @@ ui::action_transform_f const &ui::ease_in_out_transformer() {
 #pragma mark - action::impl
 
 struct ui::action::impl : public base::impl, public updatable_action::impl {
-    void update(time_point_t const &time) override {
-        if (update_handler && update_handler(time)) {
-            if (finish_handler) {
-                finish_handler();
-            }
+    bool update(time_point_t const &time) override {
+        if (update_handler) {
+            return update_handler(time);
         }
-    }
-
-    void set_finish_handler(action_finish_f &&handler) override {
-        finish_handler = std::move(handler);
+        return true;
     }
 
     weak<ui::node> target{nullptr};
     action_update_f update_handler;
-    action_finish_f finish_handler;
 };
 
 #pragma mark - action

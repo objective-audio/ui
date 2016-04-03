@@ -63,15 +63,6 @@ class ui::node_renderer::impl : public renderer::impl {
 
     void insert_action(ui::action action) {
         _actions.insert(action);
-
-        action.updatable().set_finish_handler(
-            [weak_renderer = to_weak(cast<node_renderer>()), weak_action = to_weak(action)]() {
-                auto renderer = weak_renderer.lock();
-                auto action = weak_action.lock();
-                if (renderer && action) {
-                    renderer.impl_ptr<impl>()->_actions.erase(action);
-                }
-            });
     }
 
     void erase_action(ui::action const &action) {
@@ -125,7 +116,9 @@ class ui::node_renderer::impl : public renderer::impl {
 
         if (_actions.size() > 0) {
             for (auto action : to_vector(_actions)) {
-                action.updatable().update(time);
+                if (action.updatable().update(time)) {
+                    _actions.erase(action);
+                }
             }
         }
     }
