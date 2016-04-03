@@ -42,9 +42,11 @@ namespace ui {
 
         ui::node target() const;
         action_update_f const &update_handler() const;
+        action_completion_f const &completion_handler() const;
 
         void set_target(ui::node);
         void set_update_handler(action_update_f);
+        void set_completion_handler(action_completion_f);
 
         updatable_action updatable();
 
@@ -63,12 +65,10 @@ namespace ui {
         time_point_t const &start_time() const;
         double duration() const;
         action_transform_f const &value_transformer() const;
-        action_completion_f const &completion_handler() const;
 
         void set_start_time(time_point_t);
         void set_duration(double const &);
         void set_value_transformer(action_transform_f);
-        void set_completion_handler(action_completion_f);
 
        protected:
         class impl;
