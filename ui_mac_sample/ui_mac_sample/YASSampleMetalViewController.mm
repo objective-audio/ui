@@ -61,7 +61,7 @@ namespace sample {
     auto root_node = _cpp.renderer.root_node();
     root_node.add_sub_node(_cpp.node);
 
-    [self.metalView setRenderer:_cpp.renderer.view_renderable()];
+    [self setRenderer:_cpp.renderer.view_renderable()];
 
     auto action = ui::make_action({.end_angle = 360.0f, .continuous_action = {.duration = 4.0f, .loop_count = 0}});
     action.set_target(_cpp.node);
