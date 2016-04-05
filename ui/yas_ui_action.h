@@ -9,15 +9,16 @@
 #include <vector>
 #include "yas_base.h"
 #include "yas_protocol.h"
+#include "yas_ui_transformer.h"
 
 namespace yas {
 namespace ui {
     class node;
+
     using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
     using duration_t = std::chrono::duration<double>;
-    using action_update_f = std::function<bool(time_point_t const &)>;
-    using action_finish_f = std::function<void(void)>;
-    using action_transform_f = std::function<float(float const)>;
+    using action_time_update_f = std::function<bool(time_point_t const &)>;
+    using action_value_update_f = std::function<void(double const)>;
     using action_completion_f = std::function<void(void)>;
 
     struct updatable_action : public protocol {
@@ -30,126 +31,103 @@ namespace ui {
         bool update(time_point_t const &time);
     };
 
-    action_transform_f const &ease_in_transformer();
-    action_transform_f const &ease_out_transformer();
-    action_transform_f const &ease_in_out_transformer();
+    struct action_args {
+        time_point_t start_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+    };
 
     class action : public base {
         using super_class = base;
 
        public:
         action();
+        action(action_args);
         action(std::nullptr_t);
 
         ui::node target() const;
         time_point_t const &start_time() const;
         double delay() const;
-        action_update_f const &update_handler() const;
+        action_time_update_f const &time_updater() const;
         action_completion_f const &completion_handler() const;
 
-        void set_target(ui::node);
-        void set_start_time(time_point_t);
-        void set_delay(double const);
-        void set_update_handler(action_update_f);
+        void set_target(ui::node const &);
+        void set_time_updater(action_time_update_f);
         void set_completion_handler(action_completion_f);
 
         updatable_action updatable();
 
-       protected:
         class impl;
 
+       protected:
         action(std::shared_ptr<impl> &&);
     };
 
-    class one_shot_action : public action {
+    struct continuous_action_args {
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+
+        action_args action;
+    };
+
+    class continuous_action : public action {
         using super_class = action;
 
        public:
-        one_shot_action(std::nullptr_t);
+        continuous_action();
+        continuous_action(continuous_action_args args);
+        continuous_action(std::nullptr_t);
 
         double duration() const;
+        action_value_update_f const &value_updater() const;
         action_transform_f const &value_transformer() const;
+        std::size_t loop_count() const;
 
-        void set_duration(double const &);
+        void set_value_updater(action_value_update_f);
         void set_value_transformer(action_transform_f);
 
         class impl;
-
-       protected:
-        one_shot_action(std::shared_ptr<impl> &&);
     };
 
-    class translate_action : public one_shot_action {
-        using super_class = one_shot_action;
+    struct translate_action_args {
+        simd::float2 start_position = 0.0f;
+        simd::float2 end_position = 0.0f;
 
-       public:
-        translate_action();
-        translate_action(std::nullptr_t);
-
-        simd::float2 const &start_position() const;
-        simd::float2 const &end_position() const;
-
-        void set_start_position(simd::float2);
-        void set_end_position(simd::float2);
-
-        class impl;
+        continuous_action_args continuous_action;
     };
 
-    class rotate_action : public one_shot_action {
-        using super_class = one_shot_action;
+    struct rotate_action_args {
+        float start_angle = 0.0f;
+        float end_angle = 0.0f;
+        bool is_shortest = false;
 
-       public:
-        rotate_action();
-        rotate_action(std::nullptr_t);
-
-        float start_angle() const;
-        float end_angle() const;
-        bool is_shortest() const;
-
-        void set_start_angle(float const);
-        void set_end_angle(float const);
-        void set_shortest(bool const);
-
-        class impl;
+        continuous_action_args continuous_action;
     };
 
-    class scale_action : public one_shot_action {
-        using super_class = one_shot_action;
+    struct scale_action_args {
+        simd::float2 start_scale = 1.0f;
+        simd::float2 end_scale = 1.0f;
 
-       public:
-        scale_action();
-        scale_action(std::nullptr_t);
-
-        simd::float2 const &start_scale() const;
-        simd::float2 const &end_scale() const;
-
-        void set_start_scale(simd::float2);
-        void set_end_scale(simd::float2);
-
-        class impl;
+        continuous_action_args continuous_action;
     };
 
-    class color_action : public one_shot_action {
-        using super_class = one_shot_action;
+    struct color_action_args {
+        simd::float4 start_color = 1.0f;
+        simd::float4 end_color = 1.0f;
 
-       public:
-        color_action();
-        color_action(std::nullptr_t);
-
-        simd::float4 const &start_color() const;
-        simd::float4 const &end_color() const;
-
-        void set_start_color(simd::float4);
-        void set_end_color(simd::float4);
-
-        class impl;
+        continuous_action_args continuous_action;
     };
+
+    continuous_action make_action(translate_action_args);
+    continuous_action make_action(rotate_action_args);
+    continuous_action make_action(scale_action_args);
+    continuous_action make_action(color_action_args);
 
     class parallel_action : public action {
         using super_class = action;
 
        public:
         parallel_action();
+        parallel_action(action_args);
         parallel_action(std::nullptr_t);
 
         std::vector<action> actions() const;

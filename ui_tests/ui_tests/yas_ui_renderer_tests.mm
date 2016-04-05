@@ -45,8 +45,8 @@ using namespace yas;
 
     ui::node target1;
     ui::node target2;
-    ui::translate_action action1;
-    ui::rotate_action action2;
+    ui::action action1;
+    ui::action action2;
     action1.set_target(target1);
     action2.set_target(target2);
 
