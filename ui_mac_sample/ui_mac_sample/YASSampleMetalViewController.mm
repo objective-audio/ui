@@ -63,59 +63,8 @@ namespace sample {
 
     [self.metalView setRenderer:_cpp.renderer.view_renderable()];
 
-    ui::action action;
-
-    property<ui::time_point_t> prev_time;
-    prev_time.set_value(std::chrono::system_clock::now());
-
-    property<double> sum_duration;
-    sum_duration.set_value(0.0);
-
-    action.set_update_handler([
-        prev_time = std::move(prev_time),
-        sum_duration = std::move(sum_duration),
-        weak_node = to_weak(_cpp.node),
-        weak_renderer = to_weak(_cpp.renderer)
-    ](ui::time_point_t const &now) mutable {
-        std::chrono::duration<double> duration = now - prev_time.value();
-
-        if (auto node = weak_node.lock()) {
-            node.set_angle(fmodf(node.angle() + duration.count() * 100.0, 360.0f));
-
-            auto sum = sum_duration.value() + duration.count();
-            if (sum > 5.0) {
-                sum = fmod(sum, 5.0);
-                if (auto renderer = weak_renderer.lock()) {
-                    renderer.erase_action(node);
-
-                    ui::scale_action scale_action;
-                    scale_action.set_target(node);
-                    scale_action.set_duration(3.0);
-                    scale_action.set_value_transformer([](float const value) {
-                        auto const &transformer = ui::ease_out_transformer();
-                        return transformer(transformer(value));
-                    });
-                    scale_action.set_start_scale({3.0f, 3.0f});
-                    scale_action.set_end_scale({1.0f, 1.0f});
-                    renderer.insert_action(scale_action);
-
-                    ui::color_action color_action;
-                    color_action.set_target(node);
-                    color_action.set_duration(3.0);
-                    color_action.set_value_transformer(ui::ease_out_transformer());
-                    color_action.set_start_color({0.0f, 0.6f, 1.0f, 1.0f});
-                    color_action.set_end_color({1.0f, 0.6f, 0.0f, 1.0f});
-
-                    renderer.insert_action(std::move(color_action));
-                }
-            }
-            sum_duration.set_value(sum);
-        }
-
-        prev_time.set_value(now);
-
-        return false;
-    });
+    auto action = ui::make_action({.end_angle = 360.0f, .continuous_action = {.duration = 4.0f, .loop_count = 0}});
+    action.set_target(_cpp.node);
 
     _cpp.renderer.insert_action(action);
 }

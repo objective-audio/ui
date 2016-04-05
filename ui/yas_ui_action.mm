@@ -3,7 +3,6 @@
 //
 
 #include <unordered_set>
-#include "yas_each_index.h"
 #include "yas_stl_utils.h"
 #include "yas_ui_action.h"
 #include "yas_ui_node.h"
@@ -21,75 +20,21 @@ bool ui::updatable_action::update(time_point_t const &time) {
     return impl_ptr<impl>()->update(time);
 }
 
-#pragma mark - action_utils
-
-namespace yas {
-namespace ui {
-    namespace action_utils {
-        static std::size_t constexpr _curve_frames = 256;
-
-        static std::vector<float> make_curve_vector(std::function<float(float const)> const &func) {
-            static std::size_t constexpr _vector_size = _curve_frames + 2;
-            std::vector<float> curve_vector;
-            curve_vector.reserve(_vector_size);
-            for (auto const &i : each_index<std::size_t>(_vector_size)) {
-                float const pos = float(i) / _curve_frames;
-                float val = (pos < 1.0f) ? func(pos) : 1.0f;
-                curve_vector.push_back(val);
-            }
-            return curve_vector;
-        }
-
-        static float convert_value(std::vector<float> const &vector, float pos) {
-            float const frame = pos * _curve_frames;
-            std::size_t const cur_index = frame;
-            float const cur_val = vector.at(cur_index);
-            float const next_val = vector.at(cur_index + 1);
-            float const frac = frame - cur_index;
-            return cur_val + (next_val - cur_val) * frac;
-        }
-    }
-}
-}
-
-ui::action_transform_f const &ui::ease_in_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
-        static auto curve =
-            action_utils::make_curve_vector([](float const pos) { return sinf((pos - 1.0f) * M_PI_2) + 1.0f; });
-        return action_utils::convert_value(curve, pos);
-    };
-
-    return _transformer;
-}
-
-ui::action_transform_f const &ui::ease_out_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
-        static auto curve = action_utils::make_curve_vector([](float const pos) { return sinf(pos * M_PI_2); });
-        return action_utils::convert_value(curve, pos);
-    };
-
-    return _transformer;
-}
-
-ui::action_transform_f const &ui::ease_in_out_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
-        static auto curve = action_utils::make_curve_vector(
-            [](float const pos) { return (sinf((pos * 2.0f - 1.0f) * M_PI_2) + 1.0f) * 0.5f; });
-        return action_utils::convert_value(curve, pos);
-    };
-
-    return _transformer;
-}
-
 #pragma mark - action::impl
 
 struct ui::action::impl : public base::impl, public updatable_action::impl {
+    impl() {
+    }
+
+    impl(action_args &&args) : start_time(std::move(args.start_time)), delay(args.delay) {
+    }
+
     bool update(time_point_t const &time) override {
         if (time < start_time + delay) {
             return false;
         }
 
-        auto const finished = update_handler ? update_handler(time) : true;
+        auto const finished = time_updater ? time_updater(time) : true;
 
         if (finished && completion_handler) {
             completion_handler();
@@ -106,13 +51,16 @@ struct ui::action::impl : public base::impl, public updatable_action::impl {
     weak<ui::node> target{nullptr};
     time_point_t start_time = system_clock::now();
     duration_t delay{0.0};
-    action_update_f update_handler;
+    action_time_update_f time_updater;
     action_completion_f completion_handler;
 };
 
 #pragma mark - action
 
 ui::action::action() : super_class(std::make_shared<impl>()) {
+}
+
+ui::action::action(action_args args) : super_class(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::action::action(std::nullptr_t) : super_class(nullptr) {
@@ -133,28 +81,20 @@ double ui::action::delay() const {
     return impl_ptr<impl>()->delay.count();
 }
 
-ui::action_update_f const &ui::action::update_handler() const {
-    return impl_ptr<impl>()->update_handler;
+ui::action_time_update_f const &ui::action::time_updater() const {
+    return impl_ptr<impl>()->time_updater;
 }
 
 ui::action_completion_f const &ui::action::completion_handler() const {
     return impl_ptr<impl>()->completion_handler;
 }
 
-void ui::action::set_target(ui::node target) {
+void ui::action::set_target(ui::node const &target) {
     impl_ptr<impl>()->target = target;
 }
 
-void ui::action::set_start_time(time_point_t time) {
-    impl_ptr<impl>()->start_time = std::move(time);
-}
-
-void ui::action::set_delay(double const delay) {
-    impl_ptr<impl>()->delay = duration_t{delay};
-}
-
-void ui::action::set_update_handler(action_update_f handler) {
-    impl_ptr<impl>()->update_handler = std::move(handler);
+void ui::action::set_time_updater(action_time_update_f handler) {
+    impl_ptr<impl>()->time_updater = std::move(handler);
 }
 
 void ui::action::set_completion_handler(action_completion_f handler) {
@@ -167,39 +107,60 @@ ui::updatable_action ui::action::updatable() {
 
 #pragma mark - action::impl
 
-struct ui::one_shot_action::impl : public action::impl {
-    virtual void value_update(double const value) = 0;
+struct ui::continuous_action::impl : public action::impl {
+    impl() {
+    }
+
+    impl(continuous_action_args &&args)
+        : action::impl(std::move(args.action)), duration(args.duration), loop_count(args.loop_count) {
+        if (duration < 0.0) {
+            throw "duration underflow";
+        }
+    }
+
+    virtual void value_update(double const value) {
+        if (value_updater) {
+            value_updater(value);
+        }
+    }
+
+    auto end_time() {
+        return start_time + delay + duration_t{duration} * loop_count;
+    }
 
     double duration = 0.3;
+    action_value_update_f value_updater;
     action_transform_f value_transformer;
+    std::size_t loop_count = 1;
+    std::size_t index = 0;
 };
 
-#pragma mark - one_shot_action
+#pragma mark - continuous_action
 
-ui::one_shot_action::one_shot_action(std::nullptr_t) : super_class(nullptr) {
+ui::continuous_action::continuous_action() : continuous_action(continuous_action_args{}) {
 }
 
-ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
-    set_update_handler([weak_action = to_weak(*this)](auto const &time) {
+ui::continuous_action::continuous_action(continuous_action_args args)
+    : super_class(std::make_shared<impl>(std::move(args))) {
+    set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto action = weak_action.lock()) {
-            auto impl_ptr = action.impl_ptr<one_shot_action::impl>();
-
-            auto const time_diff = impl_ptr->time_diff(time);
-            auto value = time_diff.count() / impl_ptr->duration;
+            auto impl_ptr = action.impl_ptr<continuous_action::impl>();
+            auto const duration = impl_ptr->duration;
             bool finished = false;
 
-            if (value >= 1.0) {
-                value = 1.0;
-                finished = true;
-            } else if (value < 0) {
-                value = 0;
+            if (impl_ptr->loop_count > 0) {
+                if (action.impl_ptr<continuous_action::impl>()->end_time() <= time) {
+                    finished = true;
+                }
             }
 
-            if (auto const &transformer = impl_ptr->value_transformer) {
+            float value = finished ? 1.0f : (fmod(impl_ptr->time_diff(time).count(), duration) / duration);
+
+            if (auto const &transformer = action.value_transformer()) {
                 value = transformer(value);
             }
 
-            impl_ptr->value_update(value);
+            action.impl_ptr<continuous_action::impl>()->value_update(value);
 
             return finished;
         }
@@ -208,187 +169,112 @@ ui::one_shot_action::one_shot_action(std::shared_ptr<impl> &&impl) : super_class
     });
 }
 
-double ui::one_shot_action::duration() const {
+ui::continuous_action::continuous_action(std::nullptr_t) : super_class(nullptr) {
+}
+
+double ui::continuous_action::duration() const {
     return impl_ptr<impl>()->duration;
 }
 
-ui::action_transform_f const &ui::one_shot_action::value_transformer() const {
+ui::action_value_update_f const &ui::continuous_action::value_updater() const {
+    return impl_ptr<impl>()->value_updater;
+}
+
+ui::action_transform_f const &ui::continuous_action::value_transformer() const {
     return impl_ptr<impl>()->value_transformer;
 }
 
-void ui::one_shot_action::set_duration(double const &duration) {
-    if (duration < 0.0) {
-        throw "duration underflow";
-    }
-
-    impl_ptr<impl>()->duration = duration;
+std::size_t ui::continuous_action::loop_count() const {
+    return impl_ptr<impl>()->loop_count;
 }
 
-void ui::one_shot_action::set_value_transformer(action_transform_f transformer) {
+void ui::continuous_action::set_value_updater(action_value_update_f updater) {
+    impl_ptr<impl>()->value_updater = std::move(updater);
+}
+
+void ui::continuous_action::set_value_transformer(action_transform_f transformer) {
     impl_ptr<impl>()->value_transformer = std::move(transformer);
 }
 
 #pragma mark - translate_action
 
-struct ui::translate_action::impl : public ui::one_shot_action::impl {
-    void value_update(double const value) override {
-        if (auto locked_target = target.lock()) {
-            locked_target.set_position((end_position - start_position) * (float)value + start_position);
+ui::continuous_action ui::make_action(translate_action_args args) {
+    ui::continuous_action action{std::move(args.continuous_action)};
+
+    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+        if (auto action = weak_action.lock()) {
+            if (auto target = action.target()) {
+                target.set_position((args.end_position - args.start_position) * (float)value + args.start_position);
+            }
         }
-    }
+    });
 
-    simd::float2 start_position;
-    simd::float2 end_position;
-};
-
-ui::translate_action::translate_action() : super_class(std::make_shared<impl>()) {
-}
-
-ui::translate_action::translate_action(std::nullptr_t) : super_class(nullptr) {
-}
-
-simd::float2 const &ui::translate_action::start_position() const {
-    return impl_ptr<impl>()->start_position;
-}
-
-simd::float2 const &ui::translate_action::end_position() const {
-    return impl_ptr<impl>()->end_position;
-}
-
-void ui::translate_action::set_start_position(simd::float2 pos) {
-    impl_ptr<impl>()->start_position = std::move(pos);
-}
-
-void ui::translate_action::set_end_position(simd::float2 pos) {
-    impl_ptr<impl>()->end_position = std::move(pos);
+    return action;
 }
 
 #pragma mark - rotate_action
 
-struct ui::rotate_action::impl : public ui::one_shot_action::impl {
-    void value_update(double const value) override {
-        if (shortest) {
-            if ((end_angle - start_angle) > 180.0f) {
-                start_angle += 360.0f;
-            } else if ((end_angle - start_angle) < -180.0f) {
-                start_angle -= 360.0f;
+ui::continuous_action ui::make_action(rotate_action_args args) {
+    ui::continuous_action action{std::move(args.continuous_action)};
+
+    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+        if (auto action = weak_action.lock()) {
+            if (auto target = action.target()) {
+                auto const end_angle = args.end_angle;
+                auto start_angle = args.start_angle;
+
+                if (args.is_shortest) {
+                    if ((end_angle - start_angle) > 180.0f) {
+                        start_angle += 360.0f;
+                    } else if ((end_angle - start_angle) < -180.0f) {
+                        start_angle -= 360.0f;
+                    }
+                }
+
+                target.set_angle((end_angle - start_angle) * value + start_angle);
             }
         }
+    });
 
-        if (auto locked_target = target.lock()) {
-            locked_target.set_angle((end_angle - start_angle) * value + start_angle);
-        }
-    }
-
-    float start_angle;
-    float end_angle;
-    bool shortest;
-};
-
-ui::rotate_action::rotate_action() : super_class(std::make_shared<impl>()) {
-}
-
-ui::rotate_action::rotate_action(std::nullptr_t) : super_class(nullptr) {
-}
-
-float ui::rotate_action::start_angle() const {
-    return impl_ptr<impl>()->start_angle;
-}
-
-float ui::rotate_action::end_angle() const {
-    return impl_ptr<impl>()->end_angle;
-}
-
-bool ui::rotate_action::is_shortest() const {
-    return impl_ptr<impl>()->shortest;
-}
-
-void ui::rotate_action::set_start_angle(float const angle) {
-    impl_ptr<impl>()->start_angle = angle;
-}
-
-void ui::rotate_action::set_end_angle(float const angle) {
-    impl_ptr<impl>()->end_angle = angle;
-}
-
-void ui::rotate_action::set_shortest(bool const shortest) {
-    impl_ptr<impl>()->shortest = shortest;
+    return action;
 }
 
 #pragma mark - scale_action
 
-struct ui::scale_action::impl : public ui::one_shot_action::impl {
-    void value_update(double const value) override {
-        if (auto locked_target = target.lock()) {
-            locked_target.set_scale((end_scale - start_scale) * (float)value + start_scale);
+ui::continuous_action ui::make_action(ui::scale_action_args args) {
+    ui::continuous_action action{std::move(args.continuous_action)};
+
+    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+        if (auto action = weak_action.lock()) {
+            if (auto target = action.target()) {
+                target.set_scale((args.end_scale - args.start_scale) * (float)value + args.start_scale);
+            }
         }
-    }
+    });
 
-    simd::float2 start_scale;
-    simd::float2 end_scale;
-};
-
-ui::scale_action::scale_action() : super_class(std::make_shared<impl>()) {
-}
-
-ui::scale_action::scale_action(std::nullptr_t) : super_class(nullptr) {
-}
-
-simd::float2 const &ui::scale_action::start_scale() const {
-    return impl_ptr<impl>()->start_scale;
-}
-
-simd::float2 const &ui::scale_action::end_scale() const {
-    return impl_ptr<impl>()->end_scale;
-}
-
-void ui::scale_action::set_start_scale(simd::float2 scale) {
-    impl_ptr<impl>()->start_scale = std::move(scale);
-}
-
-void ui::scale_action::set_end_scale(simd::float2 scale) {
-    impl_ptr<impl>()->end_scale = std::move(scale);
+    return action;
 }
 
 #pragma mark - color_action
 
-struct ui::color_action::impl : public ui::one_shot_action::impl {
-    void value_update(double const value) override {
-        if (auto locked_target = target.lock()) {
-            locked_target.set_color((end_color - start_color) * (float)value + start_color);
+ui::continuous_action ui::make_action(ui::color_action_args args) {
+    ui::continuous_action action{std::move(args.continuous_action)};
+
+    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+        if (auto action = weak_action.lock()) {
+            if (auto target = action.target()) {
+                target.set_color((args.end_color - args.start_color) * (float)value + args.start_color);
+            }
         }
-    }
+    });
 
-    simd::float4 start_color;
-    simd::float4 end_color;
-};
-
-ui::color_action::color_action() : super_class(std::make_shared<impl>()) {
-}
-
-ui::color_action::color_action(std::nullptr_t) : super_class(nullptr) {
-}
-
-simd::float4 const &ui::color_action::start_color() const {
-    return impl_ptr<impl>()->start_color;
-}
-
-simd::float4 const &ui::color_action::end_color() const {
-    return impl_ptr<impl>()->end_color;
-}
-
-void ui::color_action::set_start_color(simd::float4 color) {
-    impl_ptr<impl>()->start_color = std::move(color);
-}
-
-void ui::color_action::set_end_color(simd::float4 color) {
-    impl_ptr<impl>()->end_color = std::move(color);
+    return action;
 }
 
 #pragma mark - parallel_action::impl
 
 struct ui::parallel_action::impl : public action::impl {
-    impl() : actions() {
+    impl(action_args &&args) : action::impl(std::move(args)) {
     }
 
     std::unordered_set<action> actions;
@@ -396,8 +282,11 @@ struct ui::parallel_action::impl : public action::impl {
 
 #pragma mark - parallel_action
 
-ui::parallel_action::parallel_action() : super_class(std::make_shared<impl>()) {
-    set_update_handler([weak_action = to_weak(*this)](auto const &time) {
+ui::parallel_action::parallel_action() : parallel_action(action_args{}) {
+}
+
+ui::parallel_action::parallel_action(action_args args) : super_class(std::make_shared<impl>(std::move(args))) {
+    set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;
 
@@ -432,19 +321,18 @@ void ui::parallel_action::erase_action(action const &action) {
 #pragma mark -
 
 ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_point_t const &start_time) {
-    parallel_action sequence;
-    sequence.set_start_time(start_time);
+    parallel_action sequence{{.start_time = start_time}};
 
     duration_t delay{0.0};
 
     for (auto &action : actions) {
-        action.set_start_time(start_time);
-        action.set_delay(delay.count());
+        action.impl_ptr<action::impl>()->start_time = start_time;
+        action.impl_ptr<action::impl>()->delay = delay;
 
         sequence.insert_action(action);
 
-        if (auto one_shot_action = cast<ui::one_shot_action>(action)) {
-            delay += duration_cast<milliseconds>(duration_t{one_shot_action.duration()});
+        if (auto continuous_action = cast<ui::continuous_action>(action)) {
+            delay += duration_t{continuous_action.duration()};
         }
     }
 

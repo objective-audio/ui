@@ -29,324 +29,227 @@ using namespace yas;
 
     XCTAssertFalse(action.target());
     XCTAssertEqual(action.delay(), 0.0);
-    XCTAssertFalse(action.update_handler());
+    XCTAssertFalse(action.time_updater());
     XCTAssertFalse(action.completion_handler());
 
     auto const &start_time = action.start_time();
-    auto const now = std::chrono::system_clock::now();
+    auto const time = std::chrono::system_clock::now();
 
-    XCTAssertTrue(start_time <= now);
-    XCTAssertTrue((now + -100ms) < start_time);
+    XCTAssertTrue(start_time <= time);
+    XCTAssertTrue((time + -100ms) < start_time);
 
     XCTAssertTrue(action.updatable());
 }
 
 - (void)test_create_action_null {
     ui::action action{nullptr};
-    ui::one_shot_action one_shot_action{nullptr};
-    ui::translate_action translate_action{nullptr};
-    ui::rotate_action rotate_action{nullptr};
-    ui::scale_action scale_action{nullptr};
-    ui::color_action color_action{nullptr};
+    ui::continuous_action continuous_action{nullptr};
     ui::parallel_action parallel_action{nullptr};
 
     XCTAssertFalse(action);
-    XCTAssertFalse(one_shot_action);
-    XCTAssertFalse(translate_action);
-    XCTAssertFalse(rotate_action);
-    XCTAssertFalse(scale_action);
-    XCTAssertFalse(color_action);
+    XCTAssertFalse(continuous_action);
     XCTAssertFalse(parallel_action);
 }
 
-- (void)test_create_one_shot_action {
-    ui::translate_action action;
+- (void)test_create_continuous_action {
+    ui::continuous_action action;
 
     XCTAssertEqual(action.duration(), 0.3);
     XCTAssertFalse(action.value_transformer());
 }
 
 - (void)test_updatable_finished {
-    ui::translate_action action;
-    auto updatable_action = action.updatable();
     auto const start_time = std::chrono::system_clock::now();
-
-    action.set_duration(1.0);
-    action.set_start_time(start_time);
+    ui::continuous_action action{{.duration = 1.0, .action = {.start_time = start_time}}};
+    auto updatable_action = action.updatable();
 
     XCTAssertFalse(updatable_action.update(start_time + 999ms));
     XCTAssertTrue(updatable_action.update(start_time + 1000ms));
 }
 
 - (void)test_set_variables_to_action {
-    ui::action action;
     ui::node target;
     auto const time = std::chrono::system_clock::now();
+    ui::action action{{.start_time = time, .delay = 1.0}};
 
     action.set_target(target);
-    action.set_start_time(time);
-    action.set_delay(1.0);
-    action.set_update_handler([](auto const &time) { return false; });
+    action.set_time_updater([](auto const &time) { return false; });
     action.set_completion_handler([]() {});
 
     XCTAssertEqual(action.target(), target);
     XCTAssertEqual(action.start_time(), time);
     XCTAssertEqual(action.delay(), 1.0);
-    XCTAssertTrue(action.update_handler());
+    XCTAssertTrue(action.time_updater());
     XCTAssertTrue(action.completion_handler());
 }
 
-- (void)test_set_variables_to_one_shot_action {
-    ui::translate_action action;
+- (void)test_set_variables_to_continuous_action {
+    ui::continuous_action action{{.duration = 10.0}};
     ui::node target;
 
-    action.set_duration(10.0);
     action.set_value_transformer(ui::ease_out_transformer());
 
     XCTAssertEqual(action.duration(), 10.0);
     XCTAssertTrue(action.value_transformer());
 }
 
-- (void)test_set_variables_to_translate_action {
-    ui::translate_action action;
-
-    action.set_start_position({0.5, -1.5});
-    action.set_end_position({-10.0, 20.0});
-
-    XCTAssertEqual(action.start_position().x, 0.5);
-    XCTAssertEqual(action.start_position().y, -1.5);
-    XCTAssertEqual(action.end_position().x, -10.0);
-    XCTAssertEqual(action.end_position().y, 20.0);
-}
-
-- (void)test_set_variables_to_rotate_action {
-    ui::rotate_action action;
-
-    action.set_start_angle(1.0f);
-    action.set_end_angle(2.0f);
-    action.set_shortest(true);
-
-    XCTAssertEqual(action.start_angle(), 1.0f);
-    XCTAssertEqual(action.end_angle(), 2.0f);
-    XCTAssertEqual(action.is_shortest(), true);
-}
-
-- (void)test_set_variables_to_scale_action {
-    ui::scale_action action;
-
-    action.set_start_scale({3.0f, 5.0f});
-    action.set_end_scale({6.0f, 10.0f});
-
-    XCTAssertEqual(action.start_scale().x, 3.0f);
-    XCTAssertEqual(action.start_scale().y, 5.0f);
-    XCTAssertEqual(action.end_scale().x, 6.0f);
-    XCTAssertEqual(action.end_scale().y, 10.0f);
-}
-
-- (void)test_set_variables_to_color_action {
-    ui::color_action action;
-
-    action.set_start_color({0.1f, 0.2f, 0.3f, 0.4f});
-    action.set_end_color({0.9f, 0.8f, 0.7f, 0.6f});
-
-    XCTAssertEqual(action.start_color()[0], 0.1f);
-    XCTAssertEqual(action.start_color()[1], 0.2f);
-    XCTAssertEqual(action.start_color()[2], 0.3f);
-    XCTAssertEqual(action.start_color()[3], 0.4f);
-    XCTAssertEqual(action.end_color()[0], 0.9f);
-    XCTAssertEqual(action.end_color()[1], 0.8f);
-    XCTAssertEqual(action.end_color()[2], 0.7f);
-    XCTAssertEqual(action.end_color()[3], 0.6f);
-}
-
 - (void)test_start_time {
-    ui::action action;
+    auto time = std::chrono::system_clock::now();
+    ui::action action{{.start_time = time + 1s}};
     auto updatable = action.updatable();
 
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now + 1s);
-
-    XCTAssertFalse(updatable.update(now));
-    XCTAssertFalse(updatable.update(now + 999ms));
-    XCTAssertTrue(updatable.update(now + 1s));
+    XCTAssertFalse(updatable.update(time));
+    XCTAssertFalse(updatable.update(time + 999ms));
+    XCTAssertTrue(updatable.update(time + 1s));
 }
 
 - (void)test_update_translate_action {
-    ui::translate_action action;
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action(
+        {.start_position = {0.0f, -1.0f}, .end_position = {1.0f, 1.0f}, .continuous_action = std::move(args)});
+    action.set_target(target);
+
     auto updatable = action.updatable();
 
-    action.set_target(target);
-    action.set_start_position({0.0f, -1.0f});
-    action.set_end_position({1.0f, 1.0f});
-    action.set_duration(1.0);
-
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertEqual(target.position().x, 0.0f);
     XCTAssertEqual(target.position().y, -1.0f);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertEqual(target.position().x, 0.5f);
     XCTAssertEqual(target.position().y, 0.0f);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertEqual(target.position().x, 1.0f);
     XCTAssertEqual(target.position().y, 1.0f);
 }
 
 - (void)test_update_rotate_action {
-    ui::rotate_action action;
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action(
+        {.start_angle = 0.0f, .end_angle = 360.0f, .is_shortest = false, .continuous_action = std::move(args)});
+    action.set_target(target);
+
     auto updatable = action.updatable();
 
-    action.set_target(target);
-    action.set_start_angle(0.0f);
-    action.set_end_angle(360.0f);
-    action.set_shortest(false);
-    action.set_duration(1.0);
-
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertEqual(target.angle(), 0.0f);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertEqual(target.angle(), 180.0f);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertEqual(target.angle(), 360.0f);
 }
 
 - (void)test_update_rotate_action_shortest_1 {
-    ui::rotate_action action;
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action(
+        {.start_angle = 0.0f, .end_angle = 270.0f, .is_shortest = true, .continuous_action = std::move(args)});
+    action.set_target(target);
+
     auto updatable = action.updatable();
 
-    action.set_target(target);
-    action.set_start_angle(0.0f);
-    action.set_end_angle(270.0f);
-    action.set_shortest(true);
-    action.set_duration(1.0);
-
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertEqual(target.angle(), 360.0f);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertEqual(target.angle(), 315.0f);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertEqual(target.angle(), 270.0f);
 }
 
 - (void)test_update_rotate_action_shortest_2 {
-    ui::rotate_action action;
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action(
+        {.start_angle = -180.0f, .end_angle = 90.0f, .is_shortest = true, .continuous_action = std::move(args)});
+    action.set_target(target);
     auto updatable = action.updatable();
 
-    action.set_target(target);
-    action.set_start_angle(-180.0f);
-    action.set_end_angle(90.0f);
-    action.set_shortest(true);
-    action.set_duration(1.0);
-
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertEqual(target.angle(), 180.0f);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertEqual(target.angle(), 135.0f);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertEqual(target.angle(), 90.0f);
 }
 
 - (void)test_update_scale_action {
-    ui::scale_action action;
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action(
+        {.start_scale = {0.0f, -1.0f}, .end_scale = {1.0f, 1.0f}, .continuous_action = std::move(args)});
+    action.set_target(target);
+
     auto updatable = action.updatable();
 
-    action.set_target(target);
-    action.set_start_scale({0.0f, -1.0f});
-    action.set_end_scale({1.0f, 1.0f});
-    action.set_duration(1.0);
-
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertEqual(target.scale().x, 0.0f);
     XCTAssertEqual(target.scale().y, -1.0f);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertEqual(target.scale().x, 0.5f);
     XCTAssertEqual(target.scale().y, 0.0f);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertEqual(target.scale().x, 1.0f);
     XCTAssertEqual(target.scale().y, 1.0f);
 }
 
 - (void)test_update_color_action {
-    ui::color_action action;
-    ui::mesh mesh{0, 0, false};
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action({.start_color = {0.0f, 0.25f, 0.5f, 1.0f},
+                                   .end_color = {1.0f, 0.75f, 0.5f, 0.0f},
+                                   .continuous_action = std::move(args)});
+    action.set_target(target);
+    ui::mesh mesh{0, 0, false};
     target.set_mesh(mesh);
     auto updatable = action.updatable();
 
-    action.set_target(target);
-    action.set_start_color({0.0f, 0.25f, 0.5f, 1.0f});
-    action.set_end_color({1.0f, 0.75f, 0.5f, 0.0f});
-    action.set_duration(1.0);
-
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertEqual(target.color()[0], 0.0f);
     XCTAssertEqual(target.color()[1], 0.25f);
     XCTAssertEqual(target.color()[2], 0.5f);
     XCTAssertEqual(target.color()[3], 1.0f);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertEqual(target.color()[0], 0.5f);
     XCTAssertEqual(target.color()[1], 0.5f);
     XCTAssertEqual(target.color()[2], 0.5f);
     XCTAssertEqual(target.color()[3], 0.5f);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertEqual(target.color()[0], 1.0f);
     XCTAssertEqual(target.color()[1], 0.75f);
@@ -355,67 +258,98 @@ using namespace yas;
 }
 
 - (void)test_completion_handler {
-    ui::rotate_action action;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action action{{.duration = 1.0, .action = {.start_time = time}}};
     auto updatable = action.updatable();
 
     bool completed = false;
     action.set_completion_handler([&completed]() { completed = true; });
-    action.set_duration(1.0);
 
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    updatable.update(now);
+    updatable.update(time);
 
     XCTAssertFalse(completed);
 
-    updatable.update(now + 500ms);
+    updatable.update(time + 500ms);
 
     XCTAssertFalse(completed);
 
-    updatable.update(now + 1s);
+    updatable.update(time + 1s);
 
     XCTAssertTrue(completed);
 }
 
 - (void)test_aciton_with_delay {
-    ui::rotate_action action;
     ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args = {.duration = 1.0, .action = {.delay = 2.0, .start_time = time}};
+    auto action = ui::make_action({.start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
+    action.set_target(target);
+
     auto updatable = action.updatable();
 
     bool completed = false;
 
-    action.set_target(target);
     action.set_completion_handler([&completed]() { completed = true; });
-    action.set_duration(1.0);
-    action.set_delay(2.0);
-    action.set_start_angle(0.0f);
-    action.set_end_angle(1.0f);
 
     target.set_angle(2.0f);
 
-    auto now = std::chrono::system_clock::now();
-
-    action.set_start_time(now);
-
-    XCTAssertFalse(updatable.update(now));
+    XCTAssertFalse(updatable.update(time));
     XCTAssertFalse(completed);
     XCTAssertEqual(target.angle(), 2.0f);
 
-    XCTAssertFalse(updatable.update(now + 1999ms));
+    XCTAssertFalse(updatable.update(time + 1999ms));
     XCTAssertFalse(completed);
     XCTAssertEqual(target.angle(), 2.0f);
 
-    XCTAssertFalse(updatable.update(now + 2s));
+    XCTAssertFalse(updatable.update(time + 2s));
     XCTAssertFalse(completed);
     XCTAssertEqual(target.angle(), 0.0f);
 
-    XCTAssertFalse(updatable.update(now + 2999ms));
+    XCTAssertFalse(updatable.update(time + 2999ms));
     XCTAssertFalse(completed);
 
-    XCTAssertTrue(updatable.update(now + 3000ms));
+    XCTAssertTrue(updatable.update(time + 3000ms));
     XCTAssertTrue(completed);
+}
+
+- (void)test_action_with_loop {
+    ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args = {.duration = 1.0, .loop_count = 2, .action = {.start_time = time}};
+    auto action = ui::make_action({.start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
+    action.set_target(target);
+
+    auto updatable = action.updatable();
+
+    bool completed = false;
+
+    action.set_completion_handler([&completed]() { completed = true; });
+
+    target.set_angle(2.0f);
+
+    XCTAssertFalse(updatable.update(time - 1ms));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 2.0f);
+
+    XCTAssertFalse(updatable.update(time));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 0.0f);
+
+    XCTAssertFalse(updatable.update(time + 500ms));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 0.5f);
+
+    XCTAssertFalse(updatable.update(time + 1s));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 0.0f);
+
+    XCTAssertFalse(updatable.update(time + 1500ms));
+    XCTAssertFalse(completed);
+    XCTAssertEqual(target.angle(), 0.5f);
+
+    XCTAssertTrue(updatable.update(time + 2s));
+    XCTAssertTrue(completed);
+    XCTAssertEqual(target.angle(), 1.0f);
 }
 
 - (void)test_create_parallel_action {
@@ -427,52 +361,46 @@ using namespace yas;
 - (void)test_parallel_action {
     ui::parallel_action parallel_action;
 
-    auto now = std::chrono::system_clock::now();
+    auto time = std::chrono::system_clock::now();
 
-    ui::translate_action action1;
-    action1.set_start_time(now);
-    action1.set_duration(1.0);
+    ui::continuous_action action1{{.duration = 1.0, .action = {.start_time = time}}};
     parallel_action.insert_action(std::move(action1));
 
-    ui::rotate_action action2;
-    action2.set_start_time(now);
-    action2.set_duration(2.0);
+    ui::continuous_action action2{{.duration = 2.0, .action = {.start_time = time}}};
     parallel_action.insert_action(std::move(action2));
 
-    ui::scale_action action3;
-    action3.set_start_time(now);
-    action3.set_duration(3.0);
+    ui::continuous_action action3{{.duration = 3.0, .action = {.start_time = time}}};
     parallel_action.insert_action(std::move(action3));
 
     XCTAssertEqual(parallel_action.actions().size(), 3);
 
-    XCTAssertFalse(parallel_action.updatable().update(now));
+    XCTAssertFalse(parallel_action.updatable().update(time));
     XCTAssertEqual(parallel_action.actions().size(), 3);
 
-    XCTAssertFalse(parallel_action.updatable().update(now + 999ms));
+    XCTAssertFalse(parallel_action.updatable().update(time + 999ms));
     XCTAssertEqual(parallel_action.actions().size(), 3);
 
-    XCTAssertFalse(parallel_action.updatable().update(now + 1s));
+    XCTAssertFalse(parallel_action.updatable().update(time + 1s));
     XCTAssertEqual(parallel_action.actions().size(), 2);
 
-    XCTAssertFalse(parallel_action.updatable().update(now + 1999ms));
+    XCTAssertFalse(parallel_action.updatable().update(time + 1999ms));
     XCTAssertEqual(parallel_action.actions().size(), 2);
 
-    XCTAssertFalse(parallel_action.updatable().update(now + 2s));
+    XCTAssertFalse(parallel_action.updatable().update(time + 2s));
     XCTAssertEqual(parallel_action.actions().size(), 1);
 
-    XCTAssertFalse(parallel_action.updatable().update(now + 2999ms));
+    XCTAssertFalse(parallel_action.updatable().update(time + 2999ms));
     XCTAssertEqual(parallel_action.actions().size(), 1);
 
-    XCTAssertTrue(parallel_action.updatable().update(now + 3s));
+    XCTAssertTrue(parallel_action.updatable().update(time + 3s));
     XCTAssertEqual(parallel_action.actions().size(), 0);
 }
 
 - (void)test_make_sequence {
     ui::action first_action;
-    ui::rotate_action rotate_action;
+    ui::continuous_action continuous_action1{{.duration = 1.0}};
     ui::action end_action;
-    ui::scale_action scale_action;
+    ui::continuous_action continuous_action2{{.duration = 0.5}};
 
     bool first_completed = false;
     bool rotate_completed = false;
@@ -481,19 +409,18 @@ using namespace yas;
     bool sequence_completed = false;
 
     first_action.set_completion_handler([&first_completed] { first_completed = true; });
-    rotate_action.set_duration(1.0);
-    rotate_action.set_completion_handler([&rotate_completed] { rotate_completed = true; });
+    continuous_action1.set_completion_handler([&rotate_completed] { rotate_completed = true; });
     end_action.set_completion_handler([&end_completed] { end_completed = true; });
-    scale_action.set_duration(0.5);
-    scale_action.set_completion_handler([&scale_completed] { scale_completed = true; });
+    continuous_action2.set_completion_handler([&scale_completed] { scale_completed = true; });
 
-    auto now = std::chrono::system_clock::now();
+    auto time = std::chrono::system_clock::now();
 
-    auto action_sequence = ui::make_action_sequence({first_action, rotate_action, end_action, scale_action}, now + 1s);
+    auto action_sequence =
+        ui::make_action_sequence({first_action, continuous_action1, end_action, continuous_action2}, time + 1s);
     action_sequence.set_completion_handler([&sequence_completed] { sequence_completed = true; });
     auto updatable = action_sequence.updatable();
 
-    XCTAssertFalse(updatable.update(now));
+    XCTAssertFalse(updatable.update(time));
 
     XCTAssertFalse(first_completed);
     XCTAssertFalse(rotate_completed);
@@ -501,7 +428,7 @@ using namespace yas;
     XCTAssertFalse(scale_completed);
     XCTAssertFalse(sequence_completed);
 
-    XCTAssertFalse(updatable.update(now + 999ms));
+    XCTAssertFalse(updatable.update(time + 999ms));
 
     XCTAssertFalse(first_completed);
     XCTAssertFalse(rotate_completed);
@@ -509,7 +436,7 @@ using namespace yas;
     XCTAssertFalse(scale_completed);
     XCTAssertFalse(sequence_completed);
 
-    XCTAssertFalse(updatable.update(now + 1s));
+    XCTAssertFalse(updatable.update(time + 1s));
 
     XCTAssertTrue(first_completed);
     XCTAssertFalse(rotate_completed);
@@ -517,7 +444,7 @@ using namespace yas;
     XCTAssertFalse(scale_completed);
     XCTAssertFalse(sequence_completed);
 
-    XCTAssertFalse(updatable.update(now + 1999ms));
+    XCTAssertFalse(updatable.update(time + 1999ms));
 
     XCTAssertTrue(first_completed);
     XCTAssertFalse(rotate_completed);
@@ -525,7 +452,7 @@ using namespace yas;
     XCTAssertFalse(scale_completed);
     XCTAssertFalse(sequence_completed);
 
-    XCTAssertFalse(updatable.update(now + 2s));
+    XCTAssertFalse(updatable.update(time + 2s));
 
     XCTAssertTrue(first_completed);
     XCTAssertTrue(rotate_completed);
@@ -533,7 +460,7 @@ using namespace yas;
     XCTAssertFalse(scale_completed);
     XCTAssertFalse(sequence_completed);
 
-    XCTAssertFalse(updatable.update(now + 2499ms));
+    XCTAssertFalse(updatable.update(time + 2499ms));
 
     XCTAssertTrue(first_completed);
     XCTAssertTrue(rotate_completed);
@@ -541,45 +468,13 @@ using namespace yas;
     XCTAssertFalse(scale_completed);
     XCTAssertFalse(sequence_completed);
 
-    XCTAssertTrue(updatable.update(now + 2500ms));
+    XCTAssertTrue(updatable.update(time + 2500ms));
 
     XCTAssertTrue(first_completed);
     XCTAssertTrue(rotate_completed);
     XCTAssertTrue(end_completed);
     XCTAssertTrue(scale_completed);
     XCTAssertTrue(sequence_completed);
-}
-
-#pragma mark - transformer
-
-- (void)test_ease_in_transformer {
-    auto const &transformer = ui::ease_in_transformer();
-
-    XCTAssertEqual(transformer(0.0f), 0.0f);
-    XCTAssertLessThan(transformer(0.25f), 0.25f);
-    XCTAssertLessThan(transformer(0.5f), 0.5f);
-    XCTAssertLessThan(transformer(0.75f), 0.75f);
-    XCTAssertEqual(transformer(1.0f), 1.0f);
-}
-
-- (void)test_ease_out_transformer {
-    auto const &transformer = ui::ease_out_transformer();
-
-    XCTAssertEqual(transformer(0.0f), 0.0f);
-    XCTAssertGreaterThan(transformer(0.25f), 0.25f);
-    XCTAssertGreaterThan(transformer(0.5f), 0.5f);
-    XCTAssertGreaterThan(transformer(0.75f), 0.75f);
-    XCTAssertEqual(transformer(1.0f), 1.0f);
-}
-
-- (void)test_ease_in_out_transformer {
-    auto const &transformer = ui::ease_in_out_transformer();
-
-    XCTAssertEqual(transformer(0.0f), 0.0f);
-    XCTAssertLessThan(transformer(0.25f), 0.25f);
-    XCTAssertEqual(transformer(0.5f), 0.5f);
-    XCTAssertGreaterThan(transformer(0.75f), 0.75f);
-    XCTAssertEqual(transformer(1.0f), 1.0f);
 }
 
 @end
