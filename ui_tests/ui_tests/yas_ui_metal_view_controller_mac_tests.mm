@@ -42,7 +42,7 @@ using namespace yas;
 
     auto metalView = viewController.metalView;
     XCTAssertNotNil(metalView);
-    XCTAssertEqualObjects([metalView class], [MTKView class]);
+    XCTAssertEqualObjects([metalView class], [YASUIMetalView class]);
 }
 
 - (void)test_set_frame {

@@ -7,6 +7,7 @@
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
 #include "yas_ui_matrix.h"
+#include "yas_ui_metal_view.h"
 #include "yas_ui_renderer.h"
 
 using namespace yas;
@@ -65,7 +66,7 @@ ui::renderer::impl::impl(id<MTLDevice> const device) : _core(std::make_shared<co
     }
 }
 
-void ui::renderer::impl::view_configure(MTKView *const view) {
+void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     view.sampleCount = _core->sample_count;
 
     auto defaultLibrary = _core->default_library.object();
@@ -155,12 +156,12 @@ simd::float4x4 const &ui::renderer::impl::projection_matrix() {
 
 #pragma mark - renderable::impl
 
-void ui::renderer::impl::view_drawable_size_will_change(MTKView *const view, CGSize const size) {
+void ui::renderer::impl::view_drawable_size_will_change(YASUIMetalView *const view, CGSize const size) {
     auto view_size = view.bounds.size;
     _core->update_projection_matrix(view_size);
 }
 
-void ui::renderer::impl::view_render(MTKView *const view) {
+void ui::renderer::impl::view_render(YASUIMetalView *const view) {
     if (_core->subject.has_observer()) {
         _core->subject.notify(renderer_method::will_render, cast<renderer>());
     }
