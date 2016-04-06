@@ -2,14 +2,16 @@
 //  yas_ui_metal_view_controller.h
 //
 
-#import <Metal/Metal.h>
-#import <MetalKit/MetalKit.h>
-#import "yas_objc_macros.h"
-#import "yas_ui_renderer_protocol.h"
+#pragma once
+
+#include <Metal/Metal.h>
+#include "yas_objc_macros.h"
+#include "yas_ui_metal_view.h"
+#include "yas_ui_renderer_protocol.h"
 #if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
+#include <UIKit/UIKit.h>
 #elif TARGET_OS_MAC
-#import <AppKit/AppKit.h>
+#include <AppKit/AppKit.h>
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YASUIMetalViewController : yas_objc_view_controller
 
-@property (nonatomic, strong, readonly) MTKView *metalView;
+@property (nonatomic, strong, readonly) YASUIMetalView *metalView;
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
 
 - (void)initCommon NS_REQUIRES_SUPER;
