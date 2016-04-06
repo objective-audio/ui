@@ -9,7 +9,6 @@
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_protocol.h"
-#include "yas_ui_metal_view.h"
 #include "yas_ui_metal_view_controller.h"
 #include "yas_ui_node.h"
 #include "yas_ui_renderer.h"

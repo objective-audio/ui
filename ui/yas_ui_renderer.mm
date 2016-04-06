@@ -57,7 +57,7 @@ class ui::node_renderer::impl : public renderer::impl {
     impl(id<MTLDevice> const device) : super_class(device) {
     }
 
-    void view_configure(YASUIMetalView *const view) override {
+    void view_configure(MTKView *const view) override {
         super_class::view_configure(view);
     }
 

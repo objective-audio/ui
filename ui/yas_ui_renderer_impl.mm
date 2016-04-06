@@ -7,7 +7,6 @@
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
 #include "yas_ui_matrix.h"
-#include "yas_ui_metal_view.h"
 #include "yas_ui_renderer.h"
 
 using namespace yas;
@@ -44,6 +43,13 @@ struct ui::renderer::impl::core {
     objc_ptr<id<MTLRenderPipelineState>> pipeline_state_without_texture;
 
     yas::subject<renderer> subject;
+
+    void update_projection_matrix(CGSize const view_size) {
+        float half_width = view_size.width * 0.5f;
+        float half_height = view_size.height * 0.5f;
+
+        projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
+    }
 };
 
 #pragma mark - renderer::impl
@@ -59,7 +65,7 @@ ui::renderer::impl::impl(id<MTLDevice> const device) : _core(std::make_shared<co
     }
 }
 
-void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
+void ui::renderer::impl::view_configure(MTKView *const view) {
     view.sampleCount = _core->sample_count;
 
     auto defaultLibrary = _core->default_library.object();
@@ -114,6 +120,8 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     pipelineStateDesc.fragmentFunction = fragmentProgram;
 
     _core->pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
+
+    _core->update_projection_matrix(view.bounds.size);
 }
 
 id<MTLDevice> ui::renderer::impl::device() {
@@ -147,15 +155,12 @@ simd::float4x4 const &ui::renderer::impl::projection_matrix() {
 
 #pragma mark - renderable::impl
 
-void ui::renderer::impl::view_drawable_size_will_change(YASUIMetalView *const view, CGSize const size) {
+void ui::renderer::impl::view_drawable_size_will_change(MTKView *const view, CGSize const size) {
     auto view_size = view.bounds.size;
-    float half_width = view_size.width * 0.5f;
-    float half_height = view_size.height * 0.5f;
-
-    _core->projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
+    _core->update_projection_matrix(view_size);
 }
 
-void ui::renderer::impl::view_render(YASUIMetalView *const view) {
+void ui::renderer::impl::view_render(MTKView *const view) {
     if (_core->subject.has_observer()) {
         _core->subject.notify(renderer_method::will_render, cast<renderer>());
     }
@@ -167,10 +172,10 @@ void ui::renderer::impl::view_render(YASUIMetalView *const view) {
     });
     auto commandBuffer = command_buffer.object();
 
-    MTLRenderPassDescriptor *renderPassDesc = view.renderPassDescriptor;
-    assert(renderPassDesc);
-
     _core->constant_buffer_offset = 0;
+
+    auto renderPassDesc = view.currentRenderPassDescriptor;
+    assert(renderPassDesc);
 
     render(commandBuffer, renderPassDesc);
 

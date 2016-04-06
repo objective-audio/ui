@@ -3,58 +3,65 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_metal_view.h"
+#import "yas_objc_ptr.h"
 #import "yas_ui_metal_view_controller.h"
+
+using namespace yas;
 
 @interface yas_ui_metal_view_controller_mac_tests : XCTestCase
 
-@property (nonatomic, strong) NSWindow *window;
-@property (nonatomic, strong) YASUIMetalViewController *viewController;
-
 @end
 
-@implementation yas_ui_metal_view_controller_mac_tests
+@implementation yas_ui_metal_view_controller_mac_tests {
+    objc_ptr<NSWindow *> _window;
+    objc_ptr<YASUIMetalViewController *> _view_controller;
+}
 
 - (void)setUp {
     [super setUp];
 
-    self.viewController = [[YASUIMetalViewController alloc] initWithNibName:nil bundle:nil];
-
-    self.window = [NSWindow windowWithContentViewController:self.viewController];
-    self.window.styleMask = NSBorderlessWindowMask;
-
-    yas_release(self.viewController);
+    _view_controller.move_object([[YASUIMetalViewController alloc] initWithNibName:nil bundle:nil]);
+    _window = make_objc_ptr<NSWindow *>([viewController = _view_controller.object()]() {
+        NSWindow *window = [NSWindow windowWithContentViewController:viewController];
+        window.styleMask = NSBorderlessWindowMask;
+        return window;
+    });
 }
 
 - (void)tearDown {
-    self.viewController = nil;
-    self.window = nil;
+    _view_controller.set_object(nil);
+    _window.set_object(nil);
 
     [super tearDown];
 }
 
 - (void)test_create {
-    auto viewController = self.viewController;
+    auto viewController = _view_controller.object();
 
     XCTAssertFalse(viewController.paused);
 
     auto metalView = viewController.metalView;
     XCTAssertNotNil(metalView);
-    XCTAssertEqualObjects([metalView class], [YASUIMetalView class]);
+    XCTAssertEqualObjects([metalView class], [MTKView class]);
 }
 
 - (void)test_set_frame {
-    XCTAssertTrue(CGRectEqualToRect(self.viewController.metalView.frame, CGRectZero));
+    auto viewController = _view_controller.object();
+    auto window = _window.object();
 
-    [self.window setFrame:CGRectMake(10, 100, 256, 128) display:YES];
+    XCTAssertTrue(CGRectEqualToRect(viewController.metalView.frame, CGRectZero));
 
-    XCTAssertTrue(CGRectEqualToRect(self.viewController.metalView.frame, CGRectMake(0, 0, 256, 128)));
+    [window setFrame:CGRectMake(10, 100, 256, 128) display:YES];
+
+    XCTAssertTrue(CGRectEqualToRect(viewController.metalView.frame, CGRectMake(0, 0, 256, 128)));
 }
 
 - (void)test_set_pause {
-    self.viewController.paused = YES;
+    auto viewController = _view_controller.object();
 
-    XCTAssertTrue(self.viewController.paused);
+    viewController.paused = YES;
+
+    XCTAssertTrue(viewController.paused);
 }
 
 @end
