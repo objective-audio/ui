@@ -22,7 +22,7 @@ bool ui::updatable_action::update(time_point_t const &time) {
 
 #pragma mark - action::impl
 
-struct ui::action::impl : public base::impl, public updatable_action::impl {
+struct ui::action::impl : base::impl, updatable_action::impl {
     impl() {
     }
 
@@ -107,7 +107,7 @@ ui::updatable_action ui::action::updatable() {
 
 #pragma mark - action::impl
 
-struct ui::continuous_action::impl : public action::impl {
+struct ui::continuous_action::impl : action::impl {
     impl() {
     }
 
@@ -273,7 +273,7 @@ ui::continuous_action ui::make_action(ui::color_action_args args) {
 
 #pragma mark - parallel_action::impl
 
-struct ui::parallel_action::impl : public action::impl {
+struct ui::parallel_action::impl : action::impl {
     impl(action_args &&args) : action::impl(std::move(args)) {
     }
 

@@ -7,7 +7,7 @@
 
 using namespace yas;
 
-struct ui::image::impl : public base::impl {
+struct ui::image::impl : base::impl {
     impl(uint_size const point_size, Float64 const scale_factor)
         : point_size(point_size),
           scale_factor(scale_factor),

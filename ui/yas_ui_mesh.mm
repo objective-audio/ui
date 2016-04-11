@@ -36,7 +36,7 @@ void ui::renderable_mesh::render(ui::renderer &renderer, id<MTLRenderCommandEnco
 
 #pragma mark - ui::mesh::impl
 
-struct ui::mesh::impl : public base::impl, public renderable_mesh::impl, public metal_object::impl {
+struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     impl(UInt32 const vertex_count, UInt32 const index_count, bool const dynamic)
         : _vertex_count(vertex_count),
           _vertices(vertex_count),

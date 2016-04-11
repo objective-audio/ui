@@ -10,7 +10,7 @@ using namespace yas;
 
 #pragma mark - event::impl
 
-struct ui::event::impl_base : public base::impl, public manageable_event::impl {
+struct ui::event::impl_base : base::impl, manageable_event::impl {
     virtual std::type_info const &type() const = 0;
 
     void set_phase(event_phase &&st) override {
@@ -21,7 +21,7 @@ struct ui::event::impl_base : public base::impl, public manageable_event::impl {
 };
 
 template <typename T>
-struct ui::event::impl : public impl_base {
+struct ui::event::impl : impl_base {
     typename T::type value;
 
     impl() {
@@ -96,7 +96,7 @@ ui::manageable_event ui::event::manageable() {
 
 #pragma mark - event_manager::impl
 
-struct ui::event_manager::impl : public base::impl, public event_inputtable::impl {
+struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     void input_cursor_event(event_phase const phase, cursor_event &&value) override {
         if (phase == event_phase::began) {
             if (cursor_event) {
