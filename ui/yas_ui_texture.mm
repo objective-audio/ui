@@ -14,7 +14,7 @@ namespace ui {
 }
 }
 
-struct ui::texture::impl : public base::impl, public metal_object::impl {
+struct ui::texture::impl : base::impl, metal_object::impl {
     impl(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const pixel_format)
         : _draw_actual_padding(texture_draw_padding * scale_factor),
           point_size(point_size),

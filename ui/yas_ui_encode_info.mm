@@ -8,7 +8,7 @@
 
 using namespace yas;
 
-struct ui::encode_info::impl : public base::impl {
+struct ui::encode_info::impl : base::impl {
     impl(MTLRenderPassDescriptor *const renderPassDesc, id<MTLRenderPipelineState> const pipelineState,
          id<MTLRenderPipelineState> const pipelineStateWithoutTexture) {
         render_pass_descriptor = renderPassDesc;

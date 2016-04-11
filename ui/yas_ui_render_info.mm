@@ -7,7 +7,7 @@
 
 using namespace yas;
 
-struct ui::render_info::impl : public base::impl {
+struct ui::render_info::impl : base::impl {
     std::deque<encode_info> all_encode_infos;
     std::deque<encode_info> current_encode_infos;
 };

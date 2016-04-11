@@ -43,7 +43,7 @@ Float64 ui::strings_info::width() const {
 
 namespace yas {
 namespace ui {
-    struct mutable_strings_info : public strings_info {
+    struct mutable_strings_info : strings_info {
         mutable_strings_info(std::size_t const word_size) : strings_info(word_size) {
         }
 
@@ -60,7 +60,7 @@ namespace ui {
 
 #pragma mark - strings_data::impl
 
-struct ui::strings_data::impl : public base::impl {
+struct ui::strings_data::impl : base::impl {
     ui::texture texture;
     std::string font_name;
     Float64 font_size;

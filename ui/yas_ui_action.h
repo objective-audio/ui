@@ -21,7 +21,7 @@ namespace ui {
     using action_value_update_f = std::function<void(double const)>;
     using action_completion_f = std::function<void(void)>;
 
-    struct updatable_action : public protocol {
+    struct updatable_action : protocol {
         struct impl : protocol::impl {
             virtual bool update(time_point_t const &time) = 0;
         };
