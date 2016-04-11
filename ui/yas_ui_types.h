@@ -42,7 +42,8 @@ MTLRegion to_mtl_region(ui::uint_region const);
 
 simd::float2 to_float2(CGPoint const &);
 
-std::string to_string(ui::pivot const &pivot);
+std::string to_string(ui::pivot const &);
+std::string to_string(simd::float2 const &);
 }
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);

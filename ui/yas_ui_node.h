@@ -54,6 +54,8 @@ namespace ui {
         ui::metal_object metal();
         ui::renderable_node renderable();
 
+        simd::float2 convert_position(simd::float2 const &);
+
        public:
         class impl;
     };
