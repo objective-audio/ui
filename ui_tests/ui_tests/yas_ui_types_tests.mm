@@ -146,4 +146,18 @@ using namespace yas;
     XCTAssertTrue(region_a1_a1 != region_b);
 }
 
+- (void)test_CGPoint_to_float2 {
+    CGPoint point{1.0, 2.0};
+    auto float2 = to_float2(point);
+
+    XCTAssertEqual(float2.x, 1.0f);
+    XCTAssertEqual(float2.y, 2.0f);
+}
+
+- (void)test_pivot_to_string {
+    XCTAssertEqual(to_string(ui::pivot::center), "center");
+    XCTAssertEqual(to_string(ui::pivot::left), "left");
+    XCTAssertEqual(to_string(ui::pivot::right), "right");
+}
+
 @end

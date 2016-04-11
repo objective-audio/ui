@@ -46,6 +46,10 @@ std::string yas::to_string(ui::pivot const &pivot) {
     }
 }
 
+std::string yas::to_string(simd::float2 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
+}
+
 #pragma mark -
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {

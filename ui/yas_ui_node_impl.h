@@ -47,6 +47,8 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     ui::node_renderer renderer() override;
     void set_renderer(ui::node_renderer &&) override;
 
+    simd::float2 convert_position(simd::float2 const &);
+
    private:
     weak<ui::node_renderer> _node_renderer;
 

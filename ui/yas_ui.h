@@ -5,6 +5,7 @@
 #pragma once
 
 #include "yas_ui_action.h"
+#include "yas_ui_event.h"
 #include "yas_ui_image.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"

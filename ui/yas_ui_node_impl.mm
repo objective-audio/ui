@@ -166,3 +166,9 @@ ui::node_renderer ui::node::impl::renderer() {
 void ui::node::impl::set_renderer(ui::node_renderer &&renderer) {
     _node_renderer = renderer;
 }
+
+simd::float2 ui::node::impl::convert_position(simd::float2 const &loc) {
+    auto renderer = _node_renderer.lock();
+    auto loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
+    return {loc4.x, loc4.y};
+}

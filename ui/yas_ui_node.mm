@@ -98,3 +98,7 @@ ui::metal_object ui::node::metal() {
 ui::renderable_node ui::node::renderable() {
     return ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
 }
+
+simd::float2 ui::node::convert_position(simd::float2 const &loc) {
+    return impl_ptr<impl>()->convert_position(loc);
+}
