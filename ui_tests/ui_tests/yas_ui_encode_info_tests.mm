@@ -37,8 +37,8 @@ using namespace yas;
 
 - (void)test_push_back_mesh {
     ui::encode_info info{nil, nil, nil};
-    ui::mesh mesh1{0, 0, false};
-    ui::mesh mesh2{0, 0, false};
+    ui::mesh mesh1;
+    ui::mesh mesh2;
 
     info.push_back_mesh(mesh1);
 

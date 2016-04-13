@@ -26,25 +26,31 @@ namespace sample {
             }
 
             ui::mesh _make_square_mesh() {
-                ui::mesh mesh{4, 6, false};
+                static ui::mesh_data _mesh_data = nullptr;
+                if (!_mesh_data) {
+                    _mesh_data = ui::mesh_data{4, 6};
 
-                mesh.write([](auto &vertices, auto &indices) {
-                    vertices[0].position.x = -0.5f;
-                    vertices[0].position.y = -0.5f;
-                    vertices[1].position.x = 0.5f;
-                    vertices[1].position.y = -0.5f;
-                    vertices[2].position.x = -0.5f;
-                    vertices[2].position.y = 0.5f;
-                    vertices[3].position.x = 0.5f;
-                    vertices[3].position.y = 0.5f;
+                    _mesh_data.write([](auto &vertices, auto &indices) {
+                        vertices[0].position.x = -0.5f;
+                        vertices[0].position.y = -0.5f;
+                        vertices[1].position.x = 0.5f;
+                        vertices[1].position.y = -0.5f;
+                        vertices[2].position.x = -0.5f;
+                        vertices[2].position.y = 0.5f;
+                        vertices[3].position.x = 0.5f;
+                        vertices[3].position.y = 0.5f;
 
-                    indices[0] = 0;
-                    indices[1] = 1;
-                    indices[2] = 2;
-                    indices[3] = 1;
-                    indices[4] = 3;
-                    indices[5] = 2;
-                });
+                        indices[0] = 0;
+                        indices[1] = 1;
+                        indices[2] = 2;
+                        indices[3] = 1;
+                        indices[4] = 3;
+                        indices[5] = 2;
+                    });
+                }
+
+                ui::mesh mesh;
+                mesh.set_data(_mesh_data);
 
                 return mesh;
             }

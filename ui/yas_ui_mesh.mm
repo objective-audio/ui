@@ -10,39 +10,11 @@
 
 using namespace yas;
 
-namespace yas {
-namespace ui {
-    static const UInt32 mesh_dynamic_buffer_count = 2;
-}
-}
+#pragma mark - ui::mesh_data::impl
 
-#pragma mark - renderable_mesh
-
-ui::renderable_mesh::renderable_mesh(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-simd::float4x4 const &ui::renderable_mesh::matrix() const {
-    return impl_ptr<impl>()->matrix();
-}
-
-void ui::renderable_mesh::set_matrix(simd::float4x4 matrix) {
-    impl_ptr<impl>()->set_matrix(std::move(matrix));
-}
-
-void ui::renderable_mesh::render(ui::renderer &renderer, id<MTLRenderCommandEncoder> const encoder,
-                                 ui::encode_info const &encode_info) {
-    impl_ptr<impl>()->render(renderer, encoder, encode_info);
-}
-
-#pragma mark - ui::mesh::impl
-
-struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
-    impl(UInt32 const vertex_count, UInt32 const index_count, bool const dynamic)
-        : _vertex_count(vertex_count),
-          _vertices(vertex_count),
-          _index_count(index_count),
-          _indices(index_count),
-          _dynamic(dynamic) {
+struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_data::impl {
+    impl(UInt32 const vertex_count, UInt32 const index_count)
+        : _vertex_count(vertex_count), _vertices(vertex_count), _index_count(index_count), _indices(index_count) {
     }
 
     ui::setup_metal_result setup(id<MTLDevice> const device) override {
@@ -53,11 +25,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         }
 
         if (!_vertex_buffer) {
-            auto vertex_length = _vertices.size() * sizeof(ui::vertex2d_t);
-
-            if (_dynamic) {
-                vertex_length *= mesh_dynamic_buffer_count;
-            }
+            auto vertex_length = _vertices.size() * sizeof(ui::vertex2d_t) * dynamic_buffer_count();
 
             _vertex_buffer.move_object(
                 [device newBufferWithLength:vertex_length options:MTLResourceOptionCPUCacheModeDefault]);
@@ -68,11 +36,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         }
 
         if (!_index_buffer) {
-            auto index_length = _indices.size() * sizeof(UInt16);
-
-            if (_dynamic) {
-                index_length *= mesh_dynamic_buffer_count;
-            }
+            auto index_length = _indices.size() * sizeof(UInt16) * dynamic_buffer_count();
 
             _index_buffer.move_object(
                 [device newBufferWithLength:index_length options:MTLResourceOptionCPUCacheModeDefault]);
@@ -85,21 +49,112 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return ui::setup_metal_result{nullptr};
     }
 
-    void set_needs_update_render_buffer() {
-        if (_dynamic) {
-            _needs_update_render_buffer = true;
+    void update_render_buffer_if_needed() override {
+        if (_needs_update_render_buffer) {
+            _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
+
+            auto vertex_ptr = (ui::vertex2d_t *)[_vertex_buffer.object() contents];
+            auto index_ptr = (UInt16 *)[_index_buffer.object() contents];
+
+            memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
+                   _vertex_count * sizeof(ui::vertex2d_t));
+            memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(), _index_count * sizeof(UInt16));
+
+            _needs_update_render_buffer = false;
         }
     }
 
-    UInt32 vertex_count() {
-        return _vertex_count;
+    std::size_t vertex_buffer_offset() override {
+        return 0;
+    }
+
+    std::size_t index_buffer_offset() override {
+        return 0;
+    }
+
+    id<MTLBuffer> vertexBuffer() override {
+        return _vertex_buffer.object();
+    }
+
+    id<MTLBuffer> indexBuffer() override {
+        return _index_buffer.object();
+    }
+
+    virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<UInt16> &)> const &func) {
+        if (_needs_update_render_buffer) {
+            func(_vertices, _indices);
+        } else {
+            throw "write failed.";
+        }
+    }
+
+    virtual UInt32 dynamic_buffer_count() {
+        return 1;
+    }
+
+    bool _needs_update_render_buffer = true;
+    UInt32 _dynamic_buffer_index = 0;
+    UInt32 _vertex_count;
+    UInt32 _index_count;
+
+    objc_ptr<id<MTLBuffer>> _vertex_buffer;
+    objc_ptr<id<MTLBuffer>> _index_buffer;
+    std::vector<ui::vertex2d_t> _vertices;
+    std::vector<UInt16> _indices;
+
+   private:
+    objc_ptr<id<MTLDevice>> _device;
+};
+
+#pragma mark - ui::mesh_data
+
+ui::mesh_data::mesh_data(UInt32 const vertex_count, UInt32 const index_count)
+    : super_class(std::make_shared<impl>(vertex_count, index_count)) {
+}
+
+ui::mesh_data::mesh_data(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+}
+
+ui::mesh_data::mesh_data(std::nullptr_t) : super_class(nullptr) {
+}
+
+const ui::vertex2d_t *ui::mesh_data::vertices() const {
+    return impl_ptr<impl>()->_vertices.data();
+}
+
+UInt32 ui::mesh_data::vertex_count() const {
+    return impl_ptr<impl>()->_vertex_count;
+}
+
+const UInt16 *ui::mesh_data::indices() const {
+    return impl_ptr<impl>()->_indices.data();
+}
+
+UInt32 ui::mesh_data::index_count() const {
+    return impl_ptr<impl>()->_index_count;
+}
+
+void ui::mesh_data::write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<UInt16> &)> const &func) {
+    impl_ptr<impl>()->write(func);
+}
+
+ui::metal_object ui::mesh_data::metal() {
+    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+}
+
+ui::renderable_mesh_data ui::mesh_data::renderable() {
+    return ui::renderable_mesh_data{impl_ptr<ui::renderable_mesh_data::impl>()};
+}
+
+#pragma mark - dynamic_mesh_data::impl
+
+struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
+    using super_class = ui::mesh_data::impl;
+
+    impl(UInt32 const vertex_count, UInt32 const index_count) : super_class(vertex_count, index_count) {
     }
 
     void set_vertex_count(UInt32 const count) {
-        if (!_dynamic) {
-            throw std::string(__PRETTY_FUNCTION__) + " : mesh is constant";
-        }
-
         if (_vertices.size() < count) {
             throw std::string(__PRETTY_FUNCTION__) + " : out of range";
         }
@@ -107,20 +162,60 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _vertex_count = count;
     }
 
-    UInt32 index_count() {
-        return _index_count;
-    }
-
     void set_index_count(UInt32 const count) {
-        if (!_dynamic) {
-            throw std::string(__PRETTY_FUNCTION__) + " : mesh is constant";
-        }
-
         if (_indices.size() < count) {
             throw std::string(__PRETTY_FUNCTION__) + " : out of range";
         }
 
         _index_count = count;
+    }
+
+    std::size_t vertex_buffer_offset() override {
+        return _vertices.size() * _dynamic_buffer_index * sizeof(ui::vertex2d_t);
+    }
+
+    std::size_t index_buffer_offset() override {
+        return _indices.size() * _dynamic_buffer_index * sizeof(UInt16);
+    }
+
+    void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<UInt16> &)> const &func) override {
+        func(_vertices, _indices);
+
+        _needs_update_render_buffer = true;
+    }
+
+    UInt32 dynamic_buffer_count() override {
+        return 2;
+    }
+};
+
+#pragma mark - dynamic_mesh_data
+
+ui::dynamic_mesh_data::dynamic_mesh_data(UInt32 const vertex_count, UInt32 const index_count)
+    : super_class(std::make_shared<impl>(vertex_count, index_count)) {
+}
+
+ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : super_class(nullptr) {
+}
+
+void ui::dynamic_mesh_data::set_vertex_count(UInt32 const count) {
+    impl_ptr<impl>()->set_vertex_count(count);
+}
+
+void ui::dynamic_mesh_data::set_index_count(UInt32 const count) {
+    impl_ptr<impl>()->set_index_count(count);
+}
+
+#pragma mark - ui::mesh::impl
+
+struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
+    impl() = default;
+
+    ui::setup_metal_result setup(id<MTLDevice> const device) override {
+        if (_mesh_data) {
+            return _mesh_data.metal().setup(device);
+        }
+        return ui::setup_metal_result{nullptr};
     }
 
     simd::float4x4 const &matrix() const override {
@@ -133,22 +228,15 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     void render(ui::renderer &renderer, id<MTLRenderCommandEncoder> const encoder,
                 ui::encode_info const &encode_info) override {
-        if (_needs_update_render_buffer) {
-            if (_dynamic) {
-                _dynamic_buffer_index = (_dynamic_buffer_index + 1) % mesh_dynamic_buffer_count;
-            }
-
-            auto vertex_ptr = (ui::vertex2d_t *)[_vertex_buffer.object() contents];
-            auto index_ptr = (UInt16 *)[_index_buffer.object() contents];
-
-            memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
-                   _vertex_count * sizeof(ui::vertex2d_t));
-            memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(), _index_count * sizeof(UInt16));
-
-            _needs_update_render_buffer = false;
+        if (!_mesh_data) {
+            return;
         }
 
-        if (_index_count == 0) {
+        _mesh_data.renderable().update_render_buffer_if_needed();
+
+        auto const index_count = _mesh_data.index_count();
+
+        if (index_count == 0) {
             return;
         }
 
@@ -156,8 +244,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return;
         }
 
-        auto vertex_buffer_offset = _vertices.size() * _dynamic_buffer_index * sizeof(ui::vertex2d_t);
-        auto index_buffer_offset = _indices.size() * _dynamic_buffer_index * sizeof(UInt16);
+        auto vertex_buffer_offset = _mesh_data.renderable().vertex_buffer_offset();
+        auto index_buffer_offset = _mesh_data.renderable().index_buffer_offset();
         auto constant_buffer_offset = renderer.constant_buffer_offset();
         auto currentConstantBuffer = renderer.current_constant_buffer();
 
@@ -175,47 +263,40 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
 
-        [encoder setVertexBuffer:_vertex_buffer.object() offset:vertex_buffer_offset atIndex:0];
+        [encoder setVertexBuffer:_mesh_data.renderable().vertexBuffer() offset:vertex_buffer_offset atIndex:0];
         [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
 
         constant_buffer_offset += sizeof(uniforms2d_t);
 
-        [encoder drawIndexedPrimitives:_primitive_type
-                            indexCount:_index_count
+        [encoder drawIndexedPrimitives:to_mtl_primitive_type(_primitive_type)
+                            indexCount:index_count
                              indexType:MTLIndexTypeUInt16
-                           indexBuffer:_index_buffer.object()
+                           indexBuffer:_mesh_data.renderable().indexBuffer()
                      indexBufferOffset:index_buffer_offset];
 
         renderer.set_constant_buffer_offset(constant_buffer_offset);
     }
 
+    ui::mesh_data _mesh_data = nullptr;
     ui::texture _texture = nullptr;
-    MTLPrimitiveType _primitive_type = MTLPrimitiveTypeTriangle;
+    ui::primitive_type _primitive_type = ui::primitive_type::triangle;
     bool _dynamic;
     simd::float4 _color = 1.0f;
 
-    bool _needs_update_render_buffer = true;
-    UInt32 _dynamic_buffer_index = 0;
-    objc_ptr<id<MTLBuffer>> _vertex_buffer;
-    objc_ptr<id<MTLBuffer>> _index_buffer;
-    std::vector<ui::vertex2d_t> _vertices;
-    std::vector<UInt16> _indices;
-
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
-    UInt32 _vertex_count;
-    UInt32 _index_count;
-
-    objc_ptr<id<MTLDevice>> _device;
 };
 
 #pragma mark - ui::mesh
 
-ui::mesh::mesh(UInt32 const vertex_count, UInt32 const index_count, bool const dynamic)
-    : super_class(std::make_shared<impl>(vertex_count, index_count, dynamic)) {
+ui::mesh::mesh() : super_class(std::make_shared<impl>()) {
 }
 
 ui::mesh::mesh(std::nullptr_t) : super_class(nullptr) {
+}
+
+ui::mesh_data const &ui::mesh::data() const {
+    return impl_ptr<impl>()->_mesh_data;
 }
 
 ui::texture const &ui::mesh::texture() const {
@@ -226,24 +307,12 @@ simd::float4 const &ui::mesh::color() const {
     return impl_ptr<impl>()->_color;
 }
 
-const ui::vertex2d_t *ui::mesh::vertices() const {
-    return impl_ptr<impl>()->_vertices.data();
+ui::primitive_type const &ui::mesh::primitive_type() const {
+    return impl_ptr<impl>()->_primitive_type;
 }
 
-UInt32 ui::mesh::vertex_count() const {
-    return impl_ptr<impl>()->vertex_count();
-}
-
-const UInt16 *ui::mesh::indices() const {
-    return impl_ptr<impl>()->_indices.data();
-}
-
-UInt32 ui::mesh::index_count() const {
-    return impl_ptr<impl>()->index_count();
-}
-
-bool ui::mesh::is_dynamic() const {
-    return impl_ptr<impl>()->_dynamic;
+void ui::mesh::set_data(ui::mesh_data data) {
+    impl_ptr<impl>()->_mesh_data = std::move(data);
 }
 
 void ui::mesh::set_texture(ui::texture texture) {
@@ -254,18 +323,8 @@ void ui::mesh::set_color(simd::float4 const color) {
     impl_ptr<impl>()->_color = color;
 }
 
-void ui::mesh::set_vertex_count(UInt32 const count) {
-    impl_ptr<impl>()->set_vertex_count(count);
-}
-
-void ui::mesh::set_index_count(UInt32 const count) {
-    impl_ptr<impl>()->set_index_count(count);
-}
-
-void ui::mesh::write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<UInt16> &)> const &func) {
-    func(impl_ptr<impl>()->_vertices, impl_ptr<impl>()->_indices);
-
-    impl_ptr<impl>()->_needs_update_render_buffer = true;
+void ui::mesh::set_primitive_type(ui::primitive_type const type) {
+    impl_ptr<impl>()->_primitive_type = type;
 }
 
 #pragma mark - protocol
