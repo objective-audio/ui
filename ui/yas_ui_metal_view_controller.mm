@@ -3,6 +3,7 @@
 //
 
 #include "yas_objc_ptr.h"
+#include "yas_ui_event.h"
 #include "yas_ui_metal_view_controller.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,6 +19,12 @@ namespace ui {
     }
 }
 }
+
+@interface YASUIMetalView (YASUIMetalViewController)
+
+- (yas::ui::event_manager const &)event_manager;
+
+@end
 
 @interface YASUIMetalViewController () <MTKViewDelegate>
 
@@ -75,6 +82,10 @@ namespace ui {
 
 - (yas::ui::view_renderable const &)renderer {
     return _cpp.renderer;
+}
+
+- (yas::ui::event_manager const &)event_manager {
+    return [self.metalView event_manager];
 }
 
 #pragma mark -
