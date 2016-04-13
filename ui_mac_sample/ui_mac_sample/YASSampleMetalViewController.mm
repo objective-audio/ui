@@ -105,7 +105,7 @@ namespace sample {
 
     [self setRenderer:_cpp.renderer.view_renderable()];
 
-    auto event_manager = [self.metalView event_manager];
+    auto event_manager = [self event_manager];
 
     _cpp.observers.reserve(3);
 

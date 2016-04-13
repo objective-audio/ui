@@ -16,6 +16,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+namespace yas {
+namespace ui {
+    class event_manager;
+}
+}
+
 @class YASUIMetalView;
 
 @interface YASUIMetalViewController : yas_objc_view_controller
@@ -27,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setRenderer:(yas::ui::view_renderable)renderer;
 - (yas::ui::view_renderable const &)renderer;
+- (yas::ui::event_manager const &)event_manager;
 
 @end
 
