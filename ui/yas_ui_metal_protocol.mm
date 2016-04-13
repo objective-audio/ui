@@ -23,7 +23,11 @@ std::string yas::to_string(ui::setup_metal_error const error) {
             return "create_sampler_descriptor_failed";
         case ui::setup_metal_error::create_sampler_failed:
             return "create_sampler_failed";
-        default:
+        case ui::setup_metal_error::create_vertex_buffer_failed:
+            return "create_vertex_buffer_failed";
+        case ui::setup_metal_error::create_index_buffer_failed:
+            return "create_index_buffer_failed";
+        case ui::setup_metal_error::unknown:
             return "unknown";
     }
 }
