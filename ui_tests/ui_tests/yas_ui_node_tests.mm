@@ -53,7 +53,7 @@ using namespace yas;
 
 - (void)test_set_variables {
     ui::node node;
-    ui::mesh mesh{0, 0, false};
+    ui::mesh mesh;
 
     node.set_position({1.0f, 2.0f});
     node.set_angle(3.0f);
@@ -76,7 +76,7 @@ using namespace yas;
 
 - (void)test_color {
     ui::node node;
-    ui::mesh mesh{0, 0, false};
+    ui::mesh mesh;
 
     node.set_color({0.1f, 0.2f, 0.3f, 0.4f});
 

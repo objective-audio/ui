@@ -231,7 +231,7 @@ using namespace yas;
                                    .end_color = {1.0f, 0.75f, 0.5f, 0.0f},
                                    .continuous_action = std::move(args)});
     action.set_target(target);
-    ui::mesh mesh{0, 0, false};
+    ui::mesh mesh;
     target.set_mesh(mesh);
     auto updatable = action.updatable();
 

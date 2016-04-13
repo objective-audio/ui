@@ -160,4 +160,12 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::pivot::right), "right");
 }
 
+- (void)test_to_mtl_primitive_type {
+    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::point), MTLPrimitiveTypePoint);
+    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line), MTLPrimitiveTypeLine);
+    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line_strip), MTLPrimitiveTypeLineStrip);
+    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle), MTLPrimitiveTypeTriangle);
+    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle_strip), MTLPrimitiveTypeTriangleStrip);
+}
+
 @end

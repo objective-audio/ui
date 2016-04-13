@@ -31,6 +31,21 @@ MTLRegion yas::to_mtl_region(ui::uint_region const region) {
     return MTLRegionMake2D(region.origin.x, region.origin.y, region.size.width, region.size.height);
 }
 
+MTLPrimitiveType yas::to_mtl_primitive_type(ui::primitive_type const type) {
+    switch (type) {
+        case ui::primitive_type::point:
+            return MTLPrimitiveTypePoint;
+        case ui::primitive_type::line:
+            return MTLPrimitiveTypeLine;
+        case ui::primitive_type::line_strip:
+            return MTLPrimitiveTypeLineStrip;
+        case ui::primitive_type::triangle:
+            return MTLPrimitiveTypeTriangle;
+        case ui::primitive_type::triangle_strip:
+            return MTLPrimitiveTypeTriangleStrip;
+    }
+}
+
 simd::float2 yas::to_float2(CGPoint const &point) {
     return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
 }
