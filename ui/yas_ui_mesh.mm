@@ -13,7 +13,7 @@ using namespace yas;
 #pragma mark - ui::mesh_data::impl
 
 struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_data::impl {
-    impl(UInt32 const vertex_count, UInt32 const index_count)
+    impl(std::size_t const vertex_count, std::size_t const index_count)
         : _vertex_count(vertex_count), _vertices(vertex_count), _index_count(index_count), _indices(index_count) {
     }
 
@@ -88,14 +88,14 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         }
     }
 
-    virtual UInt32 dynamic_buffer_count() {
+    virtual std::size_t dynamic_buffer_count() {
         return 1;
     }
 
     bool _needs_update_render_buffer = true;
-    UInt32 _dynamic_buffer_index = 0;
-    UInt32 _vertex_count;
-    UInt32 _index_count;
+    std::size_t _dynamic_buffer_index = 0;
+    std::size_t _vertex_count;
+    std::size_t _index_count;
 
     objc_ptr<id<MTLBuffer>> _vertex_buffer;
     objc_ptr<id<MTLBuffer>> _index_buffer;
@@ -108,7 +108,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
 
 #pragma mark - ui::mesh_data
 
-ui::mesh_data::mesh_data(UInt32 const vertex_count, UInt32 const index_count)
+ui::mesh_data::mesh_data(std::size_t const vertex_count, std::size_t const index_count)
     : super_class(std::make_shared<impl>(vertex_count, index_count)) {
 }
 
@@ -122,7 +122,7 @@ const ui::vertex2d_t *ui::mesh_data::vertices() const {
     return impl_ptr<impl>()->_vertices.data();
 }
 
-UInt32 ui::mesh_data::vertex_count() const {
+std::size_t ui::mesh_data::vertex_count() const {
     return impl_ptr<impl>()->_vertex_count;
 }
 
@@ -130,7 +130,7 @@ const UInt16 *ui::mesh_data::indices() const {
     return impl_ptr<impl>()->_indices.data();
 }
 
-UInt32 ui::mesh_data::index_count() const {
+std::size_t ui::mesh_data::index_count() const {
     return impl_ptr<impl>()->_index_count;
 }
 
@@ -151,10 +151,11 @@ ui::renderable_mesh_data ui::mesh_data::renderable() {
 struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
     using super_class = ui::mesh_data::impl;
 
-    impl(UInt32 const vertex_count, UInt32 const index_count) : super_class(vertex_count, index_count) {
+    impl(std::size_t const vertex_count, std::size_t const index_count) : super_class(vertex_count, index_count) {
+        _needs_update_render_buffer = false;
     }
 
-    void set_vertex_count(UInt32 const count) {
+    void set_vertex_count(std::size_t const count) {
         if (_vertices.size() < count) {
             throw std::string(__PRETTY_FUNCTION__) + " : out of range";
         }
@@ -162,7 +163,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
         _vertex_count = count;
     }
 
-    void set_index_count(UInt32 const count) {
+    void set_index_count(std::size_t const count) {
         if (_indices.size() < count) {
             throw std::string(__PRETTY_FUNCTION__) + " : out of range";
         }
@@ -184,25 +185,25 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
         _needs_update_render_buffer = true;
     }
 
-    UInt32 dynamic_buffer_count() override {
+    std::size_t dynamic_buffer_count() override {
         return 2;
     }
 };
 
 #pragma mark - dynamic_mesh_data
 
-ui::dynamic_mesh_data::dynamic_mesh_data(UInt32 const vertex_count, UInt32 const index_count)
+ui::dynamic_mesh_data::dynamic_mesh_data(std::size_t const vertex_count, std::size_t const index_count)
     : super_class(std::make_shared<impl>(vertex_count, index_count)) {
 }
 
 ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : super_class(nullptr) {
 }
 
-void ui::dynamic_mesh_data::set_vertex_count(UInt32 const count) {
+void ui::dynamic_mesh_data::set_vertex_count(std::size_t const count) {
     impl_ptr<impl>()->set_vertex_count(count);
 }
 
-void ui::dynamic_mesh_data::set_index_count(UInt32 const count) {
+void ui::dynamic_mesh_data::set_index_count(std::size_t const count) {
     impl_ptr<impl>()->set_index_count(count);
 }
 

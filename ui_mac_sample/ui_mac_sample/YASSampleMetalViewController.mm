@@ -6,6 +6,7 @@
 #import "yas_cf_utils.h"
 #import "yas_objc_ptr.h"
 #import "yas_property.h"
+#import "yas_ui_matrix.h"
 
 using namespace yas;
 
@@ -14,7 +15,7 @@ namespace sample {
     namespace metal_view_controller {
         struct cpp_variables {
             ui::node_renderer renderer;
-            ui::node touch_node;
+            ui::square_node touch_node{1};
             weak<ui::action> touch_scale_action;
             ui::node cursor_node;
             weak<ui::action> cursor_color_action;
@@ -25,41 +26,9 @@ namespace sample {
                 _setup_cursor_node();
             }
 
-            ui::mesh _make_square_mesh() {
-                static ui::mesh_data _mesh_data = nullptr;
-                if (!_mesh_data) {
-                    _mesh_data = ui::mesh_data{4, 6};
-
-                    _mesh_data.write([](auto &vertices, auto &indices) {
-                        vertices[0].position.x = -0.5f;
-                        vertices[0].position.y = -0.5f;
-                        vertices[1].position.x = 0.5f;
-                        vertices[1].position.y = -0.5f;
-                        vertices[2].position.x = -0.5f;
-                        vertices[2].position.y = 0.5f;
-                        vertices[3].position.x = 0.5f;
-                        vertices[3].position.y = 0.5f;
-
-                        indices[0] = 0;
-                        indices[1] = 1;
-                        indices[2] = 2;
-                        indices[3] = 1;
-                        indices[4] = 3;
-                        indices[5] = 2;
-                    });
-                }
-
-                ui::mesh mesh;
-                mesh.set_data(_mesh_data);
-
-                return mesh;
-            }
-
             void _setup_touch_node() {
                 auto &node = touch_node;
-                auto mesh = _make_square_mesh();
-
-                node.set_mesh(mesh);
+                node.set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
                 node.set_scale(0.0f);
                 node.set_color({1.0f, 0.6f, 0.0f, 1.0f});
 
@@ -70,22 +39,35 @@ namespace sample {
             void _setup_cursor_node() {
                 auto &node = cursor_node;
 
-                auto mesh = _make_square_mesh();
-                ui::node mesh_node;
-                mesh_node.set_position({30.0f, 0.0f});
-                mesh_node.set_mesh(mesh);
-                mesh_node.set_scale(10.0f);
+                auto const count = 5;
+                auto const angle_diff = 360.0f / count;
+                ui::square_node mesh_node{count};
+
+                ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
+                auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
+                for (auto const &idx : make_each(count)) {
+                    mesh_node.set_square_position(region, idx, ui::matrix::rotation(angle_diff * idx) * trans_matrix);
+                }
+
                 mesh_node.set_color(0.0f);
                 node.add_sub_node(mesh_node);
 
                 auto root_node = renderer.root_node();
                 root_node.add_sub_node(node);
 
-                auto action =
-                    ui::make_action({.end_angle = -360.0f, .continuous_action = {.duration = 1.0f, .loop_count = 0}});
-                action.set_target(node);
+                auto rotate_action =
+                    ui::make_action({.end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
+                rotate_action.set_target(node);
 
-                renderer.insert_action(action);
+                auto scale_action = ui::make_action({.start_scale = 10.0f,
+                                                     .end_scale = 15.0f,
+                                                     .continuous_action = {.duration = 5.0f, .loop_count = 0}});
+                scale_action.set_value_transformer(
+                    ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_transformer()}));
+                scale_action.set_target(node);
+
+                renderer.insert_action(rotate_action);
+                renderer.insert_action(scale_action);
             }
         };
     }

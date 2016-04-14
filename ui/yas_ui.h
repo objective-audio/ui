@@ -14,6 +14,7 @@
 #include "yas_ui_node.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
+#include "yas_ui_square_node.h"
 #include "yas_ui_strings_data.h"
 #include "yas_ui_texture.h"
 #include "yas_ui_types.h"

@@ -58,6 +58,9 @@ namespace ui {
 
        public:
         class impl;
+
+       protected:
+        node(std::shared_ptr<impl> &&);
     };
 }
 }
