@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_ui_square_node.h"
+#import "yas_ui_mesh_data.h"
 
 using namespace yas;
 

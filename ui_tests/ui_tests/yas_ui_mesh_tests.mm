@@ -6,6 +6,7 @@
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
 #import "yas_ui_mesh.h"
+#import "yas_ui_mesh_data.h"
 #import "yas_ui_texture.h"
 
 using namespace yas;

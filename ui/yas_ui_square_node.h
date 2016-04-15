@@ -5,9 +5,12 @@
 #pragma once
 
 #include "yas_ui_node.h"
+#include "yas_ui_shared_types.h"
 
 namespace yas {
 namespace ui {
+    class dynamic_mesh_data;
+
     class square_node : public node {
         using super_class = node;
 
