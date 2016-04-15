@@ -19,13 +19,13 @@ namespace ui {
         using super_class = base;
 
        public:
-        mesh_data(UInt32 const vertex_count, UInt32 const index_count);
+        mesh_data(std::size_t const vertex_count, std::size_t const index_count);
         mesh_data(std::nullptr_t);
 
         const ui::vertex2d_t *vertices() const;
-        UInt32 vertex_count() const;
+        std::size_t vertex_count() const;
         const UInt16 *indices() const;
-        UInt32 index_count() const;
+        std::size_t index_count() const;
 
         void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<UInt16> &)> const &);
 
@@ -42,11 +42,11 @@ namespace ui {
         using super_class = mesh_data;
 
        public:
-        dynamic_mesh_data(UInt32 const max_vertex_count, UInt32 const max_index_count);
+        dynamic_mesh_data(std::size_t const max_vertex_count, std::size_t const max_index_count);
         dynamic_mesh_data(std::nullptr_t);
 
-        void set_vertex_count(UInt32 const);
-        void set_index_count(UInt32 const);
+        void set_vertex_count(std::size_t const);
+        void set_index_count(std::size_t const);
 
        private:
         class impl;

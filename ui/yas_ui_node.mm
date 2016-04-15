@@ -12,6 +12,9 @@ using namespace yas;
 ui::node::node() : super_class(std::make_shared<impl>()) {
 }
 
+ui::node::node(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+}
+
 ui::node::node(std::nullptr_t) : super_class(nullptr) {
 }
 
