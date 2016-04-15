@@ -25,6 +25,21 @@ namespace ui {
         uint_size size;
     };
 
+    struct float_origin {
+        float x = 0.0f;
+        float y = 0.0f;
+    };
+
+    struct float_size {
+        float width = 0.0f;
+        float height = 0.0f;
+    };
+
+    struct float_region {
+        float_origin origin;
+        float_size size;
+    };
+
     enum class pivot {
         left,
         center,
