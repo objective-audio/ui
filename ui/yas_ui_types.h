@@ -15,13 +15,13 @@ namespace ui {
     using index_square_t = struct { uint16_t v[6]; };
 
     struct uint_origin {
-        UInt32 x = 0;
-        UInt32 y = 0;
+        uint32_t x = 0;
+        uint32_t y = 0;
     };
 
     struct uint_size {
-        UInt32 width = 1;
-        UInt32 height = 1;
+        uint32_t width = 1;
+        uint32_t height = 1;
     };
 
     struct uint_region {

@@ -91,8 +91,8 @@ struct ui::strings_data::impl : base::impl {
         auto const string_height = descent + ascent;
 
         for (auto const &idx : each_index<std::size_t>(word_size)) {
-            uint_region const image_region{{0, UInt32(roundf(-descent))},
-                                           {UInt32(ceilf(_advances[idx].width)), UInt32(ceilf(string_height))}};
+            uint_region const image_region{{0, uint32_t(roundf(-descent))},
+                                           {uint32_t(ceilf(_advances[idx].width)), uint32_t(ceilf(string_height))}};
 
             _set_vertex_position(image_region, idx);
 

@@ -41,7 +41,7 @@ namespace ui {
         uint_size point_size() const;
         uint_size actual_size() const;
         double scale_factor() const;
-        UInt32 depth() const;
+        uint32_t depth() const;
         MTLPixelFormat pixel_format() const;
         bool has_alpha() const;
 

@@ -16,8 +16,8 @@ class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_ren
     id<MTLDevice> device();
     id<MTLBuffer> currentConstantBuffer();
 
-    UInt32 constant_buffer_offset();
-    void set_constant_buffer_offset(UInt32 const offset);
+    uint32_t constant_buffer_offset();
+    void set_constant_buffer_offset(uint32_t const offset);
 
     id<MTLRenderPipelineState> multiSamplePipelineState();
     id<MTLRenderPipelineState> multiSamplePipelineStateWithoutTexture();

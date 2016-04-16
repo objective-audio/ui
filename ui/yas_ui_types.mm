@@ -7,16 +7,16 @@
 using namespace yas;
 
 ui::uint_origin yas::to_uint_origin(MTLOrigin const origin) {
-    return ui::uint_origin{static_cast<UInt32>(origin.x), static_cast<UInt32>(origin.y)};
+    return ui::uint_origin{static_cast<uint32_t>(origin.x), static_cast<uint32_t>(origin.y)};
 }
 
 ui::uint_size yas::to_uint_size(MTLSize const size) {
-    return ui::uint_size{static_cast<UInt32>(size.width), static_cast<UInt32>(size.height)};
+    return ui::uint_size{static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height)};
 }
 
 ui::uint_region yas::to_uint_region(MTLRegion const region) {
-    return ui::uint_region{static_cast<UInt32>(region.origin.x), static_cast<UInt32>(region.origin.y),
-                           static_cast<UInt32>(region.size.width), static_cast<UInt32>(region.size.height)};
+    return ui::uint_region{static_cast<uint32_t>(region.origin.x), static_cast<uint32_t>(region.origin.y),
+                           static_cast<uint32_t>(region.size.width), static_cast<uint32_t>(region.size.height)};
 }
 
 MTLOrigin yas::to_mtl_origin(ui::uint_origin const origin) {

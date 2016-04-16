@@ -21,7 +21,7 @@ namespace ui {
 }
 
 struct ui::renderer::impl::core {
-    UInt32 sample_count = 4;
+    uint32_t sample_count = 4;
 
     objc_ptr<id<MTLBuffer>> constant_buffers[inflight_buffer_count];
     UInt8 constant_buffer_index = 0;
@@ -35,7 +35,7 @@ struct ui::renderer::impl::core {
 
     objc_ptr<dispatch_semaphore_t> inflight_semaphore;
 
-    UInt32 constant_buffer_offset = 0;
+    uint32_t constant_buffer_offset = 0;
     simd::float4x4 projection_matrix;
 
     objc_ptr<id<MTLRenderPipelineState>> multi_sample_pipeline_state;
@@ -133,11 +133,11 @@ id<MTLBuffer> ui::renderer::impl::currentConstantBuffer() {
     return _core->constant_buffers[_core->constant_buffer_index].object();
 }
 
-UInt32 ui::renderer::impl::constant_buffer_offset() {
+uint32_t ui::renderer::impl::constant_buffer_offset() {
     return _core->constant_buffer_offset;
 }
 
-void ui::renderer::impl::set_constant_buffer_offset(UInt32 const offset) {
+void ui::renderer::impl::set_constant_buffer_offset(uint32_t const offset) {
     assert(offset < buffer_max_bytes);
     _core->constant_buffer_offset = offset;
 }
