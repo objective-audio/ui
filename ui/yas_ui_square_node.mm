@@ -113,7 +113,7 @@ void ui::square_mesh_data::set_square_vertex(const vertex2d_t *const in_ptr, std
 ui::dynamic_mesh_data &ui::square_mesh_data::mesh_data() {
     return _mesh_data;
 }
-
+/*
 #pragma mark - square_node::impl
 
 struct ui::square_node::impl : ui::node::impl {
@@ -127,7 +127,7 @@ struct ui::square_node::impl : ui::node::impl {
 
     ui::square_mesh_data _mesh_data;
 };
-
+*/
 #pragma mark - square_node
 
 ui::square_node::square_node(std::size_t const square_count) : super_class(std::make_shared<impl>(square_count)) {
