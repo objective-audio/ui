@@ -11,12 +11,12 @@ namespace yas {
 namespace ui {
     class dynamic_mesh_data;
 
-    class square_node : public node {
-        using super_class = node;
+    struct square_mesh_data {
+        square_mesh_data(std::size_t const max_square_count);
 
-       public:
-        explicit square_node(std::size_t const square_count);
-        square_node(std::nullptr_t);
+        void write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &);
+
+        void set_square_count(std::size_t const);
 
         void set_square_index(std::size_t const element_idx, std::size_t const square_idx);
         void set_square_indices(std::vector<std::pair<std::size_t, std::size_t>> const &idx_pairs);
@@ -27,6 +27,19 @@ namespace ui {
                                simd::float4x4 const &matrix = matrix_identity_float4x4);
 
         ui::dynamic_mesh_data &mesh_data();
+
+       private:
+        ui::dynamic_mesh_data _mesh_data;
+    };
+
+    class square_node : public node {
+        using super_class = node;
+
+       public:
+        explicit square_node(std::size_t const square_count);
+        square_node(std::nullptr_t);
+
+        ui::square_mesh_data &square_mesh_data();
 
        private:
         class impl;
