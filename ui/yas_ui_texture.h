@@ -28,7 +28,7 @@ namespace ui {
 
         using draw_image_result = result<uint_region, draw_image_error>;
 
-        texture(uint_size const point_size, Float64 const scale_factor,
+        texture(uint_size const point_size, double const scale_factor,
                 MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
         texture(std::nullptr_t);
 
@@ -40,7 +40,7 @@ namespace ui {
         MTLTextureType target() const;
         uint_size point_size() const;
         uint_size actual_size() const;
-        Float64 scale_factor() const;
+        double scale_factor() const;
         UInt32 depth() const;
         MTLPixelFormat pixel_format() const;
         bool has_alpha() const;

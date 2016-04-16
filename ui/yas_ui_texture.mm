@@ -15,7 +15,7 @@ namespace ui {
 }
 
 struct ui::texture::impl : base::impl, metal_object::impl {
-    impl(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const pixel_format)
+    impl(uint_size const point_size, double const scale_factor, MTLPixelFormat const pixel_format)
         : _draw_actual_padding(texture_draw_padding * scale_factor),
           point_size(point_size),
           actual_size(uint_size{static_cast<UInt32>(point_size.width * scale_factor),
@@ -155,7 +155,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
     uint_size const point_size;
     uint_size const actual_size;
-    Float64 const scale_factor;
+    double const scale_factor;
     UInt32 const depth = 1;
     MTLPixelFormat const format;
     MTLTextureType target = MTLTextureType2D;
@@ -172,7 +172,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     objc_ptr<id<MTLDevice>> _device;
 };
 
-ui::texture::texture(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const format)
+ui::texture::texture(uint_size const point_size, double const scale_factor, MTLPixelFormat const format)
     : super_class(std::make_shared<impl>(point_size, scale_factor, format)) {
 }
 
@@ -207,7 +207,7 @@ ui::uint_size ui::texture::actual_size() const {
     return impl_ptr<impl>()->actual_size;
 }
 
-Float64 ui::texture::scale_factor() const {
+double ui::texture::scale_factor() const {
     return impl_ptr<impl>()->scale_factor;
 }
 
