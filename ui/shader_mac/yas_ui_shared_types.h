@@ -8,16 +8,14 @@
 
 namespace yas {
 namespace ui {
-    typedef struct {
+    using vertex2d_t = struct {
         simd::float2 position;
         simd::float2 tex_coord;
-    } vertex2d_t;
+    };
 
-    typedef struct { vertex2d_t v[4]; } vertex2d_square_t;
-
-    typedef struct {
+    using uniforms2d_t = struct {
         simd::float4x4 matrix;
         simd::float4 color;
-    } __attribute__((aligned(256))) uniforms2d_t;
+    } __attribute__((aligned(256)));
 }
 }

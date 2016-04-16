@@ -7,9 +7,13 @@
 #include <Metal/Metal.h>
 #include <simd/simd.h>
 #include <string>
+#include "yas_ui_shared_types.h"
 
 namespace yas {
 namespace ui {
+    using vertex2d_square_t = struct { vertex2d_t v[4]; };
+    using index_square_t = struct { uint16_t v[6]; };
+
     struct uint_origin {
         UInt32 x = 0;
         UInt32 y = 0;
