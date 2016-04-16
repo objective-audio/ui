@@ -11,17 +11,21 @@ using namespace yas;
 
 #pragma mark - square_mesh_data
 
-ui::square_mesh_data::square_mesh_data(std::size_t const square_count)
-    : _mesh_data(square_count * 4, square_count * 6) {
-    write([&square_count](auto *, auto *sq_indices) {
-        for (auto const &idx : make_each(square_count)) {
-            std::size_t const sq_top_raw_idx = idx * 4;
+ui::square_mesh_data::square_mesh_data(std::size_t const square_count) : square_mesh_data(square_count, square_count) {
+}
 
+ui::square_mesh_data::square_mesh_data(std::size_t const vertex_count, std::size_t const index_count)
+    : _mesh_data(vertex_count * 4, index_count * 6) {
+    write([&vertex_count, &index_count](auto *, auto *sq_indices) {
+        for (auto const &idx : make_each(index_count)) {
             auto &sq_index = sq_indices[idx];
-            sq_index.v[0] = sq_top_raw_idx;
-            sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
-            sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
-            sq_index.v[5] = sq_top_raw_idx + 3;
+            if (idx < vertex_count) {
+                std::size_t const sq_top_raw_idx = idx * 4;
+                sq_index.v[0] = sq_top_raw_idx;
+                sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
+                sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
+                sq_index.v[5] = sq_top_raw_idx + 3;
+            }
         }
     });
 }
@@ -30,17 +34,25 @@ void ui::square_mesh_data::set_square_count(std::size_t const count) {
     _mesh_data.set_index_count(count * 6);
 }
 
+void ui::square_mesh_data::write(std::size_t const square_idx,
+                                 std::function<void(ui::vertex2d_square_t &, ui::index_square_t &)> const &func) {
+    _mesh_data.write([&square_idx, &func](auto &vertices, auto &indices) {
+        auto sq_vertex_ptr = (vertex2d_square_t *)vertices.data();
+        auto sq_index_ptr = (index_square_t *)indices.data();
+        func(sq_vertex_ptr[square_idx], sq_index_ptr[square_idx]);
+    });
+}
+
 void ui::square_mesh_data::write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &func) {
     _mesh_data.write([&func](auto &vertices, auto &indices) {
         func((vertex2d_square_t *)vertices.data(), (index_square_t *)indices.data());
     });
 }
 
-void ui::square_mesh_data::set_square_index(std::size_t const element_idx, std::size_t const square_idx) {
-    write([&element_idx, &square_idx](auto *, auto *sq_indices) {
-        std::size_t const sq_top_raw_idx = square_idx * 4;
+void ui::square_mesh_data::set_square_index(std::size_t const index_idx, std::size_t const vertex_idx) {
+    write(index_idx, [&vertex_idx](auto &, auto &sq_index) {
+        std::size_t const sq_top_raw_idx = vertex_idx * 4;
 
-        auto &sq_index = sq_indices[element_idx];
         sq_index.v[0] = sq_top_raw_idx;
         sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
         sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
