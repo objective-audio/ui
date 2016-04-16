@@ -10,16 +10,16 @@ using namespace yas;
 
 namespace yas {
 namespace ui {
-    static UInt32 const texture_draw_padding = 2;
+    static uint32_t const texture_draw_padding = 2;
 }
 }
 
 struct ui::texture::impl : base::impl, metal_object::impl {
-    impl(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const pixel_format)
+    impl(uint_size const point_size, double const scale_factor, MTLPixelFormat const pixel_format)
         : _draw_actual_padding(texture_draw_padding * scale_factor),
           point_size(point_size),
-          actual_size(uint_size{static_cast<UInt32>(point_size.width * scale_factor),
-                                static_cast<UInt32>(point_size.height * scale_factor)}),
+          actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
+                                static_cast<uint32_t>(point_size.height * scale_factor)}),
           scale_factor(scale_factor),
           format(pixel_format) {
     }
@@ -155,8 +155,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
     uint_size const point_size;
     uint_size const actual_size;
-    Float64 const scale_factor;
-    UInt32 const depth = 1;
+    double const scale_factor;
+    uint32_t const depth = 1;
     MTLPixelFormat const format;
     MTLTextureType target = MTLTextureType2D;
     bool const has_alpha = false;
@@ -166,13 +166,13 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
    private:
     uint_origin _draw_actual_pos = uint_origin{texture_draw_padding, texture_draw_padding};
-    UInt32 _max_line_height = 0;
-    UInt32 const _draw_actual_padding;
+    uint32_t _max_line_height = 0;
+    uint32_t const _draw_actual_padding;
 
     objc_ptr<id<MTLDevice>> _device;
 };
 
-ui::texture::texture(uint_size const point_size, Float64 const scale_factor, MTLPixelFormat const format)
+ui::texture::texture(uint_size const point_size, double const scale_factor, MTLPixelFormat const format)
     : super_class(std::make_shared<impl>(point_size, scale_factor, format)) {
 }
 
@@ -207,11 +207,11 @@ ui::uint_size ui::texture::actual_size() const {
     return impl_ptr<impl>()->actual_size;
 }
 
-Float64 ui::texture::scale_factor() const {
+double ui::texture::scale_factor() const {
     return impl_ptr<impl>()->scale_factor;
 }
 
-UInt32 ui::texture::depth() const {
+uint32_t ui::texture::depth() const {
     return impl_ptr<impl>()->depth;
 }
 

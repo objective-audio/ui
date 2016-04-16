@@ -54,7 +54,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         auto constant_buffer_offset = renderer.constant_buffer_offset();
         auto currentConstantBuffer = renderer.current_constant_buffer();
 
-        auto constant_ptr = (UInt8 *)[currentConstantBuffer contents];
+        auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
         auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
         uniforms_ptr->matrix = _matrix;
         uniforms_ptr->color = _color;

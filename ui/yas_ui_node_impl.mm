@@ -30,7 +30,7 @@ simd::float2 ui::node::impl::position() {
     return _position;
 }
 
-Float32 ui::node::impl::angle() {
+float ui::node::impl::angle() {
     return _angle;
 }
 
@@ -59,7 +59,7 @@ void ui::node::impl::set_position(simd::float2 const pos) {
     _needs_update_matrix = true;
 }
 
-void ui::node::impl::set_angle(Float32 const angle) {
+void ui::node::impl::set_angle(float const angle) {
     _angle = angle;
     _needs_update_matrix = true;
 }

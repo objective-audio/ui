@@ -22,8 +22,8 @@ namespace ui {
         simd::float4x4 const &projection_matrix() const;
         id<MTLBuffer> current_constant_buffer() const;
 
-        UInt32 constant_buffer_offset() const;
-        void set_constant_buffer_offset(UInt32 const);
+        uint32_t constant_buffer_offset() const;
+        void set_constant_buffer_offset(uint32_t const);
 
         ui::view_renderable view_renderable();
         subject<renderer> &subject();

@@ -21,23 +21,23 @@ namespace ui {
 
         std::size_t word_count() const;
 
-        Float64 width() const;
+        double width() const;
 
        protected:
         strings_info(std::size_t const word_count);
 
         std::vector<vertex2d_square_t> _squares;
-        Float64 _width;
+        double _width;
     };
 
     class strings_data : base {
         using super_class = base;
 
        public:
-        strings_data(std::string font_name, Float64 const font_size, std::string words, texture texture);
+        strings_data(std::string font_name, double const font_size, std::string words, texture texture);
 
         std::string const &font_name() const;
-        Float64 const &font_size() const;
+        double const &font_size() const;
         std::string const &words() const;
         ui::texture const &texture() const;
 

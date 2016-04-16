@@ -8,11 +8,11 @@
 using namespace yas;
 
 struct ui::image::impl : base::impl {
-    impl(uint_size const point_size, Float64 const scale_factor)
+    impl(uint_size const point_size, double const scale_factor)
         : point_size(point_size),
           scale_factor(scale_factor),
-          actual_size(uint_size{static_cast<UInt32>(point_size.width * scale_factor),
-                                static_cast<UInt32>(point_size.height * scale_factor)}) {
+          actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
+                                static_cast<uint32_t>(point_size.height * scale_factor)}) {
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGBitmapInfo bitmapInfo = static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast);
         bitmap_context = CGBitmapContextCreate(NULL, actual_size.width, actual_size.height, 8, actual_size.width * 4,
@@ -40,12 +40,12 @@ struct ui::image::impl : base::impl {
     }
 
     uint_size point_size;
-    Float64 scale_factor;
+    double scale_factor;
     uint_size actual_size;
     CGContextRef bitmap_context;
 };
 
-ui::image::image(uint_size const point_size, Float64 const scale_factor)
+ui::image::image(uint_size const point_size, double const scale_factor)
     : super_class(std::make_shared<impl>(point_size, scale_factor)) {
 }
 
@@ -60,7 +60,7 @@ ui::uint_size ui::image::actual_size() const {
     return impl_ptr<impl>()->actual_size;
 }
 
-Float64 ui::image::scale_factor() const {
+double ui::image::scale_factor() const {
     return impl_ptr<impl>()->scale_factor;
 }
 

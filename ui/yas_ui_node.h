@@ -28,7 +28,7 @@ namespace ui {
         bool operator!=(node const &) const;
 
         simd::float2 position() const;
-        Float32 angle() const;
+        float angle() const;
         simd::float2 scale() const;
         simd::float4 color() const;
         ui::mesh mesh() const;
@@ -36,7 +36,7 @@ namespace ui {
         bool is_enabled() const;
 
         void set_position(simd::float2 const);
-        void set_angle(Float32 const);
+        void set_angle(float const);
         void set_scale(simd::float2 const);
         void set_color(simd::float4 const);
         void set_mesh(ui::mesh);

@@ -21,10 +21,10 @@ namespace ui {
 
         const ui::vertex2d_t *vertices() const;
         std::size_t vertex_count() const;
-        const UInt16 *indices() const;
+        const uint16_t *indices() const;
         std::size_t index_count() const;
 
-        void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<UInt16> &)> const &);
+        void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<uint16_t> &)> const &);
 
         ui::metal_object metal();
         ui::renderable_mesh_data renderable();

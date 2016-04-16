@@ -32,11 +32,11 @@ id<MTLBuffer> ui::renderer::current_constant_buffer() const {
     return impl_ptr<impl>()->currentConstantBuffer();
 }
 
-UInt32 ui::renderer::constant_buffer_offset() const {
+uint32_t ui::renderer::constant_buffer_offset() const {
     return impl_ptr<impl>()->constant_buffer_offset();
 }
 
-void ui::renderer::set_constant_buffer_offset(UInt32 const offset) {
+void ui::renderer::set_constant_buffer_offset(uint32_t const offset) {
     impl_ptr<impl>()->set_constant_buffer_offset(offset);
 }
 
