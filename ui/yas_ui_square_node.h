@@ -44,8 +44,9 @@ namespace ui {
 
         ui::square_mesh_data &square_mesh_data();
 
-       private:
         class impl;
     };
 }
 }
+
+#include "yas_ui_square_node_impl.h"
