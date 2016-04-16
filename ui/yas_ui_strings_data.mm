@@ -170,10 +170,10 @@ struct ui::strings_data::impl : base::impl {
 
     void _set_vertex_position(uint_region const &region, std::size_t const word_idx) {
         auto &square = _squares.at(word_idx);
-        Float32 const minX = region.origin.x;
-        Float32 const minY = region.origin.y;
-        Float32 const maxX = minX + region.size.width;
-        Float32 const maxY = minY + region.size.height;
+        float const minX = region.origin.x;
+        float const minY = region.origin.y;
+        float const maxX = minX + region.size.width;
+        float const maxY = minY + region.size.height;
         square.v[0].position[0] = square.v[2].position[0] = minX;
         square.v[0].position[1] = square.v[1].position[1] = minY;
         square.v[1].position[0] = square.v[3].position[0] = maxX;
@@ -182,10 +182,10 @@ struct ui::strings_data::impl : base::impl {
 
     void _set_vertex_tex_coords(uint_region const &region, std::size_t const word_idx) {
         auto &square = _squares.at(word_idx);
-        Float32 const minX = region.origin.x;
-        Float32 const minY = region.origin.y;
-        Float32 const maxX = minX + region.size.width;
-        Float32 const maxY = minY + region.size.height;
+        float const minX = region.origin.x;
+        float const minY = region.origin.y;
+        float const maxX = minX + region.size.width;
+        float const maxY = minY + region.size.height;
         square.v[0].tex_coord[0] = square.v[2].tex_coord[0] = minX;
         square.v[0].tex_coord[1] = square.v[1].tex_coord[1] = maxY;
         square.v[1].tex_coord[0] = square.v[3].tex_coord[0] = maxX;

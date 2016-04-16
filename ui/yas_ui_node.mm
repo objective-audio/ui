@@ -30,7 +30,7 @@ simd::float2 ui::node::position() const {
     return impl_ptr<impl>()->position();
 }
 
-Float32 ui::node::angle() const {
+float ui::node::angle() const {
     return impl_ptr<impl>()->angle();
 }
 
@@ -54,7 +54,7 @@ void ui::node::set_position(simd::float2 const pos) {
     impl_ptr<impl>()->set_position(pos);
 }
 
-void ui::node::set_angle(Float32 const angle) {
+void ui::node::set_angle(float const angle) {
     impl_ptr<impl>()->set_angle(angle);
 }
 

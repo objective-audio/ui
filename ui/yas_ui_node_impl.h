@@ -20,14 +20,14 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     weak<node> parent;
 
     simd::float2 position();
-    Float32 angle();
+    float angle();
     simd::float2 scale();
     simd::float4 color();
     ui::mesh mesh();
     bool is_enabled();
 
     void set_position(simd::float2 const);
-    void set_angle(Float32 const);
+    void set_angle(float const);
     void set_scale(simd::float2 const);
     void set_color(simd::float4 const);
     void set_mesh(ui::mesh &&);
@@ -53,7 +53,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     weak<ui::node_renderer> _node_renderer;
 
     simd::float2 _position;
-    Float32 _angle;
+    float _angle;
     simd::float2 _scale;
     ui::mesh _mesh{nullptr};
     bool _enabled;
