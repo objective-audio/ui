@@ -24,7 +24,7 @@ struct ui::renderer::impl::core {
     uint32_t sample_count = 4;
 
     objc_ptr<id<MTLBuffer>> constant_buffers[inflight_buffer_count];
-    UInt8 constant_buffer_index = 0;
+    uint8_t constant_buffer_index = 0;
 
     MTLPixelFormat depth_pixel_format = MTLPixelFormatInvalid;
     MTLPixelFormat stencil_pixel_format = MTLPixelFormatInvalid;

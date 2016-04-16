@@ -53,7 +53,7 @@ using namespace yas;
         CGContextFillRect(context, CGRectMake(0, 0, 2, 2));
     });
 
-    UInt8 *data = static_cast<UInt8 *>(image.data());
+    uint8_t *data = static_cast<uint8_t *>(image.data());
     for (auto &idx : each_index<std::size_t>{2 * 2 * 4}) {
         XCTAssertEqual(data[idx], 0xFF);
     }
@@ -69,7 +69,7 @@ using namespace yas;
 
     image.clear();
 
-    UInt8 *data = static_cast<UInt8 *>(image.data());
+    uint8_t *data = static_cast<uint8_t *>(image.data());
     for (auto &idx : each_index<std::size_t>{2 * 2 * 4}) {
         XCTAssertEqual(data[idx], 0x00);
     }
