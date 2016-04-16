@@ -28,7 +28,7 @@ namespace sample {
 
             void _setup_touch_node() {
                 auto &node = touch_node;
-                node.set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+                node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
                 node.set_scale(0.0f);
                 node.set_color({1.0f, 0.6f, 0.0f, 1.0f});
 
@@ -46,7 +46,8 @@ namespace sample {
                 ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
                 auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
                 for (auto const &idx : make_each(count)) {
-                    mesh_node.set_square_position(region, idx, ui::matrix::rotation(angle_diff * idx) * trans_matrix);
+                    mesh_node.square_mesh_data().set_square_position(
+                        region, idx, ui::matrix::rotation(angle_diff * idx) * trans_matrix);
                 }
 
                 mesh_node.set_color(0.0f);
