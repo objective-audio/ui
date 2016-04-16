@@ -11,8 +11,13 @@
 
 namespace yas {
 namespace ui {
-    using vertex2d_square_t = struct { vertex2d_t v[4]; };
-    using index_square_t = struct { uint16_t v[6]; };
+    struct vertex2d_square_t {
+        vertex2d_t v[4];
+    };
+
+    struct index_square_t {
+        uint16_t v[6];
+    };
 
     struct uint_origin {
         uint32_t x = 0;

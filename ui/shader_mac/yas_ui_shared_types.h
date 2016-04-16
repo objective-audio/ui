@@ -8,12 +8,12 @@
 
 namespace yas {
 namespace ui {
-    using vertex2d_t = struct {
+    struct vertex2d_t {
         simd::float2 position;
         simd::float2 tex_coord;
     };
 
-    using uniforms2d_t = struct {
+    struct uniforms2d_t {
         simd::float4x4 matrix;
         simd::float4 color;
     } __attribute__((aligned(256)));
