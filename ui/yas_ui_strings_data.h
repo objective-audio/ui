@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 #include "yas_base.h"
-#include "yas_ui_shared_types.h"
 #include "yas_ui_types.h"
 
 namespace yas {
