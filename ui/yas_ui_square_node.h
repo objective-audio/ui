@@ -13,12 +13,15 @@ namespace ui {
 
     struct square_mesh_data {
         square_mesh_data(std::size_t const max_square_count);
+        square_mesh_data(std::size_t const vertex_count, std::size_t const max_index_count);
 
+        void write(std::size_t const square_idx,
+                   std::function<void(ui::vertex2d_square_t &, ui::index_square_t &)> const &);
         void write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &);
 
         void set_square_count(std::size_t const);
 
-        void set_square_index(std::size_t const element_idx, std::size_t const square_idx);
+        void set_square_index(std::size_t const index_idx, std::size_t const vertex_idx);
         void set_square_indices(std::vector<std::pair<std::size_t, std::size_t>> const &idx_pairs);
         void set_square_position(ui::float_region const &region, std::size_t const square_idx,
                                  simd::float4x4 const &matrix = matrix_identity_float4x4);
