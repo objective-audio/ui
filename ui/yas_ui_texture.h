@@ -28,8 +28,6 @@ namespace ui {
 
         using draw_image_result = result<uint_region, draw_image_error>;
 
-        texture(uint_size const point_size, double const scale_factor,
-                MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
         texture(std::nullptr_t);
 
         bool operator==(texture const &) const;
@@ -51,7 +49,15 @@ namespace ui {
         ui::metal_object metal();
 
         class impl;
+
+       protected:
+        texture(std::shared_ptr<impl> &&);
     };
+
+    using setup_texture_result = result<ui::texture, setup_metal_error>;
+
+    setup_texture_result make_texture(id<MTLDevice> const device, uint_size const point_size, double const scale_factor,
+                                      MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
 }
 
 template <>

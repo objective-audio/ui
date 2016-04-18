@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_objc_ptr.h"
 #import "yas_objc_macros.h"
+#import "yas_objc_ptr.h"
 #import "yas_ui_image.h"
 #import "yas_ui_texture.h"
 
@@ -25,7 +25,13 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::texture texture{{2, 1}, 2.0};
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    auto texture = ui::make_texture(device.object(), {2, 1}, 2.0).value();
 
     XCTAssertEqual(texture.target(), MTLTextureType2D);
     XCTAssertTrue(texture.point_size() == (ui::uint_size{2, 1}));
@@ -37,20 +43,13 @@ using namespace yas;
 }
 
 - (void)test_add_image {
-    ui::texture texture{{8, 8}, 1.0};
-
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
 
-    auto setup_result = texture.metal().setup(device.object());
-    XCTAssertTrue(setup_result);
-
-    if (!setup_result) {
-        std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
-    }
+    auto texture = ui::make_texture(device.object(), {8, 8}, 1.0).value();
 
     ui::image image{{1, 1}, 1.0};
 

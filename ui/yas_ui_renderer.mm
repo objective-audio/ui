@@ -24,6 +24,10 @@ ui::renderer::renderer(std::shared_ptr<impl> &&impl) : super_class(std::move(imp
 ui::renderer::renderer(std::nullptr_t) : super_class(nullptr) {
 }
 
+id<MTLDevice> ui::renderer::device() const {
+    return impl_ptr<impl>()->device();
+}
+
 simd::float4x4 const &ui::renderer::projection_matrix() const {
     return impl_ptr<impl>()->projection_matrix();
 }

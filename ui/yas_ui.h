@@ -6,6 +6,7 @@
 
 #include "yas_ui_action.h"
 #include "yas_ui_event.h"
+#include "yas_ui_font_atlas.h"
 #include "yas_ui_image.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
@@ -16,6 +17,6 @@
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
 #include "yas_ui_square_node.h"
-#include "yas_ui_strings_data.h"
+#include "yas_ui_strings_node.h"
 #include "yas_ui_texture.h"
 #include "yas_ui_types.h"

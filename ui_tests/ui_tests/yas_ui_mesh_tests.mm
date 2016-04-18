@@ -7,6 +7,7 @@
 #import "yas_objc_ptr.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
+#import "yas_ui_renderer.h"
 #import "yas_ui_texture.h"
 
 using namespace yas;
@@ -35,10 +36,28 @@ using namespace yas;
     XCTAssertTrue(mesh_data.renderable());
 }
 
+- (void)test_create_dynamic_mesh_data {
+    ui::dynamic_mesh_data mesh_data{4, 6};
+
+    XCTAssertEqual(mesh_data.vertex_count(), 4);
+    XCTAssertEqual(mesh_data.index_count(), 6);
+    XCTAssertEqual(mesh_data.max_vertex_count(), 4);
+    XCTAssertEqual(mesh_data.max_index_count(), 6);
+
+    XCTAssertTrue(mesh_data.metal());
+    XCTAssertTrue(mesh_data.renderable());
+}
+
 - (void)test_create_null_mesh_data {
     ui::mesh_data mesh_data{nullptr};
 
     XCTAssertFalse(mesh_data);
+}
+
+- (void)test_create_null_dynamic_mesh_data {
+    ui::dynamic_mesh_data dyn_mesh_data{nullptr};
+
+    XCTAssertFalse(dyn_mesh_data);
 }
 
 - (void)test_create_mesh {
@@ -124,12 +143,16 @@ using namespace yas;
 
     XCTAssertEqual(mesh_data.vertex_count(), 4);
     XCTAssertEqual(mesh_data.index_count(), 6);
+    XCTAssertEqual(mesh_data.max_vertex_count(), 4);
+    XCTAssertEqual(mesh_data.max_index_count(), 6);
 
     mesh_data.set_vertex_count(0);
     mesh_data.set_index_count(0);
 
     XCTAssertEqual(mesh_data.vertex_count(), 0);
     XCTAssertEqual(mesh_data.index_count(), 0);
+    XCTAssertEqual(mesh_data.max_vertex_count(), 4);
+    XCTAssertEqual(mesh_data.max_index_count(), 6);
 
     mesh_data.set_vertex_count(4);
     mesh_data.set_index_count(6);
@@ -142,9 +165,16 @@ using namespace yas;
 }
 
 - (void)test_set_mesh_variables {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
     ui::mesh mesh;
     ui::mesh_data mesh_data{4, 6};
-    ui::texture texture{{16, 8}, 1.0};
+
+    auto texture = ui::make_texture(device.object(), {16, 8}, 1.0).value();
 
     mesh.set_data(mesh_data);
     mesh.set_texture(texture);

@@ -19,6 +19,8 @@ namespace ui {
        public:
         renderer(std::nullptr_t);
 
+        id<MTLDevice> device() const;
+
         simd::float4x4 const &projection_matrix() const;
         id<MTLBuffer> current_constant_buffer() const;
 

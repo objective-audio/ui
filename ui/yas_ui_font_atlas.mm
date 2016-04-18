@@ -1,13 +1,13 @@
 //
-//  yas_ui_strings_data.mm
+//  yas_ui_font.mm
 //
 
 #include <CoreGraphics/CoreGraphics.h>
 #import <CoreText/CoreText.h>
 #include "yas_cf_utils.h"
 #include "yas_objc_macros.h"
+#include "yas_ui_font_atlas.h"
 #import "yas_ui_image.h"
-#include "yas_ui_strings_data.h"
 #include "yas_ui_texture.h"
 
 #if TARGET_OS_IPHONE
@@ -18,33 +18,33 @@
 
 using namespace yas;
 
-#pragma mark - strings_info
+#pragma mark - strings_layout
 
-ui::strings_info::strings_info(std::size_t const word_count) : _squares(word_count), _width(0.0) {
+ui::strings_layout::strings_layout(std::size_t const word_count) : _squares(word_count), _width(0.0) {
 }
 
-ui::vertex2d_square_t const &ui::strings_info::square(std::size_t const word_index) const {
+ui::vertex2d_square_t const &ui::strings_layout::square(std::size_t const word_index) const {
     return _squares.at(word_index);
 }
 
-std::vector<ui::vertex2d_square_t> const &ui::strings_info::squares() const {
+std::vector<ui::vertex2d_square_t> const &ui::strings_layout::squares() const {
     return _squares;
 }
 
-std::size_t ui::strings_info::word_count() const {
+std::size_t ui::strings_layout::word_count() const {
     return _squares.size();
 }
 
-double ui::strings_info::width() const {
+double ui::strings_layout::width() const {
     return _width;
 }
 
-#pragma mark - mutable_strings_info
+#pragma mark - mutable_strings_layout
 
 namespace yas {
 namespace ui {
-    struct mutable_strings_info : strings_info {
-        mutable_strings_info(std::size_t const word_size) : strings_info(word_size) {
+    struct mutable_strings_layout : strings_layout {
+        mutable_strings_layout(std::size_t const word_size) : strings_layout(word_size) {
         }
 
         ui::vertex2d_square_t &square(std::size_t const word_index) {
@@ -58,9 +58,9 @@ namespace ui {
 }
 }
 
-#pragma mark - strings_data::impl
+#pragma mark - font_atlas::impl
 
-struct ui::strings_data::impl : base::impl {
+struct ui::font_atlas::impl : base::impl {
     ui::texture texture;
     std::string font_name;
     double font_size;
@@ -68,7 +68,7 @@ struct ui::strings_data::impl : base::impl {
 
     impl(std::string &&font_name, double const font_size, std::string &&words, ui::texture &&texture)
         : font_name(std::move(font_name)), font_size(font_size), words(std::move(words)), texture(std::move(texture)) {
-        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr);
+        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(this->font_name), font_size, nullptr);
         setup(ct_font);
         CFRelease(ct_font);
     }
@@ -91,12 +91,13 @@ struct ui::strings_data::impl : base::impl {
         auto const string_height = descent + ascent;
 
         for (auto const &idx : each_index<std::size_t>(word_size)) {
-            uint_region const image_region{{0, uint32_t(roundf(-descent))},
-                                           {uint32_t(ceilf(_advances[idx].width)), uint32_t(ceilf(string_height))}};
+            ui::uint_size const image_size = {uint32_t(ceilf(_advances[idx].width)), uint32_t(ceilf(string_height))};
+            ui::float_region const image_region = {0.0f, roundf(-descent), static_cast<float>(image_size.width),
+                                                   static_cast<float>(image_size.height)};
 
             _set_vertex_position(image_region, idx);
 
-            ui::image image{image_region.size};
+            ui::image image{image_size};
 
             image.draw([&image_region, &descent, &glyphs, &idx, &ct_font](CGContextRef const ctx) {
                 CGContextSaveGState(ctx);
@@ -119,27 +120,27 @@ struct ui::strings_data::impl : base::impl {
         }
     }
 
-    strings_info make_strings_info(std::string const &text, pivot const pivot) {
+    strings_layout make_strings_layout(std::string const &text, pivot const pivot) {
         auto const word_size = text.size();
 
-        ui::mutable_strings_info strings_info{word_size};
+        ui::mutable_strings_layout strings_layout{word_size};
 
         double width = 0;
 
         for (auto const &word_idx : each_index<std::size_t>(word_size)) {
             auto const word = text.substr(word_idx, 1);
             auto const &str_square = _square(word);
-            auto &info_square = strings_info.square(word_idx);
+            auto &info_square = strings_layout.square(word_idx);
 
             for (auto const &sq_idx : each_index<std::size_t>(4)) {
                 info_square.v[sq_idx] = str_square.v[sq_idx];
-                info_square.v[sq_idx].position[0] += roundf(width);
+                info_square.v[sq_idx].position.x += roundf(width);
             }
 
             width += _advance(word).width;
         }
 
-        strings_info.set_width(ceil(width));
+        strings_layout.set_width(ceil(width));
 
         if (pivot != pivot::left) {
             double offset = 0;
@@ -150,14 +151,14 @@ struct ui::strings_data::impl : base::impl {
                 offset = -width;
             }
 
-            for (auto &square : strings_info.squares()) {
+            for (auto &square : strings_layout.squares()) {
                 for (auto &vertex : square.v) {
-                    vertex.position[0] += offset;
+                    vertex.position.x += offset;
                 }
             }
         }
 
-        return std::move(strings_info);
+        return std::move(strings_layout);
     }
 
     ui::vertex2d_square_t &_square(std::string const &word) {
@@ -168,16 +169,16 @@ struct ui::strings_data::impl : base::impl {
         return _squares.at(idx);
     }
 
-    void _set_vertex_position(uint_region const &region, std::size_t const word_idx) {
+    void _set_vertex_position(float_region const &region, std::size_t const word_idx) {
         auto &square = _squares.at(word_idx);
         float const minX = region.origin.x;
         float const minY = region.origin.y;
         float const maxX = minX + region.size.width;
         float const maxY = minY + region.size.height;
-        square.v[0].position[0] = square.v[2].position[0] = minX;
-        square.v[0].position[1] = square.v[1].position[1] = minY;
-        square.v[1].position[0] = square.v[3].position[0] = maxX;
-        square.v[2].position[1] = square.v[3].position[1] = maxY;
+        square.v[0].position.x = square.v[2].position.x = minX;
+        square.v[0].position.y = square.v[1].position.y = minY;
+        square.v[1].position.x = square.v[3].position.x = maxX;
+        square.v[2].position.y = square.v[3].position.y = maxY;
     }
 
     void _set_vertex_tex_coords(uint_region const &region, std::size_t const word_idx) {
@@ -186,10 +187,10 @@ struct ui::strings_data::impl : base::impl {
         float const minY = region.origin.y;
         float const maxX = minX + region.size.width;
         float const maxY = minY + region.size.height;
-        square.v[0].tex_coord[0] = square.v[2].tex_coord[0] = minX;
-        square.v[0].tex_coord[1] = square.v[1].tex_coord[1] = maxY;
-        square.v[1].tex_coord[0] = square.v[3].tex_coord[0] = maxX;
-        square.v[2].tex_coord[1] = square.v[3].tex_coord[1] = minY;
+        square.v[0].tex_coord.x = square.v[2].tex_coord.x = minX;
+        square.v[0].tex_coord.y = square.v[1].tex_coord.y = maxY;
+        square.v[1].tex_coord.x = square.v[3].tex_coord.x = maxX;
+        square.v[2].tex_coord.y = square.v[3].tex_coord.y = minY;
     }
 
     CGSize const &_advance(std::string const &word) {
@@ -205,26 +206,26 @@ struct ui::strings_data::impl : base::impl {
     std::vector<CGSize> _advances;
 };
 
-ui::strings_data::strings_data(std::string font_name, double const font_size, std::string words, ui::texture texture)
+ui::font_atlas::font_atlas(std::string font_name, double const font_size, std::string words, ui::texture texture)
     : super_class(std::make_shared<impl>(std::move(font_name), font_size, std::move(words), std::move(texture))) {
 }
 
-std::string const &ui::strings_data::font_name() const {
+std::string const &ui::font_atlas::font_name() const {
     return impl_ptr<impl>()->font_name;
 }
 
-double const &ui::strings_data::font_size() const {
+double const &ui::font_atlas::font_size() const {
     return impl_ptr<impl>()->font_size;
 }
 
-std::string const &ui::strings_data::words() const {
+std::string const &ui::font_atlas::words() const {
     return impl_ptr<impl>()->words;
 }
 
-ui::texture const &ui::strings_data::texture() const {
+ui::texture const &ui::font_atlas::texture() const {
     return impl_ptr<impl>()->texture;
 }
 
-ui::strings_info ui::strings_data::make_strings_info(std::string const &text, pivot const pivot) const {
-    return std::move(impl_ptr<impl>()->make_strings_info(text, pivot));
+ui::strings_layout ui::font_atlas::make_strings_layout(std::string const &text, pivot const pivot) const {
+    return std::move(impl_ptr<impl>()->make_strings_layout(text, pivot));
 }
