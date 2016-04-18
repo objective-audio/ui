@@ -55,7 +55,8 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
 
             memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
                    _vertex_count * sizeof(ui::vertex2d_t));
-            memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(), _index_count * sizeof(uint16_t));
+            memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
+                   _index_count * sizeof(uint16_t));
 
             _needs_update_render_buffer = false;
         }
@@ -194,6 +195,14 @@ ui::dynamic_mesh_data::dynamic_mesh_data(std::size_t const vertex_count, std::si
 }
 
 ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : super_class(nullptr) {
+}
+
+std::size_t ui::dynamic_mesh_data::max_vertex_count() const {
+    return impl_ptr<impl>()->_vertices.size();
+}
+
+std::size_t ui::dynamic_mesh_data::max_index_count() const {
+    return impl_ptr<impl>()->_indices.size();
 }
 
 void ui::dynamic_mesh_data::set_vertex_count(std::size_t const count) {

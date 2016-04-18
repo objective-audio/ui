@@ -4,6 +4,7 @@
 
 #include "yas_objc_ptr.h"
 #include "yas_ui_image.h"
+#include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
 
 using namespace yas;
@@ -172,8 +173,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     objc_ptr<id<MTLDevice>> _device;
 };
 
-ui::texture::texture(uint_size const point_size, double const scale_factor, MTLPixelFormat const format)
-    : super_class(std::make_shared<impl>(point_size, scale_factor, format)) {
+ui::texture::texture(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
 }
 
 ui::texture::texture(std::nullptr_t) : super_class(nullptr) {
@@ -234,6 +234,34 @@ ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui
 ui::metal_object ui::texture::metal() {
     return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
 }
+
+#pragma mark -
+
+namespace yas {
+namespace ui {
+    struct texture_factory : texture {
+        using super_class = texture;
+
+        texture_factory(uint_size const point_size, double const scale_factor, MTLPixelFormat const format)
+            : super_class(std::make_shared<super_class::impl>(point_size, scale_factor, format)) {
+        }
+    };
+}
+}
+
+#pragma mark -
+
+ui::setup_texture_result ui::make_texture(id<MTLDevice> const device, uint_size const point_size,
+                                          double const scale_factor, MTLPixelFormat const pixel_format) {
+    auto factory = ui::texture_factory{point_size, scale_factor, pixel_format};
+    if (auto result = factory.metal().setup(device)) {
+        return ui::setup_texture_result{std::move(factory)};
+    } else {
+        return ui::setup_texture_result{std::move(result.error())};
+    }
+}
+
+#pragma mark -
 
 template <>
 ui::texture yas::cast(base const &base) {

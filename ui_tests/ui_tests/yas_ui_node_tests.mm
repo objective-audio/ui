@@ -43,6 +43,7 @@ using namespace yas;
     XCTAssertTrue(node.is_enabled());
 
     XCTAssertTrue(node.renderable());
+    XCTAssertTrue(node.metal());
 }
 
 - (void)test_create_null {

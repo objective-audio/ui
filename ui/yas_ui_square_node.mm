@@ -5,38 +5,31 @@
 #include "yas_each_index.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
+#include "yas_ui_node.h"
 #include "yas_ui_square_node.h"
 
 using namespace yas;
 
 #pragma mark - square_mesh_data
 
-ui::square_mesh_data::square_mesh_data(std::size_t const square_count) : square_mesh_data(square_count, square_count) {
+ui::square_mesh_data::square_mesh_data(ui::dynamic_mesh_data mesh_data) : _dynamic_mesh_data(std::move(mesh_data)) {
 }
 
-ui::square_mesh_data::square_mesh_data(std::size_t const vertex_count, std::size_t const index_count)
-    : _mesh_data(vertex_count * 4, index_count * 6) {
-    write([&vertex_count, &index_count](auto *, auto *sq_indices) {
-        for (auto const &idx : make_each(index_count)) {
-            auto &sq_index = sq_indices[idx];
-            if (idx < vertex_count) {
-                std::size_t const sq_top_raw_idx = idx * 4;
-                sq_index.v[0] = sq_top_raw_idx;
-                sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
-                sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
-                sq_index.v[5] = sq_top_raw_idx + 3;
-            }
-        }
-    });
+std::size_t ui::square_mesh_data::max_square_count() const {
+    auto const max_index_count = _dynamic_mesh_data.max_index_count();
+    if (max_index_count > 0) {
+        return max_index_count / 6;
+    }
+    return 0;
 }
 
 void ui::square_mesh_data::set_square_count(std::size_t const count) {
-    _mesh_data.set_index_count(count * 6);
+    _dynamic_mesh_data.set_index_count(count * 6);
 }
 
 void ui::square_mesh_data::write(std::size_t const square_idx,
                                  std::function<void(ui::vertex2d_square_t &, ui::index_square_t &)> const &func) {
-    _mesh_data.write([&square_idx, &func](auto &vertices, auto &indices) {
+    _dynamic_mesh_data.write([&square_idx, &func](auto &vertices, auto &indices) {
         auto sq_vertex_ptr = (vertex2d_square_t *)vertices.data();
         auto sq_index_ptr = (index_square_t *)indices.data();
         func(sq_vertex_ptr[square_idx], sq_index_ptr[square_idx]);
@@ -44,7 +37,7 @@ void ui::square_mesh_data::write(std::size_t const square_idx,
 }
 
 void ui::square_mesh_data::write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &func) {
-    _mesh_data.write([&func](auto &vertices, auto &indices) {
+    _dynamic_mesh_data.write([&func](auto &vertices, auto &indices) {
         func((vertex2d_square_t *)vertices.data(), (index_square_t *)indices.data());
     });
 }
@@ -85,16 +78,16 @@ void ui::square_mesh_data::set_square_position(ui::float_region const &region, s
 
 void ui::square_mesh_data::set_square_tex_coords(ui::uint_region const &pixel_region, std::size_t const square_idx) {
     write([&pixel_region, &square_idx](auto *sq_vertices, auto *) {
-        float min_x = pixel_region.origin.x;
-        float min_y = pixel_region.origin.y;
-        float max_x = min_x + pixel_region.size.width;
-        float max_y = min_y + pixel_region.size.height;
+        float const min_x = pixel_region.origin.x;
+        float const min_y = pixel_region.origin.y;
+        float const max_x = min_x + pixel_region.size.width;
+        float const max_y = min_y + pixel_region.size.height;
 
         auto &sq_vertex = sq_vertices[square_idx];
-        sq_vertex.v[0].tex_coord[0] = sq_vertex.v[2].tex_coord[0] = min_x;
-        sq_vertex.v[0].tex_coord[1] = sq_vertex.v[1].tex_coord[1] = max_y;
-        sq_vertex.v[1].tex_coord[0] = sq_vertex.v[3].tex_coord[0] = max_x;
-        sq_vertex.v[2].tex_coord[1] = sq_vertex.v[3].tex_coord[1] = min_y;
+        sq_vertex.v[0].tex_coord.x = sq_vertex.v[2].tex_coord.x = min_x;
+        sq_vertex.v[0].tex_coord.y = sq_vertex.v[1].tex_coord.y = max_y;
+        sq_vertex.v[1].tex_coord.x = sq_vertex.v[3].tex_coord.x = max_x;
+        sq_vertex.v[2].tex_coord.y = sq_vertex.v[3].tex_coord.y = min_y;
     });
 }
 
@@ -110,32 +103,59 @@ void ui::square_mesh_data::set_square_vertex(const vertex2d_t *const in_ptr, std
     });
 }
 
-ui::dynamic_mesh_data &ui::square_mesh_data::mesh_data() {
-    return _mesh_data;
+ui::dynamic_mesh_data &ui::square_mesh_data::dynamic_mesh_data() {
+    return _dynamic_mesh_data;
 }
-/*
-#pragma mark - square_node::impl
 
-struct ui::square_node::impl : ui::node::impl {
-    using super_class = ui::node::impl;
+ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count) {
+    ui::square_mesh_data sq_mesh_data{ui::dynamic_mesh_data{square_count * 4, square_count * 6}};
 
-    impl(std::size_t const square_count) : super_class(), _mesh_data(square_count) {
-        ui::mesh mesh;
-        mesh.set_data(_mesh_data.mesh_data());
-        set_mesh(std::move(mesh));
+    sq_mesh_data.write([&square_count](auto *, auto *sq_indices) {
+        for (auto const &idx : make_each(square_count)) {
+            auto &sq_index = sq_indices[idx];
+            std::size_t const sq_top_raw_idx = idx * 4;
+            sq_index.v[0] = sq_top_raw_idx;
+            sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
+            sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
+            sq_index.v[5] = sq_top_raw_idx + 3;
+        }
+    });
+
+    return sq_mesh_data;
+}
+
+#pragma mark - ui::square_node::impl
+
+struct yas::ui::square_node::impl : base::impl {
+    impl(ui::square_mesh_data &&sq_mesh_data) : _square_mesh_data(std::move(sq_mesh_data)) {
     }
 
-    ui::square_mesh_data _mesh_data;
+    ui::node _node;
+    ui::square_mesh_data _square_mesh_data;
 };
-*/
-#pragma mark - square_node
 
-ui::square_node::square_node(std::size_t const square_count) : super_class(std::make_shared<impl>(square_count)) {
+#pragma mark - ui::square_node
+
+ui::square_node::square_node(ui::square_mesh_data sq_mesh_data)
+    : super_class(std::make_shared<impl>(std::move(sq_mesh_data))) {
 }
 
 ui::square_node::square_node(std::nullptr_t) : super_class(nullptr) {
 }
 
+ui::node &ui::square_node::node() {
+    return impl_ptr<impl>()->_node;
+}
+
 ui::square_mesh_data &ui::square_node::square_mesh_data() {
-    return impl_ptr<impl>()->_mesh_data;
+    return impl_ptr<impl>()->_square_mesh_data;
+}
+
+ui::square_node ui::make_square_node(std::size_t const square_count) {
+    ui::square_node node{make_square_mesh_data(square_count)};
+    ui::mesh mesh;
+    mesh.set_data(node.square_mesh_data().dynamic_mesh_data());
+    node.node().set_mesh(std::move(mesh));
+
+    return node;
 }

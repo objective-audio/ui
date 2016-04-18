@@ -1,5 +1,5 @@
 //
-//  yas_ui_strings_data.h
+//  yas_ui_font.h
 //
 
 #pragma once
@@ -14,34 +14,31 @@ namespace yas {
 namespace ui {
     class texture;
 
-    struct strings_info {
+    struct strings_layout {
         vertex2d_square_t const &square(std::size_t const word_index) const;
-
         std::vector<vertex2d_square_t> const &squares() const;
-
         std::size_t word_count() const;
-
         double width() const;
 
        protected:
-        strings_info(std::size_t const word_count);
+        strings_layout(std::size_t const word_count);
 
         std::vector<vertex2d_square_t> _squares;
         double _width;
     };
 
-    class strings_data : base {
+    class font_atlas : base {
         using super_class = base;
 
        public:
-        strings_data(std::string font_name, double const font_size, std::string words, texture texture);
+        font_atlas(std::string font_name, double const font_size, std::string words, texture texture);
 
         std::string const &font_name() const;
         double const &font_size() const;
         std::string const &words() const;
         ui::texture const &texture() const;
 
-        strings_info make_strings_info(std::string const &text, pivot const pivot) const;
+        strings_layout make_strings_layout(std::string const &text, pivot const pivot) const;
 
         class impl;
     };

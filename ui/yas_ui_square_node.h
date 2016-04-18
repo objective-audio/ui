@@ -4,21 +4,21 @@
 
 #pragma once
 
-#include "yas_ui_node.h"
-#include "yas_ui_shared_types.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
+    class node;
     class dynamic_mesh_data;
 
     struct square_mesh_data {
-        square_mesh_data(std::size_t const max_square_count);
-        square_mesh_data(std::size_t const vertex_count, std::size_t const max_index_count);
+        explicit square_mesh_data(ui::dynamic_mesh_data mesh_data);
 
         void write(std::size_t const square_idx,
                    std::function<void(ui::vertex2d_square_t &, ui::index_square_t &)> const &);
         void write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &);
 
+        std::size_t max_square_count() const;
         void set_square_count(std::size_t const);
 
         void set_square_index(std::size_t const index_idx, std::size_t const vertex_idx);
@@ -29,24 +29,28 @@ namespace ui {
         void set_square_vertex(const vertex2d_t *const in_ptr, std::size_t const square_idx,
                                simd::float4x4 const &matrix = matrix_identity_float4x4);
 
-        ui::dynamic_mesh_data &mesh_data();
+        ui::dynamic_mesh_data &dynamic_mesh_data();
 
        private:
-        ui::dynamic_mesh_data _mesh_data;
+        ui::dynamic_mesh_data _dynamic_mesh_data;
     };
 
-    class square_node : public node {
-        using super_class = node;
+    square_mesh_data make_square_mesh_data(std::size_t const max_square_count);
+
+    class square_node : public base {
+        using super_class = base;
 
        public:
-        explicit square_node(std::size_t const square_count);
+        explicit square_node(square_mesh_data);
         square_node(std::nullptr_t);
 
+        ui::node &node();
         ui::square_mesh_data &square_mesh_data();
 
+       private:
         class impl;
     };
-}
-}
 
-#include "yas_ui_square_node_impl.h"
+    square_node make_square_node(std::size_t const square_count);
+}
+}
