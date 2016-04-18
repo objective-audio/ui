@@ -46,6 +46,7 @@ namespace ui {
         bool operator!=(cursor_event const &) const;
 
         simd::float2 const &position() const;
+        bool contains_in_window() const;
 
        private:
         simd::float2 _position;
@@ -119,7 +120,7 @@ namespace ui {
 
     struct event_inputtable : protocol {
         struct impl : protocol::impl {
-            virtual void input_cursor_event(event_phase const phase, cursor_event &&value) = 0;
+            virtual void input_cursor_event(cursor_event &&value) = 0;
             virtual void input_touch_event(event_phase const, touch_event &&) = 0;
             virtual void input_key_event(event_phase const, key_event &&) = 0;
             virtual void input_modifier_event(modifier_flags &&) = 0;
@@ -127,7 +128,7 @@ namespace ui {
 
         explicit event_inputtable(std::shared_ptr<impl>);
 
-        void input_cursor_event(event_phase const, cursor_event);
+        void input_cursor_event(cursor_event);
         void input_touch_event(event_phase const, touch_event);
         void input_key_event(event_phase const, key_event);
         void input_modifier_event(modifier_flags);

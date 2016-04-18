@@ -97,12 +97,18 @@ ui::manageable_event ui::event::manageable() {
 #pragma mark - event_manager::impl
 
 struct ui::event_manager::impl : base::impl, event_inputtable::impl {
-    void input_cursor_event(event_phase const phase, cursor_event &&value) override {
-        if (phase == event_phase::began) {
+    void input_cursor_event(cursor_event &&value) override {
+        ui::event_phase phase;
+
+        if (value.contains_in_window()) {
             if (cursor_event) {
-                return;
+                phase = event_phase::changed;
+            } else {
+                phase = event_phase::began;
+                cursor_event = ui::event{cursor_tag};
             }
-            cursor_event = ui::event{cursor_tag};
+        } else {
+            phase = event_phase::ended;
         }
 
         if (cursor_event) {
@@ -114,7 +120,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                 subject.notify(event_method::cursor_changed, cursor_event);
             }
 
-            if (phase == event_phase::ended || phase == event_phase::canceled) {
+            if (phase == event_phase::ended) {
                 cursor_event = nullptr;
             }
         }

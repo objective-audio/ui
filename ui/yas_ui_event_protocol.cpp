@@ -26,6 +26,10 @@ simd::float2 const &ui::cursor_event::position() const {
     return _position;
 }
 
+bool ui::cursor_event::contains_in_window() const {
+    return -1.0f <= _position.x && _position.x <= 1.0f && -1.0f <= _position.y && _position.y <= 1.0f;
+}
+
 #pragma mark - touch_event
 
 ui::touch_event::touch_event() : _identifier(-1), _position(0.0f) {
@@ -105,8 +109,8 @@ ui::modifier_flags ui::modifier_event::flag() const {
 ui::event_inputtable::event_inputtable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
-void ui::event_inputtable::input_cursor_event(event_phase const phase, cursor_event value) {
-    impl_ptr<impl>()->input_cursor_event(phase, std::move(value));
+void ui::event_inputtable::input_cursor_event(cursor_event value) {
+    impl_ptr<impl>()->input_cursor_event(std::move(value));
 }
 
 void ui::event_inputtable::input_touch_event(event_phase const phase, touch_event value) {
