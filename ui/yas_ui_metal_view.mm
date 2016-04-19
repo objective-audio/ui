@@ -51,8 +51,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #elif TARGET_OS_MAC
 
-- (void)_sendCursorEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    _event_manager.inputtable().input_cursor_event(std::move(phase), ui::cursor_event{[self _position:event]});
+- (void)_sendCursorEvent:(NSEvent *)event {
+    _event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event]});
 }
 
 - (void)_sendButtonEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
@@ -75,6 +75,11 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     auto viewSize = self.bounds.size;
     return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),
             static_cast<float>(locInView.y / viewSize.height * 2.0f - 1.0f)};
+}
+
+- (bool)_containsEventLocation:(NSEvent *)event {
+    auto locInView = [self convertPoint:event.locationInWindow fromView:nil];
+    return CGRectContainsPoint(self.bounds, locInView);
 }
 
 - (void)updateTrackingAreas {
@@ -119,29 +124,29 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)mouseEntered:(NSEvent *)event {
-    [self _sendCursorEvent:event phase:ui::event_phase::began];
+    [self _sendCursorEvent:event];
 }
 
 - (void)mouseMoved:(NSEvent *)event {
-    [self _sendCursorEvent:event phase:ui::event_phase::changed];
+    [self _sendCursorEvent:event];
 }
 
 - (void)mouseExited:(NSEvent *)event {
-    [self _sendCursorEvent:event phase:ui::event_phase::ended];
+    [self _sendCursorEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event {
-    [self _sendCursorEvent:event phase:ui::event_phase::changed];
+    [self _sendCursorEvent:event];
     [self _sendButtonEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)rightMouseDragged:(NSEvent *)event {
-    [self _sendCursorEvent:event phase:ui::event_phase::changed];
+    [self _sendCursorEvent:event];
     [self _sendButtonEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)otherMouseDragged:(NSEvent *)event {
-    [self _sendCursorEvent:event phase:ui::event_phase::changed];
+    [self _sendCursorEvent:event];
     [self _sendButtonEvent:event phase:ui::event_phase::changed];
 }
 
