@@ -275,7 +275,7 @@ using namespace yas;
             called = true;
         });
 
-    manager.inputtable().input_cursor_event(ui::event_phase::began, ui::cursor_event{simd::float2{0.25f, 0.125f}});
+    manager.inputtable().input_cursor_event(ui::cursor_event{simd::float2{0.25f, 0.125f}});
 
     XCTAssertTrue(called);
 }
@@ -369,29 +369,29 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_cursor_event(ui::event_phase::ended, ui::cursor_event{0.0f});
+    manager.inputtable().input_cursor_event(ui::cursor_event{2.0f});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::event_phase::began, ui::cursor_event{0.0f});
+    manager.inputtable().input_cursor_event(ui::cursor_event{0.0f});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::event_phase::began, ui::cursor_event{0.0f});
+    manager.inputtable().input_cursor_event(ui::cursor_event{0.0f});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::event_phase::ended, ui::cursor_event{0.0f});
+    manager.inputtable().input_cursor_event(ui::cursor_event{-2.0f});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_cursor_event(ui::event_phase::ended, ui::cursor_event{0.0f});
+    manager.inputtable().input_cursor_event(ui::cursor_event{-2.0f});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
