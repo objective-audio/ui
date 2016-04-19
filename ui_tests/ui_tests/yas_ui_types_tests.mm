@@ -5,6 +5,8 @@
 #import <XCTest/XCTest.h>
 #import "yas_ui_types.h"
 
+#import <iostream>
+
 using namespace yas;
 
 @interface yas_ui_types_tests : XCTestCase
@@ -158,6 +160,30 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::pivot::center), "center");
     XCTAssertEqual(to_string(ui::pivot::left), "left");
     XCTAssertEqual(to_string(ui::pivot::right), "right");
+}
+
+- (void)test_uint_origin_to_string {
+    XCTAssertEqual(to_string(ui::uint_origin{1, 2}), "{1, 2}");
+}
+
+- (void)test_uint_size_to_string {
+    XCTAssertEqual(to_string(ui::uint_size{3, 4}), "{3, 4}");
+}
+
+- (void)test_uint_region_to_string {
+    XCTAssertEqual(to_string(ui::uint_region{5, 6, 7, 8}), "{{5, 6}, {7, 8}}");
+}
+
+- (void)test_float_origin_to_string {
+    XCTAssertEqual(to_string(ui::float_origin{1.0f, 2.0f}), "{1.000000, 2.000000}");
+}
+
+- (void)test_float_size_to_string {
+    XCTAssertEqual(to_string(ui::float_size{3.0f, 4.0f}), "{3.000000, 4.000000}");
+}
+
+- (void)test_float_region_to_string {
+    XCTAssertEqual(to_string(ui::float_region{5.0f, 6.0f, 7.0f, 8.0f}), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
 }
 
 - (void)test_to_mtl_primitive_type {

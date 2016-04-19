@@ -61,6 +61,30 @@ std::string yas::to_string(ui::pivot const &pivot) {
     }
 }
 
+std::string yas::to_string(ui::uint_origin const &origin) {
+    return "{" + std::to_string(origin.x) + ", " + std::to_string(origin.y) + "}";
+}
+
+std::string yas::to_string(ui::uint_size const &size) {
+    return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
+}
+
+std::string yas::to_string(ui::uint_region const &region) {
+    return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
+}
+
+std::string yas::to_string(ui::float_origin const &origin) {
+    return "{" + std::to_string(origin.x) + ", " + std::to_string(origin.y) + "}";
+}
+
+std::string yas::to_string(ui::float_size const &size) {
+    return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
+}
+
+std::string yas::to_string(ui::float_region const &region) {
+    return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
+}
+
 std::string yas::to_string(simd::float2 const &value) {
     return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
 }
