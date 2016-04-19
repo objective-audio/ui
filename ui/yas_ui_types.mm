@@ -114,3 +114,33 @@ bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
     return lhs.origin != rhs.origin || lhs.size != rhs.size;
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {
+    os << to_string(origin);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_size const &size) {
+    os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_region const &region) {
+    os << to_string(region);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::float_origin const &origin) {
+    os << to_string(origin);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::float_size const &size) {
+    os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::float_region const &region) {
+    os << to_string(region);
+    return os;
+}

@@ -186,6 +186,15 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::float_region{5.0f, 6.0f, 7.0f, 8.0f}), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
 }
 
+- (void)test_ostream {
+    std::cout << ui::uint_origin{1, 2} << std::endl;
+    std::cout << ui::uint_size{3, 4} << std::endl;
+    std::cout << ui::uint_region{5, 6, 7, 8} << std::endl;
+    std::cout << ui::float_origin{1.0f, 2.0f} << std::endl;
+    std::cout << ui::float_size{3.0f, 4.0f} << std::endl;
+    std::cout << ui::float_region{5.0f, 6.0f, 7.0f, 8.0f} << std::endl;
+}
+
 - (void)test_to_mtl_primitive_type {
     XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::point), MTLPrimitiveTypePoint);
     XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line), MTLPrimitiveTypeLine);
