@@ -86,7 +86,7 @@ using namespace yas;
     XCTAssertEqual(region.size.height, 32);
 }
 
-- (void)test_is_equal_origin {
+- (void)test_is_equal_uint_origin {
     auto origin1_2a = ui::uint_origin{1, 2};
     auto origin1_2b = ui::uint_origin{1, 2};
     auto origin1_3 = ui::uint_origin{1, 3};
@@ -103,7 +103,7 @@ using namespace yas;
     XCTAssertTrue(origin1_2a != origin2_2);
 }
 
-- (void)test_is_equal_size {
+- (void)test_is_equal_uint_size {
     auto size1_2a = ui::uint_size{1, 2};
     auto size1_2b = ui::uint_size{1, 2};
     auto size1_3 = ui::uint_size{1, 3};
@@ -120,7 +120,7 @@ using namespace yas;
     XCTAssertTrue(size1_2a != size2_2);
 }
 
-- (void)test_is_equal_region {
+- (void)test_is_equal_uint_region {
     auto origin_a1 = ui::uint_origin{1, 2};
     auto origin_a2 = ui::uint_origin{1, 2};
     auto origin_b = ui::uint_origin{3, 4};
@@ -134,6 +134,68 @@ using namespace yas;
     auto region_a2_a1 = ui::uint_region{origin_a2, size_a1};
     auto region_a2_a2 = ui::uint_region{origin_a2, size_a2};
     auto region_b = ui::uint_region{origin_b, size_b};
+
+    XCTAssertTrue(region_a1_a1 == region_a1_a1);
+    XCTAssertTrue(region_a1_a1 == region_a1_a2);
+    XCTAssertTrue(region_a1_a1 == region_a2_a1);
+    XCTAssertTrue(region_a1_a1 == region_a2_a2);
+    XCTAssertFalse(region_a1_a1 == region_b);
+
+    XCTAssertFalse(region_a1_a1 != region_a1_a1);
+    XCTAssertFalse(region_a1_a1 != region_a1_a2);
+    XCTAssertFalse(region_a1_a1 != region_a2_a1);
+    XCTAssertFalse(region_a1_a1 != region_a2_a2);
+    XCTAssertTrue(region_a1_a1 != region_b);
+}
+
+- (void)test_is_equal_float_origin {
+    auto origin1_2a = ui::float_origin{1.0f, 2.0f};
+    auto origin1_2b = ui::float_origin{1.0f, 2.0f};
+    auto origin1_3 = ui::float_origin{1.0f, 3.0f};
+    auto origin2_2 = ui::float_origin{2, 2};
+
+    XCTAssertTrue(origin1_2a == origin1_2a);
+    XCTAssertTrue(origin1_2a == origin1_2b);
+    XCTAssertFalse(origin1_2a == origin1_3);
+    XCTAssertFalse(origin1_2a == origin2_2);
+
+    XCTAssertFalse(origin1_2a != origin1_2a);
+    XCTAssertFalse(origin1_2a != origin1_2b);
+    XCTAssertTrue(origin1_2a != origin1_3);
+    XCTAssertTrue(origin1_2a != origin2_2);
+}
+
+- (void)test_is_equal_float_size {
+    auto size1_2a = ui::float_size{1.0f, 2.0f};
+    auto size1_2b = ui::float_size{1.0f, 2.0f};
+    auto size1_3 = ui::float_size{1.0f, 3.0f};
+    auto size2_2 = ui::float_size{2.0f, 2.0f};
+
+    XCTAssertTrue(size1_2a == size1_2a);
+    XCTAssertTrue(size1_2a == size1_2b);
+    XCTAssertFalse(size1_2a == size1_3);
+    XCTAssertFalse(size1_2a == size2_2);
+
+    XCTAssertFalse(size1_2a != size1_2a);
+    XCTAssertFalse(size1_2a != size1_2b);
+    XCTAssertTrue(size1_2a != size1_3);
+    XCTAssertTrue(size1_2a != size2_2);
+}
+
+- (void)test_is_equal_float_region {
+    auto origin_a1 = ui::float_origin{1.0f, 2.0f};
+    auto origin_a2 = ui::float_origin{1.0f, 2.0f};
+    auto origin_b = ui::float_origin{3.0f, 4.0f};
+
+    auto size_a1 = ui::float_size{5.0f, 6.0f};
+    auto size_a2 = ui::float_size{5.0f, 6.0f};
+    auto size_b = ui::float_size{7.0f, 8.0f};
+
+    auto region_a1_a1 = ui::float_region{origin_a1, size_a1};
+    auto region_a1_a2 = ui::float_region{origin_a1, size_a2};
+    auto region_a2_a1 = ui::float_region{origin_a2, size_a1};
+    auto region_a2_a2 = ui::float_region{origin_a2, size_a2};
+    auto region_b = ui::float_region{origin_b, size_b};
 
     XCTAssertTrue(region_a1_a1 == region_a1_a1);
     XCTAssertTrue(region_a1_a1 == region_a1_a2);

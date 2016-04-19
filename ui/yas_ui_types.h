@@ -89,12 +89,16 @@ std::string to_string(simd::float2 const &);
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
 bool operator!=(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
-
 bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
 bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
-
 bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
+bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
+bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
+bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
+bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
+bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
+bool operator!=(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
 
 std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);

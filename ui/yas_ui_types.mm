@@ -115,6 +115,30 @@ bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs
     return lhs.origin != rhs.origin || lhs.size != rhs.size;
 }
 
+bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs) {
+    return lhs.x != rhs.x || lhs.y != rhs.y;
+}
+
+bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) {
+    return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
+bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) {
+    return lhs.width != rhs.width || lhs.height != rhs.height;
+}
+
+bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs) {
+    return lhs.origin == rhs.origin && lhs.size == rhs.size;
+}
+
+bool operator!=(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs) {
+    return lhs.origin != rhs.origin || lhs.size != rhs.size;
+}
+
 std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {
     os << to_string(origin);
     return os;
