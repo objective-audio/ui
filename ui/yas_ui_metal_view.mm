@@ -77,11 +77,6 @@ ui::event_phase to_phase(NSEventPhase const phase) {
             static_cast<float>(locInView.y / viewSize.height * 2.0f - 1.0f)};
 }
 
-- (bool)_containsEventLocation:(NSEvent *)event {
-    auto locInView = [self convertPoint:event.locationInWindow fromView:nil];
-    return CGRectContainsPoint(self.bounds, locInView);
-}
-
 - (void)updateTrackingAreas {
     [super updateTrackingAreas];
 
