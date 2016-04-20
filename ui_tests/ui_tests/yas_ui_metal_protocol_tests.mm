@@ -33,4 +33,8 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::setup_metal_error::unknown), "unknown");
 }
 
+- (void)test_ostream {
+    std::cout << ui::setup_metal_error::create_texture_descriptor_failed << std::endl;
+}
+
 @end

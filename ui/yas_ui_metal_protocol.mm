@@ -31,3 +31,8 @@ std::string yas::to_string(ui::setup_metal_error const error) {
             return "unknown";
     }
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::setup_metal_error const &error) {
+    os << to_string(error);
+    return os;
+}

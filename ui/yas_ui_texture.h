@@ -65,3 +65,5 @@ ui::texture cast(base const &);
 
 std::string to_string(ui::texture::draw_image_error const);
 }
+
+std::ostream &operator<<(std::ostream &, yas::ui::texture::draw_image_error const &);

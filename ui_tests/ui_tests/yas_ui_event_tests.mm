@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_ui_event.h"
+#import <iostream>
 
 using namespace yas;
 
@@ -40,6 +41,11 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::modifier_flags::numeric_pad), "numeric_pad");
     XCTAssertEqual(to_string(ui::modifier_flags::help), "help");
     XCTAssertEqual(to_string(ui::modifier_flags::function), "function");
+}
+
+- (void)test_ostream {
+    std::cout << ui::event_phase::none << std::endl;
+    std::cout << ui::modifier_flags::alpha_shift << std::endl;
 }
 
 - (void)test_create_cursor_event {

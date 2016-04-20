@@ -282,3 +282,8 @@ std::string yas::to_string(ui::texture::draw_image_error const error) {
             return "unknown";
     }
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::texture::draw_image_error const &error) {
+    os << to_string(error);
+    return os;
+}

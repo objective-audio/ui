@@ -97,4 +97,15 @@ using namespace yas;
     }
 }
 
+- (void)test_draw_image_error_to_string {
+    XCTAssertEqual(to_string(ui::texture::draw_image_error::unknown), "unknown");
+    XCTAssertEqual(to_string(ui::texture::draw_image_error::image_is_null), "image_is_null");
+    XCTAssertEqual(to_string(ui::texture::draw_image_error::no_setup), "no_setup");
+    XCTAssertEqual(to_string(ui::texture::draw_image_error::out_of_range), "out_of_range");
+}
+
+- (void)test_ostream {
+    std::cout << ui::texture::draw_image_error::unknown << std::endl;
+}
+
 @end

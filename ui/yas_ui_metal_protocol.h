@@ -35,3 +35,5 @@ namespace ui {
 
 std::string to_string(ui::setup_metal_error const);
 }
+
+std::ostream &operator<<(std::ostream &, yas::ui::setup_metal_error const &);
