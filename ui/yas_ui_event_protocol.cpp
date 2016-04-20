@@ -168,3 +168,13 @@ std::string yas::to_string(ui::modifier_flags const &flag) {
 
     return "unknown";
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::event_phase const &phase) {
+    os << to_string(phase);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::modifier_flags const &flags) {
+    os << to_string(flags);
+    return os;
+}

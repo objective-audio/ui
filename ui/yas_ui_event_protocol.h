@@ -138,3 +138,6 @@ namespace ui {
 std::string to_string(ui::event_phase const &);
 std::string to_string(ui::modifier_flags const &);
 }
+
+std::ostream &operator<<(std::ostream &, yas::ui::event_phase const &);
+std::ostream &operator<<(std::ostream &, yas::ui::modifier_flags const &);

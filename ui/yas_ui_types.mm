@@ -61,6 +61,30 @@ std::string yas::to_string(ui::pivot const &pivot) {
     }
 }
 
+std::string yas::to_string(ui::uint_origin const &origin) {
+    return "{" + std::to_string(origin.x) + ", " + std::to_string(origin.y) + "}";
+}
+
+std::string yas::to_string(ui::uint_size const &size) {
+    return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
+}
+
+std::string yas::to_string(ui::uint_region const &region) {
+    return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
+}
+
+std::string yas::to_string(ui::float_origin const &origin) {
+    return "{" + std::to_string(origin.x) + ", " + std::to_string(origin.y) + "}";
+}
+
+std::string yas::to_string(ui::float_size const &size) {
+    return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
+}
+
+std::string yas::to_string(ui::float_region const &region) {
+    return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
+}
+
 std::string yas::to_string(simd::float2 const &value) {
     return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
 }
@@ -89,4 +113,58 @@ bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs
 
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
     return lhs.origin != rhs.origin || lhs.size != rhs.size;
+}
+
+bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs) {
+    return lhs.x != rhs.x || lhs.y != rhs.y;
+}
+
+bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) {
+    return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
+bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) {
+    return lhs.width != rhs.width || lhs.height != rhs.height;
+}
+
+bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs) {
+    return lhs.origin == rhs.origin && lhs.size == rhs.size;
+}
+
+bool operator!=(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs) {
+    return lhs.origin != rhs.origin || lhs.size != rhs.size;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {
+    os << to_string(origin);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_size const &size) {
+    os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_region const &region) {
+    os << to_string(region);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::float_origin const &origin) {
+    os << to_string(origin);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::float_size const &size) {
+    os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::float_region const &region) {
+    os << to_string(region);
+    return os;
 }

@@ -6,6 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <simd/simd.h>
+#include <ostream>
 #include <string>
 #include "yas_ui_shared_types.h"
 
@@ -77,14 +78,31 @@ MTLPrimitiveType to_mtl_primitive_type(ui::primitive_type const type);
 simd::float2 to_float2(CGPoint const &);
 
 std::string to_string(ui::pivot const &);
+std::string to_string(ui::uint_origin const &);
+std::string to_string(ui::uint_size const &);
+std::string to_string(ui::uint_region const &);
+std::string to_string(ui::float_origin const &);
+std::string to_string(ui::float_size const &);
+std::string to_string(ui::float_region const &);
 std::string to_string(simd::float2 const &);
 }
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
 bool operator!=(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
-
 bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
 bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
-
 bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
+bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
+bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
+bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
+bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
+bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
+bool operator!=(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
+
+std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
+std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
+std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
+std::ostream &operator<<(std::ostream &, yas::ui::float_origin const &);
+std::ostream &operator<<(std::ostream &, yas::ui::float_size const &);
+std::ostream &operator<<(std::ostream &, yas::ui::float_region const &);
