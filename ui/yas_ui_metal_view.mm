@@ -49,13 +49,49 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #if TARGET_OS_IPHONE
 
+- (simd::float2)_position:(UITouch *)touch {
+    auto const locInView = [touch locationInView:self];
+    auto const viewSize = self.bounds.size;
+    return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),
+            static_cast<float>((viewSize.height - locInView.y) / viewSize.height * 2.0f - 1.0f)};
+}
+
+- (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
+    _event_manager.inputtable().input_touch_event(std::move(phase),
+                                                  ui::touch_event{uintptr_t(touch), [self _position:touch]});
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::began];
+    }
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::ended];
+    }
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::changed];
+    }
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::canceled];
+    }
+}
+
 #elif TARGET_OS_MAC
 
 - (void)_sendCursorEvent:(NSEvent *)event {
     _event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event]});
 }
 
-- (void)_sendButtonEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
+- (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
     _event_manager.inputtable().input_touch_event(
         std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event]});
 }
@@ -95,27 +131,27 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)mouseDown:(NSEvent *)event {
-    [self _sendButtonEvent:event phase:ui::event_phase::began];
+    [self _sendTouchEvent:event phase:ui::event_phase::began];
 }
 
 - (void)rightMouseDown:(NSEvent *)event {
-    [self _sendButtonEvent:event phase:ui::event_phase::began];
+    [self _sendTouchEvent:event phase:ui::event_phase::began];
 }
 
 - (void)otherMouseDown:(NSEvent *)event {
-    [self _sendButtonEvent:event phase:ui::event_phase::began];
+    [self _sendTouchEvent:event phase:ui::event_phase::began];
 }
 
 - (void)mouseUp:(NSEvent *)event {
-    [self _sendButtonEvent:event phase:ui::event_phase::ended];
+    [self _sendTouchEvent:event phase:ui::event_phase::ended];
 }
 
 - (void)rightMouseUp:(NSEvent *)event {
-    [self _sendButtonEvent:event phase:ui::event_phase::ended];
+    [self _sendTouchEvent:event phase:ui::event_phase::ended];
 }
 
 - (void)otherMouseUp:(NSEvent *)event {
-    [self _sendButtonEvent:event phase:ui::event_phase::ended];
+    [self _sendTouchEvent:event phase:ui::event_phase::ended];
 }
 
 - (void)mouseEntered:(NSEvent *)event {
@@ -132,17 +168,17 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)mouseDragged:(NSEvent *)event {
     [self _sendCursorEvent:event];
-    [self _sendButtonEvent:event phase:ui::event_phase::changed];
+    [self _sendTouchEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)rightMouseDragged:(NSEvent *)event {
     [self _sendCursorEvent:event];
-    [self _sendButtonEvent:event phase:ui::event_phase::changed];
+    [self _sendTouchEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)otherMouseDragged:(NSEvent *)event {
     [self _sendCursorEvent:event];
-    [self _sendButtonEvent:event phase:ui::event_phase::changed];
+    [self _sendTouchEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)scrollWheel:(NSEvent *)event {
