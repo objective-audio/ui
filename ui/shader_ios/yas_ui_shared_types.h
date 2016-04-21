@@ -6,14 +6,16 @@
 
 #include <simd/simd.h>
 
-using namespace simd;
+namespace yas {
+namespace ui {
+    struct vertex2d_t {
+        simd::float2 position;
+        simd::float2 tex_coord;
+    };
 
-typedef struct {
-    float2 position;
-    float2 tex_coord;
-} vertex2d_t;
-
-typedef struct {
-    float4x4 matrix;
-    float4 color;
-} __attribute__((aligned(16))) uniforms2d_t;
+    struct uniforms2d_t {
+        simd::float4x4 matrix;
+        simd::float4 color;
+    } __attribute__((aligned(16)));
+}
+}

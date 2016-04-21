@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <CoreGraphics/CoreGraphics.h>
 #include <Metal/Metal.h>
 #include <simd/simd.h>
 #include <ostream>

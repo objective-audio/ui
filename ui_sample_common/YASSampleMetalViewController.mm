@@ -25,12 +25,27 @@ namespace sample {
             ui::texture text_texture = nullptr;
             ui::strings_node text_node = nullptr;
 
-            std::vector<observer<ui::event>> observers;
+            ui::square_node bg_node = nullptr;
+
+            std::vector<base> observers;
 
             cpp_variables() : renderer(make_objc_ptr(MTLCreateSystemDefaultDevice()).object()) {
+                _setup_background_node();
                 _setup_touch_node();
                 _setup_cursor_node();
                 _setup_text_node();
+            }
+
+            void _setup_background_node() {
+                bg_node = ui::make_square_node(1);
+
+                auto &node = bg_node.node();
+                bg_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+                node.set_scale(0.0f);
+                node.set_color(0.25);
+
+                auto root_node = renderer.root_node();
+                root_node.add_sub_node(node);
             }
 
             void _setup_touch_node() {
@@ -112,7 +127,17 @@ namespace sample {
 
     auto event_manager = [self event_manager];
 
-    _cpp.observers.reserve(3);
+    auto const &view_size = _cpp.renderer.view_size();
+    _cpp.bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+
+    _cpp.observers.emplace_back(_cpp.renderer.subject().make_observer(
+        ui::renderer_method::drawable_size_changed,
+        [weak_node = to_weak(_cpp.bg_node)](auto const &method, auto const &renderer) {
+            if (auto bg_node = weak_node.lock()) {
+                auto const &view_size = renderer.view_size();
+                bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+            }
+        }));
 
     _cpp.observers.emplace_back(event_manager.subject().make_observer(ui::event_method::cursor_changed, [
         weak_node = to_weak(_cpp.cursor_node),

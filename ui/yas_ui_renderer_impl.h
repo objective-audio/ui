@@ -21,6 +21,9 @@ class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_ren
 
     id<MTLRenderPipelineState> multiSamplePipelineState();
     id<MTLRenderPipelineState> multiSamplePipelineStateWithoutTexture();
+
+    ui::uint_size const &view_size();
+    ui::uint_size const &drawable_size();
     simd::float4x4 const &projection_matrix();
 
     void view_configure(YASUIMetalView *const view) override;

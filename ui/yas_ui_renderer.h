@@ -8,6 +8,7 @@
 #include <simd/simd.h>
 #include "yas_base.h"
 #include "yas_observing.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -21,6 +22,8 @@ namespace ui {
 
         id<MTLDevice> device() const;
 
+        ui::uint_size const &view_size() const;
+        ui::uint_size const &drawable_size() const;
         simd::float4x4 const &projection_matrix() const;
         id<MTLBuffer> current_constant_buffer() const;
 
