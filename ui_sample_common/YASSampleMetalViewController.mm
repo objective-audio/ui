@@ -13,11 +13,121 @@ using namespace yas;
 namespace yas {
 namespace sample {
     namespace metal_view_controller {
-        struct cpp_variables {
-            ui::node_renderer renderer;
+        struct cpp {
+            struct touch_object {
+                ui::node node = nullptr;
+                weak<ui::action> scale_action;
+            };
 
-            ui::square_node touch_node = nullptr;
-            weak<ui::action> touch_scale_action;
+            struct touch_holder : base {
+                struct impl : base::impl {
+                    std::unordered_map<uintptr_t, touch_object> _objects;
+                    ui::texture texture = nullptr;
+                    ui::mesh_data mesh_data = nullptr;
+
+                    impl(id<MTLDevice> const device, double const scale_factor) {
+                        assert(device);
+
+                        auto texture_result = ui::make_texture(device, {1024, 1024}, scale_factor);
+                        assert(texture_result);
+
+                        texture = texture_result.value();
+
+                        ui::image image{{100, 100}, scale_factor};
+                        image.draw([](CGContextRef const ctx) {
+                            CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+                            CGContextSetLineWidth(ctx, 1.0f);
+                            CGContextStrokeEllipseInRect(ctx, CGRectMake(2, 2, 96, 96));
+                        });
+
+                        auto image_result = texture.add_image(image);
+                        assert(image_result);
+
+                        auto sq_mesh_data = ui::make_square_mesh_data(1);
+                        sq_mesh_data.set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+                        sq_mesh_data.set_square_tex_coords(image_result.value(), 0);
+                        mesh_data = std::move(sq_mesh_data.dynamic_mesh_data());
+                    }
+                };
+
+                touch_holder(id<MTLDevice> const device, double const scale_factor)
+                    : base(std::make_shared<impl>(device, scale_factor)) {
+                }
+
+                touch_holder(std::nullptr_t) : base(nullptr) {
+                }
+
+                void insert_touch_node(uintptr_t const identifier, ui::node_renderer &renderer) {
+                    if (impl_ptr<impl>()->_objects.count(identifier) > 0) {
+                        return;
+                    }
+
+                    ui::node node;
+                    ui::mesh mesh;
+                    mesh.set_data(impl_ptr<impl>()->mesh_data);
+                    mesh.set_texture(impl_ptr<impl>()->texture);
+                    node.set_mesh(mesh);
+                    node.set_scale(0.0f);
+                    node.set_color(1.0f);
+
+                    auto root_node = renderer.root_node();
+                    root_node.add_sub_node(node);
+
+                    auto scale_action1 = ui::make_action(
+                        {.start_scale = 0.1f, .end_scale = 200.0f, .continuous_action = {.duration = 0.1}});
+                    scale_action1.set_value_transformer(ui::ease_in_transformer());
+                    scale_action1.set_target(node);
+
+                    auto scale_action2 = ui::make_action(
+                        {.start_scale = 200.0f, .end_scale = 100.0f, .continuous_action = {.duration = 0.2}});
+                    scale_action2.set_value_transformer(ui::ease_out_transformer());
+                    scale_action2.set_target(node);
+
+                    auto action =
+                        ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
+                    action.set_target(node);
+                    renderer.insert_action(action);
+
+                    impl_ptr<impl>()->_objects.emplace(
+                        std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
+                }
+
+                void move_touch_node(uintptr_t const identifier, simd::float2 const &position) {
+                    auto &objects = impl_ptr<impl>()->_objects;
+                    if (objects.count(identifier)) {
+                        auto &touch_object = objects.at(identifier);
+                        auto &node = touch_object.node;
+                        node.set_position(node.parent().convert_position(position));
+                    }
+                }
+
+                void erase_touch_node(uintptr_t const identifier, ui::node_renderer &renderer) {
+                    auto &objects = impl_ptr<impl>()->_objects;
+                    if (objects.count(identifier)) {
+                        auto &touch_object = objects.at(identifier);
+
+                        if (auto prev_action = touch_object.scale_action.lock()) {
+                            renderer.erase_action(prev_action);
+                            touch_object.scale_action = nullptr;
+                        }
+
+                        auto action = ui::make_action({.start_scale = touch_object.node.scale(),
+                                                       .end_scale = 0.0f,
+                                                       .continuous_action = {.duration = 0.3}});
+                        action.set_value_transformer(ui::ease_out_transformer());
+                        action.set_target(touch_object.node);
+                        action.set_completion_handler([node = touch_object.node]() mutable {
+                            node.remove_from_super_node();
+                        });
+
+                        renderer.insert_action(action);
+
+                        objects.erase(identifier);
+                    }
+                }
+            };
+
+            touch_holder touch_holder = nullptr;
 
             ui::node cursor_node;
             weak<ui::action> cursor_color_action;
@@ -29,11 +139,15 @@ namespace sample {
 
             std::vector<base> observers;
 
-            cpp_variables() : renderer(make_objc_ptr(MTLCreateSystemDefaultDevice()).object()) {
+            ui::node_renderer renderer = nullptr;
+
+            void setup(double const scale_factor) {
+                renderer = make_objc_ptr(MTLCreateSystemDefaultDevice()).object();
+                touch_holder = {renderer.device(), scale_factor};
+
                 _setup_background_node();
-                _setup_touch_node();
                 _setup_cursor_node();
-                _setup_text_node();
+                _setup_text_node(scale_factor);
             }
 
             void _setup_background_node() {
@@ -48,28 +162,16 @@ namespace sample {
                 root_node.add_sub_node(node);
             }
 
-            void _setup_touch_node() {
-                touch_node = ui::make_square_node(1);
-
-                auto &node = touch_node.node();
-                touch_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
-                node.set_scale(0.0f);
-                node.set_color({1.0f, 0.6f, 0.0f, 1.0f});
-
-                auto root_node = renderer.root_node();
-                root_node.add_sub_node(node);
-            }
-
             void _setup_cursor_node() {
                 auto const count = 5;
-                auto const angle_diff = 360.0f / count;
+                auto const angle_dif = 360.0f / count;
                 auto mesh_node = ui::make_square_node(count);
 
                 ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
                 auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
                 for (auto const &idx : make_each(count)) {
                     mesh_node.square_mesh_data().set_square_position(
-                        region, idx, ui::matrix::rotation(angle_diff * idx) * trans_matrix);
+                        region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
                 }
 
                 mesh_node.node().set_color(0.0f);
@@ -93,12 +195,12 @@ namespace sample {
                 renderer.insert_action(scale_action);
             }
 
-            void _setup_text_node() {
-                if (auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, 1.0)) {
+            void _setup_text_node(double const scale_factor) {
+                if (auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, scale_factor)) {
                     text_texture = std::move(texture_result.value());
 
                     text_node = ui::strings_node{ui::font_atlas{
-                        "TrebuchetMS-Bold", 40.0, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+                        "TrebuchetMS-Bold", 40.0f, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
                         text_texture}};
 
                     text_node.set_pivot(ui::pivot::center);
@@ -117,11 +219,17 @@ namespace sample {
 @end
 
 @implementation YASSampleMetalViewController {
-    sample::metal_view_controller::cpp_variables _cpp;
+    sample::metal_view_controller::cpp _cpp;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+#if TARGET_OS_IPHONE
+    self.view.multipleTouchEnabled = YES;
+#endif
+
+    _cpp.setup(self.view.layer.contentsScale);
 
     [self setRenderer:_cpp.renderer.view_renderable()];
 
@@ -187,60 +295,38 @@ namespace sample {
         }
     }));
 
-    _cpp.observers.emplace_back(event_manager.subject().make_observer(ui::event_method::touch_changed, [
-        weak_touch_node = to_weak(_cpp.touch_node),
-        weak_renderer = to_weak(_cpp.renderer),
-        weak_action = _cpp.touch_scale_action
-    ](auto const &method, ui::event const &event) mutable {
-        if (auto touch_node = weak_touch_node.lock()) {
-            auto &node = touch_node.node();
-            auto const &value = event.get<ui::touch>();
-
-            node.set_position(node.parent().convert_position(value.position()));
-
+    _cpp.observers.emplace_back(event_manager.subject().make_observer(
+        ui::event_method::touch_changed,
+        [weak_touch_holder = to_weak(_cpp.touch_holder), weak_renderer = to_weak(_cpp.renderer)](
+            auto const &method, ui::event const &event) mutable {
             if (auto renderer = weak_renderer.lock()) {
-                switch (event.phase()) {
-                    case ui::event_phase::began: {
-                        if (auto prev_action = weak_action.lock()) {
-                            renderer.erase_action(prev_action);
-                        }
+                if (auto touch_holder = weak_touch_holder.lock()) {
+                    auto const identifier = event.identifier();
+                    auto const &value = event.get<ui::touch>();
 
-                        auto scale_action1 = ui::make_action(
-                            {.start_scale = 0.1f, .end_scale = 200.0f, .continuous_action = {.duration = 0.1}});
-                        scale_action1.set_value_transformer(ui::ease_in_transformer());
-                        scale_action1.set_target(node);
+                    switch (event.phase()) {
+                        case ui::event_phase::began: {
+                            touch_holder.insert_touch_node(identifier, renderer);
+                            touch_holder.move_touch_node(identifier, value.position());
+                        } break;
 
-                        auto scale_action2 = ui::make_action(
-                            {.start_scale = 200.0f, .end_scale = 50.0f, .continuous_action = {.duration = 0.2}});
-                        scale_action2.set_value_transformer(ui::ease_out_transformer());
-                        scale_action2.set_target(node);
+                        case ui::event_phase::changed: {
+                            touch_holder.move_touch_node(identifier, value.position());
+                        } break;
 
-                        auto action =
-                            ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
-                        action.set_target(node);
-                        renderer.insert_action(action);
-                        weak_action = action;
-                    } break;
+                        case ui::event_phase::ended:
+                        case ui::event_phase::canceled: {
+                            touch_holder.move_touch_node(identifier, value.position());
+                            touch_holder.erase_touch_node(identifier, renderer);
+                        } break;
 
-                    case ui::event_phase::ended: {
-                        if (auto prev_action = weak_action.lock()) {
-                            renderer.erase_action(prev_action);
-                        }
-
-                        auto action = ui::make_action(
-                            {.start_scale = node.scale(), .end_scale = 0.0f, .continuous_action = {.duration = 0.3}});
-                        action.set_value_transformer(ui::ease_out_transformer());
-                        action.set_target(node);
-                        renderer.insert_action(action);
-                        weak_action = action;
-                    } break;
-
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
-        }
-    }));
+
+        }));
 
     _cpp.observers.emplace_back(event_manager.subject().make_observer(
         ui::event_method::key_changed,
