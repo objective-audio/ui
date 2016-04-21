@@ -49,6 +49,42 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #if TARGET_OS_IPHONE
 
+- (simd::float2)_position:(UITouch *)touch {
+    auto const locInView = [touch locationInView:self];
+    auto const viewSize = self.bounds.size;
+    return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),
+            static_cast<float>((viewSize.height - locInView.y) / viewSize.height * 2.0f - 1.0f)};
+}
+
+- (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
+    _event_manager.inputtable().input_touch_event(std::move(phase),
+                                                  ui::touch_event{uintptr_t(touch), [self _position:touch]});
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::began];
+    }
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::ended];
+    }
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::changed];
+    }
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        [self _sendTouchEvent:touch phase:ui::event_phase::canceled];
+    }
+}
+
 #elif TARGET_OS_MAC
 
 - (void)_sendCursorEvent:(NSEvent *)event {
