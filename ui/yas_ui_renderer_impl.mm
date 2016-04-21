@@ -36,6 +36,8 @@ struct ui::renderer::impl::core {
     objc_ptr<dispatch_semaphore_t> inflight_semaphore;
 
     uint32_t constant_buffer_offset = 0;
+    ui::uint_size view_size;
+    ui::uint_size drawable_size;
     simd::float4x4 projection_matrix;
 
     objc_ptr<id<MTLRenderPipelineState>> multi_sample_pipeline_state;
@@ -45,10 +47,12 @@ struct ui::renderer::impl::core {
 
     yas::subject<renderer> subject;
 
-    void update_projection_matrix(CGSize const view_size) {
-        float half_width = view_size.width * 0.5f;
-        float half_height = view_size.height * 0.5f;
+    void update_view_size(CGSize const v_size, CGSize const d_size) {
+        float half_width = v_size.width * 0.5f;
+        float half_height = v_size.height * 0.5f;
 
+        view_size = {static_cast<uint32_t>(v_size.width), static_cast<uint32_t>(v_size.height)};
+        drawable_size = {static_cast<uint32_t>(d_size.width), static_cast<uint32_t>(d_size.height)};
         projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
     }
 };
@@ -122,7 +126,7 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
 
     _core->pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
-    _core->update_projection_matrix(view.bounds.size);
+    _core->update_view_size(view.bounds.size, view.drawableSize);
 }
 
 id<MTLDevice> ui::renderer::impl::device() {
@@ -150,15 +154,27 @@ id<MTLRenderPipelineState> ui::renderer::impl::multiSamplePipelineStateWithoutTe
     return _core->multi_sample_pipeline_state_without_texture.object();
 }
 
+ui::uint_size const &ui::renderer::impl::view_size() {
+    return _core->view_size;
+}
+
+ui::uint_size const &ui::renderer::impl::drawable_size() {
+    return _core->drawable_size;
+}
+
 simd::float4x4 const &ui::renderer::impl::projection_matrix() {
     return _core->projection_matrix;
 }
 
 #pragma mark - renderable::impl
 
-void ui::renderer::impl::view_drawable_size_will_change(YASUIMetalView *const view, CGSize const size) {
+void ui::renderer::impl::view_drawable_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
     auto view_size = view.bounds.size;
-    _core->update_projection_matrix(view_size);
+    _core->update_view_size(view_size, drawable_size);
+
+    if (_core->subject.has_observer()) {
+        _core->subject.notify(renderer_method::drawable_size_changed, cast<renderer>());
+    }
 }
 
 void ui::renderer::impl::view_render(YASUIMetalView *const view) {

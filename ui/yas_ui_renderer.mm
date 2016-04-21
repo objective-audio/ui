@@ -28,6 +28,14 @@ id<MTLDevice> ui::renderer::device() const {
     return impl_ptr<impl>()->device();
 }
 
+ui::uint_size const &ui::renderer::view_size() const {
+    return impl_ptr<impl>()->view_size();
+}
+
+ui::uint_size const &ui::renderer::drawable_size() const {
+    return impl_ptr<impl>()->drawable_size();
+}
+
 simd::float4x4 const &ui::renderer::projection_matrix() const {
     return impl_ptr<impl>()->projection_matrix();
 }

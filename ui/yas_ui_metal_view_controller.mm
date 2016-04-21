@@ -34,7 +34,11 @@ namespace ui {
     ui::metal_view::cpp_variables _cpp;
 }
 
+#if TARGET_OS_IPHONE
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
+#elif TARGET_OS_MAC
 - (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
+#endif
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         [self initCommon];
