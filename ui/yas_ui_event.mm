@@ -215,7 +215,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     std::unordered_map<uintptr_t, event> touch_events;
     std::unordered_map<uint16_t, event> key_events;
     std::unordered_map<uint32_t, event> modifier_events;
-    yas::subject<ui::event> subject;
+    yas::subject<ui::event, ui::event_method> subject;
 };
 
 #pragma mark - manageable_event
@@ -249,7 +249,7 @@ ui::event_manager::event_manager() : super_class(std::make_shared<impl>()) {
 ui::event_manager::event_manager(std::nullptr_t) : super_class(nullptr) {
 }
 
-subject<ui::event> &ui::event_manager::subject() {
+subject<ui::event, ui::event_method> &ui::event_manager::subject() {
     return impl_ptr<impl>()->subject;
 }
 

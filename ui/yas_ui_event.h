@@ -55,7 +55,7 @@ namespace ui {
         event_manager();
         event_manager(std::nullptr_t);
 
-        subject<event> &subject();
+        subject<event, event_method> &subject();
 
         event_inputtable inputtable();
 
