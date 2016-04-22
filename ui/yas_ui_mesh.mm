@@ -116,7 +116,7 @@ ui::primitive_type const &ui::mesh::primitive_type() const {
     return impl_ptr<impl>()->_primitive_type;
 }
 
-void ui::mesh::set_data(ui::mesh_data data) {
+void ui::mesh::set_mesh_data(ui::mesh_data data) {
     impl_ptr<impl>()->_mesh_data = std::move(data);
 }
 

@@ -154,7 +154,7 @@ ui::square_mesh_data &ui::square_node::square_mesh_data() {
 ui::square_node ui::make_square_node(std::size_t const square_count) {
     ui::square_node node{make_square_mesh_data(square_count)};
     ui::mesh mesh;
-    mesh.set_data(node.square_mesh_data().dynamic_mesh_data());
+    mesh.set_mesh_data(node.square_mesh_data().dynamic_mesh_data());
     node.node().set_mesh(std::move(mesh));
 
     return node;
