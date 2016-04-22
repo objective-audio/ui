@@ -26,7 +26,7 @@ namespace ui {
         simd::float4 const &color() const;
         ui::primitive_type const &primitive_type() const;
 
-        void set_data(ui::mesh_data);
+        void set_mesh_data(ui::mesh_data);
         void set_texture(ui::texture);
         void set_color(simd::float4 const);
         void set_primitive_type(ui::primitive_type const);

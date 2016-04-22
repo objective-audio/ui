@@ -64,7 +64,7 @@ namespace sample {
 
                     ui::node node;
                     ui::mesh mesh;
-                    mesh.set_data(impl_ptr<impl>()->mesh_data);
+                    mesh.set_mesh_data(impl_ptr<impl>()->mesh_data);
                     mesh.set_texture(impl_ptr<impl>()->texture);
                     node.set_mesh(mesh);
                     node.set_scale(0.0f);

@@ -176,7 +176,7 @@ using namespace yas;
 
     auto texture = ui::make_texture(device.object(), {16, 8}, 1.0).value();
 
-    mesh.set_data(mesh_data);
+    mesh.set_mesh_data(mesh_data);
     mesh.set_texture(texture);
     mesh.set_color({0.1f, 0.2f, 0.3f, 0.4f});
     mesh.set_primitive_type(ui::primitive_type::point);
