@@ -45,7 +45,7 @@ struct ui::renderer::impl::core {
     objc_ptr<id<MTLRenderPipelineState>> pipeline_state;
     objc_ptr<id<MTLRenderPipelineState>> pipeline_state_without_texture;
 
-    yas::subject<renderer> subject;
+    yas::subject<renderer, renderer_method> subject;
 
     void update_view_size(CGSize const v_size, CGSize const d_size) {
         float half_width = v_size.width * 0.5f;
@@ -206,7 +206,7 @@ void ui::renderer::impl::view_render(YASUIMetalView *const view) {
     [commandBuffer commit];
 }
 
-subject<ui::renderer> &ui::renderer::impl::subject() {
+subject<ui::renderer, ui::renderer_method> &ui::renderer::impl::subject() {
     return _core->subject;
 }
 

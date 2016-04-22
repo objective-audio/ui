@@ -14,9 +14,9 @@ namespace yas {
 namespace ui {
     class touch;
 
-    namespace renderer_method {
-        static auto const will_render = "yas.ui.renderer.will_render";
-        static auto const drawable_size_changed = "yas.ui.renderer.drawable_size_changed";
+    enum class renderer_method {
+        will_render,
+        drawable_size_changed,
     };
 
     struct view_renderable : protocol {

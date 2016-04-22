@@ -13,6 +13,7 @@
 namespace yas {
 namespace ui {
     struct view_renderable;
+    enum class renderer_method;
 
     class renderer : public base {
         using super_class = base;
@@ -31,7 +32,7 @@ namespace ui {
         void set_constant_buffer_offset(uint32_t const);
 
         ui::view_renderable view_renderable();
-        subject<renderer> &subject();
+        subject<renderer, renderer_method> &subject();
 
         class impl;
 
