@@ -46,10 +46,10 @@ struct ui::image::impl : base::impl {
 };
 
 ui::image::image(uint_size const point_size, double const scale_factor)
-    : super_class(std::make_shared<impl>(point_size, scale_factor)) {
+    : base(std::make_shared<impl>(point_size, scale_factor)) {
 }
 
-ui::image::image(std::nullptr_t) : super_class(nullptr) {
+ui::image::image(std::nullptr_t) : base(nullptr) {
 }
 
 ui::uint_size ui::image::point_size() const {
