@@ -24,8 +24,6 @@ namespace ui {
     };
 
     class event : public base {
-        using super_class = base;
-
        public:
         explicit event(cursor const &);
         explicit event(touch const &);
@@ -49,8 +47,6 @@ namespace ui {
     };
 
     class event_manager : public base {
-        using super_class = base;
-
        public:
         event_manager();
         event_manager(std::nullptr_t);
