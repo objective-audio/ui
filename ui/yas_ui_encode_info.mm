@@ -25,10 +25,10 @@ struct ui::encode_info::impl : base::impl {
 ui::encode_info::encode_info(MTLRenderPassDescriptor *const renderPassDesc,
                              id<MTLRenderPipelineState> const pipelineState,
                              id<MTLRenderPipelineState> const pipelineStateWithoutTexture)
-    : super_class(std::make_shared<impl>(renderPassDesc, pipelineState, pipelineStateWithoutTexture)) {
+    : base(std::make_shared<impl>(renderPassDesc, pipelineState, pipelineStateWithoutTexture)) {
 }
 
-ui::encode_info::encode_info(std::nullptr_t) : super_class(nullptr) {
+ui::encode_info::encode_info(std::nullptr_t) : base(nullptr) {
 }
 
 void ui::encode_info::push_back_mesh(ui::mesh mesh) {
