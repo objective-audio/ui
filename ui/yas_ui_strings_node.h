@@ -10,7 +10,7 @@ namespace ui {
     class square_node;
 
     class strings_node : public base {
-        using super_class = base;
+        class impl;
 
        public:
         strings_node(font_atlas, std::size_t const max_word_count = 16);
@@ -24,9 +24,6 @@ namespace ui {
         void set_pivot(ui::pivot const);
 
         ui::square_node &square_node();
-
-       private:
-        class impl;
     };
 }
 }

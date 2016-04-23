@@ -63,14 +63,12 @@ subject<ui::renderer, ui::renderer_method> &ui::renderer::subject() {
 #pragma mark - node_renderer
 
 class ui::node_renderer::impl : public renderer::impl {
-    using super_class = renderer::impl;
-
    public:
-    impl(id<MTLDevice> const device) : renderer(device) {
+    impl(id<MTLDevice> const device) : renderer::impl(device) {
     }
 
     void view_configure(YASUIMetalView *const view) override {
-        super_class::view_configure(view);
+        renderer::impl::view_configure(view);
     }
 
     void insert_action(ui::action action) {
