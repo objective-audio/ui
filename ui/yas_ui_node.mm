@@ -9,21 +9,21 @@ using namespace yas;
 
 #pragma mark - node
 
-ui::node::node() : super_class(std::make_shared<impl>()) {
+ui::node::node() : base(std::make_shared<impl>()) {
 }
 
-ui::node::node(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+ui::node::node(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
-ui::node::node(std::nullptr_t) : super_class(nullptr) {
+ui::node::node(std::nullptr_t) : base(nullptr) {
 }
 
 bool ui::node::operator==(ui::node const &rhs) const {
-    return super_class::operator==(rhs);
+    return base::operator==(rhs);
 }
 
 bool ui::node::operator!=(ui::node const &rhs) const {
-    return super_class::operator!=(rhs);
+    return base::operator!=(rhs);
 }
 
 simd::float2 ui::node::position() const {

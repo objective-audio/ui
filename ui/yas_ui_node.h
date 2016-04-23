@@ -18,9 +18,9 @@ namespace ui {
     class touch;
 
     class node : public base {
-        using super_class = base;
-
        public:
+        class impl;
+
         node();
         node(std::nullptr_t);
 
@@ -55,9 +55,6 @@ namespace ui {
         ui::renderable_node renderable();
 
         simd::float2 convert_position(simd::float2 const &);
-
-       public:
-        class impl;
 
        protected:
         node(std::shared_ptr<impl> &&);
