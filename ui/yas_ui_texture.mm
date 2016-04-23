@@ -173,18 +173,18 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     objc_ptr<id<MTLDevice>> _device;
 };
 
-ui::texture::texture(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+ui::texture::texture(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
-ui::texture::texture(std::nullptr_t) : super_class(nullptr) {
+ui::texture::texture(std::nullptr_t) : base(nullptr) {
 }
 
 bool ui::texture::operator==(texture const &rhs) const {
-    return super_class::operator==(rhs);
+    return base::operator==(rhs);
 }
 
 bool ui::texture::operator!=(texture const &rhs) const {
-    return super_class::operator!=(rhs);
+    return base::operator!=(rhs);
 }
 
 id<MTLSamplerState> ui::texture::sampler() const {
@@ -240,10 +240,8 @@ ui::metal_object ui::texture::metal() {
 namespace yas {
 namespace ui {
     struct texture_factory : texture {
-        using super_class = texture;
-
         texture_factory(uint_size const point_size, double const scale_factor, MTLPixelFormat const format)
-            : super_class(std::make_shared<super_class::impl>(point_size, scale_factor, format)) {
+            : texture(std::make_shared<texture::impl>(point_size, scale_factor, format)) {
         }
     };
 }

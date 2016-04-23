@@ -16,9 +16,9 @@ namespace ui {
     class image;
 
     class texture : public base {
-        using super_class = base;
-
        public:
+        class impl;
+
         enum class draw_image_error {
             unknown,
             image_is_null,
@@ -47,8 +47,6 @@ namespace ui {
         draw_image_result replace_image(image const &image, uint_origin const actual_origin);
 
         ui::metal_object metal();
-
-        class impl;
 
        protected:
         texture(std::shared_ptr<impl> &&);
