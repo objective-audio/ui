@@ -67,10 +67,10 @@ struct ui::strings_node::impl : base::impl {
 };
 
 ui::strings_node::strings_node(font_atlas str_data, std::size_t const max_word_count)
-    : super_class(std::make_shared<impl>(std::move(str_data), max_word_count)) {
+    : base(std::make_shared<impl>(std::move(str_data), max_word_count)) {
 }
 
-ui::strings_node::strings_node(std::nullptr_t) : super_class(nullptr) {
+ui::strings_node::strings_node(std::nullptr_t) : base(nullptr) {
 }
 
 std::string const &ui::strings_node::text() const {

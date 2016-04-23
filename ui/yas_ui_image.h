@@ -11,8 +11,6 @@
 namespace yas {
 namespace ui {
     class image : public base {
-        using super_class = base;
-
        public:
         class impl;
 

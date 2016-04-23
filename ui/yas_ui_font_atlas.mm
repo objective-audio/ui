@@ -207,7 +207,7 @@ struct ui::font_atlas::impl : base::impl {
 };
 
 ui::font_atlas::font_atlas(std::string font_name, double const font_size, std::string words, ui::texture texture)
-    : super_class(std::make_shared<impl>(std::move(font_name), font_size, std::move(words), std::move(texture))) {
+    : base(std::make_shared<impl>(std::move(font_name), font_size, std::move(words), std::move(texture))) {
 }
 
 std::string const &ui::font_atlas::font_name() const {

@@ -52,19 +52,19 @@ struct ui::event::impl : impl_base {
 
 #pragma mark - event
 
-ui::event::event(cursor const &) : super_class(std::make_shared<impl<ui::cursor>>()) {
+ui::event::event(cursor const &) : base(std::make_shared<impl<ui::cursor>>()) {
 }
 
-ui::event::event(touch const &) : super_class(std::make_shared<impl<ui::touch>>()) {
+ui::event::event(touch const &) : base(std::make_shared<impl<ui::touch>>()) {
 }
 
-ui::event::event(key const &) : super_class(std::make_shared<impl<ui::key>>()) {
+ui::event::event(key const &) : base(std::make_shared<impl<ui::key>>()) {
 }
 
-ui::event::event(modifier const &) : super_class(std::make_shared<impl<ui::modifier>>()) {
+ui::event::event(modifier const &) : base(std::make_shared<impl<ui::modifier>>()) {
 }
 
-ui::event::event(std::nullptr_t) : super_class(nullptr) {
+ui::event::event(std::nullptr_t) : base(nullptr) {
 }
 
 ui::event_phase ui::event::phase() const {
@@ -243,10 +243,10 @@ void ui::manageable_event::set_phase(event_phase phase) {
 
 #pragma mark - event_manager
 
-ui::event_manager::event_manager() : super_class(std::make_shared<impl>()) {
+ui::event_manager::event_manager() : base(std::make_shared<impl>()) {
 }
 
-ui::event_manager::event_manager(std::nullptr_t) : super_class(nullptr) {
+ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 }
 
 subject<ui::event, ui::event_method> &ui::event_manager::subject() {

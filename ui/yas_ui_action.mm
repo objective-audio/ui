@@ -57,16 +57,16 @@ struct ui::action::impl : base::impl, updatable_action::impl {
 
 #pragma mark - action
 
-ui::action::action() : super_class(std::make_shared<impl>()) {
+ui::action::action() : base(std::make_shared<impl>()) {
 }
 
-ui::action::action(action_args args) : super_class(std::make_shared<impl>(std::move(args))) {
+ui::action::action(action_args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
-ui::action::action(std::nullptr_t) : super_class(nullptr) {
+ui::action::action(std::nullptr_t) : base(nullptr) {
 }
 
-ui::action::action(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+ui::action::action(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
 ui::node ui::action::target() const {
@@ -141,7 +141,7 @@ ui::continuous_action::continuous_action() : continuous_action(continuous_action
 }
 
 ui::continuous_action::continuous_action(continuous_action_args args)
-    : super_class(std::make_shared<impl>(std::move(args))) {
+    : action(std::make_shared<impl>(std::move(args))) {
     set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto action = weak_action.lock()) {
             auto impl_ptr = action.impl_ptr<continuous_action::impl>();
@@ -169,7 +169,7 @@ ui::continuous_action::continuous_action(continuous_action_args args)
     });
 }
 
-ui::continuous_action::continuous_action(std::nullptr_t) : super_class(nullptr) {
+ui::continuous_action::continuous_action(std::nullptr_t) : action(nullptr) {
 }
 
 double ui::continuous_action::duration() const {
@@ -285,7 +285,7 @@ struct ui::parallel_action::impl : action::impl {
 ui::parallel_action::parallel_action() : parallel_action(action_args{}) {
 }
 
-ui::parallel_action::parallel_action(action_args args) : super_class(std::make_shared<impl>(std::move(args))) {
+ui::parallel_action::parallel_action(action_args args) : action(std::make_shared<impl>(std::move(args))) {
     set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;
@@ -303,7 +303,7 @@ ui::parallel_action::parallel_action(action_args args) : super_class(std::make_s
     });
 }
 
-ui::parallel_action::parallel_action(std::nullptr_t) : super_class(nullptr) {
+ui::parallel_action::parallel_action(std::nullptr_t) : action(nullptr) {
 }
 
 std::vector<ui::action> ui::parallel_action::actions() const {

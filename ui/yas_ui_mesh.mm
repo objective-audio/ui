@@ -94,10 +94,10 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
 #pragma mark - ui::mesh
 
-ui::mesh::mesh() : super_class(std::make_shared<impl>()) {
+ui::mesh::mesh() : base(std::make_shared<impl>()) {
 }
 
-ui::mesh::mesh(std::nullptr_t) : super_class(nullptr) {
+ui::mesh::mesh(std::nullptr_t) : base(nullptr) {
 }
 
 ui::mesh_data const &ui::mesh::data() const {

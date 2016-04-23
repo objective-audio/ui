@@ -16,9 +16,9 @@ namespace ui {
     enum class renderer_method;
 
     class renderer : public base {
-        using super_class = base;
-
        public:
+        class impl;
+
         renderer(std::nullptr_t);
 
         id<MTLDevice> device() const;
@@ -34,8 +34,6 @@ namespace ui {
         ui::view_renderable view_renderable();
         subject<renderer, renderer_method> &subject();
 
-        class impl;
-
        protected:
         renderer(std::shared_ptr<impl> &&);
     };
@@ -44,9 +42,9 @@ namespace ui {
     class action;
 
     class node_renderer : public renderer {
-        using super_class = renderer;
-
        public:
+        class impl;
+
         node_renderer(id<MTLDevice> const);
         node_renderer(std::nullptr_t);
 
@@ -56,8 +54,6 @@ namespace ui {
         void insert_action(ui::action action);
         void erase_action(ui::action const &action);
         void erase_action(ui::node const &target);
-
-        class impl;
     };
 }
 }

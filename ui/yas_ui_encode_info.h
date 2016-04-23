@@ -14,8 +14,6 @@ namespace ui {
     class mesh;
 
     class encode_info : public base {
-        using super_class = base;
-
        public:
         encode_info(MTLRenderPassDescriptor *const render_pass_desc, id<MTLRenderPipelineState> const pipeline_state,
                     id<MTLRenderPipelineState> const pipeline_state_without_texture);

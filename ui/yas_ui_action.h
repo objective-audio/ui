@@ -37,9 +37,9 @@ namespace ui {
     };
 
     class action : public base {
-        using super_class = base;
-
        public:
+        class impl;
+
         action();
         action(action_args);
         action(std::nullptr_t);
@@ -56,8 +56,6 @@ namespace ui {
 
         updatable_action updatable();
 
-        class impl;
-
        protected:
         action(std::shared_ptr<impl> &&);
     };
@@ -70,8 +68,6 @@ namespace ui {
     };
 
     class continuous_action : public action {
-        using super_class = action;
-
        public:
         continuous_action();
         continuous_action(continuous_action_args args);
@@ -123,8 +119,6 @@ namespace ui {
     continuous_action make_action(color_action_args);
 
     class parallel_action : public action {
-        using super_class = action;
-
        public:
         parallel_action();
         parallel_action(action_args);

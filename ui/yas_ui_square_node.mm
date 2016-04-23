@@ -137,10 +137,10 @@ struct yas::ui::square_node::impl : base::impl {
 #pragma mark - ui::square_node
 
 ui::square_node::square_node(ui::square_mesh_data sq_mesh_data)
-    : super_class(std::make_shared<impl>(std::move(sq_mesh_data))) {
+    : base(std::make_shared<impl>(std::move(sq_mesh_data))) {
 }
 
-ui::square_node::square_node(std::nullptr_t) : super_class(nullptr) {
+ui::square_node::square_node(std::nullptr_t) : base(nullptr) {
 }
 
 ui::node &ui::square_node::node() {
