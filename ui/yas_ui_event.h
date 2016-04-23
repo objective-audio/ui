@@ -25,6 +25,11 @@ namespace ui {
 
     class event : public base {
        public:
+        class impl_base;
+
+        template <typename T>
+        class impl;
+
         explicit event(cursor const &);
         explicit event(touch const &);
         explicit event(key const &);
@@ -39,23 +44,18 @@ namespace ui {
         typename T::type const &get() const;
 
         manageable_event manageable();
-
-        class impl_base;
-
-        template <typename T>
-        class impl;
     };
 
     class event_manager : public base {
        public:
+        class impl;
+
         event_manager();
         event_manager(std::nullptr_t);
 
         subject<event, event_method> &subject();
 
         event_inputtable inputtable();
-
-        class impl;
     };
 }
 }
