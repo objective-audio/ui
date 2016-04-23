@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_event.h"
 #import <iostream>
+#import "yas_ui_event.h"
 
 using namespace yas;
 
@@ -68,7 +68,7 @@ using namespace yas;
 
     XCTAssertEqual(value.key_code(), 5);
     XCTAssertEqual(value.characters(), "a");
-    XCTAssertEqual(value.characters_ignoring_modifiers(), "B");
+    XCTAssertEqual(value.raw_characters(), "B");
 }
 
 - (void)test_create_modifier_event {
@@ -238,7 +238,7 @@ using namespace yas;
     auto const &value = event.get<ui::key>();
     XCTAssertEqual(value.key_code(), 23);
     XCTAssertEqual(value.characters(), "4");
-    XCTAssertEqual(value.characters_ignoring_modifiers(), "5");
+    XCTAssertEqual(value.raw_characters(), "5");
 }
 
 - (void)test_modifier_event_accessor {
@@ -320,7 +320,7 @@ using namespace yas;
             auto const &value = event.get<ui::key>();
             XCTAssertEqual(value.key_code(), 200);
             XCTAssertEqual(value.characters(), "xyz");
-            XCTAssertEqual(value.characters_ignoring_modifiers(), "uvw");
+            XCTAssertEqual(value.raw_characters(), "uvw");
 
             called = true;
         });
