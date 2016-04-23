@@ -14,7 +14,7 @@ namespace ui {
     class encode_info;
 
     class render_info : public base {
-        using super_class = base;
+        class impl;
 
        public:
         render_info();
@@ -28,9 +28,6 @@ namespace ui {
 
         simd::float4x4 render_matrix;
         simd::float4x4 touch_matrix;
-
-       private:
-        class impl;
     };
 }
 }

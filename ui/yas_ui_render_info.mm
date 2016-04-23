@@ -12,10 +12,10 @@ struct ui::render_info::impl : base::impl {
     std::deque<encode_info> current_encode_infos;
 };
 
-ui::render_info::render_info() : super_class(std::make_shared<impl>()) {
+ui::render_info::render_info() : base(std::make_shared<impl>()) {
 }
 
-ui::render_info::render_info(std::nullptr_t) : super_class(nullptr) {
+ui::render_info::render_info(std::nullptr_t) : base(nullptr) {
 }
 
 void ui::render_info::push_encode_info(encode_info info) {
