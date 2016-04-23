@@ -38,7 +38,7 @@ namespace ui {
     square_mesh_data make_square_mesh_data(std::size_t const max_square_count);
 
     class square_node : public base {
-        using super_class = base;
+        class impl;
 
        public:
         explicit square_node(square_mesh_data);
@@ -46,9 +46,6 @@ namespace ui {
 
         ui::node &node();
         ui::square_mesh_data &square_mesh_data();
-
-       private:
-        class impl;
     };
 
     square_node make_square_node(std::size_t const square_count);
