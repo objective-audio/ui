@@ -10,12 +10,7 @@
 
 namespace yas {
 namespace ui {
-    namespace event_method {
-        static auto const cursor_changed = "yas.ui.event.cursor_changed";
-        static auto const touch_changed = "yas.ui.event.touch_changed";
-        static auto const key_changed = "yas.ui.event.key_changed";
-        static auto const modifier_changed = "yas.ui.event.modifier_changed";
-    };
+    enum class event_method { cursor_changed, touch_changed, key_changed, modifier_changed };
 
     enum class event_phase {
         none,

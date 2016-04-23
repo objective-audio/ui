@@ -56,7 +56,7 @@ ui::view_renderable ui::renderer::view_renderable() {
     return ui::view_renderable{impl_ptr<view_renderable::impl>()};
 }
 
-subject<ui::renderer> &ui::renderer::subject() {
+subject<ui::renderer, ui::renderer_method> &ui::renderer::subject() {
     return impl_ptr<impl>()->subject();
 }
 

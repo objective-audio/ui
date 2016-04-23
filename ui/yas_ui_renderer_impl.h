@@ -32,7 +32,7 @@ class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_ren
 
     virtual void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPass_descriptor);
 
-    yas::subject<ui::renderer> &subject();
+    yas::subject<ui::renderer, ui::renderer_method> &subject();
 
    private:
     struct core;
