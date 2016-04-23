@@ -107,13 +107,13 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
 #pragma mark - ui::mesh_data
 
 ui::mesh_data::mesh_data(std::size_t const vertex_count, std::size_t const index_count)
-    : super_class(std::make_shared<impl>(vertex_count, index_count)) {
+    : base(std::make_shared<impl>(vertex_count, index_count)) {
 }
 
-ui::mesh_data::mesh_data(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+ui::mesh_data::mesh_data(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
-ui::mesh_data::mesh_data(std::nullptr_t) : super_class(nullptr) {
+ui::mesh_data::mesh_data(std::nullptr_t) : base(nullptr) {
 }
 
 const ui::vertex2d_t *ui::mesh_data::vertices() const {
@@ -147,9 +147,7 @@ ui::renderable_mesh_data ui::mesh_data::renderable() {
 #pragma mark - dynamic_mesh_data::impl
 
 struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
-    using super_class = ui::mesh_data::impl;
-
-    impl(std::size_t const vertex_count, std::size_t const index_count) : super_class(vertex_count, index_count) {
+    impl(std::size_t const vertex_count, std::size_t const index_count) : mesh_data::impl(vertex_count, index_count) {
         _needs_update_render_buffer = false;
     }
 
@@ -191,10 +189,10 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
 #pragma mark - dynamic_mesh_data
 
 ui::dynamic_mesh_data::dynamic_mesh_data(std::size_t const vertex_count, std::size_t const index_count)
-    : super_class(std::make_shared<impl>(vertex_count, index_count)) {
+    : mesh_data(std::make_shared<impl>(vertex_count, index_count)) {
 }
 
-ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : super_class(nullptr) {
+ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : mesh_data(nullptr) {
 }
 
 std::size_t ui::dynamic_mesh_data::max_vertex_count() const {

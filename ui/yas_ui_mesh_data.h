@@ -13,8 +13,6 @@
 namespace yas {
 namespace ui {
     class mesh_data : public base {
-        using super_class = base;
-
        public:
         mesh_data(std::size_t const vertex_count, std::size_t const index_count);
         mesh_data(std::nullptr_t);
@@ -36,8 +34,6 @@ namespace ui {
     };
 
     class dynamic_mesh_data : public mesh_data {
-        using super_class = mesh_data;
-
        public:
         dynamic_mesh_data(std::size_t const max_vertex_count, std::size_t const max_index_count);
         dynamic_mesh_data(std::nullptr_t);
