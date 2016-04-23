@@ -14,7 +14,7 @@
 using namespace yas;
 
 ui::node::impl::impl()
-    : super_class(),
+    : base::impl(),
       _position(0.0f),
       _angle(0.0f),
       _local_matrix(matrix_identity_float4x4),

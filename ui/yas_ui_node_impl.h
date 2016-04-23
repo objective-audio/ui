@@ -10,8 +10,6 @@
 #include "yas_ui_mesh.h"
 
 class yas::ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
-    using super_class = base::impl;
-
    public:
     impl();
     virtual ~impl();
