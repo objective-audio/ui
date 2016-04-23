@@ -15,7 +15,7 @@ namespace ui {
     class mesh_data;
 
     class mesh : public base {
-        using super_class = base;
+        class impl;
 
        public:
         mesh();
@@ -33,9 +33,6 @@ namespace ui {
 
         ui::metal_object metal();
         ui::renderable_mesh renderable();
-
-       private:
-        class impl;
     };
 }
 }
