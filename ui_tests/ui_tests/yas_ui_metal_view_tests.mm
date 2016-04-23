@@ -209,7 +209,7 @@ using namespace yas;
         bool ended_called = false;
         unsigned short key_code = 0;
         std::string characters = "";
-        std::string characters_ignoring_modifiers = "";
+        std::string raw_characters = "";
 
         void reset() {
             began_called = false;
@@ -217,7 +217,7 @@ using namespace yas;
             ended_called = false;
             key_code = 0;
             characters = "";
-            characters_ignoring_modifiers = "";
+            raw_characters = "";
         }
     };
 
@@ -238,7 +238,7 @@ using namespace yas;
             auto const &key_event = event.get<ui::key>();
             values.key_code = key_event.key_code();
             values.characters = key_event.characters();
-            values.characters_ignoring_modifiers = key_event.characters_ignoring_modifiers();
+            values.raw_characters = key_event.raw_characters();
         });
 
     [view keyDown:[self _keyEventWithType:NSKeyDown
@@ -252,7 +252,7 @@ using namespace yas;
     XCTAssertFalse(values.ended_called);
     XCTAssertEqual(values.key_code, 1);
     XCTAssertEqual(values.characters, "a");
-    XCTAssertEqual(values.characters_ignoring_modifiers, "b");
+    XCTAssertEqual(values.raw_characters, "b");
 
     values.reset();
 
@@ -267,7 +267,7 @@ using namespace yas;
     XCTAssertFalse(values.ended_called);
     XCTAssertEqual(values.key_code, 1);
     XCTAssertEqual(values.characters, "a");
-    XCTAssertEqual(values.characters_ignoring_modifiers, "b");
+    XCTAssertEqual(values.raw_characters, "b");
 
     values.reset();
 
@@ -279,7 +279,7 @@ using namespace yas;
     XCTAssertTrue(values.ended_called);
     XCTAssertEqual(values.key_code, 1);
     XCTAssertEqual(values.characters, "a");
-    XCTAssertEqual(values.characters_ignoring_modifiers, "b");
+    XCTAssertEqual(values.raw_characters, "b");
 }
 
 #pragma mark -

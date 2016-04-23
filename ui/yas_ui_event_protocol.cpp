@@ -61,7 +61,7 @@ ui::key_event::key_event() {
 }
 
 ui::key_event::key_event(uint16_t const key_code, std::string charas, std::string charas2)
-    : _key_code(key_code), _characters(std::move(charas)), _characters_ignoring_modifiers(std::move(charas2)) {
+    : _key_code(key_code), _characters(std::move(charas)), _raw_characters(std::move(charas2)) {
 }
 
 bool ui::key_event::operator==(key_event const &rhs) const {
@@ -80,8 +80,8 @@ std::string const &ui::key_event::characters() const {
     return _characters;
 }
 
-std::string const &ui::key_event::characters_ignoring_modifiers() const {
-    return _characters_ignoring_modifiers;
+std::string const &ui::key_event::raw_characters() const {
+    return _raw_characters;
 }
 
 #pragma mark - modifier_event

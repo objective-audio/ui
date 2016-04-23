@@ -64,19 +64,19 @@ namespace ui {
 
     struct key_event {
         key_event();
-        explicit key_event(uint16_t const key_code, std::string characters, std::string characters_ignoring_modifiers);
+        explicit key_event(uint16_t const key_code, std::string characters, std::string raw_characters);
 
         bool operator==(key_event const &) const;
         bool operator!=(key_event const &) const;
 
         uint16_t key_code() const;
         std::string const &characters() const;
-        std::string const &characters_ignoring_modifiers() const;
+        std::string const &raw_characters() const;
 
        private:
         uint16_t _key_code;
         std::string _characters;
-        std::string _characters_ignoring_modifiers;
+        std::string _raw_characters;
     };
 
     struct modifier_event {
