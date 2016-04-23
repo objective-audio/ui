@@ -18,10 +18,10 @@ using namespace simd;
 
 #pragma mark - renderer
 
-ui::renderer::renderer(std::shared_ptr<impl> &&impl) : super_class(std::move(impl)) {
+ui::renderer::renderer(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
-ui::renderer::renderer(std::nullptr_t) : super_class(nullptr) {
+ui::renderer::renderer(std::nullptr_t) : base(nullptr) {
 }
 
 id<MTLDevice> ui::renderer::device() const {
@@ -66,7 +66,7 @@ class ui::node_renderer::impl : public renderer::impl {
     using super_class = renderer::impl;
 
    public:
-    impl(id<MTLDevice> const device) : super_class(device) {
+    impl(id<MTLDevice> const device) : renderer(device) {
     }
 
     void view_configure(YASUIMetalView *const view) override {
@@ -133,11 +133,11 @@ class ui::node_renderer::impl : public renderer::impl {
     objc_ptr<YASUIGestureRecognizer *> gesuture_recognizer;
 };
 
-ui::node_renderer::node_renderer(id<MTLDevice> const device) : super_class(std::make_shared<impl>(device)) {
+ui::node_renderer::node_renderer(id<MTLDevice> const device) : renderer(std::make_shared<impl>(device)) {
     impl_ptr<impl>()->_root_node.renderable().set_renderer(*this);
 }
 
-ui::node_renderer::node_renderer(std::nullptr_t) : super_class(nullptr) {
+ui::node_renderer::node_renderer(std::nullptr_t) : renderer(nullptr) {
 }
 
 ui::node const &ui::node_renderer::root_node() const {
