@@ -54,7 +54,7 @@ using namespace yas;
     };
 
     auto observer = event_manager.subject().make_wild_card_observer(
-        [&self, &began_called, &changed_called, &ended_called](std::string const &method, ui::event const &event) {
+        [&self, &began_called, &changed_called, &ended_called](auto const &method, auto const &event) {
             XCTAssertEqual(method, ui::event_method::cursor_changed);
 
             if (event.phase() == ui::event_phase::began) {
@@ -110,8 +110,8 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer = event_manager.subject().make_wild_card_observer(
-        [&self, &values](std::string const &method, ui::event const &event) {
+    auto observer =
+        event_manager.subject().make_wild_card_observer([&self, &values](auto const &method, auto const &event) {
             if (method == ui::event_method::cursor_changed) {
                 return;
             }
@@ -223,8 +223,8 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer = event_manager.subject().make_wild_card_observer(
-        [&self, &values](std::string const &method, ui::event const &event) {
+    auto observer =
+        event_manager.subject().make_wild_card_observer([&self, &values](auto const &method, ui::event const &event) {
             XCTAssertEqual(method, ui::event_method::key_changed);
 
             if (event.phase() == ui::event_phase::began) {
