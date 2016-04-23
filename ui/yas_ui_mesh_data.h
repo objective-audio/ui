@@ -34,6 +34,8 @@ namespace ui {
     };
 
     class dynamic_mesh_data : public mesh_data {
+        class impl;
+
        public:
         dynamic_mesh_data(std::size_t const max_vertex_count, std::size_t const max_index_count);
         dynamic_mesh_data(std::nullptr_t);
@@ -43,9 +45,6 @@ namespace ui {
 
         void set_vertex_count(std::size_t const);
         void set_index_count(std::size_t const);
-
-       private:
-        class impl;
     };
 }
 }

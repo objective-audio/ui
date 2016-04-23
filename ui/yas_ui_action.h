@@ -69,6 +69,8 @@ namespace ui {
 
     class continuous_action : public action {
        public:
+        class impl;
+
         continuous_action();
         continuous_action(continuous_action_args args);
         continuous_action(std::nullptr_t);
@@ -80,8 +82,6 @@ namespace ui {
 
         void set_value_updater(action_value_update_f);
         void set_value_transformer(action_transform_f);
-
-        class impl;
     };
 
     struct translate_action_args {
@@ -120,6 +120,8 @@ namespace ui {
 
     class parallel_action : public action {
        public:
+        class impl;
+
         parallel_action();
         parallel_action(action_args);
         parallel_action(std::nullptr_t);
@@ -128,8 +130,6 @@ namespace ui {
 
         void insert_action(action);
         void erase_action(action const &);
-
-        class impl;
     };
 
     parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &start_time);
