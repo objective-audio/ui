@@ -249,13 +249,13 @@ namespace ui {
 
 #pragma mark -
 
-ui::setup_texture_result ui::make_texture(id<MTLDevice> const device, uint_size const point_size,
+ui::make_texture_result ui::make_texture(id<MTLDevice> const device, uint_size const point_size,
                                           double const scale_factor, MTLPixelFormat const pixel_format) {
     auto factory = ui::texture_factory{point_size, scale_factor, pixel_format};
     if (auto result = factory.metal().setup(device)) {
-        return ui::setup_texture_result{std::move(factory)};
+        return ui::make_texture_result{std::move(factory)};
     } else {
-        return ui::setup_texture_result{std::move(result.error())};
+        return ui::make_texture_result{std::move(result.error())};
     }
 }
 

@@ -52,10 +52,10 @@ namespace ui {
         texture(std::shared_ptr<impl> &&);
     };
 
-    using setup_texture_result = result<ui::texture, setup_metal_error>;
+    using make_texture_result = result<ui::texture, setup_metal_error>;
 
-    setup_texture_result make_texture(id<MTLDevice> const device, uint_size const point_size, double const scale_factor,
-                                      MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
+    make_texture_result make_texture(id<MTLDevice> const device, uint_size const point_size, double const scale_factor,
+                                     MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
 }
 
 template <>
