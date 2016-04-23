@@ -28,9 +28,9 @@ namespace ui {
     };
 
     class font_atlas : base {
-        using super_class = base;
-
        public:
+        class impl;
+
         font_atlas(std::string font_name, double const font_size, std::string words, texture texture);
 
         std::string const &font_name() const;
@@ -39,8 +39,6 @@ namespace ui {
         ui::texture const &texture() const;
 
         strings_layout make_strings_layout(std::string const &text, pivot const pivot) const;
-
-        class impl;
     };
 }
 }
