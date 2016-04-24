@@ -60,6 +60,13 @@ namespace ui {
 
 #pragma mark - font_atlas::impl
 
+namespace yas {
+namespace ui {
+    static ui::vertex2d_square_t constexpr _empty_square{0.0f};
+    static CGSize constexpr _empty_advance{0.0f};
+}
+}
+
 struct ui::font_atlas::impl : base::impl {
     ui::texture texture;
     std::string font_name;
@@ -161,10 +168,10 @@ struct ui::font_atlas::impl : base::impl {
         return std::move(strings_layout);
     }
 
-    ui::vertex2d_square_t &_square(std::string const &word) {
+    ui::vertex2d_square_t const &_square(std::string const &word) {
         auto idx = words.find_first_of(word);
         if (idx == std::string::npos) {
-            idx = 0;
+            return _empty_square;
         }
         return _squares.at(idx);
     }
@@ -196,7 +203,7 @@ struct ui::font_atlas::impl : base::impl {
     CGSize const &_advance(std::string const &word) {
         auto idx = words.find(word);
         if (idx == std::string::npos) {
-            idx = 0;
+            return _empty_advance;
         }
         return _advances.at(idx);
     }
