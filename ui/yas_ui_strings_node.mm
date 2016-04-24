@@ -16,7 +16,7 @@ struct ui::strings_node::impl : base::impl {
     using super_class = base::impl;
 
     impl(ui::font_atlas &&str_data, std::size_t const max_word_count)
-        : _square_node(make_square_node(str_data.words().size())), _font_atlas(std::move(str_data)) {
+        : _square_node(make_square_node(max_word_count)), _font_atlas(std::move(str_data)) {
         _square_node.node().mesh().set_texture(_font_atlas.texture());
         _update_mesh_data();
     }
