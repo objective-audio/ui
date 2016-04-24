@@ -3,11 +3,11 @@
 //
 
 #include <CoreGraphics/CoreGraphics.h>
-#import <CoreText/CoreText.h>
+#include <CoreText/CoreText.h>
 #include "yas_cf_utils.h"
 #include "yas_objc_macros.h"
 #include "yas_ui_font_atlas.h"
-#import "yas_ui_image.h"
+#include "yas_ui_image.h"
 #include "yas_ui_texture.h"
 
 #if TARGET_OS_IPHONE
