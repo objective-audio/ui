@@ -57,13 +57,15 @@ using namespace yas;
     XCTAssertEqual(strings_layout.word_count(), 3);
     XCTAssertGreaterThan(strings_layout.width(), 0);
 
-    for (auto const &sq_idx : make_each(2)) {
-        auto const &prev_square = strings_layout.square(sq_idx);
-        auto const &next_square = strings_layout.square(sq_idx + 1);
+    for (auto const &vtx_idx : make_each(4)) {
+        XCTAssertGreaterThan(strings_layout.square(1).v[vtx_idx].position.x,
+                             strings_layout.square(0).v[vtx_idx].position.x);
+        XCTAssertEqual(strings_layout.square(1).v[vtx_idx].position.y, strings_layout.square(0).v[vtx_idx].position.y);
+    }
 
-        for (auto const &vtx_idx : make_each(4)) {
-            XCTAssertGreaterThan(next_square.v[vtx_idx].position.x, prev_square.v[vtx_idx].position.x);
-            XCTAssertEqual(next_square.v[vtx_idx].position.y, prev_square.v[vtx_idx].position.y);
+    for (auto const &vtx_idx : make_each(4)) {
+        for (auto const &pos_idx : make_each(2)) {
+            XCTAssertEqual(strings_layout.square(2).v[vtx_idx].position[pos_idx], 0);
         }
     }
 }

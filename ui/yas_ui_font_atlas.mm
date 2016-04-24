@@ -137,11 +137,16 @@ struct ui::font_atlas::impl : base::impl {
         for (auto const &word_idx : each_index<std::size_t>(word_size)) {
             auto const word = text.substr(word_idx, 1);
             auto const &str_square = _square(word);
+
             auto &info_square = strings_layout.square(word_idx);
 
-            for (auto const &sq_idx : each_index<std::size_t>(4)) {
-                info_square.v[sq_idx] = str_square.v[sq_idx];
-                info_square.v[sq_idx].position.x += roundf(width);
+            if (&str_square == &_empty_square) {
+                info_square = {0.0f};
+            } else {
+                for (auto const &sq_idx : each_index<std::size_t>(4)) {
+                    info_square.v[sq_idx] = str_square.v[sq_idx];
+                    info_square.v[sq_idx].position.x += roundf(width);
+                }
             }
 
             width += _advance(word).width;
