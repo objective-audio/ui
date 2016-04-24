@@ -134,6 +134,7 @@ namespace sample {
 
             ui::texture text_texture = nullptr;
             ui::strings_node text_node = nullptr;
+            ui::strings_node modifier_node = nullptr;
 
             ui::square_node bg_node = nullptr;
 
@@ -156,7 +157,7 @@ namespace sample {
                 auto &node = bg_node.node();
                 bg_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
                 node.set_scale(0.0f);
-                node.set_color(0.25);
+                node.set_color({0.15f, 0.15f, 0.15f, 1.0f});
 
                 auto root_node = renderer.root_node();
                 root_node.add_sub_node(node);
@@ -199,14 +200,19 @@ namespace sample {
                 if (auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, scale_factor)) {
                     text_texture = std::move(texture_result.value());
 
-                    text_node = ui::strings_node{ui::font_atlas{
-                        "TrebuchetMS-Bold", 40.0f, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-                        text_texture}};
+                    ui::font_atlas font_atlas{"TrebuchetMS-Bold", 26.0f,
+                                              " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+",
+                                              text_texture};
 
-                    text_node.set_pivot(ui::pivot::center);
+                    text_node = ui::strings_node{font_atlas, 512};
+                    text_node.set_pivot(ui::pivot::left);
+
+                    modifier_node = ui::strings_node{font_atlas, 64};
+                    modifier_node.set_pivot(ui::pivot::right);
 
                     auto root_node = renderer.root_node();
                     root_node.add_sub_node(text_node.square_node().node());
+                    root_node.add_sub_node(modifier_node.square_node().node());
                 }
             }
         };
@@ -238,14 +244,46 @@ namespace sample {
     auto const &view_size = _cpp.renderer.view_size();
     _cpp.bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
 
-    _cpp.observers.emplace_back(_cpp.renderer.subject().make_observer(
-        ui::renderer_method::drawable_size_changed,
-        [weak_node = to_weak(_cpp.bg_node)](auto const &method, auto const &renderer) {
-            if (auto bg_node = weak_node.lock()) {
-                auto const &view_size = renderer.view_size();
-                bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
-            }
-        }));
+    auto set_text_pos = [](ui::node &node, ui::uint_size const &view_size) {
+        node.set_position(
+            {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
+    };
+
+    auto set_modifier_pos = [](ui::node &node, ui::uint_size const &view_size) {
+        node.set_position(
+            {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
+    };
+
+    set_text_pos(_cpp.text_node.square_node().node(), view_size);
+    set_modifier_pos(_cpp.modifier_node.square_node().node(), view_size);
+
+    _cpp.observers.emplace_back(_cpp.renderer.subject().make_observer(ui::renderer_method::drawable_size_changed, [
+        weak_bg_node = to_weak(_cpp.bg_node),
+        weak_text_node = to_weak(_cpp.text_node),
+        weak_mod_node = to_weak(_cpp.modifier_node),
+        set_text_pos = std::move(set_text_pos),
+        set_modifier_pos = std::move(set_modifier_pos)
+    ](auto const &method, auto const &renderer) {
+        auto const &view_size = renderer.view_size();
+
+        if (auto bg_node = weak_bg_node.lock()) {
+            bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+        }
+
+        if (auto text_node = weak_text_node.lock()) {
+            set_text_pos(text_node.square_node().node(), view_size);
+            //            text_node.square_node().node().set_position(
+            //                {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f
+            //                - 22.0f});
+        }
+
+        if (auto mod_node = weak_mod_node.lock()) {
+            set_modifier_pos(mod_node.square_node().node(), view_size);
+            //            mod_node.square_node().node().set_position(
+            //                {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f
+            //                + 6.0f});
+        }
+    }));
 
     _cpp.observers.emplace_back(event_manager.subject().make_observer(ui::event_method::cursor_changed, [
         weak_node = to_weak(_cpp.cursor_node),
@@ -334,31 +372,46 @@ namespace sample {
                                                                                            ui::event const &event) {
             auto key_event = event.get<ui::key>();
             if (auto text_node = weak_text_node.lock()) {
-                auto &node = text_node.square_node().node();
-                if (auto renderer = weak_renderer.lock()) {
-                    if (event.phase() == ui::event_phase::began || event.phase() == ui::event_phase::changed) {
-                        renderer.erase_action(node);
+                if (event.phase() == ui::event_phase::began || event.phase() == ui::event_phase::changed) {
+                    auto const key_code = event.get<ui::key>().key_code();
 
-                        text_node.set_text(key_event.characters());
+                    switch (key_code) {
+                        case 51: {
+                            auto &text = text_node.text();
+                            if (text.size() > 0) {
+                                text_node.set_text(text.substr(0, text.size() - 1));
+                            }
+                        } break;
 
-                        auto action = ui::make_action({.start_color = {1.0f, 1.0f, 1.0f, 1.0f},
-                                                       .end_color = {0.0f, 0.0f, 0.0f, 0.0f},
-                                                       .continuous_action = {.duration = 0.5f}});
-                        action.set_target(node);
-                        action.set_value_transformer(ui::ease_out_transformer());
-                        renderer.insert_action(action);
+                        default: { text_node.set_text(text_node.text() + key_event.characters()); } break;
                     }
                 }
             }
         }));
 
-    _cpp.observers.emplace_back(event_manager.subject().make_observer(
-        ui::event_method::modifier_changed, [](auto const &method, ui::event const &event) {
-            auto mod_value = event.get<ui::modifier>();
-            std::cout << "modifier:" << to_string(mod_value.flag()) << " phase:" << to_string(event.phase())
-                      << std::endl;
+    _cpp.observers.emplace_back(event_manager.subject().make_observer(ui::event_method::modifier_changed, [
+        weak_mod_node = to_weak(_cpp.modifier_node),
+        flags = std::make_shared<std::unordered_set<ui::modifier_flags>>()
+    ](auto const &method, ui::event const &event) {
+        auto flag = event.get<ui::modifier>().flag();
 
-        }));
+        if (event.phase() == ui::event_phase::began) {
+            flags->insert(flag);
+        } else if (event.phase() == ui::event_phase::ended) {
+            flags->erase(flag);
+        }
+
+        if (auto mod_node = weak_mod_node.lock()) {
+            std::vector<std::string> flag_texts;
+            flag_texts.reserve(flags->size());
+
+            for (auto const &flg : *flags) {
+                flag_texts.emplace_back(to_string(flg));
+            }
+
+            mod_node.set_text(joined(flag_texts, " + "));
+        }
+    }));
 }
 
 @end
