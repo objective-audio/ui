@@ -301,6 +301,8 @@
 				B684E7221CC475BD00289FD9 /* yas_ui_font_atlas.mm */,
 				B6F501921C9BFFD400A0B4A1 /* yas_ui_image.h */,
 				B6F501931C9BFFD400A0B4A1 /* yas_ui_image.mm */,
+				B65A3A1F1CCE442E00929FB4 /* yas_ui_math.cpp */,
+				B65A3A201CCE442E00929FB4 /* yas_ui_math.h */,
 				B6F501941C9BFFD400A0B4A1 /* yas_ui_matrix.h */,
 				B6F501951C9BFFD400A0B4A1 /* yas_ui_matrix.mm */,
 				B61A2F171CC13E6E0086D813 /* yas_ui_mesh_data.h */,
@@ -339,8 +341,6 @@
 				B626619F1CB8FEA700F7B221 /* yas_ui_transformer.h */,
 				B6F5019E1C9BFFD400A0B4A1 /* yas_ui_types.h */,
 				B6F5019F1C9BFFD400A0B4A1 /* yas_ui_types.mm */,
-				B65A3A1F1CCE442E00929FB4 /* yas_ui_math.cpp */,
-				B65A3A201CCE442E00929FB4 /* yas_ui_math.h */,
 				B630B46E1C9FC3A3009793A9 /* yas_ui.h */,
 			);
 			name = ui;
