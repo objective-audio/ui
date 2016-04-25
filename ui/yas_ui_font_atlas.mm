@@ -8,6 +8,7 @@
 #include "yas_objc_macros.h"
 #include "yas_ui_font_atlas.h"
 #include "yas_ui_image.h"
+#include "yas_ui_math.h"
 #include "yas_ui_texture.h"
 
 #if TARGET_OS_IPHONE
@@ -96,10 +97,13 @@ struct ui::font_atlas::impl : base::impl {
         auto const ascent = CTFontGetAscent(ct_font);
         auto const descent = CTFontGetDescent(ct_font);
         auto const string_height = descent + ascent;
+        auto const scale_factor = texture.scale_factor();
 
         for (auto const &idx : each_index<std::size_t>(word_size)) {
-            ui::uint_size const image_size = {uint32_t(ceilf(_advances[idx].width)), uint32_t(ceilf(string_height))};
-            ui::float_region const image_region = {0.0f, roundf(-descent), static_cast<float>(image_size.width),
+            ui::uint_size const image_size = {uint32_t(std::ceilf(_advances[idx].width)),
+                                              uint32_t(std::ceilf(string_height))};
+            ui::float_region const image_region = {0.0f, roundf(-descent, scale_factor),
+                                                   static_cast<float>(image_size.width),
                                                    static_cast<float>(image_size.height)};
 
             _set_vertex_position(image_region, idx);
@@ -133,34 +137,36 @@ struct ui::font_atlas::impl : base::impl {
         ui::mutable_strings_layout strings_layout{word_size};
 
         double width = 0;
+        auto const scale_factor = texture.scale_factor();
 
         for (auto const &word_idx : each_index<std::size_t>(word_size)) {
             auto const word = text.substr(word_idx, 1);
             auto const &str_square = _square(word);
 
-            auto &info_square = strings_layout.square(word_idx);
+            auto &layout_square = strings_layout.square(word_idx);
 
             if (&str_square == &_empty_square) {
-                info_square = {0.0f};
+                layout_square = {0.0f};
             } else {
                 for (auto const &sq_idx : each_index<std::size_t>(4)) {
-                    info_square.v[sq_idx] = str_square.v[sq_idx];
-                    info_square.v[sq_idx].position.x += roundf(width);
+                    layout_square.v[sq_idx] = str_square.v[sq_idx];
+                    layout_square.v[sq_idx].position.x =
+                        roundf(layout_square.v[sq_idx].position.x + width, scale_factor);
                 }
             }
 
             width += _advance(word).width;
         }
 
-        strings_layout.set_width(ceil(width));
+        strings_layout.set_width(ceil(width, scale_factor));
 
         if (pivot != pivot::left) {
             double offset = 0;
 
             if (pivot == pivot::center) {
-                offset = -width * 0.5;
+                offset = roundf(-width * 0.5, scale_factor);
             } else if (pivot == pivot::right) {
-                offset = -width;
+                offset = ceilf(-width, scale_factor);
             }
 
             for (auto &square : strings_layout.squares()) {
