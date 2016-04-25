@@ -272,16 +272,10 @@ namespace sample {
 
         if (auto text_node = weak_text_node.lock()) {
             set_text_pos(text_node.square_node().node(), view_size);
-            //            text_node.square_node().node().set_position(
-            //                {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f
-            //                - 22.0f});
         }
 
         if (auto mod_node = weak_mod_node.lock()) {
             set_modifier_pos(mod_node.square_node().node(), view_size);
-            //            mod_node.square_node().node().set_position(
-            //                {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f
-            //                + 6.0f});
         }
     }));
 
