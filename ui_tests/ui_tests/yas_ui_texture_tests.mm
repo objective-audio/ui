@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
 #import "yas_objc_macros.h"
 #import "yas_objc_ptr.h"
 #import "yas_ui_image.h"

@@ -337,54 +337,52 @@ namespace sample {
         ui::event_method::touch_changed,
         [weak_touch_holder = to_weak(_cpp.touch_holder), weak_renderer = to_weak(_cpp.renderer)](
             auto const &method, ui::event const &event) mutable {
-            if (auto renderer = weak_renderer.lock()) {
-                if (auto touch_holder = weak_touch_holder.lock()) {
-                    auto const identifier = event.identifier();
-                    auto const &value = event.get<ui::touch>();
+            if (auto result = where(weak_renderer.lock(), weak_touch_holder.lock())) {
+                auto &renderer = std::get<0>(result.value());
+                auto &touch_holder = std::get<1>(result.value());
+                auto const identifier = event.identifier();
+                auto const &value = event.get<ui::touch>();
 
-                    switch (event.phase()) {
-                        case ui::event_phase::began: {
-                            touch_holder.insert_touch_node(identifier, renderer);
-                            touch_holder.move_touch_node(identifier, value.position());
-                        } break;
+                switch (event.phase()) {
+                    case ui::event_phase::began: {
+                        touch_holder.insert_touch_node(identifier, renderer);
+                        touch_holder.move_touch_node(identifier, value.position());
+                    } break;
 
-                        case ui::event_phase::changed: {
-                            touch_holder.move_touch_node(identifier, value.position());
-                        } break;
+                    case ui::event_phase::changed: {
+                        touch_holder.move_touch_node(identifier, value.position());
+                    } break;
 
-                        case ui::event_phase::ended:
-                        case ui::event_phase::canceled: {
-                            touch_holder.move_touch_node(identifier, value.position());
-                            touch_holder.erase_touch_node(identifier, renderer);
-                        } break;
+                    case ui::event_phase::ended:
+                    case ui::event_phase::canceled: {
+                        touch_holder.move_touch_node(identifier, value.position());
+                        touch_holder.erase_touch_node(identifier, renderer);
+                    } break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
                 }
             }
-
         }));
 
     _cpp.observers.emplace_back(event_manager.subject().make_observer(
         ui::event_method::key_changed,
         [weak_text_node = to_weak(_cpp.text_node), weak_renderer = to_weak(_cpp.renderer)](auto const &method,
                                                                                            ui::event const &event) {
-            auto key_event = event.get<ui::key>();
-            if (auto text_node = weak_text_node.lock()) {
-                if (event.phase() == ui::event_phase::began || event.phase() == ui::event_phase::changed) {
-                    auto const key_code = event.get<ui::key>().key_code();
+            if (auto result = where(weak_text_node.lock(), event.phase() == ui::event_phase::began ||
+                                                               event.phase() == ui::event_phase::changed)) {
+                auto &text_node = std::get<0>(result.value());
+                auto const key_code = event.get<ui::key>().key_code();
 
-                    switch (key_code) {
-                        case 51: {
-                            auto &text = text_node.text();
-                            if (text.size() > 0) {
-                                text_node.set_text(text.substr(0, text.size() - 1));
-                            }
-                        } break;
+                switch (key_code) {
+                    case 51: {
+                        auto &text = text_node.text();
+                        if (text.size() > 0) {
+                            text_node.set_text(text.substr(0, text.size() - 1));
+                        }
+                    } break;
 
-                        default: { text_node.set_text(text_node.text() + key_event.characters()); } break;
-                    }
+                    default: { text_node.set_text(text_node.text() + event.get<ui::key>().characters()); } break;
                 }
             }
         }));

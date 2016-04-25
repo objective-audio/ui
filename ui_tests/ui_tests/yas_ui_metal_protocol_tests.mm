@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
 #import "yas_ui_metal_protocol.h"
 
 using namespace yas;
