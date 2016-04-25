@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B65A3A1E1CCE441800929FB4 /* yas_ui_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */; };
 		B65F6D9F1CC87D12007C3523 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6D9E1CC87D12007C3523 /* main.m */; };
 		B65F6DA21CC87D12007C3523 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6DA11CC87D12007C3523 /* AppDelegate.m */; };
 		B65F6DA81CC87D12007C3523 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B65F6DA61CC87D12007C3523 /* Main.storyboard */; };
@@ -56,6 +57,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_math.cpp; sourceTree = "<group>"; };
+		B65A3A1D1CCE441800929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
 		B65F6D9A1CC87D12007C3523 /* ui_ios_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ui_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65F6D9E1CC87D12007C3523 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B65F6DA01CC87D12007C3523 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -279,6 +282,8 @@
 				B65F6DEB1CC87DB6007C3523 /* yas_ui_transformer.h */,
 				B65F6DEC1CC87DB6007C3523 /* yas_ui_types.h */,
 				B65F6DED1CC87DB6007C3523 /* yas_ui_types.mm */,
+				B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */,
+				B65A3A1D1CCE441800929FB4 /* yas_ui_math.h */,
 			);
 			name = ui;
 			path = ../ui;
@@ -439,6 +444,7 @@
 				B65F6E011CC87DB6007C3523 /* yas_ui_renderer.mm in Sources */,
 				B65F6E061CC87DB6007C3523 /* yas_ui_texture.mm in Sources */,
 				B65F6DFE1CC87DB6007C3523 /* yas_ui_node_impl.mm in Sources */,
+				B65A3A1E1CCE441800929FB4 /* yas_ui_math.cpp in Sources */,
 				B65F6DF71CC87DB6007C3523 /* yas_ui_mesh.mm in Sources */,
 				B65F6E4B1CC88042007C3523 /* YASSampleMetalViewController.mm in Sources */,
 				B65F6DF61CC87DB6007C3523 /* yas_ui_matrix.mm in Sources */,
@@ -617,6 +623,7 @@
 				B65F6DB31CC87D12007C3523 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
