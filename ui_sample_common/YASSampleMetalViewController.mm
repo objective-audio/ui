@@ -233,9 +233,10 @@ namespace sample {
 
 #if TARGET_OS_IPHONE
     self.view.multipleTouchEnabled = YES;
-#endif
-
     _cpp.setup(self.view.layer.contentsScale);
+#elif TARGET_OS_MAC
+    _cpp.setup([NSScreen mainScreen].backingScaleFactor);
+#endif
 
     [self setRenderer:_cpp.renderer.view_renderable()];
 
