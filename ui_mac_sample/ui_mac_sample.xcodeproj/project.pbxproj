@@ -18,6 +18,8 @@
 		B65F6E4E1CC8804D007C3523 /* YASSampleMetalViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */; };
 		B684E71D1CC23F8400289FD9 /* yas_ui_strings_node.mm in Sources */ = {isa = PBXBuildFile; fileRef = B684E71B1CC23F8400289FD9 /* yas_ui_strings_node.mm */; };
 		B684E7231CC475BD00289FD9 /* yas_ui_font_atlas.mm in Sources */ = {isa = PBXBuildFile; fileRef = B684E7221CC475BD00289FD9 /* yas_ui_font_atlas.mm */; };
+		B69A6ACC1CCEF520002AC942 /* yas_ui_collider.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69A6ACA1CCEF520002AC942 /* yas_ui_collider.mm */; };
+		B69FF9DF1CCFBD520036B0FA /* yas_ui_collider_protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B69FF9DD1CCFBD520036B0FA /* yas_ui_collider_protocol.cpp */; };
 		B6ABA5DB1CB402EF008C7714 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6ABA5DA1CB402EF008C7714 /* MetalKit.framework */; };
 		B6C760EA1CA79A5300BEE95A /* yas_ui_node_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C760E91CA79A5300BEE95A /* yas_ui_node_protocol.mm */; };
 		B6D1A9AD1CAEA5330003C6CF /* yas_objc_ptr.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6D1A9AC1CAEA5330003C6CF /* yas_objc_ptr.mm */; };
@@ -78,6 +80,10 @@
 		B684E71C1CC23F8400289FD9 /* yas_ui_strings_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings_node.h; sourceTree = "<group>"; };
 		B684E7211CC475BD00289FD9 /* yas_ui_font_atlas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_font_atlas.h; sourceTree = "<group>"; };
 		B684E7221CC475BD00289FD9 /* yas_ui_font_atlas.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_font_atlas.mm; sourceTree = "<group>"; };
+		B69A6ACA1CCEF520002AC942 /* yas_ui_collider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_collider.mm; sourceTree = "<group>"; };
+		B69A6ACB1CCEF520002AC942 /* yas_ui_collider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_collider.h; sourceTree = "<group>"; };
+		B69FF9DD1CCFBD520036B0FA /* yas_ui_collider_protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_collider_protocol.cpp; sourceTree = "<group>"; };
+		B69FF9DE1CCFBD520036B0FA /* yas_ui_collider_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_collider_protocol.h; sourceTree = "<group>"; };
 		B6ABA5DA1CB402EF008C7714 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		B6C760E81CA79A5300BEE95A /* yas_ui_node_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_node_protocol.h; sourceTree = "<group>"; };
 		B6C760E91CA79A5300BEE95A /* yas_ui_node_protocol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_node_protocol.mm; sourceTree = "<group>"; };
@@ -291,6 +297,10 @@
 				B6F501911C9BFFD400A0B4A1 /* shader_mac */,
 				B6E083911CA382BC005A5779 /* yas_ui_action.h */,
 				B6E083901CA382BC005A5779 /* yas_ui_action.mm */,
+				B69FF9DD1CCFBD520036B0FA /* yas_ui_collider_protocol.cpp */,
+				B69FF9DE1CCFBD520036B0FA /* yas_ui_collider_protocol.h */,
+				B69A6ACB1CCEF520002AC942 /* yas_ui_collider.h */,
+				B69A6ACA1CCEF520002AC942 /* yas_ui_collider.mm */,
 				B6F501D41C9E355200A0B4A1 /* yas_ui_encode_info.h */,
 				B6F501D31C9E355200A0B4A1 /* yas_ui_encode_info.mm */,
 				B639BB151CBA4BB100E081B9 /* yas_ui_event_protocol.cpp */,
@@ -423,6 +433,8 @@
 				B684E7231CC475BD00289FD9 /* yas_ui_font_atlas.mm in Sources */,
 				B6F501A61C9BFFD500A0B4A1 /* yas_flex_ptr.cpp in Sources */,
 				B6EA82011CAAAC82009C870A /* yas_ui_metal_protocol.mm in Sources */,
+				B69A6ACC1CCEF520002AC942 /* yas_ui_collider.mm in Sources */,
+				B69FF9DF1CCFBD520036B0FA /* yas_ui_collider_protocol.cpp in Sources */,
 				B6F501AD1C9BFFD500A0B4A1 /* yas_ui_image.mm in Sources */,
 				B65A3A211CCE442E00929FB4 /* yas_ui_math.cpp in Sources */,
 				B65F6E4E1CC8804D007C3523 /* YASSampleMetalViewController.mm in Sources */,
