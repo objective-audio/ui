@@ -219,7 +219,23 @@ using namespace yas;
 }
 
 - (void)test_contains {
-#warning todo
+    ui::float_region region = {0.0f, -1.0f, 1.0f, 2.0f};
+
+    XCTAssertTrue(contains(region, {0.0f, 0.0f}));
+    XCTAssertTrue(contains(region, {0.0f, -1.0f}));
+    XCTAssertTrue(contains(region, {0.999f, 0.0f}));
+    XCTAssertTrue(contains(region, {0.0f, 0.999f}));
+
+    XCTAssertFalse(contains(region, {-0.0001f, 0.0f}));
+    XCTAssertFalse(contains(region, {0.0f, -1.001f}));
+    XCTAssertFalse(contains(region, {1.0f, 0.0f}));
+    XCTAssertFalse(contains(region, {0.0f, 1.0f}));
+}
+
+- (void)test_contains_by_float2 {
+    ui::float_region region = {0.0f, -1.0f, 1.0f, 2.0f};
+
+    XCTAssertTrue(contains(region, simd::float2{0.0f, 0.0f}));
 }
 
 - (void)test_pivot_to_string {
