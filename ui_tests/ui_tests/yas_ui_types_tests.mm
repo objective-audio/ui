@@ -218,6 +218,10 @@ using namespace yas;
     XCTAssertEqual(float2.y, 2.0f);
 }
 
+- (void)test_contains {
+#warning todo
+}
+
 - (void)test_pivot_to_string {
     XCTAssertEqual(to_string(ui::pivot::center), "center");
     XCTAssertEqual(to_string(ui::pivot::left), "left");

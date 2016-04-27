@@ -50,6 +50,21 @@ simd::float2 yas::to_float2(CGPoint const &point) {
     return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
 }
 
+bool yas::contains(ui::float_region const &region, ui::float_origin const &origin) {
+    float const sum_x = region.origin.x + region.size.width;
+    float const min_x = std::min(region.origin.x, sum_x);
+    float const max_x = std::max(region.origin.x, sum_x);
+    float const sum_y = region.origin.y + region.size.height;
+    float const min_y = std::min(region.origin.y, sum_y);
+    float const max_y = std::max(region.origin.y, sum_y);
+
+    return min_x <= origin.x && origin.x < max_x && min_y <= origin.y && origin.y < max_y;
+}
+
+bool yas::contains(ui::float_region const &region, simd::float2 const &origin) {
+    return contains(region, ui::float_origin{origin.x, origin.y});
+}
+
 std::string yas::to_string(ui::pivot const &pivot) {
     switch (pivot) {
         case ui::pivot::left:
