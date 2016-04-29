@@ -4,8 +4,6 @@
 
 #pragma once
 
-@class YASUIGestureRecognizer;
-
 #include <Metal/Metal.h>
 #include "yas_ui_renderer_protocol.h"
 
