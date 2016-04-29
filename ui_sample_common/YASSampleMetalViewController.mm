@@ -68,7 +68,6 @@ namespace sample {
                     mesh.set_texture(impl_ptr<impl>()->texture);
                     node.set_mesh(mesh);
                     node.set_scale(0.0f);
-                    node.set_color(1.0f);
 
                     auto root_node = renderer.root_node();
                     root_node.add_sub_node(node);
@@ -157,7 +156,7 @@ namespace sample {
                 auto &node = bg_node.node();
                 bg_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
                 node.set_scale(0.0f);
-                node.set_color({0.15f, 0.15f, 0.15f, 1.0f});
+                node.set_color({0.15f, 0.15f, 0.15f});
 
                 auto root_node = renderer.root_node();
                 root_node.add_sub_node(node);
@@ -176,6 +175,7 @@ namespace sample {
                 }
 
                 mesh_node.node().set_color(0.0f);
+                mesh_node.node().set_alpha(0.0f);
                 cursor_node.add_sub_node(mesh_node.node());
 
                 auto root_node = renderer.root_node();
@@ -292,16 +292,35 @@ namespace sample {
 
             if (auto renderer = weak_renderer.lock()) {
                 for (auto child_node : node.children()) {
+                    auto make_fade_action = [](ui::node &node, simd::float3 const &color, float const alpha) {
+                        double const duration = 0.5;
+
+                        ui::parallel_action action;
+
+                        auto color_action = ui::make_action({.start_color = node.color(),
+                                                             .end_color = color,
+                                                             .continuous_action = {.duration = duration}});
+                        color_action.set_target(node);
+                        action.insert_action(std::move(color_action));
+
+                        auto alpha_action = ui::make_action({.start_alpha = node.alpha(),
+                                                             .end_alpha = alpha,
+                                                             .continuous_action = {.duration = duration}});
+                        alpha_action.set_target(node);
+                        action.insert_action(std::move(alpha_action));
+
+                        action.set_target(node);
+
+                        return action;
+                    };
+
                     switch (event.phase()) {
                         case ui::event_phase::began: {
                             if (auto prev_action = weak_action.lock()) {
                                 renderer.erase_action(prev_action);
                             }
 
-                            auto action = ui::make_action({.start_color = child_node.color(),
-                                                           .end_color = {0.0f, 0.6f, 1.0f, 1.0f},
-                                                           .continuous_action = {.duration = 0.5}});
-                            action.set_target(child_node);
+                            auto action = make_fade_action(child_node, simd::float3{0.0f, 0.6f, 1.0f}, 1.0f);
                             renderer.insert_action(action);
                             weak_action = action;
                         } break;
@@ -311,10 +330,7 @@ namespace sample {
                                 renderer.erase_action(prev_action);
                             }
 
-                            auto action = ui::make_action({.start_color = child_node.color(),
-                                                           .end_color = 0.0f,
-                                                           .continuous_action = {.duration = 0.5}});
-                            action.set_target(child_node);
+                            auto action = make_fade_action(child_node, simd::float3{0.0f}, 0.0f);
                             renderer.insert_action(action);
                             weak_action = action;
                         } break;

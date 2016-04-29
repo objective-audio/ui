@@ -107,8 +107,15 @@ namespace ui {
     };
 
     struct color_action_args {
-        simd::float4 start_color = 1.0f;
-        simd::float4 end_color = 1.0f;
+        simd::float3 start_color = 1.0f;
+        simd::float3 end_color = 1.0f;
+
+        continuous_action_args continuous_action;
+    };
+
+    struct alpha_action_args {
+        float start_alpha = 1.0f;
+        float end_alpha = 1.0f;
 
         continuous_action_args continuous_action;
     };
@@ -117,6 +124,7 @@ namespace ui {
     continuous_action make_action(rotate_action_args);
     continuous_action make_action(scale_action_args);
     continuous_action make_action(color_action_args);
+    continuous_action make_action(alpha_action_args);
 
     class parallel_action : public action {
        public:

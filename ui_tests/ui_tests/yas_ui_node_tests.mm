@@ -33,10 +33,10 @@ using namespace yas;
     XCTAssertEqual(node.scale().x, 1.0f);
     XCTAssertEqual(node.scale().y, 1.0f);
 
-    XCTAssertEqual(node.color()[0], 0.0f);
-    XCTAssertEqual(node.color()[1], 0.0f);
-    XCTAssertEqual(node.color()[2], 0.0f);
-    XCTAssertEqual(node.color()[3], 0.0f);
+    XCTAssertEqual(node.color()[0], 1.0f);
+    XCTAssertEqual(node.color()[1], 1.0f);
+    XCTAssertEqual(node.color()[2], 1.0f);
+    XCTAssertEqual(node.alpha(), 1.0f);
 
     XCTAssertFalse(node.mesh());
 
@@ -59,8 +59,8 @@ using namespace yas;
     node.set_position({1.0f, 2.0f});
     node.set_angle(3.0f);
     node.set_scale({4.0f, 5.0f});
-
-    node.set_mesh(mesh);
+    node.set_color({0.1f, 0.2f, 0.3f});
+    node.set_alpha(0.4f);
 
     node.set_enabled(true);
 
@@ -69,30 +69,44 @@ using namespace yas;
     XCTAssertEqual(node.angle(), 3.0f);
     XCTAssertEqual(node.scale().x, 4.0f);
     XCTAssertEqual(node.scale().y, 5.0f);
+    XCTAssertEqual(node.color()[0], 0.1f);
+    XCTAssertEqual(node.color()[1], 0.2f);
+    XCTAssertEqual(node.color()[2], 0.3f);
+    XCTAssertEqual(node.alpha(), 0.4f);
+
+    node.set_mesh(mesh);
 
     XCTAssertEqual(node.mesh(), mesh);
 
     XCTAssertTrue(node.is_enabled());
 }
 
-- (void)test_color {
+- (void)set_color_to_mesh {
     ui::node node;
     ui::mesh mesh;
 
-    node.set_color({0.1f, 0.2f, 0.3f, 0.4f});
+    XCTAssertEqual(mesh.color()[0], 1.0f);
+    XCTAssertEqual(mesh.color()[1], 1.0f);
+    XCTAssertEqual(mesh.color()[2], 1.0f);
+    XCTAssertEqual(mesh.color()[3], 1.0f);
 
-    XCTAssertEqual(node.color()[0], 0.0f);
-    XCTAssertEqual(node.color()[1], 0.0f);
-    XCTAssertEqual(node.color()[2], 0.0f);
-    XCTAssertEqual(node.color()[3], 0.0f);
+    node.set_color({0.25f, 0.5f, 0.75f});
+    node.set_alpha(0.125f);
 
     node.set_mesh(mesh);
-    node.set_color({0.9f, 0.8f, 0.7f, 0.6f});
 
-    XCTAssertEqual(node.color()[0], 0.9f);
-    XCTAssertEqual(node.color()[1], 0.8f);
-    XCTAssertEqual(node.color()[2], 0.7f);
-    XCTAssertEqual(node.color()[3], 0.6f);
+    XCTAssertEqual(mesh.color()[0], 0.25f);
+    XCTAssertEqual(mesh.color()[1], 0.5f);
+    XCTAssertEqual(mesh.color()[2], 0.75f);
+    XCTAssertEqual(mesh.color()[3], 0.125f);
+
+    node.set_color({0.1f, 0.2f, 0.3f});
+    node.set_alpha(0.4f);
+
+    XCTAssertEqual(mesh.color()[0], 0.1f);
+    XCTAssertEqual(mesh.color()[1], 0.2f);
+    XCTAssertEqual(mesh.color()[2], 0.3f);
+    XCTAssertEqual(mesh.color()[3], 0.4f);
 }
 
 - (void)test_is_equal {

@@ -38,8 +38,12 @@ simd::float2 ui::node::scale() const {
     return impl_ptr<impl>()->scale();
 }
 
-simd::float4 ui::node::color() const {
+simd::float3 ui::node::color() const {
     return impl_ptr<impl>()->color();
+}
+
+float ui::node::alpha() const {
+    return impl_ptr<impl>()->alpha();
 }
 
 ui::mesh ui::node::mesh() const {
@@ -62,8 +66,12 @@ void ui::node::set_scale(simd::float2 const scale) {
     impl_ptr<impl>()->set_scale(scale);
 }
 
-void ui::node::set_color(simd::float4 const color) {
+void ui::node::set_color(simd::float3 const color) {
     impl_ptr<impl>()->set_color(color);
+}
+
+void ui::node::set_alpha(float const alpha) {
+    impl_ptr<impl>()->set_alpha(alpha);
 }
 
 void ui::node::set_mesh(ui::mesh mesh) {

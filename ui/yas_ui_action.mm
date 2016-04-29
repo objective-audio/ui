@@ -271,6 +271,22 @@ ui::continuous_action ui::make_action(ui::color_action_args args) {
     return action;
 }
 
+#pragma mark - alpha_action
+
+ui::continuous_action ui::make_action(ui::alpha_action_args args) {
+    ui::continuous_action action{std::move(args.continuous_action)};
+
+    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+        if (auto action = weak_action.lock()) {
+            if (auto target = action.target()) {
+                target.set_alpha((args.end_alpha - args.start_alpha) * (float)value + args.start_alpha);
+            }
+        }
+    });
+
+    return action;
+}
+
 #pragma mark - parallel_action::impl
 
 struct ui::parallel_action::impl : action::impl {

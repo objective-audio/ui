@@ -227,9 +227,8 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action({.start_color = {0.0f, 0.25f, 0.5f, 1.0f},
-                                   .end_color = {1.0f, 0.75f, 0.5f, 0.0f},
-                                   .continuous_action = std::move(args)});
+    auto action = ui::make_action(
+        {.start_color = {0.0f, 0.25f, 0.5f}, .end_color = {1.0f, 0.75f, 0.5f}, .continuous_action = std::move(args)});
     action.set_target(target);
     ui::mesh mesh;
     target.set_mesh(mesh);
@@ -240,21 +239,41 @@ using namespace yas;
     XCTAssertEqual(target.color()[0], 0.0f);
     XCTAssertEqual(target.color()[1], 0.25f);
     XCTAssertEqual(target.color()[2], 0.5f);
-    XCTAssertEqual(target.color()[3], 1.0f);
 
     updatable.update(time + 500ms);
 
     XCTAssertEqual(target.color()[0], 0.5f);
     XCTAssertEqual(target.color()[1], 0.5f);
     XCTAssertEqual(target.color()[2], 0.5f);
-    XCTAssertEqual(target.color()[3], 0.5f);
 
     updatable.update(time + 1s);
 
     XCTAssertEqual(target.color()[0], 1.0f);
     XCTAssertEqual(target.color()[1], 0.75f);
     XCTAssertEqual(target.color()[2], 0.5f);
-    XCTAssertEqual(target.color()[3], 0.0f);
+}
+
+- (void)test_udpate_alpha_action {
+    ui::node target;
+    auto time = std::chrono::system_clock::now();
+    ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};
+    auto action = ui::make_action({.start_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
+    action.set_target(target);
+    ui::mesh mesh;
+    target.set_mesh(mesh);
+    auto updatable = action.updatable();
+
+    updatable.update(time);
+
+    XCTAssertEqual(target.alpha(), 1.0f);
+
+    updatable.update(time + 500ms);
+
+    XCTAssertEqual(target.alpha(), 0.5f);
+
+    updatable.update(time + 1s);
+
+    XCTAssertEqual(target.alpha(), 0.0f);
 }
 
 - (void)test_completion_handler {
