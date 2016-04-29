@@ -133,7 +133,13 @@ void ui::node::impl::update_render_info(render_info &render_info) {
         return;
     }
 
-    update_matrix_for_render(render_info.render_matrix);
+    if (_needs_update_matrix) {
+        _local_matrix = matrix::translation(_position.x, _position.y) * matrix::rotation(_angle) *
+                        matrix::scale(_scale.x, _scale.y);
+        _needs_update_matrix = false;
+    }
+
+    _render_matrix = render_info.render_matrix * _local_matrix;
 
     if (_mesh) {
         _mesh.renderable().set_matrix(_render_matrix);
@@ -167,16 +173,6 @@ ui::setup_metal_result ui::node::impl::setup(id<MTLDevice> const device) {
     }
 
     return ui::setup_metal_result{nullptr};
-}
-
-void ui::node::impl::update_matrix_for_render(simd::float4x4 const matrix) {
-    if (_needs_update_matrix) {
-        _local_matrix = matrix::translation(_position.x, _position.y) * matrix::rotation(_angle) *
-                        matrix::scale(_scale.x, _scale.y);
-        _needs_update_matrix = false;
-    }
-
-    _render_matrix = matrix * _local_matrix;
 }
 
 ui::node_renderer ui::node::impl::renderer() {

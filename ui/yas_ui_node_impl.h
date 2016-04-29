@@ -44,7 +44,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
     ui::setup_metal_result setup(id<MTLDevice> const) override;
 
-    virtual void update_matrix_for_render(simd::float4x4 const matrix);
+    void update_matrix_for_render(simd::float4x4 const matrix);
 
     ui::node_renderer renderer() override;
     void set_renderer(ui::node_renderer &&) override;
