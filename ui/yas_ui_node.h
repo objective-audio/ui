@@ -15,6 +15,7 @@ namespace yas {
 namespace ui {
     class mesh;
     class render_info;
+    class collider;
 
     class node : public base {
        public:
@@ -32,6 +33,7 @@ namespace ui {
         simd::float3 color() const;
         float alpha() const;
         ui::mesh mesh() const;
+        ui::collider collider() const;
         bool is_enabled() const;
 
         void set_position(simd::float2 const);
@@ -40,6 +42,7 @@ namespace ui {
         void set_color(simd::float3 const);
         void set_alpha(float const);
         void set_mesh(ui::mesh);
+        void set_collider(ui::collider);
         void set_enabled(bool const);
 
         void add_sub_node(ui::node);

@@ -50,6 +50,10 @@ ui::mesh ui::node::mesh() const {
     return impl_ptr<impl>()->mesh();
 }
 
+ui::collider ui::node::collider() const {
+    return impl_ptr<impl>()->collider();
+}
+
 bool ui::node::is_enabled() const {
     return impl_ptr<impl>()->is_enabled();
 }
@@ -76,6 +80,10 @@ void ui::node::set_alpha(float const alpha) {
 
 void ui::node::set_mesh(ui::mesh mesh) {
     impl_ptr<impl>()->set_mesh(std::move(mesh));
+}
+
+void ui::node::set_collider(ui::collider collider) {
+    impl_ptr<impl>()->set_collider(std::move(collider));
 }
 
 void ui::node::set_enabled(bool const enabled) {
