@@ -60,6 +60,10 @@ subject<ui::renderer, ui::renderer_method> &ui::renderer::subject() {
     return impl_ptr<impl>()->subject();
 }
 
+ui::event_manager &ui::renderer::event_manager() {
+    return impl_ptr<impl>()->event_manager();
+}
+
 #pragma mark - node_renderer
 
 class ui::node_renderer::impl : public renderer::impl {

@@ -240,7 +240,7 @@ namespace sample {
 
     [self setRenderer:_cpp.renderer.view_renderable()];
 
-    auto event_manager = [self event_manager];
+    auto &event_manager = _cpp.renderer.event_manager();
 
     auto const &view_size = _cpp.renderer.view_size();
     _cpp.bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});

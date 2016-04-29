@@ -12,7 +12,8 @@
 
 namespace yas {
 namespace ui {
-    struct view_renderable;
+    class view_renderable;
+    class event_manager;
     enum class renderer_method;
 
     class renderer : public base {
@@ -32,7 +33,10 @@ namespace ui {
         void set_constant_buffer_offset(uint32_t const);
 
         ui::view_renderable view_renderable();
+
         subject<renderer, renderer_method> &subject();
+
+        ui::event_manager &event_manager();
 
        protected:
         renderer(std::shared_ptr<impl> &&);

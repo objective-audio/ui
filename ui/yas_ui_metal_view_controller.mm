@@ -20,12 +20,6 @@ namespace ui {
 }
 }
 
-@interface YASUIMetalView (YASUIMetalViewController)
-
-- (yas::ui::event_manager const &)event_manager;
-
-@end
-
 @interface YASUIMetalViewController () <MTKViewDelegate>
 
 @end
@@ -86,10 +80,6 @@ namespace ui {
 
 - (yas::ui::view_renderable const &)renderer {
     return _cpp.renderer;
-}
-
-- (yas::ui::event_manager const &)event_manager {
-    return [self.metalView event_manager];
 }
 
 #pragma mark -

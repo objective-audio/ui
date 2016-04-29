@@ -7,6 +7,12 @@
 #include <Metal/Metal.h>
 #include "yas_ui_renderer_protocol.h"
 
+namespace yas {
+namespace ui {
+    class event_manager;
+}
+}
+
 class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_renderable::impl {
    public:
     impl(id<MTLDevice> const device);
@@ -31,6 +37,8 @@ class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_ren
     virtual void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPass_descriptor);
 
     yas::subject<ui::renderer, ui::renderer_method> &subject();
+
+    ui::event_manager &event_manager();
 
    private:
     struct core;
