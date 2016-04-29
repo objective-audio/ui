@@ -126,7 +126,6 @@ void ui::node::impl::update_render_info(render_info &render_info) {
     }
 
     update_matrix_for_render(render_info.render_matrix);
-    update_touch_for_render(render_info.touch_matrix);
 
     if (_mesh) {
         _mesh.renderable().set_matrix(_render_matrix);
@@ -137,7 +136,6 @@ void ui::node::impl::update_render_info(render_info &render_info) {
 
     for (auto &sub_node : children) {
         render_info.render_matrix = _render_matrix;
-        render_info.touch_matrix = _touch_matrix;
         sub_node.impl_ptr<impl>()->update_render_info(render_info);
     }
 }
@@ -166,10 +164,6 @@ void ui::node::impl::update_matrix_for_render(simd::float4x4 const matrix) {
     }
 
     _render_matrix = matrix * _local_matrix;
-}
-
-void ui::node::impl::update_touch_for_render(simd::float4x4 const matrix) {
-    _touch_matrix = matrix * _local_matrix;
 }
 
 ui::node_renderer ui::node::impl::renderer() {
