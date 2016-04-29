@@ -30,7 +30,8 @@ namespace ui {
         simd::float2 position() const;
         float angle() const;
         simd::float2 scale() const;
-        simd::float4 color() const;
+        simd::float3 color() const;
+        float alpha() const;
         ui::mesh mesh() const;
         ui::touch touch() const;
         bool is_enabled() const;
@@ -38,7 +39,8 @@ namespace ui {
         void set_position(simd::float2 const);
         void set_angle(float const);
         void set_scale(simd::float2 const);
-        void set_color(simd::float4 const);
+        void set_color(simd::float3 const);
+        void set_alpha(float const);
         void set_mesh(ui::mesh);
         void set_touch(ui::touch);
         void set_enabled(bool const);

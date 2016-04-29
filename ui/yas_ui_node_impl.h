@@ -20,14 +20,16 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     simd::float2 position();
     float angle();
     simd::float2 scale();
-    simd::float4 color();
+    simd::float3 color();
+    float alpha();
     ui::mesh mesh();
     bool is_enabled();
 
     void set_position(simd::float2 const);
     void set_angle(float const);
     void set_scale(simd::float2 const);
-    void set_color(simd::float4 const);
+    void set_color(simd::float3 const);
+    void set_alpha(float const);
     void set_mesh(ui::mesh &&);
     void set_enabled(bool const);
 
@@ -53,6 +55,8 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     simd::float2 _position;
     float _angle;
     simd::float2 _scale;
+    simd::float3 _color;
+    float _alpha;
     ui::mesh _mesh{nullptr};
     bool _enabled;
 
@@ -60,4 +64,6 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     simd::float4x4 _local_matrix;
     simd::float4x4 _touch_matrix;
     bool _needs_update_matrix;
+    
+    void _update_mesh_color();
 };

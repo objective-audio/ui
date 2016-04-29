@@ -19,6 +19,8 @@ ui::node::impl::impl()
       _angle(0.0f),
       _local_matrix(matrix_identity_float4x4),
       _scale(1.0f),
+      _color(1.0f),
+      _alpha(1.0f),
       _needs_update_matrix(true),
       _enabled(true) {
 }
@@ -38,12 +40,12 @@ simd::float2 ui::node::impl::scale() {
     return _scale;
 }
 
-simd::float4 ui::node::impl::color() {
-    if (_mesh) {
-        return _mesh.color();
-    } else {
-        return simd::float4{0.0f, 0.0f, 0.0f, 0.0f};
-    }
+simd::float3 ui::node::impl::color() {
+    return _color;
+}
+
+float ui::node::impl::alpha() {
+    return _alpha;
 }
 
 ui::mesh ui::node::impl::mesh() {
@@ -69,14 +71,25 @@ void ui::node::impl::set_scale(simd::float2 const scale) {
     _needs_update_matrix = true;
 }
 
-void ui::node::impl::set_color(simd::float4 const color) {
+void ui::node::impl::set_color(simd::float3 const color) {
+    _color = color;
+    _update_mesh_color();
+}
+
+void ui::node::impl::set_alpha(float const alpha) {
+    _alpha = alpha;
+    _update_mesh_color();
+}
+
+void ui::node::impl::_update_mesh_color() {
     if (_mesh) {
-        _mesh.set_color(color);
+        _mesh.set_color({_color[0] * _alpha, _color[1] * _alpha, _color[2] * _alpha, _alpha});
     }
 }
 
 void ui::node::impl::set_mesh(ui::mesh &&mesh) {
     _mesh = std::move(mesh);
+    _update_mesh_color();
 }
 
 void ui::node::impl::set_enabled(bool const enabled) {
