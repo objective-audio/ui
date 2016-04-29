@@ -127,8 +127,6 @@ class ui::node_renderer::impl : public renderer::impl {
 
     ui::node _root_node;
     ui::parallel_action _action;
-
-    objc_ptr<YASUIGestureRecognizer *> gesuture_recognizer;
 };
 
 ui::node_renderer::node_renderer(id<MTLDevice> const device) : renderer(std::make_shared<impl>(device)) {
