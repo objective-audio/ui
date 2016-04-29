@@ -15,7 +15,6 @@ namespace yas {
 namespace ui {
     class mesh;
     class render_info;
-    class touch;
 
     class node : public base {
        public:
@@ -33,7 +32,6 @@ namespace ui {
         simd::float3 color() const;
         float alpha() const;
         ui::mesh mesh() const;
-        ui::touch touch() const;
         bool is_enabled() const;
 
         void set_position(simd::float2 const);
@@ -42,7 +40,6 @@ namespace ui {
         void set_color(simd::float3 const);
         void set_alpha(float const);
         void set_mesh(ui::mesh);
-        void set_touch(ui::touch);
         void set_enabled(bool const);
 
         void add_sub_node(ui::node);

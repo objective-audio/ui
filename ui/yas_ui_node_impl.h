@@ -42,7 +42,6 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     ui::setup_metal_result setup(id<MTLDevice> const) override;
 
     virtual void update_matrix_for_render(simd::float4x4 const matrix);
-    virtual void update_touch_for_render(simd::float4x4 const matrix);
 
     ui::node_renderer renderer() override;
     void set_renderer(ui::node_renderer &&) override;
@@ -62,8 +61,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
     simd::float4x4 _render_matrix;
     simd::float4x4 _local_matrix;
-    simd::float4x4 _touch_matrix;
     bool _needs_update_matrix;
-    
+
     void _update_mesh_color();
 };
