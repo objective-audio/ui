@@ -144,6 +144,7 @@ void ui::node::impl::update_render_info(render_info &render_info) {
 
     if (_collider) {
         _collider.renderable().set_matrix(_render_matrix);
+        render_info.collision_detector.updatable().push_front_collider(_collider);
     }
 
     for (auto &sub_node : children) {
