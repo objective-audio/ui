@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include "yas_objc_ptr.h"
 #include "yas_ui_action.h"
+#include "yas_ui_collision_detector.h"
 #include "yas_ui_encode_info.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
@@ -60,6 +61,10 @@ subject<ui::renderer, ui::renderer_method> &ui::renderer::subject() {
     return impl_ptr<impl>()->subject();
 }
 
+ui::event_manager &ui::renderer::event_manager() {
+    return impl_ptr<impl>()->event_manager();
+}
+
 #pragma mark - node_renderer
 
 class ui::node_renderer::impl : public renderer::impl {
@@ -91,25 +96,23 @@ class ui::node_renderer::impl : public renderer::impl {
         _root_node.metal().setup(device());
 
         _action.updatable().update(std::chrono::system_clock::now());
-
-        //        [gesuture_recognizer.object() clearTouchesIfNeeded];
+        _detector.updatable().clear_colliders();
 
         ui::render_info render_info;
+        render_info.collision_detector = _detector;
 
         render_info.push_encode_info(
             {renderPassDesc, multiSamplePipelineState(), multiSamplePipelineStateWithoutTexture()});
 
         auto const &matrix = projection_matrix();
         render_info.render_matrix = matrix;
-        render_info.touch_matrix = matrix;
 
         _root_node.update_render_info(render_info);
-
-        //        [gesuture_recognizer.object() finalizeTouches];
+#warning todo finalize collider?
 
         auto renderer = cast<ui::renderer>();
 
-        for (auto &encode_info : render_info.all_encode_infos()) {
+        for (auto &encode_info : render_info.all_encode_infos) {
             auto renderPassDesc = encode_info.renderPassDescriptor();
             auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
                 return [commandBuffer renderCommandEncoderWithDescriptor:renderPassDesc];
@@ -127,6 +130,7 @@ class ui::node_renderer::impl : public renderer::impl {
 
     ui::node _root_node;
     ui::parallel_action _action;
+    ui::collision_detector _detector;
 };
 
 ui::node_renderer::node_renderer(id<MTLDevice> const device) : renderer(std::make_shared<impl>(device)) {
@@ -154,4 +158,8 @@ void ui::node_renderer::erase_action(ui::action const &action) {
 
 void ui::node_renderer::erase_action(ui::node const &target) {
     impl_ptr<impl>()->erase_action(target);
+}
+
+ui::collision_detector ui::node_renderer::collision_detector() {
+    return impl_ptr<impl>()->_detector;
 }

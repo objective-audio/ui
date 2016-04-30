@@ -12,7 +12,8 @@
 
 namespace yas {
 namespace ui {
-    struct view_renderable;
+    class view_renderable;
+    class event_manager;
     enum class renderer_method;
 
     class renderer : public base {
@@ -32,7 +33,10 @@ namespace ui {
         void set_constant_buffer_offset(uint32_t const);
 
         ui::view_renderable view_renderable();
+
         subject<renderer, renderer_method> &subject();
+
+        ui::event_manager &event_manager();
 
        protected:
         renderer(std::shared_ptr<impl> &&);
@@ -40,6 +44,7 @@ namespace ui {
 
     class node;
     class action;
+    class collision_detector;
 
     class node_renderer : public renderer {
        public:
@@ -54,6 +59,8 @@ namespace ui {
         void insert_action(ui::action action);
         void erase_action(ui::action const &action);
         void erase_action(ui::node const &target);
+
+        ui::collision_detector collision_detector();
     };
 }
 }

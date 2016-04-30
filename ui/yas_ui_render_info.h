@@ -8,26 +8,26 @@
 #include <simd/simd.h>
 #include <deque>
 #include "yas_base.h"
+#include "yas_ui_collision_detector.h"
 
 namespace yas {
 namespace ui {
     class encode_info;
+    class collision_detector;
 
-    class render_info : public base {
-        class impl;
-
-       public:
-        render_info();
-        render_info(std::nullptr_t);
+    struct render_info {
+        std::deque<encode_info> all_encode_infos;
 
         void push_encode_info(encode_info);
         void pop_endoce_info();
 
         ui::encode_info const &current_encode_info();
-        std::deque<ui::encode_info> const &all_encode_infos();
 
         simd::float4x4 render_matrix;
-        simd::float4x4 touch_matrix;
+        ui::collision_detector collision_detector;
+
+       private:
+        std::deque<encode_info> _current_encode_infos;
     };
 }
 }

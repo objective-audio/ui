@@ -6,12 +6,19 @@
 #include "yas_each_index.h"
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
+#include "yas_ui_event.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_metal_view.h"
 #include "yas_ui_renderer.h"
 
 using namespace yas;
 using namespace simd;
+
+@interface YASUIMetalView (yas_ui_renderer_impl)
+
+- (ui::event_manager const &)event_manager;
+
+@end
 
 namespace yas {
 namespace ui {
@@ -46,6 +53,8 @@ struct ui::renderer::impl::core {
     objc_ptr<id<MTLRenderPipelineState>> pipeline_state_without_texture;
 
     yas::subject<renderer, renderer_method> subject;
+
+    ui::event_manager event_manager = nullptr;
 
     void update_view_size(CGSize const v_size, CGSize const d_size) {
         float half_width = v_size.width * 0.5f;
@@ -127,6 +136,8 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     _core->pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
     _core->update_view_size(view.bounds.size, view.drawableSize);
+
+    _core->event_manager = [view event_manager];
 }
 
 id<MTLDevice> ui::renderer::impl::device() {
@@ -208,6 +219,10 @@ void ui::renderer::impl::view_render(YASUIMetalView *const view) {
 
 subject<ui::renderer, ui::renderer_method> &ui::renderer::impl::subject() {
     return _core->subject;
+}
+
+ui::event_manager &ui::renderer::impl::event_manager() {
+    return _core->event_manager;
 }
 
 #pragma mark - virtual
