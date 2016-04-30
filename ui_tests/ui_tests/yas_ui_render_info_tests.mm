@@ -25,15 +25,8 @@ using namespace yas;
 - (void)test_create {
     ui::render_info info;
 
-    XCTAssertTrue(info);
     XCTAssertFalse(info.current_encode_info());
-    XCTAssertEqual(info.all_encode_infos().size(), 0);
-}
-
-- (void)test_create_null {
-    ui::render_info info{nullptr};
-
-    XCTAssertFalse(info);
+    XCTAssertEqual(info.all_encode_infos.size(), 0);
 }
 
 - (void)test_push_and_pop_encode_info {
@@ -41,26 +34,26 @@ using namespace yas;
 
     info.push_encode_info({nil, nil, nil});
 
-    XCTAssertEqual(info.all_encode_infos().size(), 1);
+    XCTAssertEqual(info.all_encode_infos.size(), 1);
 
     auto encode_info1 = info.current_encode_info();
     XCTAssertTrue(encode_info1);
 
     info.push_encode_info({nil, nil, nil});
 
-    XCTAssertEqual(info.all_encode_infos().size(), 2);
+    XCTAssertEqual(info.all_encode_infos.size(), 2);
 
     auto encode_info2 = info.current_encode_info();
     XCTAssertTrue(encode_info2);
 
     info.pop_endoce_info();
 
-    XCTAssertEqual(info.all_encode_infos().size(), 2);
+    XCTAssertEqual(info.all_encode_infos.size(), 2);
     XCTAssertEqual(info.current_encode_info(), encode_info1);
 
     info.pop_endoce_info();
 
-    XCTAssertEqual(info.all_encode_infos().size(), 2);
+    XCTAssertEqual(info.all_encode_infos.size(), 2);
     XCTAssertFalse(info.current_encode_info());
 }
 
