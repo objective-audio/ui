@@ -7,6 +7,7 @@
 #include <simd/simd.h>
 #include <vector>
 #include "yas_objc_ptr.h"
+#include "yas_ui_collider.h"
 #include "yas_ui_mesh.h"
 
 class yas::ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
@@ -23,6 +24,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     simd::float3 color();
     float alpha();
     ui::mesh mesh();
+    ui::collider collider();
     bool is_enabled();
 
     void set_position(simd::float2 const);
@@ -31,6 +33,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     void set_color(simd::float3 const);
     void set_alpha(float const);
     void set_mesh(ui::mesh &&);
+    void set_collider(ui::collider &&);
     void set_enabled(bool const);
 
     void add_sub_node(ui::node &&sub_node);
@@ -57,6 +60,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     simd::float3 _color;
     float _alpha;
     ui::mesh _mesh{nullptr};
+    ui::collider _collider{nullptr};
     bool _enabled;
 
     simd::float4x4 _render_matrix;

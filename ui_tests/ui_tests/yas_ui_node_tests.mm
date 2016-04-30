@@ -39,6 +39,7 @@ using namespace yas;
     XCTAssertEqual(node.alpha(), 1.0f);
 
     XCTAssertFalse(node.mesh());
+    XCTAssertFalse(node.collider());
 
     XCTAssertTrue(node.is_enabled());
 
@@ -55,6 +56,7 @@ using namespace yas;
 - (void)test_set_variables {
     ui::node node;
     ui::mesh mesh;
+    ui::collider collider;
 
     node.set_position({1.0f, 2.0f});
     node.set_angle(3.0f);
@@ -75,8 +77,10 @@ using namespace yas;
     XCTAssertEqual(node.alpha(), 0.4f);
 
     node.set_mesh(mesh);
+    node.set_collider(collider);
 
     XCTAssertEqual(node.mesh(), mesh);
+    XCTAssertEqual(node.collider(), collider);
 
     XCTAssertTrue(node.is_enabled());
 }

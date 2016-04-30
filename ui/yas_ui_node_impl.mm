@@ -52,6 +52,10 @@ ui::mesh ui::node::impl::mesh() {
     return _mesh;
 }
 
+ui::collider ui::node::impl::collider() {
+    return _collider;
+}
+
 bool ui::node::impl::is_enabled() {
     return _enabled;
 }
@@ -90,6 +94,10 @@ void ui::node::impl::_update_mesh_color() {
 void ui::node::impl::set_mesh(ui::mesh &&mesh) {
     _mesh = std::move(mesh);
     _update_mesh_color();
+}
+
+void ui::node::impl::set_collider(ui::collider &&collider) {
+    _collider = std::move(collider);
 }
 
 void ui::node::impl::set_enabled(bool const enabled) {
@@ -132,6 +140,10 @@ void ui::node::impl::update_render_info(render_info &render_info) {
         if (auto encode_info = render_info.current_encode_info()) {
             encode_info.push_back_mesh(_mesh);
         }
+    }
+
+    if (_collider) {
+        _collider.renderable().set_matrix(_render_matrix);
     }
 
     for (auto &sub_node : children) {
