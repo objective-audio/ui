@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_ui_action.h"
+#import "yas_ui_event.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
 
@@ -31,6 +32,7 @@ using namespace yas;
     XCTAssertEqual(renderer.actions().size(), 0);
 
     XCTAssertTrue(renderer.view_renderable());
+    XCTAssertTrue(renderer.event_manager());
 }
 
 - (void)test_create_null {

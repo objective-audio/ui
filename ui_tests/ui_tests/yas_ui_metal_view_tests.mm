@@ -12,6 +12,7 @@ using namespace yas;
 @interface YASUIMetalView (yas_ui_metal_view_tests)
 
 - (yas::ui::event_manager const &)event_manager;
+- (void)set_event_manager:(ui::event_manager)manager;
 
 @end
 
@@ -34,14 +35,15 @@ using namespace yas;
     auto view = view_ptr.object();
 
     XCTAssertNotNil(view);
-    XCTAssertTrue([view event_manager]);
+    XCTAssertFalse([view event_manager]);
     XCTAssertTrue([view acceptsFirstResponder]);
 }
 
 - (void)test_cursor_event {
     auto view =
         make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]).object();
-    auto event_manager = [view event_manager];
+    ui::event_manager event_manager;
+    [view set_event_manager:event_manager];
 
     bool began_called = false;
     bool changed_called = false;
@@ -94,7 +96,8 @@ using namespace yas;
 - (void)test_touch_event {
     auto view =
         make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]).object();
-    auto event_manager = [view event_manager];
+    ui::event_manager event_manager;
+    [view set_event_manager:event_manager];
 
     struct observed_values {
         bool began_called = false;
@@ -201,7 +204,8 @@ using namespace yas;
 - (void)test_key_event {
     auto view =
         make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]).object();
-    auto event_manager = [view event_manager];
+    ui::event_manager event_manager;
+    [view set_event_manager:event_manager];
 
     struct observed_values {
         bool began_called = false;
