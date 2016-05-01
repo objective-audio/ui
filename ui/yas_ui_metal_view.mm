@@ -11,6 +11,14 @@
 using namespace yas;
 
 namespace yas {
+namespace ui {
+    namespace metal_view {
+        struct cpp {
+            ui::event_manager event_manager = nullptr;
+        };
+    };
+}
+
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
 ui::event_phase to_phase(NSEventPhase const phase) {
     switch (phase) {
@@ -33,14 +41,18 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 @implementation YASUIMetalView {
-    ui::event_manager _event_manager;
+    ui::metal_view::cpp _cpp;
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
     objc_ptr<NSTrackingArea *> _tracking_area;
 #endif
 }
 
-- (yas::ui::event_manager const &)event_manager {
-    return _event_manager;
+- (ui::event_manager const &)event_manager {
+    return _cpp.event_manager;
+}
+
+- (void)set_event_manager:(ui::event_manager)manager {
+    _cpp.event_manager = std::move(manager);
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -57,8 +69,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
-    _event_manager.inputtable().input_touch_event(std::move(phase),
-                                                  ui::touch_event{uintptr_t(touch), [self _position:touch]});
+    _cpp.event_manager.inputtable().input_touch_event(std::move(phase),
+                                                      ui::touch_event{uintptr_t(touch), [self _position:touch]});
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -88,22 +100,22 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #elif TARGET_OS_MAC
 
 - (void)_sendCursorEvent:(NSEvent *)event {
-    _event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event]});
+    _cpp.event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event]});
 }
 
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    _event_manager.inputtable().input_touch_event(
+    _cpp.event_manager.inputtable().input_touch_event(
         std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event]});
 }
 
 - (void)_sendKeyEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    _event_manager.inputtable().input_key_event(
+    _cpp.event_manager.inputtable().input_key_event(
         std::move(phase), ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
                                         to_string((__bridge CFStringRef)event.charactersIgnoringModifiers)});
 }
 
 - (void)_sendModifierEvent:(NSEvent *)event {
-    _event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags));
+    _cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags));
 }
 
 - (simd::float2)_position:(NSEvent *)event {
