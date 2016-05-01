@@ -16,7 +16,7 @@ using namespace simd;
 
 @interface YASUIMetalView (yas_ui_renderer_impl)
 
-- (ui::event_manager const &)event_manager;
+- (void)set_event_manager:(ui::event_manager)manager;
 
 @end
 
@@ -54,7 +54,7 @@ struct ui::renderer::impl::core {
 
     yas::subject<renderer, renderer_method> subject;
 
-    ui::event_manager event_manager = nullptr;
+    ui::event_manager event_manager;
 
     void update_view_size(CGSize const v_size, CGSize const d_size) {
         float half_width = v_size.width * 0.5f;
@@ -137,7 +137,7 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
 
     _core->update_view_size(view.bounds.size, view.drawableSize);
 
-    _core->event_manager = [view event_manager];
+    [view set_event_manager:_core->event_manager];
 }
 
 id<MTLDevice> ui::renderer::impl::device() {
