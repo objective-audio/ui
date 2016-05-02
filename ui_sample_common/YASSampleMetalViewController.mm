@@ -179,8 +179,7 @@ namespace sample {
                     node.collider().set_value({{.shape = ui::collider_shape::square}});
 
                     observers.emplace_back(node.subject().make_observer(
-                        ui::node_method::change_node_renderer,
-                        [idx, obs = base{nullptr}](auto const &context) mutable {
+                        ui::node_method::change_node_renderer, [idx, obs = base{nullptr}](auto const &context) mutable {
                             obs = nullptr;
 
                             ui::node node = context.value;
@@ -200,7 +199,7 @@ namespace sample {
 
                                             auto make_color_action = [](ui::node &node, simd::float3 const &color) {
                                                 auto action = ui::make_action(
-                                                    {.start_color = node.color().value(), .end_color = color});
+                                                    {.start_color = node.color().value().v, .end_color = color});
                                                 action.set_target(node);
                                                 return action;
                                             };
@@ -371,7 +370,7 @@ namespace sample {
 
                         ui::parallel_action action;
 
-                        auto color_action = ui::make_action({.start_color = node.color().value(),
+                        auto color_action = ui::make_action({.start_color = node.color().value().v,
                                                              .end_color = color,
                                                              .continuous_action = {.duration = duration}});
                         color_action.set_target(node);

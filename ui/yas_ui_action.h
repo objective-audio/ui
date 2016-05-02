@@ -10,6 +10,7 @@
 #include "yas_base.h"
 #include "yas_protocol.h"
 #include "yas_ui_transformer.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -85,8 +86,8 @@ namespace ui {
     };
 
     struct translate_action_args {
-        simd::float2 start_position = 0.0f;
-        simd::float2 end_position = 0.0f;
+        ui::point start_position = 0.0f;
+        ui::point end_position = 0.0f;
 
         continuous_action_args continuous_action;
     };
@@ -100,15 +101,15 @@ namespace ui {
     };
 
     struct scale_action_args {
-        simd::float2 start_scale = 1.0f;
-        simd::float2 end_scale = 1.0f;
+        ui::size start_scale = 1.0f;
+        ui::size end_scale = 1.0f;
 
         continuous_action_args continuous_action;
     };
 
     struct color_action_args {
-        simd::float3 start_color = 1.0f;
-        simd::float3 end_color = 1.0f;
+        ui::color start_color = 1.0f;
+        ui::color end_color = 1.0f;
 
         continuous_action_args continuous_action;
     };

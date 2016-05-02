@@ -88,7 +88,7 @@ bool ui::node::operator!=(ui::node const &rhs) const {
     return base::operator!=(rhs);
 }
 
-property<simd::float2> const &ui::node::position() const {
+property<ui::point> const &ui::node::position() const {
     return impl_ptr<impl>()->position_property;
 }
 
@@ -96,11 +96,11 @@ property<float> const &ui::node::angle() const {
     return impl_ptr<impl>()->angle_property;
 }
 
-property<simd::float2> const &ui::node::scale() const {
+property<ui::size> const &ui::node::scale() const {
     return impl_ptr<impl>()->scale_property;
 }
 
-property<simd::float3> const &ui::node::color() const {
+property<ui::color> const &ui::node::color() const {
     return impl_ptr<impl>()->color_property;
 }
 
@@ -120,7 +120,7 @@ property<bool> const &ui::node::enabled() const {
     return impl_ptr<impl>()->enabled_property;
 }
 
-property<simd::float2> &ui::node::position() {
+property<ui::point> &ui::node::position() {
     return impl_ptr<impl>()->position_property;
 }
 
@@ -128,11 +128,11 @@ property<float> &ui::node::angle() {
     return impl_ptr<impl>()->angle_property;
 }
 
-property<simd::float2> &ui::node::scale() {
+property<ui::size> &ui::node::scale() {
     return impl_ptr<impl>()->scale_property;
 }
 
-property<simd::float3> &ui::node::color() {
+property<ui::color> &ui::node::color() {
     return impl_ptr<impl>()->color_property;
 }
 

@@ -12,6 +12,7 @@
 #include "yas_property.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -31,19 +32,19 @@ namespace ui {
         bool operator==(node const &) const;
         bool operator!=(node const &) const;
 
-        property<simd::float2> const &position() const;
+        property<ui::point> const &position() const;
         property<float> const &angle() const;
-        property<simd::float2> const &scale() const;
-        property<simd::float3> const &color() const;
+        property<ui::size> const &scale() const;
+        property<ui::color> const &color() const;
         property<float> const &alpha() const;
         property<ui::mesh> const &mesh() const;
         property<ui::collider> const &collider() const;
         property<bool> const &enabled() const;
 
-        property<simd::float2> &position();
+        property<ui::point> &position();
         property<float> &angle();
-        property<simd::float2> &scale();
-        property<simd::float3> &color();
+        property<ui::size> &scale();
+        property<ui::color> &color();
         property<float> &alpha();
         property<ui::mesh> &mesh();
         property<ui::collider> &collider();

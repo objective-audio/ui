@@ -21,10 +21,10 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     property<weak<ui::node>> parent_property{{.value = ui::node{nullptr}}};
     property<weak<ui::node_renderer>> node_renderer_property{{.value = ui::node_renderer{nullptr}}};
 
-    property<simd::float2> position_property{{.value = 0.0f}};
+    property<ui::point> position_property{{.value = 0.0f}};
     property<float> angle_property{{.value = 0.0f}};
-    property<simd::float2> scale_property{{.value = 1.0f}};
-    property<simd::float3> color_property{{.value = 1.0f}};
+    property<ui::size> scale_property{{.value = 1.0f}};
+    property<ui::color> color_property{{.value = 1.0f}};
     property<float> alpha_property{{.value = 1.0f}};
     property<ui::mesh> mesh_property{{.value = nullptr}};
     property<ui::collider> collider_property{{.value = nullptr}};

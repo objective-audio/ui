@@ -62,7 +62,7 @@ void ui::node::impl::update_render_info(render_info &render_info) {
         auto const &angle = angle_property.value();
         auto const &scale = scale_property.value();
         _local_matrix =
-            matrix::translation(position.x, position.y) * matrix::rotation(angle) * matrix::scale(scale.x, scale.y);
+            matrix::translation(position.x, position.y) * matrix::rotation(angle) * matrix::scale(scale.w, scale.h);
         _needs_update_matrix = false;
     }
 
@@ -125,7 +125,7 @@ void ui::node::impl::_set_node_renderer_recursively(ui::node_renderer const &ren
 
 void ui::node::impl::_udpate_mesh_color() {
     if (auto &mesh = mesh_property.value()) {
-        auto const &color = color_property.value();
+        auto const &color = color_property.value().v;
         auto const &alpha = alpha_property.value();
         mesh.set_color({color[0] * alpha, color[1] * alpha, color[2] * alpha, alpha});
     }

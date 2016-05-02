@@ -51,6 +51,67 @@ namespace ui {
         float_size size;
     };
 
+    struct point {
+        union {
+            struct {
+                float x = 0.0f;
+                float y = 0.0f;
+            };
+            simd::float2 v;
+        };
+
+        point();
+        point(float const v);
+        point(float const x, float const y);
+        point(simd::float2 const v);
+
+        bool operator==(point const &rhs) const;
+        bool operator!=(point const &rhs) const;
+
+        explicit operator bool() const;
+    };
+
+    struct size {
+        union {
+            struct {
+                float w = 0.0f;
+                float h = 0.0f;
+            };
+            simd::float2 v;
+        };
+
+        size();
+        size(float const v);
+        size(float const w, float const h);
+        size(simd::float2);
+
+        bool operator==(size const &rhs) const;
+        bool operator!=(size const &rhs) const;
+
+        explicit operator bool() const;
+    };
+
+    struct color {
+        union {
+            struct {
+                float r = 1.0f;
+                float g = 1.0f;
+                float b = 1.0f;
+            };
+            simd::float3 v;
+        };
+
+        color();
+        color(float const);
+        color(float const x, float const y, float const z);
+        color(simd::float3);
+
+        bool operator==(color const &) const;
+        bool operator!=(color const &) const;
+
+        explicit operator bool() const;
+    };
+
     enum class pivot {
         left,
         center,
