@@ -13,160 +13,87 @@
 
 using namespace yas;
 
-ui::node::impl::impl()
-    : base::impl(),
-      _position(0.0f),
-      _angle(0.0f),
-      _local_matrix(matrix_identity_float4x4),
-      _scale(1.0f),
-      _color(1.0f),
-      _alpha(1.0f),
-      _needs_update_matrix(true),
-      _enabled(true) {
-}
+ui::node::impl::impl() = default;
+ui::node::impl::~impl() = default;
 
-ui::node::impl::~impl() {
-}
-
-simd::float2 ui::node::impl::position() {
-    return _position;
-}
-
-float ui::node::impl::angle() {
-    return _angle;
-}
-
-simd::float2 ui::node::impl::scale() {
-    return _scale;
-}
-
-simd::float3 ui::node::impl::color() {
-    return _color;
-}
-
-float ui::node::impl::alpha() {
-    return _alpha;
-}
-
-ui::mesh ui::node::impl::mesh() {
-    return _mesh;
-}
-
-ui::collider ui::node::impl::collider() {
-    return _collider;
-}
-
-bool ui::node::impl::is_enabled() {
-    return _enabled;
-}
-
-void ui::node::impl::set_position(simd::float2 const pos) {
-    _position = pos;
-    _needs_update_matrix = true;
-}
-
-void ui::node::impl::set_angle(float const angle) {
-    _angle = angle;
-    _needs_update_matrix = true;
-}
-
-void ui::node::impl::set_scale(simd::float2 const scale) {
-    _scale = scale;
-    _needs_update_matrix = true;
-}
-
-void ui::node::impl::set_color(simd::float3 const color) {
-    _color = color;
-    _update_mesh_color();
-}
-
-void ui::node::impl::set_alpha(float const alpha) {
-    _alpha = alpha;
-    _update_mesh_color();
-}
-
-void ui::node::impl::_update_mesh_color() {
-    if (_mesh) {
-        _mesh.set_color({_color[0] * _alpha, _color[1] * _alpha, _color[2] * _alpha, _alpha});
-    }
-}
-
-void ui::node::impl::set_mesh(ui::mesh &&mesh) {
-    _mesh = std::move(mesh);
-    _update_mesh_color();
-}
-
-void ui::node::impl::set_collider(ui::collider &&collider) {
-    _collider = std::move(collider);
-}
-
-void ui::node::impl::set_enabled(bool const enabled) {
-    _enabled = enabled;
+std::vector<ui::node> const &ui::node::impl::children() {
+    return _children;
 }
 
 void ui::node::impl::add_sub_node(ui::node &&sub_node) {
     auto sub_node_impl = sub_node.impl_ptr<impl>();
 
-    children.emplace_back(std::move(sub_node));
+    _children.emplace_back(std::move(sub_node));
 
-    sub_node_impl->parent = cast<ui::node>();
-    sub_node_impl->_node_renderer = _node_renderer;
+    sub_node_impl->parent_property.set_value(cast<ui::node>());
+    sub_node_impl->_set_node_renderer_recursively(node_renderer_property.value().lock());
+
+    if (sub_node_impl->subject.has_observer()) {
+        sub_node_impl->subject.notify(node_method::add_to_super, sub_node);
+    }
 }
 
 void ui::node::impl::remove_sub_node(ui::node const &sub_node) {
     auto sub_node_impl = sub_node.impl_ptr<impl>();
 
-    sub_node_impl->parent = nullptr;
-    sub_node_impl->_node_renderer = nullptr;
+    sub_node_impl->parent_property.set_value(ui::node{nullptr});
+    sub_node_impl->_set_node_renderer_recursively(ui::node_renderer{nullptr});
 
-    erase_if(children, [&sub_node](ui::node const &node) { return node == sub_node; });
+    erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
+
+    if (sub_node_impl->subject.has_observer()) {
+        sub_node_impl->subject.notify(node_method::remove_from_super, sub_node);
+    }
 }
 
 void ui::node::impl::remove_from_super_node() {
-    if (auto locked_parent = parent.lock()) {
-        locked_parent.impl_ptr<impl>()->remove_sub_node(cast<ui::node>());
+    if (auto parent = parent_property.value().lock()) {
+        parent.impl_ptr<impl>()->remove_sub_node(cast<ui::node>());
     }
 }
 
 void ui::node::impl::update_render_info(render_info &render_info) {
-    if (!_enabled) {
+    if (!enabled_property.value()) {
         return;
     }
 
     if (_needs_update_matrix) {
-        _local_matrix = matrix::translation(_position.x, _position.y) * matrix::rotation(_angle) *
-                        matrix::scale(_scale.x, _scale.y);
+        auto const &position = position_property.value();
+        auto const &angle = angle_property.value();
+        auto const &scale = scale_property.value();
+        _local_matrix =
+            matrix::translation(position.x, position.y) * matrix::rotation(angle) * matrix::scale(scale.x, scale.y);
         _needs_update_matrix = false;
     }
 
     _render_matrix = render_info.render_matrix * _local_matrix;
 
-    if (_mesh) {
-        _mesh.renderable().set_matrix(_render_matrix);
+    if (auto &mesh = mesh_property.value()) {
+        mesh.renderable().set_matrix(_render_matrix);
         if (auto encode_info = render_info.current_encode_info()) {
-            encode_info.push_back_mesh(_mesh);
+            encode_info.push_back_mesh(mesh);
         }
     }
 
-    if (_collider) {
-        _collider.renderable().set_matrix(_render_matrix);
-        render_info.collision_detector.updatable().push_front_collider(_collider);
+    if (auto &collider = collider_property.value()) {
+        collider.renderable().set_matrix(_render_matrix);
+        render_info.collision_detector.updatable().push_front_collider(collider);
     }
 
-    for (auto &sub_node : children) {
+    for (auto &sub_node : _children) {
         render_info.render_matrix = _render_matrix;
         sub_node.impl_ptr<impl>()->update_render_info(render_info);
     }
 }
 
 ui::setup_metal_result ui::node::impl::setup(id<MTLDevice> const device) {
-    if (_mesh) {
-        if (auto ul = unless(_mesh.metal().setup(device))) {
+    if (auto &mesh = mesh_property.value()) {
+        if (auto ul = unless(mesh.metal().setup(device))) {
             return std::move(ul.value);
         }
     }
 
-    for (auto &sub_node : children) {
+    for (auto &sub_node : _children) {
         if (auto ul = unless(sub_node.metal().setup(device))) {
             return std::move(ul.value);
         }
@@ -176,15 +103,34 @@ ui::setup_metal_result ui::node::impl::setup(id<MTLDevice> const device) {
 }
 
 ui::node_renderer ui::node::impl::renderer() {
-    return _node_renderer.lock();
+    return node_renderer_property.value().lock();
 }
 
 void ui::node::impl::set_renderer(ui::node_renderer &&renderer) {
-    _node_renderer = renderer;
+    node_renderer_property.set_value(renderer);
 }
 
 simd::float2 ui::node::impl::convert_position(simd::float2 const &loc) {
-    auto renderer = _node_renderer.lock();
-    auto loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
+    auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
     return {loc4.x, loc4.y};
+}
+
+void ui::node::impl::_set_node_renderer_recursively(ui::node_renderer const &renderer) {
+    node_renderer_property.set_value(renderer);
+
+    for (auto &sub_node : _children) {
+        sub_node.impl_ptr<impl>()->_set_node_renderer_recursively(renderer);
+    }
+}
+
+void ui::node::impl::_udpate_mesh_color() {
+    if (auto &mesh = mesh_property.value()) {
+        auto const &color = color_property.value();
+        auto const &alpha = alpha_property.value();
+        mesh.set_color({color[0] * alpha, color[1] * alpha, color[2] * alpha, alpha});
+    }
+}
+
+void ui::node::impl::_set_needs_update_matrix() {
+    _needs_update_matrix = true;
 }

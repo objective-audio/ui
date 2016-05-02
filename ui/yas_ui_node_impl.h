@@ -7,34 +7,28 @@
 #include <simd/simd.h>
 #include <vector>
 #include "yas_objc_ptr.h"
+#include "yas_property.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_renderer.h"
 
 class yas::ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
     impl();
     virtual ~impl();
 
-    std::vector<ui::node> children;
-    weak<node> parent;
+    std::vector<ui::node> const &children();
+    property<weak<ui::node>> parent_property{{.value = ui::node{nullptr}}};
+    property<weak<ui::node_renderer>> node_renderer_property{{.value = ui::node_renderer{nullptr}}};
 
-    simd::float2 position();
-    float angle();
-    simd::float2 scale();
-    simd::float3 color();
-    float alpha();
-    ui::mesh mesh();
-    ui::collider collider();
-    bool is_enabled();
-
-    void set_position(simd::float2 const);
-    void set_angle(float const);
-    void set_scale(simd::float2 const);
-    void set_color(simd::float3 const);
-    void set_alpha(float const);
-    void set_mesh(ui::mesh &&);
-    void set_collider(ui::collider &&);
-    void set_enabled(bool const);
+    property<simd::float2> position_property{{.value = 0.0f}};
+    property<float> angle_property{{.value = 0.0f}};
+    property<simd::float2> scale_property{{.value = 1.0f}};
+    property<simd::float3> color_property{{.value = 1.0f}};
+    property<float> alpha_property{{.value = 1.0f}};
+    property<ui::mesh> mesh_property{{.value = nullptr}};
+    property<ui::collider> collider_property{{.value = nullptr}};
+    property<bool> enabled_property{{.value = true}};
 
     void add_sub_node(ui::node &&sub_node);
     void remove_sub_node(ui::node const &sub_node);
@@ -44,28 +38,24 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
     ui::setup_metal_result setup(id<MTLDevice> const) override;
 
-    void update_matrix_for_render(simd::float4x4 const matrix);
-
     ui::node_renderer renderer() override;
     void set_renderer(ui::node_renderer &&) override;
 
+    node::subject_t subject;
+
     simd::float2 convert_position(simd::float2 const &);
 
+    void _set_node_renderer_recursively(ui::node_renderer const &renderer);
+    void _udpate_mesh_color();
+    void _set_needs_update_matrix();
+
+    std::vector<base> _property_observers;
+
    private:
-    weak<ui::node_renderer> _node_renderer;
+    std::vector<ui::node> _children;
 
-    simd::float2 _position;
-    float _angle;
-    simd::float2 _scale;
-    simd::float3 _color;
-    float _alpha;
-    ui::mesh _mesh{nullptr};
-    ui::collider _collider{nullptr};
-    bool _enabled;
+    simd::float4x4 _render_matrix = matrix_identity_float4x4;
+    simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    simd::float4x4 _render_matrix;
-    simd::float4x4 _local_matrix;
-    bool _needs_update_matrix;
-
-    void _update_mesh_color();
+    bool _needs_update_matrix = true;
 };
