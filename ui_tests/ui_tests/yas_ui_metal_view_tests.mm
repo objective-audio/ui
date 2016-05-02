@@ -56,7 +56,10 @@ using namespace yas;
     };
 
     auto observer = event_manager.subject().make_wild_card_observer(
-        [&self, &began_called, &changed_called, &ended_called](auto const &method, auto const &event) {
+        [&self, &began_called, &changed_called, &ended_called](auto const &context) {
+            auto const &method = context.key;
+            ui::event const &event = context.value;
+
             XCTAssertEqual(method, ui::event_method::cursor_changed);
 
             if (event.phase() == ui::event_phase::began) {
@@ -113,22 +116,24 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer =
-        event_manager.subject().make_wild_card_observer([&self, &values](auto const &method, auto const &event) {
-            if (method == ui::event_method::cursor_changed) {
-                return;
-            }
+    auto observer = event_manager.subject().make_wild_card_observer([&self, &values](auto const &context) {
+        auto const &method = context.key;
+        ui::event const &event = context.value;
 
-            XCTAssertEqual(method, ui::event_method::touch_changed);
+        if (method == ui::event_method::cursor_changed) {
+            return;
+        }
 
-            if (event.phase() == ui::event_phase::began) {
-                values.began_called = true;
-            } else if (event.phase() == ui::event_phase::ended) {
-                values.ended_called = true;
-            } else if (event.phase() == ui::event_phase::changed) {
-                values.changed_called = true;
-            }
-        });
+        XCTAssertEqual(method, ui::event_method::touch_changed);
+
+        if (event.phase() == ui::event_phase::began) {
+            values.began_called = true;
+        } else if (event.phase() == ui::event_phase::ended) {
+            values.ended_called = true;
+        } else if (event.phase() == ui::event_phase::changed) {
+            values.changed_called = true;
+        }
+    });
 
     [view mouseDown:[self _mouseEventWithType:NSLeftMouseDown location:NSMakePoint(100, 100)]];
 
@@ -227,23 +232,25 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer =
-        event_manager.subject().make_wild_card_observer([&self, &values](auto const &method, ui::event const &event) {
-            XCTAssertEqual(method, ui::event_method::key_changed);
+    auto observer = event_manager.subject().make_wild_card_observer([&self, &values](auto const &context) {
+        auto const &method = context.key;
+        ui::event const &event = context.value;
 
-            if (event.phase() == ui::event_phase::began) {
-                values.began_called = true;
-            } else if (event.phase() == ui::event_phase::ended) {
-                values.ended_called = true;
-            } else if (event.phase() == ui::event_phase::changed) {
-                values.changed_called = true;
-            }
+        XCTAssertEqual(method, ui::event_method::key_changed);
 
-            auto const &key_event = event.get<ui::key>();
-            values.key_code = key_event.key_code();
-            values.characters = key_event.characters();
-            values.raw_characters = key_event.raw_characters();
-        });
+        if (event.phase() == ui::event_phase::began) {
+            values.began_called = true;
+        } else if (event.phase() == ui::event_phase::ended) {
+            values.ended_called = true;
+        } else if (event.phase() == ui::event_phase::changed) {
+            values.changed_called = true;
+        }
+
+        auto const &key_event = event.get<ui::key>();
+        values.key_code = key_event.key_code();
+        values.characters = key_event.characters();
+        values.raw_characters = key_event.raw_characters();
+    });
 
     [view keyDown:[self _keyEventWithType:NSKeyDown
                                           keyCode:1
