@@ -88,6 +88,38 @@ bool ui::node::operator!=(ui::node const &rhs) const {
     return base::operator!=(rhs);
 }
 
+property<simd::float2> const &ui::node::position() const {
+    return impl_ptr<impl>()->position_property;
+}
+
+property<float> const &ui::node::angle() const {
+    return impl_ptr<impl>()->angle_property;
+}
+
+property<simd::float2> const &ui::node::scale() const {
+    return impl_ptr<impl>()->scale_property;
+}
+
+property<simd::float3> const &ui::node::color() const {
+    return impl_ptr<impl>()->color_property;
+}
+
+property<float> const &ui::node::alpha() const {
+    return impl_ptr<impl>()->alpha_property;
+}
+
+property<ui::mesh> const &ui::node::mesh() const {
+    return impl_ptr<impl>()->mesh_property;
+}
+
+property<ui::collider> const &ui::node::collider() const {
+    return impl_ptr<impl>()->collider_property;
+}
+
+property<bool> const &ui::node::enabled() const {
+    return impl_ptr<impl>()->enabled_property;
+}
+
 property<simd::float2> &ui::node::position() {
     return impl_ptr<impl>()->position_property;
 }
@@ -156,6 +188,6 @@ ui::node::subject_t &ui::node::subject() {
     return impl_ptr<impl>()->subject;
 }
 
-simd::float2 ui::node::convert_position(simd::float2 const &loc) {
+simd::float2 ui::node::convert_position(simd::float2 const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }

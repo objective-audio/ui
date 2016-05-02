@@ -31,6 +31,15 @@ namespace ui {
         bool operator==(node const &) const;
         bool operator!=(node const &) const;
 
+        property<simd::float2> const &position() const;
+        property<float> const &angle() const;
+        property<simd::float2> const &scale() const;
+        property<simd::float3> const &color() const;
+        property<float> const &alpha() const;
+        property<ui::mesh> const &mesh() const;
+        property<ui::collider> const &collider() const;
+        property<bool> const &enabled() const;
+
         property<simd::float2> &position();
         property<float> &angle();
         property<simd::float2> &scale();
@@ -55,7 +64,7 @@ namespace ui {
 
         subject_t &subject();
 
-        simd::float2 convert_position(simd::float2 const &);
+        simd::float2 convert_position(simd::float2 const &) const;
     };
 }
 }
