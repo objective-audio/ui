@@ -66,8 +66,8 @@ namespace sample {
                     ui::mesh mesh;
                     mesh.set_mesh_data(impl_ptr<impl>()->mesh_data);
                     mesh.set_texture(impl_ptr<impl>()->texture);
-                    node.set_mesh(mesh);
-                    node.set_scale(0.0f);
+                    node.mesh().set_value(mesh);
+                    node.scale().set_value(0.0f);
 
                     auto root_node = renderer.root_node();
                     root_node.add_sub_node(node);
@@ -96,7 +96,7 @@ namespace sample {
                     if (objects.count(identifier)) {
                         auto &touch_object = objects.at(identifier);
                         auto &node = touch_object.node;
-                        node.set_position(node.parent().convert_position(position));
+                        node.position().set_value(node.parent().convert_position(position));
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace sample {
                             touch_object.scale_action = nullptr;
                         }
 
-                        auto action = ui::make_action({.start_scale = touch_object.node.scale(),
+                        auto action = ui::make_action({.start_scale = touch_object.node.scale().value(),
                                                        .end_scale = 0.0f,
                                                        .continuous_action = {.duration = 0.3}});
                         action.set_value_transformer(ui::ease_out_transformer());
@@ -158,29 +158,73 @@ namespace sample {
 
                 auto &node = bg_node.node();
                 bg_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
-                node.set_scale(0.0f);
-                node.set_color({0.15f, 0.15f, 0.15f});
+                node.scale().set_value(0.0f);
+                node.color().set_value({0.15f, 0.15f, 0.15f});
 
                 auto root_node = renderer.root_node();
                 root_node.add_sub_node(node);
             }
 
             void _setup_cursor_over_nodes() {
-                auto const count = 8;
+                auto const count = 16;
 
                 for (auto const &idx : make_each(count)) {
                     auto sq_node = ui::make_square_node(1);
                     sq_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
 
                     auto &node = sq_node.node();
-                    node.set_position({100.0f, 0.0f});
-                    node.set_scale(30.0f);
-                    node.set_color(0.3f);
-                    node.set_collider({{.shape = ui::collider_shape::square}});
+                    node.position().set_value({100.0f, 0.0f});
+                    node.scale().set_value({10.0f, 30.0f});
+                    node.color().set_value(0.3f);
+                    node.collider().set_value({{.shape = ui::collider_shape::square}});
+
+                    observers.emplace_back(node.subject().make_observer(
+                        ui::node_method::change_node_renderer,
+                        [idx, obs = base{nullptr}](auto const &context) mutable {
+                            obs = nullptr;
+
+                            ui::node node = context.value;
+                            if (auto renderer = node.renderer()) {
+                                auto &event_manager = renderer.event_manager();
+                                obs = event_manager.subject().make_observer(ui::event_method::cursor_changed, [
+                                    weak_node = to_weak(node),
+                                    prev_detected = std::move(std::make_shared<bool>(false))
+                                ](auto const &context) {
+                                    ui::event const &event = context.value;
+                                    auto cursor_event = event.get<ui::cursor>();
+
+                                    if (auto node = weak_node.lock()) {
+                                        if (auto renderer = node.renderer()) {
+                                            auto is_detected = renderer.collision_detector().detect(
+                                                cursor_event.position(), node.collider().value());
+
+                                            auto make_color_action = [](ui::node &node, simd::float3 const &color) {
+                                                auto action = ui::make_action(
+                                                    {.start_color = node.color().value(), .end_color = color});
+                                                action.set_target(node);
+                                                return action;
+                                            };
+
+                                            if (is_detected && !*prev_detected) {
+                                                renderer.erase_action(node);
+                                                renderer.insert_action(
+                                                    make_color_action(node, simd::float3{1.0f, 0.6f, 0.0f}));
+                                            } else if (!is_detected && *prev_detected) {
+                                                renderer.erase_action(node);
+                                                renderer.insert_action(
+                                                    make_color_action(node, simd::float3{0.3f, 0.3f, 0.3f}));
+                                            }
+
+                                            *prev_detected = is_detected;
+                                        }
+                                    }
+                                });
+                            }
+                        }));
 
                     ui::node handle_node;
                     handle_node.add_sub_node(node);
-                    handle_node.set_angle(360.0f / count * idx);
+                    handle_node.angle().set_value(360.0f / count * idx);
 
                     auto root_node = renderer.root_node();
                     root_node.add_sub_node(handle_node);
@@ -201,8 +245,8 @@ namespace sample {
                         region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
                 }
 
-                mesh_node.node().set_color(0.0f);
-                mesh_node.node().set_alpha(0.0f);
+                mesh_node.node().color().set_value(0.0f);
+                mesh_node.node().alpha().set_value(0.0f);
                 cursor_node.add_sub_node(mesh_node.node());
 
                 auto root_node = renderer.root_node();
@@ -270,15 +314,15 @@ namespace sample {
     auto &event_manager = _cpp.renderer.event_manager();
 
     auto const &view_size = _cpp.renderer.view_size();
-    _cpp.bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+    _cpp.bg_node.node().scale().set_value({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
 
     auto set_text_pos = [](ui::node &node, ui::uint_size const &view_size) {
-        node.set_position(
+        node.position().set_value(
             {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
     };
 
     auto set_modifier_pos = [](ui::node &node, ui::uint_size const &view_size) {
-        node.set_position(
+        node.position().set_value(
             {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
     };
 
@@ -291,11 +335,13 @@ namespace sample {
         weak_mod_node = to_weak(_cpp.modifier_node),
         set_text_pos = std::move(set_text_pos),
         set_modifier_pos = std::move(set_modifier_pos)
-    ](auto const &method, auto const &renderer) {
+    ](auto const &context) {
+        auto const &renderer = context.value;
         auto const &view_size = renderer.view_size();
 
         if (auto bg_node = weak_bg_node.lock()) {
-            bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+            bg_node.node().scale().set_value(
+                {static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
         }
 
         if (auto text_node = weak_text_node.lock()) {
@@ -311,11 +357,12 @@ namespace sample {
         weak_node = to_weak(_cpp.cursor_node),
         weak_action = _cpp.cursor_color_action,
         weak_renderer = to_weak(_cpp.renderer)
-    ](auto const &method, ui::event const &event) mutable {
+    ](auto const &context) mutable {
         if (auto node = weak_node.lock()) {
+            ui::event const &event = context.value;
             auto const &value = event.get<ui::cursor>();
 
-            node.set_position(node.parent().convert_position(value.position()));
+            node.position().set_value(node.parent().convert_position(value.position()));
 
             if (auto renderer = weak_renderer.lock()) {
                 for (auto child_node : node.children()) {
@@ -324,13 +371,13 @@ namespace sample {
 
                         ui::parallel_action action;
 
-                        auto color_action = ui::make_action({.start_color = node.color(),
+                        auto color_action = ui::make_action({.start_color = node.color().value(),
                                                              .end_color = color,
                                                              .continuous_action = {.duration = duration}});
                         color_action.set_target(node);
                         action.insert_action(std::move(color_action));
 
-                        auto alpha_action = ui::make_action({.start_alpha = node.alpha(),
+                        auto alpha_action = ui::make_action({.start_alpha = node.alpha().value(),
                                                              .end_alpha = alpha,
                                                              .continuous_action = {.duration = duration}});
                         alpha_action.set_target(node);
@@ -373,9 +420,10 @@ namespace sample {
 
     _cpp.observers.emplace_back(event_manager.subject().make_observer(
         ui::event_method::touch_changed,
-        [weak_touch_holder = to_weak(_cpp.touch_holder), weak_renderer = to_weak(_cpp.renderer)](
-            auto const &method, ui::event const &event) mutable {
+        [weak_touch_holder = to_weak(_cpp.touch_holder),
+         weak_renderer = to_weak(_cpp.renderer)](auto const &context) mutable {
             if (auto result = where(weak_renderer.lock(), weak_touch_holder.lock())) {
+                ui::event const &event = context.value;
                 auto &renderer = std::get<0>(result.value());
                 auto &touch_holder = std::get<1>(result.value());
                 auto const identifier = event.identifier();
@@ -405,8 +453,8 @@ namespace sample {
 
     _cpp.observers.emplace_back(event_manager.subject().make_observer(
         ui::event_method::key_changed,
-        [weak_text_node = to_weak(_cpp.text_node), weak_renderer = to_weak(_cpp.renderer)](auto const &method,
-                                                                                           ui::event const &event) {
+        [weak_text_node = to_weak(_cpp.text_node), weak_renderer = to_weak(_cpp.renderer)](auto const &context) {
+            ui::event const &event = context.value;
             if (auto result = where(weak_text_node.lock(), event.phase() == ui::event_phase::began ||
                                                                event.phase() == ui::event_phase::changed)) {
                 auto &text_node = std::get<0>(result.value());
@@ -428,7 +476,8 @@ namespace sample {
     _cpp.observers.emplace_back(event_manager.subject().make_observer(ui::event_method::modifier_changed, [
         weak_mod_node = to_weak(_cpp.modifier_node),
         flags = std::make_shared<std::unordered_set<ui::modifier_flags>>()
-    ](auto const &method, ui::event const &event) {
+    ](auto const &context) {
+        ui::event const &event = context.value;
         auto flag = event.get<ui::modifier>().flag();
 
         if (event.phase() == ui::event_phase::began) {
@@ -448,37 +497,6 @@ namespace sample {
             mod_node.set_text(joined(flag_texts, " + "));
         }
     }));
-
-    for (auto &sq_node : _cpp.cursor_over_nodes) {
-        _cpp.observers.emplace_back(event_manager.subject().make_observer(ui::event_method::cursor_changed, [
-            weak_node = to_weak(sq_node.node()),
-            weak_renderer = to_weak(_cpp.renderer),
-            prev_detected = std::move(std::make_shared<bool>(false))
-        ](auto const &, ui::event const &event) {
-            auto cursor_event = event.get<ui::cursor>();
-            if (auto result = where(weak_node.lock(), weak_renderer.lock())) {
-                auto &node = std::get<0>(result.value());
-                auto &renderer = std::get<1>(result.value());
-                auto is_detected = renderer.collision_detector().detect(cursor_event.position(), node.collider());
-
-                auto make_color_action = [](ui::node &node, simd::float3 const &color) {
-                    auto action = ui::make_action({.start_color = node.color(), .end_color = color});
-                    action.set_target(node);
-                    return action;
-                };
-
-                if (is_detected && !*prev_detected) {
-                    renderer.erase_action(node);
-                    renderer.insert_action(make_color_action(node, simd::float3{1.0f, 0.6f, 0.0f}));
-                } else if (!is_detected && *prev_detected) {
-                    renderer.erase_action(node);
-                    renderer.insert_action(make_color_action(node, simd::float3{0.3f, 0.3f, 0.3f}));
-                }
-
-                *prev_detected = is_detected;
-            }
-        }));
-    }
 }
 
 @end
