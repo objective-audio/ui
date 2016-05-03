@@ -241,6 +241,14 @@ void ui::node::dispatch_method(ui::node_method const method) {
                     }
                 });
             break;
+        case ui::node_method::change_collider:
+            observer = imp_ptr->collider_property.subject().make_observer(
+                property_method::did_change, [weak_node](auto const &context) {
+                    if (auto node = weak_node.lock()) {
+                        node.subject().notify(node_method::change_collider, node);
+                    }
+                });
+            break;
         case ui::node_method::change_parent:
             observer = imp_ptr->parent_property.subject().make_observer(
                 property_method::did_change, [weak_node](auto const &context) {
