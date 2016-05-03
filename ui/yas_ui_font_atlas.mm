@@ -139,35 +139,51 @@ struct ui::font_atlas::impl : base::impl {
         double width = 0;
         auto const scale_factor = texture.scale_factor();
 
-        for (auto const &word_idx : each_index<std::size_t>(word_size)) {
-            auto const word = text.substr(word_idx, 1);
-            auto const &str_square = _square(word);
+        if (pivot == pivot::right) {
+            for (auto const &idx : each_index<std::size_t>(word_size)) {
+                auto const &word_idx = word_size - idx - 1;
+                auto const word = text.substr(word_idx, 1);
+                auto const &str_square = _square(word);
 
-            auto &layout_square = strings_layout.square(word_idx);
+                width += _advance(word).width;
 
-            if (&str_square == &_empty_square) {
-                layout_square = {0.0f};
-            } else {
-                for (auto const &sq_idx : each_index<std::size_t>(4)) {
-                    layout_square.v[sq_idx] = str_square.v[sq_idx];
-                    layout_square.v[sq_idx].position.x =
-                        roundf(layout_square.v[sq_idx].position.x + width, scale_factor);
+                auto &layout_square = strings_layout.square(word_idx);
+
+                if (&str_square == &_empty_square) {
+                    layout_square = {0.0f};
+                } else {
+                    for (auto const &sq_idx : each_index<std::size_t>(4)) {
+                        layout_square.v[sq_idx] = str_square.v[sq_idx];
+                        layout_square.v[sq_idx].position.x =
+                            roundf(layout_square.v[sq_idx].position.x - width, scale_factor);
+                    }
                 }
             }
+        } else {
+            for (auto const &word_idx : each_index<std::size_t>(word_size)) {
+                auto const word = text.substr(word_idx, 1);
+                auto const &str_square = _square(word);
 
-            width += _advance(word).width;
+                auto &layout_square = strings_layout.square(word_idx);
+
+                if (&str_square == &_empty_square) {
+                    layout_square = {0.0f};
+                } else {
+                    for (auto const &sq_idx : each_index<std::size_t>(4)) {
+                        layout_square.v[sq_idx] = str_square.v[sq_idx];
+                        layout_square.v[sq_idx].position.x =
+                            roundf(layout_square.v[sq_idx].position.x + width, scale_factor);
+                    }
+                }
+
+                width += _advance(word).width;
+            }
         }
 
         strings_layout.set_width(ceil(width, scale_factor));
 
-        if (pivot != pivot::left) {
-            double offset = 0;
-
-            if (pivot == pivot::center) {
-                offset = roundf(-width * 0.5, scale_factor);
-            } else if (pivot == pivot::right) {
-                offset = ceilf(-width, scale_factor);
-            }
+        if (pivot == pivot::center) {
+            double offset = roundf(-width * 0.5, scale_factor);
 
             for (auto &square : strings_layout.squares()) {
                 for (auto &vertex : square.v) {
