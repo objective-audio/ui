@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_collider.h"
-#include "yas_ui_types.h"
 
 using namespace yas;
 
@@ -16,7 +15,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
     impl(collider_args &&args) : args(std::move(args)) {
     }
 
-    bool hit_test(simd::float2 const &loc) {
+    bool hit_test(ui::point const &loc) {
         auto const &shape = args.shape;
 
         if (shape == ui::collider_shape::none) {
@@ -64,7 +63,7 @@ void ui::collider::set_shape(collider_shape shape) {
     impl_ptr<impl>()->args.shape = std::move(shape);
 }
 
-void ui::collider::set_center(simd::float2 center) {
+void ui::collider::set_center(ui::point center) {
     impl_ptr<impl>()->args.center = std::move(center);
 }
 
@@ -76,7 +75,7 @@ ui::collider_shape ui::collider::shape() const {
     return impl_ptr<impl>()->args.shape;
 }
 
-simd::float2 const &ui::collider::center() const {
+ui::point const &ui::collider::center() const {
     return impl_ptr<impl>()->args.center;
 }
 
@@ -84,7 +83,7 @@ float ui::collider::radius() const {
     return impl_ptr<impl>()->args.radius;
 }
 
-bool ui::collider::hit_test(simd::float2 const &pos) const {
+bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
 }
 

@@ -110,7 +110,7 @@ void ui::node::impl::set_renderer(ui::node_renderer &&renderer) {
     node_renderer_property.set_value(renderer);
 }
 
-simd::float2 ui::node::impl::convert_position(simd::float2 const &loc) {
+ui::point ui::node::impl::convert_position(ui::point const &loc) {
     auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
     return {loc4.x, loc4.y};
 }

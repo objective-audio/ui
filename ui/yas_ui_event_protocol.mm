@@ -1,5 +1,5 @@
 //
-//  yas_ui_event_protocol.cpp
+//  yas_ui_event_protocol.mm
 //
 
 #include "yas_ui_event_protocol.h"
@@ -11,7 +11,7 @@ using namespace yas;
 ui::cursor_event::cursor_event() : _position(0.0f) {
 }
 
-ui::cursor_event::cursor_event(simd::float2 pos) : _position(std::move(pos)) {
+ui::cursor_event::cursor_event(ui::point pos) : _position(std::move(pos)) {
 }
 
 bool ui::cursor_event::operator==(cursor_event const &rhs) const {
@@ -22,7 +22,7 @@ bool ui::cursor_event::operator!=(cursor_event const &rhs) const {
     return false;
 }
 
-simd::float2 const &ui::cursor_event::position() const {
+ui::point const &ui::cursor_event::position() const {
     return _position;
 }
 
@@ -35,7 +35,7 @@ bool ui::cursor_event::contains_in_window() const {
 ui::touch_event::touch_event() : _identifier(-1), _position(0.0f) {
 }
 
-ui::touch_event::touch_event(uintptr_t const identifier, simd::float2 pos)
+ui::touch_event::touch_event(uintptr_t const identifier, ui::point pos)
     : _identifier(identifier), _position(std::move(pos)) {
 }
 
@@ -51,7 +51,7 @@ uintptr_t ui::touch_event::identifier() const {
     return _identifier;
 }
 
-simd::float2 const &ui::touch_event::position() const {
+ui::point const &ui::touch_event::position() const {
     return _position;
 }
 

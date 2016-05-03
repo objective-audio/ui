@@ -91,7 +91,7 @@ namespace sample {
                         std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
                 }
 
-                void move_touch_node(uintptr_t const identifier, simd::float2 const &position) {
+                void move_touch_node(uintptr_t const identifier, ui::point const &position) {
                     auto &objects = impl_ptr<impl>()->_objects;
                     if (objects.count(identifier)) {
                         auto &touch_object = objects.at(identifier);

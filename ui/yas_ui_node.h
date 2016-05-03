@@ -65,7 +65,7 @@ namespace ui {
 
         subject_t &subject();
 
-        simd::float2 convert_position(simd::float2 const &) const;
+        ui::point convert_position(ui::point const &) const;
     };
 }
 }

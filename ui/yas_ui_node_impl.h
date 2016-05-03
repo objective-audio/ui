@@ -43,7 +43,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
     node::subject_t subject;
 
-    simd::float2 convert_position(simd::float2 const &);
+    ui::point convert_position(ui::point const &);
 
     void _set_node_renderer_recursively(ui::node_renderer const &renderer);
     void _udpate_mesh_color();

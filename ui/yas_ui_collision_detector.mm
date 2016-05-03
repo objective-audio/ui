@@ -1,5 +1,5 @@
 //
-//  yas_ui_collision_detector.cpp
+//  yas_ui_collision_detector.mm
 //
 
 #include <deque>
@@ -33,7 +33,7 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
         _colliders.emplace_front(collider);
     }
 
-    ui::collider detect(simd::float2 const &location) {
+    ui::collider detect(ui::point const &location) {
         for (auto const &collider : _colliders) {
             if (collider.hit_test(location)) {
                 return collider;
@@ -42,7 +42,7 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
         return nullptr;
     }
 
-    bool detect(simd::float2 const &location, ui::collider const &collider) {
+    bool detect(ui::point const &location, ui::collider const &collider) {
         if (auto detected_collider = detect(location)) {
             if (detected_collider == collider) {
                 return true;
@@ -63,11 +63,11 @@ ui::collision_detector::collision_detector() : base(std::make_shared<impl>()) {
 ui::collision_detector::collision_detector(std::nullptr_t) : base(nullptr) {
 }
 
-ui::collider ui::collision_detector::detect(simd::float2 const &location) {
+ui::collider ui::collision_detector::detect(ui::point const &location) {
     return impl_ptr<impl>()->detect(location);
 }
 
-bool ui::collision_detector::detect(simd::float2 const &location, ui::collider const &collider) {
+bool ui::collision_detector::detect(ui::point const &location, ui::collider const &collider) {
     return impl_ptr<impl>()->detect(location, collider);
 }
 

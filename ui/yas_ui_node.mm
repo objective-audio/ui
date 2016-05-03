@@ -178,6 +178,6 @@ ui::node::subject_t &ui::node::subject() {
     return impl_ptr<impl>()->subject;
 }
 
-simd::float2 ui::node::convert_position(simd::float2 const &loc) const {
+ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }
