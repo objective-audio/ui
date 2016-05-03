@@ -110,7 +110,7 @@ namespace sample {
                             touch_object.scale_action = nullptr;
                         }
 
-                        auto action = ui::make_action({.start_scale = touch_object.node.scale().value(),
+                        auto action = ui::make_action({.start_scale = touch_object.node.scale(),
                                                        .end_scale = 0.0f,
                                                        .continuous_action = {.duration = 0.3}});
                         action.set_value_transformer(ui::ease_out_transformer());
@@ -177,6 +177,7 @@ namespace sample {
                     node.set_scale({10.0f, 30.0f});
                     node.set_color(0.3f);
                     node.set_collider({{.shape = ui::collider_shape::square}});
+                    node.dispatch_method(ui::node_method::change_node_renderer);
 
                     observers.emplace_back(node.subject().make_observer(
                         ui::node_method::change_node_renderer, [idx, obs = base{nullptr}](auto const &context) mutable {
@@ -195,11 +196,11 @@ namespace sample {
                                     if (auto node = weak_node.lock()) {
                                         if (auto renderer = node.renderer()) {
                                             auto is_detected = renderer.collision_detector().detect(
-                                                cursor_event.position(), node.collider().value());
+                                                cursor_event.position(), node.collider());
 
                                             auto make_color_action = [](ui::node &node, ui::color const &color) {
                                                 auto action = ui::make_action(
-                                                    {.start_color = node.color().value().v, .end_color = color});
+                                                    {.start_color = node.color().v, .end_color = color});
                                                 action.set_target(node);
                                                 return action;
                                             };
@@ -367,13 +368,13 @@ namespace sample {
 
                         ui::parallel_action action;
 
-                        auto color_action = ui::make_action({.start_color = node.color().value().v,
+                        auto color_action = ui::make_action({.start_color = node.color().v,
                                                              .end_color = color,
                                                              .continuous_action = {.duration = duration}});
                         color_action.set_target(node);
                         action.insert_action(std::move(color_action));
 
-                        auto alpha_action = ui::make_action({.start_alpha = node.alpha().value(),
+                        auto alpha_action = ui::make_action({.start_alpha = node.alpha(),
                                                              .end_alpha = alpha,
                                                              .continuous_action = {.duration = duration}});
                         alpha_action.set_target(node);
