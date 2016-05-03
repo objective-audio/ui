@@ -67,6 +67,7 @@ namespace ui {
         ui::renderable_node renderable();
 
         subject_t &subject();
+        void dispatch_method(ui::node_method const);
 
         ui::point convert_position(ui::point const &) const;
     };
