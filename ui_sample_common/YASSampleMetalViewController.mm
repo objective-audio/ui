@@ -197,7 +197,7 @@ namespace sample {
                                             auto is_detected = renderer.collision_detector().detect(
                                                 cursor_event.position(), node.collider().value());
 
-                                            auto make_color_action = [](ui::node &node, simd::float3 const &color) {
+                                            auto make_color_action = [](ui::node &node, ui::color const &color) {
                                                 auto action = ui::make_action(
                                                     {.start_color = node.color().value().v, .end_color = color});
                                                 action.set_target(node);
@@ -206,12 +206,10 @@ namespace sample {
 
                                             if (is_detected && !*prev_detected) {
                                                 renderer.erase_action(node);
-                                                renderer.insert_action(
-                                                    make_color_action(node, simd::float3{1.0f, 0.6f, 0.0f}));
+                                                renderer.insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
                                             } else if (!is_detected && *prev_detected) {
                                                 renderer.erase_action(node);
-                                                renderer.insert_action(
-                                                    make_color_action(node, simd::float3{0.3f, 0.3f, 0.3f}));
+                                                renderer.insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
                                             }
 
                                             *prev_detected = is_detected;
