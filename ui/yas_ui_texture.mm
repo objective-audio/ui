@@ -4,6 +4,7 @@
 
 #include "yas_objc_ptr.h"
 #include "yas_ui_image.h"
+#include "yas_ui_metal_types.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
 
@@ -250,7 +251,7 @@ namespace ui {
 #pragma mark -
 
 ui::make_texture_result ui::make_texture(id<MTLDevice> const device, uint_size const point_size,
-                                          double const scale_factor, MTLPixelFormat const pixel_format) {
+                                         double const scale_factor, MTLPixelFormat const pixel_format) {
     auto factory = ui::texture_factory{point_size, scale_factor, pixel_format};
     if (auto result = factory.metal().setup(device)) {
         return ui::make_texture_result{std::move(factory)};

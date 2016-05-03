@@ -7,12 +7,12 @@
 #include "yas_base.h"
 #include "yas_ui_mesh_protocol.h"
 #include "yas_ui_metal_protocol.h"
-#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
     class texture;
     class mesh_data;
+    enum class primitive_type;
 
     class mesh : public base {
         class impl;

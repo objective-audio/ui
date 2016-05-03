@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B63CA0321CD86D0100A1380B /* yas_ui_metal_types.mm in Sources */ = {isa = PBXBuildFile; fileRef = B63CA0311CD86D0100A1380B /* yas_ui_metal_types.mm */; };
 		B65A3A1E1CCE441800929FB4 /* yas_ui_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */; };
 		B65F6D9F1CC87D12007C3523 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6D9E1CC87D12007C3523 /* main.m */; };
 		B65F6DA21CC87D12007C3523 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6DA11CC87D12007C3523 /* AppDelegate.m */; };
@@ -60,6 +61,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B63CA0301CD86D0100A1380B /* yas_ui_metal_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_types.h; sourceTree = "<group>"; };
+		B63CA0311CD86D0100A1380B /* yas_ui_metal_types.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_types.mm; sourceTree = "<group>"; };
 		B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_math.cpp; sourceTree = "<group>"; };
 		B65A3A1D1CCE441800929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
 		B65F6D9A1CC87D12007C3523 /* ui_ios_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ui_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -270,6 +273,8 @@
 				B65F6DCB1CC87DB6007C3523 /* yas_ui_mesh.mm */,
 				B65F6DD01CC87DB6007C3523 /* yas_ui_metal_protocol.h */,
 				B65F6DD11CC87DB6007C3523 /* yas_ui_metal_protocol.mm */,
+				B63CA0301CD86D0100A1380B /* yas_ui_metal_types.h */,
+				B63CA0311CD86D0100A1380B /* yas_ui_metal_types.mm */,
 				B65F6DD41CC87DB6007C3523 /* yas_ui_metal_view_controller.h */,
 				B65F6DD51CC87DB6007C3523 /* yas_ui_metal_view_controller.mm */,
 				B65F6DD21CC87DB6007C3523 /* yas_ui_metal_view.h */,
@@ -445,6 +450,7 @@
 				B65F6E041CC87DB6007C3523 /* yas_ui_square_node.mm in Sources */,
 				B65F6DF21CC87DB6007C3523 /* yas_ui_event.mm in Sources */,
 				B65F6DFB1CC87DB6007C3523 /* yas_ui_metal_view.mm in Sources */,
+				B63CA0321CD86D0100A1380B /* yas_ui_metal_types.mm in Sources */,
 				B65F6E3A1CC87DDF007C3523 /* yas_stl_utils.cpp in Sources */,
 				B65F6E381CC87DDF007C3523 /* yas_operation.cpp in Sources */,
 				B65F6E361CC87DDF007C3523 /* yas_flex_ptr.cpp in Sources */,
