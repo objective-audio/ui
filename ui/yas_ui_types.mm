@@ -132,10 +132,6 @@ bool yas::contains(ui::float_region const &region, ui::float_origin const &origi
     return min_x <= origin.x && origin.x < max_x && min_y <= origin.y && origin.y < max_y;
 }
 
-bool yas::contains(ui::float_region const &region, simd::float2 const &origin) {
-    return contains(region, ui::float_origin{origin.x, origin.y});
-}
-
 std::string yas::to_string(ui::pivot const &pivot) {
     switch (pivot) {
         case ui::pivot::left:

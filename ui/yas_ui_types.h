@@ -137,7 +137,6 @@ MTLPrimitiveType to_mtl_primitive_type(ui::primitive_type const type);
 simd::float2 to_float2(CGPoint const &);
 
 bool contains(ui::float_region const &, ui::float_origin const &);
-bool contains(ui::float_region const &, simd::float2 const &);
 
 std::string to_string(ui::pivot const &);
 std::string to_string(ui::uint_origin const &);
