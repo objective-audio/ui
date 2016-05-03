@@ -7,6 +7,7 @@
 #include <simd/simd.h>
 #include <string>
 #include "yas_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -35,31 +36,31 @@ namespace ui {
 
     struct cursor_event {
         cursor_event();
-        explicit cursor_event(simd::float2);
+        explicit cursor_event(ui::point);
 
         bool operator==(cursor_event const &) const;
         bool operator!=(cursor_event const &) const;
 
-        simd::float2 const &position() const;
+        ui::point const &position() const;
         bool contains_in_window() const;
 
        private:
-        simd::float2 _position;
+        ui::point _position;
     };
 
     struct touch_event {
         touch_event();
-        explicit touch_event(uintptr_t const identifier, simd::float2 position);
+        explicit touch_event(uintptr_t const identifier, ui::point position);
 
         bool operator==(touch_event const &) const;
         bool operator!=(touch_event const &) const;
 
         uintptr_t identifier() const;
-        simd::float2 const &position() const;
+        ui::point const &position() const;
 
        private:
         uintptr_t _identifier;
-        simd::float2 _position;
+        ui::point _position;
     };
 
     struct key_event {

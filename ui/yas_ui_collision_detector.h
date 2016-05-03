@@ -7,6 +7,7 @@
 #include <simd/simd.h>
 #include "yas_base.h"
 #include "yas_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -29,8 +30,8 @@ namespace ui {
         collision_detector();
         collision_detector(std::nullptr_t);
 
-        ui::collider detect(simd::float2 const &);
-        bool detect(simd::float2 const &, ui::collider const &);
+        ui::collider detect(ui::point const &);
+        bool detect(ui::point const &, ui::collider const &);
 
         updatable_collision_detector updatable();
 

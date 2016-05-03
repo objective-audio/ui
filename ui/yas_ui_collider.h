@@ -7,6 +7,7 @@
 #include <string>
 #include "yas_base.h"
 #include "yas_ui_collider_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -19,7 +20,7 @@ namespace ui {
 
     struct collider_args {
         collider_shape shape = collider_shape::none;
-        simd::float2 center = 0.0f;
+        ui::point center = 0.0f;
         float radius = 0.5f;
     };
 
@@ -32,14 +33,14 @@ namespace ui {
         collider(std::nullptr_t);
 
         void set_shape(collider_shape);
-        void set_center(simd::float2);
+        void set_center(ui::point);
         void set_radius(float const);
 
         collider_shape shape() const;
-        simd::float2 const &center() const;
+        ui::point const &center() const;
         float radius() const;
 
-        bool hit_test(simd::float2 const &) const;
+        bool hit_test(ui::point const &) const;
 
         renderable_collider renderable();
     };

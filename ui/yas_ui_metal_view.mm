@@ -61,7 +61,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #if TARGET_OS_IPHONE
 
-- (simd::float2)_position:(UITouch *)touch {
+- (ui::point)_position:(UITouch *)touch {
     auto const locInView = [touch locationInView:self];
     auto const viewSize = self.bounds.size;
     return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),
@@ -118,7 +118,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     _cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags));
 }
 
-- (simd::float2)_position:(NSEvent *)event {
+- (ui::point)_position:(NSEvent *)event {
     auto locInView = [self convertPoint:event.locationInWindow fromView:nil];
     auto viewSize = self.bounds.size;
     return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),

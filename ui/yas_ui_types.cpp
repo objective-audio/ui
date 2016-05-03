@@ -1,5 +1,5 @@
 //
-//  yas_ui_types.mm
+//  yas_ui_types.cpp
 //
 
 #include "yas_ui_types.h"
@@ -34,88 +34,48 @@ ui::point::operator bool() const {
 ui::size::size() {
 }
 
-ui::size::size(float const w, float const h) : w(w), h(h) {
+ui::size::size(float const w, float const h) : width(w), height(h) {
 }
 
 ui::size::size(simd::float2 v) : v(std::move(v)) {
 }
 
 bool ui::size::operator==(size const &rhs) const {
-    return w == rhs.w && h == rhs.h;
+    return width == rhs.width && height == rhs.height;
 }
 
 bool ui::size::operator!=(size const &rhs) const {
-    return w != rhs.w || h != rhs.h;
+    return width != rhs.width || height != rhs.height;
 }
 
 ui::size::operator bool() const {
-    return w != 0 || h != 0;
+    return width != 0 || height != 0;
 }
 
 #pragma mark -
 
-ui::color::color() : v(0.0f) {
+ui::color::color() {
 }
 
-ui::color::color(float const r, float const g, float const b) : r(r), g(g), b(b) {
+ui::color::color(float const r, float const g, float const b) : red(r), green(g), blue(b) {
 }
 
 ui::color::color(simd::float3 v) : v(std::move(v)) {
 }
 
 bool ui::color::operator==(color const &rhs) const {
-    return v.x == rhs.v.x && v.y == rhs.v.y && v.z == rhs.v.z;
+    return red == rhs.red && green == rhs.green && blue == rhs.blue;
 }
 
 bool ui::color::operator!=(color const &rhs) const {
-    return v.x != rhs.v.x || v.y != rhs.v.y || v.z != rhs.v.z;
+    return red != rhs.red || green != rhs.green || blue != rhs.blue;
 }
 
 ui::color::operator bool() const {
-    return v.x != 0 || v.y != 0 || v.z != 0;
+    return red != 0 || green != 0 || blue != 0;
 }
 
 #pragma mark -
-
-ui::uint_origin yas::to_uint_origin(MTLOrigin const origin) {
-    return ui::uint_origin{static_cast<uint32_t>(origin.x), static_cast<uint32_t>(origin.y)};
-}
-
-ui::uint_size yas::to_uint_size(MTLSize const size) {
-    return ui::uint_size{static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height)};
-}
-
-ui::uint_region yas::to_uint_region(MTLRegion const region) {
-    return ui::uint_region{static_cast<uint32_t>(region.origin.x), static_cast<uint32_t>(region.origin.y),
-                           static_cast<uint32_t>(region.size.width), static_cast<uint32_t>(region.size.height)};
-}
-
-MTLOrigin yas::to_mtl_origin(ui::uint_origin const origin) {
-    return MTLOrigin{origin.x, origin.y, 0};
-}
-
-MTLSize yas::to_mtl_size(ui::uint_size const size) {
-    return MTLSize{size.width, size.height, 1};
-}
-
-MTLRegion yas::to_mtl_region(ui::uint_region const region) {
-    return MTLRegionMake2D(region.origin.x, region.origin.y, region.size.width, region.size.height);
-}
-
-MTLPrimitiveType yas::to_mtl_primitive_type(ui::primitive_type const type) {
-    switch (type) {
-        case ui::primitive_type::point:
-            return MTLPrimitiveTypePoint;
-        case ui::primitive_type::line:
-            return MTLPrimitiveTypeLine;
-        case ui::primitive_type::line_strip:
-            return MTLPrimitiveTypeLineStrip;
-        case ui::primitive_type::triangle:
-            return MTLPrimitiveTypeTriangle;
-        case ui::primitive_type::triangle_strip:
-            return MTLPrimitiveTypeTriangleStrip;
-    }
-}
 
 simd::float2 yas::to_float2(CGPoint const &point) {
     return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
@@ -130,10 +90,6 @@ bool yas::contains(ui::float_region const &region, ui::float_origin const &origi
     float const max_y = std::max(region.origin.y, sum_y);
 
     return min_x <= origin.x && origin.x < max_x && min_y <= origin.y && origin.y < max_y;
-}
-
-bool yas::contains(ui::float_region const &region, simd::float2 const &origin) {
-    return contains(region, ui::float_origin{origin.x, origin.y});
 }
 
 std::string yas::to_string(ui::pivot const &pivot) {

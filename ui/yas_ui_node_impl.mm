@@ -61,8 +61,8 @@ void ui::node::impl::update_render_info(render_info &render_info) {
         auto const &position = position_property.value();
         auto const &angle = angle_property.value();
         auto const &scale = scale_property.value();
-        _local_matrix =
-            matrix::translation(position.x, position.y) * matrix::rotation(angle) * matrix::scale(scale.w, scale.h);
+        _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+                        matrix::scale(scale.width, scale.height);
         _needs_update_matrix = false;
     }
 
@@ -110,7 +110,7 @@ void ui::node::impl::set_renderer(ui::node_renderer &&renderer) {
     node_renderer_property.set_value(renderer);
 }
 
-simd::float2 ui::node::impl::convert_position(simd::float2 const &loc) {
+ui::point ui::node::impl::convert_position(ui::point const &loc) {
     auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
     return {loc4.x, loc4.y};
 }
@@ -123,7 +123,7 @@ void ui::node::impl::_set_node_renderer_recursively(ui::node_renderer const &ren
     }
 }
 
-void ui::node::impl::_udpate_mesh_color() {
+void ui::node::impl::_update_mesh_color() {
     if (auto &mesh = mesh_property.value()) {
         auto const &color = color_property.value().v;
         auto const &alpha = alpha_property.value();

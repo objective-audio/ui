@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_ui_types.h"
-
 #import <iostream>
 
 using namespace yas;
@@ -21,69 +20,6 @@ using namespace yas;
 
 - (void)tearDown {
     [super tearDown];
-}
-
-- (void)test_to_mtl_origin {
-    ui::uint_origin origin{2, 5};
-
-    auto mtl_origin = to_mtl_origin(origin);
-
-    XCTAssertEqual(mtl_origin.x, 2);
-    XCTAssertEqual(mtl_origin.y, 5);
-    XCTAssertEqual(mtl_origin.z, 0);
-}
-
-- (void)test_to_mtl_size {
-    ui::uint_size size{3, 17};
-
-    auto mtl_size = to_mtl_size(size);
-
-    XCTAssertEqual(mtl_size.width, 3);
-    XCTAssertEqual(mtl_size.height, 17);
-    XCTAssertEqual(mtl_size.depth, 1);
-}
-
-- (void)test_to_mtl_region {
-    ui::uint_region region{4, 2, 38, 888};
-
-    auto mtl_region = to_mtl_region(region);
-
-    XCTAssertEqual(mtl_region.origin.x, 4);
-    XCTAssertEqual(mtl_region.origin.y, 2);
-    XCTAssertEqual(mtl_region.size.width, 38);
-    XCTAssertEqual(mtl_region.size.height, 888);
-
-    XCTAssertEqual(mtl_region.origin.z, 0);
-    XCTAssertEqual(mtl_region.size.depth, 1);
-}
-
-- (void)test_to_uint_origin {
-    MTLOrigin mtl_origin = MTLOriginMake(2, 5, 0);
-
-    auto origin = to_uint_origin(mtl_origin);
-
-    XCTAssertEqual(origin.x, 2);
-    XCTAssertEqual(origin.y, 5);
-}
-
-- (void)test_to_uint_size {
-    MTLSize mtl_size = MTLSizeMake(76, 9, 1);
-
-    auto size = to_uint_size(mtl_size);
-
-    XCTAssertEqual(size.width, 76);
-    XCTAssertEqual(size.height, 9);
-}
-
-- (void)test_to_uint_region {
-    MTLRegion mtl_region = MTLRegionMake2D(36, 100, 9, 32);
-
-    auto region = to_uint_region(mtl_region);
-
-    XCTAssertEqual(region.origin.x, 36);
-    XCTAssertEqual(region.origin.y, 100);
-    XCTAssertEqual(region.size.width, 9);
-    XCTAssertEqual(region.size.height, 32);
 }
 
 - (void)test_is_equal_uint_origin {
@@ -232,12 +168,6 @@ using namespace yas;
     XCTAssertFalse(contains(region, {0.0f, 1.0f}));
 }
 
-- (void)test_contains_by_float2 {
-    ui::float_region region = {0.0f, -1.0f, 1.0f, 2.0f};
-
-    XCTAssertTrue(contains(region, simd::float2{0.0f, 0.0f}));
-}
-
 - (void)test_pivot_to_string {
     XCTAssertEqual(to_string(ui::pivot::center), "center");
     XCTAssertEqual(to_string(ui::pivot::left), "left");
@@ -277,14 +207,6 @@ using namespace yas;
     std::cout << ui::float_region{5.0f, 6.0f, 7.0f, 8.0f} << std::endl;
 }
 
-- (void)test_to_mtl_primitive_type {
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::point), MTLPrimitiveTypePoint);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line), MTLPrimitiveTypeLine);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line_strip), MTLPrimitiveTypeLineStrip);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle), MTLPrimitiveTypeTriangle);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle_strip), MTLPrimitiveTypeTriangleStrip);
-}
-
 - (void)test_create_point {
     ui::point p;
 
@@ -304,6 +226,36 @@ using namespace yas;
 
     XCTAssertEqual(p.x, 3.0f);
     XCTAssertEqual(p.y, 4.0f);
+}
+
+- (void)test_create_size {
+    ui::size s;
+
+    XCTAssertEqual(s.width, 0.0f);
+    XCTAssertEqual(s.height, 0.0f);
+}
+
+- (void)test_create_size_with_params {
+    ui::size s{1.0f, 2.0f};
+
+    XCTAssertEqual(s.width, 1.0f);
+    XCTAssertEqual(s.height, 2.0f);
+}
+
+- (void)test_create_color {
+    ui::color c;
+
+    XCTAssertEqual(c.red, 1.0f);
+    XCTAssertEqual(c.green, 1.0f);
+    XCTAssertEqual(c.blue, 1.0f);
+}
+
+- (void)test_create_color_with_params {
+    ui::color c{1.0f, 2.0f, 3.0f};
+
+    XCTAssertEqual(c.red, 1.0f);
+    XCTAssertEqual(c.green, 2.0f);
+    XCTAssertEqual(c.blue, 3.0f);
 }
 
 - (void)test_is_equal_points {

@@ -1,5 +1,5 @@
 //
-//  yas_ui_image.mm
+//  yas_ui_image.cpp
 //
 
 #include <CoreGraphics/CoreGraphics.h>

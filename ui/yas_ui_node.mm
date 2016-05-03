@@ -36,19 +36,19 @@ ui::node::node() : base(std::make_shared<impl>()) {
 
     observers.emplace_back(mesh().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
         if (auto node = weak_node.lock()) {
-            node.impl_ptr<impl>()->_udpate_mesh_color();
+            node.impl_ptr<impl>()->_update_mesh_color();
         }
     }));
 
     observers.emplace_back(color().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
         if (auto node = weak_node.lock()) {
-            node.impl_ptr<impl>()->_udpate_mesh_color();
+            node.impl_ptr<impl>()->_update_mesh_color();
         }
     }));
 
     observers.emplace_back(alpha().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
         if (auto node = weak_node.lock()) {
-            node.impl_ptr<impl>()->_udpate_mesh_color();
+            node.impl_ptr<impl>()->_update_mesh_color();
         }
     }));
 
@@ -178,6 +178,6 @@ ui::node::subject_t &ui::node::subject() {
     return impl_ptr<impl>()->subject;
 }
 
-simd::float2 ui::node::convert_position(simd::float2 const &loc) const {
+ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }

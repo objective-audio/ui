@@ -5,7 +5,6 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <Metal/Metal.h>
 #include <simd/simd.h>
 #include <ostream>
 #include <string>
@@ -73,8 +72,8 @@ namespace ui {
     struct size {
         union {
             struct {
-                float w = 0.0f;
-                float h = 0.0f;
+                float width = 0.0f;
+                float height = 0.0f;
             };
             simd::float2 v;
         };
@@ -92,9 +91,9 @@ namespace ui {
     struct color {
         union {
             struct {
-                float r = 1.0f;
-                float g = 1.0f;
-                float b = 1.0f;
+                float red = 1.0f;
+                float green = 1.0f;
+                float blue = 1.0f;
             };
             simd::float3 v;
         };
@@ -124,20 +123,9 @@ namespace ui {
     };
 }
 
-ui::uint_origin to_uint_origin(MTLOrigin const);
-ui::uint_size to_uint_size(MTLSize const);
-ui::uint_region to_uint_region(MTLRegion const);
-
-MTLOrigin to_mtl_origin(ui::uint_origin const);
-MTLSize to_mtl_size(ui::uint_size const);
-MTLRegion to_mtl_region(ui::uint_region const);
-
-MTLPrimitiveType to_mtl_primitive_type(ui::primitive_type const type);
-
 simd::float2 to_float2(CGPoint const &);
 
 bool contains(ui::float_region const &, ui::float_origin const &);
-bool contains(ui::float_region const &, simd::float2 const &);
 
 std::string to_string(ui::pivot const &);
 std::string to_string(ui::uint_origin const &);
