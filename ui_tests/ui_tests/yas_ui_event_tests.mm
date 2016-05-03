@@ -49,14 +49,14 @@ using namespace yas;
 }
 
 - (void)test_create_cursor_event {
-    ui::cursor_event value{simd::float2{1.0f, 2.0f}};
+    ui::cursor_event value{{1.0f, 2.0f}};
 
     XCTAssertEqual(value.position().x, 1.0f);
     XCTAssertEqual(value.position().y, 2.0f);
 }
 
 - (void)test_create_touch_event {
-    ui::touch_event value{10, simd::float2{4.0f, 8.0f}};
+    ui::touch_event value{10, {4.0f, 8.0f}};
 
     XCTAssertEqual(value.identifier(), 10);
     XCTAssertEqual(value.position().x, 4.0f);
@@ -85,8 +85,8 @@ using namespace yas;
 }
 
 - (void)test_is_equal_cursor_event {
-    ui::cursor_event value1{simd::float2{1.0f, 2.0f}};
-    ui::cursor_event value2{simd::float2{3.0f, 4.0f}};
+    ui::cursor_event value1{{1.0f, 2.0f}};
+    ui::cursor_event value2{{3.0f, 4.0f}};
 
     // always equal
 
@@ -95,9 +95,9 @@ using namespace yas;
 }
 
 - (void)test_is_equal_touch_event {
-    ui::touch_event value1{5, simd::float2{4.0f, 8.0f}};
-    ui::touch_event value2{5, simd::float2{16.0f, 32.0f}};
-    ui::touch_event value3{6, simd::float2{4.0f, 8.0f}};
+    ui::touch_event value1{5, {4.0f, 8.0f}};
+    ui::touch_event value2{5, {16.0f, 32.0f}};
+    ui::touch_event value3{6, {4.0f, 8.0f}};
 
     // compare identifier
 
@@ -207,7 +207,7 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event.get<ui::cursor>()) == typeid(ui::cursor_event));
 
-    event.manageable().set<ui::cursor>(ui::cursor_event{simd::float2{0.5f, 1.5f}});
+    event.manageable().set<ui::cursor>(ui::cursor_event{{0.5f, 1.5f}});
 
     auto const &pos = event.get<ui::cursor>().position();
     XCTAssertEqual(pos.x, 0.5f);
@@ -219,7 +219,7 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event.get<ui::touch>()) == typeid(ui::touch_event));
 
-    event.manageable().set<ui::touch>(ui::touch_event{11, simd::float2{2.5f, 3.5f}});
+    event.manageable().set<ui::touch>(ui::touch_event{11, {2.5f, 3.5f}});
 
     auto const &value = event.get<ui::touch>();
     auto const &pos = value.position();
@@ -283,7 +283,7 @@ using namespace yas;
         called = true;
     });
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{simd::float2{0.25f, 0.125f}});
+    manager.inputtable().input_cursor_event(ui::cursor_event{{0.25f, 0.125f}});
 
     XCTAssertTrue(called);
 }
@@ -296,7 +296,7 @@ using namespace yas;
     auto observer = manager.subject().make_wild_card_observer([&called, self](auto const &context) {
         auto const &method = context.key;
         ui::event const &event = context.value;
-        
+
         XCTAssertEqual(method, ui::event_method::touch_changed);
 
         auto const &value = event.get<ui::touch>();
@@ -307,7 +307,7 @@ using namespace yas;
         called = true;
     });
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{100, simd::float2{256.0f, 512.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{100, {256.0f, 512.0f}});
 
     XCTAssertTrue(called);
 }
@@ -320,7 +320,7 @@ using namespace yas;
     auto observer = manager.subject().make_wild_card_observer([&called, self](auto const &context) {
         auto const &method = context.key;
         ui::event const &event = context.value;
-        
+
         XCTAssertEqual(method, ui::event_method::key_changed);
 
         auto const &value = event.get<ui::key>();
@@ -345,7 +345,7 @@ using namespace yas;
     auto observer = manager.subject().make_wild_card_observer([&alt_called, &func_called, self](auto const &context) {
         auto const &method = context.key;
         ui::event const &event = context.value;
-        
+
         XCTAssertEqual(method, ui::event_method::modifier_changed);
 
         auto const &value = event.get<ui::modifier>();
@@ -376,7 +376,7 @@ using namespace yas;
         manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
             auto const &method = context.key;
             ui::event const &event = context.value;
-            
+
             XCTAssertEqual(method, ui::event_method::cursor_changed);
 
             if (event.phase() == ui::event_phase::began) {
@@ -424,7 +424,7 @@ using namespace yas;
         manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
             auto const &method = context.key;
             ui::event const &event = context.value;
-            
+
             XCTAssertEqual(method, ui::event_method::touch_changed);
 
             if (event.get<ui::touch>().identifier() == 1) {
@@ -484,7 +484,7 @@ using namespace yas;
         manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
             auto const &method = context.key;
             ui::event const &event = context.value;
-            
+
             XCTAssertEqual(method, ui::event_method::key_changed);
 
             if (event.get<ui::key>().key_code() == 1) {
@@ -544,7 +544,7 @@ using namespace yas;
         manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
             auto const &method = context.key;
             ui::event const &event = context.value;
-            
+
             XCTAssertEqual(method, ui::event_method::modifier_changed);
 
             if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
