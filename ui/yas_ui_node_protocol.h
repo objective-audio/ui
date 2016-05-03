@@ -15,7 +15,6 @@ namespace ui {
         remove_from_super,
         change_parent,
         change_node_renderer,
-
         change_position,
         change_angle,
         change_scale,
