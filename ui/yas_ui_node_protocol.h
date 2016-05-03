@@ -11,18 +11,19 @@ namespace ui {
     class node_renderer;
 
     enum class node_method {
-        add_to_super,
-        remove_from_super,
-        change_parent,
-        change_node_renderer,
-        change_position,
-        change_angle,
-        change_scale,
-        change_color,
-        change_alpha,
-        change_mesh,
-        change_collider,
-        change_enabled,
+        added_to_super,
+        removed_from_super,
+
+        parent_changed,
+        renderer_changed,
+        position_changed,
+        angle_changed,
+        scale_changed,
+        color_changed,
+        alpha_changed,
+        mesh_changed,
+        collider_changed,
+        enabled_changed,
     };
 
     struct renderable_node : protocol {

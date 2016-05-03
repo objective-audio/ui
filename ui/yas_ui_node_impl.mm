@@ -29,7 +29,7 @@ void ui::node::impl::add_sub_node(ui::node &&sub_node) {
     sub_node_impl->_set_node_renderer_recursively(node_renderer_property.value().lock());
 
     if (sub_node_impl->subject.has_observer()) {
-        sub_node_impl->subject.notify(node_method::add_to_super, sub_node);
+        sub_node_impl->subject.notify(node_method::added_to_super, sub_node);
     }
 }
 
@@ -42,7 +42,7 @@ void ui::node::impl::remove_sub_node(ui::node const &sub_node) {
     erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
     if (sub_node_impl->subject.has_observer()) {
-        sub_node_impl->subject.notify(node_method::remove_from_super, sub_node);
+        sub_node_impl->subject.notify(node_method::removed_from_super, sub_node);
     }
 }
 

@@ -177,10 +177,10 @@ namespace sample {
                     node.set_scale({10.0f, 30.0f});
                     node.set_color(0.3f);
                     node.set_collider({{.shape = ui::collider_shape::square}});
-                    node.dispatch_method(ui::node_method::change_node_renderer);
+                    node.dispatch_method(ui::node_method::renderer_changed);
 
                     observers.emplace_back(node.subject().make_observer(
-                        ui::node_method::change_node_renderer, [idx, obs = base{nullptr}](auto const &context) mutable {
+                        ui::node_method::renderer_changed, [idx, obs = base{nullptr}](auto const &context) mutable {
                             obs = nullptr;
 
                             ui::node node = context.value;
