@@ -57,22 +57,14 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->parent_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
             if (auto node = weak_node.lock()) {
-                auto const &old_value = context.value.old_value;
-                auto const &new_value = context.value.new_value;
-                if ((old_value || new_value) && (old_value != new_value)) {
-                    node.subject().notify(node_method::change_parent, node);
-                }
+                node.subject().notify(node_method::change_parent, node);
             }
         }));
 
     observers.emplace_back(imp_ptr->node_renderer_property.subject().make_observer(
         property_method::did_change, [weak_node](auto const &context) {
             if (auto node = weak_node.lock()) {
-                auto const &old_value = context.value.old_value;
-                auto const &new_value = context.value.new_value;
-                if ((old_value || new_value) && (old_value != new_value)) {
-                    node.subject().notify(node_method::change_node_renderer, node);
-                }
+                node.subject().notify(node_method::change_node_renderer, node);
             }
         }));
 }
