@@ -15,6 +15,15 @@ namespace ui {
         remove_from_super,
         change_parent,
         change_node_renderer,
+
+        change_position,
+        change_angle,
+        change_scale,
+        change_color,
+        change_alpha,
+        change_mesh,
+        change_collider,
+        change_enabled,
     };
 
     struct renderable_node : protocol {

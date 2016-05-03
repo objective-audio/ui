@@ -32,23 +32,26 @@ namespace ui {
         bool operator==(node const &) const;
         bool operator!=(node const &) const;
 
-        property<ui::point> const &position() const;
-        property<float> const &angle() const;
-        property<ui::size> const &scale() const;
-        property<ui::color> const &color() const;
-        property<float> const &alpha() const;
-        property<ui::mesh> const &mesh() const;
-        property<ui::collider> const &collider() const;
-        property<bool> const &enabled() const;
+        ui::point position() const;
+        float angle() const;
+        ui::size scale() const;
+        ui::color color() const;
+        float alpha() const;
+        bool is_enabled() const;
 
-        property<ui::point> &position();
-        property<float> &angle();
-        property<ui::size> &scale();
-        property<ui::color> &color();
-        property<float> &alpha();
-        property<ui::mesh> &mesh();
-        property<ui::collider> &collider();
-        property<bool> &enabled();
+        ui::mesh const &mesh() const;
+        ui::mesh &mesh();
+        ui::collider const &collider() const;
+        ui::collider &collider();
+
+        void set_position(ui::point);
+        void set_angle(float const);
+        void set_scale(ui::size);
+        void set_color(ui::color);
+        void set_alpha(float const);
+        void set_mesh(ui::mesh);
+        void set_collider(ui::collider);
+        void set_enabled(bool const);
 
         void add_sub_node(ui::node);
         void remove_from_super_node();

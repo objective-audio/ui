@@ -66,8 +66,8 @@ namespace sample {
                     ui::mesh mesh;
                     mesh.set_mesh_data(impl_ptr<impl>()->mesh_data);
                     mesh.set_texture(impl_ptr<impl>()->texture);
-                    node.mesh().set_value(mesh);
-                    node.scale().set_value(0.0f);
+                    node.set_mesh(mesh);
+                    node.set_scale(0.0f);
 
                     auto root_node = renderer.root_node();
                     root_node.add_sub_node(node);
@@ -96,7 +96,7 @@ namespace sample {
                     if (objects.count(identifier)) {
                         auto &touch_object = objects.at(identifier);
                         auto &node = touch_object.node;
-                        node.position().set_value(node.parent().convert_position(position));
+                        node.set_position(node.parent().convert_position(position));
                     }
                 }
 
@@ -158,8 +158,8 @@ namespace sample {
 
                 auto &node = bg_node.node();
                 bg_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
-                node.scale().set_value(0.0f);
-                node.color().set_value({0.15f, 0.15f, 0.15f});
+                node.set_scale(0.0f);
+                node.set_color({0.15f, 0.15f, 0.15f});
 
                 auto root_node = renderer.root_node();
                 root_node.add_sub_node(node);
@@ -173,10 +173,10 @@ namespace sample {
                     sq_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
 
                     auto &node = sq_node.node();
-                    node.position().set_value({100.0f, 0.0f});
-                    node.scale().set_value({10.0f, 30.0f});
-                    node.color().set_value(0.3f);
-                    node.collider().set_value({{.shape = ui::collider_shape::square}});
+                    node.set_position({100.0f, 0.0f});
+                    node.set_scale({10.0f, 30.0f});
+                    node.set_color(0.3f);
+                    node.set_collider({{.shape = ui::collider_shape::square}});
 
                     observers.emplace_back(node.subject().make_observer(
                         ui::node_method::change_node_renderer, [idx, obs = base{nullptr}](auto const &context) mutable {
@@ -221,7 +221,7 @@ namespace sample {
 
                     ui::node handle_node;
                     handle_node.add_sub_node(node);
-                    handle_node.angle().set_value(360.0f / count * idx);
+                    handle_node.set_angle(360.0f / count * idx);
 
                     auto root_node = renderer.root_node();
                     root_node.add_sub_node(handle_node);
@@ -242,8 +242,8 @@ namespace sample {
                         region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
                 }
 
-                mesh_node.node().color().set_value(0.0f);
-                mesh_node.node().alpha().set_value(0.0f);
+                mesh_node.node().set_color(0.0f);
+                mesh_node.node().set_alpha(0.0f);
                 cursor_node.add_sub_node(mesh_node.node());
 
                 auto root_node = renderer.root_node();
@@ -311,15 +311,15 @@ namespace sample {
     auto &event_manager = _cpp.renderer.event_manager();
 
     auto const &view_size = _cpp.renderer.view_size();
-    _cpp.bg_node.node().scale().set_value({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+    _cpp.bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
 
     auto set_text_pos = [](ui::node &node, ui::uint_size const &view_size) {
-        node.position().set_value(
+        node.set_position(
             {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
     };
 
     auto set_modifier_pos = [](ui::node &node, ui::uint_size const &view_size) {
-        node.position().set_value(
+        node.set_position(
             {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
     };
 
@@ -337,8 +337,7 @@ namespace sample {
         auto const &view_size = renderer.view_size();
 
         if (auto bg_node = weak_bg_node.lock()) {
-            bg_node.node().scale().set_value(
-                {static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+            bg_node.node().set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
         }
 
         if (auto text_node = weak_text_node.lock()) {
@@ -359,7 +358,7 @@ namespace sample {
             ui::event const &event = context.value;
             auto const &value = event.get<ui::cursor>();
 
-            node.position().set_value(node.parent().convert_position(value.position()));
+            node.set_position(node.parent().convert_position(value.position()));
 
             if (auto renderer = weak_renderer.lock()) {
                 for (auto child_node : node.children()) {

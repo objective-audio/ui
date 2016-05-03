@@ -27,25 +27,25 @@ using namespace yas;
 - (void)test_create {
     ui::node node;
 
-    XCTAssertEqual(node.position().value().x, 0.0f);
-    XCTAssertEqual(node.position().value().y, 0.0f);
-    XCTAssertEqual(node.angle().value(), 0.0f);
-    XCTAssertEqual(node.scale().value().width, 1.0f);
-    XCTAssertEqual(node.scale().value().height, 1.0f);
+    XCTAssertEqual(node.position().x, 0.0f);
+    XCTAssertEqual(node.position().y, 0.0f);
+    XCTAssertEqual(node.angle(), 0.0f);
+    XCTAssertEqual(node.scale().width, 1.0f);
+    XCTAssertEqual(node.scale().height, 1.0f);
 
-    XCTAssertEqual(node.color().value().red, 1.0f);
-    XCTAssertEqual(node.color().value().green, 1.0f);
-    XCTAssertEqual(node.color().value().blue, 1.0f);
-    XCTAssertEqual(node.alpha().value(), 1.0f);
+    XCTAssertEqual(node.color().red, 1.0f);
+    XCTAssertEqual(node.color().green, 1.0f);
+    XCTAssertEqual(node.color().blue, 1.0f);
+    XCTAssertEqual(node.alpha(), 1.0f);
 
-    XCTAssertFalse(node.mesh().value());
-    XCTAssertFalse(node.collider().value());
+    XCTAssertFalse(node.mesh());
+    XCTAssertFalse(node.collider());
 
     XCTAssertEqual(node.children().size(), 0);
     XCTAssertFalse(node.parent());
     XCTAssertFalse(node.renderer());
 
-    XCTAssertTrue(node.enabled().value());
+    XCTAssertTrue(node.is_enabled());
 
     XCTAssertTrue(node.renderable());
     XCTAssertTrue(node.metal());
@@ -62,31 +62,31 @@ using namespace yas;
     ui::mesh mesh;
     ui::collider collider;
 
-    node.position().set_value({1.0f, 2.0f});
-    node.angle().set_value(3.0f);
-    node.scale().set_value({4.0f, 5.0f});
-    node.color().set_value({0.1f, 0.2f, 0.3f});
-    node.alpha().set_value(0.4f);
+    node.set_position({1.0f, 2.0f});
+    node.set_angle(3.0f);
+    node.set_scale({4.0f, 5.0f});
+    node.set_color({0.1f, 0.2f, 0.3f});
+    node.set_alpha(0.4f);
 
-    node.enabled().set_value(true);
+    node.set_enabled(true);
 
-    XCTAssertEqual(node.position().value().x, 1.0f);
-    XCTAssertEqual(node.position().value().y, 2.0f);
-    XCTAssertEqual(node.angle().value(), 3.0f);
-    XCTAssertEqual(node.scale().value().width, 4.0f);
-    XCTAssertEqual(node.scale().value().height, 5.0f);
-    XCTAssertEqual(node.color().value().red, 0.1f);
-    XCTAssertEqual(node.color().value().green, 0.2f);
-    XCTAssertEqual(node.color().value().blue, 0.3f);
-    XCTAssertEqual(node.alpha().value(), 0.4f);
+    XCTAssertEqual(node.position().x, 1.0f);
+    XCTAssertEqual(node.position().y, 2.0f);
+    XCTAssertEqual(node.angle(), 3.0f);
+    XCTAssertEqual(node.scale().width, 4.0f);
+    XCTAssertEqual(node.scale().height, 5.0f);
+    XCTAssertEqual(node.color().red, 0.1f);
+    XCTAssertEqual(node.color().green, 0.2f);
+    XCTAssertEqual(node.color().blue, 0.3f);
+    XCTAssertEqual(node.alpha(), 0.4f);
 
-    node.mesh().set_value(mesh);
-    node.collider().set_value(collider);
+    node.set_mesh(mesh);
+    node.set_collider(collider);
 
     XCTAssertEqual(node.mesh(), mesh);
     XCTAssertEqual(node.collider(), collider);
 
-    XCTAssertTrue(node.enabled().value());
+    XCTAssertTrue(node.is_enabled());
 }
 
 - (void)set_color_to_mesh {
@@ -98,18 +98,18 @@ using namespace yas;
     XCTAssertEqual(mesh.color()[2], 1.0f);
     XCTAssertEqual(mesh.color()[3], 1.0f);
 
-    node.color().set_value({0.25f, 0.5f, 0.75f});
-    node.alpha().set_value(0.125f);
+    node.set_color({0.25f, 0.5f, 0.75f});
+    node.set_alpha(0.125f);
 
-    node.mesh().set_value(mesh);
+    node.set_mesh(mesh);
 
     XCTAssertEqual(mesh.color()[0], 0.25f);
     XCTAssertEqual(mesh.color()[1], 0.5f);
     XCTAssertEqual(mesh.color()[2], 0.75f);
     XCTAssertEqual(mesh.color()[3], 0.125f);
 
-    node.color().set_value({0.1f, 0.2f, 0.3f});
-    node.alpha().set_value(0.4f);
+    node.set_color({0.1f, 0.2f, 0.3f});
+    node.set_alpha(0.4f);
 
     XCTAssertEqual(mesh.color()[0], 0.1f);
     XCTAssertEqual(mesh.color()[1], 0.2f);
