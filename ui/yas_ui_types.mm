@@ -6,6 +6,77 @@
 
 using namespace yas;
 
+#pragma mark - ui::point
+
+ui::point::point() {
+}
+
+ui::point::point(float const x, float const y) : x(x), y(y) {
+}
+
+ui::point::point(simd::float2 v) : v(std::move(v)) {
+}
+
+bool ui::point::operator==(point const &rhs) const {
+    return x == rhs.x && y == rhs.y;
+}
+
+bool ui::point::operator!=(point const &rhs) const {
+    return x != rhs.x || y != rhs.y;
+}
+
+ui::point::operator bool() const {
+    return x != 0 || y != 0;
+}
+
+#pragma mark - ui::size
+
+ui::size::size() {
+}
+
+ui::size::size(float const w, float const h) : w(w), h(h) {
+}
+
+ui::size::size(simd::float2 v) : v(std::move(v)) {
+}
+
+bool ui::size::operator==(size const &rhs) const {
+    return w == rhs.w && h == rhs.h;
+}
+
+bool ui::size::operator!=(size const &rhs) const {
+    return w != rhs.w || h != rhs.h;
+}
+
+ui::size::operator bool() const {
+    return w != 0 || h != 0;
+}
+
+#pragma mark -
+
+ui::color::color() : v(0.0f) {
+}
+
+ui::color::color(float const r, float const g, float const b) : r(r), g(g), b(b) {
+}
+
+ui::color::color(simd::float3 v) : v(std::move(v)) {
+}
+
+bool ui::color::operator==(color const &rhs) const {
+    return v.x == rhs.v.x && v.y == rhs.v.y && v.z == rhs.v.z;
+}
+
+bool ui::color::operator!=(color const &rhs) const {
+    return v.x != rhs.v.x || v.y != rhs.v.y || v.z != rhs.v.z;
+}
+
+ui::color::operator bool() const {
+    return v.x != 0 || v.y != 0 || v.z != 0;
+}
+
+#pragma mark -
+
 ui::uint_origin yas::to_uint_origin(MTLOrigin const origin) {
     return ui::uint_origin{static_cast<uint32_t>(origin.x), static_cast<uint32_t>(origin.y)};
 }

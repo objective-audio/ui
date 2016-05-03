@@ -285,4 +285,94 @@ using namespace yas;
     XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle_strip), MTLPrimitiveTypeTriangleStrip);
 }
 
+- (void)test_create_point {
+    ui::point p;
+
+    XCTAssertEqual(p.x, 0.0f);
+    XCTAssertEqual(p.y, 0.0f);
+}
+
+- (void)test_create_point_with_params {
+    ui::point p{1.0f, 2.0f};
+
+    XCTAssertEqual(p.x, 1.0f);
+    XCTAssertEqual(p.y, 2.0f);
+}
+
+- (void)test_create_point_with_float2 {
+    ui::point p{simd::float2{3.0f, 4.0f}};
+
+    XCTAssertEqual(p.x, 3.0f);
+    XCTAssertEqual(p.y, 4.0f);
+}
+
+- (void)test_is_equal_points {
+    ui::point p1{1.0f, 2.0f};
+    ui::point p2{1.0f, 2.0f};
+    ui::point p3{1.1f, 2.0f};
+    ui::point p4{1.0f, 2.1f};
+    ui::point p5{1.1f, 2.1f};
+    ui::point pz1{0.0f, 0.0f};
+    ui::point pz2{0.0f, 0.0f};
+
+    XCTAssertTrue(p1 == p2);
+    XCTAssertFalse(p1 == p3);
+    XCTAssertFalse(p1 == p4);
+    XCTAssertFalse(p1 == p5);
+    XCTAssertTrue(pz1 == pz2);
+
+    XCTAssertFalse(p1 != p2);
+    XCTAssertTrue(p1 != p3);
+    XCTAssertTrue(p1 != p4);
+    XCTAssertTrue(p1 != p5);
+    XCTAssertFalse(pz1 != pz2);
+}
+
+- (void)test_is_equal_sizes {
+    ui::size s1{1.0f, 2.0f};
+    ui::size s2{1.0f, 2.0f};
+    ui::size s3{1.1f, 2.0f};
+    ui::size s4{1.0f, 2.1f};
+    ui::size s5{1.1f, 2.1f};
+    ui::size sz1{0.0f, 0.0f};
+    ui::size sz2{0.0f, 0.0f};
+
+    XCTAssertTrue(s1 == s2);
+    XCTAssertFalse(s1 == s3);
+    XCTAssertFalse(s1 == s4);
+    XCTAssertFalse(s1 == s5);
+    XCTAssertTrue(sz1 == sz2);
+
+    XCTAssertFalse(s1 != s2);
+    XCTAssertTrue(s1 != s3);
+    XCTAssertTrue(s1 != s4);
+    XCTAssertTrue(s1 != s5);
+    XCTAssertFalse(sz1 != sz2);
+}
+
+- (void)test_is_equal_colors {
+    ui::color c1{1.0f, 2.0f, 3.0f};
+    ui::color c2{1.0f, 2.0f, 3.0f};
+    ui::color c3{1.1f, 2.0f, 3.0f};
+    ui::color c4{1.0f, 2.1f, 3.0f};
+    ui::color c5{1.0f, 2.0f, 3.1f};
+    ui::color c6{1.1f, 2.1f, 3.1f};
+    ui::color cz1{0.0f, 0.0f, 0.0f};
+    ui::color cz2{0.0f, 0.0f, 0.0f};
+
+    XCTAssertTrue(c1 == c2);
+    XCTAssertFalse(c1 == c3);
+    XCTAssertFalse(c1 == c4);
+    XCTAssertFalse(c1 == c5);
+    XCTAssertFalse(c1 == c6);
+    XCTAssertTrue(cz1 == cz2);
+
+    XCTAssertFalse(c1 != c2);
+    XCTAssertTrue(c1 != c3);
+    XCTAssertTrue(c1 != c4);
+    XCTAssertTrue(c1 != c5);
+    XCTAssertTrue(c1 != c6);
+    XCTAssertFalse(cz1 != cz2);
+}
+
 @end

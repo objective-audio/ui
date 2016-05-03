@@ -10,9 +10,61 @@ using namespace yas;
 #pragma mark - node
 
 ui::node::node() : base(std::make_shared<impl>()) {
-}
+    auto imp_ptr = impl_ptr<impl>();
+    auto &observers = imp_ptr->_property_observers;
+    auto weak_node = to_weak(*this);
 
-ui::node::node(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
+    observers.reserve(8);
+
+    observers.emplace_back(position().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        if (auto node = weak_node.lock()) {
+            node.impl_ptr<impl>()->_set_needs_update_matrix();
+        }
+    }));
+
+    observers.emplace_back(angle().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        if (auto node = weak_node.lock()) {
+            node.impl_ptr<impl>()->_set_needs_update_matrix();
+        }
+    }));
+
+    observers.emplace_back(scale().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        if (auto node = weak_node.lock()) {
+            node.impl_ptr<impl>()->_set_needs_update_matrix();
+        }
+    }));
+
+    observers.emplace_back(mesh().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        if (auto node = weak_node.lock()) {
+            node.impl_ptr<impl>()->_udpate_mesh_color();
+        }
+    }));
+
+    observers.emplace_back(color().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        if (auto node = weak_node.lock()) {
+            node.impl_ptr<impl>()->_udpate_mesh_color();
+        }
+    }));
+
+    observers.emplace_back(alpha().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        if (auto node = weak_node.lock()) {
+            node.impl_ptr<impl>()->_udpate_mesh_color();
+        }
+    }));
+
+    observers.emplace_back(
+        imp_ptr->parent_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
+            if (auto node = weak_node.lock()) {
+                node.subject().notify(node_method::change_parent, node);
+            }
+        }));
+
+    observers.emplace_back(imp_ptr->node_renderer_property.subject().make_observer(
+        property_method::did_change, [weak_node](auto const &context) {
+            if (auto node = weak_node.lock()) {
+                node.subject().notify(node_method::change_node_renderer, node);
+            }
+        }));
 }
 
 ui::node::node(std::nullptr_t) : base(nullptr) {
@@ -26,68 +78,68 @@ bool ui::node::operator!=(ui::node const &rhs) const {
     return base::operator!=(rhs);
 }
 
-simd::float2 ui::node::position() const {
-    return impl_ptr<impl>()->position();
+property<ui::point> const &ui::node::position() const {
+    return impl_ptr<impl>()->position_property;
 }
 
-float ui::node::angle() const {
-    return impl_ptr<impl>()->angle();
+property<float> const &ui::node::angle() const {
+    return impl_ptr<impl>()->angle_property;
 }
 
-simd::float2 ui::node::scale() const {
-    return impl_ptr<impl>()->scale();
+property<ui::size> const &ui::node::scale() const {
+    return impl_ptr<impl>()->scale_property;
 }
 
-simd::float3 ui::node::color() const {
-    return impl_ptr<impl>()->color();
+property<ui::color> const &ui::node::color() const {
+    return impl_ptr<impl>()->color_property;
 }
 
-float ui::node::alpha() const {
-    return impl_ptr<impl>()->alpha();
+property<float> const &ui::node::alpha() const {
+    return impl_ptr<impl>()->alpha_property;
 }
 
-ui::mesh ui::node::mesh() const {
-    return impl_ptr<impl>()->mesh();
+property<ui::mesh> const &ui::node::mesh() const {
+    return impl_ptr<impl>()->mesh_property;
 }
 
-ui::collider ui::node::collider() const {
-    return impl_ptr<impl>()->collider();
+property<ui::collider> const &ui::node::collider() const {
+    return impl_ptr<impl>()->collider_property;
 }
 
-bool ui::node::is_enabled() const {
-    return impl_ptr<impl>()->is_enabled();
+property<bool> const &ui::node::enabled() const {
+    return impl_ptr<impl>()->enabled_property;
 }
 
-void ui::node::set_position(simd::float2 const pos) {
-    impl_ptr<impl>()->set_position(pos);
+property<ui::point> &ui::node::position() {
+    return impl_ptr<impl>()->position_property;
 }
 
-void ui::node::set_angle(float const angle) {
-    impl_ptr<impl>()->set_angle(angle);
+property<float> &ui::node::angle() {
+    return impl_ptr<impl>()->angle_property;
 }
 
-void ui::node::set_scale(simd::float2 const scale) {
-    impl_ptr<impl>()->set_scale(scale);
+property<ui::size> &ui::node::scale() {
+    return impl_ptr<impl>()->scale_property;
 }
 
-void ui::node::set_color(simd::float3 const color) {
-    impl_ptr<impl>()->set_color(color);
+property<ui::color> &ui::node::color() {
+    return impl_ptr<impl>()->color_property;
 }
 
-void ui::node::set_alpha(float const alpha) {
-    impl_ptr<impl>()->set_alpha(alpha);
+property<float> &ui::node::alpha() {
+    return impl_ptr<impl>()->alpha_property;
 }
 
-void ui::node::set_mesh(ui::mesh mesh) {
-    impl_ptr<impl>()->set_mesh(std::move(mesh));
+property<ui::mesh> &ui::node::mesh() {
+    return impl_ptr<impl>()->mesh_property;
 }
 
-void ui::node::set_collider(ui::collider collider) {
-    impl_ptr<impl>()->set_collider(std::move(collider));
+property<ui::collider> &ui::node::collider() {
+    return impl_ptr<impl>()->collider_property;
 }
 
-void ui::node::set_enabled(bool const enabled) {
-    impl_ptr<impl>()->set_enabled(enabled);
+property<bool> &ui::node::enabled() {
+    return impl_ptr<impl>()->enabled_property;
 }
 
 void ui::node::add_sub_node(ui::node sub_node) {
@@ -99,11 +151,15 @@ void ui::node::remove_from_super_node() {
 }
 
 std::vector<ui::node> const &ui::node::children() const {
-    return impl_ptr<impl>()->children;
+    return impl_ptr<impl>()->children();
 }
 
 ui::node ui::node::parent() const {
-    return impl_ptr<impl>()->parent.lock();
+    return impl_ptr<impl>()->parent_property.value().lock();
+}
+
+ui::node_renderer ui::node::renderer() const {
+    return impl_ptr<impl>()->renderer();
 }
 
 void ui::node::update_render_info(render_info &info) {
@@ -118,6 +174,10 @@ ui::renderable_node ui::node::renderable() {
     return ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
 }
 
-simd::float2 ui::node::convert_position(simd::float2 const &loc) {
+ui::node::subject_t &ui::node::subject() {
+    return impl_ptr<impl>()->subject;
+}
+
+simd::float2 ui::node::convert_position(simd::float2 const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }
