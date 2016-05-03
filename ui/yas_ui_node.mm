@@ -5,8 +5,6 @@
 #include "yas_ui_node.h"
 #include "yas_ui_renderer.h"
 
-#include <iostream>
-
 using namespace yas;
 
 #pragma mark - node
