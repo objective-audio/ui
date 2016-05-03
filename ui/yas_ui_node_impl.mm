@@ -123,7 +123,7 @@ void ui::node::impl::_set_node_renderer_recursively(ui::node_renderer const &ren
     }
 }
 
-void ui::node::impl::_udpate_mesh_color() {
+void ui::node::impl::_update_mesh_color() {
     if (auto &mesh = mesh_property.value()) {
         auto const &color = color_property.value().v;
         auto const &alpha = alpha_property.value();

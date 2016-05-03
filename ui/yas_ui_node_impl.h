@@ -46,7 +46,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
     ui::point convert_position(ui::point const &);
 
     void _set_node_renderer_recursively(ui::node_renderer const &renderer);
-    void _udpate_mesh_color();
+    void _update_mesh_color();
     void _set_needs_update_matrix();
 
     std::vector<base> _property_observers;

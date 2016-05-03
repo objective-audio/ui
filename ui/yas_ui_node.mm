@@ -36,19 +36,19 @@ ui::node::node() : base(std::make_shared<impl>()) {
 
     observers.emplace_back(mesh().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
         if (auto node = weak_node.lock()) {
-            node.impl_ptr<impl>()->_udpate_mesh_color();
+            node.impl_ptr<impl>()->_update_mesh_color();
         }
     }));
 
     observers.emplace_back(color().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
         if (auto node = weak_node.lock()) {
-            node.impl_ptr<impl>()->_udpate_mesh_color();
+            node.impl_ptr<impl>()->_update_mesh_color();
         }
     }));
 
     observers.emplace_back(alpha().subject().make_observer(property_method::did_change, [weak_node](auto const &) {
         if (auto node = weak_node.lock()) {
-            node.impl_ptr<impl>()->_udpate_mesh_color();
+            node.impl_ptr<impl>()->_update_mesh_color();
         }
     }));
 
