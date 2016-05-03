@@ -30,12 +30,12 @@ using namespace yas;
     XCTAssertEqual(node.position().value().x, 0.0f);
     XCTAssertEqual(node.position().value().y, 0.0f);
     XCTAssertEqual(node.angle().value(), 0.0f);
-    XCTAssertEqual(node.scale().value().x, 1.0f);
-    XCTAssertEqual(node.scale().value().y, 1.0f);
+    XCTAssertEqual(node.scale().value().w, 1.0f);
+    XCTAssertEqual(node.scale().value().h, 1.0f);
 
-    XCTAssertEqual(node.color().value()[0], 1.0f);
-    XCTAssertEqual(node.color().value()[1], 1.0f);
-    XCTAssertEqual(node.color().value()[2], 1.0f);
+    XCTAssertEqual(node.color().value().r, 1.0f);
+    XCTAssertEqual(node.color().value().g, 1.0f);
+    XCTAssertEqual(node.color().value().b, 1.0f);
     XCTAssertEqual(node.alpha().value(), 1.0f);
 
     XCTAssertFalse(node.mesh().value());
@@ -73,11 +73,11 @@ using namespace yas;
     XCTAssertEqual(node.position().value().x, 1.0f);
     XCTAssertEqual(node.position().value().y, 2.0f);
     XCTAssertEqual(node.angle().value(), 3.0f);
-    XCTAssertEqual(node.scale().value().x, 4.0f);
-    XCTAssertEqual(node.scale().value().y, 5.0f);
-    XCTAssertEqual(node.color().value()[0], 0.1f);
-    XCTAssertEqual(node.color().value()[1], 0.2f);
-    XCTAssertEqual(node.color().value()[2], 0.3f);
+    XCTAssertEqual(node.scale().value().w, 4.0f);
+    XCTAssertEqual(node.scale().value().h, 5.0f);
+    XCTAssertEqual(node.color().value().r, 0.1f);
+    XCTAssertEqual(node.color().value().g, 0.2f);
+    XCTAssertEqual(node.color().value().b, 0.3f);
     XCTAssertEqual(node.alpha().value(), 0.4f);
 
     node.mesh().set_value(mesh);
