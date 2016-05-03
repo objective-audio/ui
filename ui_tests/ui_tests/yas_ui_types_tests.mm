@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_ui_types.h"
-
 #import <iostream>
 
 using namespace yas;
@@ -232,31 +231,31 @@ using namespace yas;
 - (void)test_create_size {
     ui::size s;
 
-    XCTAssertEqual(s.w, 0.0f);
-    XCTAssertEqual(s.h, 0.0f);
+    XCTAssertEqual(s.width, 0.0f);
+    XCTAssertEqual(s.height, 0.0f);
 }
 
 - (void)test_create_size_with_params {
     ui::size s{1.0f, 2.0f};
 
-    XCTAssertEqual(s.w, 1.0f);
-    XCTAssertEqual(s.h, 2.0f);
+    XCTAssertEqual(s.width, 1.0f);
+    XCTAssertEqual(s.height, 2.0f);
 }
 
 - (void)test_create_color {
     ui::color c;
 
-    XCTAssertEqual(c.r, 1.0f);
-    XCTAssertEqual(c.g, 1.0f);
-    XCTAssertEqual(c.b, 1.0f);
+    XCTAssertEqual(c.red, 1.0f);
+    XCTAssertEqual(c.green, 1.0f);
+    XCTAssertEqual(c.blue, 1.0f);
 }
 
 - (void)test_create_color_with_params {
     ui::color c{1.0f, 2.0f, 3.0f};
 
-    XCTAssertEqual(c.r, 1.0f);
-    XCTAssertEqual(c.g, 2.0f);
-    XCTAssertEqual(c.b, 3.0f);
+    XCTAssertEqual(c.red, 1.0f);
+    XCTAssertEqual(c.green, 2.0f);
+    XCTAssertEqual(c.blue, 3.0f);
 }
 
 - (void)test_is_equal_points {

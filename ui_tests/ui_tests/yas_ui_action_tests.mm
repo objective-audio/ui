@@ -209,18 +209,18 @@ using namespace yas;
 
     updatable.update(time);
 
-    XCTAssertEqual(target.scale().value().w, 0.0f);
-    XCTAssertEqual(target.scale().value().h, -1.0f);
+    XCTAssertEqual(target.scale().value().width, 0.0f);
+    XCTAssertEqual(target.scale().value().height, -1.0f);
 
     updatable.update(time + 500ms);
 
-    XCTAssertEqual(target.scale().value().w, 0.5f);
-    XCTAssertEqual(target.scale().value().h, 0.0f);
+    XCTAssertEqual(target.scale().value().width, 0.5f);
+    XCTAssertEqual(target.scale().value().height, 0.0f);
 
     updatable.update(time + 1s);
 
-    XCTAssertEqual(target.scale().value().w, 1.0f);
-    XCTAssertEqual(target.scale().value().h, 1.0f);
+    XCTAssertEqual(target.scale().value().width, 1.0f);
+    XCTAssertEqual(target.scale().value().height, 1.0f);
 }
 
 - (void)test_update_color_action {
@@ -236,21 +236,21 @@ using namespace yas;
 
     updatable.update(time);
 
-    XCTAssertEqual(target.color().value().r, 0.0f);
-    XCTAssertEqual(target.color().value().g, 0.25f);
-    XCTAssertEqual(target.color().value().b, 0.5f);
+    XCTAssertEqual(target.color().value().red, 0.0f);
+    XCTAssertEqual(target.color().value().green, 0.25f);
+    XCTAssertEqual(target.color().value().blue, 0.5f);
 
     updatable.update(time + 500ms);
 
-    XCTAssertEqual(target.color().value().r, 0.5f);
-    XCTAssertEqual(target.color().value().g, 0.5f);
-    XCTAssertEqual(target.color().value().b, 0.5f);
+    XCTAssertEqual(target.color().value().red, 0.5f);
+    XCTAssertEqual(target.color().value().green, 0.5f);
+    XCTAssertEqual(target.color().value().blue, 0.5f);
 
     updatable.update(time + 1s);
 
-    XCTAssertEqual(target.color().value().r, 1.0f);
-    XCTAssertEqual(target.color().value().g, 0.75f);
-    XCTAssertEqual(target.color().value().b, 0.5f);
+    XCTAssertEqual(target.color().value().red, 1.0f);
+    XCTAssertEqual(target.color().value().green, 0.75f);
+    XCTAssertEqual(target.color().value().blue, 0.5f);
 }
 
 - (void)test_udpate_alpha_action {

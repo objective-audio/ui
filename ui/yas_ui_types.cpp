@@ -34,22 +34,22 @@ ui::point::operator bool() const {
 ui::size::size() {
 }
 
-ui::size::size(float const w, float const h) : w(w), h(h) {
+ui::size::size(float const w, float const h) : width(w), height(h) {
 }
 
 ui::size::size(simd::float2 v) : v(std::move(v)) {
 }
 
 bool ui::size::operator==(size const &rhs) const {
-    return w == rhs.w && h == rhs.h;
+    return width == rhs.width && height == rhs.height;
 }
 
 bool ui::size::operator!=(size const &rhs) const {
-    return w != rhs.w || h != rhs.h;
+    return width != rhs.width || height != rhs.height;
 }
 
 ui::size::operator bool() const {
-    return w != 0 || h != 0;
+    return width != 0 || height != 0;
 }
 
 #pragma mark -
@@ -57,22 +57,22 @@ ui::size::operator bool() const {
 ui::color::color() {
 }
 
-ui::color::color(float const r, float const g, float const b) : r(r), g(g), b(b) {
+ui::color::color(float const r, float const g, float const b) : red(r), green(g), blue(b) {
 }
 
 ui::color::color(simd::float3 v) : v(std::move(v)) {
 }
 
 bool ui::color::operator==(color const &rhs) const {
-    return v.x == rhs.v.x && v.y == rhs.v.y && v.z == rhs.v.z;
+    return red == rhs.red && green == rhs.green && blue == rhs.blue;
 }
 
 bool ui::color::operator!=(color const &rhs) const {
-    return v.x != rhs.v.x || v.y != rhs.v.y || v.z != rhs.v.z;
+    return red != rhs.red || green != rhs.green || blue != rhs.blue;
 }
 
 ui::color::operator bool() const {
-    return v.x != 0 || v.y != 0 || v.z != 0;
+    return red != 0 || green != 0 || blue != 0;
 }
 
 #pragma mark -

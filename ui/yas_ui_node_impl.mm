@@ -61,8 +61,8 @@ void ui::node::impl::update_render_info(render_info &render_info) {
         auto const &position = position_property.value();
         auto const &angle = angle_property.value();
         auto const &scale = scale_property.value();
-        _local_matrix =
-            matrix::translation(position.x, position.y) * matrix::rotation(angle) * matrix::scale(scale.w, scale.h);
+        _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+                        matrix::scale(scale.width, scale.height);
         _needs_update_matrix = false;
     }
 
