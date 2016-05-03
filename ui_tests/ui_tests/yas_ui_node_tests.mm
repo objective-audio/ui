@@ -187,4 +187,160 @@ using namespace yas;
     XCTAssertEqual(renderable.renderer(), renderer);
 }
 
+- (void)test_method_undispatched {
+    id<MTLDevice> device = nil;
+
+    ui::node node;
+    ui::node_renderer renderer{device};
+
+    std::shared_ptr<ui::node_method> called_method = nullptr;
+
+    auto observer = node.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
+        auto const &method = context.key;
+        if (method != ui::node_method::add_to_super && method != ui::node_method::remove_from_super) {
+            called_method = std::make_shared<ui::node_method>(context.key);
+        }
+    });
+
+    node.set_position({1.0f, 2.0f});
+    XCTAssertFalse(called_method);
+    node.set_angle(90.0f);
+    XCTAssertFalse(called_method);
+    node.set_scale({3.0f, 4.0f});
+    XCTAssertFalse(called_method);
+    node.set_color({1.0f, 2.0f, 3.0f});
+    XCTAssertFalse(called_method);
+    node.set_alpha(5.0f);
+    XCTAssertFalse(called_method);
+    node.set_enabled(false);
+    XCTAssertFalse(called_method);
+    node.set_mesh(ui::mesh{});
+    XCTAssertFalse(called_method);
+    node.set_collider(ui::collider{});
+    XCTAssertFalse(called_method);
+
+    ui::node parent;
+    parent.add_sub_node(node);
+    XCTAssertFalse(called_method);
+
+    node.renderable().set_renderer(renderer);
+    XCTAssertFalse(called_method);
+}
+
+- (void)test_method_dispatched {
+    std::shared_ptr<ui::node_method> called_method = nullptr;
+
+    auto make_observer = [&called_method](ui::node &node) {
+        return node.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
+            auto const &method = context.key;
+            if (method != ui::node_method::add_to_super && method != ui::node_method::remove_from_super) {
+                called_method = std::make_shared<ui::node_method>(context.key);
+            }
+        });
+    };
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_position);
+        auto observer = make_observer(node);
+        node.set_position({1.0f, 2.0f});
+        XCTAssertEqual(*called_method, ui::node_method::change_position);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_angle);
+        auto observer = make_observer(node);
+        node.set_angle(90.0f);
+        XCTAssertEqual(*called_method, ui::node_method::change_angle);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_scale);
+        auto observer = make_observer(node);
+        node.set_scale({3.0f, 4.0f});
+        XCTAssertEqual(*called_method, ui::node_method::change_scale);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_color);
+        auto observer = make_observer(node);
+        node.set_color({1.0f, 2.0f, 3.0f});
+        XCTAssertEqual(*called_method, ui::node_method::change_color);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_alpha);
+        auto observer = make_observer(node);
+        node.set_alpha(0.5f);
+        XCTAssertEqual(*called_method, ui::node_method::change_alpha);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_enabled);
+        auto observer = make_observer(node);
+        node.set_enabled(false);
+        XCTAssertEqual(*called_method, ui::node_method::change_enabled);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_mesh);
+        auto observer = make_observer(node);
+        node.set_mesh(ui::mesh{});
+        XCTAssertEqual(*called_method, ui::node_method::change_mesh);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_collider);
+        auto observer = make_observer(node);
+        node.set_collider(ui::collider{});
+        XCTAssertEqual(*called_method, ui::node_method::change_collider);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::node parent;
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_parent);
+        auto observer = make_observer(node);
+        parent.add_sub_node(node);
+        XCTAssertEqual(*called_method, ui::node_method::change_parent);
+    }
+
+    called_method = nullptr;
+
+    {
+        id<MTLDevice> device = nil;
+        ui::node_renderer renderer{device};
+        ui::node node;
+        node.dispatch_method(ui::node_method::change_node_renderer);
+        auto observer = make_observer(node);
+        node.renderable().set_renderer(renderer);
+        XCTAssertEqual(*called_method, ui::node_method::change_node_renderer);
+    }
+
+    called_method = nullptr;
+}
+
 @end
