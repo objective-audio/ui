@@ -8,19 +8,19 @@
 using namespace yas;
 
 namespace yas {
-float roundf(float const &v, double scale) {
-    return static_cast<float>(std::round(scale * v) / scale);
+float roundf(float const value, double const scale) {
+    return static_cast<float>(std::round(scale * value) / scale);
 }
 
-double round(double const &v, double scale) {
-    return std::round(scale * v) / scale;
+double round(double const value, double const scale) {
+    return std::round(scale * value) / scale;
 }
 
-float ceilf(float const &v, double scale) {
-    return static_cast<float>(std::ceil(scale * v) / scale);
+float ceilf(float const value, double const scale) {
+    return static_cast<float>(std::ceil(scale * value) / scale);
 }
 
-double ceil(double const &v, double scale) {
-    return std::ceil(scale * v) / scale;
+double ceil(double const value, double const scale) {
+    return std::ceil(scale * value) / scale;
 }
 }
