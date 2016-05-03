@@ -1,5 +1,5 @@
 //
-//  yas_ui_types.mm
+//  yas_ui_types.cpp
 //
 
 #include "yas_ui_types.h"

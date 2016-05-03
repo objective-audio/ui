@@ -74,7 +74,7 @@
 		B6F502051C9F87EF00A0B4A1 /* yas_ui_renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F501F31C9F87EF00A0B4A1 /* yas_ui_renderer.mm */; };
 		B6F502061C9F87EF00A0B4A1 /* yas_ui_font_atlas.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F501F51C9F87EF00A0B4A1 /* yas_ui_font_atlas.mm */; };
 		B6F502071C9F87EF00A0B4A1 /* yas_ui_texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F501F71C9F87EF00A0B4A1 /* yas_ui_texture.mm */; };
-		B6F502081C9F87EF00A0B4A1 /* yas_ui_types.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F501F91C9F87EF00A0B4A1 /* yas_ui_types.mm */; };
+		B6F502081C9F87EF00A0B4A1 /* yas_ui_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F501F91C9F87EF00A0B4A1 /* yas_ui_types.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -208,7 +208,7 @@
 		B6F501F61C9F87EF00A0B4A1 /* yas_ui_texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture.h; sourceTree = "<group>"; };
 		B6F501F71C9F87EF00A0B4A1 /* yas_ui_texture.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_texture.mm; sourceTree = "<group>"; };
 		B6F501F81C9F87EF00A0B4A1 /* yas_ui_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_types.h; sourceTree = "<group>"; };
-		B6F501F91C9F87EF00A0B4A1 /* yas_ui_types.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_types.mm; sourceTree = "<group>"; };
+		B6F501F91C9F87EF00A0B4A1 /* yas_ui_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_types.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -291,7 +291,7 @@
 				B6ABA5D11CB3F101008C7714 /* yas_ui_transformer.cpp */,
 				B6ABA5D21CB3F101008C7714 /* yas_ui_transformer.h */,
 				B6F501F81C9F87EF00A0B4A1 /* yas_ui_types.h */,
-				B6F501F91C9F87EF00A0B4A1 /* yas_ui_types.mm */,
+				B6F501F91C9F87EF00A0B4A1 /* yas_ui_types.cpp */,
 				B6EA81FE1CAAA948009C870A /* yas_ui.h */,
 			);
 			name = ui;
@@ -530,7 +530,7 @@
 				B639BB141CBA166300E081B9 /* yas_ui_event_tests.mm in Sources */,
 				B6F501FD1C9F87EF00A0B4A1 /* yas_ui_mesh.mm in Sources */,
 				B63CA02F1CD86CF300A1380B /* yas_ui_metal_types.mm in Sources */,
-				B6F502081C9F87EF00A0B4A1 /* yas_ui_types.mm in Sources */,
+				B6F502081C9F87EF00A0B4A1 /* yas_ui_types.cpp in Sources */,
 				B65A3A1B1CCE402100929FB4 /* yas_ui_math.cpp in Sources */,
 				B6ABA5D01CB3F03E008C7714 /* yas_ui_transformer_tests.mm in Sources */,
 				B6C56DB81C9049A500CAC59D /* yas_base.cpp in Sources */,
