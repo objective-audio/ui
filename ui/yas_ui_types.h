@@ -103,7 +103,7 @@ namespace ui {
 
         color();
         color(float const);
-        color(float const x, float const y, float const z);
+        color(float const r, float const g, float const b);
         color(simd::float3);
 
         bool operator==(color const &) const;

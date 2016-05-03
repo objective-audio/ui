@@ -66,7 +66,7 @@ ui::color::color() : v(0.0f) {
 ui::color::color(float const v) : v(v) {
 }
 
-ui::color::color(float const x, float const y, float const z) : v(simd::float3{x, y, z}) {
+ui::color::color(float const r, float const g, float const b) : r(r), g(g), b(b) {
 }
 
 ui::color::color(simd::float3 v) : v(std::move(v)) {
