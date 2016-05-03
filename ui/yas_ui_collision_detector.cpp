@@ -1,5 +1,5 @@
 //
-//  yas_ui_collision_detector.mm
+//  yas_ui_collision_detector.cpp
 //
 
 #include <deque>

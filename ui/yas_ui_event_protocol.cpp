@@ -1,5 +1,5 @@
 //
-//  yas_ui_event_protocol.mm
+//  yas_ui_event_protocol.cpp
 //
 
 #include "yas_ui_event_protocol.h"

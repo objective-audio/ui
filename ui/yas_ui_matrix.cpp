@@ -1,8 +1,8 @@
 //
-//  yas_ui_matrix.mm
+//  yas_ui_matrix.cpp
 //
 
-#include <GLKit/GLKit.h>
+#include <GLKit/GLKMath.h>
 #include "yas_ui_matrix.h"
 
 using namespace simd;
