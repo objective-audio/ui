@@ -11,13 +11,10 @@ using namespace yas;
 ui::point::point() {
 }
 
-ui::point::point(float const v) : x(v), y(v) {
-}
-
 ui::point::point(float const x, float const y) : x(x), y(y) {
 }
 
-ui::point::point(simd::float2 const v) : x(v.x), y(v.y) {
+ui::point::point(simd::float2 v) : v(std::move(v)) {
 }
 
 bool ui::point::operator==(point const &rhs) const {
@@ -35,9 +32,6 @@ ui::point::operator bool() const {
 #pragma mark - ui::size
 
 ui::size::size() {
-}
-
-ui::size::size(float const v) : w(v), h(v) {
 }
 
 ui::size::size(float const w, float const h) : w(w), h(h) {
@@ -61,9 +55,6 @@ ui::size::operator bool() const {
 #pragma mark -
 
 ui::color::color() : v(0.0f) {
-}
-
-ui::color::color(float const v) : v(v) {
 }
 
 ui::color::color(float const r, float const g, float const b) : r(r), g(g), b(b) {

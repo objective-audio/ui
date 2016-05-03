@@ -61,9 +61,8 @@ namespace ui {
         };
 
         point();
-        point(float const v);
         point(float const x, float const y);
-        point(simd::float2 const v);
+        point(simd::float2);
 
         bool operator==(point const &rhs) const;
         bool operator!=(point const &rhs) const;
@@ -81,7 +80,6 @@ namespace ui {
         };
 
         size();
-        size(float const v);
         size(float const w, float const h);
         size(simd::float2);
 
@@ -102,7 +100,6 @@ namespace ui {
         };
 
         color();
-        color(float const);
         color(float const r, float const g, float const b);
         color(simd::float3);
 
