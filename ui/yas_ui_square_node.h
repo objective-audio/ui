@@ -14,9 +14,9 @@ namespace ui {
     struct square_mesh_data {
         explicit square_mesh_data(ui::dynamic_mesh_data mesh_data);
 
-        void write(std::size_t const square_idx,
-                   std::function<void(ui::vertex2d_square_t &, ui::index_square_t &)> const &);
         void write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &);
+        void write_vertex(std::size_t const square_idx, std::function<void(ui::vertex2d_square_t &)> const &);
+        void write_index(std::size_t const square_idx, std::function<void(ui::index_square_t &)> const &);
 
         std::size_t max_square_count() const;
         void set_square_count(std::size_t const);
