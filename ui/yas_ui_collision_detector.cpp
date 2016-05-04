@@ -14,23 +14,43 @@ ui::updatable_collision_detector::updatable_collision_detector(std::shared_ptr<i
     : yas::protocol(std::move(impl)) {
 }
 
-void ui::updatable_collision_detector::clear_colliders() {
-    impl_ptr<impl>()->clear_colliders();
+void ui::updatable_collision_detector::set_needs_update_colliders() {
+    impl_ptr<impl>()->set_needs_update_colliders();
 }
 
-void ui::updatable_collision_detector::push_front_collider(ui::collider collider) {
-    impl_ptr<impl>()->push_front_collider(std::move(collider));
+void ui::updatable_collision_detector::clear_colliders_if_needed() {
+    impl_ptr<impl>()->clear_colliders_if_needed();
+}
+
+void ui::updatable_collision_detector::push_front_collider_if_needed(ui::collider collider) {
+    impl_ptr<impl>()->push_front_collider_if_needed(std::move(collider));
+}
+
+void ui::updatable_collision_detector::finalize() {
+    impl_ptr<impl>()->finalize();
 }
 
 #pragma mark - ui::collision_detector::impl
 
 struct ui::collision_detector::impl : base::impl, updatable_collision_detector::impl {
-    void clear_colliders() override {
-        _colliders.clear();
+    void set_needs_update_colliders() override {
+        _needs_update = true;
     }
 
-    void push_front_collider(ui::collider &&collider) override {
-        _colliders.emplace_front(collider);
+    void clear_colliders_if_needed() override {
+        if (_needs_update) {
+            _colliders.clear();
+        }
+    }
+
+    void push_front_collider_if_needed(ui::collider &&collider) override {
+        if (_needs_update) {
+            _colliders.emplace_front(collider);
+        }
+    }
+
+    void finalize() override {
+        _needs_update = false;
     }
 
     ui::collider detect(ui::point const &location) {
@@ -53,6 +73,7 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
 
    private:
     std::deque<ui::collider> _colliders;
+    bool _needs_update = true;
 };
 
 #pragma mark - ui::collision_detector

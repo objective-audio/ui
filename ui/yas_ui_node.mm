@@ -2,6 +2,7 @@
 //  yas_ui_node.mm
 //
 
+#include "yas_ui_collision_detector.h"
 #include "yas_ui_node.h"
 #include "yas_ui_renderer.h"
 
@@ -55,6 +56,15 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_update_mesh_color();
+            }
+        }));
+
+    observers.emplace_back(
+        imp_ptr->collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+            if (auto node = weak_node.lock()) {
+                if (auto renderer = node.renderer()) {
+                    renderer.collision_detector().updatable().set_needs_update_colliders();
+                }
             }
         }));
 }
