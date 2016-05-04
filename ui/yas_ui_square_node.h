@@ -4,12 +4,13 @@
 
 #pragma once
 
+#include <vector>
+#include "yas_ui_mesh_data.h"
 #include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
     class node;
-    class dynamic_mesh_data;
 
     struct square_mesh_data {
         explicit square_mesh_data(ui::dynamic_mesh_data mesh_data);
@@ -36,6 +37,7 @@ namespace ui {
     };
 
     square_mesh_data make_square_mesh_data(std::size_t const max_square_count);
+    square_mesh_data make_square_mesh_data(std::size_t const max_square_count, std::size_t const max_index_count);
 
     class square_node : public base {
         class impl;
@@ -48,6 +50,7 @@ namespace ui {
         ui::square_mesh_data &square_mesh_data();
     };
 
-    square_node make_square_node(std::size_t const square_count);
+    square_node make_square_node(std::size_t const max_square_count);
+    square_node make_square_node(std::size_t const max_square_count, std::size_t const max_index_count);
 }
 }

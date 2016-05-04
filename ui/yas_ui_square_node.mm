@@ -131,6 +131,23 @@ ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count) {
     return sq_mesh_data;
 }
 
+ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count, std::size_t const index_count) {
+    ui::square_mesh_data sq_mesh_data{ui::dynamic_mesh_data{square_count * 4, index_count * 6}};
+
+    sq_mesh_data.write([&square_count, &index_count](auto *, auto *sq_indices) {
+        for (auto const &idx : make_each(std::min(square_count, index_count))) {
+            auto &sq_index = sq_indices[idx];
+            std::size_t const sq_top_raw_idx = idx * 4;
+            sq_index.v[0] = sq_top_raw_idx;
+            sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
+            sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
+            sq_index.v[5] = sq_top_raw_idx + 3;
+        }
+    });
+
+    return sq_mesh_data;
+}
+
 #pragma mark - ui::square_node::impl
 
 struct yas::ui::square_node::impl : base::impl {
@@ -159,7 +176,11 @@ ui::square_mesh_data &ui::square_node::square_mesh_data() {
 }
 
 ui::square_node ui::make_square_node(std::size_t const square_count) {
-    ui::square_node node{make_square_mesh_data(square_count)};
+    return make_square_node(square_count, square_count);
+}
+
+ui::square_node ui::make_square_node(std::size_t const square_count, std::size_t const index_count) {
+    ui::square_node node{make_square_mesh_data(square_count, index_count)};
     ui::mesh mesh;
     mesh.set_mesh_data(node.square_mesh_data().dynamic_mesh_data());
     node.node().set_mesh(std::move(mesh));
