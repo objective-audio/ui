@@ -34,8 +34,8 @@ namespace ui {
         collision_detector();
         collision_detector(std::nullptr_t);
 
-        ui::collider detect(ui::point const &);
-        bool detect(ui::point const &, ui::collider const &);
+        ui::collider detect(ui::point const &) const;
+        bool detect(ui::point const &, ui::collider const &) const;
 
         updatable_collision_detector updatable();
 
