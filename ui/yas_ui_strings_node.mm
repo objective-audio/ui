@@ -50,7 +50,7 @@ struct ui::strings_node::impl : base::impl {
         auto const layout = _font_atlas.make_strings_layout(_text, _pivot);
 
         for (auto const &idx : make_each(count)) {
-            mesh_data.write(idx, [&layout, &idx](auto &sq_vertex, auto &) { sq_vertex = layout.square(idx); });
+            mesh_data.write_vertex(idx, [&layout, &idx](auto &sq_vertex) { sq_vertex = layout.square(idx); });
         }
 
         _width = layout.width();
