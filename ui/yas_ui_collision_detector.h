@@ -15,14 +15,18 @@ namespace ui {
 
     struct updatable_collision_detector : protocol {
         struct impl : protocol::impl {
-            virtual void clear_colliders() = 0;
-            virtual void push_front_collider(ui::collider &&) = 0;
+            virtual void set_needs_update_colliders() = 0;
+            virtual void clear_colliders_if_needed() = 0;
+            virtual void push_front_collider_if_needed(ui::collider &&) = 0;
+            virtual void finalize() = 0;
         };
 
         explicit updatable_collision_detector(std::shared_ptr<impl>);
 
-        void clear_colliders();
-        void push_front_collider(ui::collider);
+        void set_needs_update_colliders();
+        void clear_colliders_if_needed();
+        void push_front_collider_if_needed(ui::collider);
+        void finalize();
     };
 
     class collision_detector : public base {

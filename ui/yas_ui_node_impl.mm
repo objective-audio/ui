@@ -31,6 +31,10 @@ void ui::node::impl::add_sub_node(ui::node &&sub_node) {
     if (sub_node_impl->subject.has_observer()) {
         sub_node_impl->subject.notify(node_method::added_to_super, sub_node);
     }
+
+    if (auto renderer = node_renderer_property.value().lock()) {
+        renderer.collision_detector().updatable().set_needs_update_colliders();
+    }
 }
 
 void ui::node::impl::remove_sub_node(ui::node const &sub_node) {
@@ -43,6 +47,10 @@ void ui::node::impl::remove_sub_node(ui::node const &sub_node) {
 
     if (sub_node_impl->subject.has_observer()) {
         sub_node_impl->subject.notify(node_method::removed_from_super, sub_node);
+    }
+
+    if (auto renderer = node_renderer_property.value().lock()) {
+        renderer.collision_detector().updatable().set_needs_update_colliders();
     }
 }
 
@@ -77,7 +85,7 @@ void ui::node::impl::update_render_info(render_info &render_info) {
 
     if (auto &collider = collider_property.value()) {
         collider.renderable().set_matrix(_render_matrix);
-        render_info.collision_detector.updatable().push_front_collider(collider);
+        render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
     }
 
     for (auto &sub_node : _children) {

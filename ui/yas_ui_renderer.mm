@@ -96,7 +96,7 @@ class ui::node_renderer::impl : public renderer::impl {
         _root_node.metal().setup(device());
 
         _action.updatable().update(std::chrono::system_clock::now());
-        _detector.updatable().clear_colliders();
+        _detector.updatable().clear_colliders_if_needed();
 
         ui::render_info render_info;
         render_info.collision_detector = _detector;
@@ -108,7 +108,8 @@ class ui::node_renderer::impl : public renderer::impl {
         render_info.render_matrix = matrix;
 
         _root_node.update_render_info(render_info);
-#warning todo finalize collider?
+
+        _detector.updatable().finalize();
 
         auto renderer = cast<ui::renderer>();
 

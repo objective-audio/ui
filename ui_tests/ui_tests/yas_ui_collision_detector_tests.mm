@@ -43,12 +43,12 @@ using namespace yas;
     ui::collider collider1{{.shape = ui::collider_shape::square}};
     ui::collider collider2{{.shape = ui::collider_shape::square}};
 
-    detector.updatable().push_front_collider(collider1);
-    detector.updatable().push_front_collider(collider2);
+    detector.updatable().push_front_collider_if_needed(collider1);
+    detector.updatable().push_front_collider_if_needed(collider2);
 
     XCTAssertEqual(detector.detect(0.0f), collider2);
 
-    detector.updatable().clear_colliders();
+    detector.updatable().clear_colliders_if_needed();
 
     XCTAssertFalse(detector.detect(0.0f));
 }
@@ -59,8 +59,8 @@ using namespace yas;
     ui::collider collider1{{.shape = ui::collider_shape::square}};
     ui::collider collider2{{.shape = ui::collider_shape::square}};
 
-    detector.updatable().push_front_collider(collider1);
-    detector.updatable().push_front_collider(collider2);
+    detector.updatable().push_front_collider_if_needed(collider1);
+    detector.updatable().push_front_collider_if_needed(collider2);
 
     XCTAssertFalse(detector.detect(0.0f, collider1));
     XCTAssertTrue(detector.detect(0.0f, collider2));
