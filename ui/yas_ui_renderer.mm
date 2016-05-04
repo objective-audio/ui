@@ -145,6 +145,10 @@ ui::node const &ui::node_renderer::root_node() const {
     return impl_ptr<impl>()->_root_node;
 }
 
+ui::node &ui::node_renderer::root_node() {
+    return impl_ptr<impl>()->_root_node;
+}
+
 std::vector<ui::action> ui::node_renderer::actions() const {
     return impl_ptr<impl>()->_action.actions();
 }
@@ -161,6 +165,10 @@ void ui::node_renderer::erase_action(ui::node const &target) {
     impl_ptr<impl>()->erase_action(target);
 }
 
-ui::collision_detector ui::node_renderer::collision_detector() {
+ui::collision_detector const &ui::node_renderer::collision_detector() const {
+    return impl_ptr<impl>()->_detector;
+}
+
+ui::collision_detector &ui::node_renderer::collision_detector() {
     return impl_ptr<impl>()->_detector;
 }
