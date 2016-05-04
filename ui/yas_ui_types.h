@@ -134,6 +134,9 @@ std::string to_string(ui::uint_region const &);
 std::string to_string(ui::float_origin const &);
 std::string to_string(ui::float_size const &);
 std::string to_string(ui::float_region const &);
+std::string to_string(ui::point const &);
+std::string to_string(ui::size const &);
+std::string to_string(ui::color const &);
 std::string to_string(simd::float2 const &);
 }
 
@@ -156,3 +159,6 @@ std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::float_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::float_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::float_region const &);
+std::ostream &operator<<(std::ostream &, yas::ui::point const &);
+std::ostream &operator<<(std::ostream &, yas::ui::size const &);
+std::ostream &operator<<(std::ostream &, yas::ui::color const &);

@@ -131,6 +131,19 @@ std::string yas::to_string(simd::float2 const &value) {
     return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
 }
 
+std::string yas::to_string(ui::point const &point) {
+    return "{" + std::to_string(point.x) + ", " + std::to_string(point.y) + "}";
+}
+
+std::string yas::to_string(ui::size const &size) {
+    return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
+}
+
+std::string yas::to_string(ui::color const &color) {
+    return "{" + std::to_string(color.red) + ", " + std::to_string(color.green) + ", " + std::to_string(color.blue) +
+           "}";
+}
+
 #pragma mark -
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
@@ -208,5 +221,20 @@ std::ostream &operator<<(std::ostream &os, yas::ui::float_size const &size) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::float_region const &region) {
     os << to_string(region);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::point const &point) {
+    os << to_string(point);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::size const &size) {
+    os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::color const &color) {
+    os << to_string(color);
     return os;
 }
