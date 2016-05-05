@@ -84,11 +84,11 @@ ui::collision_detector::collision_detector() : base(std::make_shared<impl>()) {
 ui::collision_detector::collision_detector(std::nullptr_t) : base(nullptr) {
 }
 
-ui::collider ui::collision_detector::detect(ui::point const &location) {
+ui::collider ui::collision_detector::detect(ui::point const &location) const {
     return impl_ptr<impl>()->detect(location);
 }
 
-bool ui::collision_detector::detect(ui::point const &location, ui::collider const &collider) {
+bool ui::collision_detector::detect(ui::point const &location, ui::collider const &collider) const {
     return impl_ptr<impl>()->detect(location, collider);
 }
 

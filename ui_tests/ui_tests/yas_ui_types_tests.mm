@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_types.h"
 #import <iostream>
+#import "yas_ui_types.h"
 
 using namespace yas;
 
@@ -196,6 +196,18 @@ using namespace yas;
 
 - (void)test_float_region_to_string {
     XCTAssertEqual(to_string(ui::float_region{5.0f, 6.0f, 7.0f, 8.0f}), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
+}
+
+- (void)test_point_to_string {
+    XCTAssertEqual(to_string(ui::point{1.0f, 2.0f}), "{1.000000, 2.000000}");
+}
+
+- (void)test_size_to_string {
+    XCTAssertEqual(to_string(ui::size{1.0f, 2.0f}), "{1.000000, 2.000000}");
+}
+
+- (void)test_color_to_string {
+    XCTAssertEqual(to_string(ui::color{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
 }
 
 - (void)test_ostream {

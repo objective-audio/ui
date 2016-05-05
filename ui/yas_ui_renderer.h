@@ -54,13 +54,15 @@ namespace ui {
         node_renderer(std::nullptr_t);
 
         ui::node const &root_node() const;
+        ui::node &root_node();
 
         std::vector<ui::action> actions() const;
         void insert_action(ui::action action);
         void erase_action(ui::action const &action);
         void erase_action(ui::node const &target);
 
-        ui::collision_detector collision_detector();
+        ui::collision_detector const &collision_detector() const;
+        ui::collision_detector &collision_detector();
     };
 }
 }
