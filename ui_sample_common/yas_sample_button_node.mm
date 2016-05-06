@@ -4,6 +4,7 @@
 
 #include "yas_each_index.h"
 #include "yas_sample_button_node.h"
+#include "yas_ui_collider.h"
 
 using namespace yas;
 

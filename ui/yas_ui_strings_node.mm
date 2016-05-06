@@ -4,6 +4,7 @@
 
 #include "yas_each_index.h"
 #include "yas_ui_font_atlas.h"
+#include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
 #include "yas_ui_square_node.h"

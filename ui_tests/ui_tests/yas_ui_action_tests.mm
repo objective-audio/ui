@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <unordered_set>
 #import "yas_ui_action.h"
+#import "yas_ui_mesh.h"
 #import "yas_ui_node.h"
 
 using namespace std::chrono_literals;

@@ -8,6 +8,7 @@
 #include "yas_ui_action.h"
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_encode_info.h"
+#include "yas_ui_mesh.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
