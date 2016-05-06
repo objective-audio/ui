@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include "yas_objc_ptr.h"
 #include "yas_sample_main.h"
 
 using namespace yas;

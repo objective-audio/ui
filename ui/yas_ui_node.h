@@ -73,5 +73,3 @@ namespace ui {
     };
 }
 }
-
-#include "yas_ui_node_impl.h"
