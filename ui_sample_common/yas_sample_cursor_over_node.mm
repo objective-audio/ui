@@ -76,7 +76,7 @@ struct sample::cursor_over_node::impl : base::impl {
                                 renderer.collision_detector().detect(cursor_event.position(), node.collider());
 
                             auto make_color_action = [](ui::node &node, ui::color const &color) {
-                                auto action = ui::make_action({.start_color = node.color().v, .end_color = color});
+                                auto action = ui::make_action({.start_color = node.color(), .end_color = color});
                                 action.set_target(node);
                                 return action;
                             };

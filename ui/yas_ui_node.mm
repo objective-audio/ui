@@ -152,9 +152,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void _update_mesh_color() {
         if (auto &mesh = mesh_property.value()) {
-            auto const &color = color_property.value().v;
+            auto const &color = color_property.value();
             auto const &alpha = alpha_property.value();
-            mesh.set_color({color[0] * alpha, color[1] * alpha, color[2] * alpha, alpha});
+            mesh.set_color({color.red * alpha, color.green * alpha, color.blue * alpha, alpha});
         }
     }
 
