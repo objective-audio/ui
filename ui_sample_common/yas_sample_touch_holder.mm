@@ -104,6 +104,7 @@ struct sample::touch_holder::impl : base::impl {
         mesh.set_texture(_texture);
         node.set_mesh(mesh);
         node.set_scale(0.0f);
+        node.set_alpha(0.0f);
 
         root_node.add_sub_node(node);
 
@@ -117,8 +118,18 @@ struct sample::touch_holder::impl : base::impl {
         scale_action2.set_value_transformer(ui::ease_out_transformer());
         scale_action2.set_target(node);
 
-        auto action = ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
+        auto scale_action = ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
+        scale_action.set_target(node);
+
+        auto alpha_action =
+            ui::make_action({.start_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});
+        alpha_action.set_target(node);
+
+        ui::parallel_action action;
+        action.insert_action(scale_action);
+        action.insert_action(alpha_action);
         action.set_target(node);
+
         root_node.renderer().insert_action(action);
 
         _objects.emplace(std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
@@ -142,11 +153,24 @@ struct sample::touch_holder::impl : base::impl {
                 touch_object.scale_action = nullptr;
             }
 
-            auto action = ui::make_action(
-                {.start_scale = touch_object.node.scale(), .end_scale = 0.0f, .continuous_action = {.duration = 0.3}});
-            action.set_value_transformer(ui::ease_out_transformer());
-            action.set_target(touch_object.node);
-            action.set_completion_handler([node = touch_object.node]() mutable { node.remove_from_super_node(); });
+            auto const &node = touch_object.node;
+
+            auto scale_action = ui::make_action({.start_scale = touch_object.node.scale(),
+                                                 .end_scale = 300.0f,
+                                                 .continuous_action = {.duration = 0.3}});
+            scale_action.set_value_transformer(ui::ease_out_transformer());
+            scale_action.set_target(node);
+            scale_action.set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
+
+            auto alpha_action = ui::make_action(
+                {.start_alpha = node.alpha(), .end_alpha = 0.0f, .continuous_action = {.duration = 0.3}});
+            alpha_action.set_value_transformer(ui::ease_out_transformer());
+            alpha_action.set_target(node);
+
+            ui::parallel_action action;
+            action.insert_action(scale_action);
+            action.insert_action(alpha_action);
+            action.set_target(node);
 
             renderer.insert_action(action);
 
