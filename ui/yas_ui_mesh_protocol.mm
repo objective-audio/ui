@@ -44,7 +44,7 @@ void ui::renderable_mesh::set_matrix(simd::float4x4 matrix) {
     impl_ptr<impl>()->set_matrix(std::move(matrix));
 }
 
-void ui::renderable_mesh::render(ui::renderer &renderer, id<MTLRenderCommandEncoder> const encoder,
+void ui::renderable_mesh::render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
                                  ui::encode_info const &encode_info) {
     impl_ptr<impl>()->render(renderer, encoder, encode_info);
 }

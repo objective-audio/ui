@@ -32,7 +32,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _matrix = std::move(matrix);
     }
 
-    void render(ui::renderer &renderer, id<MTLRenderCommandEncoder> const encoder,
+    void render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
                 ui::encode_info const &encode_info) override {
         if (!_mesh_data) {
             return;

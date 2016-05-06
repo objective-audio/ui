@@ -10,7 +10,7 @@
 
 namespace yas {
 namespace ui {
-    class renderer;
+    class renderer_base;
     class encode_info;
 
     struct renderable_mesh_data : protocol {
@@ -37,14 +37,14 @@ namespace ui {
         struct impl : protocol::impl {
             virtual simd::float4x4 const &matrix() const = 0;
             virtual void set_matrix(simd::float4x4 &&) = 0;
-            virtual void render(ui::renderer &, id<MTLRenderCommandEncoder> const, ui::encode_info const &) = 0;
+            virtual void render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::encode_info const &) = 0;
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
 
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);
-        void render(ui::renderer &, id<MTLRenderCommandEncoder> const, ui::encode_info const &);
+        void render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::encode_info const &);
     };
 }
 }

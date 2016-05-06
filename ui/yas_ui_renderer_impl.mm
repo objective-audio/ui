@@ -27,7 +27,7 @@ namespace ui {
 }
 }
 
-struct ui::renderer::impl::core {
+struct ui::renderer_base::impl::core {
     uint32_t sample_count = 4;
 
     objc_ptr<id<MTLBuffer>> constant_buffers[inflight_buffer_count];
@@ -52,7 +52,7 @@ struct ui::renderer::impl::core {
     objc_ptr<id<MTLRenderPipelineState>> pipeline_state;
     objc_ptr<id<MTLRenderPipelineState>> pipeline_state_without_texture;
 
-    yas::subject<renderer, renderer_method> subject;
+    yas::subject<ui::renderer_base, ui::renderer_method> subject;
 
     ui::event_manager event_manager;
 
@@ -68,7 +68,7 @@ struct ui::renderer::impl::core {
 
 #pragma mark - renderer::impl
 
-ui::renderer::impl::impl(id<MTLDevice> const device) : _core(std::make_shared<core>()) {
+ui::renderer_base::impl::impl(id<MTLDevice> const device) : _core(std::make_shared<core>()) {
     _core->device = device;
     _core->command_queue.move_object([device newCommandQueue]);
     _core->default_library.move_object([device newDefaultLibrary]);
@@ -79,7 +79,7 @@ ui::renderer::impl::impl(id<MTLDevice> const device) : _core(std::make_shared<co
     }
 }
 
-void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
+void ui::renderer_base::impl::view_configure(YASUIMetalView *const view) {
     view.sampleCount = _core->sample_count;
 
     auto defaultLibrary = _core->default_library.object();
@@ -140,57 +140,57 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
     [view set_event_manager:_core->event_manager];
 }
 
-id<MTLDevice> ui::renderer::impl::device() {
+id<MTLDevice> ui::renderer_base::impl::device() {
     return _core->device.object();
 }
 
-id<MTLBuffer> ui::renderer::impl::currentConstantBuffer() {
+id<MTLBuffer> ui::renderer_base::impl::currentConstantBuffer() {
     return _core->constant_buffers[_core->constant_buffer_index].object();
 }
 
-uint32_t ui::renderer::impl::constant_buffer_offset() {
+uint32_t ui::renderer_base::impl::constant_buffer_offset() {
     return _core->constant_buffer_offset;
 }
 
-void ui::renderer::impl::set_constant_buffer_offset(uint32_t const offset) {
+void ui::renderer_base::impl::set_constant_buffer_offset(uint32_t const offset) {
     assert(offset < buffer_max_bytes);
     _core->constant_buffer_offset = offset;
 }
 
-id<MTLRenderPipelineState> ui::renderer::impl::multiSamplePipelineState() {
+id<MTLRenderPipelineState> ui::renderer_base::impl::multiSamplePipelineState() {
     return _core->multi_sample_pipeline_state.object();
 }
 
-id<MTLRenderPipelineState> ui::renderer::impl::multiSamplePipelineStateWithoutTexture() {
+id<MTLRenderPipelineState> ui::renderer_base::impl::multiSamplePipelineStateWithoutTexture() {
     return _core->multi_sample_pipeline_state_without_texture.object();
 }
 
-ui::uint_size const &ui::renderer::impl::view_size() {
+ui::uint_size const &ui::renderer_base::impl::view_size() {
     return _core->view_size;
 }
 
-ui::uint_size const &ui::renderer::impl::drawable_size() {
+ui::uint_size const &ui::renderer_base::impl::drawable_size() {
     return _core->drawable_size;
 }
 
-simd::float4x4 const &ui::renderer::impl::projection_matrix() {
+simd::float4x4 const &ui::renderer_base::impl::projection_matrix() {
     return _core->projection_matrix;
 }
 
 #pragma mark - renderable::impl
 
-void ui::renderer::impl::view_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
+void ui::renderer_base::impl::view_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
     auto view_size = view.bounds.size;
     _core->update_view_size(view_size, drawable_size);
 
     if (_core->subject.has_observer()) {
-        _core->subject.notify(renderer_method::view_size_changed, cast<renderer>());
+        _core->subject.notify(renderer_method::view_size_changed, cast<ui::renderer_base>());
     }
 }
 
-void ui::renderer::impl::view_render(YASUIMetalView *const view) {
+void ui::renderer_base::impl::view_render(YASUIMetalView *const view) {
     if (_core->subject.has_observer()) {
-        _core->subject.notify(renderer_method::will_render, cast<renderer>());
+        _core->subject.notify(renderer_method::will_render, cast<ui::renderer_base>());
     }
 
     dispatch_semaphore_wait(_core->inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
@@ -217,16 +217,16 @@ void ui::renderer::impl::view_render(YASUIMetalView *const view) {
     [commandBuffer commit];
 }
 
-subject<ui::renderer, ui::renderer_method> &ui::renderer::impl::subject() {
+subject<ui::renderer_base, ui::renderer_method> &ui::renderer_base::impl::subject() {
     return _core->subject;
 }
 
-ui::event_manager &ui::renderer::impl::event_manager() {
+ui::event_manager &ui::renderer_base::impl::event_manager() {
     return _core->event_manager;
 }
 
 #pragma mark - virtual
 
-void ui::renderer::impl::render(id<MTLCommandBuffer> const commandBuffer,
-                                MTLRenderPassDescriptor *const renderPassDesc) {
+void ui::renderer_base::impl::render(id<MTLCommandBuffer> const commandBuffer,
+                                     MTLRenderPassDescriptor *const renderPassDesc) {
 }
