@@ -16,20 +16,20 @@ namespace ui {
 
     enum class renderer_method {
         will_render,
-        drawable_size_changed,
+        view_size_changed,
     };
 
     struct view_renderable : protocol {
         struct impl : protocol::impl {
             virtual void view_configure(YASUIMetalView *const view) = 0;
-            virtual void view_drawable_size_will_change(YASUIMetalView *const view, CGSize const size) = 0;
+            virtual void view_size_will_change(YASUIMetalView *const view, CGSize const size) = 0;
             virtual void view_render(YASUIMetalView *const view) = 0;
         };
 
         explicit view_renderable(std::shared_ptr<impl> impl);
 
         void configure(YASUIMetalView *const view);
-        void drawable_size_will_change(YASUIMetalView *const view, CGSize const size);
+        void size_will_change(YASUIMetalView *const view, CGSize const size);
         void render(YASUIMetalView *const view);
     };
 }

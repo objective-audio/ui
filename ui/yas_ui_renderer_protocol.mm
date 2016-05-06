@@ -15,8 +15,8 @@ void ui::view_renderable::configure(YASUIMetalView *const view) {
     impl_ptr<impl>()->view_configure(view);
 }
 
-void ui::view_renderable::drawable_size_will_change(YASUIMetalView *const view, CGSize const size) {
-    impl_ptr<impl>()->view_drawable_size_will_change(view, size);
+void ui::view_renderable::size_will_change(YASUIMetalView *const view, CGSize const size) {
+    impl_ptr<impl>()->view_size_will_change(view, size);
 }
 
 void ui::view_renderable::render(YASUIMetalView *const view) {

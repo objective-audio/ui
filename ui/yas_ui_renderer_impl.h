@@ -31,7 +31,7 @@ class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_ren
     simd::float4x4 const &projection_matrix();
 
     void view_configure(YASUIMetalView *const view) override;
-    void view_drawable_size_will_change(YASUIMetalView *const view, CGSize const size) override;
+    void view_size_will_change(YASUIMetalView *const view, CGSize const size) override;
     void view_render(YASUIMetalView *const view) override;
 
     virtual void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPass_descriptor);
