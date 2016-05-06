@@ -175,7 +175,7 @@ using namespace yas;
     id<MTLDevice> device = nil;
 
     ui::node node;
-    ui::node_renderer renderer{device};
+    ui::renderer renderer{device};
 
     auto renderable = node.renderable();
 
@@ -191,7 +191,7 @@ using namespace yas;
     id<MTLDevice> device = nil;
 
     ui::node node;
-    ui::node_renderer renderer{device};
+    ui::renderer renderer{device};
 
     std::shared_ptr<ui::node_method> called_method = nullptr;
 
@@ -332,7 +332,7 @@ using namespace yas;
 
     {
         id<MTLDevice> device = nil;
-        ui::node_renderer renderer{device};
+        ui::renderer renderer{device};
         ui::node node;
         node.dispatch_method(ui::node_method::renderer_changed);
         auto observer = make_observer(node);

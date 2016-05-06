@@ -17,63 +17,63 @@
 using namespace yas;
 using namespace simd;
 
-#pragma mark - renderer
+#pragma mark - renderer_base
 
-ui::renderer::renderer(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
+ui::renderer_base::renderer_base(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
-ui::renderer::renderer(std::nullptr_t) : base(nullptr) {
+ui::renderer_base::renderer_base(std::nullptr_t) : base(nullptr) {
 }
 
-id<MTLDevice> ui::renderer::device() const {
+id<MTLDevice> ui::renderer_base::device() const {
     return impl_ptr<impl>()->device();
 }
 
-ui::uint_size const &ui::renderer::view_size() const {
+ui::uint_size const &ui::renderer_base::view_size() const {
     return impl_ptr<impl>()->view_size();
 }
 
-ui::uint_size const &ui::renderer::drawable_size() const {
+ui::uint_size const &ui::renderer_base::drawable_size() const {
     return impl_ptr<impl>()->drawable_size();
 }
 
-simd::float4x4 const &ui::renderer::projection_matrix() const {
+simd::float4x4 const &ui::renderer_base::projection_matrix() const {
     return impl_ptr<impl>()->projection_matrix();
 }
 
-id<MTLBuffer> ui::renderer::current_constant_buffer() const {
+id<MTLBuffer> ui::renderer_base::current_constant_buffer() const {
     return impl_ptr<impl>()->currentConstantBuffer();
 }
 
-uint32_t ui::renderer::constant_buffer_offset() const {
+uint32_t ui::renderer_base::constant_buffer_offset() const {
     return impl_ptr<impl>()->constant_buffer_offset();
 }
 
-void ui::renderer::set_constant_buffer_offset(uint32_t const offset) {
+void ui::renderer_base::set_constant_buffer_offset(uint32_t const offset) {
     impl_ptr<impl>()->set_constant_buffer_offset(offset);
 }
 
-ui::view_renderable ui::renderer::view_renderable() {
+ui::view_renderable ui::renderer_base::view_renderable() {
     return ui::view_renderable{impl_ptr<view_renderable::impl>()};
 }
 
-subject<ui::renderer, ui::renderer_method> &ui::renderer::subject() {
+subject<ui::renderer_base, ui::renderer_method> &ui::renderer_base::subject() {
     return impl_ptr<impl>()->subject();
 }
 
-ui::event_manager &ui::renderer::event_manager() {
+ui::event_manager &ui::renderer_base::event_manager() {
     return impl_ptr<impl>()->event_manager();
 }
 
-#pragma mark - node_renderer
+#pragma mark - renderer
 
-class ui::node_renderer::impl : public renderer::impl {
+class ui::renderer::impl : public renderer_base::impl {
    public:
-    impl(id<MTLDevice> const device) : renderer::impl(device) {
+    impl(id<MTLDevice> const device) : renderer_base::impl(device) {
     }
 
     void view_configure(YASUIMetalView *const view) override {
-        renderer::impl::view_configure(view);
+        renderer_base::impl::view_configure(view);
     }
 
     void insert_action(ui::action action) {
@@ -111,7 +111,7 @@ class ui::node_renderer::impl : public renderer::impl {
 
         _detector.updatable().finalize();
 
-        auto renderer = cast<ui::renderer>();
+        auto renderer = cast<ui::renderer_base>();
 
         for (auto &encode_info : render_info.all_encode_infos) {
             auto renderPassDesc = encode_info.renderPassDescriptor();
@@ -134,41 +134,41 @@ class ui::node_renderer::impl : public renderer::impl {
     ui::collision_detector _detector;
 };
 
-ui::node_renderer::node_renderer(id<MTLDevice> const device) : renderer(std::make_shared<impl>(device)) {
+ui::renderer::renderer(id<MTLDevice> const device) : renderer_base(std::make_shared<impl>(device)) {
     impl_ptr<impl>()->_root_node.renderable().set_renderer(*this);
 }
 
-ui::node_renderer::node_renderer(std::nullptr_t) : renderer(nullptr) {
+ui::renderer::renderer(std::nullptr_t) : renderer_base(nullptr) {
 }
 
-ui::node const &ui::node_renderer::root_node() const {
+ui::node const &ui::renderer::root_node() const {
     return impl_ptr<impl>()->_root_node;
 }
 
-ui::node &ui::node_renderer::root_node() {
+ui::node &ui::renderer::root_node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-std::vector<ui::action> ui::node_renderer::actions() const {
+std::vector<ui::action> ui::renderer::actions() const {
     return impl_ptr<impl>()->_action.actions();
 }
 
-void ui::node_renderer::insert_action(ui::action action) {
+void ui::renderer::insert_action(ui::action action) {
     impl_ptr<impl>()->insert_action(std::move(action));
 }
 
-void ui::node_renderer::erase_action(ui::action const &action) {
+void ui::renderer::erase_action(ui::action const &action) {
     impl_ptr<impl>()->erase_action(action);
 }
 
-void ui::node_renderer::erase_action(ui::node const &target) {
+void ui::renderer::erase_action(ui::node const &target) {
     impl_ptr<impl>()->erase_action(target);
 }
 
-ui::collision_detector const &ui::node_renderer::collision_detector() const {
+ui::collision_detector const &ui::renderer::collision_detector() const {
     return impl_ptr<impl>()->_detector;
 }
 
-ui::collision_detector &ui::node_renderer::collision_detector() {
+ui::collision_detector &ui::renderer::collision_detector() {
     return impl_ptr<impl>()->_detector;
 }

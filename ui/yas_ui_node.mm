@@ -168,7 +168,7 @@ ui::node ui::node::parent() const {
     return impl_ptr<impl>()->parent_property.value().lock();
 }
 
-ui::node_renderer ui::node::renderer() const {
+ui::renderer ui::node::renderer() const {
     return impl_ptr<impl>()->renderer();
 }
 
@@ -268,7 +268,7 @@ void ui::node::dispatch_method(ui::node_method const method) {
                 });
             break;
         case ui::node_method::renderer_changed:
-            observer = imp_ptr->node_renderer_property.subject().make_observer(
+            observer = imp_ptr->renderer_property.subject().make_observer(
                 property_method::did_change, [weak_node](auto const &context) {
                     if (auto node = weak_node.lock()) {
                         node.subject().notify(node_method::renderer_changed, node);

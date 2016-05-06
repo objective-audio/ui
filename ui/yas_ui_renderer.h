@@ -16,11 +16,11 @@ namespace ui {
     class event_manager;
     enum class renderer_method;
 
-    class renderer : public base {
+    class renderer_base : public base {
        public:
         class impl;
 
-        renderer(std::nullptr_t);
+        renderer_base(std::nullptr_t);
 
         id<MTLDevice> device() const;
 
@@ -34,24 +34,24 @@ namespace ui {
 
         ui::view_renderable view_renderable();
 
-        subject<renderer, renderer_method> &subject();
+        subject<ui::renderer_base, ui::renderer_method> &subject();
 
         ui::event_manager &event_manager();
 
        protected:
-        renderer(std::shared_ptr<impl> &&);
+        renderer_base(std::shared_ptr<impl> &&);
     };
 
     class node;
     class action;
     class collision_detector;
 
-    class node_renderer : public renderer {
+    class renderer : public renderer_base {
        public:
         class impl;
 
-        node_renderer(id<MTLDevice> const);
-        node_renderer(std::nullptr_t);
+        renderer(id<MTLDevice> const);
+        renderer(std::nullptr_t);
 
         ui::node const &root_node() const;
         ui::node &root_node();

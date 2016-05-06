@@ -8,7 +8,7 @@
 
 namespace yas {
 namespace ui {
-    class node_renderer;
+    class renderer;
 
     enum class node_method {
         added_to_super,
@@ -28,14 +28,14 @@ namespace ui {
 
     struct renderable_node : protocol {
         struct impl : protocol::impl {
-            virtual ui::node_renderer renderer() = 0;
-            virtual void set_renderer(ui::node_renderer &&) = 0;
+            virtual ui::renderer renderer() = 0;
+            virtual void set_renderer(ui::renderer &&) = 0;
         };
 
         explicit renderable_node(std::shared_ptr<impl> impl);
 
-        ui::node_renderer renderer() const;
-        void set_renderer(ui::node_renderer);
+        ui::renderer renderer() const;
+        void set_renderer(ui::renderer);
     };
 }
 }

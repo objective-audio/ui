@@ -26,7 +26,7 @@ using namespace yas;
 
 - (void)test_create {
     id<MTLDevice> device = nil;
-    ui::node_renderer renderer{device};
+    ui::renderer renderer{device};
 
     XCTAssertTrue(renderer.root_node());
     XCTAssertEqual(renderer.actions().size(), 0);
@@ -36,14 +36,14 @@ using namespace yas;
 }
 
 - (void)test_create_null {
-    ui::node_renderer renderer{nullptr};
+    ui::renderer renderer{nullptr};
 
     XCTAssertFalse(renderer);
 }
 
 - (void)test_action {
     id<MTLDevice> device = nil;
-    ui::node_renderer renderer{device};
+    ui::renderer renderer{device};
 
     ui::node target1;
     ui::node target2;

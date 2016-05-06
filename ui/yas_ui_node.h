@@ -59,7 +59,7 @@ namespace ui {
         std::vector<ui::node> const &children() const;
         ui::node parent() const;
 
-        ui::node_renderer renderer() const;
+        ui::renderer renderer() const;
 
         void update_render_info(render_info &info);
 

@@ -13,7 +13,7 @@ namespace ui {
 }
 }
 
-class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_renderable::impl {
+class yas::ui::renderer_base::impl : public yas::base::impl, public yas::ui::view_renderable::impl {
    public:
     impl(id<MTLDevice> const device);
 
@@ -36,7 +36,7 @@ class yas::ui::renderer::impl : public yas::base::impl, public yas::ui::view_ren
 
     virtual void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPass_descriptor);
 
-    yas::subject<ui::renderer, ui::renderer_method> &subject();
+    yas::subject<ui::renderer_base, ui::renderer_method> &subject();
 
     ui::event_manager &event_manager();
 

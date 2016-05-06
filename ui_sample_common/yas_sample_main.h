@@ -17,7 +17,7 @@
 namespace yas {
 namespace sample {
     struct main {
-        ui::node_renderer renderer = nullptr;
+        ui::renderer renderer = nullptr;
 
         void setup(double const scale_factor);
 
