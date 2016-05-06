@@ -65,9 +65,9 @@ ui::event_manager &ui::renderer_base::event_manager() {
     return impl_ptr<impl>()->event_manager();
 }
 
-#pragma mark - node_renderer
+#pragma mark - renderer
 
-class ui::node_renderer::impl : public renderer_base::impl {
+class ui::renderer::impl : public renderer_base::impl {
    public:
     impl(id<MTLDevice> const device) : renderer_base::impl(device) {
     }
@@ -134,41 +134,41 @@ class ui::node_renderer::impl : public renderer_base::impl {
     ui::collision_detector _detector;
 };
 
-ui::node_renderer::node_renderer(id<MTLDevice> const device) : renderer_base(std::make_shared<impl>(device)) {
+ui::renderer::renderer(id<MTLDevice> const device) : renderer_base(std::make_shared<impl>(device)) {
     impl_ptr<impl>()->_root_node.renderable().set_renderer(*this);
 }
 
-ui::node_renderer::node_renderer(std::nullptr_t) : renderer_base(nullptr) {
+ui::renderer::renderer(std::nullptr_t) : renderer_base(nullptr) {
 }
 
-ui::node const &ui::node_renderer::root_node() const {
+ui::node const &ui::renderer::root_node() const {
     return impl_ptr<impl>()->_root_node;
 }
 
-ui::node &ui::node_renderer::root_node() {
+ui::node &ui::renderer::root_node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-std::vector<ui::action> ui::node_renderer::actions() const {
+std::vector<ui::action> ui::renderer::actions() const {
     return impl_ptr<impl>()->_action.actions();
 }
 
-void ui::node_renderer::insert_action(ui::action action) {
+void ui::renderer::insert_action(ui::action action) {
     impl_ptr<impl>()->insert_action(std::move(action));
 }
 
-void ui::node_renderer::erase_action(ui::action const &action) {
+void ui::renderer::erase_action(ui::action const &action) {
     impl_ptr<impl>()->erase_action(action);
 }
 
-void ui::node_renderer::erase_action(ui::node const &target) {
+void ui::renderer::erase_action(ui::node const &target) {
     impl_ptr<impl>()->erase_action(target);
 }
 
-ui::collision_detector const &ui::node_renderer::collision_detector() const {
+ui::collision_detector const &ui::renderer::collision_detector() const {
     return impl_ptr<impl>()->_detector;
 }
 
-ui::collision_detector &ui::node_renderer::collision_detector() {
+ui::collision_detector &ui::renderer::collision_detector() {
     return impl_ptr<impl>()->_detector;
 }

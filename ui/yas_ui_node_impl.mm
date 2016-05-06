@@ -26,13 +26,13 @@ void ui::node::impl::add_sub_node(ui::node &&sub_node) {
     _children.emplace_back(std::move(sub_node));
 
     sub_node_impl->parent_property.set_value(cast<ui::node>());
-    sub_node_impl->_set_node_renderer_recursively(node_renderer_property.value().lock());
+    sub_node_impl->_set_renderer_recursively(renderer_property.value().lock());
 
     if (sub_node_impl->subject.has_observer()) {
         sub_node_impl->subject.notify(node_method::added_to_super, sub_node);
     }
 
-    if (auto renderer = node_renderer_property.value().lock()) {
+    if (auto renderer = renderer_property.value().lock()) {
         renderer.collision_detector().updatable().set_needs_update_colliders();
     }
 }
@@ -41,7 +41,7 @@ void ui::node::impl::remove_sub_node(ui::node const &sub_node) {
     auto sub_node_impl = sub_node.impl_ptr<impl>();
 
     sub_node_impl->parent_property.set_value(ui::node{nullptr});
-    sub_node_impl->_set_node_renderer_recursively(ui::node_renderer{nullptr});
+    sub_node_impl->_set_renderer_recursively(ui::renderer{nullptr});
 
     erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
@@ -49,7 +49,7 @@ void ui::node::impl::remove_sub_node(ui::node const &sub_node) {
         sub_node_impl->subject.notify(node_method::removed_from_super, sub_node);
     }
 
-    if (auto renderer = node_renderer_property.value().lock()) {
+    if (auto renderer = renderer_property.value().lock()) {
         renderer.collision_detector().updatable().set_needs_update_colliders();
     }
 }
@@ -110,12 +110,12 @@ ui::setup_metal_result ui::node::impl::setup(id<MTLDevice> const device) {
     return ui::setup_metal_result{nullptr};
 }
 
-ui::node_renderer ui::node::impl::renderer() {
-    return node_renderer_property.value().lock();
+ui::renderer ui::node::impl::renderer() {
+    return renderer_property.value().lock();
 }
 
-void ui::node::impl::set_renderer(ui::node_renderer &&renderer) {
-    node_renderer_property.set_value(renderer);
+void ui::node::impl::set_renderer(ui::renderer &&renderer) {
+    renderer_property.set_value(renderer);
 }
 
 ui::point ui::node::impl::convert_position(ui::point const &loc) {
@@ -123,11 +123,11 @@ ui::point ui::node::impl::convert_position(ui::point const &loc) {
     return {loc4.x, loc4.y};
 }
 
-void ui::node::impl::_set_node_renderer_recursively(ui::node_renderer const &renderer) {
-    node_renderer_property.set_value(renderer);
+void ui::node::impl::_set_renderer_recursively(ui::renderer const &renderer) {
+    renderer_property.set_value(renderer);
 
     for (auto &sub_node : _children) {
-        sub_node.impl_ptr<impl>()->_set_node_renderer_recursively(renderer);
+        sub_node.impl_ptr<impl>()->_set_renderer_recursively(renderer);
     }
 }
 

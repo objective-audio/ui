@@ -64,7 +64,7 @@ struct sample::modifier_node::impl : base::impl {
             });
     }
 
-    static base _make_view_size_observer(ui::node &node, ui::node_renderer &renderer) {
+    static base _make_view_size_observer(ui::node &node, ui::renderer &renderer) {
         auto set_position = [](ui::node &node, ui::uint_size const &view_size) {
             node.set_position(
                 {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});

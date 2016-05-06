@@ -57,7 +57,7 @@ struct sample::cursor_over_node::impl : base::impl {
         }
     }
 
-    static std::vector<base> _make_event_observers(std::vector<ui::node> const &nodes, ui::node_renderer &renderer) {
+    static std::vector<base> _make_event_observers(std::vector<ui::node> const &nodes, ui::renderer &renderer) {
         std::vector<base> event_observers;
         event_observers.reserve(nodes.size());
 

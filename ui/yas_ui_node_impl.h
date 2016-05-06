@@ -19,7 +19,7 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
     std::vector<ui::node> const &children();
     property<weak<ui::node>> parent_property{{.value = ui::node{nullptr}}};
-    property<weak<ui::node_renderer>> node_renderer_property{{.value = ui::node_renderer{nullptr}}};
+    property<weak<ui::renderer>> renderer_property{{.value = ui::renderer{nullptr}}};
 
     property<ui::point> position_property{{.value = 0.0f}};
     property<float> angle_property{{.value = 0.0f}};
@@ -38,14 +38,14 @@ class yas::ui::node::impl : public base::impl, public renderable_node::impl, pub
 
     ui::setup_metal_result setup(id<MTLDevice> const) override;
 
-    ui::node_renderer renderer() override;
-    void set_renderer(ui::node_renderer &&) override;
+    ui::renderer renderer() override;
+    void set_renderer(ui::renderer &&) override;
 
     node::subject_t subject;
 
     ui::point convert_position(ui::point const &);
 
-    void _set_node_renderer_recursively(ui::node_renderer const &renderer);
+    void _set_renderer_recursively(ui::renderer const &renderer);
     void _update_mesh_color();
     void _set_needs_update_matrix();
 

@@ -61,7 +61,7 @@ struct sample::touch_holder::impl : base::impl {
     }
 
    private:
-    static base _make_event_observer(sample::touch_holder &touch_holder, ui::node_renderer &renderer) {
+    static base _make_event_observer(sample::touch_holder &touch_holder, ui::renderer &renderer) {
         return renderer.event_manager().subject().make_observer(
             ui::event_method::touch_changed, [weak_touch_holder = to_weak(touch_holder)](auto const &context) mutable {
                 if (auto touch_holder = weak_touch_holder.lock()) {

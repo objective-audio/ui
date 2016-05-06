@@ -11,7 +11,7 @@ namespace ui {
     class square_node;
     class texture;
     class uint_region;
-    class node_renderer;
+    class renderer;
 }
 namespace sample {
     class button_node;

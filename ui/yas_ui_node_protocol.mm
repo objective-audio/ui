@@ -12,10 +12,10 @@ using namespace yas;
 ui::renderable_node::renderable_node(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
-ui::node_renderer ui::renderable_node::renderer() const {
+ui::renderer ui::renderable_node::renderer() const {
     return impl_ptr<impl>()->renderer();
 }
 
-void ui::renderable_node::set_renderer(ui::node_renderer renderer) {
+void ui::renderable_node::set_renderer(ui::renderer renderer) {
     impl_ptr<impl>()->set_renderer(std::move(renderer));
 }

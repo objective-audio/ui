@@ -46,12 +46,12 @@ namespace ui {
     class action;
     class collision_detector;
 
-    class node_renderer : public renderer_base {
+    class renderer : public renderer_base {
        public:
         class impl;
 
-        node_renderer(id<MTLDevice> const);
-        node_renderer(std::nullptr_t);
+        renderer(id<MTLDevice> const);
+        renderer(std::nullptr_t);
 
         ui::node const &root_node() const;
         ui::node &root_node();

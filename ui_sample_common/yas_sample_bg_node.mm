@@ -34,7 +34,7 @@ struct sample::bg_node::impl : base::impl {
     }
 
    private:
-    static base _make_view_size_observer(ui::node &node, ui::node_renderer &renderer) {
+    static base _make_view_size_observer(ui::node &node, ui::renderer &renderer) {
         auto set_scale = [](ui::node &node, ui::uint_size const &view_size) {
             node.set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
         };
