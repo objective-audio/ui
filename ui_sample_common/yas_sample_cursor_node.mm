@@ -87,7 +87,7 @@ struct sample::cursor_node::impl : base::impl {
 
                                 ui::parallel_action action;
 
-                                auto color_action = ui::make_action({.start_color = node.color().v,
+                                auto color_action = ui::make_action({.start_color = node.color(),
                                                                      .end_color = color,
                                                                      .continuous_action = {.duration = duration}});
                                 color_action.set_target(node);
