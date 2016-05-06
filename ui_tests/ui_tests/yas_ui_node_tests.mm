@@ -5,8 +5,10 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
+#import "yas_ui_mesh.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
+#import "yas_ui_collider.h"
 
 using namespace yas;
 
