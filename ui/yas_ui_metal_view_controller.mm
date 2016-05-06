@@ -96,7 +96,7 @@ namespace ui {
 
 - (void)mtkView:(YASUIMetalView *)view drawableSizeWillChange:(CGSize)size {
     if (_cpp.renderer && self.metalView) {
-        _cpp.renderer.drawable_size_will_change(self.metalView, size);
+        _cpp.renderer.size_will_change(self.metalView, size);
     }
 }
 

@@ -135,7 +135,7 @@ void ui::renderer::impl::view_configure(YASUIMetalView *const view) {
 
     _core->pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
-    _core->update_view_size(view.bounds.size, view.drawableSize);
+    view_size_will_change(view, view.drawableSize);
 
     [view set_event_manager:_core->event_manager];
 }
@@ -179,12 +179,12 @@ simd::float4x4 const &ui::renderer::impl::projection_matrix() {
 
 #pragma mark - renderable::impl
 
-void ui::renderer::impl::view_drawable_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
+void ui::renderer::impl::view_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
     auto view_size = view.bounds.size;
     _core->update_view_size(view_size, drawable_size);
 
     if (_core->subject.has_observer()) {
-        _core->subject.notify(renderer_method::drawable_size_changed, cast<renderer>());
+        _core->subject.notify(renderer_method::view_size_changed, cast<renderer>());
     }
 }
 
