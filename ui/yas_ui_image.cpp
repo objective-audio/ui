@@ -2,8 +2,8 @@
 //  yas_ui_image.cpp
 //
 
-#include <CoreGraphics/CoreGraphics.h>
 #include "yas_ui_image.h"
+#include "yas_ui_types.h"
 
 using namespace yas;
 
