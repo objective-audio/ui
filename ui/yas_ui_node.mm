@@ -37,7 +37,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<ui::collider> collider_property{{.value = nullptr}};
     property<bool> enabled_property{{.value = true}};
 
-    void add_sub_node(ui::node &&sub_node) {
+    void push_back_sub_node(ui::node &&sub_node) {
         auto sub_node_impl = sub_node.impl_ptr<impl>();
 
         _children.emplace_back(std::move(sub_node));
@@ -317,8 +317,8 @@ void ui::node::set_enabled(bool const enabled) {
     impl_ptr<impl>()->enabled_property.set_value(enabled);
 }
 
-void ui::node::add_sub_node(ui::node sub_node) {
-    impl_ptr<impl>()->add_sub_node(std::move(sub_node));
+void ui::node::push_back_sub_node(ui::node sub_node) {
+    impl_ptr<impl>()->push_back_sub_node(std::move(sub_node));
 }
 
 void ui::node::remove_from_super_node() {

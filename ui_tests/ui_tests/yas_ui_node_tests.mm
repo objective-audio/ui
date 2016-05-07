@@ -143,12 +143,12 @@ using namespace yas;
     XCTAssertFalse(sub_node1.parent());
     XCTAssertFalse(sub_node2.parent());
 
-    parent_node.add_sub_node(sub_node1);
+    parent_node.push_back_sub_node(sub_node1);
 
     XCTAssertEqual(parent_node.children().size(), 1);
     XCTAssertTrue(sub_node1.parent());
 
-    parent_node.add_sub_node(sub_node2);
+    parent_node.push_back_sub_node(sub_node2);
 
     XCTAssertEqual(parent_node.children().size(), 2);
     XCTAssertTrue(sub_node1.parent());
@@ -222,7 +222,7 @@ using namespace yas;
     XCTAssertFalse(called_method);
 
     ui::node parent;
-    parent.add_sub_node(node);
+    parent.push_back_sub_node(node);
     XCTAssertFalse(called_method);
 
     node.renderable().set_renderer(renderer);
@@ -326,7 +326,7 @@ using namespace yas;
         ui::node node;
         node.dispatch_method(ui::node_method::parent_changed);
         auto observer = make_observer(node);
-        parent.add_sub_node(node);
+        parent.push_back_sub_node(node);
         XCTAssertEqual(*called_method, ui::node_method::parent_changed);
     }
 
