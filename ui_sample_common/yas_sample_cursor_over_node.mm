@@ -49,10 +49,10 @@ struct sample::cursor_over_node::impl : base::impl {
             node.set_collider({{.shape = ui::collider_shape::square}});
 
             ui::node handle_node;
-            handle_node.add_sub_node(node);
+            handle_node.push_back_sub_node(node);
             handle_node.set_angle(360.0f / count * idx);
 
-            root_node.add_sub_node(handle_node);
+            root_node.push_back_sub_node(handle_node);
 
             _nodes.emplace_back(node);
         }

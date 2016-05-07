@@ -5,10 +5,10 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
+#import "yas_ui_collider.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
-#import "yas_ui_collider.h"
 
 using namespace yas;
 
@@ -143,12 +143,12 @@ using namespace yas;
     XCTAssertFalse(sub_node1.parent());
     XCTAssertFalse(sub_node2.parent());
 
-    parent_node.add_sub_node(sub_node1);
+    parent_node.push_back_sub_node(sub_node1);
 
     XCTAssertEqual(parent_node.children().size(), 1);
     XCTAssertTrue(sub_node1.parent());
 
-    parent_node.add_sub_node(sub_node2);
+    parent_node.push_back_sub_node(sub_node2);
 
     XCTAssertEqual(parent_node.children().size(), 2);
     XCTAssertTrue(sub_node1.parent());
@@ -171,6 +171,35 @@ using namespace yas;
 
     XCTAssertEqual(parent_node.children().size(), 0);
     XCTAssertFalse(sub_node2.parent());
+}
+
+- (void)test_push_front_sub_node {
+    ui::node parent_node;
+
+    ui::node sub_node1;
+    ui::node sub_node2;
+
+    parent_node.push_back_sub_node(sub_node2);
+    parent_node.push_front_sub_node(sub_node1);
+
+    XCTAssertEqual(parent_node.children().at(0), sub_node1);
+    XCTAssertEqual(parent_node.children().at(1), sub_node2);
+}
+
+- (void)test_insert_sub_node {
+    ui::node parent_node;
+
+    ui::node sub_node1;
+    ui::node sub_node2;
+    ui::node sub_node3;
+
+    parent_node.push_back_sub_node(sub_node1);
+    parent_node.push_back_sub_node(sub_node3);
+    parent_node.insert_sub_node(sub_node2, 1);
+
+    XCTAssertEqual(parent_node.children().at(0), sub_node1);
+    XCTAssertEqual(parent_node.children().at(1), sub_node2);
+    XCTAssertEqual(parent_node.children().at(2), sub_node3);
 }
 
 - (void)test_renderable_node {
@@ -222,7 +251,7 @@ using namespace yas;
     XCTAssertFalse(called_method);
 
     ui::node parent;
-    parent.add_sub_node(node);
+    parent.push_back_sub_node(node);
     XCTAssertFalse(called_method);
 
     node.renderable().set_renderer(renderer);
@@ -326,7 +355,7 @@ using namespace yas;
         ui::node node;
         node.dispatch_method(ui::node_method::parent_changed);
         auto observer = make_observer(node);
-        parent.add_sub_node(node);
+        parent.push_back_sub_node(node);
         XCTAssertEqual(*called_method, ui::node_method::parent_changed);
     }
 

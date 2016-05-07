@@ -106,7 +106,7 @@ struct sample::touch_holder::impl : base::impl {
         node.set_scale(0.0f);
         node.set_alpha(0.0f);
 
-        root_node.add_sub_node(node);
+        root_node.push_back_sub_node(node);
 
         auto scale_action1 =
             ui::make_action({.start_scale = 0.1f, .end_scale = 200.0f, .continuous_action = {.duration = 0.1}});
