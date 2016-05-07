@@ -7,7 +7,6 @@
 #include <Metal/Metal.h>
 #include <vector>
 #include "yas_base.h"
-#include "yas_objc_ptr.h"
 
 namespace yas {
 namespace ui {
