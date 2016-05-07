@@ -21,3 +21,5 @@
 #include "yas_ui_square_node.h"
 #include "yas_ui_strings_node.h"
 #include "yas_ui_texture.h"
+
+#include "yas_observing.h"
