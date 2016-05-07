@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <Metal/Metal.h>
 #include <string>
 #include <vector>
 #include "yas_base.h"
