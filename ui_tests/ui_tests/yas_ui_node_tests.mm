@@ -179,11 +179,27 @@ using namespace yas;
     ui::node sub_node1;
     ui::node sub_node2;
 
-    parent_node.push_back_sub_node(sub_node1);
-    parent_node.push_front_sub_node(sub_node2);
+    parent_node.push_back_sub_node(sub_node2);
+    parent_node.push_front_sub_node(sub_node1);
 
-    XCTAssertEqual(parent_node.children().at(0), sub_node2);
-    XCTAssertEqual(parent_node.children().at(1), sub_node1);
+    XCTAssertEqual(parent_node.children().at(0), sub_node1);
+    XCTAssertEqual(parent_node.children().at(1), sub_node2);
+}
+
+- (void)test_insert_sub_node {
+    ui::node parent_node;
+
+    ui::node sub_node1;
+    ui::node sub_node2;
+    ui::node sub_node3;
+
+    parent_node.push_back_sub_node(sub_node1);
+    parent_node.push_back_sub_node(sub_node3);
+    parent_node.insert_sub_node(sub_node2, 1);
+
+    XCTAssertEqual(parent_node.children().at(0), sub_node1);
+    XCTAssertEqual(parent_node.children().at(1), sub_node2);
+    XCTAssertEqual(parent_node.children().at(2), sub_node3);
 }
 
 - (void)test_renderable_node {

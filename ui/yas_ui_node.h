@@ -55,6 +55,7 @@ namespace ui {
 
         void push_front_sub_node(ui::node);
         void push_back_sub_node(ui::node);
+        void insert_sub_node(ui::node, std::size_t const);
         void remove_from_super_node();
 
         std::vector<ui::node> const &children() const;

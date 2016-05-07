@@ -47,6 +47,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _add_sub_node(_children.back());
     }
 
+    void insert_sub_node(ui::node &&sub_node, std::size_t const idx) {
+        auto iterator = _children.emplace(_children.begin() + idx, std::move(sub_node));
+        _add_sub_node(*iterator);
+    }
+
     void _add_sub_node(ui::node &sub_node) {
         auto sub_node_impl = sub_node.impl_ptr<impl>();
 
@@ -331,6 +336,10 @@ void ui::node::push_front_sub_node(ui::node sub_node) {
 
 void ui::node::push_back_sub_node(ui::node sub_node) {
     impl_ptr<impl>()->push_back_sub_node(std::move(sub_node));
+}
+
+void ui::node::insert_sub_node(ui::node sub_node, std::size_t const idx) {
+    impl_ptr<impl>()->insert_sub_node(std::move(sub_node), idx);
 }
 
 void ui::node::remove_from_super_node() {
