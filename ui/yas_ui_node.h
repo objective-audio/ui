@@ -53,6 +53,7 @@ namespace ui {
         void set_collider(ui::collider);
         void set_enabled(bool const);
 
+        void push_front_sub_node(ui::node);
         void push_back_sub_node(ui::node);
         void remove_from_super_node();
 

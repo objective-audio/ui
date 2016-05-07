@@ -5,10 +5,10 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
+#import "yas_ui_collider.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
-#import "yas_ui_collider.h"
 
 using namespace yas;
 
@@ -171,6 +171,19 @@ using namespace yas;
 
     XCTAssertEqual(parent_node.children().size(), 0);
     XCTAssertFalse(sub_node2.parent());
+}
+
+- (void)test_push_front_sub_node {
+    ui::node parent_node;
+
+    ui::node sub_node1;
+    ui::node sub_node2;
+
+    parent_node.push_back_sub_node(sub_node1);
+    parent_node.push_front_sub_node(sub_node2);
+
+    XCTAssertEqual(parent_node.children().at(0), sub_node2);
+    XCTAssertEqual(parent_node.children().at(1), sub_node1);
 }
 
 - (void)test_renderable_node {
