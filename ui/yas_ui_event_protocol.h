@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <simd/simd.h>
 #include <string>
 #include "yas_protocol.h"
 #include "yas_ui_types.h"
