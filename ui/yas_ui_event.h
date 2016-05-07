@@ -5,10 +5,12 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_observing.h"
 #include "yas_ui_event_protocol.h"
 
 namespace yas {
+template <typename T, typename K>
+class subject;
+
 namespace ui {
     struct manageable_event : protocol {
         struct impl : protocol::impl {

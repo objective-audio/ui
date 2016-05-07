@@ -4,21 +4,22 @@
 
 #pragma once
 
-#include <Metal/Metal.h>
-#include <simd/simd.h>
 #include <vector>
 #include "yas_base.h"
-#include "yas_observing.h"
-#include "yas_property.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
-#include "yas_ui_types.h"
 
 namespace yas {
+template <typename T, typename K>
+class subject;
+
 namespace ui {
     class mesh;
     class render_info;
     class collider;
+    class point;
+    class size;
+    class color;
 
     class node : public base {
        public:

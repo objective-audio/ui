@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <simd/simd.h>
 #include <chrono>
 #include <vector>
 #include "yas_base.h"

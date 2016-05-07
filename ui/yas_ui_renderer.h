@@ -6,14 +6,17 @@
 
 #include <Metal/Metal.h>
 #include <simd/simd.h>
+#include <vector>
 #include "yas_base.h"
-#include "yas_observing.h"
-#include "yas_ui_types.h"
 
 namespace yas {
+template <typename T, typename K>
+class subject;
+
 namespace ui {
     class view_renderable;
     class event_manager;
+    class uint_size;
     enum class renderer_method;
 
     class renderer_base : public base {
