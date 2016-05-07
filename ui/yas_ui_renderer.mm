@@ -5,6 +5,7 @@
 #include <chrono>
 #include <unordered_set>
 #include "yas_objc_ptr.h"
+#include "yas_observing.h"
 #include "yas_ui_action.h"
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_encode_info.h"
@@ -14,6 +15,7 @@
 #include "yas_ui_renderer.h"
 #include "yas_ui_renderer_impl.h"
 #include "yas_ui_renderer_protocol.h"
+#include "yas_ui_types.h"
 
 using namespace yas;
 using namespace simd;
