@@ -3,6 +3,7 @@
 //
 
 #include "yas_observing.h"
+#include "yas_property.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_encode_info.h"

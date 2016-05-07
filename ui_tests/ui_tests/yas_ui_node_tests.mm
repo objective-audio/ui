@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
+#import "yas_observing.h"
 #import "yas_ui_collider.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_node.h"

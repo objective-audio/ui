@@ -8,7 +8,6 @@
 #include <simd/simd.h>
 #include <vector>
 #include "yas_base.h"
-#include "yas_property.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
 
