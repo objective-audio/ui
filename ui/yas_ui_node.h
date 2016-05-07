@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <Metal/Metal.h>
-#include <simd/simd.h>
 #include <vector>
 #include "yas_base.h"
 #include "yas_ui_metal_protocol.h"
