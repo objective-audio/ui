@@ -218,6 +218,40 @@ using namespace yas;
     XCTAssertEqual(renderable.renderer(), renderer);
 }
 
+- (void)test_add_and_remove_node_observed {
+    ui::node parent_node;
+    ui::node sub_node;
+    int observer_called_count = 0;
+    bool added_to_super_called = false;
+    bool removed_from_super_called = false;
+
+    auto observer = sub_node.subject().make_wild_card_observer(
+        [&observer_called_count, &added_to_super_called, &removed_from_super_called](auto const &context) {
+            switch (context.key) {
+                case ui::node_method::added_to_super:
+                    added_to_super_called = true;
+                    break;
+                case ui::node_method::removed_from_super:
+                    removed_from_super_called = true;
+                    break;
+
+                default:
+                    break;
+            }
+            ++observer_called_count;
+        });
+
+    parent_node.push_back_sub_node(sub_node);
+
+    XCTAssertTrue(added_to_super_called);
+
+    sub_node.remove_from_super_node();
+
+    XCTAssertTrue(removed_from_super_called);
+
+    XCTAssertEqual(observer_called_count, 2);
+}
+
 - (void)test_method_undispatched {
     id<MTLDevice> device = nil;
 
