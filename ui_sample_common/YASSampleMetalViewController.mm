@@ -17,14 +17,13 @@ using namespace yas;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    [self setRenderer:_main.renderer.view_renderable()];
+
+    _main.setup();
+
 #if TARGET_OS_IPHONE
     self.view.multipleTouchEnabled = YES;
-    _main.setup(self.view.layer.contentsScale);
-#elif TARGET_OS_MAC
-    _main.setup([NSScreen mainScreen].backingScaleFactor);
 #endif
-
-    [self setRenderer:_main.renderer.view_renderable()];
 }
 
 @end

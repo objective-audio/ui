@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "yas_objc_ptr.h"
 #include "yas_sample_bg_node.h"
 #include "yas_sample_button_node.h"
 #include "yas_sample_button_status_node.h"
@@ -17,9 +18,9 @@
 namespace yas {
 namespace sample {
     struct main {
-        ui::renderer renderer = nullptr;
+        ui::renderer renderer{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()};
 
-        void setup(double const scale_factor);
+        void setup();
 
        private:
         sample::touch_holder _touch_holder = nullptr;

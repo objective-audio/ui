@@ -3,13 +3,12 @@
 //
 
 #include <iostream>
-#include "yas_objc_ptr.h"
 #include "yas_sample_main.h"
 
 using namespace yas;
 
-void sample::main::setup(double const scale_factor) {
-    renderer = ui::renderer{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()};
+void sample::main::setup() {
+    auto const scale_factor = renderer.scale_factor();
 
     auto &root_node = renderer.root_node();
 
