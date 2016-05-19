@@ -27,7 +27,7 @@ void sample::main::setup(double const scale_factor) {
 
     if (auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, scale_factor)) {
         ui::font_atlas font_atlas{"TrebuchetMS-Bold", 26.0f,
-                                  " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+",
+                                  " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-",
                                   std::move(texture_result.value())};
 
         _text_node = sample::text_node{font_atlas};
