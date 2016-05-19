@@ -9,7 +9,7 @@
 using namespace yas;
 
 void sample::main::setup(double const scale_factor) {
-    renderer = make_objc_ptr(MTLCreateSystemDefaultDevice()).object();
+    renderer = ui::renderer{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()};
 
     auto &root_node = renderer.root_node();
 
