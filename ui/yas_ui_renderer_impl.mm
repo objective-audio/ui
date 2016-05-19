@@ -45,6 +45,7 @@ struct ui::renderer_base::impl::core {
     uint32_t constant_buffer_offset = 0;
     ui::uint_size view_size;
     ui::uint_size drawable_size;
+    double scale_factor = 0.0;
     simd::float4x4 projection_matrix;
 
     objc_ptr<id<MTLRenderPipelineState>> multi_sample_pipeline_state;
@@ -62,6 +63,13 @@ struct ui::renderer_base::impl::core {
 
         view_size = {static_cast<uint32_t>(v_size.width), static_cast<uint32_t>(v_size.height)};
         drawable_size = {static_cast<uint32_t>(d_size.width), static_cast<uint32_t>(d_size.height)};
+        if (v_size.width > 0 && d_size.width > 0) {
+            scale_factor = d_size.width / v_size.width;
+        } else if (v_size.height > 0 && d_size.height > 0) {
+            scale_factor = d_size.height / v_size.height;
+        } else {
+            scale_factor = 0.0;
+        }
         projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
     }
 };
@@ -171,6 +179,10 @@ ui::uint_size const &ui::renderer_base::impl::view_size() {
 
 ui::uint_size const &ui::renderer_base::impl::drawable_size() {
     return _core->drawable_size;
+}
+
+double ui::renderer_base::impl::scale_factor() {
+    return _core->scale_factor;
 }
 
 simd::float4x4 const &ui::renderer_base::impl::projection_matrix() {

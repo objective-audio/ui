@@ -28,6 +28,7 @@ class yas::ui::renderer_base::impl : public yas::base::impl, public yas::ui::vie
 
     ui::uint_size const &view_size();
     ui::uint_size const &drawable_size();
+    double scale_factor();
     simd::float4x4 const &projection_matrix();
 
     void view_configure(YASUIMetalView *const view) override;
