@@ -41,7 +41,7 @@ namespace ui {
         class impl;
 
         action();
-        action(action_args);
+        explicit action(action_args);
         action(std::nullptr_t);
 
         ui::node target() const;
