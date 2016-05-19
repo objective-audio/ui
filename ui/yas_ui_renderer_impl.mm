@@ -168,7 +168,15 @@ void ui::renderer_base::impl::view_configure(YASUIMetalView *const view) {
 
     _core->pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
-    view_size_will_change(view, view.drawableSize);
+#if TARGET_OS_IPHONE
+    auto const view_size = view.frame.size;
+    auto const scale = view.contentScaleFactor;
+    auto const drawable_size = CGSizeMake(round(view_size.width * scale), round(view_size.height * scale));
+#elif TARGET_OS_MAC
+    auto const drawable_size = view.drawableSize;
+#endif
+
+    view_size_will_change(view, drawable_size);
 
     [view set_event_manager:_core->event_manager];
 }
