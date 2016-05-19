@@ -29,7 +29,7 @@ namespace ui {
 
        public:
         collider();
-        collider(collider_args);
+        explicit collider(collider_args);
         collider(std::nullptr_t);
 
         void set_shape(collider_shape);
