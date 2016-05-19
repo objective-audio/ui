@@ -53,7 +53,7 @@ namespace ui {
        public:
         class impl;
 
-        renderer(id<MTLDevice> const);
+        explicit renderer(id<MTLDevice> const);
         renderer(std::nullptr_t);
 
         ui::node const &root_node() const;
