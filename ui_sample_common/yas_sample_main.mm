@@ -14,7 +14,6 @@ void sample::main::setup() {
 
     _bg_node = sample::bg_node{};
     _cursor_over_node = sample::cursor_over_node{};
-    _button_node = sample::button_node{renderer.device(), scale_factor};
     _cursor_node = sample::cursor_node{};
     _touch_holder = sample::touch_holder(renderer.device(), scale_factor);
 

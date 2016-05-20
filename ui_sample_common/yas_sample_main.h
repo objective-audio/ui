@@ -29,7 +29,7 @@ namespace sample {
         sample::modifier_node _modifier_node = nullptr;
         sample::bg_node _bg_node = nullptr;
         sample::cursor_over_node _cursor_over_node = nullptr;
-        sample::button_node _button_node = nullptr;
+        sample::button_node _button_node;
         sample::button_status_node _button_status_node = nullptr;
 
         base _button_observer = nullptr;

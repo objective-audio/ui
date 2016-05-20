@@ -27,7 +27,7 @@ namespace sample {
     struct button_node : public base {
         class impl;
 
-        button_node(id<MTLDevice> const device, double const scale_factor);
+        button_node();
         button_node(std::nullptr_t);
 
         subject<button_node, button_method> &subject();
