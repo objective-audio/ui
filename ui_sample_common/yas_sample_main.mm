@@ -12,11 +12,6 @@ void sample::main::setup() {
 
     auto &root_node = renderer.root_node();
 
-    _bg_node = sample::bg_node{};
-    _cursor_over_node = sample::cursor_over_node{};
-    _cursor_node = sample::cursor_node{};
-    _touch_holder = sample::touch_holder{};
-
     root_node.push_back_sub_node(_bg_node.square_node().node());
     root_node.push_back_sub_node(_cursor_over_node.node());
     root_node.push_back_sub_node(_button_node.square_node().node());
