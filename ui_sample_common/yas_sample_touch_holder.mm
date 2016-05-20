@@ -18,13 +18,65 @@ namespace sample {
 struct sample::touch_holder::impl : base::impl {
     ui::node root_node;
 
-    impl(id<MTLDevice> const device, double const scale_factor) {
+    impl() {
+        _square_mesh_data.set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+    }
+
+    void setup_renderer_observer() {
+        root_node.dispatch_method(ui::node_method::renderer_changed);
+        _renderer_observer = root_node.subject().make_observer(ui::node_method::renderer_changed, [
+            weak_touch_holder = to_weak(cast<touch_holder>()),
+            event_observer = base{nullptr},
+            scale_observer = base{nullptr}
+        ](auto const &context) mutable {
+            auto &node = context.value;
+            if (auto renderer = node.renderer()) {
+                event_observer = renderer.event_manager().subject().make_observer(
+                    ui::event_method::touch_changed, [weak_touch_holder](auto const &context) mutable {
+                        if (auto touch_holder = weak_touch_holder.lock()) {
+                            ui::event const &event = context.value;
+                            touch_holder.impl_ptr<impl>()->update_touch_node(event);
+                        }
+                    });
+
+                scale_observer = renderer.subject().make_observer(
+                    ui::renderer_method::scale_factor_changed, [weak_touch_holder](auto const &context) {
+                        if (auto touch_holder = weak_touch_holder.lock()) {
+                            touch_holder.impl_ptr<impl>()->update_texture();
+                        }
+                    });
+            } else {
+                event_observer = nullptr;
+                scale_observer = nullptr;
+            }
+
+            if (auto touch_holder = weak_touch_holder.lock()) {
+                touch_holder.impl_ptr<impl>()->update_texture();
+            }
+        });
+    }
+
+    void update_texture() {
+        _set_texture(nullptr);
+
+        auto renderer = root_node.renderer();
+        if (!renderer) {
+            return;
+        }
+
+        double const scale_factor = renderer.scale_factor();
+        if (scale_factor == 0.0) {
+            return;
+        }
+
+        auto const device = renderer.device();
+
         assert(device);
 
         auto texture_result = ui::make_texture(device, {128, 128}, scale_factor);
         assert(texture_result);
 
-        _texture = texture_result.value();
+        _set_texture(std::move(texture_result.value()));
 
         ui::image image{{100, 100}, scale_factor};
         image.draw([](CGContextRef const ctx) {
@@ -36,63 +88,44 @@ struct sample::touch_holder::impl : base::impl {
         auto image_result = _texture.add_image(image);
         assert(image_result);
 
-        auto sq_mesh_data = ui::make_square_mesh_data(1);
-        sq_mesh_data.set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
-        sq_mesh_data.set_square_tex_coords(image_result.value(), 0);
-        _mesh_data = std::move(sq_mesh_data.dynamic_mesh_data());
+        _square_mesh_data.set_square_tex_coords(image_result.value(), 0);
     }
 
-    void setup_renderer_observer() {
-        root_node.dispatch_method(ui::node_method::renderer_changed);
-        _renderer_observer = root_node.subject().make_observer(
-            ui::node_method::renderer_changed,
-            [weak_touch_holder = to_weak(cast<touch_holder>()),
-             event_observer = base{nullptr}](auto const &context) mutable {
-                if (auto touch_holder = weak_touch_holder.lock()) {
-                    auto impl = touch_holder.impl_ptr<touch_holder::impl>();
-                    auto &node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        event_observer = _make_event_observer(touch_holder, renderer);
-                    } else {
-                        event_observer = nullptr;
-                    }
-                }
-            });
+    void update_touch_node(ui::event const &event) {
+        auto const identifier = event.identifier();
+        auto const &value = event.get<ui::touch>();
+
+        switch (event.phase()) {
+            case ui::event_phase::began: {
+                _insert_touch_node(identifier);
+                _move_touch_node(identifier, value.position());
+            } break;
+
+            case ui::event_phase::changed: {
+                _move_touch_node(identifier, value.position());
+            } break;
+
+            case ui::event_phase::ended:
+            case ui::event_phase::canceled: {
+                _move_touch_node(identifier, value.position());
+                _erase_touch_node(identifier);
+            } break;
+
+            default:
+                break;
+        }
     }
 
    private:
-    static base _make_event_observer(sample::touch_holder &touch_holder, ui::renderer &renderer) {
-        return renderer.event_manager().subject().make_observer(
-            ui::event_method::touch_changed, [weak_touch_holder = to_weak(touch_holder)](auto const &context) mutable {
-                if (auto touch_holder = weak_touch_holder.lock()) {
-                    auto impl = touch_holder.impl_ptr<touch_holder::impl>();
-                    ui::event const &event = context.value;
-                    auto const identifier = event.identifier();
-                    auto const &value = event.get<ui::touch>();
+    void _set_texture(ui::texture texture) {
+        _texture = std::move(texture);
 
-                    switch (event.phase()) {
-                        case ui::event_phase::began: {
-                            impl->_insert_touch_node(identifier);
-                            impl->_move_touch_node(identifier, value.position());
-                        } break;
-
-                        case ui::event_phase::changed: {
-                            impl->_move_touch_node(identifier, value.position());
-                        } break;
-
-                        case ui::event_phase::ended:
-                        case ui::event_phase::canceled: {
-                            impl->_move_touch_node(identifier, value.position());
-                            impl->_erase_touch_node(identifier);
-                        } break;
-
-                        default:
-                            break;
-                    }
-                }
-            });
+        for (auto &touch_object : _objects) {
+            if (auto &node = touch_object.second.node) {
+                node.mesh().set_texture(_texture);
+            }
+        }
     }
-
     void _insert_touch_node(uintptr_t const identifier) {
         if (_objects.count(identifier) > 0) {
             return;
@@ -100,7 +133,7 @@ struct sample::touch_holder::impl : base::impl {
 
         ui::node node;
         ui::mesh mesh;
-        mesh.set_mesh_data(_mesh_data);
+        mesh.set_mesh_data(_square_mesh_data.dynamic_mesh_data());
         mesh.set_texture(_texture);
         node.set_mesh(mesh);
         node.set_scale(0.0f);
@@ -180,12 +213,11 @@ struct sample::touch_holder::impl : base::impl {
 
     std::unordered_map<uintptr_t, touch_object> _objects;
     ui::texture _texture = nullptr;
-    ui::mesh_data _mesh_data = nullptr;
+    ui::square_mesh_data _square_mesh_data = ui::make_square_mesh_data(1);
     base _renderer_observer = nullptr;
 };
 
-sample::touch_holder::touch_holder(id<MTLDevice> const device, double const scale_factor)
-    : base(std::make_shared<impl>(device, scale_factor)) {
+sample::touch_holder::touch_holder() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
 }
 
