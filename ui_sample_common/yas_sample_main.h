@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "yas_objc_ptr.h"
 #include "yas_sample_bg_node.h"
 #include "yas_sample_button_node.h"
 #include "yas_sample_button_status_node.h"
@@ -17,18 +18,18 @@
 namespace yas {
 namespace sample {
     struct main {
-        ui::renderer renderer = nullptr;
+        ui::renderer renderer{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()};
 
-        void setup(double const scale_factor);
+        void setup();
 
        private:
-        sample::touch_holder _touch_holder = nullptr;
-        sample::cursor_node _cursor_node = nullptr;
+        sample::touch_holder _touch_holder;
+        sample::cursor_node _cursor_node;
         sample::text_node _text_node = nullptr;
         sample::modifier_node _modifier_node = nullptr;
-        sample::bg_node _bg_node = nullptr;
-        sample::cursor_over_node _cursor_over_node = nullptr;
-        sample::button_node _button_node = nullptr;
+        sample::bg_node _bg_node;
+        sample::cursor_over_node _cursor_over_node;
+        sample::button_node _button_node;
         sample::button_status_node _button_status_node = nullptr;
 
         base _button_observer = nullptr;

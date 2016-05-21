@@ -3,21 +3,14 @@
 //
 
 #include <iostream>
-#include "yas_objc_ptr.h"
 #include "yas_sample_main.h"
 
 using namespace yas;
 
-void sample::main::setup(double const scale_factor) {
-    renderer = ui::renderer{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()};
+void sample::main::setup() {
+    auto const scale_factor = renderer.scale_factor();
 
     auto &root_node = renderer.root_node();
-
-    _bg_node = sample::bg_node{};
-    _cursor_over_node = sample::cursor_over_node{};
-    _button_node = sample::button_node{renderer.device(), scale_factor};
-    _cursor_node = sample::cursor_node{};
-    _touch_holder = sample::touch_holder(renderer.device(), scale_factor);
 
     root_node.push_back_sub_node(_bg_node.square_node().node());
     root_node.push_back_sub_node(_cursor_over_node.node());

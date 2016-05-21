@@ -29,6 +29,7 @@ namespace ui {
 
         ui::uint_size const &view_size() const;
         ui::uint_size const &drawable_size() const;
+        double scale_factor() const;
         simd::float4x4 const &projection_matrix() const;
         id<MTLBuffer> current_constant_buffer() const;
 

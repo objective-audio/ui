@@ -14,26 +14,43 @@ struct sample::button_node::impl : base::impl {
     yas::subject<sample::button_node, sample::button_method> subject;
     ui::square_node square_node = ui::make_square_node(2, 1);
 
-    impl(id<MTLDevice> const device, double const scale_factor) {
-        _setup_node(device, scale_factor);
+    impl() {
+        _setup_node();
     }
 
     void setup_renderer_observer() {
         square_node.node().dispatch_method(ui::node_method::renderer_changed);
 
-        _renderer_observer = square_node.node().subject().make_observer(
-            ui::node_method::renderer_changed,
-            [event_observer = base{nullptr},
-             weak_button_node = to_weak(cast<sample::button_node>())](auto const &context) mutable {
-                ui::node const &node = context.value;
-                if (auto renderer = node.renderer()) {
-                    if (auto button_node = weak_button_node.lock()) {
-                        event_observer = _make_event_observer(button_node, renderer.event_manager());
-                    }
-                } else {
-                    event_observer = nullptr;
-                }
-            });
+        _renderer_observer = square_node.node().subject().make_observer(ui::node_method::renderer_changed, [
+            event_observer = base{nullptr},
+            scale_observer = base{nullptr},
+            weak_button_node = to_weak(cast<sample::button_node>())
+        ](auto const &context) mutable {
+            ui::node const &node = context.value;
+
+            if (auto renderer = node.renderer()) {
+                event_observer = renderer.event_manager().subject().make_observer(
+                    ui::event_method::touch_changed, [weak_button_node](auto const &context) {
+                        if (auto button_node = weak_button_node.lock()) {
+                            button_node.impl_ptr<impl>()->update_tracking(context.value);
+                        }
+                    });
+
+                scale_observer = renderer.subject().make_observer(
+                    ui::renderer_method::scale_factor_changed, [weak_button_node](auto const &context) {
+                        if (auto button_node = weak_button_node.lock()) {
+                            button_node.impl_ptr<impl>()->update_texture();
+                        }
+                    });
+            } else {
+                event_observer = nullptr;
+                scale_observer = nullptr;
+            }
+
+            if (auto button_node = weak_button_node.lock()) {
+                button_node.impl_ptr<impl>()->update_texture();
+            }
+        });
     }
 
     bool is_tracking() {
@@ -49,19 +66,29 @@ struct sample::button_node::impl : base::impl {
         _update_square_index();
     }
 
-   private:
-    void _setup_node(id<MTLDevice> const device, double const scale_factor) {
+    void update_texture() {
+        auto &node = square_node.node();
+        node.mesh().set_texture(nullptr);
+
+        auto renderer = node.renderer();
+        if (!renderer) {
+            return;
+        }
+
+        double const scale_factor = renderer.scale_factor();
+        if (scale_factor == 0.0) {
+            return;
+        }
+
+        auto const device = renderer.device();
+
         float const radius = 60;
         uint32_t const width = radius * 2;
-        auto &square_mesh_data = square_node.square_mesh_data();
 
         auto texture = ui::make_texture(device, ui::uint_size{256, 128}, scale_factor).value();
         assert(texture);
 
-        ui::float_region region{-radius, -radius, radius * 2.0f, radius * 2.0f};
-        for (auto const &idx : make_each(2)) {
-            square_mesh_data.set_square_position(region, idx);
-        }
+        auto &square_mesh_data = square_node.square_mesh_data();
 
         ui::uint_size image_size{width, width};
         ui::image image{image_size, scale_factor};
@@ -91,6 +118,63 @@ struct sample::button_node::impl : base::impl {
         }
 
         square_node.node().mesh().set_texture(std::move(texture));
+    }
+
+    void update_tracking(ui::event const &event) {
+        auto &node = square_node.node();
+        if (auto renderer = node.renderer()) {
+            auto const &detector = renderer.collision_detector();
+            auto button_node = cast<sample::button_node>();
+
+            auto const &touch_event = event.get<ui::touch>();
+            switch (event.phase()) {
+                case ui::event_phase::began:
+                    if (!is_tracking()) {
+                        if (detector.detect(touch_event.position(), node.collider())) {
+                            set_tracking_event(event);
+                            subject.notify(sample::button_method::began, button_node);
+                        }
+                    }
+                    break;
+                case ui::event_phase::stationary:
+                case ui::event_phase::changed: {
+                    bool const is_event_tracking = is_tracking(event);
+                    bool is_detected = detector.detect(touch_event.position(), node.collider());
+                    if (!is_event_tracking && is_detected) {
+                        set_tracking_event(event);
+                        subject.notify(sample::button_method::entered, button_node);
+                    } else if (is_event_tracking && !is_detected) {
+                        set_tracking_event(nullptr);
+                        subject.notify(sample::button_method::leaved, button_node);
+                    }
+                } break;
+                case ui::event_phase::ended:
+                    if (is_tracking(event)) {
+                        set_tracking_event(nullptr);
+                        subject.notify(sample::button_method::ended, button_node);
+                    }
+                    break;
+                case ui::event_phase::canceled:
+                    if (is_tracking(event)) {
+                        set_tracking_event(nullptr);
+                        subject.notify(sample::button_method::canceled, button_node);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+   private:
+    void _setup_node() {
+        float const radius = 60;
+        auto &square_mesh_data = square_node.square_mesh_data();
+
+        ui::float_region region{-radius, -radius, radius * 2.0f, radius * 2.0f};
+        for (auto const &idx : make_each(2)) {
+            square_mesh_data.set_square_position(region, idx);
+        }
 
         ui::collider collider;
         collider.set_shape(ui::collider_shape::circle);
@@ -98,58 +182,6 @@ struct sample::button_node::impl : base::impl {
         square_node.node().set_collider(std::move(collider));
 
         _update_square_index();
-    }
-
-    static base _make_event_observer(sample::button_node &button_node, ui::event_manager &event_manager) {
-        return event_manager.subject().make_observer(
-            ui::event_method::touch_changed, [weak_button_node = to_weak(button_node)](auto const &context) {
-                if (auto button_node = weak_button_node.lock()) {
-                    auto &node = button_node.square_node().node();
-                    if (auto renderer = node.renderer()) {
-                        auto const &detector = renderer.collision_detector();
-
-                        auto impl = button_node.impl_ptr<button_node::impl>();
-                        ui::event const &event = context.value;
-                        auto const &touch_event = event.get<ui::touch>();
-                        switch (event.phase()) {
-                            case ui::event_phase::began:
-                                if (!impl->is_tracking()) {
-                                    if (detector.detect(touch_event.position(), node.collider())) {
-                                        impl->set_tracking_event(event);
-                                        impl->subject.notify(sample::button_method::began, button_node);
-                                    }
-                                }
-                                break;
-                            case ui::event_phase::stationary:
-                            case ui::event_phase::changed: {
-                                bool const is_tracking = impl->is_tracking(event);
-                                bool is_detected = detector.detect(touch_event.position(), node.collider());
-                                if (!is_tracking && is_detected) {
-                                    impl->set_tracking_event(event);
-                                    impl->subject.notify(sample::button_method::entered, button_node);
-                                } else if (is_tracking && !is_detected) {
-                                    impl->set_tracking_event(nullptr);
-                                    impl->subject.notify(sample::button_method::leaved, button_node);
-                                }
-                            } break;
-                            case ui::event_phase::ended:
-                                if (impl->is_tracking(event)) {
-                                    impl->set_tracking_event(nullptr);
-                                    impl->subject.notify(sample::button_method::ended, button_node);
-                                }
-                                break;
-                            case ui::event_phase::canceled:
-                                if (impl->is_tracking(event)) {
-                                    impl->set_tracking_event(nullptr);
-                                    impl->subject.notify(sample::button_method::canceled, button_node);
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            });
     }
 
     void _update_square_index() {
@@ -163,8 +195,7 @@ struct sample::button_node::impl : base::impl {
 
 #pragma mark - button_node
 
-sample::button_node::button_node(id<MTLDevice> const device, double const scale_factor)
-    : base(std::make_shared<impl>(device, scale_factor)) {
+sample::button_node::button_node() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
 }
 

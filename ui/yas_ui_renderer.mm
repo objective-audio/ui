@@ -40,6 +40,10 @@ ui::uint_size const &ui::renderer_base::drawable_size() const {
     return impl_ptr<impl>()->drawable_size();
 }
 
+double ui::renderer_base::scale_factor() const {
+    return impl_ptr<impl>()->scale_factor();
+}
+
 simd::float4x4 const &ui::renderer_base::projection_matrix() const {
     return impl_ptr<impl>()->projection_matrix();
 }

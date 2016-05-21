@@ -17,6 +17,7 @@ namespace ui {
     enum class renderer_method {
         will_render,
         view_size_changed,
+        scale_factor_changed,
     };
 
     struct view_renderable : protocol {

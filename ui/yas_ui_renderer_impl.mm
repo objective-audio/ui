@@ -28,6 +28,11 @@ namespace ui {
 }
 
 struct ui::renderer_base::impl::core {
+    enum class update_result {
+        no_change,
+        changed,
+    };
+
     uint32_t sample_count = 4;
 
     objc_ptr<id<MTLBuffer>> constant_buffers[inflight_buffer_count];
@@ -45,6 +50,7 @@ struct ui::renderer_base::impl::core {
     uint32_t constant_buffer_offset = 0;
     ui::uint_size view_size;
     ui::uint_size drawable_size;
+    double scale_factor = 0.0;
     simd::float4x4 projection_matrix;
 
     objc_ptr<id<MTLRenderPipelineState>> multi_sample_pipeline_state;
@@ -56,13 +62,40 @@ struct ui::renderer_base::impl::core {
 
     ui::event_manager event_manager;
 
-    void update_view_size(CGSize const v_size, CGSize const d_size) {
+    update_result update_view_size(CGSize const v_size, CGSize const d_size) {
+        auto const prev_view_size = view_size;
+        auto const prev_drawable_size = drawable_size;
+
         float half_width = v_size.width * 0.5f;
         float half_height = v_size.height * 0.5f;
 
         view_size = {static_cast<uint32_t>(v_size.width), static_cast<uint32_t>(v_size.height)};
         drawable_size = {static_cast<uint32_t>(d_size.width), static_cast<uint32_t>(d_size.height)};
-        projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
+
+        if (view_size == prev_view_size && drawable_size == prev_drawable_size) {
+            return update_result::no_change;
+        } else {
+            projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
+            return update_result::changed;
+        }
+    }
+
+    update_result update_scale_factor() {
+        auto const prev_scale_factor = scale_factor;
+
+        if (view_size.width > 0 && drawable_size.width > 0) {
+            scale_factor = static_cast<double>(drawable_size.width) / static_cast<double>(view_size.width);
+        } else if (view_size.height > 0 && drawable_size.height > 0) {
+            scale_factor = static_cast<double>(drawable_size.height) / static_cast<double>(view_size.height);
+        } else {
+            scale_factor = 0.0;
+        }
+
+        if ((prev_scale_factor - 0.001) < scale_factor && scale_factor < (prev_scale_factor + 0.001)) {
+            return update_result::no_change;
+        } else {
+            return update_result::changed;
+        }
     }
 };
 
@@ -135,7 +168,15 @@ void ui::renderer_base::impl::view_configure(YASUIMetalView *const view) {
 
     _core->pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
-    view_size_will_change(view, view.drawableSize);
+#if TARGET_OS_IPHONE
+    auto const view_size = view.frame.size;
+    auto const scale = view.contentScaleFactor;
+    auto const drawable_size = CGSizeMake(round(view_size.width * scale), round(view_size.height * scale));
+#elif TARGET_OS_MAC
+    auto const drawable_size = view.drawableSize;
+#endif
+
+    view_size_will_change(view, drawable_size);
 
     [view set_event_manager:_core->event_manager];
 }
@@ -173,6 +214,10 @@ ui::uint_size const &ui::renderer_base::impl::drawable_size() {
     return _core->drawable_size;
 }
 
+double ui::renderer_base::impl::scale_factor() {
+    return _core->scale_factor;
+}
+
 simd::float4x4 const &ui::renderer_base::impl::projection_matrix() {
     return _core->projection_matrix;
 }
@@ -180,11 +225,20 @@ simd::float4x4 const &ui::renderer_base::impl::projection_matrix() {
 #pragma mark - renderable::impl
 
 void ui::renderer_base::impl::view_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
-    auto view_size = view.bounds.size;
-    _core->update_view_size(view_size, drawable_size);
+    auto const view_size = view.bounds.size;
+    auto const update_view_size_result = _core->update_view_size(view_size, drawable_size);
+    auto const udpate_scale_result = _core->update_scale_factor();
 
-    if (_core->subject.has_observer()) {
-        _core->subject.notify(renderer_method::view_size_changed, cast<ui::renderer_base>());
+    if (update_view_size_result == core::update_result::changed) {
+        if (_core->subject.has_observer()) {
+            _core->subject.notify(renderer_method::view_size_changed, cast<ui::renderer_base>());
+        }
+
+        if (udpate_scale_result == core::update_result::changed) {
+            if (_core->subject.has_observer()) {
+                _core->subject.notify(renderer_method::scale_factor_changed, cast<ui::renderer_base>());
+            }
+        }
     }
 }
 
