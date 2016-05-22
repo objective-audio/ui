@@ -29,18 +29,23 @@ void sample::main::setup() {
         }
     });
 
-    auto update_texture = [weak_font_atlas = to_weak(_font_atlas)](ui::renderer_base const &renderer) mutable {
-        if (auto font_atlas = weak_font_atlas.lock()) {
-            if (renderer.scale_factor() > 0) {
-                auto const scale_factor = renderer.scale_factor();
+    auto update_texture = [weak_font_atlas = to_weak(_font_atlas),
+                           weak_button_node = to_weak(_button_node)](ui::renderer_base const &renderer) mutable {
+        auto const scale_factor = renderer.scale_factor();
 
-                auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, scale_factor);
-                assert(texture_result);
-
-                font_atlas.set_texture(std::move(texture_result.value()));
-            } else {
-                font_atlas.set_texture(nullptr);
+        ui::texture texture = nullptr;
+        if (scale_factor > 0) {
+            if (auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, scale_factor)) {
+                texture = std::move(texture_result.value());
             }
+        }
+
+        if (auto font_atlas = weak_font_atlas.lock()) {
+            font_atlas.set_texture(texture);
+        }
+
+        if (auto button_node = weak_button_node.lock()) {
+            button_node.set_texture(texture);
         }
     };
 

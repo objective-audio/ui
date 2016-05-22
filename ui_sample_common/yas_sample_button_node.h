@@ -13,6 +13,7 @@ namespace ui {
     class uint_region;
     class renderer;
 }
+
 namespace sample {
     class button_node;
 
@@ -29,6 +30,8 @@ namespace sample {
 
         button_node();
         button_node(std::nullptr_t);
+
+        void set_texture(ui::texture);
 
         subject<button_node, button_method> &subject();
 
