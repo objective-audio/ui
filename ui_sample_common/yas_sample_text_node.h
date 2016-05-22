@@ -11,7 +11,7 @@ namespace sample {
     struct text_node : base {
         class impl;
 
-        text_node(ui::font_atlas const &);
+        text_node(ui::font_atlas atlas = nullptr);
         text_node(std::nullptr_t);
 
         ui::strings_node &strings_node();

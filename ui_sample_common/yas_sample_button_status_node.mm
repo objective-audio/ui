@@ -10,7 +10,7 @@ using namespace yas;
 struct sample::button_status_node::impl : base::impl {
     ui::strings_node strings_node;
 
-    impl(ui::font_atlas &&font_atlas) : strings_node(font_atlas, 32) {
+    impl(ui::font_atlas &&font_atlas) : strings_node({.font_atlas = font_atlas, .max_word_count = 32}) {
         strings_node.square_node().node().set_position(ui::point{0.0f, -7.0f});
         strings_node.square_node().node().set_alpha(0.5f);
         strings_node.set_pivot(ui::pivot::center);

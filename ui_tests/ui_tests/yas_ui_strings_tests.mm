@@ -34,7 +34,8 @@ using namespace yas;
     }
 
     auto texture = ui::make_texture(device.object(), {256, 256}, 1.0).value();
-    ui::font_atlas font_atlas{"HelveticaNeue", 14.0, "abcde12345", texture};
+    ui::font_atlas font_atlas{
+        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
     XCTAssertEqual(font_atlas.font_name(), "HelveticaNeue");
     XCTAssertEqual(font_atlas.font_size(), 14.0);
@@ -50,7 +51,8 @@ using namespace yas;
     }
 
     auto texture = ui::make_texture(device.object(), {256, 256}, 1.0).value();
-    ui::font_atlas font_atlas{"HelveticaNeue", 14.0, "abcde12345", texture};
+    ui::font_atlas font_atlas{
+        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
     auto strings_layout = font_atlas.make_strings_layout("a1z", ui::pivot::left);
 

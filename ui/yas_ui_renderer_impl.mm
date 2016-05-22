@@ -7,6 +7,7 @@
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
 #include "yas_ui_event.h"
+#include "yas_ui_math.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_metal_view.h"
 #include "yas_ui_renderer.h"
@@ -91,7 +92,7 @@ struct ui::renderer_base::impl::core {
             scale_factor = 0.0;
         }
 
-        if ((prev_scale_factor - 0.001) < scale_factor && scale_factor < (prev_scale_factor + 0.001)) {
+        if (std::abs(scale_factor - prev_scale_factor) < std::numeric_limits<double>::epsilon()) {
             return update_result::no_change;
         } else {
             return update_result::changed;
