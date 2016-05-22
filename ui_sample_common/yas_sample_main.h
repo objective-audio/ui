@@ -25,14 +25,21 @@ namespace sample {
        private:
         sample::touch_holder _touch_holder;
         sample::cursor_node _cursor_node;
-        sample::text_node _text_node = nullptr;
-        sample::modifier_node _modifier_node = nullptr;
+        sample::text_node _text_node;
+        sample::modifier_node _modifier_node;
         sample::bg_node _bg_node;
         sample::cursor_over_node _cursor_over_node;
         sample::button_node _button_node;
-        sample::button_status_node _button_status_node = nullptr;
+        sample::button_status_node _button_status_node;
+
+        ui::font_atlas _font_atlas{{.font_name = "TrebuchetMS-Bold",
+                                    .font_size = 26.0f,
+                                    .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"}};
 
         base _button_observer = nullptr;
+        base _scale_observer = nullptr;
+
+        void _update_texture();
     };
 }
 }
