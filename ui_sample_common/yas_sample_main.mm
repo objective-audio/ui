@@ -2,7 +2,6 @@
 //  yas_sample_main.mm
 //
 
-#include <iostream>
 #include "yas_sample_main.h"
 
 using namespace yas;
