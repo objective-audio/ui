@@ -19,9 +19,8 @@ vertex color_inout2d vertex2d(device ui::vertex2d_t *vertex_array[[buffer(0)]],
                               constant ui::uniforms2d_t &uniforms[[buffer(1)]], unsigned int vid[[vertex_id]]) {
     color_inout2d out;
 
-    float4 in_position = float4(float2(vertex_array[vid].position), 0.0, 1.0);
-    out.position = uniforms.matrix * in_position;
-    out.color = uniforms.color;
+    out.position = uniforms.matrix * float4(float2(vertex_array[vid].position), 0.0, 1.0);
+    out.color = uniforms.use_mesh_color ? vertex_array[vid].color : uniforms.color;
     out.tex_coord = vertex_array[vid].tex_coord;
 
     return out;
