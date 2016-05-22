@@ -197,7 +197,7 @@ struct sample::touch_holder::impl : base::impl {
 
             auto alpha_action = ui::make_action(
                 {.start_alpha = node.alpha(), .end_alpha = 0.0f, .continuous_action = {.duration = 0.3}});
-            alpha_action.set_value_transformer(ui::ease_out_transformer());
+            alpha_action.set_value_transformer(ui::connect({ui::ease_out_transformer(), ui::ease_out_transformer()}));
             alpha_action.set_target(node);
 
             ui::parallel_action action;
