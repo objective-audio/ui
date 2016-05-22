@@ -13,7 +13,6 @@
 #include "yas_ui_renderer.h"
 
 using namespace yas;
-using namespace simd;
 
 @interface YASUIMetalView (yas_ui_renderer_impl)
 
