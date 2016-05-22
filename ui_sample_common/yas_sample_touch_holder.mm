@@ -24,61 +24,33 @@ struct sample::touch_holder::impl : base::impl {
 
     void setup_renderer_observer() {
         root_node.dispatch_method(ui::node_method::renderer_changed);
-        _renderer_observer = root_node.subject().make_observer(ui::node_method::renderer_changed, [
-            weak_touch_holder = to_weak(cast<touch_holder>()),
-            event_observer = base{nullptr},
-            scale_observer = base{nullptr}
-        ](auto const &context) mutable {
-            auto &node = context.value;
-            if (auto renderer = node.renderer()) {
-                event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_method::touch_changed, [weak_touch_holder](auto const &context) mutable {
-                        if (auto touch_holder = weak_touch_holder.lock()) {
-                            ui::event const &event = context.value;
-                            touch_holder.impl_ptr<impl>()->update_touch_node(event);
-                        }
-                    });
-
-                scale_observer = renderer.subject().make_observer(
-                    ui::renderer_method::scale_factor_changed, [weak_touch_holder](auto const &context) {
-                        if (auto touch_holder = weak_touch_holder.lock()) {
-                            touch_holder.impl_ptr<impl>()->update_texture();
-                        }
-                    });
-            } else {
-                event_observer = nullptr;
-                scale_observer = nullptr;
-            }
-
-            if (auto touch_holder = weak_touch_holder.lock()) {
-                touch_holder.impl_ptr<impl>()->update_texture();
-            }
-        });
+        _renderer_observer = root_node.subject().make_observer(
+            ui::node_method::renderer_changed,
+            [weak_touch_holder = to_weak(cast<touch_holder>()),
+             event_observer = base{nullptr}](auto const &context) mutable {
+                auto &node = context.value;
+                if (auto renderer = node.renderer()) {
+                    event_observer = renderer.event_manager().subject().make_observer(
+                        ui::event_method::touch_changed, [weak_touch_holder](auto const &context) mutable {
+                            if (auto touch_holder = weak_touch_holder.lock()) {
+                                ui::event const &event = context.value;
+                                touch_holder.impl_ptr<impl>()->update_touch_node(event);
+                            }
+                        });
+                } else {
+                    event_observer = nullptr;
+                }
+            });
     }
 
-    void update_texture() {
-        _set_texture(nullptr);
+    void set_texture(ui::texture &&texture) {
+        _set_texture(std::move(texture));
 
-        auto renderer = root_node.renderer();
-        if (!renderer) {
+        if (!_texture) {
             return;
         }
 
-        double const scale_factor = renderer.scale_factor();
-        if (scale_factor == 0.0) {
-            return;
-        }
-
-        auto const device = renderer.device();
-
-        assert(device);
-
-        auto texture_result = ui::make_texture(device, {128, 128}, scale_factor);
-        assert(texture_result);
-
-        _set_texture(std::move(texture_result.value()));
-
-        ui::image image{{100, 100}, scale_factor};
+        ui::image image{{100, 100}, _texture.scale_factor()};
         image.draw([](CGContextRef const ctx) {
             CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
             CGContextSetLineWidth(ctx, 1.0f);
@@ -222,6 +194,10 @@ sample::touch_holder::touch_holder() : base(std::make_shared<impl>()) {
 }
 
 sample::touch_holder::touch_holder(std::nullptr_t) : base(nullptr) {
+}
+
+void sample::touch_holder::set_texture(ui::texture texture) {
+    impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
 ui::node &sample::touch_holder::node() {

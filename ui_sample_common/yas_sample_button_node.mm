@@ -21,36 +21,23 @@ struct sample::button_node::impl : base::impl {
     void setup_renderer_observer() {
         square_node.node().dispatch_method(ui::node_method::renderer_changed);
 
-        _renderer_observer = square_node.node().subject().make_observer(ui::node_method::renderer_changed, [
-            event_observer = base{nullptr},
-            scale_observer = base{nullptr},
-            weak_button_node = to_weak(cast<sample::button_node>())
-        ](auto const &context) mutable {
-            ui::node const &node = context.value;
+        _renderer_observer = square_node.node().subject().make_observer(
+            ui::node_method::renderer_changed,
+            [event_observer = base{nullptr},
+             weak_button_node = to_weak(cast<sample::button_node>())](auto const &context) mutable {
+                ui::node const &node = context.value;
 
-            if (auto renderer = node.renderer()) {
-                event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_method::touch_changed, [weak_button_node](auto const &context) {
-                        if (auto button_node = weak_button_node.lock()) {
-                            button_node.impl_ptr<impl>()->update_tracking(context.value);
-                        }
-                    });
-
-                scale_observer = renderer.subject().make_observer(
-                    ui::renderer_method::scale_factor_changed, [weak_button_node](auto const &context) {
-                        if (auto button_node = weak_button_node.lock()) {
-                            button_node.impl_ptr<impl>()->update_texture();
-                        }
-                    });
-            } else {
-                event_observer = nullptr;
-                scale_observer = nullptr;
-            }
-
-            if (auto button_node = weak_button_node.lock()) {
-                button_node.impl_ptr<impl>()->update_texture();
-            }
-        });
+                if (auto renderer = node.renderer()) {
+                    event_observer = renderer.event_manager().subject().make_observer(
+                        ui::event_method::touch_changed, [weak_button_node](auto const &context) {
+                            if (auto button_node = weak_button_node.lock()) {
+                                button_node.impl_ptr<impl>()->update_tracking(context.value);
+                            }
+                        });
+                } else {
+                    event_observer = nullptr;
+                }
+            });
     }
 
     bool is_tracking() {
@@ -66,32 +53,21 @@ struct sample::button_node::impl : base::impl {
         _update_square_index();
     }
 
-    void update_texture() {
-        auto &node = square_node.node();
-        node.mesh().set_texture(nullptr);
+    void set_texture(ui::texture &&texture) {
+        auto &mesh = square_node.node().mesh();
+        mesh.set_texture(texture);
 
-        auto renderer = node.renderer();
-        if (!renderer) {
+        if (!texture) {
             return;
         }
-
-        double const scale_factor = renderer.scale_factor();
-        if (scale_factor == 0.0) {
-            return;
-        }
-
-        auto const device = renderer.device();
 
         float const radius = 60;
         uint32_t const width = radius * 2;
 
-        auto texture = ui::make_texture(device, ui::uint_size{256, 128}, scale_factor).value();
-        assert(texture);
-
         auto &square_mesh_data = square_node.square_mesh_data();
 
         ui::uint_size image_size{width, width};
-        ui::image image{image_size, scale_factor};
+        ui::image image{image_size, texture.scale_factor()};
 
         auto set_image_region = [&square_mesh_data](ui::uint_region const &pixel_region, bool const tracking) {
             std::size_t const sq_idx = tracking ? 1 : 0;
@@ -116,8 +92,6 @@ struct sample::button_node::impl : base::impl {
         if (auto texture_result = texture.add_image(image)) {
             set_image_region(texture_result.value(), true);
         }
-
-        square_node.node().mesh().set_texture(std::move(texture));
     }
 
     void update_tracking(ui::event const &event) {
@@ -200,6 +174,10 @@ sample::button_node::button_node() : base(std::make_shared<impl>()) {
 }
 
 sample::button_node::button_node(std::nullptr_t) : base(nullptr) {
+}
+
+void sample::button_node::set_texture(ui::texture texture) {
+    impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
 subject<sample::button_node, sample::button_method> &sample::button_node::subject() {

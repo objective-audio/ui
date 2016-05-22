@@ -14,6 +14,8 @@ namespace sample {
         touch_holder();
         touch_holder(std::nullptr_t);
 
+        void set_texture(ui::texture);
+
         ui::node &node();
     };
 }
