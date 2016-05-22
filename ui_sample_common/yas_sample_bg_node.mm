@@ -13,7 +13,7 @@ struct sample::bg_node::impl : base::impl {
         square_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
         auto &node = square_node.node();
         node.set_scale(0.0f);
-        node.set_color(0.15f);
+        node.set_color(0.75f);
     }
 
     void setup_renderer_observer() {
