@@ -40,7 +40,7 @@ struct ui::strings_node::impl : base::impl {
         if (_font_atlas) {
             _square_node.node().mesh().set_texture(_font_atlas.texture());
             _font_atlas_observer = _font_atlas.subject().make_observer(
-                ui::font_atlas::method::texture_changed,
+                ui::font_atlas_method::texture_changed,
                 [weak_strings_node = to_weak(cast<strings_node>())](auto const &context) {
                     if (auto strings_node = weak_strings_node.lock()) {
                         strings_node.impl_ptr<impl>()->update_mesh_data();
