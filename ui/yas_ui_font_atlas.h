@@ -7,12 +7,16 @@
 #include <string>
 #include <vector>
 #include "yas_base.h"
+#include "yas_ui_texture.h"
 #include "yas_ui_types.h"
 
 namespace yas {
-namespace ui {
-    class texture;
+template <typename T, typename K>
+class subject;
+template <typename T, typename K>
+class observer;
 
+namespace ui {
     struct strings_layout {
         vertex2d_square_t const &square(std::size_t const word_index) const;
         std::vector<vertex2d_square_t> const &squares() const;
@@ -26,16 +30,33 @@ namespace ui {
         double _width;
     };
 
-    class font_atlas : base {
+    class font_atlas : public base {
        public:
         class impl;
 
-        font_atlas(std::string font_name, double const font_size, std::string words, texture texture);
+        enum class method { texture_changed };
+
+        using subject_t = subject<font_atlas, method>;
+        using observer_t = observer<font_atlas, method>;
+
+        struct args {
+            std::string font_name;
+            double font_size;
+            std::string words;
+            ui::texture texture = nullptr;
+        };
+
+        font_atlas(args);
+        font_atlas(std::nullptr_t);
 
         std::string const &font_name() const;
         double const &font_size() const;
         std::string const &words() const;
         ui::texture const &texture() const;
+
+        void set_texture(ui::texture);
+
+        subject_t &subject();
 
         strings_layout make_strings_layout(std::string const &text, pivot const pivot) const;
     };

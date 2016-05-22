@@ -6,10 +6,10 @@
 #include <CoreText/CoreText.h>
 #include "yas_cf_utils.h"
 #include "yas_objc_macros.h"
+#include "yas_observing.h"
 #include "yas_ui_font_atlas.h"
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
-#include "yas_ui_texture.h"
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIKit.h>
@@ -69,75 +69,42 @@ namespace ui {
 }
 
 struct ui::font_atlas::impl : base::impl {
-    ui::texture texture;
     std::string font_name;
     double font_size;
     std::string words;
+    ui::font_atlas::subject_t subject;
 
-    impl(std::string &&font_name, double const font_size, std::string &&words, ui::texture &&texture)
-        : font_name(std::move(font_name)), font_size(font_size), words(std::move(words)), texture(std::move(texture)) {
-        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(this->font_name), font_size, nullptr);
-        setup(ct_font);
-        CFRelease(ct_font);
+    impl(std::string &&font_name, double const font_size, std::string &&words)
+        : font_name(std::move(font_name)), font_size(font_size), words(std::move(words)) {
     }
 
-    void setup(CTFontRef const &ct_font) {
-        auto const word_size = words.size();
+    ui::texture &texture() {
+        return _texture;
+    }
 
-        _squares.resize(word_size);
-        _advances.resize(word_size);
+    void set_texture(ui::texture &&texture) {
+        if (!is_same(_texture, texture)) {
+            _texture = std::move(texture);
 
-        CGGlyph glyphs[word_size];
-        UniChar characters[word_size];
+            _update_texture();
 
-        CFStringGetCharacters(to_cf_object(words), CFRangeMake(0, word_size), characters);
-        CTFontGetGlyphsForCharacters(ct_font, characters, glyphs, word_size);
-        CTFontGetAdvancesForGlyphs(ct_font, kCTFontOrientationDefault, glyphs, _advances.data(), word_size);
-
-        auto const ascent = CTFontGetAscent(ct_font);
-        auto const descent = CTFontGetDescent(ct_font);
-        auto const string_height = descent + ascent;
-        auto const scale_factor = texture.scale_factor();
-
-        for (auto const &idx : each_index<std::size_t>(word_size)) {
-            ui::uint_size const image_size = {uint32_t(std::ceilf(_advances[idx].width)),
-                                              uint32_t(std::ceilf(string_height))};
-            ui::float_region const image_region = {0.0f, roundf(-descent, scale_factor),
-                                                   static_cast<float>(image_size.width),
-                                                   static_cast<float>(image_size.height)};
-
-            _set_vertex_position(image_region, idx);
-
-            ui::image image{image_size, scale_factor};
-
-            image.draw([&image_region, &descent, &glyphs, &idx, &ct_font](CGContextRef const ctx) {
-                CGContextSaveGState(ctx);
-
-                CGContextTranslateCTM(ctx, 0.0, image_region.size.height);
-                CGContextScaleCTM(ctx, 1.0, -1.0);
-                CGContextTranslateCTM(ctx, 0.0, descent);
-                CGPathRef path = CTFontCreatePathForGlyph(ct_font, glyphs[idx], nullptr);
-                CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
-                CGContextAddPath(ctx, path);
-                CGContextFillPath(ctx);
-                CGPathRelease(path);
-
-                CGContextRestoreGState(ctx);
-            });
-
-            if (auto result = texture.add_image(image)) {
-                _set_vertex_tex_coords(result.value(), idx);
+            if (subject.has_observer()) {
+                subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
             }
         }
     }
 
     strings_layout make_strings_layout(std::string const &text, pivot const pivot) {
+        if (!_texture) {
+            return ui::mutable_strings_layout{0};
+        }
+
         auto const word_size = text.size();
 
         ui::mutable_strings_layout strings_layout{word_size};
 
         double width = 0;
-        auto const scale_factor = texture.scale_factor();
+        auto const scale_factor = _texture.scale_factor();
 
         if (pivot == pivot::right) {
             for (auto const &idx : each_index<std::size_t>(word_size)) {
@@ -195,6 +162,71 @@ struct ui::font_atlas::impl : base::impl {
         return std::move(strings_layout);
     }
 
+   private:
+    std::vector<ui::vertex2d_square_t> _squares;
+    std::vector<CGSize> _advances;
+    ui::texture _texture = nullptr;
+
+    void _update_texture() {
+        if (!_texture) {
+            _squares.clear();
+            _advances.clear();
+            return;
+        }
+
+        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(this->font_name), font_size, nullptr);
+
+        auto const word_size = words.size();
+
+        _squares.resize(word_size);
+        _advances.resize(word_size);
+
+        CGGlyph glyphs[word_size];
+        UniChar characters[word_size];
+
+        CFStringGetCharacters(to_cf_object(words), CFRangeMake(0, word_size), characters);
+        CTFontGetGlyphsForCharacters(ct_font, characters, glyphs, word_size);
+        CTFontGetAdvancesForGlyphs(ct_font, kCTFontOrientationDefault, glyphs, _advances.data(), word_size);
+
+        auto const ascent = CTFontGetAscent(ct_font);
+        auto const descent = CTFontGetDescent(ct_font);
+        auto const string_height = descent + ascent;
+        auto const scale_factor = _texture.scale_factor();
+
+        for (auto const &idx : each_index<std::size_t>(word_size)) {
+            ui::uint_size const image_size = {uint32_t(std::ceilf(_advances[idx].width)),
+                                              uint32_t(std::ceilf(string_height))};
+            ui::float_region const image_region = {0.0f, roundf(-descent, scale_factor),
+                                                   static_cast<float>(image_size.width),
+                                                   static_cast<float>(image_size.height)};
+
+            _set_vertex_position(image_region, idx);
+
+            ui::image image{image_size, scale_factor};
+
+            image.draw([&image_region, &descent, &glyphs, &idx, &ct_font](CGContextRef const ctx) {
+                CGContextSaveGState(ctx);
+
+                CGContextTranslateCTM(ctx, 0.0, image_region.size.height);
+                CGContextScaleCTM(ctx, 1.0, -1.0);
+                CGContextTranslateCTM(ctx, 0.0, descent);
+                CGPathRef path = CTFontCreatePathForGlyph(ct_font, glyphs[idx], nullptr);
+                CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+                CGContextAddPath(ctx, path);
+                CGContextFillPath(ctx);
+                CGPathRelease(path);
+
+                CGContextRestoreGState(ctx);
+            });
+
+            if (auto result = _texture.add_image(image)) {
+                _set_vertex_tex_coords(result.value(), idx);
+            }
+        }
+
+        CFRelease(ct_font);
+    }
+
     ui::vertex2d_square_t const &_square(std::string const &word) {
         auto idx = words.find_first_of(word);
         if (idx == std::string::npos) {
@@ -234,14 +266,14 @@ struct ui::font_atlas::impl : base::impl {
         }
         return _advances.at(idx);
     }
-
-   private:
-    std::vector<ui::vertex2d_square_t> _squares;
-    std::vector<CGSize> _advances;
 };
 
-ui::font_atlas::font_atlas(std::string font_name, double const font_size, std::string words, ui::texture texture)
-    : base(std::make_shared<impl>(std::move(font_name), font_size, std::move(words), std::move(texture))) {
+ui::font_atlas::font_atlas(args args)
+    : base(std::make_shared<impl>(std::move(args.font_name), args.font_size, std::move(args.words))) {
+    set_texture(std::move(args.texture));
+}
+
+ui::font_atlas::font_atlas(std::nullptr_t) : base(nullptr) {
 }
 
 std::string const &ui::font_atlas::font_name() const {
@@ -257,7 +289,15 @@ std::string const &ui::font_atlas::words() const {
 }
 
 ui::texture const &ui::font_atlas::texture() const {
-    return impl_ptr<impl>()->texture;
+    return impl_ptr<impl>()->texture();
+}
+
+void ui::font_atlas::set_texture(ui::texture texture) {
+    impl_ptr<impl>()->set_texture(std::move(texture));
+}
+
+ui::font_atlas::subject_t &ui::font_atlas::subject() {
+    return impl_ptr<impl>()->subject;
 }
 
 ui::strings_layout ui::font_atlas::make_strings_layout(std::string const &text, pivot const pivot) const {
