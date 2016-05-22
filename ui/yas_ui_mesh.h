@@ -24,11 +24,13 @@ namespace ui {
         ui::mesh_data const &data() const;
         ui::texture const &texture() const;
         simd::float4 const &color() const;
+        bool is_use_mesh_color() const;
         ui::primitive_type const &primitive_type() const;
 
         void set_mesh_data(ui::mesh_data);
         void set_texture(ui::texture);
         void set_color(simd::float4 const);
+        void set_use_mesh_color(bool const);
         void set_primitive_type(ui::primitive_type const);
 
         ui::metal_object metal();

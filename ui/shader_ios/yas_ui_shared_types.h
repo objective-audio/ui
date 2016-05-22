@@ -9,13 +9,15 @@
 namespace yas {
 namespace ui {
     struct vertex2d_t {
-        simd::float2 position;
-        simd::float2 tex_coord;
+        simd::float2 position = 0.0f;
+        simd::float2 tex_coord = 0.0f;
+        simd::float4 color = 1.0f;
     };
 
     struct uniforms2d_t {
         simd::float4x4 matrix;
-        simd::float4 color;
+        simd::float4 color = 1.0f;
+        bool use_mesh_color = false;
     } __attribute__((aligned(16)));
 }
 }

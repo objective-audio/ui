@@ -46,7 +46,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return;
         }
 
-        if (_color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f) {
+        if (!_use_mesh_color && _color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f) {
             return;
         }
 
@@ -59,6 +59,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
         uniforms_ptr->matrix = _matrix;
         uniforms_ptr->color = _color;
+        uniforms_ptr->use_mesh_color = _use_mesh_color;
 
         if (_texture) {
             [encoder setFragmentBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:0];
@@ -88,6 +89,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     ui::primitive_type _primitive_type = ui::primitive_type::triangle;
     bool _dynamic;
     simd::float4 _color = 1.0f;
+    bool _use_mesh_color = false;
 
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
@@ -113,6 +115,10 @@ simd::float4 const &ui::mesh::color() const {
     return impl_ptr<impl>()->_color;
 }
 
+bool ui::mesh::is_use_mesh_color() const {
+    return impl_ptr<impl>()->_use_mesh_color;
+}
+
 ui::primitive_type const &ui::mesh::primitive_type() const {
     return impl_ptr<impl>()->_primitive_type;
 }
@@ -127,6 +133,10 @@ void ui::mesh::set_texture(ui::texture texture) {
 
 void ui::mesh::set_color(simd::float4 const color) {
     impl_ptr<impl>()->_color = color;
+}
+
+void ui::mesh::set_use_mesh_color(bool const use) {
+    impl_ptr<impl>()->_use_mesh_color = use;
 }
 
 void ui::mesh::set_primitive_type(ui::primitive_type const type) {
