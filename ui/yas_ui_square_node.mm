@@ -83,6 +83,15 @@ void ui::square_mesh_data::set_square_position(ui::float_region const &region, s
     });
 }
 
+void ui::square_mesh_data::set_square_color(simd::float4 const &color, std::size_t const square_idx) {
+    write([&color, &square_idx](auto *sq_vertices, auto *) {
+        auto &sq_vertex = sq_vertices[square_idx];
+        for (auto const &idx : make_each(4)) {
+            sq_vertex.v[idx].color = color;
+        }
+    });
+}
+
 void ui::square_mesh_data::set_square_tex_coords(ui::uint_region const &pixel_region, std::size_t const square_idx) {
     write([&pixel_region, &square_idx](auto *sq_vertices, auto *) {
         float const min_x = pixel_region.origin.x;
