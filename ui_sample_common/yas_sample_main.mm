@@ -29,8 +29,11 @@ void sample::main::setup() {
         }
     });
 
-    auto update_texture = [weak_font_atlas = to_weak(_font_atlas),
-                           weak_button_node = to_weak(_button_node)](ui::renderer_base const &renderer) mutable {
+    auto update_texture = [
+        weak_font_atlas = to_weak(_font_atlas),
+        weak_button_node = to_weak(_button_node),
+        weak_touch_holder = to_weak(_touch_holder)
+    ](ui::renderer_base const &renderer) mutable {
         auto const scale_factor = renderer.scale_factor();
 
         ui::texture texture = nullptr;
@@ -46,6 +49,10 @@ void sample::main::setup() {
 
         if (auto button_node = weak_button_node.lock()) {
             button_node.set_texture(texture);
+        }
+
+        if (auto touch_holder = weak_touch_holder.lock()) {
+            touch_holder.set_texture(texture);
         }
     };
 
