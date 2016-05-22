@@ -10,16 +10,23 @@ namespace ui {
     class square_node;
 
     class strings_node : public base {
+       public:
         class impl;
 
-       public:
-        strings_node(font_atlas, std::size_t const max_word_count = 16);
+        struct args {
+            ui::font_atlas font_atlas = nullptr;
+            std::size_t max_word_count = 16;
+        };
+
+        strings_node(args);
         strings_node(std::nullptr_t);
 
+        ui::font_atlas const &font_atlas() const;
         std::string const &text() const;
         ui::pivot pivot() const;
         float width() const;
 
+        void set_font_atlas(ui::font_atlas);
         void set_text(std::string);
         void set_pivot(ui::pivot const);
 
