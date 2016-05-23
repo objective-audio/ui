@@ -87,7 +87,6 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     ui::mesh_data _mesh_data = nullptr;
     ui::texture _texture = nullptr;
     ui::primitive_type _primitive_type = ui::primitive_type::triangle;
-    bool _dynamic;
     simd::float4 _color = 1.0f;
     bool _use_mesh_color = false;
 
