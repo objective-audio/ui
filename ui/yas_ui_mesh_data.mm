@@ -54,9 +54,9 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
             auto index_ptr = (uint16_t *)[_index_buffer.object() contents];
 
             memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
-                   _vertex_count * sizeof(ui::vertex2d_t));
+                   _vertices.size() * sizeof(ui::vertex2d_t));
             memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
-                   _index_count * sizeof(uint16_t));
+                   _indices.size() * sizeof(uint16_t));
 
             _needs_update_render_buffer = false;
         }
