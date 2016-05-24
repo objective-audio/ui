@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_each_index.h"
 #import "yas_ui_mesh_data.h"
 #import "yas_ui_square_node.h"
 
@@ -46,6 +47,12 @@ using namespace yas;
     XCTAssertEqual(indices[9], 5);
     XCTAssertEqual(indices[10], 6);
     XCTAssertEqual(indices[11], 7);
+}
+
+- (void)test_create_null {
+    ui::square_node square_node{nullptr};
+
+    XCTAssertFalse(square_node);
 }
 
 - (void)test_set_index {
@@ -147,6 +154,31 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.y, 200.0f);
 }
 
+- (void)test_set_square_color {
+    auto sq_mesh_data = ui::make_square_mesh_data(1);
+    auto vertices = sq_mesh_data.dynamic_mesh_data().vertices();
+
+    sq_mesh_data.set_square_color({0.1f, 0.2f, 0.3f, 0.4f}, 0);
+
+    for (auto const &idx : make_each(4)) {
+        auto &color = vertices[idx].color;
+        XCTAssertEqual(color[0], 0.1f);
+        XCTAssertEqual(color[1], 0.2f);
+        XCTAssertEqual(color[2], 0.3f);
+        XCTAssertEqual(color[3], 0.4f);
+    }
+
+    sq_mesh_data.set_square_color({0.5f, 0.6f, 0.7f, 0.8f}, 0);
+
+    for (auto const &idx : make_each(4)) {
+        auto &color = vertices[idx].color;
+        XCTAssertEqual(color[0], 0.5f);
+        XCTAssertEqual(color[1], 0.6f);
+        XCTAssertEqual(color[2], 0.7f);
+        XCTAssertEqual(color[3], 0.8f);
+    }
+}
+
 - (void)test_set_vertex_by_data {
     auto square_node = ui::make_square_node(2);
     auto vertices = square_node.square_mesh_data().dynamic_mesh_data().vertices();
@@ -171,6 +203,23 @@ using namespace yas;
     in_data[3].tex_coord.x = 17.0f;
     in_data[3].tex_coord.y = 18.0f;
 
+    in_data[0].color[0] = 21.0f;
+    in_data[0].color[1] = 22.0f;
+    in_data[0].color[2] = 23.0f;
+    in_data[0].color[3] = 24.0f;
+    in_data[1].color[0] = 25.0f;
+    in_data[1].color[1] = 26.0f;
+    in_data[1].color[2] = 27.0f;
+    in_data[1].color[3] = 28.0f;
+    in_data[2].color[0] = 29.0f;
+    in_data[2].color[1] = 30.0f;
+    in_data[2].color[2] = 31.0f;
+    in_data[2].color[3] = 32.0f;
+    in_data[3].color[0] = 33.0f;
+    in_data[3].color[1] = 34.0f;
+    in_data[3].color[2] = 35.0f;
+    in_data[3].color[3] = 36.0f;
+
     square_node.square_mesh_data().set_square_vertex(in_data, 0);
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
@@ -191,6 +240,23 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.x, 17.0f);
     XCTAssertEqual(vertices[3].tex_coord.y, 18.0f);
 
+    XCTAssertEqual(vertices[0].color[0], 21.0f);
+    XCTAssertEqual(vertices[0].color[1], 22.0f);
+    XCTAssertEqual(vertices[0].color[2], 23.0f);
+    XCTAssertEqual(vertices[0].color[3], 24.0f);
+    XCTAssertEqual(vertices[1].color[0], 25.0f);
+    XCTAssertEqual(vertices[1].color[1], 26.0f);
+    XCTAssertEqual(vertices[1].color[2], 27.0f);
+    XCTAssertEqual(vertices[1].color[3], 28.0f);
+    XCTAssertEqual(vertices[2].color[0], 29.0f);
+    XCTAssertEqual(vertices[2].color[1], 30.0f);
+    XCTAssertEqual(vertices[2].color[2], 31.0f);
+    XCTAssertEqual(vertices[2].color[3], 32.0f);
+    XCTAssertEqual(vertices[3].color[0], 33.0f);
+    XCTAssertEqual(vertices[3].color[1], 34.0f);
+    XCTAssertEqual(vertices[3].color[2], 35.0f);
+    XCTAssertEqual(vertices[3].color[3], 36.0f);
+
     in_data[0].position.x = 101.0f;
     in_data[0].position.y = 102.0f;
     in_data[1].position.x = 103.0f;
@@ -208,6 +274,23 @@ using namespace yas;
     in_data[2].tex_coord.y = 116.0f;
     in_data[3].tex_coord.x = 117.0f;
     in_data[3].tex_coord.y = 118.0f;
+
+    in_data[0].color[0] = 121.0f;
+    in_data[0].color[1] = 122.0f;
+    in_data[0].color[2] = 123.0f;
+    in_data[0].color[3] = 124.0f;
+    in_data[1].color[0] = 125.0f;
+    in_data[1].color[1] = 126.0f;
+    in_data[1].color[2] = 127.0f;
+    in_data[1].color[3] = 128.0f;
+    in_data[2].color[0] = 129.0f;
+    in_data[2].color[1] = 130.0f;
+    in_data[2].color[2] = 131.0f;
+    in_data[2].color[3] = 132.0f;
+    in_data[3].color[0] = 133.0f;
+    in_data[3].color[1] = 134.0f;
+    in_data[3].color[2] = 135.0f;
+    in_data[3].color[3] = 136.0f;
 
     square_node.square_mesh_data().set_square_vertex(in_data, 1);
 
@@ -228,6 +311,23 @@ using namespace yas;
     XCTAssertEqual(vertices[6].tex_coord.y, 116.0f);
     XCTAssertEqual(vertices[7].tex_coord.x, 117.0f);
     XCTAssertEqual(vertices[7].tex_coord.y, 118.0f);
+
+    XCTAssertEqual(vertices[4].color[0], 121.0f);
+    XCTAssertEqual(vertices[4].color[1], 122.0f);
+    XCTAssertEqual(vertices[4].color[2], 123.0f);
+    XCTAssertEqual(vertices[4].color[3], 124.0f);
+    XCTAssertEqual(vertices[5].color[0], 125.0f);
+    XCTAssertEqual(vertices[5].color[1], 126.0f);
+    XCTAssertEqual(vertices[5].color[2], 127.0f);
+    XCTAssertEqual(vertices[5].color[3], 128.0f);
+    XCTAssertEqual(vertices[6].color[0], 129.0f);
+    XCTAssertEqual(vertices[6].color[1], 130.0f);
+    XCTAssertEqual(vertices[6].color[2], 131.0f);
+    XCTAssertEqual(vertices[6].color[3], 132.0f);
+    XCTAssertEqual(vertices[7].color[0], 133.0f);
+    XCTAssertEqual(vertices[7].color[1], 134.0f);
+    XCTAssertEqual(vertices[7].color[2], 135.0f);
+    XCTAssertEqual(vertices[7].color[3], 136.0f);
 }
 
 - (void)test_set_square_count {
@@ -238,6 +338,16 @@ using namespace yas;
     sq_mesh_data.set_square_count(2);
 
     XCTAssertEqual(sq_mesh_data.dynamic_mesh_data().index_count(), 2 * 6);
+}
+
+- (void)test_max_square_count {
+    auto sq_mesh_data = ui::make_square_mesh_data(4);
+
+    XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
+    
+    sq_mesh_data.set_square_count(2);
+    
+    XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
 }
 
 @end

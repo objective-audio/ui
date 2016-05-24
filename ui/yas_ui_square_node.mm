@@ -115,6 +115,7 @@ void ui::square_mesh_data::set_square_vertex(const vertex2d_t *const in_ptr, std
             auto pos = matrix * simd::float4{in_ptr[idx].position.x, in_ptr[idx].position.y, 0, 1};
             sq_vertex.v[idx].position = {pos.x, pos.y};
             sq_vertex.v[idx].tex_coord = in_ptr[idx].tex_coord;
+            sq_vertex.v[idx].color = in_ptr[idx].color;
         }
     });
 }

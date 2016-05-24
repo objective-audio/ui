@@ -262,13 +262,6 @@ ui::make_texture_result ui::make_texture(id<MTLDevice> const device, uint_size c
 
 #pragma mark -
 
-template <>
-ui::texture yas::cast(base const &base) {
-    ui::texture obj{nullptr};
-    obj.set_impl_ptr(std::dynamic_pointer_cast<ui::texture::impl>(base.impl_ptr()));
-    return obj;
-}
-
 std::string yas::to_string(ui::texture::draw_image_error const error) {
     switch (error) {
         case ui::texture::draw_image_error::image_is_null:
