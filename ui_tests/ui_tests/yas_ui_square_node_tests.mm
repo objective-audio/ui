@@ -344,10 +344,87 @@ using namespace yas;
     auto sq_mesh_data = ui::make_square_mesh_data(4);
 
     XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
-    
+
     sq_mesh_data.set_square_count(2);
-    
+
     XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
+}
+
+- (void)test_write_vertex {
+    auto sq_mesh_data = ui::make_square_mesh_data(1);
+    auto vertices = sq_mesh_data.dynamic_mesh_data().vertices();
+
+    sq_mesh_data.write_vertex(0, [](ui::vertex2d_square_t &square) {
+        square.v[0].position.x = 0.1f;
+        square.v[0].position.y = 0.2f;
+        square.v[1].position.x = 0.3f;
+        square.v[1].position.y = 0.4f;
+        square.v[2].position.x = 0.5f;
+        square.v[2].position.y = 0.6f;
+        square.v[3].position.x = 0.7f;
+        square.v[3].position.y = 0.8f;
+
+        square.v[0].tex_coord.x = 1.1f;
+        square.v[0].tex_coord.y = 1.2f;
+        square.v[1].tex_coord.x = 1.3f;
+        square.v[1].tex_coord.y = 1.4f;
+        square.v[2].tex_coord.x = 1.5f;
+        square.v[2].tex_coord.y = 1.6f;
+        square.v[3].tex_coord.x = 1.7f;
+        square.v[3].tex_coord.y = 1.8f;
+
+        square.v[0].color[0] = 2.1f;
+        square.v[0].color[1] = 2.2f;
+        square.v[0].color[2] = 2.3f;
+        square.v[0].color[3] = 2.4f;
+        square.v[1].color[0] = 2.5f;
+        square.v[1].color[1] = 2.6f;
+        square.v[1].color[2] = 2.7f;
+        square.v[1].color[3] = 2.8f;
+        square.v[2].color[0] = 2.9f;
+        square.v[2].color[1] = 3.0f;
+        square.v[2].color[2] = 3.1f;
+        square.v[2].color[3] = 3.2f;
+        square.v[3].color[0] = 3.3f;
+        square.v[3].color[1] = 3.4f;
+        square.v[3].color[2] = 3.5f;
+        square.v[3].color[3] = 3.6f;
+    });
+
+    XCTAssertEqual(vertices[0].position.x, 0.1f);
+    XCTAssertEqual(vertices[0].position.y, 0.2f);
+    XCTAssertEqual(vertices[1].position.x, 0.3f);
+    XCTAssertEqual(vertices[1].position.y, 0.4f);
+    XCTAssertEqual(vertices[2].position.x, 0.5f);
+    XCTAssertEqual(vertices[2].position.y, 0.6f);
+    XCTAssertEqual(vertices[3].position.x, 0.7f);
+    XCTAssertEqual(vertices[3].position.y, 0.8f);
+
+    XCTAssertEqual(vertices[0].tex_coord.x, 1.1f);
+    XCTAssertEqual(vertices[0].tex_coord.y, 1.2f);
+    XCTAssertEqual(vertices[1].tex_coord.x, 1.3f);
+    XCTAssertEqual(vertices[1].tex_coord.y, 1.4f);
+    XCTAssertEqual(vertices[2].tex_coord.x, 1.5f);
+    XCTAssertEqual(vertices[2].tex_coord.y, 1.6f);
+    XCTAssertEqual(vertices[3].tex_coord.x, 1.7f);
+    XCTAssertEqual(vertices[3].tex_coord.y, 1.8f);
+
+    XCTAssertEqual(vertices[0].color[0], 2.1f);
+    XCTAssertEqual(vertices[0].color[1], 2.2f);
+    XCTAssertEqual(vertices[0].color[2], 2.3f);
+    XCTAssertEqual(vertices[0].color[3], 2.4f);
+    XCTAssertEqual(vertices[1].color[0], 2.5f);
+    XCTAssertEqual(vertices[1].color[1], 2.6f);
+    XCTAssertEqual(vertices[1].color[2], 2.7f);
+    XCTAssertEqual(vertices[1].color[3], 2.8f);
+    XCTAssertEqual(vertices[2].color[0], 2.9f);
+    XCTAssertEqual(vertices[2].color[1], 3.0f);
+    XCTAssertEqual(vertices[2].color[2], 3.1f);
+    XCTAssertEqual(vertices[2].color[3], 3.2f);
+    XCTAssertEqual(vertices[3].color[0], 3.3f);
+    XCTAssertEqual(vertices[3].color[1], 3.4f);
+    XCTAssertEqual(vertices[3].color[2], 3.5f);
+    XCTAssertEqual(vertices[3].color[3], 3.6f);
 }
 
 @end
