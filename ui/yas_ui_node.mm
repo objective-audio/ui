@@ -37,6 +37,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<ui::collider> collider_property{{.value = nullptr}};
     property<bool> enabled_property{{.value = true}};
 
+    node::subject_t subject;
+
     void push_front_sub_node(ui::node &&sub_node) {
         auto iterator = _children.emplace(_children.begin(), std::move(sub_node));
         _add_sub_node(*iterator);
@@ -148,7 +150,25 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         renderer_property.set_value(renderer);
     }
 
-    node::subject_t subject;
+    bool needs_update_for_render() override {
+        if (_needs_update_matrix) {
+            return true;
+        }
+
+        if (auto &mesh = mesh_property.value()) {
+            if (mesh.renderable().needs_update_for_render()) {
+                return true;
+            }
+        }
+
+        for (auto &sub_node : _children) {
+            if (sub_node.renderable().needs_update_for_render()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};

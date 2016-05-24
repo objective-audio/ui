@@ -19,3 +19,7 @@ ui::renderer ui::renderable_node::renderer() {
 void ui::renderable_node::set_renderer(ui::renderer renderer) {
     impl_ptr<impl>()->set_renderer(std::move(renderer));
 }
+
+bool ui::renderable_node::needs_update_for_render() {
+    return impl_ptr<impl>()->needs_update_for_render();
+}

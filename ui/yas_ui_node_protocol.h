@@ -30,12 +30,14 @@ namespace ui {
         struct impl : protocol::impl {
             virtual ui::renderer renderer() = 0;
             virtual void set_renderer(ui::renderer &&) = 0;
+            virtual bool needs_update_for_render() = 0;
         };
 
         explicit renderable_node(std::shared_ptr<impl> impl);
 
         ui::renderer renderer();
         void set_renderer(ui::renderer);
+        bool needs_update_for_render();
     };
 }
 }
