@@ -20,6 +20,7 @@ namespace ui {
             virtual id<MTLBuffer> vertexBuffer() = 0;
             virtual id<MTLBuffer> indexBuffer() = 0;
 
+            virtual bool needs_update_for_render() = 0;
             virtual void update_render_buffer_if_needed() = 0;
         };
 
@@ -30,13 +31,15 @@ namespace ui {
         id<MTLBuffer> vertexBuffer();
         id<MTLBuffer> indexBuffer();
 
+        bool needs_update_for_render();
         void update_render_buffer_if_needed();
     };
 
     struct renderable_mesh : protocol {
         struct impl : protocol::impl {
-            virtual simd::float4x4 const &matrix() const = 0;
+            virtual simd::float4x4 const &matrix() = 0;
             virtual void set_matrix(simd::float4x4 &&) = 0;
+            virtual bool needs_update_for_render() = 0;
             virtual void render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::encode_info const &) = 0;
         };
 
@@ -44,6 +47,7 @@ namespace ui {
 
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);
+        bool needs_update_for_render();
         void render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::encode_info const &);
     };
 }

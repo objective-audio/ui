@@ -35,6 +35,7 @@ class yas::ui::renderer_base::impl : public yas::base::impl, public yas::ui::vie
     void view_size_will_change(YASUIMetalView *const view, CGSize const size) override;
     void view_render(YASUIMetalView *const view) override;
 
+    virtual bool pre_render();
     virtual void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPass_descriptor);
 
     yas::subject<ui::renderer_base, ui::renderer_method> &subject();

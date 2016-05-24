@@ -99,10 +99,15 @@ class ui::renderer::impl : public renderer_base::impl {
         }
     }
 
-    void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPassDesc) override {
+    bool pre_render() override {
         _root_node.metal().setup(device());
 
         _action.updatable().update(std::chrono::system_clock::now());
+
+        return _root_node.renderable().needs_update_for_render();
+    }
+
+    void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPassDesc) override {
         _detector.updatable().clear_colliders_if_needed();
 
         ui::render_info render_info;

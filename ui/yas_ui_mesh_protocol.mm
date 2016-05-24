@@ -27,6 +27,10 @@ id<MTLBuffer> ui::renderable_mesh_data::indexBuffer() {
     return impl_ptr<impl>()->indexBuffer();
 }
 
+bool ui::renderable_mesh_data::needs_update_for_render() {
+    return impl_ptr<impl>()->needs_update_for_render();
+}
+
 void ui::renderable_mesh_data::update_render_buffer_if_needed() {
     impl_ptr<impl>()->update_render_buffer_if_needed();
 }
@@ -42,6 +46,10 @@ simd::float4x4 const &ui::renderable_mesh::matrix() {
 
 void ui::renderable_mesh::set_matrix(simd::float4x4 matrix) {
     impl_ptr<impl>()->set_matrix(std::move(matrix));
+}
+
+bool ui::renderable_mesh::needs_update_for_render() {
+    return impl_ptr<impl>()->needs_update_for_render();
 }
 
 void ui::renderable_mesh::render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,

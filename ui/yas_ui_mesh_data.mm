@@ -80,6 +80,10 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         return _index_buffer.object();
     }
 
+    bool needs_update_for_render() override {
+        return _needs_update_render_buffer;
+    }
+
     virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<uint16_t> &)> const &func) {
         if (_needs_update_render_buffer) {
             func(_vertices, _indices);

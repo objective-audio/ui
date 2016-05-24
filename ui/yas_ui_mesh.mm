@@ -24,7 +24,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return ui::setup_metal_result{nullptr};
     }
 
-    simd::float4x4 const &matrix() const override {
+    simd::float4x4 const &matrix() override {
         return _matrix;
     }
 
@@ -32,8 +32,20 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _matrix = std::move(matrix);
     }
 
+    bool needs_update_for_render() override {
+        if (_needs_update_for_render) {
+            return true;
+        } else if (_mesh_data) {
+            return _mesh_data.renderable().needs_update_for_render();
+        }
+
+        return false;
+    }
+
     void render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
                 ui::encode_info const &encode_info) override {
+        _needs_update_for_render = false;
+
         if (!_mesh_data) {
             return;
         }
@@ -84,14 +96,77 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         renderer.set_constant_buffer_offset(constant_buffer_offset);
     }
 
+    ui::mesh_data &mesh_data() {
+        return _mesh_data;
+    }
+
+    ui::texture &texture() {
+        return _texture;
+    }
+
+    ui::primitive_type &primitive_type() {
+        return _primitive_type;
+    }
+
+    simd::float4 &color() {
+        return _color;
+    }
+
+    bool is_use_mesh_color() {
+        return _use_mesh_color;
+    }
+
+    void set_mesh_data(ui::mesh_data &&mesh_data) {
+        if (!is_same(_mesh_data, mesh_data)) {
+            _mesh_data = std::move(mesh_data);
+            _needs_update_for_render = true;
+        }
+    }
+
+    void set_texture(ui::texture &&texture) {
+        if (!is_same(_texture, texture)) {
+            _texture = std::move(texture);
+            _set_needs_update_for_render();
+        }
+    }
+
+    void set_primitive_type(ui::primitive_type const type) {
+        if (_primitive_type != type) {
+            _primitive_type = type;
+            _set_needs_update_for_render();
+        }
+    }
+
+    void set_color(simd::float4 &&color) {
+        if (_color[0] != color[0] || _color[1] != color[1] || _color[2] != color[2] || _color[3] != color[3]) {
+            _color = std::move(color);
+            _set_needs_update_for_render();
+        }
+    }
+
+    void set_use_mesh_color(bool const use) {
+        if (_use_mesh_color != use) {
+            _use_mesh_color = use;
+            _set_needs_update_for_render();
+        }
+    }
+
+   private:
     ui::mesh_data _mesh_data = nullptr;
     ui::texture _texture = nullptr;
     ui::primitive_type _primitive_type = ui::primitive_type::triangle;
     simd::float4 _color = 1.0f;
     bool _use_mesh_color = false;
 
-   private:
+    bool _needs_update_for_render = true;
+
     simd::float4x4 _matrix = matrix_identity_float4x4;
+
+    void _set_needs_update_for_render() {
+        if (_mesh_data) {
+            _needs_update_for_render = true;
+        }
+    }
 };
 
 #pragma mark - ui::mesh
@@ -103,43 +178,43 @@ ui::mesh::mesh(std::nullptr_t) : base(nullptr) {
 }
 
 ui::mesh_data const &ui::mesh::data() const {
-    return impl_ptr<impl>()->_mesh_data;
+    return impl_ptr<impl>()->mesh_data();
 }
 
 ui::texture const &ui::mesh::texture() const {
-    return impl_ptr<impl>()->_texture;
+    return impl_ptr<impl>()->texture();
 }
 
 simd::float4 const &ui::mesh::color() const {
-    return impl_ptr<impl>()->_color;
+    return impl_ptr<impl>()->color();
 }
 
 bool ui::mesh::is_use_mesh_color() const {
-    return impl_ptr<impl>()->_use_mesh_color;
+    return impl_ptr<impl>()->is_use_mesh_color();
 }
 
 ui::primitive_type const &ui::mesh::primitive_type() const {
-    return impl_ptr<impl>()->_primitive_type;
+    return impl_ptr<impl>()->primitive_type();
 }
 
 void ui::mesh::set_mesh_data(ui::mesh_data data) {
-    impl_ptr<impl>()->_mesh_data = std::move(data);
+    impl_ptr<impl>()->set_mesh_data(std::move(data));
 }
 
 void ui::mesh::set_texture(ui::texture texture) {
-    impl_ptr<impl>()->_texture = std::move(texture);
+    impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-void ui::mesh::set_color(simd::float4 const color) {
-    impl_ptr<impl>()->_color = color;
+void ui::mesh::set_color(simd::float4 color) {
+    impl_ptr<impl>()->set_color(std::move(color));
 }
 
 void ui::mesh::set_use_mesh_color(bool const use) {
-    impl_ptr<impl>()->_use_mesh_color = use;
+    impl_ptr<impl>()->set_use_mesh_color(use);
 }
 
 void ui::mesh::set_primitive_type(ui::primitive_type const type) {
-    impl_ptr<impl>()->_primitive_type = type;
+    impl_ptr<impl>()->set_primitive_type(type);
 }
 
 #pragma mark - protocol
