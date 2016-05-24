@@ -340,4 +340,14 @@ using namespace yas;
     XCTAssertEqual(sq_mesh_data.dynamic_mesh_data().index_count(), 2 * 6);
 }
 
+- (void)test_max_square_count {
+    auto sq_mesh_data = ui::make_square_mesh_data(4);
+
+    XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
+    
+    sq_mesh_data.set_square_count(2);
+    
+    XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
+}
+
 @end
