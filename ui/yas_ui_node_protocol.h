@@ -31,6 +31,8 @@ namespace ui {
             virtual ui::renderer renderer() = 0;
             virtual void set_renderer(ui::renderer &&) = 0;
             virtual bool needs_update_for_render() = 0;
+            virtual bool children_render_disabled() = 0;
+            virtual void set_children_render_disabled(bool const) = 0;
         };
 
         explicit renderable_node(std::shared_ptr<impl> impl);
@@ -38,6 +40,8 @@ namespace ui {
         ui::renderer renderer();
         void set_renderer(ui::renderer);
         bool needs_update_for_render();
+        bool children_render_disabled();
+        void set_children_render_disabled(bool const);
     };
 }
 }
