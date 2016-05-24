@@ -48,6 +48,12 @@ using namespace yas;
     XCTAssertEqual(indices[11], 7);
 }
 
+- (void)test_create_null {
+    ui::square_node square_node{nullptr};
+
+    XCTAssertFalse(square_node);
+}
+
 - (void)test_set_index {
     auto square_node = ui::make_square_node(2);
 
