@@ -120,9 +120,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
         }
 
-        for (auto &sub_node : _children) {
-            render_info.render_matrix = _render_matrix;
-            sub_node.impl_ptr<impl>()->update_render_info(render_info);
+        if (!_children_render_disabled) {
+            for (auto &sub_node : _children) {
+                render_info.render_matrix = _render_matrix;
+                sub_node.impl_ptr<impl>()->update_render_info(render_info);
+            }
         }
     }
 
@@ -170,6 +172,17 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return false;
     }
 
+    bool children_render_disabled() override {
+        return _children_render_disabled;
+    }
+
+    void set_children_render_disabled(bool const disabled) override {
+        if (_children_render_disabled != disabled) {
+            _children_render_disabled = disabled;
+            _set_needs_update_matrix();
+        }
+    }
+
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
@@ -204,6 +217,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     bool _needs_update_matrix = true;
+    bool _children_render_disabled = false;
 };
 
 #pragma mark - node
