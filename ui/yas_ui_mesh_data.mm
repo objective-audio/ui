@@ -47,19 +47,21 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     void update_render_buffer_if_needed() override {
-        if (_needs_update_render_buffer) {
-            _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
-
-            auto vertex_ptr = (ui::vertex2d_t *)[_vertex_buffer.object() contents];
-            auto index_ptr = (uint16_t *)[_index_buffer.object() contents];
-
-            memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
-                   _vertex_count * sizeof(ui::vertex2d_t));
-            memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
-                   _index_count * sizeof(uint16_t));
-
-            _needs_update_render_buffer = false;
+        if (!_needs_update_render_buffer) {
+            return;
         }
+
+        _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
+
+        auto vertex_ptr = (ui::vertex2d_t *)[_vertex_buffer.object() contents];
+        auto index_ptr = (uint16_t *)[_index_buffer.object() contents];
+
+        memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
+               _vertices.size() * sizeof(ui::vertex2d_t));
+        memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
+               _indices.size() * sizeof(uint16_t));
+
+        _needs_update_render_buffer = false;
     }
 
     std::size_t vertex_buffer_offset() override {
