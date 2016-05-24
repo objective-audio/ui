@@ -247,6 +247,10 @@ void ui::renderer_base::impl::view_render(YASUIMetalView *const view) {
         _core->subject.notify(renderer_method::will_render, cast<ui::renderer_base>());
     }
 
+    if (!pre_render()) {
+        return;
+    }
+
     dispatch_semaphore_wait(_core->inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
     auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = _core->command_queue.object()]() {
@@ -280,6 +284,10 @@ ui::event_manager &ui::renderer_base::impl::event_manager() {
 }
 
 #pragma mark - virtual
+
+bool ui::renderer_base::impl::pre_render() {
+    return false;
+}
 
 void ui::renderer_base::impl::render(id<MTLCommandBuffer> const commandBuffer,
                                      MTLRenderPassDescriptor *const renderPassDesc) {
