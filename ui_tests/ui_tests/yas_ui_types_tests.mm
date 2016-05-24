@@ -210,6 +210,10 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::color{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
 }
 
+- (void)test_simd_float2_to_string {
+    XCTAssertEqual(to_string(simd::float2{1.0f, 2.0f}), "{1.000000, 2.000000}");
+}
+
 - (void)test_ostream {
     std::cout << ui::uint_origin{1, 2} << std::endl;
     std::cout << ui::uint_size{3, 4} << std::endl;
@@ -217,6 +221,9 @@ using namespace yas;
     std::cout << ui::float_origin{1.0f, 2.0f} << std::endl;
     std::cout << ui::float_size{3.0f, 4.0f} << std::endl;
     std::cout << ui::float_region{5.0f, 6.0f, 7.0f, 8.0f} << std::endl;
+    std::cout << ui::point{9.0f, 10.0f} << std::endl;
+    std::cout << ui::size{11.0f, 12.0f} << std::endl;
+    std::cout << ui::color{13.0f, 14.0f, 15.0f} << std::endl;
 }
 
 - (void)test_create_point {
