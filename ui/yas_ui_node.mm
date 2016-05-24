@@ -21,9 +21,6 @@ using namespace yas;
 
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
-    impl() = default;
-    virtual ~impl() = default;
-
     std::vector<ui::node> const &children() {
         return _children;
     }
