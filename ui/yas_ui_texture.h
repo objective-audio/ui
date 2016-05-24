@@ -58,9 +58,6 @@ namespace ui {
                                      MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
 }
 
-template <>
-ui::texture cast(base const &);
-
 std::string to_string(ui::texture::draw_image_error const);
 }
 
