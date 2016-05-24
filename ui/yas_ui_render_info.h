@@ -13,7 +13,6 @@
 namespace yas {
 namespace ui {
     class encode_info;
-    class collision_detector;
 
     struct render_info {
         std::deque<encode_info> all_encode_infos;

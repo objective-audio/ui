@@ -16,8 +16,8 @@ namespace ui {
         class impl;
 
        public:
-        encode_info(MTLRenderPassDescriptor *const render_pass_desc, id<MTLRenderPipelineState> const pipeline_state,
-                    id<MTLRenderPipelineState> const pipeline_state_without_texture);
+        encode_info(MTLRenderPassDescriptor *const renderPassDesc, id<MTLRenderPipelineState> const pipelineState,
+                    id<MTLRenderPipelineState> const pipelineStateWithoutTexture);
         encode_info(std::nullptr_t);
 
         void push_back_mesh(ui::mesh mesh);
