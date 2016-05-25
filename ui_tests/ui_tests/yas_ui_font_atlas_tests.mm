@@ -77,4 +77,8 @@ using namespace yas;
     }
 }
 
+- (void)test_method_to_string {
+    XCTAssertEqual(to_string(ui::font_atlas_method::texture_changed), "texture_changed");
+}
+
 @end
