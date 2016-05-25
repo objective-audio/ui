@@ -423,4 +423,14 @@ using namespace yas;
     called_method = nullptr;
 }
 
+- (void)test_children_render_disabled {
+    ui::node node;
+
+    XCTAssertFalse(node.renderable().is_children_render_disabled());
+
+    node.renderable().set_children_render_disabled(true);
+
+    XCTAssertTrue(node.renderable().is_children_render_disabled());
+}
+
 @end
