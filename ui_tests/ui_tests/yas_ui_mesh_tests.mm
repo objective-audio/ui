@@ -70,6 +70,7 @@ using namespace yas;
     XCTAssertEqual(mesh.color()[2], 1.0f);
     XCTAssertEqual(mesh.color()[3], 1.0f);
     XCTAssertEqual(mesh.primitive_type(), ui::primitive_type::triangle);
+    XCTAssertFalse(mesh.is_use_mesh_color());
 
     auto matrix = mesh.renderable().matrix();
     auto identity_matrix = matrix_identity_float4x4;
@@ -181,6 +182,7 @@ using namespace yas;
     mesh.set_texture(texture);
     mesh.set_color({0.1f, 0.2f, 0.3f, 0.4f});
     mesh.set_primitive_type(ui::primitive_type::point);
+    mesh.set_use_mesh_color(true);
 
     XCTAssertEqual(mesh.texture(), texture);
     XCTAssertEqual(mesh.color()[0], 0.1f);
@@ -189,6 +191,7 @@ using namespace yas;
     XCTAssertEqual(mesh.color()[3], 0.4f);
     XCTAssertEqual(mesh.data(), mesh_data);
     XCTAssertEqual(mesh.primitive_type(), ui::primitive_type::point);
+    XCTAssertTrue(mesh.is_use_mesh_color());
 }
 
 - (void)test_set_renderable_variables {
