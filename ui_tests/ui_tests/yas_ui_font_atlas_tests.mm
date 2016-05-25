@@ -1,5 +1,5 @@
 //
-//  yas_ui_strings_tests.mm
+//  yas_ui_font_atlas_tests.mm
 //
 
 #import <XCTest/XCTest.h>
@@ -7,16 +7,14 @@
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
 #import "yas_ui_font_atlas.h"
-#import "yas_ui_renderer.h"
-#import "yas_ui_texture.h"
 
 using namespace yas;
 
-@interface yas_ui_strings_tests : XCTestCase
+@interface yas_ui_font_atlas_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_strings_tests
+@implementation yas_ui_font_atlas_tests
 
 - (void)setUp {
     [super setUp];
@@ -41,6 +39,12 @@ using namespace yas;
     XCTAssertEqual(font_atlas.font_size(), 14.0);
     XCTAssertEqual(font_atlas.words(), "abcde12345");
     XCTAssertEqual(font_atlas.texture(), texture);
+}
+
+- (void)test_create_null {
+    ui::font_atlas atlas = nullptr;
+
+    XCTAssertFalse(atlas);
 }
 
 - (void)test_make_strings_layout {
@@ -71,6 +75,10 @@ using namespace yas;
             XCTAssertEqual(strings_layout.square(2).v[vtx_idx].position[pos_idx], 0);
         }
     }
+}
+
+- (void)test_method_to_string {
+    XCTAssertEqual(to_string(ui::font_atlas_method::texture_changed), "texture_changed");
 }
 
 @end

@@ -92,6 +92,20 @@ using namespace yas;
     XCTAssertTrue(node.is_enabled());
 }
 
+- (void)test_const_variables {
+    ui::node node;
+    ui::node const_node = node;
+
+    XCTAssertFalse(const_node.mesh());
+    XCTAssertFalse(const_node.collider());
+
+    node.set_mesh(ui::mesh{});
+    node.set_collider(ui::collider{});
+
+    XCTAssertTrue(const_node.mesh());
+    XCTAssertTrue(const_node.collider());
+}
+
 - (void)set_color_to_mesh {
     ui::node node;
     ui::mesh mesh;
@@ -407,6 +421,16 @@ using namespace yas;
     }
 
     called_method = nullptr;
+}
+
+- (void)test_children_render_disabled {
+    ui::node node;
+
+    XCTAssertFalse(node.renderable().is_children_render_disabled());
+
+    node.renderable().set_children_render_disabled(true);
+
+    XCTAssertTrue(node.renderable().is_children_render_disabled());
 }
 
 @end
