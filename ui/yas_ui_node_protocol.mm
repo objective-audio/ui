@@ -24,8 +24,8 @@ bool ui::renderable_node::needs_update_for_render() {
     return impl_ptr<impl>()->needs_update_for_render();
 }
 
-bool ui::renderable_node::children_render_disabled() {
-    return impl_ptr<impl>()->children_render_disabled();
+bool ui::renderable_node::is_children_render_disabled() {
+    return impl_ptr<impl>()->is_children_render_disabled();
 }
 
 void ui::renderable_node::set_children_render_disabled(bool const disabled) {

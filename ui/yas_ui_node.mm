@@ -172,7 +172,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return false;
     }
 
-    bool children_render_disabled() override {
+    bool is_children_render_disabled() override {
         return _children_render_disabled;
     }
 
