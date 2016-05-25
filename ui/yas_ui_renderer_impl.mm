@@ -48,8 +48,8 @@ struct ui::renderer_base::impl::core {
     objc_ptr<dispatch_semaphore_t> inflight_semaphore;
 
     uint32_t constant_buffer_offset = 0;
-    ui::uint_size view_size;
-    ui::uint_size drawable_size;
+    ui::uint_size view_size = {0, 0};
+    ui::uint_size drawable_size = {0, 0};
     double scale_factor = 0.0;
     simd::float4x4 projection_matrix;
 

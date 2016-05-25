@@ -3,10 +3,13 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_observing.h"
 #import "yas_ui_action.h"
+#import "yas_ui_collision_detector.h"
 #import "yas_ui_event.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
+#import "yas_ui_types.h"
 
 using namespace yas;
 
@@ -28,11 +31,26 @@ using namespace yas;
     id<MTLDevice> device = nil;
     ui::renderer renderer{device};
 
+    XCTAssertNil(renderer.device());
+
     XCTAssertTrue(renderer.root_node());
     XCTAssertEqual(renderer.actions().size(), 0);
 
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer.scale_factor(), 0.0);
+
     XCTAssertTrue(renderer.view_renderable());
     XCTAssertTrue(renderer.event_manager());
+    XCTAssertTrue(renderer.collision_detector());
+}
+
+- (void)test_const_getter {
+    id<MTLDevice> device = nil;
+    ui::renderer const renderer{device};
+
+    XCTAssertTrue(renderer.root_node());
+    XCTAssertTrue(renderer.collision_detector());
 }
 
 - (void)test_create_null {
