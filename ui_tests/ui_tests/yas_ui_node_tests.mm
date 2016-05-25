@@ -92,6 +92,20 @@ using namespace yas;
     XCTAssertTrue(node.is_enabled());
 }
 
+- (void)test_const_variables {
+    ui::node node;
+    ui::node const_node = node;
+
+    XCTAssertFalse(const_node.mesh());
+    XCTAssertFalse(const_node.collider());
+
+    node.set_mesh(ui::mesh{});
+    node.set_collider(ui::collider{});
+
+    XCTAssertTrue(const_node.mesh());
+    XCTAssertTrue(const_node.collider());
+}
+
 - (void)set_color_to_mesh {
     ui::node node;
     ui::mesh mesh;
