@@ -250,7 +250,7 @@ using namespace yas;
     XCTAssertNotNil(mesh_data.renderable().vertexBuffer());
     XCTAssertNotNil(mesh_data.renderable().indexBuffer());
     XCTAssertEqual(mesh_data.renderable().vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
-    XCTAssertEqual(mesh_data.renderable().indexBuffer().length, 6 * sizeof(uint16_t));
+    XCTAssertEqual(mesh_data.renderable().indexBuffer().length, 6 * sizeof(ui::index2d_t));
 }
 
 - (void)test_mesh_setup_metal_buffer_dynamic {
@@ -275,7 +275,7 @@ using namespace yas;
     XCTAssertNotNil(mesh_data.renderable().vertexBuffer());
     XCTAssertNotNil(mesh_data.renderable().indexBuffer());
     XCTAssertEqual(mesh_data.renderable().vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
-    XCTAssertEqual(mesh_data.renderable().indexBuffer().length, 6 * sizeof(uint16_t) * 2);
+    XCTAssertEqual(mesh_data.renderable().indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
 }
 
 - (void)test_write_to_buffer_dynamic {
@@ -292,9 +292,9 @@ using namespace yas;
     XCTAssertTrue(mesh_data.metal().setup(device.object()));
 
     ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable.vertexBuffer() contents]);
-    uint16_t *index_top_ptr = static_cast<uint16_t *>([renderable.indexBuffer() contents]);
+    ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable.indexBuffer() contents]);
 
-    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<uint16_t> &indices) {
+    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         for (auto const &idx : make_each(4)) {
             float const value = idx;
             vertices[idx].position.x = value;
@@ -314,10 +314,10 @@ using namespace yas;
     renderable.update_render_buffer_if_needed();
 
     XCTAssertEqual(renderable.vertex_buffer_offset(), sizeof(ui::vertex2d_t) * 4);
-    XCTAssertEqual(renderable.index_buffer_offset(), sizeof(uint16_t) * 6);
+    XCTAssertEqual(renderable.index_buffer_offset(), sizeof(ui::index2d_t) * 6);
 
     auto vertex_ptr = &vertex_top_ptr[renderable.vertex_buffer_offset() / sizeof(ui::vertex2d_t)];
-    auto index_ptr = &index_top_ptr[renderable.index_buffer_offset() / sizeof(uint16_t)];
+    auto index_ptr = &index_top_ptr[renderable.index_buffer_offset() / sizeof(ui::index2d_t)];
 
     for (auto const &idx : make_each(4)) {
         float const value = idx;
@@ -331,7 +331,7 @@ using namespace yas;
         XCTAssertEqual(index_ptr[idx], idx + 400);
     }
 
-    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<uint16_t> &indices) {
+    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         for (auto const &idx : make_each(4)) {
             float const value = idx;
             vertices[idx].position.x = value + 1000.0f;
@@ -370,12 +370,12 @@ using namespace yas;
     XCTAssertEqual(renderable.vertex_buffer_offset(), 0);
     XCTAssertEqual(renderable.index_buffer_offset(), 0);
 
-    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<uint16_t> &indices) {});
+    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {});
 
     renderable.update_render_buffer_if_needed();
 
     XCTAssertEqual(renderable.vertex_buffer_offset(), sizeof(ui::vertex2d_t) * 4);
-    XCTAssertEqual(renderable.index_buffer_offset(), sizeof(uint16_t) * 6);
+    XCTAssertEqual(renderable.index_buffer_offset(), sizeof(ui::index2d_t) * 6);
 }
 
 @end

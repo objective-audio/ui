@@ -33,7 +33,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         }
 
         if (!_index_buffer) {
-            auto index_length = _indices.size() * sizeof(uint16_t) * dynamic_buffer_count();
+            auto index_length = _indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
             _index_buffer.move_object(
                 [device newBufferWithLength:index_length options:MTLResourceOptionCPUCacheModeDefault]);
@@ -54,12 +54,12 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
 
         auto vertex_ptr = (ui::vertex2d_t *)[_vertex_buffer.object() contents];
-        auto index_ptr = (uint16_t *)[_index_buffer.object() contents];
+        auto index_ptr = (ui::index2d_t *)[_index_buffer.object() contents];
 
         memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
                _vertices.size() * sizeof(ui::vertex2d_t));
         memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
-               _indices.size() * sizeof(uint16_t));
+               _indices.size() * sizeof(ui::index2d_t));
 
         _needs_update_render_buffer = false;
     }
@@ -84,7 +84,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         return _needs_update_render_buffer;
     }
 
-    virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<uint16_t> &)> const &func) {
+    virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
         if (_needs_update_render_buffer) {
             func(_vertices, _indices);
         } else {
@@ -104,7 +104,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     objc_ptr<id<MTLBuffer>> _vertex_buffer;
     objc_ptr<id<MTLBuffer>> _index_buffer;
     std::vector<ui::vertex2d_t> _vertices;
-    std::vector<uint16_t> _indices;
+    std::vector<ui::index2d_t> _indices;
 
    private:
     objc_ptr<id<MTLDevice>> _device;
@@ -130,7 +130,7 @@ std::size_t ui::mesh_data::vertex_count() const {
     return impl_ptr<impl>()->_vertex_count;
 }
 
-const uint16_t *ui::mesh_data::indices() const {
+const ui::index2d_t *ui::mesh_data::indices() const {
     return impl_ptr<impl>()->_indices.data();
 }
 
@@ -138,7 +138,8 @@ std::size_t ui::mesh_data::index_count() const {
     return impl_ptr<impl>()->_index_count;
 }
 
-void ui::mesh_data::write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<uint16_t> &)> const &func) {
+void ui::mesh_data::write(
+    std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
     impl_ptr<impl>()->write(func);
 }
 
@@ -178,10 +179,10 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
     }
 
     std::size_t index_buffer_offset() override {
-        return _indices.size() * _dynamic_buffer_index * sizeof(uint16_t);
+        return _indices.size() * _dynamic_buffer_index * sizeof(ui::index2d_t);
     }
 
-    void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<uint16_t> &)> const &func) override {
+    void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override {
         func(_vertices, _indices);
 
         _needs_update_render_buffer = true;
