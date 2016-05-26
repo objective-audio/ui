@@ -89,7 +89,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(_primitive_type)
                             indexCount:index_count
-                             indexType:MTLIndexTypeUInt16
+                             indexType:MTLIndexTypeUInt32
                            indexBuffer:_mesh_data.renderable().indexBuffer()
                      indexBufferOffset:index_buffer_offset];
 
