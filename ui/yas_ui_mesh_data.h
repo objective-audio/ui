@@ -8,7 +8,7 @@
 #include "yas_base.h"
 #include "yas_ui_mesh_protocol.h"
 #include "yas_ui_metal_protocol.h"
-#include "yas_ui_shared_types.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
