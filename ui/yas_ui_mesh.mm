@@ -65,7 +65,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         auto const vertex_buffer_byte_offset = _mesh_data.renderable().vertex_buffer_byte_offset();
         auto const index_buffer_byte_offset = _mesh_data.renderable().index_buffer_byte_offset();
         auto constant_buffer_offset = renderer.constant_buffer_offset();
-        auto currentConstantBuffer = renderer.current_constant_buffer();
+        auto currentConstantBuffer = renderer.currentConstantBuffer();
 
         auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
         auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);

@@ -48,7 +48,7 @@ simd::float4x4 const &ui::renderer_base::projection_matrix() const {
     return impl_ptr<impl>()->projection_matrix();
 }
 
-id<MTLBuffer> ui::renderer_base::current_constant_buffer() const {
+id<MTLBuffer> ui::renderer_base::currentConstantBuffer() const {
     return impl_ptr<impl>()->currentConstantBuffer();
 }
 

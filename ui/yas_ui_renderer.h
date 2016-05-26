@@ -31,7 +31,7 @@ namespace ui {
         ui::uint_size const &drawable_size() const;
         double scale_factor() const;
         simd::float4x4 const &projection_matrix() const;
-        id<MTLBuffer> current_constant_buffer() const;
+        id<MTLBuffer> currentConstantBuffer() const;
 
         uint32_t constant_buffer_offset() const;
         void set_constant_buffer_offset(uint32_t const);
