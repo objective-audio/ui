@@ -27,9 +27,9 @@ void ui::square_mesh_data::set_square_count(std::size_t const count) {
     _dynamic_mesh_data.set_index_count(count * 6);
 }
 
-void ui::square_mesh_data::write(std::function<void(ui::vertex2d_square_t *, ui::index_square_t *)> const &func) {
+void ui::square_mesh_data::write(std::function<void(ui::vertex2d_square_t *, ui::index2d_square_t *)> const &func) {
     _dynamic_mesh_data.write([&func](auto &vertices, auto &indices) {
-        func((vertex2d_square_t *)vertices.data(), (index_square_t *)indices.data());
+        func((vertex2d_square_t *)vertices.data(), (index2d_square_t *)indices.data());
     });
 }
 
@@ -42,9 +42,9 @@ void ui::square_mesh_data::write_vertex(std::size_t const square_idx,
 }
 
 void ui::square_mesh_data::write_index(std::size_t const square_idx,
-                                       std::function<void(ui::index_square_t &)> const &func) {
+                                       std::function<void(ui::index2d_square_t &)> const &func) {
     _dynamic_mesh_data.write([&square_idx, &func](auto &vertices, auto &indices) {
-        auto sq_index_ptr = (index_square_t *)indices.data();
+        auto sq_index_ptr = (index2d_square_t *)indices.data();
         func(sq_index_ptr[square_idx]);
     });
 }
