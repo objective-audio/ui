@@ -51,7 +51,7 @@ void ui::square_mesh_data::write_index(std::size_t const square_idx,
 
 void ui::square_mesh_data::set_square_index(std::size_t const index_idx, std::size_t const vertex_idx) {
     write_index(index_idx, [&vertex_idx](auto &sq_index) {
-        std::size_t const sq_top_raw_idx = vertex_idx * 4;
+        auto const sq_top_raw_idx = static_cast<index2d_t>(vertex_idx * 4);
 
         sq_index.v[0] = sq_top_raw_idx;
         sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
@@ -130,7 +130,7 @@ ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count) {
     sq_mesh_data.write([&square_count](auto *, auto *sq_indices) {
         for (auto const &idx : make_each(square_count)) {
             auto &sq_index = sq_indices[idx];
-            std::size_t const sq_top_raw_idx = idx * 4;
+            auto const sq_top_raw_idx = static_cast<index2d_t>(idx * 4);
             sq_index.v[0] = sq_top_raw_idx;
             sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
             sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
@@ -147,7 +147,7 @@ ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count, s
     sq_mesh_data.write([&square_count, &index_count](auto *, auto *sq_indices) {
         for (auto const &idx : make_each(std::min(square_count, index_count))) {
             auto &sq_index = sq_indices[idx];
-            std::size_t const sq_top_raw_idx = idx * 4;
+            auto const sq_top_raw_idx = static_cast<index2d_t>(idx * 4);
             sq_index.v[0] = sq_top_raw_idx;
             sq_index.v[1] = sq_index.v[4] = sq_top_raw_idx + 2;
             sq_index.v[2] = sq_index.v[3] = sq_top_raw_idx + 1;
