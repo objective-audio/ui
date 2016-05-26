@@ -15,8 +15,8 @@ namespace ui {
 
     struct renderable_mesh_data : protocol {
         struct impl : protocol::impl {
-            virtual std::size_t vertex_buffer_offset() = 0;
-            virtual std::size_t index_buffer_offset() = 0;
+            virtual std::size_t vertex_buffer_byte_offset() = 0;
+            virtual std::size_t index_buffer_byte_offset() = 0;
             virtual id<MTLBuffer> vertexBuffer() = 0;
             virtual id<MTLBuffer> indexBuffer() = 0;
 
@@ -26,8 +26,8 @@ namespace ui {
 
         explicit renderable_mesh_data(std::shared_ptr<impl>);
 
-        std::size_t vertex_buffer_offset();
-        std::size_t index_buffer_offset();
+        std::size_t vertex_buffer_byte_offset();
+        std::size_t index_buffer_byte_offset();
         id<MTLBuffer> vertexBuffer();
         id<MTLBuffer> indexBuffer();
 

@@ -64,11 +64,11 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         _needs_update_render_buffer = false;
     }
 
-    std::size_t vertex_buffer_offset() override {
+    std::size_t vertex_buffer_byte_offset() override {
         return 0;
     }
 
-    std::size_t index_buffer_offset() override {
+    std::size_t index_buffer_byte_offset() override {
         return 0;
     }
 
@@ -174,11 +174,11 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
         _index_count = count;
     }
 
-    std::size_t vertex_buffer_offset() override {
+    std::size_t vertex_buffer_byte_offset() override {
         return _vertices.size() * _dynamic_buffer_index * sizeof(ui::vertex2d_t);
     }
 
-    std::size_t index_buffer_offset() override {
+    std::size_t index_buffer_byte_offset() override {
         return _indices.size() * _dynamic_buffer_index * sizeof(ui::index2d_t);
     }
 

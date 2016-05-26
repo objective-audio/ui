@@ -11,12 +11,12 @@ using namespace yas;
 ui::renderable_mesh_data::renderable_mesh_data(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
-std::size_t ui::renderable_mesh_data::vertex_buffer_offset() {
-    return impl_ptr<impl>()->vertex_buffer_offset();
+std::size_t ui::renderable_mesh_data::vertex_buffer_byte_offset() {
+    return impl_ptr<impl>()->vertex_buffer_byte_offset();
 }
 
-std::size_t ui::renderable_mesh_data::index_buffer_offset() {
-    return impl_ptr<impl>()->index_buffer_offset();
+std::size_t ui::renderable_mesh_data::index_buffer_byte_offset() {
+    return impl_ptr<impl>()->index_buffer_byte_offset();
 }
 
 id<MTLBuffer> ui::renderable_mesh_data::vertexBuffer() {

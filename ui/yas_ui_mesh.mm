@@ -62,8 +62,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return;
         }
 
-        auto vertex_buffer_offset = _mesh_data.renderable().vertex_buffer_offset();
-        auto index_buffer_offset = _mesh_data.renderable().index_buffer_offset();
+        auto const vertex_buffer_byte_offset = _mesh_data.renderable().vertex_buffer_byte_offset();
+        auto const index_buffer_byte_offset = _mesh_data.renderable().index_buffer_byte_offset();
         auto constant_buffer_offset = renderer.constant_buffer_offset();
         auto currentConstantBuffer = renderer.current_constant_buffer();
 
@@ -82,7 +82,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
 
-        [encoder setVertexBuffer:_mesh_data.renderable().vertexBuffer() offset:vertex_buffer_offset atIndex:0];
+        [encoder setVertexBuffer:_mesh_data.renderable().vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
         [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
 
         constant_buffer_offset += sizeof(uniforms2d_t);
@@ -91,7 +91,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
                             indexCount:index_count
                              indexType:MTLIndexTypeUInt32
                            indexBuffer:_mesh_data.renderable().indexBuffer()
-                     indexBufferOffset:index_buffer_offset];
+                     indexBufferOffset:index_buffer_byte_offset];
 
         renderer.set_constant_buffer_offset(constant_buffer_offset);
     }
