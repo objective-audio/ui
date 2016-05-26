@@ -8,7 +8,7 @@
 #include "yas_base.h"
 #include "yas_ui_mesh_protocol.h"
 #include "yas_ui_metal_protocol.h"
-#include "yas_ui_shared_types.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
@@ -19,10 +19,10 @@ namespace ui {
 
         const ui::vertex2d_t *vertices() const;
         std::size_t vertex_count() const;
-        const uint16_t *indices() const;
+        const ui::index2d_t *indices() const;
         std::size_t index_count() const;
 
-        void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<uint16_t> &)> const &);
+        void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
 
         ui::metal_object metal();
         ui::renderable_mesh_data renderable();

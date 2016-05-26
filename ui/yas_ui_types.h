@@ -16,8 +16,10 @@ namespace ui {
         vertex2d_t v[4];
     };
 
-    struct index_square_t {
-        uint16_t v[6];
+    using index2d_t = uint32_t;
+
+    struct index2d_square_t {
+        index2d_t v[6];
     };
 
     struct uint_origin {
