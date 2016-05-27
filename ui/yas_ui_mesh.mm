@@ -177,7 +177,7 @@ ui::mesh::mesh() : base(std::make_shared<impl>()) {
 ui::mesh::mesh(std::nullptr_t) : base(nullptr) {
 }
 
-ui::mesh_data const &ui::mesh::data() const {
+ui::mesh_data const &ui::mesh::mesh_data() const {
     return impl_ptr<impl>()->mesh_data();
 }
 
