@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B63C41441CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B63C41421CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm */; };
 		B63CA0321CD86D0100A1380B /* yas_ui_metal_types.mm in Sources */ = {isa = PBXBuildFile; fileRef = B63CA0311CD86D0100A1380B /* yas_ui_metal_types.mm */; };
+		B64F91131CF2953000365111 /* yas_ui_batch.mm in Sources */ = {isa = PBXBuildFile; fileRef = B64F91121CF2953000365111 /* yas_ui_batch.mm */; };
 		B65A3A1E1CCE441800929FB4 /* yas_ui_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */; };
 		B65F6D9F1CC87D12007C3523 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6D9E1CC87D12007C3523 /* main.m */; };
 		B65F6DA21CC87D12007C3523 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6DA11CC87D12007C3523 /* AppDelegate.m */; };
@@ -69,8 +71,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B63C41421CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_batch_protocol.mm; sourceTree = "<group>"; };
+		B63C41431CF5C9DA005A8E60 /* yas_ui_batch_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch_protocol.h; sourceTree = "<group>"; };
 		B63CA0301CD86D0100A1380B /* yas_ui_metal_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_types.h; sourceTree = "<group>"; };
 		B63CA0311CD86D0100A1380B /* yas_ui_metal_types.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_types.mm; sourceTree = "<group>"; };
+		B64F91111CF2953000365111 /* yas_ui_batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch.h; sourceTree = "<group>"; };
+		B64F91121CF2953000365111 /* yas_ui_batch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_batch.mm; sourceTree = "<group>"; };
 		B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_math.cpp; sourceTree = "<group>"; };
 		B65A3A1D1CCE441800929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
 		B65F6D9A1CC87D12007C3523 /* ui_ios_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ui_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -287,6 +293,10 @@
 				B65F6DB51CC87DB6007C3523 /* shader_ios */,
 				B65F6DBC1CC87DB6007C3523 /* yas_ui_action.h */,
 				B65F6DBD1CC87DB6007C3523 /* yas_ui_action.mm */,
+				B63C41421CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm */,
+				B63C41431CF5C9DA005A8E60 /* yas_ui_batch_protocol.h */,
+				B64F91111CF2953000365111 /* yas_ui_batch.h */,
+				B64F91121CF2953000365111 /* yas_ui_batch.mm */,
 				B69FF9DA1CCFBD450036B0FA /* yas_ui_collider_protocol.cpp */,
 				B69FF9DB1CCFBD450036B0FA /* yas_ui_collider_protocol.h */,
 				B69A6ACD1CCEF528002AC942 /* yas_ui_collider.cpp */,
@@ -509,6 +519,7 @@
 				B65A3A1E1CCE441800929FB4 /* yas_ui_math.cpp in Sources */,
 				B65F6DF71CC87DB6007C3523 /* yas_ui_mesh.mm in Sources */,
 				B65F6E4B1CC88042007C3523 /* YASSampleMetalViewController.mm in Sources */,
+				B63C41441CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm in Sources */,
 				B6C413EF1CDC5FC70012095F /* yas_sample_main.mm in Sources */,
 				B65F6DF61CC87DB6007C3523 /* yas_ui_matrix.cpp in Sources */,
 				B69FF9DC1CCFBD450036B0FA /* yas_ui_collider_protocol.cpp in Sources */,
@@ -540,6 +551,7 @@
 				B6F73BA71CDB7D7E009FD0DD /* yas_sample_touch_holder.mm in Sources */,
 				B65F6E021CC87DB6007C3523 /* yas_ui_renderer_impl.mm in Sources */,
 				B6F73BA61CDB7D7E009FD0DD /* yas_sample_text_node.mm in Sources */,
+				B64F91131CF2953000365111 /* yas_ui_batch.mm in Sources */,
 				B6F73BA21CDB7D7E009FD0DD /* yas_sample_button_node.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
