@@ -120,11 +120,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
         }
 
-        if (!_children_batching_enabled) {
-            for (auto &sub_node : _children) {
-                render_info.render_matrix = _render_matrix;
-                sub_node.impl_ptr<impl>()->update_render_info(render_info);
-            }
+        for (auto &sub_node : _children) {
+            render_info.render_matrix = _render_matrix;
+            sub_node.impl_ptr<impl>()->update_render_info(render_info);
         }
     }
 
