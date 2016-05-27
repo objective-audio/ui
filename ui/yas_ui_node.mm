@@ -21,7 +21,7 @@ using namespace yas;
 
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
-    std::vector<ui::node> const &children() {
+    std::vector<ui::node> &children() {
         return _children;
     }
 
@@ -379,6 +379,10 @@ void ui::node::remove_from_super_node() {
 }
 
 std::vector<ui::node> const &ui::node::children() const {
+    return impl_ptr<impl>()->children();
+}
+
+std::vector<ui::node> &ui::node::children() {
     return impl_ptr<impl>()->children();
 }
 
