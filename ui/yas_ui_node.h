@@ -60,6 +60,7 @@ namespace ui {
         void remove_from_super_node();
 
         std::vector<ui::node> const &children() const;
+        std::vector<ui::node> &children();
         ui::node parent() const;
 
         ui::renderer renderer() const;
