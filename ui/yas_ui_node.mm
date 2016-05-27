@@ -120,7 +120,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
         }
 
-        if (!_children_render_disabled) {
+        if (!_children_batching_enabled) {
             for (auto &sub_node : _children) {
                 render_info.render_matrix = _render_matrix;
                 sub_node.impl_ptr<impl>()->update_render_info(render_info);
@@ -172,13 +172,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return false;
     }
 
-    bool is_children_render_disabled() override {
-        return _children_render_disabled;
+    bool is_children_batching_enabled() override {
+        return _children_batching_enabled;
     }
 
-    void set_children_render_disabled(bool const disabled) override {
-        if (_children_render_disabled != disabled) {
-            _children_render_disabled = disabled;
+    void set_children_batching_enabled(bool const enabled) override {
+        if (_children_batching_enabled != enabled) {
+            _children_batching_enabled = enabled;
             _set_needs_update_matrix();
         }
     }
@@ -217,7 +217,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     bool _needs_update_matrix = true;
-    bool _children_render_disabled = false;
+    bool _children_batching_enabled = false;
 };
 
 #pragma mark - node
