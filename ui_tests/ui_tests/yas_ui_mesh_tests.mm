@@ -189,7 +189,7 @@ using namespace yas;
     XCTAssertEqual(mesh.color()[1], 0.2f);
     XCTAssertEqual(mesh.color()[2], 0.3f);
     XCTAssertEqual(mesh.color()[3], 0.4f);
-    XCTAssertEqual(mesh.data(), mesh_data);
+    XCTAssertEqual(mesh.mesh_data(), mesh_data);
     XCTAssertEqual(mesh.primitive_type(), ui::primitive_type::point);
     XCTAssertTrue(mesh.is_use_mesh_color());
 }
