@@ -58,7 +58,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return;
         }
 
-        if (!_use_mesh_color && _color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f) {
+        if (_is_skip_render_for_clear_color()) {
             return;
         }
 
@@ -166,6 +166,10 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         if (_mesh_data) {
             _needs_update_for_render = true;
         }
+    }
+
+    bool _is_skip_render_for_clear_color() {
+        return !_use_mesh_color && _color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f;
     }
 };
 
