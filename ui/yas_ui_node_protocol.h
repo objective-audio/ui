@@ -35,7 +35,7 @@ namespace ui {
             virtual void set_children_batching_enabled(bool const) = 0;
         };
 
-        explicit renderable_node(std::shared_ptr<impl> impl);
+        explicit renderable_node(std::shared_ptr<impl>);
 
         ui::renderer renderer();
         void set_renderer(ui::renderer);
