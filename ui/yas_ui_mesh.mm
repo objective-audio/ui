@@ -42,8 +42,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return false;
     }
 
-    void render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
-                ui::metal_encode_info const &encode_info) override {
+    void metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
+                      ui::metal_encode_info const &encode_info) override {
         _needs_update_for_render = false;
 
         if (!_mesh_data) {

@@ -52,7 +52,7 @@ bool ui::renderable_mesh::needs_update_for_render() {
     return impl_ptr<impl>()->needs_update_for_render();
 }
 
-void ui::renderable_mesh::render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
-                                 ui::metal_encode_info const &encode_info) {
-    impl_ptr<impl>()->render(renderer, encoder, encode_info);
+void ui::renderable_mesh::metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
+                                       ui::metal_encode_info const &encode_info) {
+    impl_ptr<impl>()->metal_render(renderer, encoder, encode_info);
 }
