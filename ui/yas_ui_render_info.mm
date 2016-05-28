@@ -12,7 +12,7 @@ void ui::render_info::push_encode_info(encode_info info) {
     _current_encode_infos.push_front(info);
 }
 
-void ui::render_info::pop_endoce_info() {
+void ui::render_info::pop_encode_info() {
     _current_encode_infos.pop_front();
 }
 

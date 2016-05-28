@@ -18,7 +18,7 @@ namespace ui {
         std::deque<encode_info> all_encode_infos;
 
         void push_encode_info(encode_info);
-        void pop_endoce_info();
+        void pop_encode_info();
 
         ui::encode_info const &current_encode_info();
 
