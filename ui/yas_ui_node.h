@@ -65,8 +65,6 @@ namespace ui {
 
         ui::renderer renderer() const;
 
-        void update_render_info(render_info &info);
-
         ui::metal_object metal();
         ui::renderable_node renderable();
 
