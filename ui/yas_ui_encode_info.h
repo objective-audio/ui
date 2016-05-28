@@ -1,5 +1,5 @@
 //
-//  yas_ui_encode_info.h
+//  yas_ui_metal_encode_info.h
 //
 
 #pragma once
@@ -12,13 +12,13 @@ namespace yas {
 namespace ui {
     class mesh;
 
-    class encode_info : public base {
+    class metal_encode_info : public base {
         class impl;
 
        public:
-        encode_info(MTLRenderPassDescriptor *const renderPassDesc, id<MTLRenderPipelineState> const pipelineState,
-                    id<MTLRenderPipelineState> const pipelineStateWithoutTexture);
-        encode_info(std::nullptr_t);
+        metal_encode_info(MTLRenderPassDescriptor *const renderPassDesc, id<MTLRenderPipelineState> const pipelineState,
+                          id<MTLRenderPipelineState> const pipelineStateWithoutTexture);
+        metal_encode_info(std::nullptr_t);
 
         void push_back_mesh(ui::mesh mesh);
 
