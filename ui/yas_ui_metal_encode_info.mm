@@ -4,8 +4,8 @@
 
 #include <vector>
 #include "yas_objc_ptr.h"
-#include "yas_ui_encode_info.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_metal_encode_info.h"
 
 using namespace yas;
 
