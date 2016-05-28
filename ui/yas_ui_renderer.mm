@@ -3,10 +3,12 @@
 //
 
 #include <chrono>
-#include <unordered_set>
+#include <unordered_map>
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
 #include "yas_ui_action.h"
+#include "yas_ui_batch.h"
+#include "yas_ui_batch_protocol.h"
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_encode_info.h"
 #include "yas_ui_mesh.h"
@@ -99,6 +101,23 @@ class ui::renderer::impl : public renderer_base::impl {
         }
     }
 
+    std::unordered_map<uintptr_t, ui::batch> &batches() {
+        return _batches;
+    }
+
+    void insert_batch(ui::batch &&batch) {
+        _batches.emplace(std::make_pair(batch.identifier(), std::move(batch)));
+    }
+
+    void erase_batch(ui::batch const &batch) {
+        auto const identifier = batch.identifier();
+        if (_batches.count(identifier)) {
+            auto &removing_batch = _batches.at(identifier);
+            removing_batch.render_node().remove_from_super_node();
+            _batches.erase(identifier);
+        }
+    }
+
     bool pre_render() override {
         _root_node.metal().setup(device());
 
@@ -143,6 +162,7 @@ class ui::renderer::impl : public renderer_base::impl {
 
     ui::node _root_node;
     ui::parallel_action _action;
+    std::unordered_map<uintptr_t, ui::batch> _batches;
     ui::collision_detector _detector;
 };
 
@@ -175,6 +195,18 @@ void ui::renderer::erase_action(ui::action const &action) {
 
 void ui::renderer::erase_action(ui::node const &target) {
     impl_ptr<impl>()->erase_action(target);
+}
+
+std::vector<ui::batch> ui::renderer::batches() const {
+    return to_vector<ui::batch>(impl_ptr<impl>()->batches(), [](auto &pair) { return pair.second; });
+}
+
+void ui::renderer::insert_batch(ui::batch batch) {
+    impl_ptr<impl>()->insert_batch(std::move(batch));
+}
+
+void ui::renderer::erase_batch(ui::batch const &batch) {
+    impl_ptr<impl>()->erase_batch(batch);
 }
 
 ui::collision_detector const &ui::renderer::collision_detector() const {

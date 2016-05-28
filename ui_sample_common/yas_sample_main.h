@@ -36,6 +36,8 @@ namespace sample {
                                     .font_size = 26.0f,
                                     .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"}};
 
+        ui::batch _batch;
+
         base _button_observer = nullptr;
         base _scale_observer = nullptr;
 

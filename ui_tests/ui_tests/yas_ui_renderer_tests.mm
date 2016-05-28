@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "yas_observing.h"
 #import "yas_ui_action.h"
+#import "yas_ui_batch.h"
 #import "yas_ui_collision_detector.h"
 #import "yas_ui_event.h"
 #import "yas_ui_node.h"
@@ -35,6 +36,7 @@ using namespace yas;
 
     XCTAssertTrue(renderer.root_node());
     XCTAssertEqual(renderer.actions().size(), 0);
+    XCTAssertEqual(renderer.batches().size(), 0);
 
     XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
@@ -87,6 +89,32 @@ using namespace yas;
     renderer.erase_action(action2);
 
     XCTAssertEqual(renderer.actions().size(), 0);
+}
+
+- (void)test_batch {
+    id<MTLDevice> device = nil;
+    ui::renderer renderer{device};
+
+    ui::batch batch1;
+    ui::batch batch2;
+
+    renderer.insert_batch(batch1);
+
+    XCTAssertEqual(renderer.batches().size(), 1);
+    XCTAssertEqual(renderer.batches().at(0), batch1);
+
+    renderer.insert_batch(batch2);
+
+    XCTAssertEqual(renderer.batches().size(), 2);
+
+    renderer.erase_batch(batch1);
+
+    XCTAssertEqual(renderer.batches().size(), 1);
+    XCTAssertEqual(renderer.batches().at(0), batch2);
+
+    renderer.erase_batch(batch2);
+
+    XCTAssertEqual(renderer.batches().size(), 0);
 }
 
 @end
