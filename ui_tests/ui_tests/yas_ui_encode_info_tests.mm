@@ -23,20 +23,20 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::encode_info info{nil, nil, nil};
+    ui::metal_encode_info info{nil, nil, nil};
 
     XCTAssertTrue(info);
     XCTAssertEqual(info.meshes().size(), 0);
 }
 
 - (void)test_create_null {
-    ui::encode_info info{nullptr};
+    ui::metal_encode_info info{nullptr};
 
     XCTAssertFalse(info);
 }
 
 - (void)test_push_back_mesh {
-    ui::encode_info info{nil, nil, nil};
+    ui::metal_encode_info info{nil, nil, nil};
     ui::mesh mesh1;
     ui::mesh mesh2;
 
