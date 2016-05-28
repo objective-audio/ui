@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_encode_info.h"
+#import "yas_ui_metal_encode_info.h"
 #import "yas_ui_render_info.h"
 
 using namespace yas;

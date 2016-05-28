@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_encode_info.h"
 #import "yas_ui_mesh.h"
+#import "yas_ui_metal_encode_info.h"
 
 using namespace yas;
 
