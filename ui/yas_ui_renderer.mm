@@ -12,6 +12,7 @@
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_encode_info.h"
+#include "yas_ui_metal_render_encoder.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
@@ -127,37 +128,22 @@ class ui::renderer::impl : public renderer_base::impl {
     }
 
     void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPassDesc) override {
-        _detector.updatable().clear_colliders_if_needed();
+        ui::metal_render_encoder metal_render_encoder;
+        metal_render_encoder.push_encode_info(
+            {renderPassDesc, multiSamplePipelineState(), multiSamplePipelineStateWithoutTexture()});
 
         ui::render_info render_info;
         render_info.collision_detector = _detector;
+        render_info.render_encodable = metal_render_encoder.encodable();
+        render_info.render_matrix = projection_matrix();
 
-        render_info.push_encode_info(
-            {renderPassDesc, multiSamplePipelineState(), multiSamplePipelineStateWithoutTexture()});
-
-        auto const &matrix = projection_matrix();
-        render_info.render_matrix = matrix;
-
+        _detector.updatable().clear_colliders_if_needed();
         _root_node.update_render_info(render_info);
-
         _detector.updatable().finalize();
 
         auto renderer = cast<ui::renderer_base>();
 
-        for (auto &encode_info : render_info.all_encode_infos) {
-            auto renderPassDesc = encode_info.renderPassDescriptor();
-            auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
-                return [commandBuffer renderCommandEncoderWithDescriptor:renderPassDesc];
-            });
-
-            auto renderEncoder = render_encoder.object();
-
-            for (auto &mesh : encode_info.meshes()) {
-                mesh.renderable().metal_render(renderer, renderEncoder, encode_info);
-            }
-
-            [renderEncoder endEncoding];
-        }
+        metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);
     }
 
     ui::node _root_node;

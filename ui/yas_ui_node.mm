@@ -110,9 +110,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         if (auto &mesh = mesh_property.value()) {
             mesh.renderable().set_matrix(_render_matrix);
-            if (auto encode_info = render_info.current_encode_info()) {
-                encode_info.push_back_mesh(mesh);
-            }
+            render_info.render_encodable.push_back_mesh(mesh);
         }
 
         if (auto &collider = collider_property.value()) {
