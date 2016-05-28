@@ -93,6 +93,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void update_render_info(render_info &render_info) {
+        _enabled_updated = false;
+
         if (!enabled_property.value()) {
             return;
         }
@@ -149,8 +151,12 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool needs_update_for_render() override {
-        if (_needs_update_matrix) {
+        if (_needs_update_matrix || _enabled_updated) {
             return true;
+        }
+
+        if (!enabled_property.value()) {
+            return false;
         }
 
         if (auto &mesh = mesh_property.value()) {
@@ -204,6 +210,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _needs_update_matrix = true;
     }
 
+    void _set_enabled_updated() {
+        _enabled_updated = true;
+    }
+
     std::vector<base> _property_observers;
 
    private:
@@ -213,6 +223,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     bool _needs_update_matrix = true;
+    bool _enabled_updated = true;
     bool _children_batching_enabled = false;
 };
 
@@ -224,6 +235,13 @@ ui::node::node() : base(std::make_shared<impl>()) {
     auto weak_node = to_weak(*this);
 
     observers.reserve(8);
+
+    observers.emplace_back(
+        imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+            if (auto node = weak_node.lock()) {
+                node.impl_ptr<impl>()->_set_enabled_updated();
+            }
+        }));
 
     observers.emplace_back(
         imp_ptr->position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
