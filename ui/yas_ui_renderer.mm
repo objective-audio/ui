@@ -138,7 +138,7 @@ class ui::renderer::impl : public renderer_base::impl {
         render_info.render_matrix = projection_matrix();
 
         _detector.updatable().clear_colliders_if_needed();
-        _root_node.update_render_info(render_info);
+        _root_node.renderable().update_render_info(render_info);
         _detector.updatable().finalize();
 
         auto renderer = cast<ui::renderer_base>();

@@ -92,7 +92,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void update_render_info(render_info &render_info) {
+    void update_render_info(ui::render_info &render_info) override {
         _enabled_updated = false;
 
         if (!enabled_property.value()) {
@@ -408,10 +408,6 @@ ui::node ui::node::parent() const {
 
 ui::renderer ui::node::renderer() const {
     return impl_ptr<impl>()->renderer();
-}
-
-void ui::node::update_render_info(render_info &info) {
-    impl_ptr<impl>()->update_render_info(info);
 }
 
 ui::metal_object ui::node::metal() {
