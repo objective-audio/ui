@@ -46,12 +46,12 @@ using namespace yas;
     auto encode_info2 = info.current_encode_info();
     XCTAssertTrue(encode_info2);
 
-    info.pop_endoce_info();
+    info.pop_encode_info();
 
     XCTAssertEqual(info.all_encode_infos.size(), 2);
     XCTAssertEqual(info.current_encode_info(), encode_info1);
 
-    info.pop_endoce_info();
+    info.pop_encode_info();
 
     XCTAssertEqual(info.all_encode_infos.size(), 2);
     XCTAssertFalse(info.current_encode_info());
