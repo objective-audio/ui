@@ -40,8 +40,8 @@ namespace ui {
             virtual simd::float4x4 const &matrix() = 0;
             virtual void set_matrix(simd::float4x4 &&) = 0;
             virtual bool needs_update_for_render() = 0;
-            virtual void render(ui::renderer_base &, id<MTLRenderCommandEncoder> const,
-                                ui::metal_encode_info const &) = 0;
+            virtual void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const,
+                                      ui::metal_encode_info const &) = 0;
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
@@ -49,7 +49,7 @@ namespace ui {
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);
         bool needs_update_for_render();
-        void render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
+        void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
     };
 }
 }

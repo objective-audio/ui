@@ -153,7 +153,7 @@ class ui::renderer::impl : public renderer_base::impl {
             auto renderEncoder = render_encoder.object();
 
             for (auto &mesh : encode_info.meshes()) {
-                mesh.renderable().render(renderer, renderEncoder, encode_info);
+                mesh.renderable().metal_render(renderer, renderEncoder, encode_info);
             }
 
             [renderEncoder endEncoding];
