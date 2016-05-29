@@ -424,14 +424,4 @@ using namespace yas;
     called_method = nullptr;
 }
 
-- (void)test_children_batching_enabled {
-    ui::node node;
-
-    XCTAssertFalse(node.renderable().is_children_batching_enabled());
-
-    node.renderable().set_children_batching_enabled(true);
-
-    XCTAssertTrue(node.renderable().is_children_batching_enabled());
-}
-
 @end

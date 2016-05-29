@@ -176,17 +176,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return false;
     }
 
-    bool is_children_batching_enabled() override {
-        return _children_batching_enabled;
-    }
-
-    void set_children_batching_enabled(bool const enabled) override {
-        if (_children_batching_enabled != enabled) {
-            _children_batching_enabled = enabled;
-            _set_needs_update_matrix();
-        }
-    }
-
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
@@ -233,7 +222,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     bool _needs_update_matrix = true;
     bool _property_updated = true;
-    bool _children_batching_enabled = false;
 };
 
 #pragma mark - node
