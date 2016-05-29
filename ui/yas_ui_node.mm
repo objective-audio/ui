@@ -212,7 +212,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void _set_needs_update_colliders() {
-        renderer().collision_detector().updatable().set_needs_update_colliders();
+        if (auto locked_renderer = renderer()) {
+            locked_renderer.collision_detector().updatable().set_needs_update_colliders();
+        }
     }
 
     void _set_property_updated() {
