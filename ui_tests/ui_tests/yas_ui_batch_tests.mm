@@ -28,9 +28,6 @@ using namespace yas;
 
     XCTAssertTrue(batch);
 
-    XCTAssertTrue(batch.root_node());
-    XCTAssertTrue(batch.render_node());
-
     XCTAssertTrue(batch.renderable());
 }
 

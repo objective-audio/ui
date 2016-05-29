@@ -4,6 +4,7 @@
 
 #include "yas_observing.h"
 #include "yas_property.h"
+#include "yas_ui_batch.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_matrix.h"
@@ -35,6 +36,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<float> alpha_property{{.value = 1.0f}};
     property<ui::mesh> mesh_property{{.value = nullptr}};
     property<ui::collider> collider_property{{.value = nullptr}};
+    property<ui::batch> batch_property{{.value = nullptr}};
     property<bool> enabled_property{{.value = true}};
 
     node::subject_t subject;
@@ -174,17 +176,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return false;
     }
 
-    bool is_children_batching_enabled() override {
-        return _children_batching_enabled;
-    }
-
-    void set_children_batching_enabled(bool const enabled) override {
-        if (_children_batching_enabled != enabled) {
-            _children_batching_enabled = enabled;
-            _set_needs_update_matrix();
-        }
-    }
-
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
@@ -231,7 +222,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     bool _needs_update_matrix = true;
     bool _property_updated = true;
-    bool _children_batching_enabled = false;
 };
 
 #pragma mark - node
@@ -241,7 +231,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
     auto &observers = imp_ptr->_property_observers;
     auto weak_node = to_weak(*this);
 
-    observers.reserve(8);
+    observers.reserve(9);
 
     observers.emplace_back(
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
@@ -298,6 +288,13 @@ ui::node::node() : base(std::make_shared<impl>()) {
                 node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
+
+    observers.emplace_back(
+        imp_ptr->batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+            if (auto node = weak_node.lock()) {
+                node.impl_ptr<impl>()->_set_property_updated();
+            }
+        }));
 }
 
 ui::node::node(std::nullptr_t) : base(nullptr) {
@@ -351,6 +348,14 @@ ui::collider &ui::node::collider() {
     return impl_ptr<impl>()->collider_property.value();
 }
 
+ui::batch const &ui::node::batch() const {
+    return impl_ptr<impl>()->batch_property.value();
+}
+
+ui::batch &ui::node::batch() {
+    return impl_ptr<impl>()->batch_property.value();
+}
+
 void ui::node::set_position(ui::point point) {
     impl_ptr<impl>()->position_property.set_value(std::move(point));
 }
@@ -377,6 +382,10 @@ void ui::node::set_mesh(ui::mesh mesh) {
 
 void ui::node::set_collider(ui::collider collider) {
     impl_ptr<impl>()->collider_property.set_value(std::move(collider));
+}
+
+void ui::node::set_batch(ui::batch batch) {
+    impl_ptr<impl>()->batch_property.set_value(std::move(batch));
 }
 
 void ui::node::set_enabled(bool const enabled) {

@@ -27,11 +27,3 @@ bool ui::renderable_node::needs_update_for_render() {
 void ui::renderable_node::update_render_info(ui::render_info &info) {
     impl_ptr<impl>()->update_render_info(info);
 }
-
-bool ui::renderable_node::is_children_batching_enabled() {
-    return impl_ptr<impl>()->is_children_batching_enabled();
-}
-
-void ui::renderable_node::set_children_batching_enabled(bool const enabled) {
-    impl_ptr<impl>()->set_children_batching_enabled(enabled);
-}
