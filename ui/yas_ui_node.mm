@@ -5,6 +5,7 @@
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_ui_batch.h"
+#include "yas_ui_batch_protocol.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_matrix.h"
@@ -386,6 +387,7 @@ void ui::node::set_collider(ui::collider collider) {
 
 void ui::node::set_batch(ui::batch batch) {
     impl_ptr<impl>()->batch_property.set_value(std::move(batch));
+    batch.renderable().clear();
 }
 
 void ui::node::set_enabled(bool const enabled) {

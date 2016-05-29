@@ -8,3 +8,7 @@ using namespace yas;
 
 ui::renderable_batch::renderable_batch(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
+
+void ui::renderable_batch::clear() {
+    impl_ptr<impl>()->clear();
+}
