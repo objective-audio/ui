@@ -18,9 +18,6 @@ namespace ui {
         batch();
         batch(std::nullptr_t);
 
-        ui::node &root_node();
-        ui::node &render_node();
-
         ui::renderable_batch renderable();
     };
 }
