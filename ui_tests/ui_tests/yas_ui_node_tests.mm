@@ -94,7 +94,7 @@ using namespace yas;
 
 - (void)test_const_variables {
     ui::node node;
-    ui::node const_node = node;
+    ui::node const &const_node = node;
 
     XCTAssertFalse(const_node.mesh());
     XCTAssertFalse(const_node.collider());
@@ -104,6 +104,7 @@ using namespace yas;
 
     XCTAssertTrue(const_node.mesh());
     XCTAssertTrue(const_node.collider());
+    XCTAssertEqual(const_node.children().size(), 0);
 }
 
 - (void)set_color_to_mesh {
