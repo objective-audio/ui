@@ -25,7 +25,7 @@ using namespace yas;
 - (void)test_create {
     ui::render_info info;
 
-    XCTAssertTrue(info.collision_detector);
+    XCTAssertFalse(info.collision_detector);
     XCTAssertFalse(info.render_encodable);
 }
 
