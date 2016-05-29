@@ -115,7 +115,8 @@ class ui::renderer::impl : public renderer_base::impl {
         ui::render_info render_info;
         render_info.collision_detector = _detector;
         render_info.render_encodable = metal_render_encoder.encodable();
-        render_info.render_matrix = projection_matrix();
+        render_info.matrix = projection_matrix();
+        render_info.mesh_matrix = projection_matrix();
 
         _detector.updatable().clear_colliders_if_needed();
         _root_node.renderable().update_render_info(render_info);
