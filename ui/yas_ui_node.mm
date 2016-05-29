@@ -93,7 +93,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void update_render_info(ui::render_info &render_info) override {
-        _enabled_updated = false;
+        _property_updated = false;
 
         if (!enabled_property.value()) {
             return;
@@ -151,7 +151,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool needs_update_for_render() override {
-        if (_needs_update_matrix || _enabled_updated) {
+        if (_property_updated) {
             return true;
         }
 
@@ -208,10 +208,17 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void _set_needs_update_matrix() {
         _needs_update_matrix = true;
+        _property_updated = true;
     }
 
-    void _set_enabled_updated() {
-        _enabled_updated = true;
+    void _set_needs_update_colliders() {
+        if (auto locked_renderer = renderer()) {
+            locked_renderer.collision_detector().updatable().set_needs_update_colliders();
+        }
+    }
+
+    void _set_property_updated() {
+        _property_updated = true;
     }
 
     std::vector<base> _property_observers;
@@ -223,7 +230,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     bool _needs_update_matrix = true;
-    bool _enabled_updated = true;
+    bool _property_updated = true;
     bool _children_batching_enabled = false;
 };
 
@@ -239,7 +246,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_enabled_updated();
+                node.impl_ptr<impl>()->_set_property_updated();
             }
         }));
 
@@ -288,9 +295,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                if (auto renderer = node.renderer()) {
-                    renderer.collision_detector().updatable().set_needs_update_colliders();
-                }
+                node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
 }
