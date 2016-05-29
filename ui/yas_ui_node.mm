@@ -211,6 +211,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _property_updated = true;
     }
 
+    void _set_needs_update_colliders() {
+        renderer().collision_detector().updatable().set_needs_update_colliders();
+    }
+
     void _set_property_updated() {
         _property_updated = true;
     }
@@ -289,9 +293,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                if (auto renderer = node.renderer()) {
-                    renderer.collision_detector().updatable().set_needs_update_colliders();
-                }
+                node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
 }
