@@ -15,7 +15,7 @@ namespace yas {
 namespace ui {
     struct render_info {
         simd::float4x4 render_matrix = matrix_identity_float4x4;
-        ui::collision_detector collision_detector;
+        ui::collision_detector collision_detector = nullptr;
         render_encodable render_encodable = nullptr;
     };
 }
