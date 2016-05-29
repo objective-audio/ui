@@ -48,7 +48,6 @@ namespace ui {
 
     class node;
     class action;
-    class batch;
     class collision_detector;
 
     class renderer : public renderer_base {
@@ -65,10 +64,6 @@ namespace ui {
         void insert_action(ui::action);
         void erase_action(ui::action const &);
         void erase_action(ui::node const &target);
-
-        std::vector<ui::batch> batches() const;
-        void insert_batch(ui::batch);
-        void erase_batch(ui::batch const &);
 
         ui::collision_detector const &collision_detector() const;
         ui::collision_detector &collision_detector();
