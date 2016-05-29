@@ -111,21 +111,38 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             _needs_update_matrix = false;
         }
 
-        _render_matrix = render_info.render_matrix * _local_matrix;
-
-        if (auto &mesh = mesh_property.value()) {
-            mesh.renderable().set_matrix(_render_matrix);
-            render_info.render_encodable.push_back_mesh(mesh);
-        }
+        _matrix = render_info.matrix * _local_matrix;
+        auto const mesh_matrix = render_info.mesh_matrix * _local_matrix;
 
         if (auto &collider = collider_property.value()) {
-            collider.renderable().set_matrix(_render_matrix);
+            collider.renderable().set_matrix(_matrix);
             render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
         }
 
-        for (auto &sub_node : _children) {
-            render_info.render_matrix = _render_matrix;
-            sub_node.impl_ptr<impl>()->update_render_info(render_info);
+        if (auto &mesh = mesh_property.value()) {
+            mesh.renderable().set_matrix(mesh_matrix);
+            render_info.render_encodable.push_back_mesh(mesh);
+        }
+
+        if (auto batch = batch_property.value()) {
+            ui::render_info batch_render_info;
+            batch_render_info.collision_detector = render_info.collision_detector;
+#warning todo batchのrender_encodableをrender_infoにアサインする
+#warning todo childrenの更新が必要か確認する。必要ならchildrenのupdate_render_infoを呼ぶ。必要なければ前回更新したものを再利用する
+
+            for (auto &sub_node : _children) {
+                batch_render_info.matrix = _matrix;
+                batch_render_info.mesh_matrix = matrix_identity_float4x4;
+                sub_node.impl_ptr<impl>()->update_render_info(batch_render_info);
+            }
+
+#warning todo ここでbatchのmeshをrender_infoにpush_back_meshする
+        } else {
+            for (auto &sub_node : _children) {
+                render_info.matrix = _matrix;
+                render_info.mesh_matrix = mesh_matrix;
+                sub_node.impl_ptr<impl>()->update_render_info(render_info);
+            }
         }
     }
 
@@ -178,7 +195,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     ui::point convert_position(ui::point const &loc) {
-        auto const loc4 = simd::float4x4(matrix_invert(_render_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
+        auto const loc4 = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
     }
 
@@ -218,7 +235,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
    private:
     std::vector<ui::node> _children;
 
-    simd::float4x4 _render_matrix = matrix_identity_float4x4;
+    simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     bool _needs_update_matrix = true;
