@@ -11,7 +11,8 @@
 using namespace yas;
 
 struct ui::batch::impl : base::impl, renderable_batch::impl {
-    impl() {
+    void clear() override {
+#warning todo
     }
 };
 

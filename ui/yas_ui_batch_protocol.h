@@ -9,9 +9,13 @@
 namespace yas {
 namespace ui {
     struct renderable_batch : protocol {
-        struct impl : protocol::impl {};
+        struct impl : protocol::impl {
+            virtual void clear() = 0;
+        };
 
         explicit renderable_batch(std::shared_ptr<impl>);
+
+        void clear();
     };
 }
 }
