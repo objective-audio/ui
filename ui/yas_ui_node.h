@@ -20,6 +20,7 @@ namespace ui {
     class point;
     class size;
     class color;
+    class batch;
 
     class node : public base {
        public:
@@ -44,6 +45,8 @@ namespace ui {
         ui::mesh &mesh();
         ui::collider const &collider() const;
         ui::collider &collider();
+        ui::batch const &batch() const;
+        ui::batch &batch();
 
         void set_position(ui::point);
         void set_angle(float const);
@@ -53,6 +56,7 @@ namespace ui {
         void set_mesh(ui::mesh);
         void set_collider(ui::collider);
         void set_enabled(bool const);
+        void set_batch(ui::batch);
 
         void push_front_sub_node(ui::node);
         void push_back_sub_node(ui::node);
