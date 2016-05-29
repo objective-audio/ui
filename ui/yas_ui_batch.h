@@ -22,10 +22,3 @@ namespace ui {
     };
 }
 }
-
-template <>
-struct std::hash<yas::ui::batch> {
-    std::size_t operator()(yas::ui::batch const &key) const {
-        return std::hash<uintptr_t>()(key.identifier());
-    }
-};
