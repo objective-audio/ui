@@ -7,20 +7,16 @@
 using namespace yas;
 
 void sample::main::setup() {
-    renderer.insert_batch(_batch);
-
     auto &root_node = renderer.root_node();
 
     root_node.push_back_sub_node(_bg_node.square_node().node());
+    root_node.push_back_sub_node(_cursor_over_node.node());
     root_node.push_back_sub_node(_button_node.square_node().node());
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_text_node.strings_node().square_node().node());
     root_node.push_back_sub_node(_modifier_node.strings_node().square_node().node());
     root_node.push_back_sub_node(_button_status_node.strings_node().square_node().node());
-
-    root_node.push_back_sub_node(_batch.render_node());
-    _batch.root_node().push_back_sub_node(_cursor_over_node.node());
 
     _text_node.strings_node().set_font_atlas(_font_atlas);
     _modifier_node.strings_node().set_font_atlas(_font_atlas);
