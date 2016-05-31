@@ -2,7 +2,9 @@
 //  yas_ui_mesh.mm
 //
 
+#include "yas_each_index.h"
 #include "yas_objc_ptr.h"
+#include "yas_ui_batch_render_mesh_info.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
@@ -32,6 +34,22 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _matrix = std::move(matrix);
     }
 
+    std::size_t render_vertex_count() override {
+        if (_is_skip_render()) {
+            return 0;
+        }
+
+        return _mesh_data.vertex_count();
+    }
+
+    std::size_t render_index_count() override {
+        if (_is_skip_render()) {
+            return 0;
+        }
+
+        return _mesh_data.index_count();
+    }
+
     bool needs_update_for_render() override {
         if (_needs_update_for_render) {
             return true;
@@ -44,21 +62,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     void metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
                       ui::metal_encode_info const &encode_info) override {
-        _needs_update_for_render = false;
-
-        if (!_mesh_data) {
-            return;
-        }
-
-        _mesh_data.renderable().update_render_buffer_if_needed();
-
-        auto const index_count = _mesh_data.index_count();
-
-        if (index_count == 0) {
-            return;
-        }
-
-        if (_is_skip_render_for_clear_color()) {
+        if (!_ready_render()) {
             return;
         }
 
@@ -88,12 +92,51 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         constant_buffer_offset += sizeof(uniforms2d_t);
 
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(_primitive_type)
-                            indexCount:index_count
+                            indexCount:_mesh_data.index_count()
                              indexType:MTLIndexTypeUInt32
                            indexBuffer:_mesh_data.renderable().indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
         renderer.set_constant_buffer_offset(constant_buffer_offset);
+    }
+
+    void batch_render(ui::batch_render_mesh_info &mesh_info) override {
+        if (!_ready_render()) {
+            return;
+        }
+
+        mesh_info.mesh_data.write([
+                &src_mesh_data = _mesh_data,
+                &matrix = _matrix,
+                &color = _color,
+                is_use_mesh_color = _use_mesh_color,
+                &mesh_info
+        ](auto &vertices, auto &indices) {
+            auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
+            auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
+
+            auto *dst_indices = &indices[dst_index_offset];
+            auto const *src_indices = src_mesh_data.indices();
+
+            for (auto const &idx : make_each(src_mesh_data.index_count())) {
+                dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
+            }
+
+            auto *dst_vertices = &vertices[dst_vertex_offset];
+            auto const *src_vertices = src_mesh_data.vertices();
+
+            for (auto const &idx : make_each(src_mesh_data.vertex_count())) {
+                auto &dst_vertex = dst_vertices[idx];
+                auto &src_vertex = src_vertices[idx];
+                auto pos = matrix * simd::float4{src_vertex.position[0], src_vertex.position[1], 0.0f, 1.0f};
+                dst_vertex.position = simd::float2{pos.x, pos.y};
+                dst_vertex.tex_coord = src_vertex.tex_coord;
+                dst_vertex.color = is_use_mesh_color ? src_vertex.color : color;
+            }
+        });
+
+        mesh_info.vertex_idx += _mesh_data.vertex_count();
+        mesh_info.index_idx += _mesh_data.index_count();
     }
 
     ui::mesh_data &mesh_data() {
@@ -168,8 +211,32 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         }
     }
 
-    bool _is_skip_render_for_clear_color() {
-        return !_use_mesh_color && _color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f;
+    bool _is_skip_render() {
+        if (!_mesh_data || _mesh_data.index_count() == 0) {
+            return true;
+        }
+
+        if (!_use_mesh_color && _color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f) {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool _ready_render() {
+        _needs_update_for_render = false;
+
+        if (_mesh_data) {
+            _mesh_data.renderable().update_render_buffer_if_needed();
+        } else {
+            return false;
+        }
+
+        if (_is_skip_render()) {
+            return false;
+        }
+
+        return true;
     }
 };
 

@@ -10,7 +10,12 @@ void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
     root_node.push_back_sub_node(_bg_node.square_node().node());
-    root_node.push_back_sub_node(_cursor_over_node.node());
+
+    ui::node batch_node;
+    batch_node.set_batch(ui::batch{});
+    batch_node.push_back_sub_node(_cursor_over_node.node());
+    root_node.push_back_sub_node(std::move(batch_node));
+
     root_node.push_back_sub_node(_button_node.square_node().node());
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());

@@ -75,6 +75,7 @@
 /* Begin PBXFileReference section */
 		B61AE4CA1CF9868C001479E3 /* yas_ui_metal_render_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_render_encoder.h; sourceTree = "<group>"; };
 		B61AE4CB1CF9868C001479E3 /* yas_ui_metal_render_encoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_render_encoder.mm; sourceTree = "<group>"; };
+		B63085871CFC91DC009FCAEC /* yas_ui_batch_render_mesh_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch_render_mesh_info.h; sourceTree = "<group>"; };
 		B63C41421CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_batch_protocol.mm; sourceTree = "<group>"; };
 		B63C41431CF5C9DA005A8E60 /* yas_ui_batch_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch_protocol.h; sourceTree = "<group>"; };
 		B63C414D1CF9321C005A8E60 /* yas_ui_render_encoder_protocol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_render_encoder_protocol.mm; sourceTree = "<group>"; };
@@ -301,6 +302,7 @@
 				B65F6DBD1CC87DB6007C3523 /* yas_ui_action.mm */,
 				B63C41431CF5C9DA005A8E60 /* yas_ui_batch_protocol.h */,
 				B63C41421CF5C9DA005A8E60 /* yas_ui_batch_protocol.mm */,
+				B63085871CFC91DC009FCAEC /* yas_ui_batch_render_mesh_info.h */,
 				B64F91111CF2953000365111 /* yas_ui_batch.h */,
 				B64F91121CF2953000365111 /* yas_ui_batch.mm */,
 				B69FF9DA1CCFBD450036B0FA /* yas_ui_collider_protocol.cpp */,
