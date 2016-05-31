@@ -100,7 +100,7 @@ class ui::renderer::impl : public renderer_base::impl {
     }
 
     bool pre_render() override {
-        _root_node.metal().setup(device());
+        _root_node.metal().metal_setup(device());
 
         _action.updatable().update(std::chrono::system_clock::now());
 

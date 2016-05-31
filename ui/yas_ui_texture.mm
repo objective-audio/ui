@@ -26,7 +26,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
           format(pixel_format) {
     }
 
-    ui::setup_metal_result setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
         if (![_device.object() isEqual:device]) {
             _device.set_object(device);
             texture_object.set_object(nil);
@@ -253,7 +253,7 @@ namespace ui {
 ui::make_texture_result ui::make_texture(id<MTLDevice> const device, uint_size const point_size,
                                          double const scale_factor, MTLPixelFormat const pixel_format) {
     auto factory = ui::texture_factory{point_size, scale_factor, pixel_format};
-    if (auto result = factory.metal().setup(device)) {
+    if (auto result = factory.metal().metal_setup(device)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};

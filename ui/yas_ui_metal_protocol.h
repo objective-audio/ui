@@ -24,12 +24,12 @@ namespace ui {
 
     struct metal_object : protocol {
         struct impl : protocol::impl {
-            virtual ui::setup_metal_result setup(id<MTLDevice> const) = 0;
+            virtual ui::setup_metal_result metal_setup(id<MTLDevice> const) = 0;
         };
 
         explicit metal_object(std::shared_ptr<impl>);
 
-        ui::setup_metal_result setup(id<MTLDevice> const device);
+        ui::setup_metal_result metal_setup(id<MTLDevice> const device);
     };
 }
 
