@@ -17,9 +17,9 @@ using namespace yas;
 struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     impl() = default;
 
-    ui::setup_metal_result setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
         if (_mesh_data) {
-            return _mesh_data.metal().setup(device);
+            return _mesh_data.metal().metal_setup(device);
         }
         return ui::setup_metal_result{nullptr};
     }

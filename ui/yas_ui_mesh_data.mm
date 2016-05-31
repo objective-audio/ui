@@ -14,7 +14,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         : _vertex_count(vertex_count), _vertices(vertex_count), _index_count(index_count), _indices(index_count) {
     }
 
-    ui::setup_metal_result setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
         if (![_device.object() isEqual:device]) {
             _device.set_object(device);
             _vertex_buffer.set_object(nil);

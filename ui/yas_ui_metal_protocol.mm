@@ -9,8 +9,8 @@ using namespace yas;
 ui::metal_object::metal_object(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
-ui::setup_metal_result ui::metal_object::setup(id<MTLDevice> const device) {
-    return impl_ptr<impl>()->setup(device);
+ui::setup_metal_result ui::metal_object::metal_setup(id<MTLDevice> const device) {
+    return impl_ptr<impl>()->metal_setup(device);
 }
 
 std::string yas::to_string(ui::setup_metal_error const error) {

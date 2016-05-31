@@ -146,15 +146,15 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    ui::setup_metal_result setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
         if (auto &mesh = mesh_property.value()) {
-            if (auto ul = unless(mesh.metal().setup(device))) {
+            if (auto ul = unless(mesh.metal().metal_setup(device))) {
                 return std::move(ul.value);
             }
         }
 
         for (auto &sub_node : _children) {
-            if (auto ul = unless(sub_node.metal().setup(device))) {
+            if (auto ul = unless(sub_node.metal().metal_setup(device))) {
                 return std::move(ul.value);
             }
         }
