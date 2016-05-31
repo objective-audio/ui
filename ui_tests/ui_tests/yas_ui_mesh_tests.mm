@@ -240,7 +240,7 @@ using namespace yas;
     XCTAssertNil(mesh_data.renderable().vertexBuffer());
     XCTAssertNil(mesh_data.renderable().indexBuffer());
 
-    auto setup_result = mesh_data.metal().setup(device.object());
+    auto setup_result = mesh_data.metal().metal_setup(device.object());
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -265,7 +265,7 @@ using namespace yas;
     XCTAssertNil(mesh_data.renderable().vertexBuffer());
     XCTAssertNil(mesh_data.renderable().indexBuffer());
 
-    auto setup_result = mesh_data.metal().setup(device.object());
+    auto setup_result = mesh_data.metal().metal_setup(device.object());
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -289,7 +289,7 @@ using namespace yas;
 
     auto renderable = mesh_data.renderable();
 
-    XCTAssertTrue(mesh_data.metal().setup(device.object()));
+    XCTAssertTrue(mesh_data.metal().metal_setup(device.object()));
 
     ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable.vertexBuffer() contents]);
     ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable.indexBuffer() contents]);
