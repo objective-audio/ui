@@ -122,7 +122,9 @@ class ui::renderer::impl : public renderer_base::impl {
         _root_node.renderable().update_render_info(render_info);
         _detector.updatable().finalize();
 
-        _root_node.metal().metal_setup(device());
+        for (auto &batch : render_info.batches) {
+            batch.metal().metal_setup(device());
+        }
 
         auto renderer = cast<ui::renderer_base>();
         metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);

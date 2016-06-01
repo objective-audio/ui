@@ -8,12 +8,14 @@
 #include "yas_ui_batch_render_mesh_info.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
+#include "yas_ui_metal_protocol.h"
 #include "yas_ui_node.h"
 #include "yas_ui_texture.h"
+#include "yas_unless.h"
 
 using namespace yas;
 
-struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::impl {
+struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::impl, metal_object::impl {
     void push_back_mesh(ui::mesh &&mesh) override {
         ui::batch_render_mesh_info &mesh_info = _find_or_make_mesh_info(mesh.texture());
 
@@ -47,6 +49,16 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     void clear() override {
         _render_meshes.clear();
         _render_mesh_infos.clear();
+    }
+
+    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
+        for (auto &mesh : _render_meshes) {
+            if (auto ul = unless(mesh.metal().metal_setup(device))) {
+                return std::move(ul.value);
+            };
+        }
+
+        return ui::setup_metal_result{nullptr};
     }
 
    private:
@@ -84,4 +96,8 @@ ui::renderable_batch ui::batch::renderable() {
 
 ui::render_encodable ui::batch::encodable() {
     return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+}
+
+ui::metal_object ui::batch::metal() {
+    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
 }
