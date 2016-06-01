@@ -127,10 +127,6 @@ std::string yas::to_string(ui::float_region const &region) {
     return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
 }
 
-std::string yas::to_string(simd::float2 const &value) {
-    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
-}
-
 std::string yas::to_string(ui::point const &point) {
     return "{" + std::to_string(point.x) + ", " + std::to_string(point.y) + "}";
 }
@@ -142,6 +138,19 @@ std::string yas::to_string(ui::size const &size) {
 std::string yas::to_string(ui::color const &color) {
     return "{" + std::to_string(color.red) + ", " + std::to_string(color.green) + ", " + std::to_string(color.blue) +
            "}";
+}
+
+std::string yas::to_string(simd::float2 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
+}
+
+std::string yas::to_string(simd::float3 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + "}";
+}
+
+std::string yas::to_string(simd::float4 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ", " +
+           std::to_string(value.w) + "}";
 }
 
 #pragma mark -

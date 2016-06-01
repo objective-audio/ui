@@ -140,6 +140,8 @@ std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
 std::string to_string(ui::color const &);
 std::string to_string(simd::float2 const &);
+std::string to_string(simd::float3 const &);
+std::string to_string(simd::float4 const &);
 }
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);

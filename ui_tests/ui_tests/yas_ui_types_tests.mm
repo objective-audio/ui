@@ -214,6 +214,14 @@ using namespace yas;
     XCTAssertEqual(to_string(simd::float2{1.0f, 2.0f}), "{1.000000, 2.000000}");
 }
 
+- (void)test_simd_float3_to_string {
+    XCTAssertEqual(to_string(simd::float3{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
+}
+
+- (void)test_simd_float4_to_string {
+    XCTAssertEqual(to_string(simd::float4{1.0f, 2.0f, 3.0f, 4.0f}), "{1.000000, 2.000000, 3.000000, 4.000000}");
+}
+
 - (void)test_ostream {
     std::cout << ui::uint_origin{1, 2} << std::endl;
     std::cout << ui::uint_size{3, 4} << std::endl;
