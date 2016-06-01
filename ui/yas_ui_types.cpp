@@ -155,6 +155,18 @@ std::string yas::to_string(simd::float4 const &value) {
 
 #pragma mark -
 
+bool yas::is_equal(simd::float2 const &lhs, simd::float2 const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool yas::is_equal(simd::float3 const &lhs, simd::float3 const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
+
+bool yas::is_equal(simd::float4 const &lhs, simd::float4 const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+}
+
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
