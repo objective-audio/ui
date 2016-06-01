@@ -11,6 +11,7 @@ namespace yas {
 namespace ui {
     class node;
     class renderable_batch;
+    class metal_object;
 
     class batch : public base {
         class impl;
@@ -21,6 +22,7 @@ namespace ui {
 
         ui::renderable_batch renderable();
         ui::render_encodable encodable();
+        ui::metal_object metal();
     };
 }
 }

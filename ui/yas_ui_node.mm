@@ -157,6 +157,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 mesh.renderable().set_matrix(mesh_matrix);
                 render_info.render_encodable.push_back_mesh(mesh);
             }
+
+            render_info.batches.push_back(batch);
         } else {
             for (auto &sub_node : _children) {
                 render_info.matrix = _matrix;
@@ -176,14 +178,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         for (auto &sub_node : _children) {
             if (auto ul = unless(sub_node.metal().metal_setup(device))) {
                 return std::move(ul.value);
-            }
-        }
-
-        if (auto &batch = batch_property.value()) {
-            for (auto &mesh : batch.renderable().meshes()) {
-                if (auto ul = unless(mesh.metal().metal_setup(device))) {
-                    return std::move(ul.value);
-                }
             }
         }
 
