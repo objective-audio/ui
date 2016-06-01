@@ -48,6 +48,14 @@ void ui::renderable_mesh::set_matrix(simd::float4x4 matrix) {
     impl_ptr<impl>()->set_matrix(std::move(matrix));
 }
 
+std::size_t ui::renderable_mesh::render_vertex_count() {
+    return impl_ptr<impl>()->render_vertex_count();
+}
+
+std::size_t ui::renderable_mesh::render_index_count() {
+    return impl_ptr<impl>()->render_index_count();
+}
+
 bool ui::renderable_mesh::needs_update_for_render() {
     return impl_ptr<impl>()->needs_update_for_render();
 }
@@ -55,4 +63,8 @@ bool ui::renderable_mesh::needs_update_for_render() {
 void ui::renderable_mesh::metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
                                        ui::metal_encode_info const &encode_info) {
     impl_ptr<impl>()->metal_render(renderer, encoder, encode_info);
+}
+
+void ui::renderable_mesh::batch_render(batch_render_mesh_info &mesh_info) {
+    impl_ptr<impl>()->batch_render(mesh_info);
 }

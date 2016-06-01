@@ -119,16 +119,29 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
         }
 
-        if (auto &mesh = mesh_property.value()) {
-            mesh.renderable().set_matrix(mesh_matrix);
-            render_info.render_encodable.push_back_mesh(mesh);
+        if (auto &render_encodable = render_info.render_encodable) {
+            if (auto &mesh = mesh_property.value()) {
+                mesh.renderable().set_matrix(mesh_matrix);
+                render_encodable.push_back_mesh(mesh);
+            }
         }
 
         if (auto batch = batch_property.value()) {
             ui::render_info batch_render_info;
             batch_render_info.collision_detector = render_info.collision_detector;
-#warning todo batchのrender_encodableをrender_infoにアサインする
-#warning todo childrenの更新が必要か確認する。必要ならchildrenのupdate_render_infoを呼ぶ。必要なければ前回更新したものを再利用する
+
+            bool needs_update_for_render = false;
+            for (auto &sub_node : _children) {
+                if (sub_node.renderable().needs_update_for_render()) {
+                    needs_update_for_render = true;
+                    break;
+                }
+            }
+
+            if (needs_update_for_render) {
+                batch_render_info.render_encodable = batch.encodable();
+                batch.renderable().clear();
+            }
 
             for (auto &sub_node : _children) {
                 batch_render_info.matrix = _matrix;
@@ -136,7 +149,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 sub_node.impl_ptr<impl>()->update_render_info(batch_render_info);
             }
 
-#warning todo ここでbatchのmeshをrender_infoにpush_back_meshする
+            if (needs_update_for_render) {
+                batch.renderable().commit();
+            }
+
+            for (auto &mesh : batch.renderable().meshes()) {
+                mesh.renderable().set_matrix(mesh_matrix);
+                render_info.render_encodable.push_back_mesh(mesh);
+            }
         } else {
             for (auto &sub_node : _children) {
                 render_info.matrix = _matrix;
@@ -156,6 +176,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         for (auto &sub_node : _children) {
             if (auto ul = unless(sub_node.metal().metal_setup(device))) {
                 return std::move(ul.value);
+            }
+        }
+
+        if (auto &batch = batch_property.value()) {
+            for (auto &mesh : batch.renderable().meshes()) {
+                if (auto ul = unless(mesh.metal().metal_setup(device))) {
+                    return std::move(ul.value);
+                }
             }
         }
 
@@ -403,8 +431,10 @@ void ui::node::set_collider(ui::collider collider) {
 }
 
 void ui::node::set_batch(ui::batch batch) {
+    if (batch) {
+        batch.renderable().clear();
+    }
     impl_ptr<impl>()->batch_property.set_value(std::move(batch));
-    batch.renderable().clear();
 }
 
 void ui::node::set_enabled(bool const enabled) {

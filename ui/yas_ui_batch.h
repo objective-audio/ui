@@ -5,6 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
+#include "yas_ui_render_encoder_protocol.h"
 
 namespace yas {
 namespace ui {
@@ -19,6 +20,7 @@ namespace ui {
         batch(std::nullptr_t);
 
         ui::renderable_batch renderable();
+        ui::render_encodable encodable();
     };
 }
 }

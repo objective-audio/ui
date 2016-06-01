@@ -100,8 +100,6 @@ class ui::renderer::impl : public renderer_base::impl {
     }
 
     bool pre_render() override {
-        _root_node.metal().metal_setup(device());
-
         _action.updatable().update(std::chrono::system_clock::now());
 
         return _root_node.renderable().needs_update_for_render();
@@ -118,12 +116,15 @@ class ui::renderer::impl : public renderer_base::impl {
         render_info.matrix = projection_matrix();
         render_info.mesh_matrix = projection_matrix();
 
+        _root_node.metal().metal_setup(device());
+
         _detector.updatable().clear_colliders_if_needed();
         _root_node.renderable().update_render_info(render_info);
         _detector.updatable().finalize();
 
-        auto renderer = cast<ui::renderer_base>();
+        _root_node.metal().metal_setup(device());
 
+        auto renderer = cast<ui::renderer_base>();
         metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);
     }
 

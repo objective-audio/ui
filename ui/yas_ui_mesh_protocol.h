@@ -12,6 +12,7 @@ namespace yas {
 namespace ui {
     class renderer_base;
     class metal_encode_info;
+    class batch_render_mesh_info;
 
     struct renderable_mesh_data : protocol {
         struct impl : protocol::impl {
@@ -39,17 +40,23 @@ namespace ui {
         struct impl : protocol::impl {
             virtual simd::float4x4 const &matrix() = 0;
             virtual void set_matrix(simd::float4x4 &&) = 0;
+            virtual std::size_t render_vertex_count() = 0;
+            virtual std::size_t render_index_count() = 0;
             virtual bool needs_update_for_render() = 0;
             virtual void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const,
                                       ui::metal_encode_info const &) = 0;
+            virtual void batch_render(batch_render_mesh_info &) = 0;
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
 
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);
+        std::size_t render_vertex_count();
+        std::size_t render_index_count();
         bool needs_update_for_render();
         void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
+        void batch_render(batch_render_mesh_info &);
     };
 }
 }
