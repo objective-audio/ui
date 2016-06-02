@@ -109,6 +109,9 @@ ui::modifier_flags ui::modifier_event::flag() const {
 ui::event_inputtable::event_inputtable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::event_inputtable::event_inputtable(std::nullptr_t) : protocol(nullptr) {
+}
+
 void ui::event_inputtable::input_cursor_event(cursor_event value) {
     impl_ptr<impl>()->input_cursor_event(std::move(value));
 }
