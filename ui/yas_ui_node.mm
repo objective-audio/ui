@@ -129,6 +129,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         if (auto batch = batch_property.value()) {
             ui::render_info batch_render_info;
             batch_render_info.collision_detector = render_info.collision_detector;
+            auto &batch_renderable = batch.renderable();
 
             bool needs_update_for_render = false;
             for (auto &sub_node : _children) {
@@ -140,7 +141,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             if (needs_update_for_render) {
                 batch_render_info.render_encodable = batch.encodable();
-                batch.renderable().clear();
+                batch_renderable.clear();
             }
 
             for (auto &sub_node : _children) {
@@ -150,10 +151,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             }
 
             if (needs_update_for_render) {
-                batch.renderable().commit();
+                batch_renderable.commit();
             }
 
-            for (auto &mesh : batch.renderable().meshes()) {
+            for (auto &mesh : batch_renderable.meshes()) {
                 mesh.renderable().set_matrix(mesh_matrix);
                 render_info.render_encodable.push_back_mesh(mesh);
             }

@@ -17,7 +17,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     void push_back_mesh(ui::mesh &&mesh) override {
         ui::batch_render_mesh_info &mesh_info = _find_or_make_mesh_info(mesh.texture());
 
-        auto renderable_mesh = mesh.renderable();
+        auto &renderable_mesh = mesh.renderable();
         mesh_info.vertex_count += renderable_mesh.render_vertex_count();
         mesh_info.index_count += renderable_mesh.render_index_count();
 

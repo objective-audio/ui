@@ -120,9 +120,11 @@ class ui::renderer::impl : public renderer_base::impl {
 
         _root_node.metal().metal_setup(device());
 
-        _detector.updatable().clear_colliders_if_needed();
+        auto &detector_updatable = _detector.updatable();
+
+        detector_updatable.clear_colliders_if_needed();
         _root_node.renderable().update_render_info(render_info);
-        _detector.updatable().finalize();
+        detector_updatable.finalize();
 
         for (auto &batch : render_info.batches) {
             batch.metal().metal_setup(device());

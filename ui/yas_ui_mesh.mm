@@ -66,8 +66,9 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return;
         }
 
-        auto const vertex_buffer_byte_offset = _mesh_data.renderable().vertex_buffer_byte_offset();
-        auto const index_buffer_byte_offset = _mesh_data.renderable().index_buffer_byte_offset();
+        auto &renderable_mesh_data = _mesh_data.renderable();
+        auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
+        auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
         auto constant_buffer_offset = renderer.constant_buffer_offset();
         auto currentConstantBuffer = renderer.currentConstantBuffer();
 
@@ -86,7 +87,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
 
-        [encoder setVertexBuffer:_mesh_data.renderable().vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
+        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
         [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
 
         constant_buffer_offset += sizeof(uniforms2d_t);
@@ -94,7 +95,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(_primitive_type)
                             indexCount:_mesh_data.index_count()
                              indexType:MTLIndexTypeUInt32
-                           indexBuffer:_mesh_data.renderable().indexBuffer()
+                           indexBuffer:renderable_mesh_data.indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
         renderer.set_constant_buffer_offset(constant_buffer_offset);
