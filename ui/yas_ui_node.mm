@@ -467,12 +467,18 @@ ui::renderer ui::node::renderer() const {
     return impl_ptr<impl>()->renderer();
 }
 
-ui::metal_object ui::node::metal() {
-    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+ui::metal_object &ui::node::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
 }
 
-ui::renderable_node ui::node::renderable() {
-    return ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
+ui::renderable_node &ui::node::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
+    }
+    return _renderable;
 }
 
 ui::node::subject_t &ui::node::subject() {
