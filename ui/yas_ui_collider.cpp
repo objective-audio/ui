@@ -87,8 +87,11 @@ bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
 }
 
-ui::renderable_collider ui::collider::renderable() {
-    return ui::renderable_collider{impl_ptr<ui::renderable_collider::impl>()};
+ui::renderable_collider &ui::collider::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_collider{impl_ptr<ui::renderable_collider::impl>()};
+    }
+    return _renderable;
 }
 
 #pragma mark -

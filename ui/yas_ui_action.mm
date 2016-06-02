@@ -16,6 +16,9 @@ using namespace std::chrono_literals;
 ui::updatable_action::updatable_action(std::shared_ptr<impl> &&impl) : protocol(std::move(impl)) {
 }
 
+ui::updatable_action::updatable_action(std::nullptr_t) : protocol(nullptr) {
+}
+
 bool ui::updatable_action::update(time_point_t const &time) {
     return impl_ptr<impl>()->update(time);
 }
@@ -101,8 +104,11 @@ void ui::action::set_completion_handler(action_completion_f handler) {
     impl_ptr<impl>()->completion_handler = std::move(handler);
 }
 
-ui::updatable_action ui::action::updatable() {
-    return ui::updatable_action{impl_ptr<ui::updatable_action::impl>()};
+ui::updatable_action &ui::action::updatable() {
+    if (!_updatable) {
+        _updatable = ui::updatable_action{impl_ptr<ui::updatable_action::impl>()};
+    }
+    return _updatable;
 }
 
 #pragma mark - action::impl

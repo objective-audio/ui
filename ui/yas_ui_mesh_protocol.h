@@ -26,6 +26,7 @@ namespace ui {
         };
 
         explicit renderable_mesh_data(std::shared_ptr<impl>);
+        renderable_mesh_data(std::nullptr_t);
 
         std::size_t vertex_buffer_byte_offset();
         std::size_t index_buffer_byte_offset();
@@ -49,6 +50,7 @@ namespace ui {
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
+        renderable_mesh(std::nullptr_t);
 
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);

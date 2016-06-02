@@ -19,6 +19,7 @@ namespace ui {
         };
 
         explicit renderable_batch(std::shared_ptr<impl>);
+        renderable_batch(std::nullptr_t);
 
         std::vector<ui::mesh> &meshes();
         void commit();

@@ -66,8 +66,9 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return;
         }
 
-        auto const vertex_buffer_byte_offset = _mesh_data.renderable().vertex_buffer_byte_offset();
-        auto const index_buffer_byte_offset = _mesh_data.renderable().index_buffer_byte_offset();
+        auto &renderable_mesh_data = _mesh_data.renderable();
+        auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
+        auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
         auto constant_buffer_offset = renderer.constant_buffer_offset();
         auto currentConstantBuffer = renderer.currentConstantBuffer();
 
@@ -86,7 +87,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
 
-        [encoder setVertexBuffer:_mesh_data.renderable().vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
+        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
         [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
 
         constant_buffer_offset += sizeof(uniforms2d_t);
@@ -94,7 +95,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(_primitive_type)
                             indexCount:_mesh_data.index_count()
                              indexType:MTLIndexTypeUInt32
-                           indexBuffer:_mesh_data.renderable().indexBuffer()
+                           indexBuffer:renderable_mesh_data.indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
         renderer.set_constant_buffer_offset(constant_buffer_offset);
@@ -290,10 +291,16 @@ void ui::mesh::set_primitive_type(ui::primitive_type const type) {
 
 #pragma mark - protocol
 
-ui::metal_object ui::mesh::metal() {
-    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+ui::metal_object &ui::mesh::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
 }
 
-ui::renderable_mesh ui::mesh::renderable() {
-    return ui::renderable_mesh{impl_ptr<ui::renderable_mesh::impl>()};
+ui::renderable_mesh &ui::mesh::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_mesh{impl_ptr<ui::renderable_mesh::impl>()};
+    }
+    return _renderable;
 }

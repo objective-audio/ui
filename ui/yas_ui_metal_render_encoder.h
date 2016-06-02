@@ -30,7 +30,10 @@ namespace ui {
         void render(ui::renderer_base &renderer, id<MTLCommandBuffer> const commandBuffer,
                     MTLRenderPassDescriptor *const renderPassDesc);
 
-        ui::render_encodable encodable();
+        ui::render_encodable &encodable();
+
+       private:
+        ui::render_encodable _encodable = nullptr;
     };
 }
 }

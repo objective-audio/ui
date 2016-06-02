@@ -122,6 +122,7 @@ namespace ui {
         };
 
         explicit event_inputtable(std::shared_ptr<impl>);
+        event_inputtable(std::nullptr_t);
 
         void input_cursor_event(cursor_event);
         void input_touch_event(event_phase const, touch_event);

@@ -33,8 +33,12 @@ namespace ui {
         void set_use_mesh_color(bool const);
         void set_primitive_type(ui::primitive_type const);
 
-        ui::metal_object metal();
-        ui::renderable_mesh renderable();
+        ui::metal_object &metal();
+        ui::renderable_mesh &renderable();
+
+       private:
+        ui::metal_object _metal_object = nullptr;
+        ui::renderable_mesh _renderable = nullptr;
     };
 }
 }

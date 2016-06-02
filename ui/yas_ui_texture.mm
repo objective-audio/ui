@@ -232,8 +232,11 @@ ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui
     return impl_ptr<impl>()->replace_image(image, actual_origin);
 }
 
-ui::metal_object ui::texture::metal() {
-    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+ui::metal_object &ui::texture::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
 }
 
 #pragma mark -

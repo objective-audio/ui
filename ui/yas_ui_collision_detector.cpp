@@ -10,8 +10,10 @@ using namespace yas;
 
 #pragma mark - ui::updatable_collision_detector
 
-ui::updatable_collision_detector::updatable_collision_detector(std::shared_ptr<impl> impl)
-    : yas::protocol(std::move(impl)) {
+ui::updatable_collision_detector::updatable_collision_detector(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
+}
+
+ui::updatable_collision_detector::updatable_collision_detector(std::nullptr_t) : protocol(nullptr) {
 }
 
 void ui::updatable_collision_detector::set_needs_update_colliders() {
@@ -92,6 +94,9 @@ bool ui::collision_detector::detect(ui::point const &location, ui::collider cons
     return impl_ptr<impl>()->detect(location, collider);
 }
 
-ui::updatable_collision_detector ui::collision_detector::updatable() {
-    return ui::updatable_collision_detector{impl_ptr<ui::updatable_collision_detector::impl>()};
+ui::updatable_collision_detector &ui::collision_detector::updatable() {
+    if (!_updatable) {
+        _updatable = ui::updatable_collision_detector{impl_ptr<ui::updatable_collision_detector::impl>()};
+    }
+    return _updatable;
 }

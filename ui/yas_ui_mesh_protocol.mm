@@ -11,6 +11,9 @@ using namespace yas;
 ui::renderable_mesh_data::renderable_mesh_data(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::renderable_mesh_data::renderable_mesh_data(std::nullptr_t) : protocol(nullptr) {
+}
+
 std::size_t ui::renderable_mesh_data::vertex_buffer_byte_offset() {
     return impl_ptr<impl>()->vertex_buffer_byte_offset();
 }
@@ -38,6 +41,9 @@ void ui::renderable_mesh_data::update_render_buffer_if_needed() {
 #pragma mark - renderable_mesh
 
 ui::renderable_mesh::renderable_mesh(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
+}
+
+ui::renderable_mesh::renderable_mesh(std::nullptr_t) : protocol(nullptr) {
 }
 
 simd::float4x4 const &ui::renderable_mesh::matrix() {

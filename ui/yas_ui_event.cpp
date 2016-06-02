@@ -91,8 +91,11 @@ template ui::touch::type const &ui::event::get<ui::touch>() const;
 template ui::key::type const &ui::event::get<ui::key>() const;
 template ui::modifier::type const &ui::event::get<ui::modifier>() const;
 
-ui::manageable_event ui::event::manageable() {
-    return ui::manageable_event{impl_ptr<ui::manageable_event::impl>()};
+ui::manageable_event &ui::event::manageable() {
+    if (!_manageable) {
+        _manageable = ui::manageable_event{impl_ptr<ui::manageable_event::impl>()};
+    }
+    return _manageable;
 }
 
 #pragma mark - event_manager::impl
@@ -224,6 +227,9 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
 ui::manageable_event::manageable_event(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::manageable_event::manageable_event(std::nullptr_t) : protocol(nullptr) {
+}
+
 template <typename T>
 void ui::manageable_event::set(typename T::type value) {
     if (auto ip = std::dynamic_pointer_cast<event::impl<T>>(impl_ptr<impl>())) {
@@ -254,6 +260,9 @@ subject<ui::event, ui::event_method> &ui::event_manager::subject() {
     return impl_ptr<impl>()->subject;
 }
 
-ui::event_inputtable ui::event_manager::inputtable() {
-    return ui::event_inputtable{impl_ptr<ui::event_inputtable::impl>()};
+ui::event_inputtable &ui::event_manager::inputtable() {
+    if (!_inputtable) {
+        _inputtable = ui::event_inputtable{impl_ptr<ui::event_inputtable::impl>()};
+    }
+    return _inputtable;
 }

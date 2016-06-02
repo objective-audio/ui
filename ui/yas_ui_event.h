@@ -18,6 +18,7 @@ namespace ui {
         };
 
         explicit manageable_event(std::shared_ptr<impl>);
+        manageable_event(std::nullptr_t);
 
         template <typename T>
         void set(typename T::type);
@@ -45,7 +46,10 @@ namespace ui {
         template <typename T>
         typename T::type const &get() const;
 
-        manageable_event manageable();
+        ui::manageable_event &manageable();
+
+       private:
+        ui::manageable_event _manageable = nullptr;
     };
 
     class event_manager : public base {
@@ -57,7 +61,10 @@ namespace ui {
 
         subject<event, event_method> &subject();
 
-        event_inputtable inputtable();
+        ui::event_inputtable &inputtable();
+
+       private:
+        ui::event_inputtable _inputtable = nullptr;
     };
 }
 }

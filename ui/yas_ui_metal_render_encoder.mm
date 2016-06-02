@@ -87,6 +87,9 @@ void ui::metal_render_encoder::render(ui::renderer_base &renderer, id<MTLCommand
     impl_ptr<impl>()->render(renderer, commandBuffer, renderPassDesc);
 }
 
-ui::render_encodable ui::metal_render_encoder::encodable() {
-    return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+ui::render_encodable &ui::metal_render_encoder::encodable() {
+    if (!_encodable) {
+        _encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+    }
+    return _encodable;
 }

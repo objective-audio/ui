@@ -28,6 +28,7 @@ namespace ui {
         };
 
         explicit metal_object(std::shared_ptr<impl>);
+        metal_object(std::nullptr_t);
 
         ui::setup_metal_result metal_setup(id<MTLDevice> const device);
     };

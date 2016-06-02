@@ -36,6 +36,7 @@ namespace ui {
         };
 
         explicit renderable_node(std::shared_ptr<impl>);
+        renderable_node(std::nullptr_t);
 
         ui::renderer renderer();
         void set_renderer(ui::renderer);

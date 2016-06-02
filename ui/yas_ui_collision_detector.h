@@ -22,6 +22,7 @@ namespace ui {
         };
 
         explicit updatable_collision_detector(std::shared_ptr<impl>);
+        updatable_collision_detector(std::nullptr_t);
 
         void set_needs_update_colliders();
         void clear_colliders_if_needed();
@@ -37,10 +38,12 @@ namespace ui {
         ui::collider detect(ui::point const &) const;
         bool detect(ui::point const &, ui::collider const &) const;
 
-        updatable_collision_detector updatable();
+        ui::updatable_collision_detector &updatable();
 
        private:
         class impl;
+
+        ui::updatable_collision_detector _updatable = nullptr;
     };
 }
 }

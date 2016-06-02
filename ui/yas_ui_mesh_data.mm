@@ -143,12 +143,18 @@ void ui::mesh_data::write(
     impl_ptr<impl>()->write(func);
 }
 
-ui::metal_object ui::mesh_data::metal() {
-    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+ui::metal_object &ui::mesh_data::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
 }
 
-ui::renderable_mesh_data ui::mesh_data::renderable() {
-    return ui::renderable_mesh_data{impl_ptr<ui::renderable_mesh_data::impl>()};
+ui::renderable_mesh_data &ui::mesh_data::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_mesh_data{impl_ptr<ui::renderable_mesh_data::impl>()};
+    }
+    return _renderable;
 }
 
 #pragma mark - dynamic_mesh_data::impl

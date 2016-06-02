@@ -8,6 +8,7 @@
 #include <simd/simd.h>
 #include <vector>
 #include "yas_base.h"
+#include "yas_ui_renderer_protocol.h"
 
 namespace yas {
 template <typename T, typename K>
@@ -36,7 +37,7 @@ namespace ui {
         uint32_t constant_buffer_offset() const;
         void set_constant_buffer_offset(uint32_t const);
 
-        ui::view_renderable view_renderable();
+        ui::view_renderable &view_renderable();
 
         subject<ui::renderer_base, ui::renderer_method> &subject();
 
@@ -44,6 +45,9 @@ namespace ui {
 
        protected:
         renderer_base(std::shared_ptr<impl> &&);
+
+       private:
+        ui::view_renderable _view_renderable = nullptr;
     };
 
     class node;
