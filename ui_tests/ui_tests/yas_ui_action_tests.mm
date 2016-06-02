@@ -62,7 +62,7 @@ using namespace yas;
 - (void)test_updatable_finished {
     auto const start_time = std::chrono::system_clock::now();
     ui::continuous_action action{{.duration = 1.0, .action = {.start_time = start_time}}};
-    auto updatable_action = action.updatable();
+    auto &updatable_action = action.updatable();
 
     XCTAssertFalse(updatable_action.update(start_time + 999ms));
     XCTAssertTrue(updatable_action.update(start_time + 1000ms));
@@ -97,7 +97,7 @@ using namespace yas;
 - (void)test_start_time {
     auto time = std::chrono::system_clock::now();
     ui::action action{{.start_time = time + 1s}};
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     XCTAssertFalse(updatable.update(time));
     XCTAssertFalse(updatable.update(time + 999ms));
@@ -112,7 +112,7 @@ using namespace yas;
         {.start_position = {0.0f, -1.0f}, .end_position = {1.0f, 1.0f}, .continuous_action = std::move(args)});
     action.set_target(target);
 
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -138,7 +138,7 @@ using namespace yas;
         {.start_angle = 0.0f, .end_angle = 360.0f, .is_shortest = false, .continuous_action = std::move(args)});
     action.set_target(target);
 
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -161,7 +161,7 @@ using namespace yas;
         {.start_angle = 0.0f, .end_angle = 270.0f, .is_shortest = true, .continuous_action = std::move(args)});
     action.set_target(target);
 
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -183,7 +183,7 @@ using namespace yas;
     auto action = ui::make_action(
         {.start_angle = -180.0f, .end_angle = 90.0f, .is_shortest = true, .continuous_action = std::move(args)});
     action.set_target(target);
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -206,7 +206,7 @@ using namespace yas;
         {.start_scale = {0.0f, -1.0f}, .end_scale = {1.0f, 1.0f}, .continuous_action = std::move(args)});
     action.set_target(target);
 
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -233,7 +233,7 @@ using namespace yas;
     action.set_target(target);
     ui::mesh mesh;
     target.set_mesh(mesh);
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -262,7 +262,7 @@ using namespace yas;
     action.set_target(target);
     ui::mesh mesh;
     target.set_mesh(mesh);
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     updatable.update(time);
 
@@ -280,7 +280,7 @@ using namespace yas;
 - (void)test_completion_handler {
     auto time = std::chrono::system_clock::now();
     ui::continuous_action action{{.duration = 1.0, .action = {.start_time = time}}};
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     bool completed = false;
     action.set_completion_handler([&completed]() { completed = true; });
@@ -305,7 +305,7 @@ using namespace yas;
     auto action = ui::make_action({.start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
     action.set_target(target);
 
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     bool completed = false;
 
@@ -339,7 +339,7 @@ using namespace yas;
     auto action = ui::make_action({.start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
     action.set_target(target);
 
-    auto updatable = action.updatable();
+    auto &updatable = action.updatable();
 
     bool completed = false;
 
@@ -438,7 +438,7 @@ using namespace yas;
     auto action_sequence =
         ui::make_action_sequence({first_action, continuous_action1, end_action, continuous_action2}, time + 1s);
     action_sequence.set_completion_handler([&sequence_completed] { sequence_completed = true; });
-    auto updatable = action_sequence.updatable();
+    auto &updatable = action_sequence.updatable();
 
     XCTAssertFalse(updatable.update(time));
 
