@@ -27,6 +27,7 @@ namespace ui {
         };
 
         explicit updatable_action(std::shared_ptr<impl> &&);
+        updatable_action(std::nullptr_t);
 
         bool update(time_point_t const &time);
     };
@@ -54,10 +55,13 @@ namespace ui {
         void set_time_updater(action_time_update_f);
         void set_completion_handler(action_completion_f);
 
-        updatable_action updatable();
+        ui::updatable_action &updatable();
 
        protected:
         action(std::shared_ptr<impl> &&);
+
+       private:
+        ui::updatable_action _updatable = nullptr;
     };
 
     struct continuous_action_args {
