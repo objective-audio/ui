@@ -9,6 +9,9 @@ using namespace yas;
 ui::renderable_collider::renderable_collider(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::renderable_collider::renderable_collider(std::nullptr_t) : protocol(nullptr) {
+}
+
 simd::float4x4 const &ui::renderable_collider::matrix() {
     return impl_ptr<impl>()->matrix();
 }

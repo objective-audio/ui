@@ -16,6 +16,7 @@ namespace ui {
         };
 
         explicit renderable_collider(std::shared_ptr<impl>);
+        renderable_collider(std::nullptr_t);
 
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);

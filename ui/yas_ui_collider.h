@@ -42,7 +42,10 @@ namespace ui {
 
         bool hit_test(ui::point const &) const;
 
-        renderable_collider renderable();
+        ui::renderable_collider &renderable();
+
+       private:
+        ui::renderable_collider _renderable = nullptr;
     };
 }
 
