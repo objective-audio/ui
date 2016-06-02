@@ -290,10 +290,16 @@ void ui::mesh::set_primitive_type(ui::primitive_type const type) {
 
 #pragma mark - protocol
 
-ui::metal_object ui::mesh::metal() {
-    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+ui::metal_object &ui::mesh::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
 }
 
-ui::renderable_mesh ui::mesh::renderable() {
-    return ui::renderable_mesh{impl_ptr<ui::renderable_mesh::impl>()};
+ui::renderable_mesh &ui::mesh::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_mesh{impl_ptr<ui::renderable_mesh::impl>()};
+    }
+    return _renderable;
 }

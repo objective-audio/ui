@@ -49,6 +49,7 @@ namespace ui {
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
+        renderable_mesh(std::nullptr_t);
 
         simd::float4x4 const &matrix();
         void set_matrix(simd::float4x4);

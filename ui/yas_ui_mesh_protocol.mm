@@ -40,6 +40,9 @@ void ui::renderable_mesh_data::update_render_buffer_if_needed() {
 ui::renderable_mesh::renderable_mesh(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::renderable_mesh::renderable_mesh(std::nullptr_t) : protocol(nullptr) {
+}
+
 simd::float4x4 const &ui::renderable_mesh::matrix() {
     return impl_ptr<impl>()->matrix();
 }
