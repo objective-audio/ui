@@ -28,6 +28,7 @@ namespace ui {
         };
 
         explicit view_renderable(std::shared_ptr<impl> impl);
+        view_renderable(std::nullptr_t);
 
         void configure(YASUIMetalView *const view);
         void size_will_change(YASUIMetalView *const view, CGSize const size);

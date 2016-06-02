@@ -14,7 +14,6 @@
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_renderer_impl.h"
-#include "yas_ui_renderer_protocol.h"
 #include "yas_ui_types.h"
 
 using namespace yas;
@@ -60,8 +59,11 @@ void ui::renderer_base::set_constant_buffer_offset(uint32_t const offset) {
     impl_ptr<impl>()->set_constant_buffer_offset(offset);
 }
 
-ui::view_renderable ui::renderer_base::view_renderable() {
-    return ui::view_renderable{impl_ptr<view_renderable::impl>()};
+ui::view_renderable &ui::renderer_base::view_renderable() {
+    if (!_view_renderable) {
+        _view_renderable = ui::view_renderable{impl_ptr<view_renderable::impl>()};
+    }
+    return _view_renderable;
 }
 
 subject<ui::renderer_base, ui::renderer_method> &ui::renderer_base::subject() {

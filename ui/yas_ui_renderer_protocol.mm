@@ -11,6 +11,9 @@ using namespace yas;
 ui::view_renderable::view_renderable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::view_renderable::view_renderable(std::nullptr_t) : protocol(nullptr) {
+}
+
 void ui::view_renderable::configure(YASUIMetalView *const view) {
     impl_ptr<impl>()->view_configure(view);
 }
