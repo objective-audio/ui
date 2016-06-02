@@ -11,6 +11,9 @@ using namespace yas;
 ui::renderable_mesh_data::renderable_mesh_data(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::renderable_mesh_data::renderable_mesh_data(std::nullptr_t) : protocol(nullptr) {
+}
+
 std::size_t ui::renderable_mesh_data::vertex_buffer_byte_offset() {
     return impl_ptr<impl>()->vertex_buffer_byte_offset();
 }

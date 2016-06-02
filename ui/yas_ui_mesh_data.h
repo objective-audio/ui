@@ -24,13 +24,17 @@ namespace ui {
 
         void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
 
-        ui::metal_object metal();
-        ui::renderable_mesh_data renderable();
+        ui::metal_object &metal();
+        ui::renderable_mesh_data &renderable();
 
        protected:
         class impl;
 
         mesh_data(std::shared_ptr<impl> &&);
+
+       private:
+        ui::metal_object _metal_object = nullptr;
+        ui::renderable_mesh_data _renderable = nullptr;
     };
 
     class dynamic_mesh_data : public mesh_data {

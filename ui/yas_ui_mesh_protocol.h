@@ -26,6 +26,7 @@ namespace ui {
         };
 
         explicit renderable_mesh_data(std::shared_ptr<impl>);
+        renderable_mesh_data(std::nullptr_t);
 
         std::size_t vertex_buffer_byte_offset();
         std::size_t index_buffer_byte_offset();
