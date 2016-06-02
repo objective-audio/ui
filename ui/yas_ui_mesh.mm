@@ -216,7 +216,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return true;
         }
 
-        if (!_use_mesh_color && _color.x == 0.0f && _color.y == 0.0f && _color.z == 0.0f && _color.w == 0.0f) {
+        if (!_use_mesh_color && yas::is_equal(_color, simd::float4{0.0f})) {
             return true;
         }
 

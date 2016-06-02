@@ -22,6 +22,57 @@ using namespace yas;
     [super tearDown];
 }
 
+- (void)test_is_equal_float2 {
+    simd::float2 vector1_2a{1.0f, 2.0f};
+    simd::float2 vector1_2b{1.0f, 2.0f};
+    simd::float2 vector2_1{2.0f, 1.0f};
+    simd::float2 vector1_4{1.0f, 4.0f};
+    simd::float2 vector4_2{4.0f, 2.0f};
+
+    XCTAssertTrue(is_equal(vector1_2a, vector1_2a));
+    XCTAssertTrue(is_equal(vector1_2a, vector1_2b));
+
+    XCTAssertFalse(is_equal(vector1_2a, vector2_1));
+    XCTAssertFalse(is_equal(vector1_2a, vector1_4));
+    XCTAssertFalse(is_equal(vector1_2a, vector4_2));
+}
+
+- (void)test_is_equal_float3 {
+    simd::float3 vector1_2_4a{1.0f, 2.0f, 4.0f};
+    simd::float3 vector1_2_4b{1.0f, 2.0f, 4.0f};
+    simd::float3 vector4_1_2{4.0f, 1.0f, 2.0f};
+    simd::float3 vector1_2_3{1.0f, 2.0f, 3.0f};
+    simd::float3 vector1_3_4{1.0f, 3.0f, 4.0f};
+    simd::float3 vector3_2_4{3.0f, 2.0f, 4.0f};
+
+    XCTAssertTrue(is_equal(vector1_2_4a, vector1_2_4a));
+    XCTAssertTrue(is_equal(vector1_2_4b, vector1_2_4b));
+
+    XCTAssertFalse(is_equal(vector1_2_4a, vector4_1_2));
+    XCTAssertFalse(is_equal(vector1_2_4a, vector1_2_3));
+    XCTAssertFalse(is_equal(vector1_2_4a, vector1_3_4));
+    XCTAssertFalse(is_equal(vector1_2_4a, vector3_2_4));
+}
+
+- (void)test_is_equal_float4 {
+    simd::float4 vector1_2_4_8a{1.0f, 2.0f, 4.0f, 8.0f};
+    simd::float4 vector1_2_4_8b{1.0f, 2.0f, 4.0f, 8.0f};
+    simd::float4 vector8_4_1_2{8.0f, 4.0f, 1.0f, 2.0f};
+    simd::float4 vector1_2_4_3{1.0f, 2.0f, 4.0f, 3.0f};
+    simd::float4 vector1_2_3_8{1.0f, 2.0f, 3.0f, 8.0f};
+    simd::float4 vector1_3_4_8{1.0f, 3.0f, 4.0f, 8.0f};
+    simd::float4 vector3_2_4_8{3.0f, 2.0f, 4.0f, 8.0f};
+
+    XCTAssertTrue(is_equal(vector1_2_4_8a, vector1_2_4_8a));
+    XCTAssertTrue(is_equal(vector1_2_4_8a, vector1_2_4_8b));
+
+    XCTAssertFalse(is_equal(vector1_2_4_8a, vector8_4_1_2));
+    XCTAssertFalse(is_equal(vector1_2_4_8a, vector1_2_4_3));
+    XCTAssertFalse(is_equal(vector1_2_4_8a, vector1_2_3_8));
+    XCTAssertFalse(is_equal(vector1_2_4_8a, vector1_3_4_8));
+    XCTAssertFalse(is_equal(vector1_2_4_8a, vector3_2_4_8));
+}
+
 - (void)test_is_equal_uint_origin {
     auto origin1_2a = ui::uint_origin{1, 2};
     auto origin1_2b = ui::uint_origin{1, 2};
@@ -212,6 +263,14 @@ using namespace yas;
 
 - (void)test_simd_float2_to_string {
     XCTAssertEqual(to_string(simd::float2{1.0f, 2.0f}), "{1.000000, 2.000000}");
+}
+
+- (void)test_simd_float3_to_string {
+    XCTAssertEqual(to_string(simd::float3{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
+}
+
+- (void)test_simd_float4_to_string {
+    XCTAssertEqual(to_string(simd::float4{1.0f, 2.0f, 3.0f, 4.0f}), "{1.000000, 2.000000, 3.000000, 4.000000}");
 }
 
 - (void)test_ostream {

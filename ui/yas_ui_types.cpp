@@ -127,10 +127,6 @@ std::string yas::to_string(ui::float_region const &region) {
     return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
 }
 
-std::string yas::to_string(simd::float2 const &value) {
-    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
-}
-
 std::string yas::to_string(ui::point const &point) {
     return "{" + std::to_string(point.x) + ", " + std::to_string(point.y) + "}";
 }
@@ -144,7 +140,32 @@ std::string yas::to_string(ui::color const &color) {
            "}";
 }
 
+std::string yas::to_string(simd::float2 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
+}
+
+std::string yas::to_string(simd::float3 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + "}";
+}
+
+std::string yas::to_string(simd::float4 const &value) {
+    return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ", " +
+           std::to_string(value.w) + "}";
+}
+
 #pragma mark -
+
+bool yas::is_equal(simd::float2 const &lhs, simd::float2 const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool yas::is_equal(simd::float3 const &lhs, simd::float3 const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
+
+bool yas::is_equal(simd::float4 const &lhs, simd::float4 const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+}
 
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y;
