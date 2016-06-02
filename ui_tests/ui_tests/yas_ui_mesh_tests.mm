@@ -197,7 +197,7 @@ using namespace yas;
 - (void)test_set_renderable_variables {
     ui::mesh mesh;
 
-    auto renderable = mesh.renderable();
+    auto &renderable = mesh.renderable();
 
     simd::float4x4 matrix;
     matrix.columns[0] = {1.0f, 2.0f, 3.0f, 4.0f};
@@ -287,7 +287,7 @@ using namespace yas;
         return;
     }
 
-    auto renderable = mesh_data.renderable();
+    auto &renderable = mesh_data.renderable();
 
     XCTAssertTrue(mesh_data.metal().metal_setup(device.object()));
 

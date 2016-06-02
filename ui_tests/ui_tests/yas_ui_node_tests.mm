@@ -224,7 +224,7 @@ using namespace yas;
     ui::node node;
     ui::renderer renderer{device};
 
-    auto renderable = node.renderable();
+    auto &renderable = node.renderable();
 
     XCTAssertFalse(renderable.renderer());
 
