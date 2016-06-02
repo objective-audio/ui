@@ -4,11 +4,9 @@
 
 #include "yas_stl_utils.h"
 #include "yas_ui_batch.h"
-#include "yas_ui_batch_protocol.h"
 #include "yas_ui_batch_render_mesh_info.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
-#include "yas_ui_metal_protocol.h"
 #include "yas_ui_node.h"
 #include "yas_ui_texture.h"
 #include "yas_unless.h"
@@ -90,14 +88,23 @@ ui::batch::batch() : base(std::make_shared<impl>()) {
 ui::batch::batch(std::nullptr_t) : base(nullptr) {
 }
 
-ui::renderable_batch ui::batch::renderable() {
-    return ui::renderable_batch{impl_ptr<ui::renderable_batch::impl>()};
+ui::renderable_batch &ui::batch::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_batch{impl_ptr<ui::renderable_batch::impl>()};
+    }
+    return _renderable;
 }
 
-ui::render_encodable ui::batch::encodable() {
-    return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+ui::render_encodable &ui::batch::encodable() {
+    if (!_encodable) {
+        _encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+    }
+    return _encodable;
 }
 
-ui::metal_object ui::batch::metal() {
-    return ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+ui::metal_object &ui::batch::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
 }

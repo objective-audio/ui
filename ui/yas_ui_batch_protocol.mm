@@ -9,6 +9,9 @@ using namespace yas;
 ui::renderable_batch::renderable_batch(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
 }
 
+ui::renderable_batch::renderable_batch(std::nullptr_t) : protocol(nullptr) {
+}
+
 std::vector<ui::mesh> &ui::renderable_batch::meshes() {
     return impl_ptr<impl>()->meshes();
 }

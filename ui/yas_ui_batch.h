@@ -5,13 +5,13 @@
 #pragma once
 
 #include "yas_base.h"
+#include "yas_ui_batch_protocol.h"
+#include "yas_ui_metal_protocol.h"
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas {
 namespace ui {
     class node;
-    class renderable_batch;
-    class metal_object;
 
     class batch : public base {
         class impl;
@@ -20,9 +20,14 @@ namespace ui {
         batch();
         batch(std::nullptr_t);
 
-        ui::renderable_batch renderable();
-        ui::render_encodable encodable();
-        ui::metal_object metal();
+        ui::renderable_batch &renderable();
+        ui::render_encodable &encodable();
+        ui::metal_object &metal();
+
+       private:
+        ui::renderable_batch _renderable = nullptr;
+        ui::render_encodable _encodable = nullptr;
+        ui::metal_object _metal_object = nullptr;
     };
 }
 }
