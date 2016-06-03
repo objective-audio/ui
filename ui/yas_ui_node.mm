@@ -2,6 +2,7 @@
 //  yas_ui_node.mm
 //
 
+#include <bitset>
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_ui_batch.h"
@@ -23,24 +24,13 @@ using namespace yas;
 
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
+    impl() {
+        _update_reasons.set();
+    }
+
     std::vector<ui::node> &children() {
         return _children;
     }
-
-    property<weak<ui::node>> parent_property{{.value = ui::node{nullptr}}};
-    property<weak<ui::renderer>> renderer_property{{.value = ui::renderer{nullptr}}};
-
-    property<ui::point> position_property{{.value = 0.0f}};
-    property<float> angle_property{{.value = 0.0f}};
-    property<ui::size> scale_property{{.value = 1.0f}};
-    property<ui::color> color_property{{.value = 1.0f}};
-    property<float> alpha_property{{.value = 1.0f}};
-    property<ui::mesh> mesh_property{{.value = nullptr}};
-    property<ui::collider> collider_property{{.value = nullptr}};
-    property<ui::batch> batch_property{{.value = nullptr}};
-    property<bool> enabled_property{{.value = true}};
-
-    node::subject_t subject;
 
     void push_front_sub_node(ui::node &&sub_node) {
         auto iterator = _children.emplace(_children.begin(), std::move(sub_node));
@@ -96,19 +86,19 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void update_render_info(ui::render_info &render_info) override {
-        _property_updated = false;
+        auto const needs_update_matrix = _needs_update(ui::node_update_reason::geometry);
+        _update_reasons.reset();
 
         if (!enabled_property.value()) {
             return;
         }
 
-        if (_needs_update_matrix) {
+        if (needs_update_matrix) {
             auto const &position = position_property.value();
             auto const &angle = angle_property.value();
             auto const &scale = scale_property.value();
             _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
                             matrix::scale(scale.width, scale.height);
-            _needs_update_matrix = false;
         }
 
         _matrix = render_info.matrix * _local_matrix;
@@ -194,7 +184,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool needs_update_for_render() override {
-        if (_property_updated) {
+        if (_update_reasons.any()) {
             return true;
         }
 
@@ -238,9 +228,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void _set_needs_update_matrix() {
-        _needs_update_matrix = true;
-        _property_updated = true;
+    void _set_needs_update_geometry() {
+        _set_needs_update(ui::node_update_reason::geometry);
     }
 
     void _set_needs_update_colliders() {
@@ -249,10 +238,28 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void _set_property_updated() {
-        _property_updated = true;
+    bool _needs_update(ui::node_update_reason const reason) {
+        return _update_reasons.test(static_cast<ui::node_update_reason_t>(reason));
     }
 
+    void _set_needs_update(ui::node_update_reason const reason) {
+        _update_reasons.set(static_cast<ui::node_update_reason_t>(reason));
+    }
+
+    property<weak<ui::node>> parent_property{{.value = ui::node{nullptr}}};
+    property<weak<ui::renderer>> renderer_property{{.value = ui::renderer{nullptr}}};
+
+    property<ui::point> position_property{{.value = 0.0f}};
+    property<float> angle_property{{.value = 0.0f}};
+    property<ui::size> scale_property{{.value = 1.0f}};
+    property<ui::color> color_property{{.value = 1.0f}};
+    property<float> alpha_property{{.value = 1.0f}};
+    property<ui::mesh> mesh_property{{.value = nullptr}};
+    property<ui::collider> collider_property{{.value = nullptr}};
+    property<ui::batch> batch_property{{.value = nullptr}};
+    property<bool> enabled_property{{.value = true}};
+
+    node::subject_t subject;
     std::vector<base> _property_observers;
 
    private:
@@ -261,8 +268,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    bool _needs_update_matrix = true;
-    bool _property_updated = true;
+    std::bitset<ui::node_update_reason_count> _update_reasons;
 };
 
 #pragma mark - node
@@ -277,28 +283,28 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_property_updated();
+                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::enabled);
             }
         }));
 
     observers.emplace_back(
         imp_ptr->position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_matrix();
+                node.impl_ptr<impl>()->_set_needs_update_geometry();
             }
         }));
 
     observers.emplace_back(
         imp_ptr->angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_matrix();
+                node.impl_ptr<impl>()->_set_needs_update_geometry();
             }
         }));
 
     observers.emplace_back(
         imp_ptr->scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_matrix();
+                node.impl_ptr<impl>()->_set_needs_update_geometry();
             }
         }));
 
@@ -333,7 +339,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_property_updated();
+                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::batch);
             }
         }));
 }
