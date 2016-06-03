@@ -27,6 +27,22 @@ namespace ui {
         enabled_changed,
     };
 
+    enum class node_update_reason : std::size_t {
+        hierarchie,
+        geometry,
+        color,
+        mesh,
+        collider,
+        enabled,
+        batch,
+
+        count,
+    };
+
+    using node_update_reason_t = std::underlying_type<ui::node_update_reason>::type;
+    static std::size_t const node_update_reason_count =
+        static_cast<node_update_reason_t>(ui::node_update_reason::count);
+
     struct renderable_node : protocol {
         struct impl : protocol::impl {
             virtual ui::renderer renderer() = 0;
