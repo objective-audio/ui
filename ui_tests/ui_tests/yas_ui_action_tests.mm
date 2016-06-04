@@ -254,7 +254,7 @@ using namespace yas;
     XCTAssertEqual(target.color().blue, 0.5f);
 }
 
-- (void)test_udpate_alpha_action {
+- (void)test_update_alpha_action {
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action_args args{.duration = 1.0, .action = {.start_time = time}};

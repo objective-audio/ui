@@ -227,14 +227,14 @@ simd::float4x4 const &ui::renderer_base::impl::projection_matrix() {
 void ui::renderer_base::impl::view_size_will_change(YASUIMetalView *const view, CGSize const drawable_size) {
     auto const view_size = view.bounds.size;
     auto const update_view_size_result = _core->update_view_size(view_size, drawable_size);
-    auto const udpate_scale_result = _core->update_scale_factor();
+    auto const update_scale_result = _core->update_scale_factor();
 
     if (update_view_size_result == core::update_result::changed) {
         if (_core->subject.has_observer()) {
             _core->subject.notify(renderer_method::view_size_changed, cast<ui::renderer_base>());
         }
 
-        if (udpate_scale_result == core::update_result::changed) {
+        if (update_scale_result == core::update_result::changed) {
             if (_core->subject.has_observer()) {
                 _core->subject.notify(renderer_method::scale_factor_changed, cast<ui::renderer_base>());
             }
