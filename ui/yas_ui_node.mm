@@ -58,7 +58,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto renderer = renderer_property.value().lock()) {
-            _set_needs_update_colliders();
+            _set_needs_update_collision_detector(ui::collider_update_reason::existence);
         }
     }
 
@@ -75,7 +75,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto renderer = renderer_property.value().lock()) {
-            _set_needs_update_colliders();
+            _set_needs_update_collision_detector(ui::collider_update_reason::existence);
         }
     }
 
@@ -228,9 +228,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void _set_needs_update_colliders() {
+    void _set_needs_update_collision_detector(ui::collider_update_reason const reason) {
         if (auto locked_renderer = renderer()) {
-            locked_renderer.collision_detector().updatable().set_needs_update_colliders();
+            locked_renderer.collision_detector().updatable().set_needs_update(reason);
         }
     }
 
@@ -280,7 +280,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::enabled);
-                node.impl_ptr<impl>()->_set_needs_update_colliders();
+                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::existence);
             }
         }));
 
@@ -288,7 +288,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
-                node.impl_ptr<impl>()->_set_needs_update_colliders();
+                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::geometry);
             }
         }));
 
@@ -296,7 +296,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
-                node.impl_ptr<impl>()->_set_needs_update_colliders();
+                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::geometry);
             }
         }));
 
@@ -304,7 +304,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
-                node.impl_ptr<impl>()->_set_needs_update_colliders();
+                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::geometry);
             }
         }));
 
@@ -332,7 +332,7 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_colliders();
+                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::existence);
             }
         }));
 
