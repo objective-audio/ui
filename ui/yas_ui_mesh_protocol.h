@@ -16,6 +16,8 @@ namespace ui {
 
     enum class mesh_data_update_reason : std::size_t {
         data,
+        vertex_count,
+        index_count,
 
         count,
     };
