@@ -177,6 +177,8 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
         }
 
         _vertex_count = count;
+
+        _set_needs_update(ui::mesh_data_update_reason::vertex_count);
     }
 
     void set_index_count(std::size_t const count) {
@@ -185,6 +187,8 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
         }
 
         _index_count = count;
+
+        _set_needs_update(ui::mesh_data_update_reason::index_count);
     }
 
     std::size_t vertex_buffer_byte_offset() override {
