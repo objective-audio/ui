@@ -80,14 +80,14 @@ using namespace yas;
 
     XCTAssertTrue(detector.detect(0.0f, collider1));
 
-    detector.updatable().set_needs_update_colliders();
+    detector.updatable().set_needs_update(ui::collider_update_reason::existence);
     detector.updatable().clear_colliders_if_needed();
 
     XCTAssertFalse(detector.detect(0.0f, collider1));
-    
+
     detector.updatable().finalize();
     detector.updatable().push_front_collider_if_needed(collider1);
-    
+
     XCTAssertFalse(detector.detect(0.0f, collider1));
 }
 
