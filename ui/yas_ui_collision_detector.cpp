@@ -11,7 +11,7 @@ using namespace yas;
 #pragma mark - ui::collision_detector::impl
 
 struct ui::collision_detector::impl : base::impl, updatable_collision_detector::impl {
-    void set_needs_update_colliders() override {
+    void set_needs_update(ui::collider_update_reason const reason) override {
         _needs_update = true;
     }
 

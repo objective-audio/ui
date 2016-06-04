@@ -15,8 +15,8 @@ ui::updatable_collision_detector::updatable_collision_detector(std::shared_ptr<i
 ui::updatable_collision_detector::updatable_collision_detector(std::nullptr_t) : protocol(nullptr) {
 }
 
-void ui::updatable_collision_detector::set_needs_update_colliders() {
-    impl_ptr<impl>()->set_needs_update_colliders();
+void ui::updatable_collision_detector::set_needs_update(ui::collider_update_reason const reason) {
+    impl_ptr<impl>()->set_needs_update(reason);
 }
 
 void ui::updatable_collision_detector::clear_colliders_if_needed() {
