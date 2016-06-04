@@ -12,7 +12,6 @@ namespace ui {
 
     enum class collider_update_reason : std::size_t {
         existence,
-        geometry,
 
         count,
     };
