@@ -86,14 +86,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void update_render_info(ui::render_info &render_info) override {
-        auto const needs_update_matrix = _needs_update(ui::node_update_reason::geometry);
+        auto const is_geometry_updated = _needs_update(ui::node_update_reason::geometry);
         _update_reasons.reset();
 
         if (!enabled_property.value()) {
             return;
         }
 
-        if (needs_update_matrix) {
+        if (is_geometry_updated) {
             auto const &position = position_property.value();
             auto const &angle = angle_property.value();
             auto const &scale = scale_property.value();
