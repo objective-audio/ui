@@ -279,8 +279,9 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::enabled);
-                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::existence);
+                auto imp_ptr = node.impl_ptr<impl>();
+                imp_ptr->_set_needs_update(ui::node_update_reason::enabled);
+                imp_ptr->_set_needs_update_collision_detector(ui::collider_update_reason::existence);
             }
         }));
 
