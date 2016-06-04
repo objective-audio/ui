@@ -58,7 +58,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto renderer = renderer_property.value().lock()) {
-            renderer.collision_detector().updatable().set_needs_update_colliders();
+            _set_needs_update_colliders();
         }
     }
 
@@ -75,7 +75,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto renderer = renderer_property.value().lock()) {
-            renderer.collision_detector().updatable().set_needs_update_colliders();
+            _set_needs_update_colliders();
         }
     }
 
@@ -228,10 +228,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void _set_needs_update_geometry() {
-        _set_needs_update(ui::node_update_reason::geometry);
-    }
-
     void _set_needs_update_colliders() {
         if (auto locked_renderer = renderer()) {
             locked_renderer.collision_detector().updatable().set_needs_update_colliders();
@@ -284,27 +280,31 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::enabled);
+                node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
 
     observers.emplace_back(
         imp_ptr->position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_geometry();
+                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
+                node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
 
     observers.emplace_back(
         imp_ptr->angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_geometry();
+                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
+                node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
 
     observers.emplace_back(
         imp_ptr->scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_geometry();
+                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
+                node.impl_ptr<impl>()->_set_needs_update_colliders();
             }
         }));
 
