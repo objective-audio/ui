@@ -2,6 +2,7 @@
 //  yas_ui_mesh_data.mm
 //
 
+#include <bitset>
 #include "yas_objc_ptr.h"
 #include "yas_ui_mesh_data.h"
 
@@ -12,6 +13,7 @@ using namespace yas;
 struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_data::impl {
     impl(std::size_t const vertex_count, std::size_t const index_count)
         : _vertex_count(vertex_count), _vertices(vertex_count), _index_count(index_count), _indices(index_count) {
+        _update_reasons.set();
     }
 
     ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
@@ -47,7 +49,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     void update_render_buffer_if_needed() override {
-        if (!_needs_update_render_buffer) {
+        if (!_update_reasons.any()) {
             return;
         }
 
@@ -61,7 +63,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
                _indices.size() * sizeof(ui::index2d_t));
 
-        _needs_update_render_buffer = false;
+        _update_reasons.reset();
     }
 
     std::size_t vertex_buffer_byte_offset() override {
@@ -81,11 +83,11 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     bool needs_update_for_render() override {
-        return _needs_update_render_buffer;
+        return _update_reasons.any();
     }
 
     virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
-        if (_needs_update_render_buffer) {
+        if (_update_reasons.any()) {
             func(_vertices, _indices);
         } else {
             throw "write failed.";
@@ -96,7 +98,10 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         return 1;
     }
 
-    bool _needs_update_render_buffer = true;
+    void _set_needs_update(ui::mesh_data_update_reason const reason) {
+        _update_reasons.set(static_cast<ui::mesh_data_update_reason_t>(reason));
+    }
+
     std::size_t _dynamic_buffer_index = 0;
     std::size_t _vertex_count;
     std::size_t _index_count;
@@ -105,6 +110,8 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     objc_ptr<id<MTLBuffer>> _index_buffer;
     std::vector<ui::vertex2d_t> _vertices;
     std::vector<ui::index2d_t> _indices;
+
+    std::bitset<ui::mesh_data_update_reason_count> _update_reasons;
 
    private:
     objc_ptr<id<MTLDevice>> _device;
@@ -161,7 +168,7 @@ ui::renderable_mesh_data &ui::mesh_data::renderable() {
 
 struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
     impl(std::size_t const vertex_count, std::size_t const index_count) : mesh_data::impl(vertex_count, index_count) {
-        _needs_update_render_buffer = false;
+        _update_reasons.reset();
     }
 
     void set_vertex_count(std::size_t const count) {
@@ -191,7 +198,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
     void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override {
         func(_vertices, _indices);
 
-        _needs_update_render_buffer = true;
+        _set_needs_update(ui::mesh_data_update_reason::data);
     }
 
     std::size_t dynamic_buffer_count() override {

@@ -2,6 +2,7 @@
 //  yas_ui_mesh.mm
 //
 
+#include <bitset>
 #include "yas_each_index.h"
 #include "yas_objc_ptr.h"
 #include "yas_ui_batch_render_mesh_info.h"
@@ -17,7 +18,9 @@ using namespace yas;
 #pragma mark - ui::mesh::impl
 
 struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
-    impl() = default;
+    impl() {
+        _update_reasons.set();
+    }
 
     ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
         if (_mesh_data) {
@@ -51,7 +54,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     bool needs_update_for_render() override {
-        if (_needs_update_for_render) {
+        if (_update_reasons.any()) {
             return true;
         } else if (_mesh_data) {
             return _mesh_data.renderable().needs_update_for_render();
@@ -163,53 +166,41 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     void set_mesh_data(ui::mesh_data &&mesh_data) {
         if (!is_same(_mesh_data, mesh_data)) {
             _mesh_data = std::move(mesh_data);
-            _needs_update_for_render = true;
+            _set_needs_update(ui::mesh_update_reason::mesh_data);
         }
     }
 
     void set_texture(ui::texture &&texture) {
         if (!is_same(_texture, texture)) {
             _texture = std::move(texture);
-            _set_needs_update_for_render();
+            _set_needs_update(ui::mesh_update_reason::texture);
         }
     }
 
     void set_primitive_type(ui::primitive_type const type) {
         if (_primitive_type != type) {
             _primitive_type = type;
-            _set_needs_update_for_render();
+            _set_needs_update(ui::mesh_update_reason::primitive_type);
         }
     }
 
     void set_color(simd::float4 &&color) {
-        if (_color[0] != color[0] || _color[1] != color[1] || _color[2] != color[2] || _color[3] != color[3]) {
+        if (!yas::is_equal(_color, color)) {
             _color = std::move(color);
-            _set_needs_update_for_render();
+            _set_needs_update(ui::mesh_update_reason::color);
         }
     }
 
     void set_use_mesh_color(bool const use) {
         if (_use_mesh_color != use) {
             _use_mesh_color = use;
-            _set_needs_update_for_render();
+            _set_needs_update(ui::mesh_update_reason::use_mesh_color);
         }
     }
 
    private:
-    ui::mesh_data _mesh_data = nullptr;
-    ui::texture _texture = nullptr;
-    ui::primitive_type _primitive_type = ui::primitive_type::triangle;
-    simd::float4 _color = 1.0f;
-    bool _use_mesh_color = false;
-
-    bool _needs_update_for_render = true;
-
-    simd::float4x4 _matrix = matrix_identity_float4x4;
-
-    void _set_needs_update_for_render() {
-        if (_mesh_data) {
-            _needs_update_for_render = true;
-        }
+    void _set_needs_update(ui::mesh_update_reason const reason) {
+        _update_reasons.set(static_cast<ui::mesh_update_reason_t>(reason));
     }
 
     bool _is_skip_render() {
@@ -225,7 +216,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     bool _ready_render() {
-        _needs_update_for_render = false;
+        _update_reasons.reset();
 
         if (_mesh_data) {
             _mesh_data.renderable().update_render_buffer_if_needed();
@@ -239,6 +230,16 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
         return true;
     }
+
+    ui::mesh_data _mesh_data = nullptr;
+    ui::texture _texture = nullptr;
+    ui::primitive_type _primitive_type = ui::primitive_type::triangle;
+    simd::float4 _color = 1.0f;
+    bool _use_mesh_color = false;
+
+    simd::float4x4 _matrix = matrix_identity_float4x4;
+
+    std::bitset<ui::mesh_update_reason_count> _update_reasons;
 };
 
 #pragma mark - ui::mesh

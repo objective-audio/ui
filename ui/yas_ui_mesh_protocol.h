@@ -14,6 +14,30 @@ namespace ui {
     class metal_encode_info;
     class batch_render_mesh_info;
 
+    enum class mesh_data_update_reason : std::size_t {
+        data,
+
+        count,
+    };
+
+    using mesh_data_update_reason_t = std::underlying_type<ui::mesh_data_update_reason>::type;
+    static std::size_t const mesh_data_update_reason_count =
+        static_cast<mesh_data_update_reason_t>(ui::mesh_data_update_reason::count);
+
+    enum class mesh_update_reason : std::size_t {
+        mesh_data,
+        texture,
+        primitive_type,
+        color,
+        use_mesh_color,
+
+        count,
+    };
+
+    using mesh_update_reason_t = std::underlying_type<ui::mesh_update_reason>::type;
+    static std::size_t const mesh_update_reason_count =
+        static_cast<mesh_update_reason_t>(ui::mesh_update_reason::count);
+
     struct renderable_mesh_data : protocol {
         struct impl : protocol::impl {
             virtual std::size_t vertex_buffer_byte_offset() = 0;
