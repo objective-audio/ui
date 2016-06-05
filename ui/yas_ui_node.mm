@@ -58,7 +58,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto renderer = renderer_property.value().lock()) {
-            _set_needs_update_collision_detector(ui::collider_update_reason::existence);
+            _set_updated_for_collider(ui::collider_update_reason::existence);
         }
     }
 
@@ -75,7 +75,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto renderer = renderer_property.value().lock()) {
-            _set_needs_update_collision_detector(ui::collider_update_reason::existence);
+            _set_updated_for_collider(ui::collider_update_reason::existence);
         }
     }
 
@@ -86,7 +86,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void update_render_info(ui::render_info &render_info) override {
-        auto const is_geometry_updated = _needs_update(ui::node_update_reason::geometry);
+        auto const is_geometry_updated = _is_updated(ui::node_update_reason::geometry);
         _update_reasons.reset();
 
         if (!enabled_property.value()) {
@@ -121,15 +121,15 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             batch_render_info.collision_detector = render_info.collision_detector;
             auto &batch_renderable = batch.renderable();
 
-            bool needs_update_for_render = false;
+            bool is_children_updated = false;
             for (auto &sub_node : _children) {
                 if (sub_node.renderable().needs_update_for_render()) {
-                    needs_update_for_render = true;
+                    is_children_updated = true;
                     break;
                 }
             }
 
-            if (needs_update_for_render) {
+            if (is_children_updated) {
                 batch_render_info.render_encodable = batch.encodable();
                 batch_renderable.clear();
             }
@@ -140,7 +140,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 sub_node.impl_ptr<impl>()->update_render_info(batch_render_info);
             }
 
-            if (needs_update_for_render) {
+            if (is_children_updated) {
                 batch_renderable.commit();
             }
 
@@ -228,17 +228,17 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void _set_needs_update_collision_detector(ui::collider_update_reason const reason) {
+    void _set_updated_for_collider(ui::collider_update_reason const reason) {
         if (auto locked_renderer = renderer()) {
             locked_renderer.collision_detector().updatable().set_needs_update(reason);
         }
     }
 
-    bool _needs_update(ui::node_update_reason const reason) {
+    bool _is_updated(ui::node_update_reason const reason) {
         return _update_reasons.test(static_cast<ui::node_update_reason_t>(reason));
     }
 
-    void _set_needs_update(ui::node_update_reason const reason) {
+    void _set_updated(ui::node_update_reason const reason) {
         _update_reasons.set(static_cast<ui::node_update_reason_t>(reason));
     }
 
@@ -280,29 +280,29 @@ ui::node::node() : base(std::make_shared<impl>()) {
         imp_ptr->enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
                 auto imp_ptr = node.impl_ptr<impl>();
-                imp_ptr->_set_needs_update(ui::node_update_reason::enabled);
-                imp_ptr->_set_needs_update_collision_detector(ui::collider_update_reason::existence);
+                imp_ptr->_set_updated(ui::node_update_reason::enabled);
+                imp_ptr->_set_updated_for_collider(ui::collider_update_reason::existence);
             }
         }));
 
     observers.emplace_back(
         imp_ptr->position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
+                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
             }
         }));
 
     observers.emplace_back(
         imp_ptr->angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
+                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
             }
         }));
 
     observers.emplace_back(
         imp_ptr->scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::geometry);
+                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
             }
         }));
 
@@ -330,14 +330,14 @@ ui::node::node() : base(std::make_shared<impl>()) {
     observers.emplace_back(
         imp_ptr->collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update_collision_detector(ui::collider_update_reason::existence);
+                node.impl_ptr<impl>()->_set_updated_for_collider(ui::collider_update_reason::existence);
             }
         }));
 
     observers.emplace_back(
         imp_ptr->batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_needs_update(ui::node_update_reason::batch);
+                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
             }
         }));
 }
