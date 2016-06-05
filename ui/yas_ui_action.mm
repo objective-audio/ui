@@ -29,33 +29,33 @@ struct ui::action::impl : base::impl, updatable_action::impl {
     impl() {
     }
 
-    impl(action_args &&args) : start_time(std::move(args.start_time)), delay(args.delay) {
+    impl(action_args &&args) : _start_time(std::move(args.start_time)), _delay(args.delay) {
     }
 
     bool update(time_point_t const &time) override {
-        if (time < start_time + delay) {
+        if (time < _start_time + _delay) {
             return false;
         }
 
-        auto const finished = time_updater ? time_updater(time) : true;
+        auto const finished = _time_updater ? _time_updater(time) : true;
 
-        if (finished && completion_handler) {
-            completion_handler();
-            completion_handler = nullptr;
+        if (finished && _completion_handler) {
+            _completion_handler();
+            _completion_handler = nullptr;
         }
 
         return finished;
     }
 
     duration_t time_diff(time_point_t const &time) {
-        return time - start_time - delay;
+        return time - _start_time - _delay;
     }
 
-    weak<ui::node> target{nullptr};
-    time_point_t start_time = system_clock::now();
-    duration_t delay{0.0};
-    action_time_update_f time_updater;
-    action_completion_f completion_handler;
+    weak<ui::node> _target{nullptr};
+    time_point_t _start_time = system_clock::now();
+    duration_t _delay{0.0};
+    action_time_update_f _time_updater;
+    action_completion_f _completion_handler;
 };
 
 #pragma mark - action
@@ -73,35 +73,35 @@ ui::action::action(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
 ui::node ui::action::target() const {
-    return impl_ptr<impl>()->target.lock();
+    return impl_ptr<impl>()->_target.lock();
 }
 
 time_point<system_clock> const &ui::action::start_time() const {
-    return impl_ptr<impl>()->start_time;
+    return impl_ptr<impl>()->_start_time;
 }
 
 double ui::action::delay() const {
-    return impl_ptr<impl>()->delay.count();
+    return impl_ptr<impl>()->_delay.count();
 }
 
 ui::action_time_update_f const &ui::action::time_updater() const {
-    return impl_ptr<impl>()->time_updater;
+    return impl_ptr<impl>()->_time_updater;
 }
 
 ui::action_completion_f const &ui::action::completion_handler() const {
-    return impl_ptr<impl>()->completion_handler;
+    return impl_ptr<impl>()->_completion_handler;
 }
 
 void ui::action::set_target(ui::node const &target) {
-    impl_ptr<impl>()->target = target;
+    impl_ptr<impl>()->_target = target;
 }
 
 void ui::action::set_time_updater(action_time_update_f handler) {
-    impl_ptr<impl>()->time_updater = std::move(handler);
+    impl_ptr<impl>()->_time_updater = std::move(handler);
 }
 
 void ui::action::set_completion_handler(action_completion_f handler) {
-    impl_ptr<impl>()->completion_handler = std::move(handler);
+    impl_ptr<impl>()->_completion_handler = std::move(handler);
 }
 
 ui::updatable_action &ui::action::updatable() {
@@ -118,27 +118,27 @@ struct ui::continuous_action::impl : action::impl {
     }
 
     impl(continuous_action_args &&args)
-        : action::impl(std::move(args.action)), duration(args.duration), loop_count(args.loop_count) {
-        if (duration < 0.0) {
+        : action::impl(std::move(args.action)), _duration(args.duration), _loop_count(args.loop_count) {
+        if (_duration < 0.0) {
             throw "duration underflow";
         }
     }
 
     virtual void value_update(double const value) {
-        if (value_updater) {
-            value_updater(value);
+        if (_value_updater) {
+            _value_updater(value);
         }
     }
 
     auto end_time() {
-        return start_time + delay + duration_t{duration} * loop_count;
+        return _start_time + _delay + duration_t{_duration} * _loop_count;
     }
 
-    double duration = 0.3;
-    action_value_update_f value_updater;
-    action_transform_f value_transformer;
-    std::size_t loop_count = 1;
-    std::size_t index = 0;
+    double _duration = 0.3;
+    action_value_update_f _value_updater;
+    action_transform_f _value_transformer;
+    std::size_t _loop_count = 1;
+    std::size_t _index = 0;
 };
 
 #pragma mark - continuous_action
@@ -151,10 +151,10 @@ ui::continuous_action::continuous_action(continuous_action_args args)
     set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto action = weak_action.lock()) {
             auto impl_ptr = action.impl_ptr<continuous_action::impl>();
-            auto const duration = impl_ptr->duration;
+            auto const duration = impl_ptr->_duration;
             bool finished = false;
 
-            if (impl_ptr->loop_count > 0) {
+            if (impl_ptr->_loop_count > 0) {
                 if (action.impl_ptr<continuous_action::impl>()->end_time() <= time) {
                     finished = true;
                 }
@@ -179,27 +179,27 @@ ui::continuous_action::continuous_action(std::nullptr_t) : action(nullptr) {
 }
 
 double ui::continuous_action::duration() const {
-    return impl_ptr<impl>()->duration;
+    return impl_ptr<impl>()->_duration;
 }
 
 ui::action_value_update_f const &ui::continuous_action::value_updater() const {
-    return impl_ptr<impl>()->value_updater;
+    return impl_ptr<impl>()->_value_updater;
 }
 
 ui::action_transform_f const &ui::continuous_action::value_transformer() const {
-    return impl_ptr<impl>()->value_transformer;
+    return impl_ptr<impl>()->_value_transformer;
 }
 
 std::size_t ui::continuous_action::loop_count() const {
-    return impl_ptr<impl>()->loop_count;
+    return impl_ptr<impl>()->_loop_count;
 }
 
 void ui::continuous_action::set_value_updater(action_value_update_f updater) {
-    impl_ptr<impl>()->value_updater = std::move(updater);
+    impl_ptr<impl>()->_value_updater = std::move(updater);
 }
 
 void ui::continuous_action::set_value_transformer(action_transform_f transformer) {
-    impl_ptr<impl>()->value_transformer = std::move(transformer);
+    impl_ptr<impl>()->_value_transformer = std::move(transformer);
 }
 
 #pragma mark - translate_action
@@ -349,8 +349,8 @@ ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_p
     duration_t delay{0.0};
 
     for (auto &action : actions) {
-        action.impl_ptr<action::impl>()->start_time = start_time;
-        action.impl_ptr<action::impl>()->delay = delay;
+        action.impl_ptr<action::impl>()->_start_time = start_time;
+        action.impl_ptr<action::impl>()->_delay = delay;
 
         sequence.insert_action(action);
 
