@@ -23,6 +23,9 @@ using namespace yas;
 }
 
 - (void)test_create {
+    ui::metal_render_encoder encoder;
+
+    XCTAssertTrue(encoder.encodable());
 }
 
 - (void)test_create_null {
