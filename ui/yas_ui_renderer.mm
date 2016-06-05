@@ -104,7 +104,9 @@ class ui::renderer::impl : public renderer_base::impl {
     bool pre_render() override {
         _action.updatable().update(std::chrono::system_clock::now());
 
-        return _root_node.renderable().needs_update_for_render();
+        ui::tree_updates tree_updates;
+        _root_node.renderable().fetch_tree_updates(tree_updates);
+        return tree_updates.any_updated();
     }
 
     void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPassDesc) override {

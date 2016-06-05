@@ -6,6 +6,8 @@
 
 #include <bitset>
 #include "yas_protocol.h"
+#include "yas_ui_mesh_data_protocol.h"
+#include "yas_ui_mesh_protocol.h"
 
 namespace yas {
 namespace ui {
@@ -44,11 +46,19 @@ namespace ui {
         static_cast<node_update_reason_t>(ui::node_update_reason::count);
     using node_updates_t = std::bitset<ui::node_update_reason_count>;
 
+    struct tree_updates {
+        node_updates_t node_updates;
+        mesh_updates_t mesh_updates;
+        mesh_data_updates_t mesh_data_updates;
+
+        bool any_updated() const;
+    };
+
     struct renderable_node : protocol {
         struct impl : protocol::impl {
             virtual ui::renderer renderer() = 0;
             virtual void set_renderer(ui::renderer &&) = 0;
-            virtual bool needs_update_for_render() = 0;
+            virtual void fetch_tree_updates(ui::tree_updates &) = 0;
             virtual void update_render_info(ui::render_info &) = 0;
         };
 
@@ -57,7 +67,7 @@ namespace ui {
 
         ui::renderer renderer();
         void set_renderer(ui::renderer);
-        bool needs_update_for_render();
+        void fetch_tree_updates(ui::tree_updates &);
         void update_render_info(ui::render_info &);
     };
 }

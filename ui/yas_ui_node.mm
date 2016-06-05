@@ -117,17 +117,19 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto batch = _batch_property.value()) {
-            ui::render_info batch_render_info;
-            batch_render_info.collision_detector = render_info.collision_detector;
-            auto &batch_renderable = batch.renderable();
+            ui::tree_updates tree_updates;
 
-            bool is_children_updated = false;
             for (auto &sub_node : _children) {
-                if (sub_node.renderable().needs_update_for_render()) {
-                    is_children_updated = true;
+                sub_node.renderable().fetch_tree_updates(tree_updates);
+                if (tree_updates.any_updated()) {
                     break;
                 }
             }
+
+            bool const is_children_updated = tree_updates.any_updated();
+
+            ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
+            auto &batch_renderable = batch.renderable();
 
             if (is_children_updated) {
                 batch_render_info.render_encodable = batch.encodable();
@@ -183,34 +185,22 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _renderer_property.set_value(renderer);
     }
 
-    bool needs_update_for_render() override {
-        if (_updates.any()) {
-            return true;
-        }
+    void fetch_tree_updates(ui::tree_updates &tree_updates) override {
+        tree_updates.node_updates |= _updates;
 
-        if (!_enabled_property.value()) {
-            return false;
-        }
+        if (_enabled_property.value()) {
+            if (auto &mesh = _mesh_property.value()) {
+                tree_updates.mesh_updates |= mesh.renderable().updates();
 
-        if (auto &mesh = _mesh_property.value()) {
-            if (mesh.renderable().updates().any()) {
-                return true;
-            }
-
-            if (auto &mesh_data = mesh.mesh_data()) {
-                if (mesh_data.renderable().updates().any()) {
-                    return true;
+                if (auto &mesh_data = mesh.mesh_data()) {
+                    tree_updates.mesh_data_updates |= mesh_data.renderable().updates();
                 }
             }
-        }
 
-        for (auto &sub_node : _children) {
-            if (sub_node.renderable().needs_update_for_render()) {
-                return true;
+            for (auto &sub_node : _children) {
+                sub_node.renderable().fetch_tree_updates(tree_updates);
             }
         }
-
-        return false;
     }
 
     ui::point convert_position(ui::point const &loc) {

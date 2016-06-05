@@ -7,6 +7,12 @@
 
 using namespace yas;
 
+#pragma mark - node_update_info
+
+bool ui::tree_updates::any_updated() const {
+    return node_updates.any() || mesh_updates.any() || mesh_data_updates.any();
+}
+
 #pragma mark - renderable_node
 
 ui::renderable_node::renderable_node(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
@@ -23,8 +29,8 @@ void ui::renderable_node::set_renderer(ui::renderer renderer) {
     impl_ptr<impl>()->set_renderer(std::move(renderer));
 }
 
-bool ui::renderable_node::needs_update_for_render() {
-    return impl_ptr<impl>()->needs_update_for_render();
+void ui::renderable_node::fetch_tree_updates(ui::tree_updates &info) {
+    return impl_ptr<impl>()->fetch_tree_updates(info);
 }
 
 void ui::renderable_node::update_render_info(ui::render_info &info) {
