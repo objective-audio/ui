@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <bitset>
 #include "yas_protocol.h"
 
 namespace yas {
@@ -17,9 +18,10 @@ namespace ui {
         count,
     };
 
-    using mesh_data_update_reason_t = std::underlying_type<ui::mesh_data_update_reason>::type;
+    using mesh_data_update_reason_size_t = std::underlying_type<ui::mesh_data_update_reason>::type;
     static std::size_t const mesh_data_update_reason_count =
-        static_cast<mesh_data_update_reason_t>(ui::mesh_data_update_reason::count);
+        static_cast<mesh_data_update_reason_size_t>(ui::mesh_data_update_reason::count);
+    using mesh_data_updates_t = std::bitset<mesh_data_update_reason_count>;
 
     struct renderable_mesh_data : protocol {
         struct impl : protocol::impl {
@@ -28,7 +30,7 @@ namespace ui {
             virtual id<MTLBuffer> vertexBuffer() = 0;
             virtual id<MTLBuffer> indexBuffer() = 0;
 
-            virtual bool needs_update_for_render() = 0;
+            virtual mesh_data_updates_t const &updates() = 0;
             virtual void update_render_buffer_if_needed() = 0;
         };
 
@@ -40,7 +42,7 @@ namespace ui {
         id<MTLBuffer> vertexBuffer();
         id<MTLBuffer> indexBuffer();
 
-        bool needs_update_for_render();
+        mesh_data_updates_t const &updates();
         void update_render_buffer_if_needed();
     };
 }

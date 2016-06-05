@@ -2,7 +2,6 @@
 //  yas_ui_mesh.mm
 //
 
-#include <bitset>
 #include "yas_each_index.h"
 #include "yas_objc_ptr.h"
 #include "yas_ui_batch_render_mesh_info.h"
@@ -19,7 +18,7 @@ using namespace yas;
 
 struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     impl() {
-        _update_reasons.set();
+        _updates.set();
     }
 
     ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
@@ -53,14 +52,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return _mesh_data.index_count();
     }
 
-    bool needs_update_for_render() override {
-        if (_update_reasons.any()) {
-            return true;
-        } else if (_mesh_data) {
-            return _mesh_data.renderable().needs_update_for_render();
-        }
-
-        return false;
+    ui::mesh_updates_t const &updates() override {
+        return _updates;
     }
 
     void metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
@@ -200,7 +193,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
    private:
     void _set_needs_update(ui::mesh_update_reason const reason) {
-        _update_reasons.set(static_cast<ui::mesh_update_reason_t>(reason));
+        _updates.set(static_cast<ui::mesh_update_reason_t>(reason));
     }
 
     bool _is_skip_render() {
@@ -216,7 +209,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     bool _ready_render() {
-        _update_reasons.reset();
+        _updates.reset();
 
         if (_mesh_data) {
             _mesh_data.renderable().update_render_buffer_if_needed();
@@ -239,7 +232,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     simd::float4x4 _matrix = matrix_identity_float4x4;
 
-    std::bitset<ui::mesh_update_reason_count> _update_reasons;
+    mesh_updates_t _updates;
 };
 
 #pragma mark - ui::mesh
@@ -288,6 +281,14 @@ void ui::mesh::set_use_mesh_color(bool const use) {
 
 void ui::mesh::set_primitive_type(ui::primitive_type const type) {
     impl_ptr<impl>()->set_primitive_type(type);
+}
+
+ui::mesh_data &ui::mesh::mesh_data() {
+    return impl_ptr<impl>()->mesh_data();
+}
+
+ui::texture &ui::mesh::texture() {
+    return impl_ptr<impl>()->texture();
 }
 
 #pragma mark - protocol

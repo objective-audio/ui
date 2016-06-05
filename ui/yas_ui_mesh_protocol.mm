@@ -30,8 +30,8 @@ std::size_t ui::renderable_mesh::render_index_count() {
     return impl_ptr<impl>()->render_index_count();
 }
 
-bool ui::renderable_mesh::needs_update_for_render() {
-    return impl_ptr<impl>()->needs_update_for_render();
+ui::mesh_updates_t const &ui::renderable_mesh::updates() {
+    return impl_ptr<impl>()->updates();
 }
 
 void ui::renderable_mesh::metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,

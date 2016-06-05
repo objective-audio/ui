@@ -30,8 +30,8 @@ id<MTLBuffer> ui::renderable_mesh_data::indexBuffer() {
     return impl_ptr<impl>()->indexBuffer();
 }
 
-bool ui::renderable_mesh_data::needs_update_for_render() {
-    return impl_ptr<impl>()->needs_update_for_render();
+ui::mesh_data_updates_t const &ui::renderable_mesh_data::updates() {
+    return impl_ptr<impl>()->updates();
 }
 
 void ui::renderable_mesh_data::update_render_buffer_if_needed() {
