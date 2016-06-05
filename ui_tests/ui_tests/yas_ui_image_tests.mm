@@ -76,13 +76,4 @@ using namespace yas;
     }
 }
 
-- (void)test_cast {
-    ui::image image{{.width = 1, .height = 1}};
-    base base = image;
-
-    ui::image casted_image = yas::cast<ui::image>(base);
-
-    XCTAssertEqual(casted_image, image);
-}
-
 @end

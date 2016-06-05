@@ -30,7 +30,4 @@ namespace ui {
         void draw(std::function<void(CGContextRef const)> const &);
     };
 }
-
-template <>
-ui::image cast<ui::image>(base const &);
 }

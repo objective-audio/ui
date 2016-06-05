@@ -79,10 +79,3 @@ void ui::image::clear() {
 void ui::image::draw(std::function<void(CGContextRef const)> const &function) {
     impl_ptr<impl>()->draw(function);
 }
-
-template <>
-ui::image yas::cast<ui::image>(base const &base) {
-    ui::image obj{nullptr};
-    obj.set_impl_ptr(std::dynamic_pointer_cast<ui::image::impl>(base.impl_ptr()));
-    return obj;
-}
