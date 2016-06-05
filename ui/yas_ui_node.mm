@@ -2,7 +2,6 @@
 //  yas_ui_node.mm
 //
 
-#include <bitset>
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_ui_batch.h"
@@ -11,6 +10,7 @@
 #include "yas_ui_collision_detector.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
@@ -25,7 +25,7 @@ using namespace yas;
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
     impl() {
-        _update_reasons.set();
+        _updates.set();
     }
 
     std::vector<ui::node> &children() {
@@ -87,7 +87,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void update_render_info(ui::render_info &render_info) override {
         auto const is_geometry_updated = _is_updated(ui::node_update_reason::geometry);
-        _update_reasons.reset();
+        _updates.reset();
 
         if (!enabled_property.value()) {
             return;
@@ -184,7 +184,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool needs_update_for_render() override {
-        if (_update_reasons.any()) {
+        if (_updates.any()) {
             return true;
         }
 
@@ -193,8 +193,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (auto &mesh = mesh_property.value()) {
-            if (mesh.renderable().needs_update_for_render()) {
+            if (mesh.renderable().updates().any()) {
                 return true;
+            }
+
+            if (auto &mesh_data = mesh.mesh_data()) {
+                if (mesh_data.renderable().updates().any()) {
+                    return true;
+                }
             }
         }
 
@@ -235,11 +241,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool _is_updated(ui::node_update_reason const reason) {
-        return _update_reasons.test(static_cast<ui::node_update_reason_t>(reason));
+        return _updates.test(static_cast<ui::node_update_reason_t>(reason));
     }
 
     void _set_updated(ui::node_update_reason const reason) {
-        _update_reasons.set(static_cast<ui::node_update_reason_t>(reason));
+        _updates.set(static_cast<ui::node_update_reason_t>(reason));
     }
 
     property<weak<ui::node>> parent_property{{.value = ui::node{nullptr}}};
@@ -264,7 +270,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::bitset<ui::node_update_reason_count> _update_reasons;
+    node_updates_t _updates;
 };
 
 #pragma mark - node
