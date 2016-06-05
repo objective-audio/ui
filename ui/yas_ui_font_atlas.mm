@@ -69,13 +69,13 @@ namespace ui {
 }
 
 struct ui::font_atlas::impl : base::impl {
-    std::string font_name;
-    double font_size;
-    std::string words;
-    ui::font_atlas::subject_t subject;
+    std::string _font_name;
+    double _font_size;
+    std::string _words;
+    ui::font_atlas::subject_t _subject;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
-        : font_name(std::move(font_name)), font_size(font_size), words(std::move(words)) {
+        : _font_name(std::move(font_name)), _font_size(font_size), _words(std::move(words)) {
     }
 
     ui::texture &texture() {
@@ -88,8 +88,8 @@ struct ui::font_atlas::impl : base::impl {
 
             _update_texture();
 
-            if (subject.has_observer()) {
-                subject.notify(ui::font_atlas_method::texture_changed, cast<ui::font_atlas>());
+            if (_subject.has_observer()) {
+                _subject.notify(ui::font_atlas_method::texture_changed, cast<ui::font_atlas>());
             }
         }
     }
@@ -174,9 +174,9 @@ struct ui::font_atlas::impl : base::impl {
             return;
         }
 
-        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(this->font_name), font_size, nullptr);
+        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr);
 
-        auto const word_size = words.size();
+        auto const word_size = _words.size();
 
         _squares.resize(word_size);
         _advances.resize(word_size);
@@ -184,7 +184,7 @@ struct ui::font_atlas::impl : base::impl {
         CGGlyph glyphs[word_size];
         UniChar characters[word_size];
 
-        CFStringGetCharacters(to_cf_object(words), CFRangeMake(0, word_size), characters);
+        CFStringGetCharacters(to_cf_object(_words), CFRangeMake(0, word_size), characters);
         CTFontGetGlyphsForCharacters(ct_font, characters, glyphs, word_size);
         CTFontGetAdvancesForGlyphs(ct_font, kCTFontOrientationDefault, glyphs, _advances.data(), word_size);
 
@@ -228,7 +228,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     ui::vertex2d_square_t const &_square(std::string const &word) {
-        auto idx = words.find_first_of(word);
+        auto idx = _words.find_first_of(word);
         if (idx == std::string::npos) {
             return _empty_square;
         }
@@ -260,7 +260,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     CGSize const &_advance(std::string const &word) {
-        auto idx = words.find(word);
+        auto idx = _words.find(word);
         if (idx == std::string::npos) {
             return _empty_advance;
         }
@@ -277,15 +277,15 @@ ui::font_atlas::font_atlas(std::nullptr_t) : base(nullptr) {
 }
 
 std::string const &ui::font_atlas::font_name() const {
-    return impl_ptr<impl>()->font_name;
+    return impl_ptr<impl>()->_font_name;
 }
 
 double const &ui::font_atlas::font_size() const {
-    return impl_ptr<impl>()->font_size;
+    return impl_ptr<impl>()->_font_size;
 }
 
 std::string const &ui::font_atlas::words() const {
-    return impl_ptr<impl>()->words;
+    return impl_ptr<impl>()->_words;
 }
 
 ui::texture const &ui::font_atlas::texture() const {
@@ -297,7 +297,7 @@ void ui::font_atlas::set_texture(ui::texture texture) {
 }
 
 ui::font_atlas::subject_t &ui::font_atlas::subject() {
-    return impl_ptr<impl>()->subject;
+    return impl_ptr<impl>()->_subject;
 }
 
 ui::strings_layout ui::font_atlas::make_strings_layout(std::string const &text, pivot const pivot) const {
