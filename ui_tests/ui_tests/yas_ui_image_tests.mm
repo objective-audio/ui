@@ -25,7 +25,7 @@ using namespace yas;
 }
 
 - (void)test_create_without_scale_factor {
-    ui::image image{{.width = 4, .height = 2}};
+    ui::image image{{.point_size = {.width = 4, .height = 2}}};
 
     XCTAssertEqual(image.point_size().width, 4);
     XCTAssertEqual(image.point_size().height, 2);
@@ -36,7 +36,7 @@ using namespace yas;
 }
 
 - (void)test_create_with_scale_factor {
-    ui::image image{{.width = 6, .height = 3}, 2.0};
+    ui::image image{{.point_size = {.width = 6, .height = 3}, .scale_factor = 2.0}};
 
     XCTAssertEqual(image.point_size().width, 6);
     XCTAssertEqual(image.point_size().height, 3);
@@ -53,7 +53,7 @@ using namespace yas;
 }
 
 - (void)test_draw {
-    ui::image image{{.width = 2, .height = 2}};
+    ui::image image{{.point_size = {.width = 2, .height = 2}}};
 
     image.draw([](auto const context) {
         CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
@@ -67,7 +67,7 @@ using namespace yas;
 }
 
 - (void)test_clear {
-    ui::image image{{.width = 2, .height = 2}};
+    ui::image image{{.point_size = {.width = 2, .height = 2}}};
 
     image.draw([](auto const context) {
         CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);

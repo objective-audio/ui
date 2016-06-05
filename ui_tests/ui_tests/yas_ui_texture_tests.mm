@@ -52,7 +52,7 @@ using namespace yas;
 
     auto texture = ui::make_texture(device.object(), {8, 8}, 1.0).value();
 
-    ui::image image{{1, 1}, 1.0};
+    ui::image image{{.point_size = {1, 1}, .scale_factor = 1.0}};
 
     image.draw([](auto const context) {
         auto const width = CGBitmapContextGetWidth(context);

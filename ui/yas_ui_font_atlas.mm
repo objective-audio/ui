@@ -202,7 +202,7 @@ struct ui::font_atlas::impl : base::impl {
 
             _set_vertex_position(image_region, idx);
 
-            ui::image image{image_size, scale_factor};
+            ui::image image{{.point_size = image_size, .scale_factor = scale_factor}};
 
             image.draw([&image_region, &descent, &glyphs, &idx, &ct_font](CGContextRef const ctx) {
                 CGContextSaveGState(ctx);

@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_image.h"
-#include "yas_ui_types.h"
 
 using namespace yas;
 
@@ -45,8 +44,7 @@ struct ui::image::impl : base::impl {
     CGContextRef _bitmap_context;
 };
 
-ui::image::image(uint_size const point_size, double const scale_factor)
-    : base(std::make_shared<impl>(point_size, scale_factor)) {
+ui::image::image(ui::image_args args) : base(std::make_shared<impl>(args.point_size, args.scale_factor)) {
 }
 
 ui::image::image(std::nullptr_t) : base(nullptr) {

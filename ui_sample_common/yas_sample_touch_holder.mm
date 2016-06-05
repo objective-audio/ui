@@ -50,7 +50,7 @@ struct sample::touch_holder::impl : base::impl {
             return;
         }
 
-        ui::image image{{100, 100}, _texture.scale_factor()};
+        ui::image image{{.point_size = {100, 100}, .scale_factor = _texture.scale_factor()}};
         image.draw([](CGContextRef const ctx) {
             CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
             CGContextSetLineWidth(ctx, 1.0f);

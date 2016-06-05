@@ -67,7 +67,7 @@ struct sample::button_node::impl : base::impl {
         auto &square_mesh_data = square_node.square_mesh_data();
 
         ui::uint_size image_size{width, width};
-        ui::image image{image_size, texture.scale_factor()};
+        ui::image image{{.point_size = image_size, .scale_factor = texture.scale_factor()}};
 
         auto set_image_region = [&square_mesh_data](ui::uint_region const &pixel_region, bool const tracking) {
             std::size_t const sq_idx = tracking ? 1 : 0;

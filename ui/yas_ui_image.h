@@ -7,16 +7,22 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <functional>
 #include "yas_base.h"
+#include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
     class uint_size;
 
+    struct image_args {
+        ui::uint_size point_size;
+        double scale_factor = 1.0;
+    };
+
     class image : public base {
        public:
         class impl;
 
-        image(ui::uint_size const point_size, double const scale_factor = 1.0);
+        image(image_args);
         image(std::nullptr_t);
 
         ui::uint_size point_size() const;
