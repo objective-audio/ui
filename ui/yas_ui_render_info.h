@@ -18,7 +18,7 @@ namespace ui {
         simd::float4x4 matrix = matrix_identity_float4x4;
         simd::float4x4 mesh_matrix = matrix_identity_float4x4;
         ui::collision_detector collision_detector = nullptr;
-        render_encodable render_encodable = nullptr;
+        ui::render_encodable render_encodable = nullptr;
         std::vector<ui::batch> batches;
     };
 }
