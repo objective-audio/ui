@@ -22,8 +22,8 @@ using namespace yas;
 
 namespace yas {
 namespace ui {
-    static auto constexpr buffer_max_bytes = 1024 * 1024;
-    static auto constexpr inflight_buffer_count = 2;
+    static auto constexpr _buffer_max_bytes = 1024 * 1024;
+    static auto constexpr _inflight_buffer_count = 2;
 }
 }
 
@@ -35,7 +35,7 @@ struct ui::renderer_base::impl::core {
 
     uint32_t _sample_count = 4;
 
-    objc_ptr<id<MTLBuffer>> _constant_buffers[inflight_buffer_count];
+    objc_ptr<id<MTLBuffer>> _constant_buffers[_inflight_buffer_count];
     uint8_t _constant_buffer_index = 0;
 
     MTLPixelFormat _depth_pixel_format = MTLPixelFormatInvalid;
@@ -105,10 +105,10 @@ ui::renderer_base::impl::impl(id<MTLDevice> const device) : _core(std::make_shar
     _core->_device = device;
     _core->_command_queue.move_object([device newCommandQueue]);
     _core->_default_library.move_object([device newDefaultLibrary]);
-    _core->_inflight_semaphore.move_object(dispatch_semaphore_create(inflight_buffer_count));
+    _core->_inflight_semaphore.move_object(dispatch_semaphore_create(_inflight_buffer_count));
 
-    for (auto const &idx : make_each(inflight_buffer_count)) {
-        _core->_constant_buffers[idx].move_object([device newBufferWithLength:buffer_max_bytes options:kNilOptions]);
+    for (auto const &idx : make_each(_inflight_buffer_count)) {
+        _core->_constant_buffers[idx].move_object([device newBufferWithLength:_buffer_max_bytes options:kNilOptions]);
     }
 }
 
@@ -194,7 +194,7 @@ uint32_t ui::renderer_base::impl::constant_buffer_offset() {
 }
 
 void ui::renderer_base::impl::set_constant_buffer_offset(uint32_t const offset) {
-    assert(offset < buffer_max_bytes);
+    assert(offset < _buffer_max_bytes);
     _core->_constant_buffer_offset = offset;
 }
 
@@ -269,7 +269,7 @@ void ui::renderer_base::impl::view_render(YASUIMetalView *const view) {
         dispatch_semaphore_signal(semaphore.object());
     }];
 
-    _core->_constant_buffer_index = (_core->_constant_buffer_index + 1) % inflight_buffer_count;
+    _core->_constant_buffer_index = (_core->_constant_buffer_index + 1) % _inflight_buffer_count;
 
     [commandBuffer presentDrawable:view.currentDrawable];
     [commandBuffer commit];
