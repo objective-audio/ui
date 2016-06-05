@@ -112,11 +112,10 @@ class ui::renderer::impl : public renderer_base::impl {
         metal_render_encoder.push_encode_info(
             {renderPassDesc, multiSamplePipelineState(), multiSamplePipelineStateWithoutTexture()});
 
-        ui::render_info render_info;
-        render_info.collision_detector = _detector;
-        render_info.render_encodable = metal_render_encoder.encodable();
-        render_info.matrix = projection_matrix();
-        render_info.mesh_matrix = projection_matrix();
+        ui::render_info render_info{.collision_detector = _detector,
+                                    .render_encodable = metal_render_encoder.encodable(),
+                                    .matrix = projection_matrix(),
+                                    .mesh_matrix = projection_matrix()};
 
         _root_node.metal().metal_setup(device());
 
