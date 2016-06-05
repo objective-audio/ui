@@ -29,6 +29,8 @@ using namespace yas;
     XCTAssertTrue(batch);
 
     XCTAssertTrue(batch.renderable());
+    XCTAssertTrue(batch.encodable());
+    XCTAssertTrue(batch.metal());
 }
 
 - (void)test_create_null {
