@@ -46,6 +46,12 @@ using namespace yas;
     XCTAssertTrue(image.data() != nullptr);
 }
 
+- (void)test_create_null {
+    ui::image image{nullptr};
+
+    XCTAssertFalse(image);
+}
+
 - (void)test_draw {
     ui::image image{{.width = 2, .height = 2}};
 
