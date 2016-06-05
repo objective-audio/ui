@@ -290,6 +290,14 @@ void ui::mesh::set_primitive_type(ui::primitive_type const type) {
     impl_ptr<impl>()->set_primitive_type(type);
 }
 
+ui::mesh_data &ui::mesh::mesh_data() {
+    return impl_ptr<impl>()->mesh_data();
+}
+
+ui::texture &ui::mesh::texture() {
+    return impl_ptr<impl>()->texture();
+}
+
 #pragma mark - protocol
 
 ui::metal_object &ui::mesh::metal() {
