@@ -13,6 +13,7 @@ namespace yas {
 namespace ui {
     class renderer;
     class render_info;
+    enum class batch_building_type;
 
     enum class node_method {
         added_to_super,
@@ -49,6 +50,7 @@ namespace ui {
         mesh_data_updates_t mesh_data_updates;
 
         bool is_any_updated() const;
+        ui::batch_building_type batch_building_type() const;
     };
 
     struct renderable_node : protocol {
@@ -68,4 +70,8 @@ namespace ui {
         void update_render_info(ui::render_info &);
     };
 }
+
+std::string to_string(ui::node_update_reason const &);
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &);

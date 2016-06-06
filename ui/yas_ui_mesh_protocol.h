@@ -14,6 +14,7 @@ namespace ui {
     class renderer_base;
     class metal_encode_info;
     class batch_render_mesh_info;
+    enum class batch_building_type;
 
     enum class mesh_update_reason : std::size_t {
         mesh_data,
@@ -36,7 +37,7 @@ namespace ui {
             virtual mesh_updates_t const &updates() = 0;
             virtual void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const,
                                       ui::metal_encode_info const &) = 0;
-            virtual void batch_render(batch_render_mesh_info &) = 0;
+            virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
@@ -48,7 +49,11 @@ namespace ui {
         std::size_t render_index_count();
         mesh_updates_t const &updates();
         void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
-        void batch_render(batch_render_mesh_info &);
+        void batch_render(batch_render_mesh_info &, ui::batch_building_type const);
     };
 }
+
+std::string to_string(ui::mesh_update_reason const &);
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::mesh_update_reason const &);

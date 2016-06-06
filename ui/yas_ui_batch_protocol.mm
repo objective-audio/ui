@@ -16,10 +16,32 @@ std::vector<ui::mesh> &ui::renderable_batch::meshes() {
     return impl_ptr<impl>()->meshes();
 }
 
-void ui::renderable_batch::commit() {
-    impl_ptr<impl>()->commit();
+void ui::renderable_batch::begin_render_meshes_building(batch_building_type const type) {
+    impl_ptr<impl>()->begin_render_meshes_building(type);
 }
 
-void ui::renderable_batch::clear() {
-    impl_ptr<impl>()->clear();
+void ui::renderable_batch::commit_render_meshes_building() {
+    impl_ptr<impl>()->commit_render_meshes_building();
+}
+
+void ui::renderable_batch::clear_render_meshes() {
+    impl_ptr<impl>()->clear_render_meshes();
+}
+
+#pragma mark -
+
+std::string yas::to_string(ui::batch_building_type const &type) {
+    switch (type) {
+        case ui::batch_building_type::rebuild:
+            return "rebuild";
+        case ui::batch_building_type::overwrite:
+            return "overwrite";
+        case ui::batch_building_type::none:
+            return "none";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::batch_building_type const &type) {
+    os << to_string(type);
+    return os;
 }

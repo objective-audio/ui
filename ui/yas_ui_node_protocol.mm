@@ -2,6 +2,7 @@
 //  yas_ui_node_protocol.mm
 //
 
+#include "yas_ui_batch_protocol.h"
 #include "yas_ui_node_protocol.h"
 #include "yas_ui_renderer.h"
 
@@ -11,6 +12,26 @@ using namespace yas;
 
 bool ui::tree_updates::is_any_updated() const {
     return node_updates.flags.any() || mesh_updates.flags.any() || mesh_data_updates.flags.any();
+}
+
+ui::batch_building_type ui::tree_updates::batch_building_type() const {
+    static node_updates_t const _node_create_updates = {ui::node_update_reason::mesh, ui::node_update_reason::enabled,
+                                                        ui::node_update_reason::batch};
+    static mesh_updates_t const _mesh_create_updates = {ui::mesh_update_reason::texture,
+                                                        ui::mesh_update_reason::mesh_data};
+    static mesh_data_updates_t const _mesh_data_create_updates = {ui::mesh_data_update_reason::index_count,
+                                                                  ui::mesh_data_update_reason::vertex_count};
+
+    if (node_updates.and_test(_node_create_updates) || mesh_updates.and_test(_mesh_create_updates) ||
+        mesh_data_updates.and_test(_mesh_data_create_updates)) {
+        return ui::batch_building_type::rebuild;
+    }
+
+    if (node_updates.flags.any() || mesh_updates.flags.any() || mesh_data_updates.flags.any()) {
+        return ui::batch_building_type::overwrite;
+    }
+
+    return ui::batch_building_type::none;
 }
 
 #pragma mark - renderable_node
@@ -35,4 +56,28 @@ void ui::renderable_node::fetch_tree_updates(ui::tree_updates &info) {
 
 void ui::renderable_node::update_render_info(ui::render_info &info) {
     impl_ptr<impl>()->update_render_info(info);
+}
+
+std::string yas::to_string(ui::node_update_reason const &reason) {
+    switch (reason) {
+        case ui::node_update_reason::geometry:
+            return "geometry";
+        case ui::node_update_reason::color:
+            return "color";
+        case ui::node_update_reason::mesh:
+            return "mesh";
+        case ui::node_update_reason::collider:
+            return "collider";
+        case ui::node_update_reason::enabled:
+            return "enabled";
+        case ui::node_update_reason::batch:
+            return "batch";
+        case ui::node_update_reason::count:
+            return "count";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &reason) {
+    os << to_string(reason);
+    return os;
 }

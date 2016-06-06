@@ -4,6 +4,7 @@
 
 #include "yas_each_index.h"
 #include "yas_objc_ptr.h"
+#include "yas_ui_batch_protocol.h"
 #include "yas_ui_batch_render_mesh_info.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
@@ -37,19 +38,17 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     std::size_t render_vertex_count() override {
-        if (_is_transparent()) {
-            return 0;
+        if (_is_mesh_data_and_color_exists()) {
+            return _mesh_data.vertex_count();
         }
-
-        return _mesh_data.vertex_count();
+        return 0;
     }
 
     std::size_t render_index_count() override {
-        if (_is_transparent()) {
-            return 0;
+        if (_is_mesh_data_and_color_exists()) {
+            return _mesh_data.index_count();
         }
-
-        return _mesh_data.index_count();
+        return 0;
     }
 
     ui::mesh_updates_t const &updates() override {
@@ -97,40 +96,48 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         renderer.set_constant_buffer_offset(constant_buffer_offset);
     }
 
-    void batch_render(ui::batch_render_mesh_info &mesh_info) override {
+    void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
+        auto const mesh_updates = _updates;
+        ui::mesh_data_updates_t mesh_data_updates;
+        if (_mesh_data) {
+            mesh_data_updates = _mesh_data.renderable().updates();
+        }
+
         if (!_ready_render()) {
             return;
         }
 
-        mesh_info.mesh_data.write([
-                &src_mesh_data = _mesh_data,
-                &matrix = _matrix,
-                &color = _color,
-                is_use_mesh_color = _use_mesh_color,
-                &mesh_info
-        ](auto &vertices, auto &indices) {
-            auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
-            auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
+        if (_needs_write_for_batch_render(mesh_updates, mesh_data_updates, building_type)) {
+            mesh_info.mesh_data.write([
+                    &src_mesh_data = _mesh_data,
+                    &matrix = _matrix,
+                    &color = _color,
+                    is_use_mesh_color = _use_mesh_color,
+                    &mesh_info
+            ](auto &vertices, auto &indices) {
+                auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
+                auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
 
-            auto *dst_indices = &indices[dst_index_offset];
-            auto const *src_indices = src_mesh_data.indices();
+                auto *dst_indices = &indices[dst_index_offset];
+                auto const *src_indices = src_mesh_data.indices();
 
-            for (auto const &idx : make_each(src_mesh_data.index_count())) {
-                dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
-            }
+                for (auto const &idx : make_each(src_mesh_data.index_count())) {
+                    dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
+                }
 
-            auto *dst_vertices = &vertices[dst_vertex_offset];
-            auto const *src_vertices = src_mesh_data.vertices();
+                auto *dst_vertices = &vertices[dst_vertex_offset];
+                auto const *src_vertices = src_mesh_data.vertices();
 
-            for (auto const &idx : make_each(src_mesh_data.vertex_count())) {
-                auto &dst_vertex = dst_vertices[idx];
-                auto &src_vertex = src_vertices[idx];
-                auto pos = matrix * simd::float4{src_vertex.position[0], src_vertex.position[1], 0.0f, 1.0f};
-                dst_vertex.position = simd::float2{pos.x, pos.y};
-                dst_vertex.tex_coord = src_vertex.tex_coord;
-                dst_vertex.color = is_use_mesh_color ? src_vertex.color : color;
-            }
-        });
+                for (auto const &idx : make_each(src_mesh_data.vertex_count())) {
+                    auto &dst_vertex = dst_vertices[idx];
+                    auto &src_vertex = src_vertices[idx];
+                    auto pos = matrix * simd::float4{src_vertex.position[0], src_vertex.position[1], 0.0f, 1.0f};
+                    dst_vertex.position = simd::float2{pos.x, pos.y};
+                    dst_vertex.tex_coord = src_vertex.tex_coord;
+                    dst_vertex.color = is_use_mesh_color ? src_vertex.color : color;
+                }
+            });
+        }
 
         mesh_info.vertex_idx += _mesh_data.vertex_count();
         mesh_info.index_idx += _mesh_data.index_count();
@@ -159,35 +166,50 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     void set_mesh_data(ui::mesh_data &&mesh_data) {
         if (!is_same(_mesh_data, mesh_data)) {
             _mesh_data = std::move(mesh_data);
-            _set_updated(ui::mesh_update_reason::mesh_data);
+
+            if (_is_color_exists()) {
+                _set_updated(ui::mesh_update_reason::mesh_data);
+            }
         }
     }
 
     void set_texture(ui::texture &&texture) {
         if (!is_same(_texture, texture)) {
             _texture = std::move(texture);
-            _set_updated(ui::mesh_update_reason::texture);
+
+            if (_is_mesh_data_and_color_exists()) {
+                _set_updated(ui::mesh_update_reason::texture);
+            }
         }
     }
 
     void set_primitive_type(ui::primitive_type const type) {
         if (_primitive_type != type) {
             _primitive_type = type;
-            _set_updated(ui::mesh_update_reason::primitive_type);
+
+            if (_is_mesh_data_and_color_exists()) {
+                _set_updated(ui::mesh_update_reason::primitive_type);
+            }
         }
     }
 
     void set_color(simd::float4 &&color) {
         if (!yas::is_equal(_color, color)) {
             _color = std::move(color);
-            _set_updated(ui::mesh_update_reason::color);
+
+            if (_is_mesh_data_exists() && !_use_mesh_color) {
+                _set_updated(ui::mesh_update_reason::color);
+            }
         }
     }
 
     void set_use_mesh_color(bool const use) {
         if (_use_mesh_color != use) {
             _use_mesh_color = use;
-            _set_updated(ui::mesh_update_reason::use_mesh_color);
+
+            if (_is_mesh_data_exists()) {
+                _set_updated(ui::mesh_update_reason::use_mesh_color);
+            }
         }
     }
 
@@ -196,16 +218,21 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _updates.set(reason);
     }
 
-    bool _is_transparent() {
-        if (!_mesh_data || _mesh_data.index_count() == 0) {
-            return true;
-        }
+    bool _is_mesh_data_exists() {
+        return _mesh_data && _mesh_data.index_count() > 0;
+    }
 
-        if (!_use_mesh_color && yas::is_equal(_color, simd::float4{0.0f})) {
-            return true;
+    bool _is_color_exists() {
+        if (_use_mesh_color) {
+            static simd::float4 const _clear_color = 0.0f;
+            if (yas::is_equal(_color, _clear_color)) {
+            }
         }
+        return true;
+    }
 
-        return false;
+    bool _is_mesh_data_and_color_exists() {
+        return _is_mesh_data_exists() && _is_color_exists();
     }
 
     bool _ready_render() {
@@ -217,11 +244,28 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return false;
         }
 
-        if (_is_transparent()) {
-            return false;
+        return _is_mesh_data_and_color_exists();
+    }
+
+    bool _needs_write_for_batch_render(ui::mesh_updates_t const &mesh_updates,
+                                       ui::mesh_data_updates_t const &mesh_data_updates,
+                                       ui::batch_building_type const &building_type) {
+        if (building_type == ui::batch_building_type::rebuild) {
+            return true;
         }
 
-        return true;
+        if (building_type == ui::batch_building_type::overwrite) {
+            static mesh_updates_t const _mesh_overwrite_updates = {ui::mesh_update_reason::color,
+                                                                   ui::mesh_update_reason::use_mesh_color};
+            static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
+
+            if (mesh_updates.and_test(_mesh_overwrite_updates) ||
+                mesh_data_updates.and_test(_mesh_data_overwrite_updates)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     ui::mesh_data _mesh_data = nullptr;

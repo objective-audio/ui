@@ -123,14 +123,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 sub_node.renderable().fetch_tree_updates(tree_updates);
             }
 
-            bool const is_children_updated = tree_updates.is_any_updated();
+            auto const building_type = tree_updates.batch_building_type();
 
             ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
             auto &batch_renderable = batch.renderable();
 
-            if (is_children_updated) {
+            if (building_type != ui::batch_building_type::none) {
                 batch_render_info.render_encodable = batch.encodable();
-                batch_renderable.clear();
+                batch_renderable.begin_render_meshes_building(building_type);
             }
 
             for (auto &sub_node : _children) {
@@ -139,8 +139,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 sub_node.impl_ptr<impl>()->update_render_info(batch_render_info);
             }
 
-            if (is_children_updated) {
-                batch_renderable.commit();
+            if (building_type != ui::batch_building_type::none) {
+                batch_renderable.commit_render_meshes_building();
             }
 
             for (auto &mesh : batch_renderable.meshes()) {
@@ -424,7 +424,7 @@ void ui::node::set_collider(ui::collider collider) {
 
 void ui::node::set_batch(ui::batch batch) {
     if (batch) {
-        batch.renderable().clear();
+        batch.renderable().clear_render_meshes();
     }
     impl_ptr<impl>()->_batch_property.set_value(std::move(batch));
 }

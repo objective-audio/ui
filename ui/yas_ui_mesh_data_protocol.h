@@ -43,4 +43,8 @@ namespace ui {
         void update_render_buffer_if_needed();
     };
 }
+
+std::string to_string(ui::mesh_data_update_reason const &);
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::mesh_data_update_reason const &);
