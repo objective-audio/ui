@@ -51,7 +51,7 @@ namespace ui {
         mesh_updates_t mesh_updates;
         mesh_data_updates_t mesh_data_updates;
 
-        bool any_updated() const;
+        bool is_any_updated() const;
     };
 
     struct renderable_node : protocol {
