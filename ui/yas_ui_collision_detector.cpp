@@ -16,7 +16,7 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
         _update_reasons.set();
     }
 
-    void set_needs_update(ui::collider_update_reason const reason) override {
+    void set_updated(ui::collider_update_reason const reason) override {
         _update_reasons.set(static_cast<ui::collider_update_reason_t>(reason));
     }
 

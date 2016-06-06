@@ -223,7 +223,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void _set_updated_for_collider(ui::collider_update_reason const reason) {
         if (auto locked_renderer = renderer()) {
-            locked_renderer.collision_detector().updatable().set_needs_update(reason);
+            locked_renderer.collision_detector().updatable().set_updated(reason);
         }
     }
 
