@@ -37,7 +37,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     std::size_t render_vertex_count() override {
-        if (_is_skip_render()) {
+        if (_is_transparent()) {
             return 0;
         }
 
@@ -45,7 +45,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     std::size_t render_index_count() override {
-        if (_is_skip_render()) {
+        if (_is_transparent()) {
             return 0;
         }
 
@@ -196,7 +196,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _updates.set(static_cast<ui::mesh_update_reason_t>(reason));
     }
 
-    bool _is_skip_render() {
+    bool _is_transparent() {
         if (!_mesh_data || _mesh_data.index_count() == 0) {
             return true;
         }
@@ -217,7 +217,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return false;
         }
 
-        if (_is_skip_render()) {
+        if (_is_transparent()) {
             return false;
         }
 
