@@ -101,6 +101,8 @@
 		B64F910F1CF2930800365111 /* yas_ui_batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch.h; sourceTree = "<group>"; };
 		B65A3A1F1CCE442E00929FB4 /* yas_ui_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_math.cpp; sourceTree = "<group>"; };
 		B65A3A201CCE442E00929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
+		B65CBB571D075CC3006D9448 /* yas_flagset_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset_private.h; sourceTree = "<group>"; };
+		B65CBB581D075CC3006D9448 /* yas_flagset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset.h; sourceTree = "<group>"; };
 		B65F6E4C1CC8804D007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
 		B67B89E51CDA212B0081848D /* yas_sample_button_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_button_node.h; path = ../../ui_sample_common/yas_sample_button_node.h; sourceTree = "<group>"; };
@@ -311,6 +313,8 @@
 				B6F501721C9BFFD400A0B4A1 /* yas_each_index.h */,
 				B6F501731C9BFFD400A0B4A1 /* yas_exception.cpp */,
 				B6F501741C9BFFD400A0B4A1 /* yas_exception.h */,
+				B65CBB571D075CC3006D9448 /* yas_flagset_private.h */,
+				B65CBB581D075CC3006D9448 /* yas_flagset.h */,
 				B6F501751C9BFFD400A0B4A1 /* yas_flex_ptr.cpp */,
 				B6F501761C9BFFD400A0B4A1 /* yas_flex_ptr.h */,
 				B6D1A9AA1CAEA5330003C6CF /* yas_objc_ptr_private.h */,
