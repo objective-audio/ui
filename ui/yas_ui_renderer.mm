@@ -106,7 +106,7 @@ class ui::renderer::impl : public renderer_base::impl {
 
         ui::tree_updates tree_updates;
         _root_node.renderable().fetch_tree_updates(tree_updates);
-        return tree_updates.any_updated();
+        return tree_updates.is_any_updated();
     }
 
     void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPassDesc) override {

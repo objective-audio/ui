@@ -121,12 +121,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             for (auto &sub_node : _children) {
                 sub_node.renderable().fetch_tree_updates(tree_updates);
-                if (tree_updates.any_updated()) {
-                    break;
-                }
             }
 
-            bool const is_children_updated = tree_updates.any_updated();
+            bool const is_children_updated = tree_updates.is_any_updated();
 
             ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
             auto &batch_renderable = batch.renderable();
@@ -226,7 +223,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void _set_updated_for_collider(ui::collider_update_reason const reason) {
         if (auto locked_renderer = renderer()) {
-            locked_renderer.collision_detector().updatable().set_needs_update(reason);
+            locked_renderer.collision_detector().updatable().set_updated(reason);
         }
     }
 

@@ -9,7 +9,7 @@ using namespace yas;
 
 #pragma mark - node_update_info
 
-bool ui::tree_updates::any_updated() const {
+bool ui::tree_updates::is_any_updated() const {
     return node_updates.any() || mesh_updates.any() || mesh_data_updates.any();
 }
 

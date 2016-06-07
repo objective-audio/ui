@@ -80,7 +80,7 @@ using namespace yas;
 
     XCTAssertTrue(detector.detect(0.0f, collider1));
 
-    detector.updatable().set_needs_update(ui::collider_update_reason::existence);
+    detector.updatable().set_updated(ui::collider_update_reason::existence);
     detector.updatable().clear_colliders_if_needed();
 
     XCTAssertFalse(detector.detect(0.0f, collider1));

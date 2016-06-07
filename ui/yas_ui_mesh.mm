@@ -37,7 +37,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     std::size_t render_vertex_count() override {
-        if (_is_skip_render()) {
+        if (_is_transparent()) {
             return 0;
         }
 
@@ -45,7 +45,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     std::size_t render_index_count() override {
-        if (_is_skip_render()) {
+        if (_is_transparent()) {
             return 0;
         }
 
@@ -159,44 +159,44 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     void set_mesh_data(ui::mesh_data &&mesh_data) {
         if (!is_same(_mesh_data, mesh_data)) {
             _mesh_data = std::move(mesh_data);
-            _set_needs_update(ui::mesh_update_reason::mesh_data);
+            _set_updated(ui::mesh_update_reason::mesh_data);
         }
     }
 
     void set_texture(ui::texture &&texture) {
         if (!is_same(_texture, texture)) {
             _texture = std::move(texture);
-            _set_needs_update(ui::mesh_update_reason::texture);
+            _set_updated(ui::mesh_update_reason::texture);
         }
     }
 
     void set_primitive_type(ui::primitive_type const type) {
         if (_primitive_type != type) {
             _primitive_type = type;
-            _set_needs_update(ui::mesh_update_reason::primitive_type);
+            _set_updated(ui::mesh_update_reason::primitive_type);
         }
     }
 
     void set_color(simd::float4 &&color) {
         if (!yas::is_equal(_color, color)) {
             _color = std::move(color);
-            _set_needs_update(ui::mesh_update_reason::color);
+            _set_updated(ui::mesh_update_reason::color);
         }
     }
 
     void set_use_mesh_color(bool const use) {
         if (_use_mesh_color != use) {
             _use_mesh_color = use;
-            _set_needs_update(ui::mesh_update_reason::use_mesh_color);
+            _set_updated(ui::mesh_update_reason::use_mesh_color);
         }
     }
 
    private:
-    void _set_needs_update(ui::mesh_update_reason const reason) {
+    void _set_updated(ui::mesh_update_reason const reason) {
         _updates.set(static_cast<ui::mesh_update_reason_t>(reason));
     }
 
-    bool _is_skip_render() {
+    bool _is_transparent() {
         if (!_mesh_data || _mesh_data.index_count() == 0) {
             return true;
         }
@@ -217,7 +217,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return false;
         }
 
-        if (_is_skip_render()) {
+        if (_is_transparent()) {
             return false;
         }
 
