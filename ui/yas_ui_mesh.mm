@@ -18,7 +18,7 @@ using namespace yas;
 
 struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     impl() {
-        _updates.set();
+        _updates.flags.set();
     }
 
     ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
@@ -193,7 +193,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
    private:
     void _set_updated(ui::mesh_update_reason const reason) {
-        _updates.set(static_cast<ui::mesh_update_reason_t>(reason));
+        _updates.set(reason);
     }
 
     bool _is_transparent() {
@@ -209,7 +209,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     bool _ready_render() {
-        _updates.reset();
+        _updates.flags.reset();
 
         if (_mesh_data) {
             _mesh_data.renderable().update_render_buffer_if_needed();

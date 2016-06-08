@@ -6,7 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <simd/simd.h>
-#include <bitset>
+#include "yas_flagset.h"
 #include "yas_protocol.h"
 
 namespace yas {
@@ -25,10 +25,7 @@ namespace ui {
         count,
     };
 
-    using mesh_update_reason_t = std::underlying_type<ui::mesh_update_reason>::type;
-    static std::size_t const mesh_update_reason_count =
-        static_cast<mesh_update_reason_t>(ui::mesh_update_reason::count);
-    using mesh_updates_t = std::bitset<mesh_update_reason_count>;
+    using mesh_updates_t = flagset<mesh_update_reason>;
 
     struct renderable_mesh : protocol {
         struct impl : protocol::impl {

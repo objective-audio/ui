@@ -2,7 +2,6 @@
 //  yas_ui_collision_detector.cpp
 //
 
-#include <bitset>
 #include <deque>
 #include "yas_ui_collider.h"
 #include "yas_ui_collision_detector.h"
@@ -13,11 +12,11 @@ using namespace yas;
 
 struct ui::collision_detector::impl : base::impl, updatable_collision_detector::impl {
     impl() {
-        _update_reasons.set();
+        _updates.flags.set();
     }
 
     void set_updated(ui::collider_update_reason const reason) override {
-        _update_reasons.set(static_cast<ui::collider_update_reason_t>(reason));
+        _updates.set(reason);
     }
 
     void clear_colliders_if_needed() override {
@@ -28,12 +27,12 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
 
     void push_front_collider_if_needed(ui::collider &&collider) override {
         if (_needs_update(ui::collider_update_reason::existence)) {
-            _colliders.emplace_front(collider);
+            _colliders.emplace_front(std::move(collider));
         }
     }
 
     void finalize() override {
-        _update_reasons.reset();
+        _updates.flags.reset();
     }
 
     ui::collider detect(ui::point const &location) {
@@ -56,10 +55,10 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
 
    private:
     std::deque<ui::collider> _colliders;
-    std::bitset<ui::collider_update_reason_count> _update_reasons;
+    ui::collider_updates_t _updates;
 
     bool _needs_update(ui::collider_update_reason const reason) {
-        return _update_reasons.test(static_cast<ui::collider_update_reason_t>(reason));
+        return _updates.test(reason);
     }
 };
 
