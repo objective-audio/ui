@@ -131,6 +131,8 @@
 		B65BF8D21C91C3D500856B6A /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		B65BF8DA1C93056500856B6A /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		B65BF8DC1C93C78A00856B6A /* yas_ui_texture_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_texture_tests.mm; sourceTree = "<group>"; };
+		B65CBB5B1D075CE6006D9448 /* yas_flagset_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset_private.h; sourceTree = "<group>"; };
+		B65CBB5C1D075CE6006D9448 /* yas_flagset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset.h; sourceTree = "<group>"; };
 		B6741D001CD8D9F200141EFB /* yas_ui_math_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_math_tests.mm; sourceTree = "<group>"; };
 		B684E71E1CC23FCA00289FD9 /* yas_ui_strings_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings_node.h; sourceTree = "<group>"; };
 		B684E71F1CC23FCA00289FD9 /* yas_ui_strings_node.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings_node.mm; sourceTree = "<group>"; };
@@ -423,6 +425,8 @@
 				B6C56DA21C9049A500CAC59D /* yas_each_index.h */,
 				B6C56DA41C9049A500CAC59D /* yas_exception.cpp */,
 				B6C56DA51C9049A500CAC59D /* yas_exception.h */,
+				B65CBB5B1D075CE6006D9448 /* yas_flagset_private.h */,
+				B65CBB5C1D075CE6006D9448 /* yas_flagset.h */,
 				B6C56DA61C9049A500CAC59D /* yas_flex_ptr.cpp */,
 				B6C56DA71C9049A500CAC59D /* yas_flex_ptr.h */,
 				B6D1A9AE1CAEB7F10003C6CF /* yas_objc_ptr_private.h */,

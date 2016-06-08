@@ -88,6 +88,8 @@
 		B64F91121CF2953000365111 /* yas_ui_batch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_batch.mm; sourceTree = "<group>"; };
 		B65A3A1C1CCE441800929FB4 /* yas_ui_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_math.cpp; sourceTree = "<group>"; };
 		B65A3A1D1CCE441800929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
+		B65CBB591D075CD3006D9448 /* yas_flagset_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset_private.h; sourceTree = "<group>"; };
+		B65CBB5A1D075CD3006D9448 /* yas_flagset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset.h; sourceTree = "<group>"; };
 		B65F6D9A1CC87D12007C3523 /* ui_ios_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ui_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65F6D9E1CC87D12007C3523 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B65F6DA01CC87D12007C3523 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -408,6 +410,8 @@
 				B65F6E161CC87DDF007C3523 /* yas_each_index_private.h */,
 				B65F6E171CC87DDF007C3523 /* yas_exception.cpp */,
 				B65F6E181CC87DDF007C3523 /* yas_exception.h */,
+				B65CBB591D075CD3006D9448 /* yas_flagset_private.h */,
+				B65CBB5A1D075CD3006D9448 /* yas_flagset.h */,
 				B65F6E191CC87DDF007C3523 /* yas_flex_ptr.cpp */,
 				B65F6E1A1CC87DDF007C3523 /* yas_flex_ptr.h */,
 				B65F6E1B1CC87DDF007C3523 /* yas_objc_ptr.h */,
