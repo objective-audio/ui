@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <bitset>
+#include "yas_flagset.h"
 #include "yas_protocol.h"
 
 namespace yas {
@@ -18,10 +18,7 @@ namespace ui {
         count,
     };
 
-    using mesh_data_update_reason_size_t = std::underlying_type<ui::mesh_data_update_reason>::type;
-    static std::size_t const mesh_data_update_reason_count =
-        static_cast<mesh_data_update_reason_size_t>(ui::mesh_data_update_reason::count);
-    using mesh_data_updates_t = std::bitset<mesh_data_update_reason_count>;
+    using mesh_data_updates_t = flagset<mesh_data_update_reason>;
 
     struct renderable_mesh_data : protocol {
         struct impl : protocol::impl {

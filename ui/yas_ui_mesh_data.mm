@@ -12,7 +12,7 @@ using namespace yas;
 struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_data::impl {
     impl(std::size_t const vertex_count, std::size_t const index_count)
         : _vertex_count(vertex_count), _vertices(vertex_count), _index_count(index_count), _indices(index_count) {
-        _updates.set();
+        _updates.flags.set();
     }
 
     ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
@@ -48,7 +48,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     void update_render_buffer_if_needed() override {
-        if (!_updates.any()) {
+        if (!_updates.flags.any()) {
             return;
         }
 
@@ -62,7 +62,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
                _indices.size() * sizeof(ui::index2d_t));
 
-        _updates.reset();
+        _updates.flags.reset();
     }
 
     std::size_t vertex_buffer_byte_offset() override {
@@ -86,7 +86,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
-        if (_updates.any()) {
+        if (_updates.flags.any()) {
             func(_vertices, _indices);
         } else {
             throw "write failed.";
@@ -98,7 +98,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     void _set_updated(ui::mesh_data_update_reason const reason) {
-        _updates.set(static_cast<ui::mesh_data_update_reason_size_t>(reason));
+        _updates.set(reason);
     }
 
     std::size_t _vertex_count;
@@ -170,7 +170,7 @@ ui::renderable_mesh_data &ui::mesh_data::renderable() {
 
 struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
     impl(std::size_t const vertex_count, std::size_t const index_count) : mesh_data::impl(vertex_count, index_count) {
-        _updates.reset();
+        _updates.flags.reset();
     }
 
     void set_vertex_count(std::size_t const count) {
