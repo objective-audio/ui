@@ -187,7 +187,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         if (_enabled_property.value()) {
             if (auto &mesh = _mesh_property.value()) {
-                tree_updates.mesh_updates |= mesh.renderable().updates();
+                tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
 
                 if (auto &mesh_data = mesh.mesh_data()) {
                     tree_updates.mesh_data_updates.flags |= mesh_data.renderable().updates().flags;
