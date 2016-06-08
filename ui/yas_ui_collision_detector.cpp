@@ -27,7 +27,7 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
 
     void push_front_collider_if_needed(ui::collider &&collider) override {
         if (_needs_update(ui::collider_update_reason::existence)) {
-            _colliders.emplace_front(collider);
+            _colliders.emplace_front(std::move(collider));
         }
     }
 
