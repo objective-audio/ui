@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "yas_flagset.h"
 #include "yas_protocol.h"
 
 namespace yas {
@@ -16,9 +17,7 @@ namespace ui {
         count,
     };
 
-    using collider_update_reason_t = std::underlying_type<ui::collider_update_reason>::type;
-    static std::size_t const collider_update_reason_count =
-        static_cast<collider_update_reason_t>(ui::collider_update_reason::count);
+    using collider_updates_t = flagset<collider_update_reason>;
 
     struct updatable_collision_detector : protocol {
         struct impl : protocol::impl {
