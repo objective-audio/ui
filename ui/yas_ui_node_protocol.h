@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <bitset>
+#include "yas_flagset.h"
 #include "yas_protocol.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"
@@ -41,10 +41,7 @@ namespace ui {
         count,
     };
 
-    using node_update_reason_t = std::underlying_type<ui::node_update_reason>::type;
-    static std::size_t const node_update_reason_count =
-        static_cast<node_update_reason_t>(ui::node_update_reason::count);
-    using node_updates_t = std::bitset<ui::node_update_reason_count>;
+    using node_updates_t = flagset<node_update_reason>;
 
     struct tree_updates {
         node_updates_t node_updates;

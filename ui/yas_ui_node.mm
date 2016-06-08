@@ -25,7 +25,7 @@ using namespace yas;
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
     impl() {
-        _updates.set();
+        _updates.flags.set();
     }
 
     std::vector<ui::node> &children() {
@@ -87,7 +87,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void update_render_info(ui::render_info &render_info) override {
         auto const is_geometry_updated = _is_updated(ui::node_update_reason::geometry);
-        _updates.reset();
+        _updates.flags.reset();
 
         if (!_enabled_property.value()) {
             return;
@@ -183,7 +183,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void fetch_tree_updates(ui::tree_updates &tree_updates) override {
-        tree_updates.node_updates |= _updates;
+        tree_updates.node_updates.flags |= _updates.flags;
 
         if (_enabled_property.value()) {
             if (auto &mesh = _mesh_property.value()) {
@@ -228,11 +228,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool _is_updated(ui::node_update_reason const reason) {
-        return _updates.test(static_cast<ui::node_update_reason_t>(reason));
+        return _updates.test(reason);
     }
 
     void _set_updated(ui::node_update_reason const reason) {
-        _updates.set(static_cast<ui::node_update_reason_t>(reason));
+        _updates.set(reason);
     }
 
     property<weak<ui::node>> _parent_property{{.value = ui::node{nullptr}}};
