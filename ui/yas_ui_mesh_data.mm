@@ -23,7 +23,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         }
 
         if (!_vertex_buffer) {
-            auto vertex_length = _vertices.size() * sizeof(ui::vertex2d_t) * dynamic_buffer_count();
+            auto const vertex_length = _vertices.size() * sizeof(ui::vertex2d_t) * dynamic_buffer_count();
 
             _vertex_buffer.move_object(
                 [device newBufferWithLength:vertex_length options:MTLResourceOptionCPUCacheModeDefault]);
@@ -34,7 +34,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         }
 
         if (!_index_buffer) {
-            auto index_length = _indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
+            auto const index_length = _indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
             _index_buffer.move_object(
                 [device newBufferWithLength:index_length options:MTLResourceOptionCPUCacheModeDefault]);
@@ -54,8 +54,8 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
 
         _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
 
-        auto vertex_ptr = (ui::vertex2d_t *)[_vertex_buffer.object() contents];
-        auto index_ptr = (ui::index2d_t *)[_index_buffer.object() contents];
+        auto vertex_ptr = static_cast<ui::vertex2d_t *>([_vertex_buffer.object() contents]);
+        auto index_ptr = static_cast<ui::index2d_t *>([_index_buffer.object() contents]);
 
         memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
                _vertices.size() * sizeof(ui::vertex2d_t));
