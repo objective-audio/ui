@@ -14,6 +14,7 @@ namespace ui {
         data,
         vertex_count,
         index_count,
+        render_buffer,
 
         count,
     };

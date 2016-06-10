@@ -46,6 +46,8 @@ std::string yas::to_string(ui::mesh_data_update_reason const &reason) {
             return "vertex_count";
         case ui::mesh_data_update_reason::index_count:
             return "index_count";
+        case ui::mesh_data_update_reason::render_buffer:
+            return "render_buffer";
         case ui::mesh_data_update_reason::count:
             return "count";
     }
