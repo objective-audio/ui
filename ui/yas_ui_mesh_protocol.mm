@@ -44,6 +44,10 @@ void ui::renderable_mesh::batch_render(ui::batch_render_mesh_info &mesh_info,
     impl_ptr<impl>()->batch_render(mesh_info, building_type);
 }
 
+bool ui::renderable_mesh::is_rendering_color_exists() {
+    return impl_ptr<impl>()->is_rendering_color_exists();
+}
+
 std::string yas::to_string(ui::mesh_update_reason const &reason) {
     switch (reason) {
         case ui::mesh_update_reason::mesh_data:

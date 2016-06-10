@@ -200,6 +200,24 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
+    bool is_rendering_color_exists() override {
+        if (!_enabled_property.value()) {
+            return false;
+        }
+
+        for (auto &sub_node : _children) {
+            if (sub_node.renderable().is_rendering_color_exists()) {
+                return true;
+            }
+        }
+
+        if (auto &mesh = _mesh_property.value()) {
+            return mesh.renderable().is_rendering_color_exists();
+        }
+
+        return false;
+    }
+
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
@@ -269,33 +287,41 @@ ui::node::node() : base(std::make_shared<impl>()) {
 
     observers.reserve(9);
 
-    observers.emplace_back(
-        imp_ptr->_enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+    observers.emplace_back(imp_ptr->_enabled_property.subject().make_observer(
+        property_method::did_change, [weak_node](auto const &context) {
             if (auto node = weak_node.lock()) {
                 auto imp_ptr = node.impl_ptr<impl>();
-                imp_ptr->_set_updated(ui::node_update_reason::enabled);
                 imp_ptr->_set_updated_for_collider(ui::collider_update_reason::existence);
+                if (!context.value.new_value || node.renderable().is_rendering_color_exists()) {
+                    imp_ptr->_set_updated(ui::node_update_reason::enabled);
+                }
             }
         }));
 
     observers.emplace_back(
         imp_ptr->_position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                if (node.renderable().is_rendering_color_exists()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                }
             }
         }));
 
     observers.emplace_back(
         imp_ptr->_angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                if (node.renderable().is_rendering_color_exists()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                }
             }
         }));
 
     observers.emplace_back(
         imp_ptr->_scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                if (node.renderable().is_rendering_color_exists()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                }
             }
         }));
 

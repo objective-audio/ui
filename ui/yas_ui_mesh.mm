@@ -38,14 +38,14 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     std::size_t render_vertex_count() override {
-        if (_is_mesh_data_and_color_exists()) {
+        if (is_rendering_color_exists()) {
             return _mesh_data.vertex_count();
         }
         return 0;
     }
 
     std::size_t render_index_count() override {
-        if (_is_mesh_data_and_color_exists()) {
+        if (is_rendering_color_exists()) {
             return _mesh_data.index_count();
         }
         return 0;
@@ -177,7 +177,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         if (!is_same(_texture, texture)) {
             _texture = std::move(texture);
 
-            if (_is_mesh_data_and_color_exists()) {
+            if (is_rendering_color_exists()) {
                 _updates.set(ui::mesh_update_reason::texture);
             }
         }
@@ -187,7 +187,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         if (_primitive_type != type) {
             _primitive_type = type;
 
-            if (_is_mesh_data_and_color_exists()) {
+            if (is_rendering_color_exists()) {
                 _updates.set(ui::mesh_update_reason::primitive_type);
             }
         }
@@ -213,6 +213,10 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         }
     }
 
+    bool is_rendering_color_exists() override {
+        return _is_mesh_data_exists() && _is_color_exists();
+    }
+
    private:
     bool _is_mesh_data_exists() {
         return _mesh_data && _mesh_data.index_count() > 0;
@@ -228,10 +232,6 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return true;
     }
 
-    bool _is_mesh_data_and_color_exists() {
-        return _is_mesh_data_exists() && _is_color_exists();
-    }
-
     bool _ready_render() {
         _updates.flags.reset();
 
@@ -241,7 +241,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             return false;
         }
 
-        return _is_mesh_data_and_color_exists();
+        return is_rendering_color_exists();
     }
 
     bool _needs_write_for_batch_render(ui::mesh_updates_t const &mesh_updates,

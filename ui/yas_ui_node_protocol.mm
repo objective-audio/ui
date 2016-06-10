@@ -58,6 +58,10 @@ void ui::renderable_node::update_render_info(ui::render_info &info) {
     impl_ptr<impl>()->update_render_info(info);
 }
 
+bool ui::renderable_node::is_rendering_color_exists() {
+    return impl_ptr<impl>()->is_rendering_color_exists();
+}
+
 std::string yas::to_string(ui::node_update_reason const &reason) {
     switch (reason) {
         case ui::node_update_reason::geometry:
