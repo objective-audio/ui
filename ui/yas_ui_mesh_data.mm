@@ -97,10 +97,6 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         return 1;
     }
 
-    void _set_updated(ui::mesh_data_update_reason const reason) {
-        _updates.set(reason);
-    }
-
     std::size_t _vertex_count;
     std::size_t _index_count;
 
@@ -180,7 +176,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
 
         _vertex_count = count;
 
-        _set_updated(ui::mesh_data_update_reason::vertex_count);
+        _updates.set(ui::mesh_data_update_reason::vertex_count);
     }
 
     void set_index_count(std::size_t const count) {
@@ -190,7 +186,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
 
         _index_count = count;
 
-        _set_updated(ui::mesh_data_update_reason::index_count);
+        _updates.set(ui::mesh_data_update_reason::index_count);
     }
 
     std::size_t vertex_buffer_byte_offset() override {
@@ -204,7 +200,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
     void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override {
         func(_vertices, _indices);
 
-        _set_updated(ui::mesh_data_update_reason::data);
+        _updates.set(ui::mesh_data_update_reason::data);
     }
 
     std::size_t dynamic_buffer_count() override {
