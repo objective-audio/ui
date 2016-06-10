@@ -424,4 +424,24 @@ using namespace yas;
     called_method = nullptr;
 }
 
+- (void)test_node_update_reason_to_string {
+    XCTAssertEqual(to_string(ui::node_update_reason::geometry), "geometry");
+    XCTAssertEqual(to_string(ui::node_update_reason::color), "color");
+    XCTAssertEqual(to_string(ui::node_update_reason::mesh), "mesh");
+    XCTAssertEqual(to_string(ui::node_update_reason::collider), "collider");
+    XCTAssertEqual(to_string(ui::node_update_reason::enabled), "enabled");
+    XCTAssertEqual(to_string(ui::node_update_reason::batch), "batch");
+    XCTAssertEqual(to_string(ui::node_update_reason::count), "count");
+}
+
+- (void)test_node_update_reason_ostream {
+    std::cout << ui::node_update_reason::geometry << std::endl;
+    std::cout << ui::node_update_reason::color << std::endl;
+    std::cout << ui::node_update_reason::mesh << std::endl;
+    std::cout << ui::node_update_reason::collider << std::endl;
+    std::cout << ui::node_update_reason::enabled << std::endl;
+    std::cout << ui::node_update_reason::batch << std::endl;
+    std::cout << ui::node_update_reason::count << std::endl;
+}
+
 @end

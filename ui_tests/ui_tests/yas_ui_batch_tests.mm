@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
 #import "yas_ui_batch.h"
 #import "yas_ui_batch_protocol.h"
 #import "yas_ui_node.h"
@@ -37,6 +38,18 @@ using namespace yas;
     ui::batch batch{nullptr};
 
     XCTAssertFalse(batch);
+}
+
+- (void)test_batch_building_type_to_string {
+    XCTAssertEqual(to_string(ui::batch_building_type::rebuild), "rebuild");
+    XCTAssertEqual(to_string(ui::batch_building_type::overwrite), "overwrite");
+    XCTAssertEqual(to_string(ui::batch_building_type::none), "none");
+}
+
+- (void)test_batch_building_type_ostream {
+    std::cout << ui::batch_building_type::rebuild << std::endl;
+    std::cout << ui::batch_building_type::overwrite << std::endl;
+    std::cout << ui::batch_building_type::none << std::endl;
 }
 
 @end

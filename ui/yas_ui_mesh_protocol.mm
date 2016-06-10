@@ -39,6 +39,29 @@ void ui::renderable_mesh::metal_render(ui::renderer_base &renderer, id<MTLRender
     impl_ptr<impl>()->metal_render(renderer, encoder, encode_info);
 }
 
-void ui::renderable_mesh::batch_render(batch_render_mesh_info &mesh_info) {
-    impl_ptr<impl>()->batch_render(mesh_info);
+void ui::renderable_mesh::batch_render(ui::batch_render_mesh_info &mesh_info,
+                                       ui::batch_building_type const building_type) {
+    impl_ptr<impl>()->batch_render(mesh_info, building_type);
+}
+
+std::string yas::to_string(ui::mesh_update_reason const &reason) {
+    switch (reason) {
+        case ui::mesh_update_reason::mesh_data:
+            return "mesh_data";
+        case ui::mesh_update_reason::texture:
+            return "texture";
+        case ui::mesh_update_reason::primitive_type:
+            return "primitive_type";
+        case ui::mesh_update_reason::color:
+            return "color";
+        case ui::mesh_update_reason::use_mesh_color:
+            return "use_mesh_color";
+        case ui::mesh_update_reason::count:
+            return "count";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::mesh_update_reason const &reason) {
+    os << to_string(reason);
+    return os;
 }
