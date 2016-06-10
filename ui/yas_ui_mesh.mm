@@ -219,9 +219,10 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     bool _is_color_exists() {
-        if (_use_mesh_color) {
+        if (!_use_mesh_color) {
             static simd::float4 const _clear_color = 0.0f;
             if (yas::is_equal(_color, _clear_color)) {
+                return false;
             }
         }
         return true;
