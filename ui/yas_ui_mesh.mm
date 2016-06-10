@@ -168,7 +168,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             _mesh_data = std::move(mesh_data);
 
             if (_is_color_exists()) {
-                _set_updated(ui::mesh_update_reason::mesh_data);
+                _updates.set(ui::mesh_update_reason::mesh_data);
             }
         }
     }
@@ -178,7 +178,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             _texture = std::move(texture);
 
             if (_is_mesh_data_and_color_exists()) {
-                _set_updated(ui::mesh_update_reason::texture);
+                _updates.set(ui::mesh_update_reason::texture);
             }
         }
     }
@@ -188,7 +188,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             _primitive_type = type;
 
             if (_is_mesh_data_and_color_exists()) {
-                _set_updated(ui::mesh_update_reason::primitive_type);
+                _updates.set(ui::mesh_update_reason::primitive_type);
             }
         }
     }
@@ -198,7 +198,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             _color = std::move(color);
 
             if (_is_mesh_data_exists() && !_use_mesh_color) {
-                _set_updated(ui::mesh_update_reason::color);
+                _updates.set(ui::mesh_update_reason::color);
             }
         }
     }
@@ -208,16 +208,12 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             _use_mesh_color = use;
 
             if (_is_mesh_data_exists()) {
-                _set_updated(ui::mesh_update_reason::use_mesh_color);
+                _updates.set(ui::mesh_update_reason::use_mesh_color);
             }
         }
     }
 
    private:
-    void _set_updated(ui::mesh_update_reason const reason) {
-        _updates.set(reason);
-    }
-
     bool _is_mesh_data_exists() {
         return _mesh_data && _mesh_data.index_count() > 0;
     }
