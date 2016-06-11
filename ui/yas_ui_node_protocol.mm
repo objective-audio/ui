@@ -58,8 +58,8 @@ void ui::renderable_node::set_renderer(ui::renderer renderer) {
     impl_ptr<impl>()->set_renderer(std::move(renderer));
 }
 
-void ui::renderable_node::fetch_tree_updates(ui::tree_updates &info) {
-    return impl_ptr<impl>()->fetch_tree_updates(info);
+void ui::renderable_node::fetch_updates(ui::tree_updates &info) {
+    return impl_ptr<impl>()->fetch_updates(info);
 }
 
 void ui::renderable_node::fetch_render_info(ui::render_info &info) {

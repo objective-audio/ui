@@ -105,7 +105,7 @@ class ui::renderer::impl : public renderer_base::impl {
         _action.updatable().update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
-        _root_node.renderable().fetch_tree_updates(tree_updates);
+        _root_node.renderable().fetch_updates(tree_updates);
 
         if (tree_updates.is_collider_updated()) {
             _detector.updatable().begin_update();
