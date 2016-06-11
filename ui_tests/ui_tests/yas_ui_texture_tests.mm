@@ -43,6 +43,7 @@ using namespace yas;
     XCTAssertEqual(texture.depth(), 1);
     XCTAssertEqual(texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
     XCTAssertEqual(texture.has_alpha(), false);
+    XCTAssertTrue(texture.metal());
 }
 
 - (void)test_add_image {
@@ -98,6 +99,84 @@ using namespace yas;
     } else {
         std::cout << "draw_image_error::" << to_string(result.error()) << std::endl;
     }
+}
+
+- (void)test_replace_image {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    auto texture =
+        ui::make_texture({.device = device.object(), .point_size = {3, 3}, .scale_factor = 1.0, .draw_padding = 1})
+            .value();
+
+    ui::image white_image{{.point_size = {1, 1}, .scale_factor = 1.0}};
+
+    white_image.draw([](auto const context) {
+        auto const width = CGBitmapContextGetWidth(context);
+        auto const height = CGBitmapContextGetHeight(context);
+        CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
+        CGContextFillRect(context, CGRectMake(0, 0, width, height));
+    });
+
+    auto white_draw_result = texture.add_image(white_image);
+    XCTAssertTrue(white_draw_result);
+
+    XCTAssertEqual(white_draw_result.value().origin.x, 1);
+    XCTAssertEqual(white_draw_result.value().origin.y, 1);
+    XCTAssertEqual(white_draw_result.value().size.width, 1);
+    XCTAssertEqual(white_draw_result.value().size.height, 1);
+
+    ui::image black_image{{.point_size = {1, 1}, .scale_factor = 1.0}};
+
+    black_image.draw([](auto const context) {
+        auto const width = CGBitmapContextGetWidth(context);
+        auto const height = CGBitmapContextGetHeight(context);
+        CGContextSetFillColorWithColor(context, [NSColor blackColor].CGColor);
+        CGContextFillRect(context, CGRectMake(0, 0, width, height));
+    });
+
+    auto black_draw_result = texture.replace_image(black_image, white_draw_result.value().origin);
+    XCTAssertTrue(black_draw_result);
+
+    XCTAssertEqual(black_draw_result.value().origin.x, 1);
+    XCTAssertEqual(black_draw_result.value().origin.y, 1);
+    XCTAssertEqual(black_draw_result.value().size.width, 1);
+    XCTAssertEqual(black_draw_result.value().size.height, 1);
+}
+
+- (void)test_is_equal {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    auto texture1a = ui::make_texture({.device = device.object()}).value();
+    auto texture1b = texture1a;
+    auto texture2 = ui::make_texture({.device = device.object()}).value();
+
+    XCTAssertTrue(texture1a == texture1a);
+    XCTAssertTrue(texture1a == texture1b);
+    XCTAssertFalse(texture1a == texture2);
+}
+
+- (void)test_is_not_equal {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    auto texture1a = ui::make_texture({.device = device.object()}).value();
+    auto texture1b = texture1a;
+    auto texture2 = ui::make_texture({.device = device.object()}).value();
+
+    XCTAssertFalse(texture1a != texture1a);
+    XCTAssertFalse(texture1a != texture1b);
+    XCTAssertTrue(texture1a != texture2);
 }
 
 - (void)test_draw_image_error_to_string {
