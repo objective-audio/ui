@@ -69,4 +69,22 @@ using namespace yas;
     XCTAssertTrue(detector.detect(0.0f, collider2));
 }
 
+- (void)test_is_updating {
+    ui::collision_detector detector;
+
+    XCTAssertTrue(detector.updatable().is_updating());
+
+    detector.updatable().begin_update();
+
+    XCTAssertTrue(detector.updatable().is_updating());
+
+    detector.updatable().end_update();
+
+    XCTAssertFalse(detector.updatable().is_updating());
+
+    detector.updatable().begin_update();
+
+    XCTAssertTrue(detector.updatable().is_updating());
+}
+
 @end
