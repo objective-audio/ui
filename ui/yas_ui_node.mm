@@ -28,6 +28,84 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _updates.flags.set();
     }
 
+    void _setup_observers() {
+        auto weak_node = to_weak(cast<ui::node>());
+
+        _property_observers.reserve(9);
+
+        _property_observers.emplace_back(
+            _enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
+                if (auto node = weak_node.lock()) {
+                    auto imp_ptr = node.impl_ptr<impl>();
+                    if (!context.value.new_value || node.renderable().is_rendering_color_exists()) {
+                        imp_ptr->_set_updated(ui::node_update_reason::enabled);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    if (node.renderable().is_rendering_color_exists()) {
+                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    if (node.renderable().is_rendering_color_exists()) {
+                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    if (node.renderable().is_rendering_color_exists()) {
+                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_update_mesh_color();
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _color_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_update_mesh_color();
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_update_mesh_color();
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::collider);
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
+                }
+            }));
+    }
+
     std::vector<ui::node> &children() {
         return _children;
     }
@@ -278,83 +356,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 #pragma mark - node
 
 ui::node::node() : base(std::make_shared<impl>()) {
-    auto imp_ptr = impl_ptr<impl>();
-    auto &observers = imp_ptr->_property_observers;
-    auto weak_node = to_weak(*this);
-
-    observers.reserve(9);
-
-    observers.emplace_back(imp_ptr->_enabled_property.subject().make_observer(
-        property_method::did_change, [weak_node](auto const &context) {
-            if (auto node = weak_node.lock()) {
-                auto imp_ptr = node.impl_ptr<impl>();
-                if (!context.value.new_value || node.renderable().is_rendering_color_exists()) {
-                    imp_ptr->_set_updated(ui::node_update_reason::enabled);
-                }
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                if (node.renderable().is_rendering_color_exists()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                }
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                if (node.renderable().is_rendering_color_exists()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                }
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                if (node.renderable().is_rendering_color_exists()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                }
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_update_mesh_color();
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_color_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_update_mesh_color();
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_update_mesh_color();
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::collider);
-            }
-        }));
-
-    observers.emplace_back(
-        imp_ptr->_batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-            if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
-            }
-        }));
+    impl_ptr<impl>()->_setup_observers();
 }
 
 ui::node::node(std::nullptr_t) : base(nullptr) {
