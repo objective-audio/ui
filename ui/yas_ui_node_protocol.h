@@ -60,6 +60,7 @@ namespace ui {
             virtual void fetch_tree_updates(ui::tree_updates &) = 0;
             virtual void update_render_info(ui::render_info &) = 0;
             virtual bool is_rendering_color_exists() = 0;
+            virtual void clear_updates() = 0;
         };
 
         explicit renderable_node(std::shared_ptr<impl>);
@@ -70,6 +71,7 @@ namespace ui {
         void fetch_tree_updates(ui::tree_updates &);
         void update_render_info(ui::render_info &);
         bool is_rendering_color_exists();
+        void clear_updates();
     };
 }
 

@@ -48,6 +48,10 @@ bool ui::renderable_mesh::is_rendering_color_exists() {
     return impl_ptr<impl>()->is_rendering_color_exists();
 }
 
+void ui::renderable_mesh::clear_updates() {
+    impl_ptr<impl>()->clear_updates();
+}
+
 std::string yas::to_string(ui::mesh_update_reason const &reason) {
     switch (reason) {
         case ui::mesh_update_reason::mesh_data:

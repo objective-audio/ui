@@ -30,6 +30,7 @@ namespace ui {
 
             virtual mesh_data_updates_t const &updates() = 0;
             virtual void update_render_buffer_if_needed() = 0;
+            virtual void clear_updates() = 0;
         };
 
         explicit renderable_mesh_data(std::shared_ptr<impl>);
@@ -42,6 +43,7 @@ namespace ui {
 
         mesh_data_updates_t const &updates();
         void update_render_buffer_if_needed();
+        void clear_updates();
     };
 }
 

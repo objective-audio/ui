@@ -37,6 +37,7 @@ class yas::ui::renderer_base::impl : public yas::base::impl, public yas::ui::vie
 
     virtual bool pre_render();
     virtual void render(id<MTLCommandBuffer> const commandBuffer, MTLRenderPassDescriptor *const renderPass_descriptor);
+    virtual void post_render();
 
     yas::subject<ui::renderer_base, ui::renderer_method> &subject();
 
