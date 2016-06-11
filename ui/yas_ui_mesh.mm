@@ -102,12 +102,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
-        ui::mesh_data_updates_t mesh_data_updates;
-        if (_mesh_data) {
-            mesh_data_updates = _mesh_data.renderable().updates();
-        }
-
-        if (_needs_write_for_batch_render(_updates, mesh_data_updates, building_type)) {
+        if (_needs_write_for_batch_render(building_type)) {
             mesh_info.mesh_data.write([
                     &src_mesh_data = _mesh_data,
                     &matrix = _matrix,
@@ -240,9 +235,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return true;
     }
 
-    bool _needs_write_for_batch_render(ui::mesh_updates_t const &mesh_updates,
-                                       ui::mesh_data_updates_t const &mesh_data_updates,
-                                       ui::batch_building_type const &building_type) {
+    bool _needs_write_for_batch_render(ui::batch_building_type const &building_type) {
         if (building_type == ui::batch_building_type::rebuild) {
             return true;
         }
@@ -250,11 +243,17 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         if (building_type == ui::batch_building_type::overwrite) {
             static mesh_updates_t const _mesh_overwrite_updates = {ui::mesh_update_reason::color,
                                                                    ui::mesh_update_reason::use_mesh_color};
-            static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
 
-            if (mesh_updates.and_test(_mesh_overwrite_updates) ||
-                mesh_data_updates.and_test(_mesh_data_overwrite_updates)) {
+            if (_updates.and_test(_mesh_overwrite_updates)) {
                 return true;
+            }
+
+            if (_mesh_data) {
+                static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
+
+                if (_mesh_data.renderable().updates().and_test(_mesh_data_overwrite_updates)) {
+                    return true;
+                }
             }
         }
 
