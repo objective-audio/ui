@@ -121,7 +121,7 @@ class ui::renderer::impl : public renderer_base::impl {
                                     .mesh_matrix = projection_matrix()};
 
         _root_node.metal().metal_setup(device());
-        _root_node.renderable().update_render_info(render_info);
+        _root_node.renderable().fetch_render_info(render_info);
 
         for (auto &batch : render_info.batches) {
             batch.metal().metal_setup(device());
