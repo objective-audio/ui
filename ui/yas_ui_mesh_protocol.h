@@ -35,6 +35,7 @@ namespace ui {
             virtual std::size_t render_vertex_count() = 0;
             virtual std::size_t render_index_count() = 0;
             virtual mesh_updates_t const &updates() = 0;
+            virtual bool pre_render() = 0;
             virtual void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const,
                                       ui::metal_encode_info const &) = 0;
             virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
@@ -50,6 +51,7 @@ namespace ui {
         std::size_t render_vertex_count();
         std::size_t render_index_count();
         mesh_updates_t const &updates();
+        bool pre_render();
         void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
         void batch_render(batch_render_mesh_info &, ui::batch_building_type const);
         bool is_rendering_color_exists();

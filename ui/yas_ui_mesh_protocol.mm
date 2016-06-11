@@ -34,6 +34,10 @@ ui::mesh_updates_t const &ui::renderable_mesh::updates() {
     return impl_ptr<impl>()->updates();
 }
 
+bool ui::renderable_mesh::pre_render() {
+    return impl_ptr<impl>()->pre_render();
+}
+
 void ui::renderable_mesh::metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
                                        ui::metal_encode_info const &encode_info) {
     impl_ptr<impl>()->metal_render(renderer, encoder, encode_info);
