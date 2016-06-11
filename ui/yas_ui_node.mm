@@ -87,7 +87,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void update_render_info(ui::render_info &render_info) override {
         if (_enabled_property.value()) {
-            if (_is_updated(ui::node_update_reason::geometry)) {
+            if (_updates.test(ui::node_update_reason::geometry)) {
                 auto const &position = _position_property.value();
                 auto const &angle = _angle_property.value();
                 auto const &scale = _scale_property.value();
@@ -250,10 +250,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         if (auto locked_renderer = renderer()) {
             locked_renderer.collision_detector().updatable().set_updated(reason);
         }
-    }
-
-    bool _is_updated(ui::node_update_reason const reason) {
-        return _updates.test(reason);
     }
 
     void _set_updated(ui::node_update_reason const reason) {
