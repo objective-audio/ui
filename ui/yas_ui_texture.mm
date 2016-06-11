@@ -10,15 +10,11 @@
 
 using namespace yas;
 
-namespace yas {
-namespace ui {
-    static uint32_t const texture_draw_padding = 2;
-}
-}
-
 struct ui::texture::impl : base::impl, metal_object::impl {
-    impl(uint_size &&point_size, double &&scale_factor, MTLPixelFormat &&pixel_format)
-        : _draw_actual_padding(texture_draw_padding * scale_factor),
+    impl(uint_size &&point_size, double const scale_factor, MTLPixelFormat const pixel_format,
+         uint32_t const draw_padding)
+        : _draw_actual_padding(draw_padding * scale_factor),
+          _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
           _point_size(std::move(point_size)),
           _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
                                  static_cast<uint32_t>(point_size.height * scale_factor)}),
@@ -167,9 +163,9 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     objc_ptr<id<MTLTexture>> _texture_object;
 
    private:
-    uint_origin _draw_actual_pos = uint_origin{texture_draw_padding, texture_draw_padding};
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
+    uint_origin _draw_actual_pos;
 
     objc_ptr<id<MTLDevice>> _device;
 };
@@ -244,9 +240,9 @@ ui::metal_object &ui::texture::metal() {
 namespace yas {
 namespace ui {
     struct texture_factory : texture {
-        texture_factory(uint_size &&point_size, double &&scale_factor, MTLPixelFormat &&format)
-            : texture(
-                  std::make_shared<texture::impl>(std::move(point_size), std::move(scale_factor), std::move(format))) {
+        texture_factory(uint_size &&point_size, double const scale_factor, MTLPixelFormat const format,
+                        uint32_t draw_padding)
+            : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, format, draw_padding)) {
         }
     };
 }
@@ -256,7 +252,7 @@ namespace ui {
 
 ui::make_texture_result ui::make_texture(ui::texture_args args) {
     auto factory =
-        ui::texture_factory{std::move(args.point_size), std::move(args.scale_factor), std::move(args.pixel_format)};
+        ui::texture_factory{std::move(args.point_size), args.scale_factor, args.pixel_format, args.draw_padding};
     if (auto result = factory.metal().metal_setup(args.device)) {
         return ui::make_texture_result{std::move(factory)};
     } else {

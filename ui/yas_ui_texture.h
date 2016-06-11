@@ -20,6 +20,7 @@ namespace ui {
         ui::uint_size point_size;
         double scale_factor = 1.0;
         MTLPixelFormat pixel_format = MTLPixelFormatRGBA8Unorm;
+        uint32_t draw_padding = 2;
     };
 
     class texture : public base {
