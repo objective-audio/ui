@@ -28,7 +28,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _updates.flags.set();
     }
 
-    void _setup_observers() {
+    void setup_observers() {
         auto weak_node = to_weak(cast<ui::node>());
 
         _property_observers.reserve(9);
@@ -125,37 +125,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _add_sub_node(*iterator);
     }
 
-    void _add_sub_node(ui::node &sub_node) {
-        auto sub_node_impl = sub_node.impl_ptr<impl>();
-
-        sub_node_impl->_parent_property.set_value(cast<ui::node>());
-        sub_node_impl->_set_renderer_recursively(_renderer_property.value().lock());
-
-        if (sub_node_impl->_subject.has_observer()) {
-            sub_node_impl->_subject.notify(node_method::added_to_super, sub_node);
-        }
-
-        _set_updated(ui::node_update_reason::children);
-    }
-
-    void remove_sub_node(ui::node const &sub_node) {
-        auto sub_node_impl = sub_node.impl_ptr<impl>();
-
-        sub_node_impl->_parent_property.set_value(ui::node{nullptr});
-        sub_node_impl->_set_renderer_recursively(ui::renderer{nullptr});
-
-        erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
-
-        if (sub_node_impl->_subject.has_observer()) {
-            sub_node_impl->_subject.notify(node_method::removed_from_super, sub_node);
-        }
-
-        _set_updated(ui::node_update_reason::children);
-    }
-
     void remove_from_super_node() {
         if (auto parent = _parent_property.value().lock()) {
-            parent.impl_ptr<impl>()->remove_sub_node(cast<ui::node>());
+            parent.impl_ptr<impl>()->_remove_sub_node(cast<ui::node>());
         }
     }
 
@@ -416,26 +388,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return {loc4.x, loc4.y};
     }
 
-    void _set_renderer_recursively(ui::renderer const &renderer) {
-        _renderer_property.set_value(renderer);
-
-        for (auto &sub_node : _children) {
-            sub_node.impl_ptr<impl>()->_set_renderer_recursively(renderer);
-        }
-    }
-
-    void _update_mesh_color() {
-        if (auto &mesh = _mesh_property.value()) {
-            auto const &color = _color_property.value();
-            auto const &alpha = _alpha_property.value();
-            mesh.set_color({color.red, color.green, color.blue, alpha});
-        }
-    }
-
-    void _set_updated(ui::node_update_reason const reason) {
-        _updates.set(reason);
-    }
-
     property<weak<ui::node>> _parent_property{{.value = ui::node{nullptr}}};
     property<weak<ui::renderer>> _renderer_property{{.value = ui::renderer{nullptr}}};
 
@@ -459,12 +411,60 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     node_updates_t _updates;
+
+    void _add_sub_node(ui::node &sub_node) {
+        auto sub_node_impl = sub_node.impl_ptr<impl>();
+
+        sub_node_impl->_parent_property.set_value(cast<ui::node>());
+        sub_node_impl->_set_renderer_recursively(_renderer_property.value().lock());
+
+        if (sub_node_impl->_subject.has_observer()) {
+            sub_node_impl->_subject.notify(node_method::added_to_super, sub_node);
+        }
+
+        _set_updated(ui::node_update_reason::children);
+    }
+
+    void _remove_sub_node(ui::node const &sub_node) {
+        auto sub_node_impl = sub_node.impl_ptr<impl>();
+
+        sub_node_impl->_parent_property.set_value(ui::node{nullptr});
+        sub_node_impl->_set_renderer_recursively(ui::renderer{nullptr});
+
+        erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
+
+        if (sub_node_impl->_subject.has_observer()) {
+            sub_node_impl->_subject.notify(node_method::removed_from_super, sub_node);
+        }
+
+        _set_updated(ui::node_update_reason::children);
+    }
+
+    void _set_renderer_recursively(ui::renderer const &renderer) {
+        _renderer_property.set_value(renderer);
+
+        for (auto &sub_node : _children) {
+            sub_node.impl_ptr<impl>()->_set_renderer_recursively(renderer);
+        }
+    }
+
+    void _update_mesh_color() {
+        if (auto &mesh = _mesh_property.value()) {
+            auto const &color = _color_property.value();
+            auto const &alpha = _alpha_property.value();
+            mesh.set_color({color.red, color.green, color.blue, alpha});
+        }
+    }
+
+    void _set_updated(ui::node_update_reason const reason) {
+        _updates.set(reason);
+    }
 };
 
 #pragma mark - node
 
 ui::node::node() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->_setup_observers();
+    impl_ptr<impl>()->setup_observers();
 }
 
 ui::node::node(std::nullptr_t) : base(nullptr) {
