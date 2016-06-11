@@ -143,7 +143,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _batch_property.set_value(std::move(batch));
     }
 
-    void fetch_render_info(ui::render_info &render_info) override {
+    void build_render_info(ui::render_info &render_info) override {
         if (_enabled_property.value()) {
             if (_updates.test(ui::node_update_reason::geometry)) {
                 auto const &position = _position_property.value();
@@ -192,7 +192,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 for (auto &sub_node : _children) {
                     batch_render_info.matrix = _matrix;
                     batch_render_info.mesh_matrix = matrix_identity_float4x4;
-                    sub_node.impl_ptr<impl>()->fetch_render_info(batch_render_info);
+                    sub_node.impl_ptr<impl>()->build_render_info(batch_render_info);
                 }
 
                 if (building_type != ui::batch_building_type::none) {
@@ -209,7 +209,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 for (auto &sub_node : _children) {
                     render_info.matrix = _matrix;
                     render_info.mesh_matrix = mesh_matrix;
-                    sub_node.impl_ptr<impl>()->fetch_render_info(render_info);
+                    sub_node.impl_ptr<impl>()->build_render_info(render_info);
                 }
             }
         }
