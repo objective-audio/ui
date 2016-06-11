@@ -103,6 +103,7 @@ class ui::renderer::impl : public renderer_base::impl {
 
     bool pre_render() override {
         _action.updatable().update(std::chrono::system_clock::now());
+        _detector.updatable().clear_colliders_if_needed();
 
         ui::tree_updates tree_updates;
         _root_node.renderable().fetch_tree_updates(tree_updates);
@@ -120,12 +121,7 @@ class ui::renderer::impl : public renderer_base::impl {
                                     .mesh_matrix = projection_matrix()};
 
         _root_node.metal().metal_setup(device());
-
-        auto &detector_updatable = _detector.updatable();
-
-        detector_updatable.clear_colliders_if_needed();
         _root_node.renderable().update_render_info(render_info);
-        detector_updatable.finalize();
 
         for (auto &batch : render_info.batches) {
             batch.metal().metal_setup(device());
@@ -137,6 +133,7 @@ class ui::renderer::impl : public renderer_base::impl {
 
     void post_render() override {
         _root_node.renderable().clear_updates();
+        _detector.updatable().finalize();
     }
 
     ui::node _root_node;
