@@ -143,7 +143,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _batch_property.set_value(std::move(batch));
     }
 
-    void fetch_render_info(ui::render_info &render_info) override {
+    void build_render_info(ui::render_info &render_info) override {
         if (_enabled_property.value()) {
             if (_updates.test(ui::node_update_reason::geometry)) {
                 auto const &position = _position_property.value();
@@ -176,7 +176,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 ui::tree_updates tree_updates;
 
                 for (auto &sub_node : _children) {
-                    sub_node.renderable().fetch_tree_updates(tree_updates);
+                    sub_node.renderable().fetch_updates(tree_updates);
                 }
 
                 auto const building_type = tree_updates.batch_building_type();
@@ -192,7 +192,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 for (auto &sub_node : _children) {
                     batch_render_info.matrix = _matrix;
                     batch_render_info.mesh_matrix = matrix_identity_float4x4;
-                    sub_node.impl_ptr<impl>()->fetch_render_info(batch_render_info);
+                    sub_node.impl_ptr<impl>()->build_render_info(batch_render_info);
                 }
 
                 if (building_type != ui::batch_building_type::none) {
@@ -209,7 +209,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 for (auto &sub_node : _children) {
                     render_info.matrix = _matrix;
                     render_info.mesh_matrix = mesh_matrix;
-                    sub_node.impl_ptr<impl>()->fetch_render_info(render_info);
+                    sub_node.impl_ptr<impl>()->build_render_info(render_info);
                 }
             }
         }
@@ -239,7 +239,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _renderer_property.set_value(renderer);
     }
 
-    void fetch_tree_updates(ui::tree_updates &tree_updates) override {
+    void fetch_updates(ui::tree_updates &tree_updates) override {
         tree_updates.node_updates.flags |= _updates.flags;
 
         if (_enabled_property.value()) {
@@ -252,7 +252,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             }
 
             for (auto &sub_node : _children) {
-                sub_node.renderable().fetch_tree_updates(tree_updates);
+                sub_node.renderable().fetch_updates(tree_updates);
             }
         }
     }

@@ -57,7 +57,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     bool pre_render() override {
         if (_mesh_data) {
-            _mesh_data.renderable().update_render_buffer_if_needed();
+            _mesh_data.renderable().update_render_buffer();
             return is_rendering_color_exists();
         }
 

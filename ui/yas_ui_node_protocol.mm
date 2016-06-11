@@ -58,12 +58,12 @@ void ui::renderable_node::set_renderer(ui::renderer renderer) {
     impl_ptr<impl>()->set_renderer(std::move(renderer));
 }
 
-void ui::renderable_node::fetch_tree_updates(ui::tree_updates &info) {
-    return impl_ptr<impl>()->fetch_tree_updates(info);
+void ui::renderable_node::fetch_updates(ui::tree_updates &info) {
+    return impl_ptr<impl>()->fetch_updates(info);
 }
 
-void ui::renderable_node::fetch_render_info(ui::render_info &info) {
-    impl_ptr<impl>()->fetch_render_info(info);
+void ui::renderable_node::build_render_info(ui::render_info &info) {
+    impl_ptr<impl>()->build_render_info(info);
 }
 
 bool ui::renderable_node::is_rendering_color_exists() {

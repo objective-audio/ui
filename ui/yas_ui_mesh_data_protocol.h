@@ -29,7 +29,7 @@ namespace ui {
             virtual id<MTLBuffer> indexBuffer() = 0;
 
             virtual mesh_data_updates_t const &updates() = 0;
-            virtual void update_render_buffer_if_needed() = 0;
+            virtual void update_render_buffer() = 0;
             virtual void clear_updates() = 0;
         };
 
@@ -42,7 +42,7 @@ namespace ui {
         id<MTLBuffer> indexBuffer();
 
         mesh_data_updates_t const &updates();
-        void update_render_buffer_if_needed();
+        void update_render_buffer();
         void clear_updates();
     };
 }

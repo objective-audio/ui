@@ -58,8 +58,8 @@ namespace ui {
         struct impl : protocol::impl {
             virtual ui::renderer renderer() = 0;
             virtual void set_renderer(ui::renderer &&) = 0;
-            virtual void fetch_tree_updates(ui::tree_updates &) = 0;
-            virtual void fetch_render_info(ui::render_info &) = 0;
+            virtual void fetch_updates(ui::tree_updates &) = 0;
+            virtual void build_render_info(ui::render_info &) = 0;
             virtual bool is_rendering_color_exists() = 0;
             virtual void clear_updates() = 0;
         };
@@ -69,8 +69,8 @@ namespace ui {
 
         ui::renderer renderer();
         void set_renderer(ui::renderer);
-        void fetch_tree_updates(ui::tree_updates &);
-        void fetch_render_info(ui::render_info &);
+        void fetch_updates(ui::tree_updates &);
+        void build_render_info(ui::render_info &);
         bool is_rendering_color_exists();
         void clear_updates();
     };
