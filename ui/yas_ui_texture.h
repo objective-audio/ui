@@ -15,6 +15,14 @@ namespace yas {
 namespace ui {
     class image;
 
+    struct texture_args {
+        id<MTLDevice> device = nil;
+        ui::uint_size point_size;
+        double scale_factor = 1.0;
+        MTLPixelFormat pixel_format = MTLPixelFormatRGBA8Unorm;
+        uint32_t draw_padding = 2;
+    };
+
     class texture : public base {
        public:
         class impl;
@@ -57,8 +65,7 @@ namespace ui {
 
     using make_texture_result = result<ui::texture, setup_metal_error>;
 
-    make_texture_result make_texture(id<MTLDevice> const device, uint_size const point_size, double const scale_factor,
-                                     MTLPixelFormat const pixel_format = MTLPixelFormatRGBA8Unorm);
+    make_texture_result make_texture(texture_args);
 }
 
 std::string to_string(ui::texture::draw_image_error const);

@@ -67,7 +67,7 @@ using namespace yas;
     ui::mesh mesh;
     ui::mesh_data mesh_data{4, 6};
 
-    auto texture = ui::make_texture(device.object(), {16, 8}, 1.0).value();
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {16, 8}, .scale_factor = 1.0}).value();
 
     mesh.set_mesh_data(mesh_data);
     mesh.set_texture(texture);
