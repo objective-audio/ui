@@ -114,9 +114,6 @@ ui::updatable_action &ui::action::updatable() {
 #pragma mark - action::impl
 
 struct ui::continuous_action::impl : action::impl {
-    impl() {
-    }
-
     impl(continuous_action_args &&args)
         : action::impl(std::move(args.action)), _duration(args.duration), _loop_count(args.loop_count) {
         if (_duration < 0.0) {
