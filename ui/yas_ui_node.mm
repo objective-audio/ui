@@ -315,6 +315,102 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
+    void dispatch_method(ui::node_method const method) {
+        auto weak_node = to_weak(cast<ui::node>());
+
+        base observer = nullptr;
+
+        switch (method) {
+            case ui::node_method::position_changed:
+                observer = _position_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::position_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::angle_changed:
+                observer = _angle_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::angle_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::scale_changed:
+                observer = _scale_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::scale_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::color_changed:
+                observer = _color_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::color_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::alpha_changed:
+                observer = _alpha_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::alpha_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::enabled_changed:
+                observer = _enabled_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::enabled_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::mesh_changed:
+                observer = _mesh_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::mesh_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::collider_changed:
+                observer = _collider_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::collider_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::parent_changed:
+                observer = _parent_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::parent_changed, node);
+                        }
+                    });
+                break;
+            case ui::node_method::renderer_changed:
+                observer = _renderer_property.subject().make_observer(
+                    property_method::did_change, [weak_node](auto const &context) {
+                        if (auto node = weak_node.lock()) {
+                            node.subject().notify(node_method::renderer_changed, node);
+                        }
+                    });
+                break;
+
+            default:
+                break;
+        }
+
+        if (observer) {
+            _property_observers.emplace_back(std::move(observer));
+        }
+    }
+
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
@@ -517,100 +613,7 @@ ui::node::subject_t &ui::node::subject() {
 }
 
 void ui::node::dispatch_method(ui::node_method const method) {
-    auto imp_ptr = impl_ptr<impl>();
-    auto weak_node = to_weak(*this);
-
-    base observer = nullptr;
-
-    switch (method) {
-        case ui::node_method::position_changed:
-            observer = imp_ptr->_position_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::position_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::angle_changed:
-            observer = imp_ptr->_angle_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::angle_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::scale_changed:
-            observer = imp_ptr->_scale_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::scale_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::color_changed:
-            observer = imp_ptr->_color_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::color_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::alpha_changed:
-            observer = imp_ptr->_alpha_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::alpha_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::enabled_changed:
-            observer = imp_ptr->_enabled_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::enabled_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::mesh_changed:
-            observer = imp_ptr->_mesh_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::mesh_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::collider_changed:
-            observer = imp_ptr->_collider_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::collider_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::parent_changed:
-            observer = imp_ptr->_parent_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::parent_changed, node);
-                    }
-                });
-            break;
-        case ui::node_method::renderer_changed:
-            observer = imp_ptr->_renderer_property.subject().make_observer(
-                property_method::did_change, [weak_node](auto const &context) {
-                    if (auto node = weak_node.lock()) {
-                        node.subject().notify(node_method::renderer_changed, node);
-                    }
-                });
-            break;
-
-        default:
-            break;
-    }
-
-    if (observer) {
-        imp_ptr->_property_observers.emplace_back(std::move(observer));
-    }
+    impl_ptr<impl>()->dispatch_method(method);
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {
