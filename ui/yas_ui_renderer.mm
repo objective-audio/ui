@@ -135,6 +135,10 @@ class ui::renderer::impl : public renderer_base::impl {
         metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);
     }
 
+    void post_render() override {
+        _root_node.renderable().clear_updates();
+    }
+
     ui::node _root_node;
     ui::parallel_action _action;
     ui::collision_detector _detector;

@@ -247,32 +247,32 @@ void ui::renderer_base::impl::view_render(YASUIMetalView *const view) {
         _core->_subject.notify(renderer_method::will_render, cast<ui::renderer_base>());
     }
 
-    if (!pre_render()) {
-        return;
+    if (pre_render()) {
+        dispatch_semaphore_wait(_core->_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
+
+        auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = _core->_command_queue.object()]() {
+            return [commandQueue commandBuffer];
+        });
+        auto commandBuffer = command_buffer.object();
+
+        _core->_constant_buffer_offset = 0;
+
+        auto renderPassDesc = view.currentRenderPassDescriptor;
+        assert(renderPassDesc);
+
+        render(commandBuffer, renderPassDesc);
+
+        [commandBuffer addCompletedHandler:[semaphore = _core->_inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
+            dispatch_semaphore_signal(semaphore.object());
+        }];
+
+        _core->_constant_buffer_index = (_core->_constant_buffer_index + 1) % _inflight_buffer_count;
+
+        [commandBuffer presentDrawable:view.currentDrawable];
+        [commandBuffer commit];
     }
 
-    dispatch_semaphore_wait(_core->_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
-
-    auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = _core->_command_queue.object()]() {
-        return [commandQueue commandBuffer];
-    });
-    auto commandBuffer = command_buffer.object();
-
-    _core->_constant_buffer_offset = 0;
-
-    auto renderPassDesc = view.currentRenderPassDescriptor;
-    assert(renderPassDesc);
-
-    render(commandBuffer, renderPassDesc);
-
-    [commandBuffer addCompletedHandler:[semaphore = _core->_inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
-        dispatch_semaphore_signal(semaphore.object());
-    }];
-
-    _core->_constant_buffer_index = (_core->_constant_buffer_index + 1) % _inflight_buffer_count;
-
-    [commandBuffer presentDrawable:view.currentDrawable];
-    [commandBuffer commit];
+    post_render();
 }
 
 subject<ui::renderer_base, ui::renderer_method> &ui::renderer_base::impl::subject() {
@@ -291,4 +291,7 @@ bool ui::renderer_base::impl::pre_render() {
 
 void ui::renderer_base::impl::render(id<MTLCommandBuffer> const commandBuffer,
                                      MTLRenderPassDescriptor *const renderPassDesc) {
+}
+
+void ui::renderer_base::impl::post_render() {
 }

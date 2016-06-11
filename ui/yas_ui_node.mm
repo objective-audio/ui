@@ -86,74 +86,69 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void update_render_info(ui::render_info &render_info) override {
-        auto const is_geometry_updated = _is_updated(ui::node_update_reason::geometry);
-        _updates.flags.reset();
-
-        if (!_enabled_property.value()) {
-            return;
-        }
-
-        if (is_geometry_updated) {
-            auto const &position = _position_property.value();
-            auto const &angle = _angle_property.value();
-            auto const &scale = _scale_property.value();
-            _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
-                            matrix::scale(scale.width, scale.height);
-        }
-
-        _matrix = render_info.matrix * _local_matrix;
-        auto const mesh_matrix = render_info.mesh_matrix * _local_matrix;
-
-        if (auto &collider = _collider_property.value()) {
-            collider.renderable().set_matrix(_matrix);
-            render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
-        }
-
-        if (auto &render_encodable = render_info.render_encodable) {
-            if (auto &mesh = _mesh_property.value()) {
-                mesh.renderable().set_matrix(mesh_matrix);
-                render_encodable.push_back_mesh(mesh);
-            }
-        }
-
-        if (auto batch = _batch_property.value()) {
-            ui::tree_updates tree_updates;
-
-            for (auto &sub_node : _children) {
-                sub_node.renderable().fetch_tree_updates(tree_updates);
+        if (_enabled_property.value()) {
+            if (_updates.test(ui::node_update_reason::geometry)) {
+                auto const &position = _position_property.value();
+                auto const &angle = _angle_property.value();
+                auto const &scale = _scale_property.value();
+                _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+                                matrix::scale(scale.width, scale.height);
             }
 
-            auto const building_type = tree_updates.batch_building_type();
+            _matrix = render_info.matrix * _local_matrix;
+            auto const mesh_matrix = render_info.mesh_matrix * _local_matrix;
 
-            ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
-            auto &batch_renderable = batch.renderable();
-
-            if (building_type != ui::batch_building_type::none) {
-                batch_render_info.render_encodable = batch.encodable();
-                batch_renderable.begin_render_meshes_building(building_type);
+            if (auto &collider = _collider_property.value()) {
+                collider.renderable().set_matrix(_matrix);
+                render_info.collision_detector.updatable().push_front_collider_if_needed(collider);
             }
 
-            for (auto &sub_node : _children) {
-                batch_render_info.matrix = _matrix;
-                batch_render_info.mesh_matrix = matrix_identity_float4x4;
-                sub_node.impl_ptr<impl>()->update_render_info(batch_render_info);
+            if (auto &render_encodable = render_info.render_encodable) {
+                if (auto &mesh = _mesh_property.value()) {
+                    mesh.renderable().set_matrix(mesh_matrix);
+                    render_encodable.push_back_mesh(mesh);
+                }
             }
 
-            if (building_type != ui::batch_building_type::none) {
-                batch_renderable.commit_render_meshes_building();
-            }
+            if (auto batch = _batch_property.value()) {
+                ui::tree_updates tree_updates;
 
-            for (auto &mesh : batch_renderable.meshes()) {
-                mesh.renderable().set_matrix(mesh_matrix);
-                render_info.render_encodable.push_back_mesh(mesh);
-            }
+                for (auto &sub_node : _children) {
+                    sub_node.renderable().fetch_tree_updates(tree_updates);
+                }
 
-            render_info.batches.push_back(batch);
-        } else {
-            for (auto &sub_node : _children) {
-                render_info.matrix = _matrix;
-                render_info.mesh_matrix = mesh_matrix;
-                sub_node.impl_ptr<impl>()->update_render_info(render_info);
+                auto const building_type = tree_updates.batch_building_type();
+
+                ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
+                auto &batch_renderable = batch.renderable();
+
+                if (building_type != ui::batch_building_type::none) {
+                    batch_render_info.render_encodable = batch.encodable();
+                    batch_renderable.begin_render_meshes_building(building_type);
+                }
+
+                for (auto &sub_node : _children) {
+                    batch_render_info.matrix = _matrix;
+                    batch_render_info.mesh_matrix = matrix_identity_float4x4;
+                    sub_node.impl_ptr<impl>()->update_render_info(batch_render_info);
+                }
+
+                if (building_type != ui::batch_building_type::none) {
+                    batch_renderable.commit_render_meshes_building();
+                }
+
+                for (auto &mesh : batch_renderable.meshes()) {
+                    mesh.renderable().set_matrix(mesh_matrix);
+                    render_info.render_encodable.push_back_mesh(mesh);
+                }
+
+                render_info.batches.push_back(batch);
+            } else {
+                for (auto &sub_node : _children) {
+                    render_info.matrix = _matrix;
+                    render_info.mesh_matrix = mesh_matrix;
+                    sub_node.impl_ptr<impl>()->update_render_info(render_info);
+                }
             }
         }
     }
@@ -218,6 +213,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return false;
     }
 
+    void clear_updates() override {
+        _updates.flags.reset();
+
+        if (auto &mesh = _mesh_property.value()) {
+            mesh.renderable().clear_updates();
+        }
+
+        for (auto &sub_node : _children) {
+            sub_node.renderable().clear_updates();
+        }
+    }
+
     ui::point convert_position(ui::point const &loc) {
         auto const loc4 = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
@@ -243,10 +250,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         if (auto locked_renderer = renderer()) {
             locked_renderer.collision_detector().updatable().set_updated(reason);
         }
-    }
-
-    bool _is_updated(ui::node_update_reason const reason) {
-        return _updates.test(reason);
     }
 
     void _set_updated(ui::node_update_reason const reason) {

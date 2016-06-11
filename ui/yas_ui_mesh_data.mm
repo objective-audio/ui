@@ -48,20 +48,22 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     void update_render_buffer_if_needed() override {
-        if (!_updates.flags.any()) {
-            return;
+        if (_updates.test(ui::mesh_data_update_reason::render_buffer)) {
+            _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
+
+            auto vertex_ptr = static_cast<ui::vertex2d_t *>([_vertex_buffer.object() contents]);
+            auto index_ptr = static_cast<ui::index2d_t *>([_index_buffer.object() contents]);
+
+            memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
+                   _vertices.size() * sizeof(ui::vertex2d_t));
+            memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
+                   _indices.size() * sizeof(ui::index2d_t));
+
+            _updates.reset(ui::mesh_data_update_reason::render_buffer);
         }
+    }
 
-        _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
-
-        auto vertex_ptr = static_cast<ui::vertex2d_t *>([_vertex_buffer.object() contents]);
-        auto index_ptr = static_cast<ui::index2d_t *>([_index_buffer.object() contents]);
-
-        memcpy(&vertex_ptr[_vertices.size() * _dynamic_buffer_index], _vertices.data(),
-               _vertices.size() * sizeof(ui::vertex2d_t));
-        memcpy(&index_ptr[_indices.size() * _dynamic_buffer_index], _indices.data(),
-               _indices.size() * sizeof(ui::index2d_t));
-
+    void clear_updates() override {
         _updates.flags.reset();
     }
 
@@ -201,6 +203,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
         func(_vertices, _indices);
 
         _updates.set(ui::mesh_data_update_reason::data);
+        _updates.set(ui::mesh_data_update_reason::render_buffer);
     }
 
     std::size_t dynamic_buffer_count() override {

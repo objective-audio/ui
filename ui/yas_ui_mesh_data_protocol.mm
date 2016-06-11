@@ -38,6 +38,10 @@ void ui::renderable_mesh_data::update_render_buffer_if_needed() {
     impl_ptr<impl>()->update_render_buffer_if_needed();
 }
 
+void ui::renderable_mesh_data::clear_updates() {
+    impl_ptr<impl>()->clear_updates();
+}
+
 std::string yas::to_string(ui::mesh_data_update_reason const &reason) {
     switch (reason) {
         case ui::mesh_data_update_reason::data:
@@ -46,6 +50,8 @@ std::string yas::to_string(ui::mesh_data_update_reason const &reason) {
             return "vertex_count";
         case ui::mesh_data_update_reason::index_count:
             return "index_count";
+        case ui::mesh_data_update_reason::render_buffer:
+            return "render_buffer";
         case ui::mesh_data_update_reason::count:
             return "count";
     }

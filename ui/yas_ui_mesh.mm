@@ -97,17 +97,16 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
-        auto const mesh_updates = _updates;
+        if (!_ready_render()) {
+            return;
+        }
+
         ui::mesh_data_updates_t mesh_data_updates;
         if (_mesh_data) {
             mesh_data_updates = _mesh_data.renderable().updates();
         }
 
-        if (!_ready_render()) {
-            return;
-        }
-
-        if (_needs_write_for_batch_render(mesh_updates, mesh_data_updates, building_type)) {
+        if (_needs_write_for_batch_render(_updates, mesh_data_updates, building_type)) {
             mesh_info.mesh_data.write([
                     &src_mesh_data = _mesh_data,
                     &matrix = _matrix,
@@ -141,6 +140,14 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
         mesh_info.vertex_idx += _mesh_data.vertex_count();
         mesh_info.index_idx += _mesh_data.index_count();
+    }
+
+    void clear_updates() override {
+        _updates.flags.reset();
+
+        if (_mesh_data) {
+            _mesh_data.renderable().clear_updates();
+        }
     }
 
     ui::mesh_data &mesh_data() {
@@ -233,15 +240,13 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     bool _ready_render() {
-        _updates.flags.reset();
-
         if (_mesh_data) {
             _mesh_data.renderable().update_render_buffer_if_needed();
-        } else {
-            return false;
+
+            return is_rendering_color_exists();
         }
 
-        return is_rendering_color_exists();
+        return false;
     }
 
     bool _needs_write_for_batch_render(ui::mesh_updates_t const &mesh_updates,

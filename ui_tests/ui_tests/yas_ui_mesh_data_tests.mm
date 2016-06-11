@@ -136,6 +136,7 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::mesh_data_update_reason::data), "data");
     XCTAssertEqual(to_string(ui::mesh_data_update_reason::vertex_count), "vertex_count");
     XCTAssertEqual(to_string(ui::mesh_data_update_reason::index_count), "index_count");
+    XCTAssertEqual(to_string(ui::mesh_data_update_reason::render_buffer), "render_buffer");
     XCTAssertEqual(to_string(ui::mesh_data_update_reason::count), "count");
 }
 
@@ -143,6 +144,7 @@ using namespace yas;
     std::cout << ui::mesh_data_update_reason::data << std::endl;
     std::cout << ui::mesh_data_update_reason::vertex_count << std::endl;
     std::cout << ui::mesh_data_update_reason::index_count << std::endl;
+    std::cout << ui::mesh_data_update_reason::render_buffer << std::endl;
     std::cout << ui::mesh_data_update_reason::count << std::endl;
 }
 

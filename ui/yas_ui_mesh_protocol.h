@@ -39,6 +39,7 @@ namespace ui {
                                       ui::metal_encode_info const &) = 0;
             virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
             virtual bool is_rendering_color_exists() = 0;
+            virtual void clear_updates() = 0;
         };
 
         explicit renderable_mesh(std::shared_ptr<impl>);
@@ -52,6 +53,7 @@ namespace ui {
         void metal_render(ui::renderer_base &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
         void batch_render(batch_render_mesh_info &, ui::batch_building_type const);
         bool is_rendering_color_exists();
+        void clear_updates();
     };
 }
 
