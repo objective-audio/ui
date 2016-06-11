@@ -6,6 +6,7 @@
 #import <iostream>
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
+#import "yas_observing.h"
 #import "yas_ui_font_atlas.h"
 
 using namespace yas;
@@ -75,6 +76,33 @@ using namespace yas;
             XCTAssertEqual(strings_layout.square(2).v[vtx_idx].position[pos_idx], 0);
         }
     }
+}
+
+- (void)test_observe_texture_changed {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::font_atlas font_atlas{{.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}};
+
+    ui::texture observed_texture = nullptr;
+
+    auto observer = font_atlas.subject().make_observer(
+        ui::font_atlas_method::texture_changed,
+        [&observed_texture](auto const &context) mutable { observed_texture = context.value.texture(); });
+
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {256, 256}}).value();
+    font_atlas.set_texture(texture);
+
+    XCTAssertEqual(font_atlas.texture(), texture);
+    XCTAssertEqual(observed_texture, font_atlas.texture());
+
+    font_atlas.set_texture(nullptr);
+
+    XCTAssertFalse(font_atlas.texture());
+    XCTAssertFalse(observed_texture);
 }
 
 - (void)test_method_to_string {
