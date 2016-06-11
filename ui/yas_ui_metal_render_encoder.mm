@@ -48,7 +48,10 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
             auto renderEncoder = render_encoder.object();
 
             for (auto &mesh : metal_encode_info.meshes()) {
-                mesh.renderable().metal_render(renderer, renderEncoder, metal_encode_info);
+                auto &mesh_renderable = mesh.renderable();
+                if (mesh_renderable.pre_render()) {
+                    mesh.renderable().metal_render(renderer, renderEncoder, metal_encode_info);
+                }
             }
 
             [renderEncoder endEncoding];

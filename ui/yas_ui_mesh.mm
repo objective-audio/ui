@@ -55,12 +55,17 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return _updates;
     }
 
-    void metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
-                      ui::metal_encode_info const &encode_info) override {
-        if (!_ready_render()) {
-            return;
+    bool pre_render() override {
+        if (_mesh_data) {
+            _mesh_data.renderable().update_render_buffer_if_needed();
+            return is_rendering_color_exists();
         }
 
+        return false;
+    }
+
+    void metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
+                      ui::metal_encode_info const &encode_info) override {
         auto &renderable_mesh_data = _mesh_data.renderable();
         auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
         auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
@@ -97,10 +102,6 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
-        if (!_ready_render()) {
-            return;
-        }
-
         ui::mesh_data_updates_t mesh_data_updates;
         if (_mesh_data) {
             mesh_data_updates = _mesh_data.renderable().updates();
@@ -237,16 +238,6 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             }
         }
         return true;
-    }
-
-    bool _ready_render() {
-        if (_mesh_data) {
-            _mesh_data.renderable().update_render_buffer_if_needed();
-
-            return is_rendering_color_exists();
-        }
-
-        return false;
     }
 
     bool _needs_write_for_batch_render(ui::mesh_updates_t const &mesh_updates,

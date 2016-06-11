@@ -54,7 +54,10 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
             }
 
             for (auto &src_mesh : mesh_info.src_meshes) {
-                src_mesh.renderable().batch_render(mesh_info, _building_type);
+                auto &src_mesh_renderable = src_mesh.renderable();
+                if (src_mesh_renderable.pre_render()) {
+                    src_mesh.renderable().batch_render(mesh_info, _building_type);
+                }
             }
         }
 
