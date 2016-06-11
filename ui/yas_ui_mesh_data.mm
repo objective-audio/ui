@@ -47,7 +47,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         return ui::setup_metal_result{nullptr};
     }
 
-    void update_render_buffer_if_needed() override {
+    void update_render_buffer() override {
         if (_updates.test(ui::mesh_data_update_reason::render_buffer)) {
             _dynamic_buffer_index = (_dynamic_buffer_index + 1) % dynamic_buffer_count();
 

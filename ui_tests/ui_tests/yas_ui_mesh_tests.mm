@@ -202,7 +202,7 @@ using namespace yas;
     XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
     XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
 
-    renderable.update_render_buffer_if_needed();
+    renderable.update_render_buffer();
 
     XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
     XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
@@ -236,7 +236,7 @@ using namespace yas;
         }
     });
 
-    renderable.update_render_buffer_if_needed();
+    renderable.update_render_buffer();
 
     XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
     XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
@@ -256,14 +256,14 @@ using namespace yas;
         XCTAssertEqual(index_ptr[idx], idx + 1400);
     }
 
-    renderable.update_render_buffer_if_needed();
+    renderable.update_render_buffer();
 
     XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
     XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
 
     mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {});
 
-    renderable.update_render_buffer_if_needed();
+    renderable.update_render_buffer();
 
     XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
     XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);

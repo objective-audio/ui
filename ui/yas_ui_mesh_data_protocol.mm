@@ -34,8 +34,8 @@ ui::mesh_data_updates_t const &ui::renderable_mesh_data::updates() {
     return impl_ptr<impl>()->updates();
 }
 
-void ui::renderable_mesh_data::update_render_buffer_if_needed() {
-    impl_ptr<impl>()->update_render_buffer_if_needed();
+void ui::renderable_mesh_data::update_render_buffer() {
+    impl_ptr<impl>()->update_render_buffer();
 }
 
 void ui::renderable_mesh_data::clear_updates() {
