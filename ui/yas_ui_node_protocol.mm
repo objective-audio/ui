@@ -14,8 +14,16 @@ bool ui::tree_updates::is_any_updated() const {
     return node_updates.flags.any() || mesh_updates.flags.any() || mesh_data_updates.flags.any();
 }
 
+bool ui::tree_updates::is_collider_updated() const {
+    static node_updates_t const _node_collider_updates = {
+        ui::node_update_reason::enabled, ui::node_update_reason::children, ui::node_update_reason::collider};
+
+    return node_updates.and_test(_node_collider_updates);
+}
+
 ui::batch_building_type ui::tree_updates::batch_building_type() const {
     static node_updates_t const _node_create_updates = {ui::node_update_reason::mesh, ui::node_update_reason::enabled,
+                                                        ui::node_update_reason::children,
                                                         ui::node_update_reason::batch};
     static mesh_updates_t const _mesh_create_updates = {ui::mesh_update_reason::texture,
                                                         ui::mesh_update_reason::mesh_data};
@@ -70,8 +78,6 @@ std::string yas::to_string(ui::node_update_reason const &reason) {
     switch (reason) {
         case ui::node_update_reason::geometry:
             return "geometry";
-        case ui::node_update_reason::color:
-            return "color";
         case ui::node_update_reason::mesh:
             return "mesh";
         case ui::node_update_reason::collider:
@@ -80,6 +86,8 @@ std::string yas::to_string(ui::node_update_reason const &reason) {
             return "enabled";
         case ui::node_update_reason::batch:
             return "batch";
+        case ui::node_update_reason::children:
+            return "children";
         case ui::node_update_reason::count:
             return "count";
     }

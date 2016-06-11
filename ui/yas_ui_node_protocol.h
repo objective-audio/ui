@@ -33,10 +33,10 @@ namespace ui {
 
     enum class node_update_reason : std::size_t {
         geometry,
-        color,
         mesh,
         collider,
         enabled,
+        children,
         batch,
 
         count,
@@ -50,6 +50,7 @@ namespace ui {
         mesh_data_updates_t mesh_data_updates;
 
         bool is_any_updated() const;
+        bool is_collider_updated() const;
         ui::batch_building_type batch_building_type() const;
     };
 

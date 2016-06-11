@@ -11,29 +11,21 @@ namespace yas {
 namespace ui {
     class collider;
 
-    enum class collider_update_reason : std::size_t {
-        existence,
-
-        count,
-    };
-
-    using collider_updates_t = flagset<collider_update_reason>;
-
     struct updatable_collision_detector : protocol {
         struct impl : protocol::impl {
-            virtual void set_updated(ui::collider_update_reason const) = 0;
-            virtual void clear_colliders_if_needed() = 0;
-            virtual void push_front_collider_if_needed(ui::collider &&) = 0;
-            virtual void finalize() = 0;
+            virtual bool is_updating() = 0;
+            virtual void begin_update() = 0;
+            virtual void push_front_collider(ui::collider &&) = 0;
+            virtual void end_update() = 0;
         };
 
         explicit updatable_collision_detector(std::shared_ptr<impl>);
         updatable_collision_detector(std::nullptr_t);
 
-        void set_updated(ui::collider_update_reason const);
-        void clear_colliders_if_needed();
-        void push_front_collider_if_needed(ui::collider);
-        void finalize();
+        bool is_updating();
+        void begin_update();
+        void push_front_collider(ui::collider);
+        void end_update();
     };
 }
 }

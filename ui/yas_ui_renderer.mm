@@ -103,10 +103,14 @@ class ui::renderer::impl : public renderer_base::impl {
 
     bool pre_render() override {
         _action.updatable().update(std::chrono::system_clock::now());
-        _detector.updatable().clear_colliders_if_needed();
 
         ui::tree_updates tree_updates;
         _root_node.renderable().fetch_tree_updates(tree_updates);
+
+        if (tree_updates.is_collider_updated()) {
+            _detector.updatable().begin_update();
+        }
+
         return tree_updates.is_any_updated();
     }
 
@@ -133,7 +137,7 @@ class ui::renderer::impl : public renderer_base::impl {
 
     void post_render() override {
         _root_node.renderable().clear_updates();
-        _detector.updatable().finalize();
+        _detector.updatable().end_update();
     }
 
     ui::node _root_node;

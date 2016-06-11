@@ -15,18 +15,18 @@ ui::updatable_collision_detector::updatable_collision_detector(std::shared_ptr<i
 ui::updatable_collision_detector::updatable_collision_detector(std::nullptr_t) : protocol(nullptr) {
 }
 
-void ui::updatable_collision_detector::set_updated(ui::collider_update_reason const reason) {
-    impl_ptr<impl>()->set_updated(reason);
+bool ui::updatable_collision_detector::is_updating() {
+    return impl_ptr<impl>()->is_updating();
 }
 
-void ui::updatable_collision_detector::clear_colliders_if_needed() {
-    impl_ptr<impl>()->clear_colliders_if_needed();
+void ui::updatable_collision_detector::begin_update() {
+    impl_ptr<impl>()->begin_update();
 }
 
-void ui::updatable_collision_detector::push_front_collider_if_needed(ui::collider collider) {
-    impl_ptr<impl>()->push_front_collider_if_needed(std::move(collider));
+void ui::updatable_collision_detector::push_front_collider(ui::collider collider) {
+    impl_ptr<impl>()->push_front_collider(std::move(collider));
 }
 
-void ui::updatable_collision_detector::finalize() {
-    impl_ptr<impl>()->finalize();
+void ui::updatable_collision_detector::end_update() {
+    impl_ptr<impl>()->end_update();
 }
