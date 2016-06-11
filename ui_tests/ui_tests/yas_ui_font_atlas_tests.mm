@@ -31,7 +31,7 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture(device.object(), {256, 256}, 1.0).value();
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {256, 256}, .scale_factor = 1.0}).value();
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
@@ -54,7 +54,7 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture(device.object(), {256, 256}, 1.0).value();
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {256, 256}, .scale_factor = 1.0}).value();
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 

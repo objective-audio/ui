@@ -32,8 +32,10 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture(device.object(), {2, 1}, 2.0).value();
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {2, 1}, .scale_factor = 2.0}).value();
 
+    XCTAssertNotNil(texture.sampler());
+    XCTAssertNotNil(texture.mtlTexture());
     XCTAssertEqual(texture.target(), MTLTextureType2D);
     XCTAssertTrue(texture.point_size() == (ui::uint_size{2, 1}));
     XCTAssertTrue(texture.actual_size() == (ui::uint_size{4, 2}));
@@ -50,7 +52,7 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture(device.object(), {8, 8}, 1.0).value();
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {8, 8}, .scale_factor = 1.0}).value();
 
     ui::image image{{.point_size = {1, 1}, .scale_factor = 1.0}};
 
