@@ -159,6 +159,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
+    void set_batch(ui::batch &&batch) {
+        if (batch) {
+            batch.renderable().clear_render_meshes();
+        }
+
+        if (auto &old_batch = _batch_property.value()) {
+            old_batch.renderable().clear_render_meshes();
+        }
+
+        _batch_property.set_value(std::move(batch));
+    }
+
     void fetch_render_info(ui::render_info &render_info) override {
         if (_enabled_property.value()) {
             if (_updates.test(ui::node_update_reason::geometry)) {
@@ -447,10 +459,7 @@ void ui::node::set_collider(ui::collider collider) {
 }
 
 void ui::node::set_batch(ui::batch batch) {
-    if (batch) {
-        batch.renderable().clear_render_meshes();
-    }
-    impl_ptr<impl>()->_batch_property.set_value(std::move(batch));
+    impl_ptr<impl>()->set_batch(std::move(batch));
 }
 
 void ui::node::set_enabled(bool const enabled) {
