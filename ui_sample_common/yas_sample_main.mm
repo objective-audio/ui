@@ -43,7 +43,8 @@ void sample::main::setup() {
 
         ui::texture texture = nullptr;
         if (scale_factor > 0) {
-            if (auto texture_result = ui::make_texture(renderer.device(), {1024, 1024}, scale_factor)) {
+            if (auto texture_result = ui::make_texture(
+                    {.device = renderer.device(), .point_size = {1024, 1024}, .scale_factor = scale_factor})) {
                 texture = std::move(texture_result.value());
             }
         }
