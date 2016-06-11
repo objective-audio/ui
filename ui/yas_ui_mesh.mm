@@ -102,7 +102,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
-        if (_needs_write_for_batch_render(building_type)) {
+        if (_needs_write(building_type)) {
             mesh_info.mesh_data.write([
                     &src_mesh_data = _mesh_data,
                     &matrix = _matrix,
@@ -235,7 +235,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return true;
     }
 
-    bool _needs_write_for_batch_render(ui::batch_building_type const &building_type) {
+    bool _needs_write(ui::batch_building_type const &building_type) {
         if (building_type == ui::batch_building_type::rebuild) {
             return true;
         }
