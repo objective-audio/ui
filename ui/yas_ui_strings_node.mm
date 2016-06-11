@@ -90,8 +90,8 @@ struct ui::strings_node::impl : base::impl {
    private:
     ui::font_atlas _font_atlas = nullptr;
     std::string _text;
-    ui::pivot _pivot;
-    float _width;
+    ui::pivot _pivot = ui::pivot::left;
+    float _width = 0.0f;
 
     ui::font_atlas::observer_t _font_atlas_observer = nullptr;
 };
