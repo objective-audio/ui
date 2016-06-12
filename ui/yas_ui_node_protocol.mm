@@ -22,16 +22,16 @@ bool ui::tree_updates::is_collider_updated() const {
 }
 
 ui::batch_building_type ui::tree_updates::batch_building_type() const {
-    static node_updates_t const _node_create_updates = {ui::node_update_reason::mesh, ui::node_update_reason::enabled,
-                                                        ui::node_update_reason::children,
-                                                        ui::node_update_reason::batch};
-    static mesh_updates_t const _mesh_create_updates = {ui::mesh_update_reason::texture,
-                                                        ui::mesh_update_reason::mesh_data};
-    static mesh_data_updates_t const _mesh_data_create_updates = {ui::mesh_data_update_reason::index_count,
-                                                                  ui::mesh_data_update_reason::vertex_count};
+    static node_updates_t const _node_rebuild_updates = {ui::node_update_reason::mesh, ui::node_update_reason::enabled,
+                                                         ui::node_update_reason::children,
+                                                         ui::node_update_reason::batch};
+    static mesh_updates_t const _mesh_rebuild_updates = {ui::mesh_update_reason::texture,
+                                                         ui::mesh_update_reason::mesh_data};
+    static mesh_data_updates_t const _mesh_data_rebuild_updates = {ui::mesh_data_update_reason::index_count,
+                                                                   ui::mesh_data_update_reason::vertex_count};
 
-    if (node_updates.and_test(_node_create_updates) || mesh_updates.and_test(_mesh_create_updates) ||
-        mesh_data_updates.and_test(_mesh_data_create_updates)) {
+    if (node_updates.and_test(_node_rebuild_updates) || mesh_updates.and_test(_mesh_rebuild_updates) ||
+        mesh_data_updates.and_test(_mesh_data_rebuild_updates)) {
         return ui::batch_building_type::rebuild;
     }
 
