@@ -18,18 +18,18 @@ namespace ui {
         square,
     };
 
-    struct collider_args {
-        collider_shape shape = collider_shape::none;
-        ui::point center = 0.0f;
-        float radius = 0.5f;
-    };
-
     class collider : public base {
         class impl;
 
        public:
+        struct args {
+            collider_shape shape = collider_shape::none;
+            ui::point center = 0.0f;
+            float radius = 0.5f;
+        };
+
         collider();
-        explicit collider(collider_args);
+        explicit collider(args);
         collider(std::nullptr_t);
 
         void set_shape(collider_shape);

@@ -36,7 +36,7 @@ using namespace yas;
 }
 
 - (void)test_create_with_args {
-    ui::collider_args args{.shape = ui::collider_shape::circle, .center = {1.0f, 2.0f}, .radius = 3.0f};
+    ui::collider::args args{.shape = ui::collider_shape::circle, .center = {1.0f, 2.0f}, .radius = 3.0f};
 
     ui::collider collider{std::move(args)};
 
