@@ -250,7 +250,7 @@ namespace ui {
 
 #pragma mark -
 
-ui::make_texture_result ui::make_texture(ui::texture_args args) {
+ui::make_texture_result ui::make_texture(ui::texture::args args) {
     auto factory =
         ui::texture_factory{std::move(args.point_size), args.scale_factor, args.pixel_format, args.draw_padding};
     if (auto result = factory.metal().metal_setup(args.device)) {
