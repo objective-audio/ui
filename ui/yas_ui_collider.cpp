@@ -7,12 +7,12 @@
 using namespace yas;
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    ui::collider_args args;
+    ui::collider::args args;
 
     impl() {
     }
 
-    impl(collider_args &&args) : args(std::move(args)) {
+    impl(collider::args &&args) : args(std::move(args)) {
     }
 
     bool hit_test(ui::point const &loc) {
@@ -53,7 +53,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 ui::collider::collider() : base(std::make_shared<impl>()) {
 }
 
-ui::collider::collider(collider_args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::collider::collider(collider::args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::collider::collider(std::nullptr_t) : base(nullptr) {

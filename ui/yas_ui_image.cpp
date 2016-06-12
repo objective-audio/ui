@@ -44,7 +44,7 @@ struct ui::image::impl : base::impl {
     CGContextRef _bitmap_context;
 };
 
-ui::image::image(ui::image_args args) : base(std::make_shared<impl>(args.point_size, args.scale_factor)) {
+ui::image::image(ui::image::args args) : base(std::make_shared<impl>(args.point_size, args.scale_factor)) {
 }
 
 ui::image::image(std::nullptr_t) : base(nullptr) {

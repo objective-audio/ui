@@ -32,17 +32,17 @@ namespace ui {
         bool update(time_point_t const &time);
     };
 
-    struct action_args {
-        time_point_t start_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-    };
-
     class action : public base {
        public:
         class impl;
 
+        struct args {
+            time_point_t start_time = std::chrono::system_clock::now();
+            double delay = 0.0;
+        };
+
         action();
-        explicit action(action_args);
+        explicit action(args);
         action(std::nullptr_t);
 
         ui::node target() const;
@@ -64,19 +64,19 @@ namespace ui {
         ui::updatable_action _updatable = nullptr;
     };
 
-    struct continuous_action_args {
-        double duration = 0.3;
-        std::size_t loop_count = 1;
-
-        action_args action;
-    };
-
     class continuous_action : public action {
        public:
         class impl;
 
+        struct args {
+            double duration = 0.3;
+            std::size_t loop_count = 1;
+
+            action::args action;
+        };
+
         continuous_action();
-        continuous_action(continuous_action_args args);
+        continuous_action(continuous_action::args args);
         continuous_action(std::nullptr_t);
 
         double duration() const;
@@ -88,54 +88,64 @@ namespace ui {
         void set_value_transformer(action_transform_f);
     };
 
-    struct translate_action_args {
-        ui::point start_position = 0.0f;
-        ui::point end_position = 0.0f;
+    namespace translate_action {
+        struct args {
+            ui::point start_position = 0.0f;
+            ui::point end_position = 0.0f;
 
-        continuous_action_args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct rotate_action_args {
-        float start_angle = 0.0f;
-        float end_angle = 0.0f;
-        bool is_shortest = false;
+    namespace rotate_action {
+        struct args {
+            float start_angle = 0.0f;
+            float end_angle = 0.0f;
+            bool is_shortest = false;
 
-        continuous_action_args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct scale_action_args {
-        ui::size start_scale = 1.0f;
-        ui::size end_scale = 1.0f;
+    namespace scale_action {
+        struct args {
+            ui::size start_scale = 1.0f;
+            ui::size end_scale = 1.0f;
 
-        continuous_action_args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct color_action_args {
-        ui::color start_color = 1.0f;
-        ui::color end_color = 1.0f;
+    namespace color_action {
+        struct args {
+            ui::color start_color = 1.0f;
+            ui::color end_color = 1.0f;
 
-        continuous_action_args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct alpha_action_args {
-        float start_alpha = 1.0f;
-        float end_alpha = 1.0f;
+    namespace alpha_action {
+        struct args {
+            float start_alpha = 1.0f;
+            float end_alpha = 1.0f;
 
-        continuous_action_args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    continuous_action make_action(translate_action_args);
-    continuous_action make_action(rotate_action_args);
-    continuous_action make_action(scale_action_args);
-    continuous_action make_action(color_action_args);
-    continuous_action make_action(alpha_action_args);
+    continuous_action make_action(translate_action::args);
+    continuous_action make_action(rotate_action::args);
+    continuous_action make_action(scale_action::args);
+    continuous_action make_action(color_action::args);
+    continuous_action make_action(alpha_action::args);
 
     class parallel_action : public action {
        public:
         class impl;
 
         parallel_action();
-        parallel_action(action_args);
+        parallel_action(action::args);
         parallel_action(std::nullptr_t);
 
         std::vector<action> actions() const;

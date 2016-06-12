@@ -13,16 +13,16 @@ namespace yas {
 namespace ui {
     class uint_size;
 
-    struct image_args {
-        ui::uint_size point_size;
-        double scale_factor = 1.0;
-    };
-
     class image : public base {
        public:
         class impl;
 
-        image(image_args);
+        struct args {
+            ui::uint_size point_size;
+            double scale_factor = 1.0;
+        };
+
+        image(args);
         image(std::nullptr_t);
 
         ui::uint_size point_size() const;
