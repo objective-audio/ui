@@ -64,19 +64,19 @@ namespace ui {
         ui::updatable_action _updatable = nullptr;
     };
 
-    struct continuous_action_args {
-        double duration = 0.3;
-        std::size_t loop_count = 1;
-
-        action::args action;
-    };
-
     class continuous_action : public action {
        public:
         class impl;
 
+        struct args {
+            double duration = 0.3;
+            std::size_t loop_count = 1;
+
+            action::args action;
+        };
+
         continuous_action();
-        continuous_action(continuous_action_args args);
+        continuous_action(continuous_action::args args);
         continuous_action(std::nullptr_t);
 
         double duration() const;
@@ -92,7 +92,7 @@ namespace ui {
         ui::point start_position = 0.0f;
         ui::point end_position = 0.0f;
 
-        continuous_action_args continuous_action;
+        continuous_action::args continuous_action;
     };
 
     struct rotate_action_args {
@@ -100,28 +100,28 @@ namespace ui {
         float end_angle = 0.0f;
         bool is_shortest = false;
 
-        continuous_action_args continuous_action;
+        continuous_action::args continuous_action;
     };
 
     struct scale_action_args {
         ui::size start_scale = 1.0f;
         ui::size end_scale = 1.0f;
 
-        continuous_action_args continuous_action;
+        continuous_action::args continuous_action;
     };
 
     struct color_action_args {
         ui::color start_color = 1.0f;
         ui::color end_color = 1.0f;
 
-        continuous_action_args continuous_action;
+        continuous_action::args continuous_action;
     };
 
     struct alpha_action_args {
         float start_alpha = 1.0f;
         float end_alpha = 1.0f;
 
-        continuous_action_args continuous_action;
+        continuous_action::args continuous_action;
     };
 
     continuous_action make_action(translate_action_args);
