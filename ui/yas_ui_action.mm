@@ -29,7 +29,7 @@ struct ui::action::impl : base::impl, updatable_action::impl {
     impl() {
     }
 
-    impl(action_args &&args) : _start_time(std::move(args.start_time)), _delay(args.delay) {
+    impl(action::args &&args) : _start_time(std::move(args.start_time)), _delay(args.delay) {
     }
 
     bool update(time_point_t const &time) override {
@@ -63,7 +63,7 @@ struct ui::action::impl : base::impl, updatable_action::impl {
 ui::action::action() : base(std::make_shared<impl>()) {
 }
 
-ui::action::action(action_args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::action::action(action::args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::action::action(std::nullptr_t) : base(nullptr) {
@@ -294,7 +294,7 @@ ui::continuous_action ui::make_action(ui::alpha_action_args args) {
 #pragma mark - parallel_action::impl
 
 struct ui::parallel_action::impl : action::impl {
-    impl(action_args &&args) : action::impl(std::move(args)) {
+    impl(action::args &&args) : action::impl(std::move(args)) {
     }
 
     std::unordered_set<action> actions;
@@ -302,10 +302,10 @@ struct ui::parallel_action::impl : action::impl {
 
 #pragma mark - parallel_action
 
-ui::parallel_action::parallel_action() : parallel_action(action_args{}) {
+ui::parallel_action::parallel_action() : parallel_action(action::args{}) {
 }
 
-ui::parallel_action::parallel_action(action_args args) : action(std::make_shared<impl>(std::move(args))) {
+ui::parallel_action::parallel_action(action::args args) : action(std::make_shared<impl>(std::move(args))) {
     set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;

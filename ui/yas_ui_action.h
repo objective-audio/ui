@@ -32,17 +32,17 @@ namespace ui {
         bool update(time_point_t const &time);
     };
 
-    struct action_args {
-        time_point_t start_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-    };
-
     class action : public base {
        public:
         class impl;
 
+        struct args {
+            time_point_t start_time = std::chrono::system_clock::now();
+            double delay = 0.0;
+        };
+
         action();
-        explicit action(action_args);
+        explicit action(args);
         action(std::nullptr_t);
 
         ui::node target() const;
@@ -68,7 +68,7 @@ namespace ui {
         double duration = 0.3;
         std::size_t loop_count = 1;
 
-        action_args action;
+        action::args action;
     };
 
     class continuous_action : public action {
@@ -135,7 +135,7 @@ namespace ui {
         class impl;
 
         parallel_action();
-        parallel_action(action_args);
+        parallel_action(action::args);
         parallel_action(std::nullptr_t);
 
         std::vector<action> actions() const;
