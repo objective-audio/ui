@@ -88,47 +88,57 @@ namespace ui {
         void set_value_transformer(action_transform_f);
     };
 
-    struct translate_action_args {
-        ui::point start_position = 0.0f;
-        ui::point end_position = 0.0f;
+    namespace translate_action {
+        struct args {
+            ui::point start_position = 0.0f;
+            ui::point end_position = 0.0f;
 
-        continuous_action::args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct rotate_action_args {
-        float start_angle = 0.0f;
-        float end_angle = 0.0f;
-        bool is_shortest = false;
+    namespace rotate_action {
+        struct args {
+            float start_angle = 0.0f;
+            float end_angle = 0.0f;
+            bool is_shortest = false;
 
-        continuous_action::args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct scale_action_args {
-        ui::size start_scale = 1.0f;
-        ui::size end_scale = 1.0f;
+    namespace scale_action {
+        struct args {
+            ui::size start_scale = 1.0f;
+            ui::size end_scale = 1.0f;
 
-        continuous_action::args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct color_action_args {
-        ui::color start_color = 1.0f;
-        ui::color end_color = 1.0f;
+    namespace color_action {
+        struct args {
+            ui::color start_color = 1.0f;
+            ui::color end_color = 1.0f;
 
-        continuous_action::args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    struct alpha_action_args {
-        float start_alpha = 1.0f;
-        float end_alpha = 1.0f;
+    namespace alpha_action {
+        struct args {
+            float start_alpha = 1.0f;
+            float end_alpha = 1.0f;
 
-        continuous_action::args continuous_action;
-    };
+            continuous_action::args continuous_action;
+        };
+    }
 
-    continuous_action make_action(translate_action_args);
-    continuous_action make_action(rotate_action_args);
-    continuous_action make_action(scale_action_args);
-    continuous_action make_action(color_action_args);
-    continuous_action make_action(alpha_action_args);
+    continuous_action make_action(translate_action::args);
+    continuous_action make_action(rotate_action::args);
+    continuous_action make_action(scale_action::args);
+    continuous_action make_action(color_action::args);
+    continuous_action make_action(alpha_action::args);
 
     class parallel_action : public action {
        public:

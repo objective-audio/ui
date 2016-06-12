@@ -201,7 +201,7 @@ void ui::continuous_action::set_value_transformer(action_transform_f transformer
 
 #pragma mark - translate_action
 
-ui::continuous_action ui::make_action(translate_action_args args) {
+ui::continuous_action ui::make_action(translate_action::args args) {
     ui::continuous_action action{std::move(args.continuous_action)};
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -218,7 +218,7 @@ ui::continuous_action ui::make_action(translate_action_args args) {
 
 #pragma mark - rotate_action
 
-ui::continuous_action ui::make_action(rotate_action_args args) {
+ui::continuous_action ui::make_action(rotate_action::args args) {
     ui::continuous_action action{std::move(args.continuous_action)};
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -245,7 +245,7 @@ ui::continuous_action ui::make_action(rotate_action_args args) {
 
 #pragma mark - scale_action
 
-ui::continuous_action ui::make_action(ui::scale_action_args args) {
+ui::continuous_action ui::make_action(ui::scale_action::args args) {
     ui::continuous_action action{std::move(args.continuous_action)};
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -261,7 +261,7 @@ ui::continuous_action ui::make_action(ui::scale_action_args args) {
 
 #pragma mark - color_action
 
-ui::continuous_action ui::make_action(ui::color_action_args args) {
+ui::continuous_action ui::make_action(ui::color_action::args args) {
     ui::continuous_action action{std::move(args.continuous_action)};
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -277,7 +277,7 @@ ui::continuous_action ui::make_action(ui::color_action_args args) {
 
 #pragma mark - alpha_action
 
-ui::continuous_action ui::make_action(ui::alpha_action_args args) {
+ui::continuous_action ui::make_action(ui::alpha_action::args args) {
     ui::continuous_action action{std::move(args.continuous_action)};
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
