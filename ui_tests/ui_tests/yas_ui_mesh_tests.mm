@@ -85,6 +85,27 @@ using namespace yas;
     XCTAssertTrue(mesh.is_use_mesh_color());
 }
 
+- (void)test_mesh_const_variables {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::mesh mesh;
+    ui::mesh_data mesh_data{4, 6};
+
+    auto texture = ui::make_texture({.device = device.object(), .point_size = {16, 8}, .scale_factor = 1.0}).value();
+
+    mesh.set_mesh_data(mesh_data);
+    mesh.set_texture(texture);
+
+    ui::mesh const const_mesh = mesh;
+
+    XCTAssertEqual(const_mesh.texture(), texture);
+    XCTAssertEqual(const_mesh.mesh_data(), mesh_data);
+}
+
 - (void)test_set_renderable_variables {
     ui::mesh mesh;
 
@@ -267,6 +288,56 @@ using namespace yas;
 
     XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
     XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
+}
+
+- (void)test_clear_updates {
+    ui::mesh mesh;
+    ui::mesh_data mesh_data{1, 1};
+    mesh.set_mesh_data(mesh_data);
+
+    XCTAssertTrue(mesh.renderable().updates().flags.any());
+    XCTAssertTrue(mesh_data.renderable().updates().flags.any());
+
+    mesh.renderable().clear_updates();
+
+    XCTAssertFalse(mesh.renderable().updates().flags.any());
+    XCTAssertFalse(mesh_data.renderable().updates().flags.any());
+}
+
+- (void)test_updates {
+    ui::mesh mesh;
+    ui::mesh_data mesh_data{1, 1};
+    mesh.set_mesh_data(mesh_data);
+
+    mesh.renderable().clear_updates();
+    mesh.set_use_mesh_color(true);
+
+    XCTAssertEqual(mesh.renderable().updates().flags.count(), 1);
+    XCTAssertTrue(mesh.renderable().updates().test(ui::mesh_update_reason::use_mesh_color));
+}
+
+- (void)test_is_rendering_color_exists {
+    ui::mesh mesh;
+
+    mesh.set_use_mesh_color(false);
+    mesh.set_color(1.0f);
+
+    XCTAssertFalse(mesh.renderable().is_rendering_color_exists());
+
+    ui::mesh_data mesh_data{1, 1};
+    mesh.set_mesh_data(mesh_data);
+
+    XCTAssertTrue(mesh.renderable().is_rendering_color_exists());
+
+    mesh.set_use_mesh_color(false);
+    mesh.set_color(0.0f);
+
+    XCTAssertFalse(mesh.renderable().is_rendering_color_exists());
+
+    mesh.set_use_mesh_color(true);
+    mesh.set_color(0.0f);
+    
+    XCTAssertTrue(mesh.renderable().is_rendering_color_exists());
 }
 
 - (void)test_mesh_update_reason_to_string {

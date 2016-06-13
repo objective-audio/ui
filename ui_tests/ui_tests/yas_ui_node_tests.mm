@@ -6,8 +6,10 @@
 #import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_observing.h"
+#import "yas_ui_batch.h"
 #import "yas_ui_collider.h"
 #import "yas_ui_mesh.h"
+#import "yas_ui_mesh_data.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
 
@@ -64,6 +66,7 @@ using namespace yas;
     ui::node node;
     ui::mesh mesh;
     ui::collider collider;
+    ui::batch batch;
 
     node.set_position({1.0f, 2.0f});
     node.set_angle(3.0f);
@@ -84,10 +87,19 @@ using namespace yas;
     XCTAssertEqual(node.alpha(), 0.4f);
 
     node.set_mesh(mesh);
-    node.set_collider(collider);
-
+    XCTAssertTrue(node.mesh());
     XCTAssertEqual(node.mesh(), mesh);
+
+    node.set_collider(collider);
+    XCTAssertTrue(node.collider());
     XCTAssertEqual(node.collider(), collider);
+
+    node.set_batch(batch);
+    XCTAssertTrue(node.batch());
+    XCTAssertEqual(node.batch(), batch);
+
+    node.set_batch(nullptr);
+    XCTAssertFalse(node.batch());
 
     XCTAssertTrue(node.is_enabled());
 }
@@ -422,6 +434,89 @@ using namespace yas;
     }
 
     called_method = nullptr;
+}
+
+- (void)test_fetch_updates {
+    ui::node node;
+
+    ui::mesh mesh;
+    node.set_mesh(mesh);
+
+    ui::dynamic_mesh_data mesh_data{2, 2};
+    mesh.set_mesh_data(mesh_data);
+
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+
+    ui::tree_updates updates;
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+    node.renderable().fetch_updates(updates);
+    XCTAssertFalse(updates.is_any_updated());
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+    node.set_angle(1.0f);
+    node.renderable().fetch_updates(updates);
+    XCTAssertTrue(updates.is_any_updated());
+    XCTAssertEqual(updates.node_updates.flags.count(), 1);
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::geometry));
+    XCTAssertFalse(updates.mesh_updates.flags.any());
+    XCTAssertFalse(updates.mesh_data_updates.flags.any());
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+    mesh.set_use_mesh_color(true);
+    node.renderable().fetch_updates(updates);
+    XCTAssertTrue(updates.is_any_updated());
+    XCTAssertFalse(updates.node_updates.flags.any());
+    XCTAssertEqual(updates.mesh_updates.flags.count(), 1);
+    XCTAssertTrue(updates.mesh_updates.test(ui::mesh_update_reason::use_mesh_color));
+    XCTAssertFalse(updates.mesh_data_updates.flags.any());
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+    mesh_data.set_vertex_count(1);
+    node.renderable().fetch_updates(updates);
+    XCTAssertTrue(updates.is_any_updated());
+    XCTAssertFalse(updates.node_updates.flags.any());
+    XCTAssertFalse(updates.mesh_updates.flags.any());
+    XCTAssertEqual(updates.mesh_data_updates.flags.count(), 1);
+    XCTAssertTrue(updates.mesh_data_updates.test(ui::mesh_data_update_reason::vertex_count));
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+    sub_node.set_enabled(false);
+    node.renderable().fetch_updates(updates);
+    XCTAssertTrue(updates.is_any_updated());
+    XCTAssertEqual(updates.node_updates.flags.count(), 1);
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
+    XCTAssertFalse(updates.mesh_updates.flags.any());
+    XCTAssertFalse(updates.mesh_data_updates.flags.any());
+}
+
+- (void)test_is_rendering_color_exists {
+    ui::node node;
+
+    XCTAssertFalse(node.renderable().is_rendering_color_exists());
+
+    ui::mesh mesh;
+    mesh.set_mesh_data(ui::mesh_data{1, 1});
+    node.set_mesh(mesh);
+
+    XCTAssertTrue(node.renderable().is_rendering_color_exists());
+
+    node.set_mesh(nullptr);
+    ui::node sub_node;
+    sub_node.set_mesh(mesh);
+    node.push_back_sub_node(sub_node);
+
+    XCTAssertTrue(node.renderable().is_rendering_color_exists());
+
+    node.set_enabled(false);
+
+    XCTAssertFalse(node.renderable().is_rendering_color_exists());
 }
 
 - (void)test_node_update_reason_to_string {
