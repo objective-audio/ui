@@ -125,7 +125,8 @@ ui::dynamic_mesh_data &ui::square_mesh_data::dynamic_mesh_data() {
 }
 
 ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count) {
-    ui::square_mesh_data sq_mesh_data{ui::dynamic_mesh_data{square_count * 4, square_count * 6}};
+    ui::square_mesh_data sq_mesh_data{
+        ui::dynamic_mesh_data{{.vertex_count = square_count * 4, .index_count = square_count * 6}}};
 
     sq_mesh_data.write([&square_count](auto *, auto *sq_indices) {
         for (auto const &idx : make_each(square_count)) {
@@ -142,7 +143,8 @@ ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count) {
 }
 
 ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count, std::size_t const index_count) {
-    ui::square_mesh_data sq_mesh_data{ui::dynamic_mesh_data{square_count * 4, index_count * 6}};
+    ui::square_mesh_data sq_mesh_data{
+        ui::dynamic_mesh_data{{.vertex_count = square_count * 4, .index_count = index_count * 6}}};
 
     sq_mesh_data.write([&square_count, &index_count](auto *, auto *sq_indices) {
         for (auto const &idx : make_each(std::min(square_count, index_count))) {
