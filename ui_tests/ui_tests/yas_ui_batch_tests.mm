@@ -73,6 +73,10 @@ using namespace yas;
     XCTAssertFalse(meshes.at(0).texture());
     XCTAssertTrue(meshes.at(1).texture());
     XCTAssertEqual(meshes.at(1).texture(), texture3);
+
+    batch.renderable().clear_render_meshes();
+
+    XCTAssertEqual(meshes.size(), 0);
 }
 
 - (void)test_mesh_batching {
