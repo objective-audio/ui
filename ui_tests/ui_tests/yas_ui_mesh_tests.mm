@@ -65,7 +65,7 @@ using namespace yas;
     }
 
     ui::mesh mesh;
-    ui::mesh_data mesh_data{4, 6};
+    ui::mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     auto texture = ui::make_texture({.device = device.object(), .point_size = {16, 8}, .scale_factor = 1.0}).value();
 
@@ -93,7 +93,7 @@ using namespace yas;
     }
 
     ui::mesh mesh;
-    ui::mesh_data mesh_data{4, 6};
+    ui::mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     auto texture = ui::make_texture({.device = device.object(), .point_size = {16, 8}, .scale_factor = 1.0}).value();
 
@@ -141,7 +141,7 @@ using namespace yas;
 }
 
 - (void)test_mesh_setup_metal_buffer_constant {
-    ui::mesh_data mesh_data{4, 6};
+    ui::mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
@@ -166,7 +166,7 @@ using namespace yas;
 }
 
 - (void)test_mesh_setup_metal_buffer_dynamic {
-    ui::dynamic_mesh_data mesh_data{4, 6};
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
@@ -191,7 +191,7 @@ using namespace yas;
 }
 
 - (void)test_write_to_buffer_dynamic {
-    ui::dynamic_mesh_data mesh_data{4, 6};
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
@@ -292,7 +292,7 @@ using namespace yas;
 
 - (void)test_clear_updates {
     ui::mesh mesh;
-    ui::mesh_data mesh_data{1, 1};
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
 
     XCTAssertTrue(mesh.renderable().updates().flags.any());
@@ -306,7 +306,7 @@ using namespace yas;
 
 - (void)test_updates {
     ui::mesh mesh;
-    ui::mesh_data mesh_data{1, 1};
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
 
     mesh.renderable().clear_updates();
@@ -324,7 +324,7 @@ using namespace yas;
 
     XCTAssertFalse(mesh.renderable().is_rendering_color_exists());
 
-    ui::mesh_data mesh_data{1, 1};
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
 
     XCTAssertTrue(mesh.renderable().is_rendering_color_exists());
@@ -336,7 +336,7 @@ using namespace yas;
 
     mesh.set_use_mesh_color(true);
     mesh.set_color(0.0f);
-    
+
     XCTAssertTrue(mesh.renderable().is_rendering_color_exists());
 }
 

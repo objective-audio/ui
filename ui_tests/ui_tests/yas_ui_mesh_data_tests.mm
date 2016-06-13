@@ -23,7 +23,7 @@ using namespace yas;
 }
 
 - (void)test_create_mesh_data {
-    ui::mesh_data mesh_data{4, 6};
+    ui::mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     XCTAssertEqual(mesh_data.vertex_count(), 4);
     XCTAssertEqual(mesh_data.index_count(), 6);
@@ -36,7 +36,7 @@ using namespace yas;
 }
 
 - (void)test_create_dynamic_mesh_data {
-    ui::dynamic_mesh_data mesh_data{4, 6};
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     XCTAssertEqual(mesh_data.vertex_count(), 4);
     XCTAssertEqual(mesh_data.index_count(), 6);
@@ -60,7 +60,7 @@ using namespace yas;
 }
 
 - (void)test_write_mesh_data {
-    ui::mesh_data mesh_data{4, 6};
+    ui::mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     mesh_data.write([self](auto &vertices, auto &indices) {
         XCTAssertEqual(vertices.size(), 4);
@@ -110,7 +110,7 @@ using namespace yas;
 }
 
 - (void)test_set_variables_dynamic_mesh_data {
-    ui::dynamic_mesh_data mesh_data{4, 6};
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     XCTAssertEqual(mesh_data.vertex_count(), 4);
     XCTAssertEqual(mesh_data.index_count(), 6);
@@ -136,7 +136,7 @@ using namespace yas;
 }
 
 - (void)test_clear_updates {
-    ui::mesh_data mesh_data{1, 1};
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
 
     XCTAssertTrue(mesh_data.renderable().updates().flags.any());
 
@@ -146,7 +146,7 @@ using namespace yas;
 }
 
 - (void)test_updates {
-    ui::dynamic_mesh_data mesh_data{4, 6};
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
     mesh_data.renderable().clear_updates();
     mesh_data.set_index_count(1);
