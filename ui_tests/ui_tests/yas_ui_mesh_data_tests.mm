@@ -30,6 +30,9 @@ using namespace yas;
 
     XCTAssertTrue(mesh_data.metal());
     XCTAssertTrue(mesh_data.renderable());
+
+    XCTAssertEqual(mesh_data.renderable().vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(mesh_data.renderable().index_buffer_byte_offset(), 0);
 }
 
 - (void)test_create_dynamic_mesh_data {
