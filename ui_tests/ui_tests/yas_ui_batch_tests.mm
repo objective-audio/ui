@@ -90,7 +90,7 @@ using namespace yas;
 
     ui::mesh mesh1;
     mesh1.set_color({0.5f, 0.5f, 0.5f, 0.5f});
-    ui::mesh_data mesh_data1{1, 1};
+    ui::mesh_data mesh_data1{{.vertex_count = 1, .index_count = 1}};
     mesh_data1.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 1.0f;
@@ -105,7 +105,7 @@ using namespace yas;
 
     ui::mesh mesh2;
     mesh2.set_use_mesh_color(true);
-    ui::mesh_data mesh_data2{1, 1};
+    ui::mesh_data mesh_data2{{.vertex_count = 1, .index_count = 1}};
     mesh_data2.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 2.0f;

@@ -45,7 +45,8 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
 
         for (auto &mesh_info : _render_mesh_infos) {
             if (_building_type == ui::batch_building_type::rebuild) {
-                ui::dynamic_mesh_data render_mesh_data{mesh_info.vertex_count, mesh_info.index_count};
+                ui::dynamic_mesh_data render_mesh_data{
+                    {.vertex_count = mesh_info.vertex_count, .index_count = mesh_info.index_count}};
                 mesh_info.render_mesh.set_mesh_data(render_mesh_data);
                 mesh_info.mesh_data = std::move(render_mesh_data);
             } else if (_building_type == ui::batch_building_type::overwrite) {

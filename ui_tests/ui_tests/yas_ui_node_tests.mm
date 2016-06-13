@@ -442,7 +442,7 @@ using namespace yas;
     ui::mesh mesh;
     node.set_mesh(mesh);
 
-    ui::dynamic_mesh_data mesh_data{2, 2};
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 2, .index_count = 2}};
     mesh.set_mesh_data(mesh_data);
 
     ui::node sub_node;
@@ -502,7 +502,7 @@ using namespace yas;
     XCTAssertFalse(node.renderable().is_rendering_color_exists());
 
     ui::mesh mesh;
-    mesh.set_mesh_data(ui::mesh_data{1, 1});
+    mesh.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
     node.set_mesh(mesh);
 
     XCTAssertTrue(node.renderable().is_rendering_color_exists());

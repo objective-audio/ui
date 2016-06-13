@@ -14,7 +14,12 @@ namespace yas {
 namespace ui {
     class mesh_data : public base {
        public:
-        mesh_data(std::size_t const vertex_count, std::size_t const index_count);
+        struct args {
+            std::size_t vertex_count = 0;
+            std::size_t index_count = 0;
+        };
+
+        mesh_data(args);
         mesh_data(std::nullptr_t);
 
         const ui::vertex2d_t *vertices() const;
@@ -41,7 +46,7 @@ namespace ui {
         class impl;
 
        public:
-        dynamic_mesh_data(std::size_t const max_vertex_count, std::size_t const max_index_count);
+        dynamic_mesh_data(args);
         dynamic_mesh_data(std::nullptr_t);
 
         std::size_t max_vertex_count() const;

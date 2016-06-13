@@ -10,8 +10,11 @@ using namespace yas;
 #pragma mark - ui::mesh_data::impl
 
 struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_data::impl {
-    impl(std::size_t const vertex_count, std::size_t const index_count)
-        : _vertex_count(vertex_count), _vertices(vertex_count), _index_count(index_count), _indices(index_count) {
+    impl(mesh_data::args &&args)
+        : _vertex_count(args.vertex_count),
+          _vertices(args.vertex_count),
+          _index_count(args.index_count),
+          _indices(args.index_count) {
         _updates.flags.set();
     }
 
@@ -119,8 +122,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
 
 #pragma mark - ui::mesh_data
 
-ui::mesh_data::mesh_data(std::size_t const vertex_count, std::size_t const index_count)
-    : base(std::make_shared<impl>(vertex_count, index_count)) {
+ui::mesh_data::mesh_data(args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::mesh_data::mesh_data(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
@@ -167,7 +169,7 @@ ui::renderable_mesh_data &ui::mesh_data::renderable() {
 #pragma mark - dynamic_mesh_data::impl
 
 struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
-    impl(std::size_t const vertex_count, std::size_t const index_count) : mesh_data::impl(vertex_count, index_count) {
+    impl(mesh_data::args args) : mesh_data::impl(std::move(args)) {
         _updates.flags.reset();
     }
 
@@ -213,8 +215,7 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
 
 #pragma mark - dynamic_mesh_data
 
-ui::dynamic_mesh_data::dynamic_mesh_data(std::size_t const vertex_count, std::size_t const index_count)
-    : mesh_data(std::make_shared<impl>(vertex_count, index_count)) {
+ui::dynamic_mesh_data::dynamic_mesh_data(mesh_data::args args) : mesh_data(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : mesh_data(nullptr) {
