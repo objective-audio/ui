@@ -132,6 +132,39 @@ using namespace yas;
     XCTAssertThrows(mesh_data.set_index_count(7));
 }
 
+- (void)test_clear_updates {
+    ui::mesh_data mesh_data{1, 1};
+
+    XCTAssertTrue(mesh_data.renderable().updates().flags.any());
+
+    mesh_data.renderable().clear_updates();
+
+    XCTAssertFalse(mesh_data.renderable().updates().flags.any());
+}
+
+- (void)test_updates {
+    ui::dynamic_mesh_data mesh_data{4, 6};
+
+    mesh_data.renderable().clear_updates();
+    mesh_data.set_index_count(1);
+
+    XCTAssertEqual(mesh_data.renderable().updates().flags.count(), 1);
+    XCTAssertTrue(mesh_data.renderable().updates().test(ui::mesh_data_update_reason::index_count));
+
+    mesh_data.renderable().clear_updates();
+    mesh_data.set_vertex_count(2);
+
+    XCTAssertEqual(mesh_data.renderable().updates().flags.count(), 1);
+    XCTAssertTrue(mesh_data.renderable().updates().test(ui::mesh_data_update_reason::vertex_count));
+
+    mesh_data.renderable().clear_updates();
+    mesh_data.write([](auto &, auto &) {});
+
+    XCTAssertEqual(mesh_data.renderable().updates().flags.count(), 2);
+    XCTAssertTrue(mesh_data.renderable().updates().test(ui::mesh_data_update_reason::data));
+    XCTAssertTrue(mesh_data.renderable().updates().test(ui::mesh_data_update_reason::render_buffer));
+}
+
 - (void)test_mesh_data_update_reason_to_string {
     XCTAssertEqual(to_string(ui::mesh_data_update_reason::data), "data");
     XCTAssertEqual(to_string(ui::mesh_data_update_reason::vertex_count), "vertex_count");
