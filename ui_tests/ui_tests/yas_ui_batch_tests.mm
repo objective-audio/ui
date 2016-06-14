@@ -143,8 +143,8 @@ using namespace yas;
     XCTAssertEqual(render_mesh_data.vertex_count(), 2);
     XCTAssertEqual(render_mesh_data.index_count(), 2);
 
-    auto const *vertices = render_mesh.mesh_data().vertices();
-    auto const *indices = render_mesh.mesh_data().indices();
+    auto const *vertices = render_mesh_data.vertices();
+    auto const *indices = render_mesh_data.indices();
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 1.0f);
@@ -165,6 +165,53 @@ using namespace yas;
     XCTAssertEqual(vertices[1].color[2], 2.0f);
     XCTAssertEqual(vertices[1].color[3], 2.0f);
     XCTAssertEqual(indices[1], 2);
+}
+
+- (void)test_overwrite {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::batch batch;
+
+    ui::mesh mesh;
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
+    mesh.set_mesh_data(mesh_data);
+
+    mesh.metal().metal_setup(device.object());
+
+    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+        vertices.at(0).position.x = 1.0f;
+        indices.at(0) = 3;
+    });
+
+    batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch.encodable().push_back_mesh(mesh);
+    batch.renderable().commit_render_meshes_building();
+
+    auto &meshes = batch.renderable().meshes();
+    XCTAssertEqual(meshes.size(), 1);
+
+    auto &render_mesh = meshes.at(0);
+    auto &render_mesh_data = render_mesh.mesh_data();
+    auto const *vertices = render_mesh_data.vertices();
+    auto const *indices = render_mesh_data.indices();
+
+    XCTAssertEqual(vertices[0].position.x, 1.0f);
+    XCTAssertEqual(indices[0], 3);
+
+    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+        vertices.at(0).position.x = 11.0f;
+        indices.at(0) = 13;
+    });
+
+    batch.renderable().begin_render_meshes_building(ui::batch_building_type::overwrite);
+    batch.renderable().commit_render_meshes_building();
+
+    XCTAssertEqual(vertices[0].position.x, 11.0f);
+    XCTAssertEqual(indices[0], 13);
 }
 
 - (void)test_metal_setup {
