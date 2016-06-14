@@ -519,6 +519,26 @@ using namespace yas;
     XCTAssertFalse(node.renderable().is_rendering_color_exists());
 }
 
+- (void)test_metal_setup {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::mesh mesh;
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
+    mesh.set_mesh_data(mesh_data);
+
+    ui::node node;
+    node.set_mesh(mesh);
+
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+
+    XCTAssertTrue(node.metal().metal_setup(device.object()));
+}
+
 - (void)test_node_update_reason_to_string {
     XCTAssertEqual(to_string(ui::node_update_reason::geometry), "geometry");
     XCTAssertEqual(to_string(ui::node_update_reason::mesh), "mesh");
