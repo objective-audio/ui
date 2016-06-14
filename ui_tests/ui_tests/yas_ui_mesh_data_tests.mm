@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import "yas_objc_ptr.h"
 #import "yas_ui_mesh_data.h"
 
 using namespace yas;
@@ -166,6 +167,18 @@ using namespace yas;
     XCTAssertEqual(mesh_data.renderable().updates().flags.count(), 2);
     XCTAssertTrue(mesh_data.renderable().updates().test(ui::mesh_data_update_reason::data));
     XCTAssertTrue(mesh_data.renderable().updates().test(ui::mesh_data_update_reason::render_buffer));
+}
+
+- (void)test_metal_setup {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
+
+    XCTAssertTrue(mesh_data.metal().metal_setup(device.object()));
 }
 
 - (void)test_mesh_data_update_reason_to_string {
