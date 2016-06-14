@@ -167,6 +167,30 @@ using namespace yas;
     XCTAssertEqual(indices[1], 2);
 }
 
+- (void)test_metal_setup {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::batch batch;
+
+    ui::mesh mesh;
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
+    mesh.set_mesh_data(mesh_data);
+
+    mesh.metal().metal_setup(device.object());
+
+    batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
+
+    batch.encodable().push_back_mesh(mesh);
+
+    batch.renderable().commit_render_meshes_building();
+
+    XCTAssertTrue(batch.metal().metal_setup(device.object()));
+}
+
 - (void)test_batch_building_type_to_string {
     XCTAssertEqual(to_string(ui::batch_building_type::rebuild), "rebuild");
     XCTAssertEqual(to_string(ui::batch_building_type::overwrite), "overwrite");
