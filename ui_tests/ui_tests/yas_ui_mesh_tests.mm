@@ -340,6 +340,20 @@ using namespace yas;
     XCTAssertTrue(mesh.renderable().is_rendering_color_exists());
 }
 
+- (void)test_metal_setup {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::mesh mesh;
+    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
+    mesh.set_mesh_data(mesh_data);
+
+    XCTAssertTrue(mesh.metal().metal_setup(device.object()));
+}
+
 - (void)test_mesh_update_reason_to_string {
     XCTAssertEqual(to_string(ui::mesh_update_reason::mesh_data), "mesh_data");
     XCTAssertEqual(to_string(ui::mesh_update_reason::texture), "texture");
