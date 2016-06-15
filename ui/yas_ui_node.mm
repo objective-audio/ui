@@ -159,9 +159,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto &collider = _collider_property.value()) {
                 collider.renderable().set_matrix(_matrix);
 
-                auto &detector_updatable = render_info.collision_detector.updatable();
-                if (detector_updatable.is_updating()) {
-                    detector_updatable.push_front_collider(collider);
+                if (auto &detector = render_info.collision_detector) {
+                    auto &detector_updatable = detector.updatable();
+                    if (detector_updatable.is_updating()) {
+                        detector_updatable.push_front_collider(collider);
+                    }
                 }
             }
 
