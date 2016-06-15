@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_ui_mesh.h"
 #import "yas_ui_metal_encode_info.h"
 #import "yas_ui_metal_render_encoder.h"
 
@@ -60,6 +61,22 @@ using namespace yas;
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 2);
     XCTAssertFalse(encoder.current_encode_info());
+}
+
+- (void)test_push_back_mesh {
+    ui::metal_render_encoder encoder;
+
+    encoder.push_encode_info({nil, nil, nil});
+
+    auto encode_info = encoder.current_encode_info();
+
+    XCTAssertEqual(encode_info.meshes().size(), 0);
+
+    ui::mesh mesh;
+    encoder.encodable().push_back_mesh(mesh);
+
+    XCTAssertEqual(encode_info.meshes().size(), 1);
+    XCTAssertEqual(encode_info.meshes().at(0), mesh);
 }
 
 @end
