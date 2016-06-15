@@ -11,6 +11,7 @@
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
 #import "yas_ui_node.h"
+#import "yas_ui_render_info.h"
 #import "yas_ui_renderer.h"
 
 using namespace yas;
@@ -537,6 +538,17 @@ using namespace yas;
     node.push_back_sub_node(sub_node);
 
     XCTAssertTrue(node.metal().metal_setup(device.object()));
+}
+
+- (void)test_build_render_info {
+    ui::node node;
+
+    ui::render_info render_info{.collision_detector = nullptr,
+                                .render_encodable = nullptr,
+                                .matrix = matrix_identity_float4x4,
+                                .mesh_matrix = matrix_identity_float4x4};
+
+    node.renderable().build_render_info(render_info);
 }
 
 - (void)test_node_update_reason_to_string {
