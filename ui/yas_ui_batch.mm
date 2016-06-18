@@ -3,6 +3,7 @@
 //
 
 #include "yas_stl_utils.h"
+#include "yas_to_bool.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_batch_render_mesh_info.h"
 #include "yas_ui_mesh.h"
@@ -39,7 +40,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     }
 
     void commit_render_meshes_building() override {
-        if (_building_type == ui::batch_building_type::none) {
+        if (!to_bool(_building_type)) {
             throw "don't commit if batch_building_type is none.";
         }
 
