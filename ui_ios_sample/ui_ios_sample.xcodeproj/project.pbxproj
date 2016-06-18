@@ -196,6 +196,7 @@
 		B65F6E441CC87E03007C3523 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		B65F6E491CC88042007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4A1CC88042007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
+		B66848561D14DFF000547947 /* yas_to_bool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_to_bool.h; sourceTree = "<group>"; };
 		B69A6ACD1CCEF528002AC942 /* yas_ui_collider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_collider.cpp; sourceTree = "<group>"; };
 		B69A6ACE1CCEF528002AC942 /* yas_ui_collider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_collider.h; sourceTree = "<group>"; };
 		B69FF9DA1CCFBD450036B0FA /* yas_ui_collider_protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_collider_protocol.cpp; sourceTree = "<group>"; };
@@ -395,43 +396,44 @@
 		B65F6E091CC87DDF007C3523 /* cpp_utils */ = {
 			isa = PBXGroup;
 			children = (
+				B65F6E0C1CC87DDF007C3523 /* yas_base_private.h */,
 				B65F6E0A1CC87DDF007C3523 /* yas_base.cpp */,
 				B65F6E0B1CC87DDF007C3523 /* yas_base.h */,
-				B65F6E0C1CC87DDF007C3523 /* yas_base_private.h */,
+				B65F6E0F1CC87DDF007C3523 /* yas_cf_utils_private.h */,
 				B65F6E0D1CC87DDF007C3523 /* yas_cf_utils.h */,
 				B65F6E0E1CC87DDF007C3523 /* yas_cf_utils.mm */,
-				B65F6E0F1CC87DDF007C3523 /* yas_cf_utils_private.h */,
+				B65F6E121CC87DDF007C3523 /* yas_chain_private.h */,
 				B65F6E101CC87DDF007C3523 /* yas_chain.cpp */,
 				B65F6E111CC87DDF007C3523 /* yas_chain.h */,
-				B65F6E121CC87DDF007C3523 /* yas_chain_private.h */,
 				B65F6E131CC87DDF007C3523 /* yas_each_dictionary.cpp */,
 				B65F6E141CC87DDF007C3523 /* yas_each_dictionary.h */,
-				B65F6E151CC87DDF007C3523 /* yas_each_index.h */,
 				B65F6E161CC87DDF007C3523 /* yas_each_index_private.h */,
+				B65F6E151CC87DDF007C3523 /* yas_each_index.h */,
 				B65F6E171CC87DDF007C3523 /* yas_exception.cpp */,
 				B65F6E181CC87DDF007C3523 /* yas_exception.h */,
 				B65CBB591D075CD3006D9448 /* yas_flagset_private.h */,
 				B65CBB5A1D075CD3006D9448 /* yas_flagset.h */,
 				B65F6E191CC87DDF007C3523 /* yas_flex_ptr.cpp */,
 				B65F6E1A1CC87DDF007C3523 /* yas_flex_ptr.h */,
+				B65F6E1D1CC87DDF007C3523 /* yas_objc_ptr_private.h */,
 				B65F6E1B1CC87DDF007C3523 /* yas_objc_ptr.h */,
 				B65F6E1C1CC87DDF007C3523 /* yas_objc_ptr.mm */,
-				B65F6E1D1CC87DDF007C3523 /* yas_objc_ptr_private.h */,
-				B65F6E1E1CC87DDF007C3523 /* yas_observing.h */,
 				B65F6E1F1CC87DDF007C3523 /* yas_observing_private.h */,
+				B65F6E1E1CC87DDF007C3523 /* yas_observing.h */,
+				B65F6E221CC87DDF007C3523 /* yas_operation_protocol.h */,
 				B65F6E201CC87DDF007C3523 /* yas_operation.cpp */,
 				B65F6E211CC87DDF007C3523 /* yas_operation.h */,
-				B65F6E221CC87DDF007C3523 /* yas_operation_protocol.h */,
-				B65F6E231CC87DDF007C3523 /* yas_property.h */,
 				B65F6E241CC87DDF007C3523 /* yas_property_private.h */,
+				B65F6E231CC87DDF007C3523 /* yas_property.h */,
+				B65F6E271CC87DDF007C3523 /* yas_protocol_private.h */,
 				B65F6E251CC87DDF007C3523 /* yas_protocol.cpp */,
 				B65F6E261CC87DDF007C3523 /* yas_protocol.h */,
-				B65F6E271CC87DDF007C3523 /* yas_protocol_private.h */,
-				B65F6E281CC87DDF007C3523 /* yas_result.h */,
 				B65F6E291CC87DDF007C3523 /* yas_result_private.h */,
+				B65F6E281CC87DDF007C3523 /* yas_result.h */,
+				B65F6E2C1CC87DDF007C3523 /* yas_stl_utils_private.h */,
 				B65F6E2A1CC87DDF007C3523 /* yas_stl_utils.cpp */,
 				B65F6E2B1CC87DDF007C3523 /* yas_stl_utils.h */,
-				B65F6E2C1CC87DDF007C3523 /* yas_stl_utils_private.h */,
+				B66848561D14DFF000547947 /* yas_to_bool.h */,
 				B65F6E2D1CC87DDF007C3523 /* yas_types.h */,
 				B65F6E2E1CC87DDF007C3523 /* yas_unless.h */,
 				B65F6E2F1CC87DDF007C3523 /* yas_version.cpp */,

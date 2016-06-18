@@ -105,6 +105,7 @@
 		B65CBB581D075CC3006D9448 /* yas_flagset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset.h; sourceTree = "<group>"; };
 		B65F6E4C1CC8804D007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
+		B66848551D14DFE600547947 /* yas_to_bool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_to_bool.h; sourceTree = "<group>"; };
 		B67B89E51CDA212B0081848D /* yas_sample_button_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_button_node.h; path = ../../ui_sample_common/yas_sample_button_node.h; sourceTree = "<group>"; };
 		B67B89E61CDA212B0081848D /* yas_sample_button_node.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_button_node.mm; path = ../../ui_sample_common/yas_sample_button_node.mm; sourceTree = "<group>"; };
 		B67B89F71CDAFD9A0081848D /* yas_sample_cursor_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_cursor_node.h; path = ../../ui_sample_common/yas_sample_cursor_node.h; sourceTree = "<group>"; };
@@ -335,6 +336,7 @@
 				B6F501831C9BFFD400A0B4A1 /* yas_stl_utils_private.h */,
 				B6F501841C9BFFD400A0B4A1 /* yas_stl_utils.cpp */,
 				B6F501851C9BFFD400A0B4A1 /* yas_stl_utils.h */,
+				B66848551D14DFE600547947 /* yas_to_bool.h */,
 				B6F501861C9BFFD400A0B4A1 /* yas_types.h */,
 				B6F501871C9BFFD400A0B4A1 /* yas_unless.h */,
 				B6F501881C9BFFD400A0B4A1 /* yas_version.cpp */,
