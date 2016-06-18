@@ -38,7 +38,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
         }
     }
 
-    void render(ui::renderer_base &renderer, id<MTLCommandBuffer> const commandBuffer,
+    void render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                 MTLRenderPassDescriptor *const renderPassDesc) {
         for (auto &metal_encode_info : _all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
@@ -85,7 +85,7 @@ ui::metal_encode_info const &ui::metal_render_encoder::current_encode_info() {
     return impl_ptr<impl>()->current_encode_info();
 }
 
-void ui::metal_render_encoder::render(ui::renderer_base &renderer, id<MTLCommandBuffer> const commandBuffer,
+void ui::metal_render_encoder::render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                                       MTLRenderPassDescriptor *const renderPassDesc) {
     impl_ptr<impl>()->render(renderer, commandBuffer, renderPassDesc);
 }

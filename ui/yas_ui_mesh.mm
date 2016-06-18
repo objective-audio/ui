@@ -64,7 +64,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return false;
     }
 
-    void metal_render(ui::renderer_base &renderer, id<MTLRenderCommandEncoder> const encoder,
+    void metal_render(ui::renderer &renderer, id<MTLRenderCommandEncoder> const encoder,
                       ui::metal_encode_info const &encode_info) override {
         auto &renderable_mesh_data = _mesh_data.renderable();
         auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
