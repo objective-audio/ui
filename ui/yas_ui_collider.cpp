@@ -2,6 +2,7 @@
 //  yas_ui_collider.cpp
 //
 
+#include "yas_to_bool.h"
 #include "yas_ui_collider.h"
 
 using namespace yas;
@@ -18,7 +19,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
     bool hit_test(ui::point const &loc) {
         auto const &shape = args.shape;
 
-        if (shape == ui::collider_shape::none) {
+        if (!to_bool(shape)) {
             return false;
         } else if (shape == ui::collider_shape::anywhere) {
             return true;

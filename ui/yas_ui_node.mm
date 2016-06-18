@@ -4,6 +4,7 @@
 
 #include "yas_observing.h"
 #include "yas_property.h"
+#include "yas_to_bool.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_collider.h"
@@ -186,7 +187,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
                 auto &batch_renderable = batch.renderable();
 
-                if (building_type != ui::batch_building_type::none) {
+                if (to_bool(building_type)) {
                     batch_render_info.render_encodable = batch.encodable();
                     batch_renderable.begin_render_meshes_building(building_type);
                 }
@@ -197,7 +198,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     sub_node.impl_ptr<impl>()->build_render_info(batch_render_info);
                 }
 
-                if (building_type != ui::batch_building_type::none) {
+                if (to_bool(building_type)) {
                     batch_renderable.commit_render_meshes_building();
                 }
 
