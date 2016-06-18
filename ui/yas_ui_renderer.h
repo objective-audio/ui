@@ -18,13 +18,17 @@ namespace ui {
     class view_renderable;
     class event_manager;
     class uint_size;
+    class node;
+    class action;
+    class collision_detector;
     enum class renderer_method;
 
-    class renderer_base : public base {
+    class renderer : public base {
        public:
         class impl;
 
-        renderer_base(std::nullptr_t);
+        explicit renderer(id<MTLDevice> const);
+        renderer(std::nullptr_t);
 
         id<MTLDevice> device() const;
 
@@ -37,32 +41,14 @@ namespace ui {
         uint32_t constant_buffer_offset() const;
         void set_constant_buffer_offset(uint32_t const);
 
-        ui::view_renderable &view_renderable();
-
-        subject<ui::renderer_base, ui::renderer_method> &subject();
-
-        ui::event_manager &event_manager();
-
-       protected:
-        renderer_base(std::shared_ptr<impl> &&);
-
-       private:
-        ui::view_renderable _view_renderable = nullptr;
-    };
-
-    class node;
-    class action;
-    class collision_detector;
-
-    class renderer : public renderer_base {
-       public:
-        class impl;
-
-        explicit renderer(id<MTLDevice> const);
-        renderer(std::nullptr_t);
-
         ui::node const &root_node() const;
         ui::node &root_node();
+
+        ui::view_renderable &view_renderable();
+
+        subject<ui::renderer, ui::renderer_method> &subject();
+
+        ui::event_manager &event_manager();
 
         std::vector<ui::action> actions() const;
         void insert_action(ui::action);
@@ -71,8 +57,12 @@ namespace ui {
 
         ui::collision_detector const &collision_detector() const;
         ui::collision_detector &collision_detector();
+
+       protected:
+        renderer(std::shared_ptr<impl> &&);
+
+       private:
+        ui::view_renderable _view_renderable = nullptr;
     };
 }
 }
-
-#include "yas_ui_renderer_impl.h"

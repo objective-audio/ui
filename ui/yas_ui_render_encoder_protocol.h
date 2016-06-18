@@ -9,7 +9,7 @@
 namespace yas {
 namespace ui {
     class mesh;
-    class renderer_base;
+    class renderer;
 
     struct render_encodable : protocol {
         struct impl : protocol::impl {

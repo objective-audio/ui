@@ -38,7 +38,7 @@ void sample::main::setup() {
         weak_font_atlas = to_weak(_font_atlas),
         weak_button_node = to_weak(_button_node),
         weak_touch_holder = to_weak(_touch_holder)
-    ](ui::renderer_base const &renderer) {
+    ](ui::renderer const &renderer) {
         auto const scale_factor = renderer.scale_factor();
 
         ui::texture texture = nullptr;
