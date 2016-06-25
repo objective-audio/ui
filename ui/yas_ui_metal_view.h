@@ -8,4 +8,8 @@
 
 @interface YASUIMetalView : MTKView
 
+#if TARGET_OS_IPHONE
+- (CGSize)drawableSize;
+#endif
+
 @end

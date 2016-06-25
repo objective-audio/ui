@@ -12,6 +12,12 @@
 
 namespace yas {
 namespace ui {
+    enum class system_type {
+        none,
+        metal,
+        //        open_gl,
+    };
+
     struct vertex2d_square_t {
         vertex2d_t v[4];
     };

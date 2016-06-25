@@ -21,25 +21,26 @@ namespace ui {
     class node;
     class action;
     class collision_detector;
+    class metal_system;
+    enum class system_type;
     enum class renderer_method;
 
     class renderer : public base {
        public:
         class impl;
 
+        renderer();
         explicit renderer(id<MTLDevice> const);
         renderer(std::nullptr_t);
-
-        id<MTLDevice> device() const;
 
         ui::uint_size const &view_size() const;
         ui::uint_size const &drawable_size() const;
         double scale_factor() const;
         simd::float4x4 const &projection_matrix() const;
-        id<MTLBuffer> currentConstantBuffer() const;
 
-        uint32_t constant_buffer_offset() const;
-        void set_constant_buffer_offset(uint32_t const);
+        ui::system_type system_type() const;
+        ui::metal_system const &metal_system() const;
+        ui::metal_system &metal_system();
 
         ui::node const &root_node() const;
         ui::node &root_node();
@@ -58,11 +59,10 @@ namespace ui {
         ui::collision_detector const &collision_detector() const;
         ui::collision_detector &collision_detector();
 
-       protected:
-        renderer(std::shared_ptr<impl> &&);
-
        private:
         ui::view_renderable _view_renderable = nullptr;
+
+        explicit renderer(std::shared_ptr<impl> &&);
     };
 }
 }

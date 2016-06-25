@@ -61,6 +61,12 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #if TARGET_OS_IPHONE
 
+- (CGSize)drawableSize {
+    auto const view_size = self.frame.size;
+    auto const scale = self.contentScaleFactor;
+    return CGSizeMake(std::round(view_size.width * scale), std::round(view_size.height * scale));
+}
+
 - (ui::point)_position:(UITouch *)touch {
     auto const locInView = [touch locationInView:self];
     auto const viewSize = self.bounds.size;
