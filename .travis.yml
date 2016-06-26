@@ -7,4 +7,4 @@ notifications:
   email: false
 script:
   - git submodule update --init --recursive
-  - xcodebuild -project ui_tests/ui_tests.xcodeproj -scheme ui_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
+  - xcodebuild -project ui_mac_tests/ui_mac_tests.xcodeproj -scheme ui_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
