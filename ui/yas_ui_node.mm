@@ -13,6 +13,7 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
+#include "yas_ui_metal_system.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
@@ -218,15 +219,15 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (auto &mesh = _mesh_property.value()) {
-            if (auto ul = unless(mesh.metal().metal_setup(device))) {
+            if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
         for (auto &sub_node : _children) {
-            if (auto ul = unless(sub_node.metal().metal_setup(device))) {
+            if (auto ul = unless(sub_node.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }

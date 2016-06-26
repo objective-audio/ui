@@ -6,6 +6,7 @@
 #import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_ui_mesh_data.h"
+#import "yas_ui_metal_system.h"
 
 using namespace yas;
 
@@ -176,9 +177,11 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
 
-    XCTAssertTrue(mesh_data.metal().metal_setup(device.object()));
+    XCTAssertTrue(mesh_data.metal().metal_setup(metal_system));
 }
 
 - (void)test_mesh_data_update_reason_to_string {

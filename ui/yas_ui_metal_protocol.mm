@@ -12,8 +12,8 @@ ui::metal_object::metal_object(std::shared_ptr<impl> impl) : protocol(std::move(
 ui::metal_object::metal_object(std::nullptr_t) : protocol(nullptr) {
 }
 
-ui::setup_metal_result ui::metal_object::metal_setup(id<MTLDevice> const device) {
-    return impl_ptr<impl>()->metal_setup(device);
+ui::setup_metal_result ui::metal_object::metal_setup(ui::metal_system const &metal_system) {
+    return impl_ptr<impl>()->metal_setup(metal_system);
 }
 
 std::string yas::to_string(ui::setup_metal_error const error) {

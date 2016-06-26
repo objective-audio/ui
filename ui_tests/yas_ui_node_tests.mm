@@ -10,6 +10,7 @@
 #import "yas_ui_collider.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
+#import "yas_ui_metal_system.h"
 #import "yas_ui_node.h"
 #import "yas_ui_render_info.h"
 #import "yas_ui_renderer.h"
@@ -522,6 +523,8 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     ui::mesh mesh;
     ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
@@ -532,7 +535,7 @@ using namespace yas;
     ui::node sub_node;
     node.push_back_sub_node(sub_node);
 
-    XCTAssertTrue(node.metal().metal_setup(device.object()));
+    XCTAssertTrue(node.metal().metal_setup(metal_system));
 }
 
 - (void)test_build_render_info_smoke {
