@@ -9,6 +9,7 @@
 #include "yas_base.h"
 #include "yas_result.h"
 #include "yas_ui_metal_protocol.h"
+#include "yas_ui_metal_system.h"
 #include "yas_ui_types.h"
 
 namespace yas {
@@ -20,7 +21,7 @@ namespace ui {
         class impl;
 
         struct args {
-            id<MTLDevice> device = nil;
+            ui::metal_system metal_system;
             ui::uint_size point_size;
             double scale_factor = 1.0;
             MTLPixelFormat pixel_format = MTLPixelFormatRGBA8Unorm;

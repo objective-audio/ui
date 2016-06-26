@@ -61,8 +61,10 @@ using namespace yas;
     batch.encodable().push_back_mesh(mesh1);
     batch.encodable().push_back_mesh(mesh2);
 
+    ui::metal_system metal_system{device.object()};
+
     ui::mesh mesh3;
-    auto texture3 = ui::make_texture({.device = device.object()}).value();
+    auto texture3 = ui::make_texture({.metal_system = metal_system}).value();
     mesh3.set_texture(texture3);
     batch.encodable().push_back_mesh(mesh3);
 

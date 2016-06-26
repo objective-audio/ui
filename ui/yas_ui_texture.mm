@@ -253,7 +253,7 @@ namespace ui {
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
     auto factory =
         ui::texture_factory{std::move(args.point_size), args.scale_factor, args.pixel_format, args.draw_padding};
-    if (auto result = factory.metal().metal_setup(args.device)) {
+    if (auto result = factory.metal().metal_setup(args.metal_system.device())) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};

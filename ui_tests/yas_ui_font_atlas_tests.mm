@@ -32,7 +32,10 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture({.device = device.object(), .point_size = {256, 256}, .scale_factor = 1.0}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture =
+        ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}, .scale_factor = 1.0}).value();
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
@@ -55,7 +58,10 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture({.device = device.object(), .point_size = {256, 256}, .scale_factor = 1.0}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture =
+        ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}, .scale_factor = 1.0}).value();
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
@@ -93,7 +99,9 @@ using namespace yas;
         ui::font_atlas_method::texture_changed,
         [&observed_texture](auto const &context) mutable { observed_texture = context.value.texture(); });
 
-    auto texture = ui::make_texture({.device = device.object(), .point_size = {256, 256}}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}}).value();
     font_atlas.set_texture(texture);
 
     XCTAssertEqual(font_atlas.texture(), texture);
