@@ -14,11 +14,12 @@
 #include "yas_sample_text_node.h"
 #include "yas_sample_touch_holder.h"
 #include "yas_ui.h"
+#include "yas_ui_metal_system.h"
 
 namespace yas {
 namespace sample {
     struct main {
-        ui::renderer renderer{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()};
+        ui::renderer renderer{ui::metal_system{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()}};
 
         void setup();
 

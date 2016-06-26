@@ -30,7 +30,7 @@ namespace ui {
         class impl;
 
         renderer();
-        explicit renderer(id<MTLDevice> const);
+        explicit renderer(ui::metal_system);
         renderer(std::nullptr_t);
 
         ui::uint_size const &view_size() const;
