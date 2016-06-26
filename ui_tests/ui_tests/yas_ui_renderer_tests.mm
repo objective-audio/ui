@@ -8,6 +8,7 @@
 #import "yas_ui_batch.h"
 #import "yas_ui_collision_detector.h"
 #import "yas_ui_event.h"
+#import "yas_ui_metal_system.h"
 #import "yas_ui_node.h"
 #import "yas_ui_renderer.h"
 #import "yas_ui_types.h"
@@ -29,10 +30,9 @@ using namespace yas;
 }
 
 - (void)test_create {
-    id<MTLDevice> device = nil;
-    ui::renderer renderer{device};
+    ui::renderer renderer;
 
-    XCTAssertNil(renderer.device());
+    XCTAssertFalse(renderer.metal_system());
 
     XCTAssertTrue(renderer.root_node());
     XCTAssertEqual(renderer.actions().size(), 0);
@@ -47,8 +47,7 @@ using namespace yas;
 }
 
 - (void)test_const_getter {
-    id<MTLDevice> device = nil;
-    ui::renderer const renderer{device};
+    ui::renderer const renderer;
 
     XCTAssertTrue(renderer.root_node());
     XCTAssertTrue(renderer.collision_detector());
@@ -61,8 +60,7 @@ using namespace yas;
 }
 
 - (void)test_action {
-    id<MTLDevice> device = nil;
-    ui::renderer renderer{device};
+    ui::renderer renderer;
 
     ui::node target1;
     ui::node target2;

@@ -13,7 +13,7 @@ namespace yas {
 namespace ui {
     namespace metal_view {
         struct cpp_variables {
-            ui::view_renderable renderer{nullptr};
+            ui::view_renderable renderable{nullptr};
         };
     }
 }
@@ -72,13 +72,13 @@ namespace ui {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderer:(yas::ui::view_renderable)renderer {
-    _cpp.renderer = renderer;
-    renderer.configure(self.metalView);
+- (void)setRenderable:(yas::ui::view_renderable)renderable {
+    _cpp.renderable = renderable;
+    renderable.configure(self.metalView);
 }
 
-- (yas::ui::view_renderable const &)renderer {
-    return _cpp.renderer;
+- (yas::ui::view_renderable const &)renderable {
+    return _cpp.renderable;
 }
 
 #pragma mark -
@@ -94,14 +94,14 @@ namespace ui {
 #pragma mark - MTKViewDelegate
 
 - (void)mtkView:(YASUIMetalView *)view drawableSizeWillChange:(CGSize)size {
-    if (_cpp.renderer && self.metalView) {
-        _cpp.renderer.size_will_change(self.metalView, size);
+    if (_cpp.renderable && self.metalView) {
+        _cpp.renderable.size_will_change(self.metalView, size);
     }
 }
 
 - (void)drawInMTKView:(YASUIMetalView *)view {
-    if (_cpp.renderer && self.metalView) {
-        _cpp.renderer.render(self.metalView);
+    if (_cpp.renderable && self.metalView) {
+        _cpp.renderable.render(self.metalView);
     }
 }
 

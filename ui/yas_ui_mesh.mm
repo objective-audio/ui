@@ -9,6 +9,7 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
+#include "yas_ui_metal_system.h"
 #include "yas_ui_metal_types.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
@@ -69,8 +70,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         auto &renderable_mesh_data = _mesh_data.renderable();
         auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
         auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
-        auto constant_buffer_offset = renderer.constant_buffer_offset();
-        auto currentConstantBuffer = renderer.currentConstantBuffer();
+        auto constant_buffer_offset = renderer.metal_system().constant_buffer_offset();
+        auto currentConstantBuffer = renderer.metal_system().currentConstantBuffer();
 
         auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
         auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
@@ -98,7 +99,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
                            indexBuffer:renderable_mesh_data.indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
-        renderer.set_constant_buffer_offset(constant_buffer_offset);
+        renderer.metal_system().set_constant_buffer_offset(constant_buffer_offset);
     }
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {

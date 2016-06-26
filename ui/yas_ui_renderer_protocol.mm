@@ -14,14 +14,14 @@ ui::view_renderable::view_renderable(std::shared_ptr<impl> impl) : protocol(std:
 ui::view_renderable::view_renderable(std::nullptr_t) : protocol(nullptr) {
 }
 
-void ui::view_renderable::configure(YASUIMetalView *const view) {
+void ui::view_renderable::configure(yas_objc_view *const view) {
     impl_ptr<impl>()->view_configure(view);
 }
 
-void ui::view_renderable::size_will_change(YASUIMetalView *const view, CGSize const size) {
+void ui::view_renderable::size_will_change(yas_objc_view *const view, CGSize const size) {
     impl_ptr<impl>()->view_size_will_change(view, size);
 }
 
-void ui::view_renderable::render(YASUIMetalView *const view) {
+void ui::view_renderable::render(yas_objc_view *const view) {
     impl_ptr<impl>()->view_render(view);
 }
