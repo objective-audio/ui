@@ -9,15 +9,15 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B6C56D5A1C90474400CAC59D"
-               BuildableName = "ui_mac_tests.xctest"
-               BlueprintName = "ui_mac_tests"
-               ReferencedContainer = "container:ui_tests.xcodeproj">
+               BlueprintIdentifier = "B66BB6E51D1F6AB600AB3D48"
+               BuildableName = "ui_mac_tests_app.app"
+               BlueprintName = "ui_mac_tests_app"
+               ReferencedContainer = "container:ui_mac_tests.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -26,20 +26,28 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B6C56D5A1C90474400CAC59D"
+               BlueprintIdentifier = "B66BB6FB1D1F6AB600AB3D48"
                BuildableName = "ui_mac_tests.xctest"
                BlueprintName = "ui_mac_tests"
-               ReferencedContainer = "container:ui_tests.xcodeproj">
+               ReferencedContainer = "container:ui_mac_tests.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "B66BB6E51D1F6AB600AB3D48"
+            BuildableName = "ui_mac_tests_app.app"
+            BlueprintName = "ui_mac_tests_app"
+            ReferencedContainer = "container:ui_mac_tests.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -53,15 +61,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B6C56D5A1C90474400CAC59D"
-            BuildableName = "ui_mac_tests.xctest"
-            BlueprintName = "ui_mac_tests"
-            ReferencedContainer = "container:ui_tests.xcodeproj">
+            BlueprintIdentifier = "B66BB6E51D1F6AB600AB3D48"
+            BuildableName = "ui_mac_tests_app.app"
+            BlueprintName = "ui_mac_tests_app"
+            ReferencedContainer = "container:ui_mac_tests.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -71,15 +80,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B6C56D5A1C90474400CAC59D"
-            BuildableName = "ui_mac_tests.xctest"
-            BlueprintName = "ui_mac_tests"
-            ReferencedContainer = "container:ui_tests.xcodeproj">
+            BlueprintIdentifier = "B66BB6E51D1F6AB600AB3D48"
+            BuildableName = "ui_mac_tests_app.app"
+            BlueprintName = "ui_mac_tests_app"
+            ReferencedContainer = "container:ui_mac_tests.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

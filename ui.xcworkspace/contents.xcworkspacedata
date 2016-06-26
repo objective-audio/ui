@@ -8,6 +8,6 @@
       location = "group:ui_mac_sample/ui_mac_sample.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:ui_tests/ui_tests.xcodeproj">
+      location = "group:ui_mac_tests/ui_mac_tests.xcodeproj">
    </FileRef>
 </Workspace>
