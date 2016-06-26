@@ -219,7 +219,7 @@ ui::renderer::renderer(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 ui::renderer::renderer() : renderer(std::make_shared<impl>()) {
 }
 
-ui::renderer::renderer(id<MTLDevice> const device) : renderer(std::make_shared<impl>(ui::metal_system(device))) {
+ui::renderer::renderer(ui::metal_system metal_system) : renderer(std::make_shared<impl>(std::move(metal_system))) {
 }
 
 ui::renderer::renderer(std::nullptr_t) : base(nullptr) {
