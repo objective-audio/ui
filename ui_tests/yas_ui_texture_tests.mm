@@ -32,7 +32,9 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture({.device = device.object(), .point_size = {2, 1}, .scale_factor = 2.0}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {2, 1}, .scale_factor = 2.0}).value();
 
     XCTAssertNotNil(texture.sampler());
     XCTAssertNotNil(texture.mtlTexture());
@@ -53,7 +55,9 @@ using namespace yas;
         return;
     }
 
-    auto texture = ui::make_texture({.device = device.object(), .point_size = {8, 8}, .scale_factor = 1.0}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {8, 8}, .scale_factor = 1.0}).value();
 
     ui::image image{{.point_size = {1, 1}, .scale_factor = 1.0}};
 
@@ -108,8 +112,10 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     auto texture =
-        ui::make_texture({.device = device.object(), .point_size = {3, 3}, .scale_factor = 1.0, .draw_padding = 1})
+        ui::make_texture({.metal_system = metal_system, .point_size = {3, 3}, .scale_factor = 1.0, .draw_padding = 1})
             .value();
 
     ui::image white_image{{.point_size = {1, 1}, .scale_factor = 1.0}};
@@ -154,9 +160,11 @@ using namespace yas;
         return;
     }
 
-    auto texture1a = ui::make_texture({.device = device.object()}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture1a = ui::make_texture({.metal_system = metal_system}).value();
     auto texture1b = texture1a;
-    auto texture2 = ui::make_texture({.device = device.object()}).value();
+    auto texture2 = ui::make_texture({.metal_system = metal_system}).value();
 
     XCTAssertTrue(texture1a == texture1a);
     XCTAssertTrue(texture1a == texture1b);
@@ -170,9 +178,11 @@ using namespace yas;
         return;
     }
 
-    auto texture1a = ui::make_texture({.device = device.object()}).value();
+    ui::metal_system metal_system{device.object()};
+
+    auto texture1a = ui::make_texture({.metal_system = metal_system}).value();
     auto texture1b = texture1a;
-    auto texture2 = ui::make_texture({.device = device.object()}).value();
+    auto texture2 = ui::make_texture({.metal_system = metal_system}).value();
 
     XCTAssertFalse(texture1a != texture1a);
     XCTAssertFalse(texture1a != texture1b);
