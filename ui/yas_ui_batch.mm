@@ -76,9 +76,9 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
         _render_mesh_infos.clear();
     }
 
-    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         for (auto &mesh : _render_meshes) {
-            if (auto ul = unless(mesh.metal().metal_setup(device))) {
+            if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             };
         }

@@ -122,11 +122,13 @@ struct ui::metal_system::impl : base::impl {
                                     .matrix = renderer.projection_matrix(),
                                     .mesh_matrix = renderer.projection_matrix()};
 
-        renderer.root_node().metal().metal_setup(_device.object());
+        auto metal_system = cast<ui::metal_system>();
+
+        renderer.root_node().metal().metal_setup(metal_system);
         renderer.root_node().renderable().build_render_info(render_info);
 
         for (auto &batch : render_info.batches) {
-            batch.metal().metal_setup(_device.object());
+            batch.metal().metal_setup(metal_system);
         }
 
         metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);

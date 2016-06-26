@@ -23,9 +23,9 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         _updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (_mesh_data) {
-            return _mesh_data.metal().metal_setup(device);
+            return _mesh_data.metal().metal_setup(metal_system);
         }
         return ui::setup_metal_result{nullptr};
     }

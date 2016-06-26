@@ -8,6 +8,7 @@
 #import "yas_objc_ptr.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
+#import "yas_ui_metal_system.h"
 #import "yas_ui_renderer.h"
 #import "yas_ui_texture.h"
 
@@ -153,10 +154,12 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     XCTAssertNil(mesh_data.renderable().vertexBuffer());
     XCTAssertNil(mesh_data.renderable().indexBuffer());
 
-    auto setup_result = mesh_data.metal().metal_setup(device.object());
+    auto setup_result = mesh_data.metal().metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -178,10 +181,12 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     XCTAssertNil(mesh_data.renderable().vertexBuffer());
     XCTAssertNil(mesh_data.renderable().indexBuffer());
 
-    auto setup_result = mesh_data.metal().metal_setup(device.object());
+    auto setup_result = mesh_data.metal().metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -203,9 +208,11 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     auto &renderable = mesh_data.renderable();
 
-    XCTAssertTrue(mesh_data.metal().metal_setup(device.object()));
+    XCTAssertTrue(mesh_data.metal().metal_setup(metal_system));
 
     ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable.vertexBuffer() contents]);
     ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable.indexBuffer() contents]);
@@ -351,11 +358,13 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     ui::mesh mesh;
     ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
 
-    XCTAssertTrue(mesh.metal().metal_setup(device.object()));
+    XCTAssertTrue(mesh.metal().metal_setup(metal_system));
 }
 
 - (void)test_mesh_update_reason_to_string {

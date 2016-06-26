@@ -4,6 +4,7 @@
 
 #include "yas_objc_ptr.h"
 #include "yas_ui_mesh_data.h"
+#include "yas_ui_metal_system.h"
 
 using namespace yas;
 
@@ -18,9 +19,9 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         _updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
-        if (![_device.object() isEqual:device]) {
-            _device.set_object(device);
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
+        if (!is_same(_metal_system, metal_system)) {
+            _metal_system = metal_system;
             _vertex_buffer.set_object(nil);
             _index_buffer.set_object(nil);
         }
@@ -28,8 +29,9 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         if (!_vertex_buffer) {
             auto const vertex_length = _vertices.size() * sizeof(ui::vertex2d_t) * dynamic_buffer_count();
 
-            _vertex_buffer.move_object(
-                [device newBufferWithLength:vertex_length options:MTLResourceOptionCPUCacheModeDefault]);
+            _vertex_buffer.move_object([_metal_system.device()
+                newBufferWithLength:vertex_length
+                            options:MTLResourceOptionCPUCacheModeDefault]);
 
             if (!_vertex_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_vertex_buffer_failed};
@@ -40,7 +42,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
             auto const index_length = _indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
             _index_buffer.move_object(
-                [device newBufferWithLength:index_length options:MTLResourceOptionCPUCacheModeDefault]);
+                [_metal_system.device() newBufferWithLength:index_length options:MTLResourceOptionCPUCacheModeDefault]);
 
             if (!_index_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_index_buffer_failed};
@@ -117,7 +119,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     mesh_data_updates_t _updates;
 
    private:
-    objc_ptr<id<MTLDevice>> _device;
+    ui::metal_system _metal_system = nullptr;
 };
 
 #pragma mark - ui::mesh_data

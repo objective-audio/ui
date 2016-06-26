@@ -10,6 +10,7 @@
 #import "yas_ui_batch_protocol.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
+#import "yas_ui_metal_system.h"
 #import "yas_ui_node.h"
 #import "yas_ui_texture.h"
 
@@ -88,6 +89,8 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     ui::batch batch;
 
     ui::mesh mesh1;
@@ -124,8 +127,8 @@ using namespace yas;
     });
     mesh2.set_mesh_data(mesh_data2);
 
-    mesh1.metal().metal_setup(device.object());
-    mesh2.metal().metal_setup(device.object());
+    mesh1.metal().metal_setup(metal_system);
+    mesh2.metal().metal_setup(metal_system);
 
     batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -176,13 +179,15 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     ui::batch batch;
 
     ui::mesh mesh;
     ui::dynamic_mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
 
-    mesh.metal().metal_setup(device.object());
+    mesh.metal().metal_setup(metal_system);
 
     mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         vertices.at(0).position.x = 1.0f;
@@ -223,13 +228,15 @@ using namespace yas;
         return;
     }
 
+    ui::metal_system metal_system{device.object()};
+
     ui::batch batch;
 
     ui::mesh mesh;
     ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
     mesh.set_mesh_data(mesh_data);
 
-    mesh.metal().metal_setup(device.object());
+    mesh.metal().metal_setup(metal_system);
 
     batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -237,7 +244,7 @@ using namespace yas;
 
     batch.renderable().commit_render_meshes_building();
 
-    XCTAssertTrue(batch.metal().metal_setup(device.object()));
+    XCTAssertTrue(batch.metal().metal_setup(metal_system));
 }
 
 - (void)test_batch_building_type_to_string {

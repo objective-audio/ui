@@ -22,9 +22,9 @@ struct ui::texture::impl : base::impl, metal_object::impl {
           _format(std::move(pixel_format)) {
     }
 
-    ui::setup_metal_result metal_setup(id<MTLDevice> const device) override {
-        if (![_device.object() isEqual:device]) {
-            _device.set_object(device);
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
+        if (!is_same(_metal_system, metal_system)) {
+            _metal_system = metal_system;
             _texture_object.set_object(nil);
             _sampler_object.set_object(nil);
         }
@@ -45,7 +45,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
             _target = textureDesc.textureType;
 
-            _texture_object.move_object([device newTextureWithDescriptor:textureDesc]);
+            _texture_object.move_object([_metal_system.device() newTextureWithDescriptor:textureDesc]);
 
             if (!_texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
@@ -71,7 +71,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             samplerDesc.lodMinClamp = 0;
             samplerDesc.lodMaxClamp = FLT_MAX;
 
-            _sampler_object.move_object([device newSamplerStateWithDescriptor:samplerDesc]);
+            _sampler_object.move_object([_metal_system.device() newSamplerStateWithDescriptor:samplerDesc]);
 
             if (!_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
@@ -167,7 +167,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t const _draw_actual_padding;
     uint_origin _draw_actual_pos;
 
-    objc_ptr<id<MTLDevice>> _device;
+    ui::metal_system _metal_system = nullptr;
 };
 
 ui::texture::texture(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
@@ -253,7 +253,7 @@ namespace ui {
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
     auto factory =
         ui::texture_factory{std::move(args.point_size), args.scale_factor, args.pixel_format, args.draw_padding};
-    if (auto result = factory.metal().metal_setup(args.metal_system.device())) {
+    if (auto result = factory.metal().metal_setup(args.metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};
