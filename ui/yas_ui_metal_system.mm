@@ -184,6 +184,8 @@ uint32_t ui::metal_system::sample_count() const {
     return impl_ptr<impl>()->_sample_count;
 }
 
-void ui::metal_system::view_render(YASUIMetalView *const view, ui::renderer &renderer) {
-    impl_ptr<impl>()->view_render(view, renderer);
+void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer &renderer) {
+    if ([view isKindOfClass:[YASUIMetalView class]]) {
+        impl_ptr<impl>()->view_render((YASUIMetalView * const)view, renderer);
+    }
 }

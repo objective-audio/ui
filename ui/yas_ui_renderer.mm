@@ -128,9 +128,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
 
         if (to_bool(pre_render())) {
             if (auto renderer = cast<ui::renderer>()) {
-                if ([view isKindOfClass:[YASUIMetalView class]]) {
-                    _metal_system.view_render((YASUIMetalView * const)view, renderer);
-                }
+                _metal_system.view_render(view, renderer);
             }
         }
 

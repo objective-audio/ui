@@ -7,6 +7,13 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <Metal/Metal.h>
 #include "yas_base.h"
+#include "yas_objc_macros.h"
+
+#if TARGET_OS_IPHONE
+#import <UIKit/UIView.h>
+#elif TARGET_OS_MAC
+#import <AppKit/NSView.h>
+#endif
 
 @class YASUIMetalView;
 
@@ -29,7 +36,7 @@ namespace ui {
 
         uint32_t sample_count() const;
 
-        void view_render(YASUIMetalView *const view, ui::renderer &);
+        void view_render(yas_objc_view *const view, ui::renderer &);
     };
 }
 }
