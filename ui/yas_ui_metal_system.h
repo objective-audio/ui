@@ -27,9 +27,6 @@ namespace ui {
         uint32_t constant_buffer_offset() const;
         void set_constant_buffer_offset(uint32_t const offset);
 
-        id<MTLRenderPipelineState> multiSamplePipelineState() const;
-        id<MTLRenderPipelineState> multiSamplePipelineStateWithoutTexture() const;
-
         uint32_t sample_count() const;
 
         void view_render(YASUIMetalView *const view, ui::renderer &);

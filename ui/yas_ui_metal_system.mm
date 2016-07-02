@@ -180,14 +180,6 @@ void ui::metal_system::set_constant_buffer_offset(uint32_t const offset) {
     impl_ptr<impl>()->_constant_buffer_offset = offset;
 }
 
-id<MTLRenderPipelineState> ui::metal_system::multiSamplePipelineState() const {
-    return impl_ptr<impl>()->_multi_sample_pipeline_state.object();
-}
-
-id<MTLRenderPipelineState> ui::metal_system::multiSamplePipelineStateWithoutTexture() const {
-    return impl_ptr<impl>()->_multi_sample_pipeline_state_without_texture.object();
-}
-
 uint32_t ui::metal_system::sample_count() const {
     return impl_ptr<impl>()->_sample_count;
 }
