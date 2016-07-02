@@ -38,9 +38,9 @@ bool ui::renderable_mesh::pre_render() {
     return impl_ptr<impl>()->pre_render();
 }
 
-void ui::renderable_mesh::metal_render(ui::renderer &renderer, id<MTLRenderCommandEncoder> const encoder,
+void ui::renderable_mesh::metal_render(ui::metal_system &metal_system, id<MTLRenderCommandEncoder> const encoder,
                                        ui::metal_encode_info const &encode_info) {
-    impl_ptr<impl>()->metal_render(renderer, encoder, encode_info);
+    impl_ptr<impl>()->metal_render(metal_system, encoder, encode_info);
 }
 
 void ui::renderable_mesh::batch_render(ui::batch_render_mesh_info &mesh_info,

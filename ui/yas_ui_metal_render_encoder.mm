@@ -6,6 +6,7 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_metal_render_encoder.h"
+#include "yas_ui_renderer.h"
 
 using namespace yas;
 
@@ -49,7 +50,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
             for (auto &mesh : metal_encode_info.meshes()) {
                 auto &mesh_renderable = mesh.renderable();
                 if (mesh_renderable.pre_render()) {
-                    mesh.renderable().metal_render(renderer, renderEncoder, metal_encode_info);
+                    mesh.renderable().metal_render(renderer.metal_system(), renderEncoder, metal_encode_info);
                 }
             }
 
