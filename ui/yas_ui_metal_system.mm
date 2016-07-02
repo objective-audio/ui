@@ -131,7 +131,7 @@ struct ui::metal_system::impl : base::impl {
             batch.metal().metal_setup(metal_system);
         }
 
-        metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);
+        metal_render_encoder.render(renderer, commandBuffer);
     }
 
     uint32_t _sample_count = 4;
