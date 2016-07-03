@@ -10,19 +10,13 @@
 
 using namespace yas;
 
-struct ui::texture::impl : base::impl, metal_object::impl {
-    impl(uint_size &&point_size, double const scale_factor, MTLPixelFormat const pixel_format,
-         uint32_t const draw_padding)
-        : _draw_actual_padding(draw_padding * scale_factor),
-          _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
-          _point_size(std::move(point_size)),
-          _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
-                                 static_cast<uint32_t>(point_size.height * scale_factor)}),
-          _scale_factor(std::move(scale_factor)),
-          _format(std::move(pixel_format)) {
+#pragma mark - ui::metal_texture::impl
+
+struct ui::metal_texture::impl : base::impl {
+    impl(ui::uint_size &&size) : _size(std::move(size)) {
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
         if (!is_same(_metal_system, metal_system)) {
             _metal_system = metal_system;
             _texture_object.set_object(nil);
@@ -30,10 +24,10 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         }
 
         if (!_texture_object) {
-            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = _format, &actual_size = _actual_size] {
+            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = _pixel_format, &size = _size] {
                 return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
-                                                                          width:actual_size.width
-                                                                         height:actual_size.height
+                                                                          width:size.width
+                                                                         height:size.height
                                                                       mipmapped:false];
             });
 
@@ -81,6 +75,66 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         return ui::setup_metal_result{nullptr};
     }
 
+    ui::uint_size _size;
+    ui::metal_system _metal_system = nullptr;
+    objc_ptr<id<MTLSamplerState>> _sampler_object;
+    objc_ptr<id<MTLTexture>> _texture_object;
+    MTLPixelFormat const _pixel_format = MTLPixelFormatRGBA8Unorm;
+    MTLTextureType _target = MTLTextureType2D;
+};
+
+#pragma mark - ui::metal_texture
+
+ui::metal_texture::metal_texture(ui::uint_size actual_size) : base(std::make_shared<impl>(std::move(actual_size))) {
+}
+
+ui::metal_texture::metal_texture(std::nullptr_t) : base(nullptr) {
+}
+
+ui::uint_size ui::metal_texture::size() const {
+    return impl_ptr<impl>()->_size;
+}
+
+id<MTLSamplerState> ui::metal_texture::samplerState() const {
+    return impl_ptr<impl>()->_sampler_object.object();
+}
+
+id<MTLTexture> ui::metal_texture::texture() const {
+    return impl_ptr<impl>()->_texture_object.object();
+}
+
+MTLTextureType ui::metal_texture::texture_type() const {
+    return impl_ptr<impl>()->_target;
+}
+
+MTLPixelFormat ui::metal_texture::pixel_format() const {
+    return impl_ptr<impl>()->_pixel_format;
+}
+
+ui::metal_system &ui::metal_texture::metal_system() {
+    return impl_ptr<impl>()->_metal_system;
+}
+
+ui::metal_object &ui::metal_texture::metal() {
+    if (!_metal_object) {
+        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return _metal_object;
+}
+
+#pragma mark - ui::texture::impl
+
+struct ui::texture::impl : base::impl {
+    impl(uint_size &&point_size, double const scale_factor, uint32_t const draw_padding)
+        : _draw_actual_padding(draw_padding * scale_factor),
+          _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
+          _point_size(std::move(point_size)),
+          _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
+                                 static_cast<uint32_t>(point_size.height * scale_factor)}),
+          _scale_factor(std::move(scale_factor)),
+          _metal_texture(_actual_size) {
+    }
+
     draw_image_result add_image(image const &image) {
         if (!image) {
             return draw_image_result{draw_image_error::image_is_null};
@@ -106,13 +160,13 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             return draw_image_result{draw_image_error::image_is_null};
         }
 
-        if (!_texture_object || !_sampler_object) {
+        if (!_metal_texture.texture() || !_metal_texture.samplerState()) {
             return draw_image_result{draw_image_error::no_setup};
         }
 
         auto region = uint_region{origin, image.actual_size()};
 
-        if (id<MTLTexture> texture = _texture_object.object()) {
+        if (id<MTLTexture> texture = _metal_texture.texture()) {
             [texture replaceRegion:to_mtl_region(region)
                        mipmapLevel:0
                          withBytes:image.data()
@@ -155,19 +209,14 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint_size const _actual_size;
     double const _scale_factor;
     uint32_t const _depth = 1;
-    MTLPixelFormat const _format;
-    MTLTextureType _target = MTLTextureType2D;
     bool const _has_alpha = false;
 
-    objc_ptr<id<MTLSamplerState>> _sampler_object;
-    objc_ptr<id<MTLTexture>> _texture_object;
+    ui::metal_texture _metal_texture;
 
    private:
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_origin _draw_actual_pos;
-
-    ui::metal_system _metal_system = nullptr;
 };
 
 ui::texture::texture(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
@@ -182,18 +231,6 @@ bool ui::texture::operator==(texture const &rhs) const {
 
 bool ui::texture::operator!=(texture const &rhs) const {
     return base::operator!=(rhs);
-}
-
-id<MTLSamplerState> ui::texture::sampler() const {
-    return impl_ptr<impl>()->_sampler_object.object();
-}
-
-id<MTLTexture> ui::texture::mtlTexture() const {
-    return impl_ptr<impl>()->_texture_object.object();
-}
-
-MTLTextureType ui::texture::target() const {
-    return impl_ptr<impl>()->_target;
 }
 
 ui::uint_size ui::texture::point_size() const {
@@ -212,10 +249,6 @@ uint32_t ui::texture::depth() const {
     return impl_ptr<impl>()->_depth;
 }
 
-MTLPixelFormat ui::texture::pixel_format() const {
-    return impl_ptr<impl>()->_format;
-}
-
 bool ui::texture::has_alpha() const {
     return impl_ptr<impl>()->_has_alpha;
 }
@@ -228,11 +261,8 @@ ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui
     return impl_ptr<impl>()->replace_image(image, actual_origin);
 }
 
-ui::metal_object &ui::texture::metal() {
-    if (!_metal_object) {
-        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
-    }
-    return _metal_object;
+ui::metal_texture &ui::texture::metal_texture() {
+    return impl_ptr<impl>()->_metal_texture;
 }
 
 #pragma mark -
@@ -240,9 +270,8 @@ ui::metal_object &ui::texture::metal() {
 namespace yas {
 namespace ui {
     struct texture_factory : texture {
-        texture_factory(uint_size &&point_size, double const scale_factor, MTLPixelFormat const format,
-                        uint32_t draw_padding)
-            : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, format, draw_padding)) {
+        texture_factory(uint_size &&point_size, double const scale_factor, uint32_t draw_padding)
+            : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, draw_padding)) {
         }
     };
 }
@@ -251,9 +280,8 @@ namespace ui {
 #pragma mark -
 
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
-    auto factory =
-        ui::texture_factory{std::move(args.point_size), args.scale_factor, args.pixel_format, args.draw_padding};
-    if (auto result = factory.metal().metal_setup(args.metal_system)) {
+    auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding};
+    if (auto result = factory.metal_texture().metal().metal_setup(args.metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};
