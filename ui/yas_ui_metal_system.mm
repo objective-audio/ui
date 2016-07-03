@@ -99,7 +99,7 @@ struct ui::metal_system::impl : base::impl {
         auto renderPassDesc = view.currentRenderPassDescriptor;
         assert(renderPassDesc);
 
-        render_nodes(renderer, commandBuffer, renderPassDesc);
+        _render_nodes(renderer, commandBuffer, renderPassDesc);
 
         [commandBuffer addCompletedHandler:[semaphore = _inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
             dispatch_semaphore_signal(semaphore.object());
@@ -109,29 +109,6 @@ struct ui::metal_system::impl : base::impl {
 
         [commandBuffer presentDrawable:view.currentDrawable];
         [commandBuffer commit];
-    }
-
-    void render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
-                      MTLRenderPassDescriptor *const renderPassDesc) {
-        ui::metal_render_encoder metal_render_encoder;
-        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state.object(),
-                                               _multi_sample_pipeline_state_without_texture.object()});
-
-        ui::render_info render_info{.collision_detector = renderer.collision_detector(),
-                                    .render_encodable = metal_render_encoder.encodable(),
-                                    .matrix = renderer.projection_matrix(),
-                                    .mesh_matrix = renderer.projection_matrix()};
-
-        auto metal_system = cast<ui::metal_system>();
-
-        renderer.root_node().metal().metal_setup(metal_system);
-        renderer.root_node().renderable().build_render_info(render_info);
-
-        for (auto &batch : render_info.batches) {
-            batch.metal().metal_setup(metal_system);
-        }
-
-        metal_render_encoder.render(renderer, commandBuffer);
     }
 
     uint32_t _sample_count = 4;
@@ -153,6 +130,30 @@ struct ui::metal_system::impl : base::impl {
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_without_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
+
+   private:
+    void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
+                       MTLRenderPassDescriptor *const renderPassDesc) {
+        ui::metal_render_encoder metal_render_encoder;
+        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state.object(),
+                                               _multi_sample_pipeline_state_without_texture.object()});
+
+        ui::render_info render_info{.collision_detector = renderer.collision_detector(),
+                                    .render_encodable = metal_render_encoder.encodable(),
+                                    .matrix = renderer.projection_matrix(),
+                                    .mesh_matrix = renderer.projection_matrix()};
+
+        auto metal_system = cast<ui::metal_system>();
+
+        renderer.root_node().metal().metal_setup(metal_system);
+        renderer.root_node().renderable().build_render_info(render_info);
+
+        for (auto &batch : render_info.batches) {
+            batch.metal().metal_setup(metal_system);
+        }
+
+        metal_render_encoder.render(renderer, commandBuffer);
+    }
 };
 
 #pragma mark - ui::metal_system
