@@ -139,16 +139,16 @@ struct ui::metal_system::impl : base::impl {
         auto &renderable_mesh_data = mesh_data.renderable();
         auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
         auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
-        auto const currentConstantBuffer = _uniforms_buffers[_uniforms_buffer_index].object();
+        auto const currentUniformsBuffer = _uniforms_buffers[_uniforms_buffer_index].object();
 
-        auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
-        auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[_uniforms_buffer_offset]);
+        auto uniforms_byte_ptr = (uint8_t *)[currentUniformsBuffer contents];
+        auto uniforms_ptr = (uniforms2d_t *)(&uniforms_byte_ptr[_uniforms_buffer_offset]);
         uniforms_ptr->matrix = renderable_mesh.matrix();
         uniforms_ptr->color = mesh.color();
         uniforms_ptr->use_mesh_color = mesh.is_use_mesh_color();
 
         if (auto &texture = mesh.texture()) {
-            [encoder setFragmentBuffer:currentConstantBuffer offset:_uniforms_buffer_offset atIndex:0];
+            [encoder setFragmentBuffer:currentUniformsBuffer offset:_uniforms_buffer_offset atIndex:0];
             [encoder setRenderPipelineState:encode_info.pipelineState()];
             [encoder setFragmentTexture:texture.mtlTexture() atIndex:0];
             [encoder setFragmentSamplerState:texture.sampler() atIndex:0];
@@ -157,7 +157,7 @@ struct ui::metal_system::impl : base::impl {
         }
 
         [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
-        [encoder setVertexBuffer:currentConstantBuffer offset:_uniforms_buffer_offset atIndex:1];
+        [encoder setVertexBuffer:currentUniformsBuffer offset:_uniforms_buffer_offset atIndex:1];
 
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh.primitive_type())
                             indexCount:mesh_data.index_count()
@@ -166,7 +166,7 @@ struct ui::metal_system::impl : base::impl {
                      indexBufferOffset:index_buffer_byte_offset];
 
         _uniforms_buffer_offset += sizeof(uniforms2d_t);
-        assert(_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentConstantBuffer.length);
+        assert(_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
     }
 
     uint32_t _sample_count = 4;
@@ -236,9 +236,9 @@ void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer &rend
     }
 }
 
-void ui::metal_system::mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
+void ui::metal_system::mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
                                    ui::metal_encode_info const &encode_info) {
-    impl_ptr<impl>()->mesh_render(mesh, encoder, encode_info);
+    impl_ptr<impl>()->mesh_encode(mesh, encoder, encode_info);
 }
 
 void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
