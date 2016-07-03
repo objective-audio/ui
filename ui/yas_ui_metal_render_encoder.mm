@@ -41,7 +41,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
     }
 
     void encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer) {
-        metal_system.prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
+        metal_system.renderable().prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
 
         for (auto &metal_encode_info : _all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
@@ -53,7 +53,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
             for (auto &mesh : metal_encode_info.meshes()) {
                 auto &mesh_renderable = mesh.renderable();
                 if (mesh_renderable.pre_render()) {
-                    metal_system.mesh_encode(mesh, renderEncoder, metal_encode_info);
+                    metal_system.renderable().mesh_encode(mesh, renderEncoder, metal_encode_info);
                 }
             }
 
