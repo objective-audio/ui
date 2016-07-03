@@ -12,6 +12,8 @@
 namespace yas {
 namespace ui {
     class renderer;
+    class mesh;
+    class metal_encode_info;
 
     class metal_system : public base {
        public:
@@ -29,6 +31,8 @@ namespace ui {
         uint32_t sample_count() const;
 
         void view_render(yas_objc_view *const view, ui::renderer &);
+        void mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
+                         ui::metal_encode_info const &encode_info);
     };
 }
 }
