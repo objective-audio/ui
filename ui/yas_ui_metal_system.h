@@ -5,16 +5,11 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <Metal/Metal.h>
 #include "yas_base.h"
-#include "yas_objc_macros.h"
+#include "yas_ui_metal_system_protocol.h"
 
 namespace yas {
 namespace ui {
-    class renderer;
-    class mesh;
-    class metal_encode_info;
-
     class metal_system : public base {
        public:
         class impl;
@@ -25,10 +20,10 @@ namespace ui {
         id<MTLDevice> device() const;
         uint32_t sample_count() const;
 
-        void view_render(yas_objc_view *const view, ui::renderer &);
-        void mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
-                         ui::metal_encode_info const &encode_info);
-        void prepare_uniforms_buffer(uint32_t const uniforms_count);
+        ui::renderable_metal_system &renderable();
+
+       private:
+        ui::renderable_metal_system _renderable = nullptr;
     };
 }
 }

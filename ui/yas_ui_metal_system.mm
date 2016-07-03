@@ -27,7 +27,7 @@ namespace ui {
 
 #pragma mark - ui::metal_system::impl
 
-struct ui::metal_system::impl : base::impl {
+struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
     impl(id<MTLDevice> const device) : _device(device) {
         _command_queue.move_object([device newCommandQueue]);
         _default_library.move_object([device newDefaultLibrary]);
@@ -86,7 +86,7 @@ struct ui::metal_system::impl : base::impl {
         _pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
     }
 
-    void prepare_uniforms_buffer(uint32_t const uniforms_count) {
+    void prepare_uniforms_buffer(uint32_t const uniforms_count) override {
         bool needs_allocate = false;
         NSUInteger length = uniforms_count * sizeof(uniforms2d_t);
         length = length - length % _uniforms_buffer_allocating_unit + _uniforms_buffer_allocating_unit;
@@ -107,7 +107,13 @@ struct ui::metal_system::impl : base::impl {
         }
     }
 
-    void view_render(YASUIMetalView *const view, ui::renderer &renderer) {
+    void view_render(yas_objc_view *const objc_view, ui::renderer &renderer) override {
+        if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
+            return;
+        }
+
+        YASUIMetalView *view = (YASUIMetalView * const)objc_view;
+
         dispatch_semaphore_wait(_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
         auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = _command_queue.object()]() {
@@ -133,7 +139,7 @@ struct ui::metal_system::impl : base::impl {
     }
 
     void mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
-                     ui::metal_encode_info const &encode_info) {
+                     ui::metal_encode_info const &encode_info) override {
         auto const currentUniformsBuffer = _uniforms_buffers[_uniforms_buffer_index].object();
 
         if (auto uniforms_ptr =
@@ -231,17 +237,10 @@ uint32_t ui::metal_system::sample_count() const {
     return impl_ptr<impl>()->_sample_count;
 }
 
-void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer &renderer) {
-    if ([view isKindOfClass:[YASUIMetalView class]]) {
-        impl_ptr<impl>()->view_render((YASUIMetalView * const)view, renderer);
+ui::renderable_metal_system &ui::metal_system::renderable() {
+    if (!_renderable) {
+        _renderable = ui::renderable_metal_system{impl_ptr<ui::renderable_metal_system::impl>()};
     }
-}
 
-void ui::metal_system::mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
-                                   ui::metal_encode_info const &encode_info) {
-    impl_ptr<impl>()->mesh_encode(mesh, encoder, encode_info);
-}
-
-void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
-    impl_ptr<impl>()->prepare_uniforms_buffer(uniforms_count);
+    return _renderable;
 }
