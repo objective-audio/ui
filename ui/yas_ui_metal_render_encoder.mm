@@ -41,6 +41,8 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
     }
 
     void render(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer) {
+        metal_system.allocate_constant_buffer_if_needed(_mesh_count_in_all_encode_infos());
+
         for (auto &metal_encode_info : _all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
             auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
@@ -62,6 +64,14 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
    private:
     std::deque<ui::metal_encode_info> _all_encode_infos;
     std::deque<ui::metal_encode_info> _current_encode_infos;
+
+    uint32_t _mesh_count_in_all_encode_infos() const {
+        uint32_t count = 0;
+        for (auto &metal_encode_info : _all_encode_infos) {
+            count += metal_encode_info.meshes().size();
+        }
+        return count;
+    }
 };
 
 ui::metal_render_encoder::metal_render_encoder() : base(std::make_shared<impl>()) {
