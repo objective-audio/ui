@@ -20,7 +20,7 @@ using namespace yas;
 
 namespace yas {
 namespace ui {
-    static auto constexpr _buffer_max_bytes = 1024 * 1024;
+    static auto constexpr _allocate_buffer_unit = 1024 * 16;
     static auto constexpr _inflight_buffer_count = 2;
 }
 }
@@ -32,10 +32,6 @@ struct ui::metal_system::impl : base::impl {
         _command_queue.move_object([device newCommandQueue]);
         _default_library.move_object([device newDefaultLibrary]);
         _inflight_semaphore.move_object(dispatch_semaphore_create(_inflight_buffer_count));
-
-        for (auto const &idx : make_each(_inflight_buffer_count)) {
-            _constant_buffers[idx].move_object([device newBufferWithLength:_buffer_max_bytes options:kNilOptions]);
-        }
 
         auto defaultLibrary = _default_library.object();
 
@@ -88,6 +84,27 @@ struct ui::metal_system::impl : base::impl {
         pipelineStateDesc.fragmentFunction = fragmentProgram;
 
         _pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
+    }
+
+    void allocate_constant_buffer_if_needed(uint32_t const mesh_count) {
+        bool needs_allocate = false;
+        NSUInteger length = mesh_count * sizeof(uniforms2d_t);
+        length = length - length % _allocate_buffer_unit + _allocate_buffer_unit;
+
+        if (auto &current_buffer = _constant_buffers[_constant_buffer_index]) {
+            id<MTLBuffer> currentBuffer = current_buffer.object();
+            auto const prev_length = currentBuffer.length;
+            if (prev_length < length) {
+                needs_allocate = true;
+            }
+        } else {
+            needs_allocate = true;
+        }
+
+        if (needs_allocate) {
+            _constant_buffers[_constant_buffer_index].move_object(
+                [_device.object() newBufferWithLength:length options:kNilOptions]);
+        }
     }
 
     void view_render(YASUIMetalView *const view, ui::renderer &renderer) {
@@ -151,7 +168,7 @@ struct ui::metal_system::impl : base::impl {
                            indexBuffer:renderable_mesh_data.indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
-        assert(constant_buffer_offset + sizeof(uniforms2d_t) < _buffer_max_bytes);
+        assert(constant_buffer_offset + sizeof(uniforms2d_t) < currentConstantBuffer.length);
         _constant_buffer_offset = constant_buffer_offset;
     }
 
@@ -196,7 +213,7 @@ struct ui::metal_system::impl : base::impl {
             batch.metal().metal_setup(metal_system);
         }
 
-        metal_render_encoder.render(renderer, commandBuffer);
+        metal_render_encoder.render(metal_system, commandBuffer);
     }
 };
 
@@ -225,4 +242,8 @@ void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer &rend
 void ui::metal_system::mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
                                    ui::metal_encode_info const &encode_info) {
     impl_ptr<impl>()->mesh_render(mesh, encoder, encode_info);
+}
+
+void ui::metal_system::allocate_constant_buffer_if_needed(uint32_t const mesh_count) {
+    impl_ptr<impl>()->allocate_constant_buffer_if_needed(mesh_count);
 }
