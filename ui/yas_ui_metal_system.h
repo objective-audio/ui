@@ -29,7 +29,7 @@ namespace ui {
         void view_render(yas_objc_view *const view, ui::renderer &);
         void mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
                          ui::metal_encode_info const &encode_info);
-        void allocate_constant_buffer_if_needed(uint32_t const mesh_count);
+        void prepare_uniforms_buffer(uint32_t const uniforms_count);
     };
 }
 }

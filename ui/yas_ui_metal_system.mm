@@ -20,8 +20,8 @@ using namespace yas;
 
 namespace yas {
 namespace ui {
-    static auto constexpr _allocate_buffer_unit = 1024 * 16;
-    static auto constexpr _inflight_buffer_count = 2;
+    static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
+    static auto constexpr _uniforms_buffer_count = 2;
 }
 }
 
@@ -31,7 +31,7 @@ struct ui::metal_system::impl : base::impl {
     impl(id<MTLDevice> const device) : _device(device) {
         _command_queue.move_object([device newCommandQueue]);
         _default_library.move_object([device newDefaultLibrary]);
-        _inflight_semaphore.move_object(dispatch_semaphore_create(_inflight_buffer_count));
+        _inflight_semaphore.move_object(dispatch_semaphore_create(_uniforms_buffer_count));
 
         auto defaultLibrary = _default_library.object();
 
@@ -86,12 +86,12 @@ struct ui::metal_system::impl : base::impl {
         _pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
     }
 
-    void allocate_constant_buffer_if_needed(uint32_t const mesh_count) {
+    void prepare_uniforms_buffer(uint32_t const uniforms_count) {
         bool needs_allocate = false;
-        NSUInteger length = mesh_count * sizeof(uniforms2d_t);
-        length = length - length % _allocate_buffer_unit + _allocate_buffer_unit;
+        NSUInteger length = uniforms_count * sizeof(uniforms2d_t);
+        length = length - length % _uniforms_buffer_allocating_unit + _uniforms_buffer_allocating_unit;
 
-        if (auto &current_buffer = _constant_buffers[_constant_buffer_index]) {
+        if (auto &current_buffer = _uniforms_buffers[_uniforms_buffer_index]) {
             id<MTLBuffer> currentBuffer = current_buffer.object();
             auto const prev_length = currentBuffer.length;
             if (prev_length < length) {
@@ -102,7 +102,7 @@ struct ui::metal_system::impl : base::impl {
         }
 
         if (needs_allocate) {
-            _constant_buffers[_constant_buffer_index].move_object(
+            _uniforms_buffers[_uniforms_buffer_index].move_object(
                 [_device.object() newBufferWithLength:length options:kNilOptions]);
         }
     }
@@ -115,7 +115,7 @@ struct ui::metal_system::impl : base::impl {
         });
         auto commandBuffer = command_buffer.object();
 
-        _constant_buffer_offset = 0;
+        _uniforms_buffer_offset = 0;
 
         auto renderPassDesc = view.currentRenderPassDescriptor;
         assert(renderPassDesc);
@@ -126,7 +126,7 @@ struct ui::metal_system::impl : base::impl {
             dispatch_semaphore_signal(semaphore.object());
         }];
 
-        _constant_buffer_index = (_constant_buffer_index + 1) % _inflight_buffer_count;
+        _uniforms_buffer_index = (_uniforms_buffer_index + 1) % _uniforms_buffer_count;
 
         [commandBuffer presentDrawable:view.currentDrawable];
         [commandBuffer commit];
@@ -139,17 +139,16 @@ struct ui::metal_system::impl : base::impl {
         auto &renderable_mesh_data = mesh_data.renderable();
         auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
         auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
-        auto constant_buffer_offset = _constant_buffer_offset;
-        auto const currentConstantBuffer = _constant_buffers[_constant_buffer_index].object();
+        auto const currentConstantBuffer = _uniforms_buffers[_uniforms_buffer_index].object();
 
         auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
-        auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
+        auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[_uniforms_buffer_offset]);
         uniforms_ptr->matrix = renderable_mesh.matrix();
         uniforms_ptr->color = mesh.color();
         uniforms_ptr->use_mesh_color = mesh.is_use_mesh_color();
 
         if (auto &texture = mesh.texture()) {
-            [encoder setFragmentBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:0];
+            [encoder setFragmentBuffer:currentConstantBuffer offset:_uniforms_buffer_offset atIndex:0];
             [encoder setRenderPipelineState:encode_info.pipelineState()];
             [encoder setFragmentTexture:texture.mtlTexture() atIndex:0];
             [encoder setFragmentSamplerState:texture.sampler() atIndex:0];
@@ -158,9 +157,7 @@ struct ui::metal_system::impl : base::impl {
         }
 
         [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
-        [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
-
-        constant_buffer_offset += sizeof(uniforms2d_t);
+        [encoder setVertexBuffer:currentConstantBuffer offset:_uniforms_buffer_offset atIndex:1];
 
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh.primitive_type())
                             indexCount:mesh_data.index_count()
@@ -168,15 +165,15 @@ struct ui::metal_system::impl : base::impl {
                            indexBuffer:renderable_mesh_data.indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
-        assert(constant_buffer_offset + sizeof(uniforms2d_t) < currentConstantBuffer.length);
-        _constant_buffer_offset = constant_buffer_offset;
+        _uniforms_buffer_offset += sizeof(uniforms2d_t);
+        assert(_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentConstantBuffer.length);
     }
 
     uint32_t _sample_count = 4;
 
-    objc_ptr<id<MTLBuffer>> _constant_buffers[_inflight_buffer_count];
-    uint8_t _constant_buffer_index = 0;
-    uint32_t _constant_buffer_offset = 0;
+    objc_ptr<id<MTLBuffer>> _uniforms_buffers[_uniforms_buffer_count];
+    uint8_t _uniforms_buffer_index = 0;
+    uint32_t _uniforms_buffer_offset = 0;
 
     MTLPixelFormat _depth_pixel_format = MTLPixelFormatInvalid;
     MTLPixelFormat _stencil_pixel_format = MTLPixelFormatInvalid;
@@ -244,6 +241,6 @@ void ui::metal_system::mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> c
     impl_ptr<impl>()->mesh_render(mesh, encoder, encode_info);
 }
 
-void ui::metal_system::allocate_constant_buffer_if_needed(uint32_t const mesh_count) {
-    impl_ptr<impl>()->allocate_constant_buffer_if_needed(mesh_count);
+void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
+    impl_ptr<impl>()->prepare_uniforms_buffer(uniforms_count);
 }
