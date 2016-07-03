@@ -132,7 +132,7 @@ struct ui::metal_system::impl : base::impl {
         [commandBuffer commit];
     }
 
-    void mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
+    void mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
                      ui::metal_encode_info const &encode_info) {
         auto &renderable_mesh = mesh.renderable();
         auto &mesh_data = mesh.mesh_data();
@@ -210,7 +210,7 @@ struct ui::metal_system::impl : base::impl {
             batch.metal().metal_setup(metal_system);
         }
 
-        metal_render_encoder.render(metal_system, commandBuffer);
+        metal_render_encoder.encode(metal_system, commandBuffer);
     }
 };
 
