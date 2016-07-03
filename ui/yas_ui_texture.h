@@ -20,7 +20,7 @@ namespace ui {
        public:
         class impl;
 
-        metal_texture(ui::uint_size actual_size);
+        metal_texture(ui::uint_size size);
         metal_texture(std::nullptr_t);
 
         ui::setup_metal_result metal_setup(ui::metal_system const &);
@@ -67,13 +67,12 @@ namespace ui {
         uint_size actual_size() const;
         double scale_factor() const;
         uint32_t depth() const;
-        MTLPixelFormat pixel_format() const;
         bool has_alpha() const;
 
         draw_image_result add_image(image const &image);
         draw_image_result replace_image(image const &image, uint_origin const actual_origin);
 
-        ui::metal_texture &metal();
+        ui::metal_texture &metal_texture();
 
        protected:
         texture(std::shared_ptr<impl> &&);

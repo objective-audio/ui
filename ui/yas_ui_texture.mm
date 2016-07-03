@@ -136,7 +136,7 @@ struct ui::texture::impl : base::impl {
           _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
                                  static_cast<uint32_t>(point_size.height * scale_factor)}),
           _scale_factor(std::move(scale_factor)),
-          _metal(_actual_size) {
+          _metal_texture(_actual_size) {
     }
 
     draw_image_result add_image(image const &image) {
@@ -164,13 +164,13 @@ struct ui::texture::impl : base::impl {
             return draw_image_result{draw_image_error::image_is_null};
         }
 
-        if (!_metal.texture() || !_metal.samplerState()) {
+        if (!_metal_texture.texture() || !_metal_texture.samplerState()) {
             return draw_image_result{draw_image_error::no_setup};
         }
 
         auto region = uint_region{origin, image.actual_size()};
 
-        if (id<MTLTexture> texture = _metal.texture()) {
+        if (id<MTLTexture> texture = _metal_texture.texture()) {
             [texture replaceRegion:to_mtl_region(region)
                        mipmapLevel:0
                          withBytes:image.data()
@@ -215,7 +215,7 @@ struct ui::texture::impl : base::impl {
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
 
-    ui::metal_texture _metal;
+    ui::metal_texture _metal_texture;
 
    private:
     uint32_t _max_line_height = 0;
@@ -265,8 +265,8 @@ ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui
     return impl_ptr<impl>()->replace_image(image, actual_origin);
 }
 
-ui::metal_texture &ui::texture::metal() {
-    return impl_ptr<impl>()->_metal;
+ui::metal_texture &ui::texture::metal_texture() {
+    return impl_ptr<impl>()->_metal_texture;
 }
 
 #pragma mark -
@@ -285,7 +285,7 @@ namespace ui {
 
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
     auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding};
-    if (auto result = factory.metal().metal_setup(args.metal_system)) {
+    if (auto result = factory.metal_texture().metal_setup(args.metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};
