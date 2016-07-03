@@ -23,8 +23,6 @@ namespace ui {
         metal_texture(ui::uint_size size);
         metal_texture(std::nullptr_t);
 
-        ui::setup_metal_result metal_setup(ui::metal_system const &);
-
         ui::uint_size size() const;
         id<MTLSamplerState> samplerState() const;
         id<MTLTexture> texture() const;

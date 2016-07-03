@@ -91,10 +91,6 @@ ui::metal_texture::metal_texture(ui::uint_size actual_size) : base(std::make_sha
 ui::metal_texture::metal_texture(std::nullptr_t) : base(nullptr) {
 }
 
-ui::setup_metal_result ui::metal_texture::metal_setup(ui::metal_system const &metal_system) {
-    return impl_ptr<impl>()->metal_setup(metal_system);
-}
-
 ui::uint_size ui::metal_texture::size() const {
     return impl_ptr<impl>()->_size;
 }
@@ -285,7 +281,7 @@ namespace ui {
 
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
     auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding};
-    if (auto result = factory.metal_texture().metal_setup(args.metal_system)) {
+    if (auto result = factory.metal_texture().metal().metal_setup(args.metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};
