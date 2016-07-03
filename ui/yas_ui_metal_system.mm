@@ -99,7 +99,7 @@ struct ui::metal_system::impl : base::impl {
         auto renderPassDesc = view.currentRenderPassDescriptor;
         assert(renderPassDesc);
 
-        render(renderer, commandBuffer, renderPassDesc);
+        render_nodes(renderer, commandBuffer, renderPassDesc);
 
         [commandBuffer addCompletedHandler:[semaphore = _inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
             dispatch_semaphore_signal(semaphore.object());
@@ -111,8 +111,8 @@ struct ui::metal_system::impl : base::impl {
         [commandBuffer commit];
     }
 
-    void render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
-                MTLRenderPassDescriptor *const renderPassDesc) {
+    void render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
+                      MTLRenderPassDescriptor *const renderPassDesc) {
         ui::metal_render_encoder metal_render_encoder;
         metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state.object(),
                                                _multi_sample_pipeline_state_without_texture.object()});
