@@ -9,14 +9,6 @@
 #include "yas_base.h"
 #include "yas_objc_macros.h"
 
-#if TARGET_OS_IPHONE
-#import <UIKit/UIView.h>
-#elif TARGET_OS_MAC
-#import <AppKit/NSView.h>
-#endif
-
-@class YASUIMetalView;
-
 namespace yas {
 namespace ui {
     class renderer;
