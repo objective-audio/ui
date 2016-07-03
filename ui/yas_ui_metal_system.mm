@@ -196,7 +196,7 @@ struct ui::metal_system::impl : base::impl {
             batch.metal().metal_setup(metal_system);
         }
 
-        metal_render_encoder.render(renderer, commandBuffer);
+        metal_render_encoder.render(metal_system, commandBuffer);
     }
 };
 
