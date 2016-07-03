@@ -27,7 +27,7 @@ namespace ui {
 
         ui::metal_encode_info const &current_encode_info();
 
-        void render(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer);
+        void encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer);
 
         ui::render_encodable &encodable();
 
