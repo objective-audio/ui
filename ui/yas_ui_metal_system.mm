@@ -134,18 +134,14 @@ struct ui::metal_system::impl : base::impl {
 
     void mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
                      ui::metal_encode_info const &encode_info) {
-        auto &renderable_mesh = mesh.renderable();
-        auto &mesh_data = mesh.mesh_data();
-        auto &renderable_mesh_data = mesh_data.renderable();
-        auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
-        auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
         auto const currentUniformsBuffer = _uniforms_buffers[_uniforms_buffer_index].object();
 
-        auto uniforms_byte_ptr = (uint8_t *)[currentUniformsBuffer contents];
-        auto uniforms_ptr = (uniforms2d_t *)(&uniforms_byte_ptr[_uniforms_buffer_offset]);
-        uniforms_ptr->matrix = renderable_mesh.matrix();
-        uniforms_ptr->color = mesh.color();
-        uniforms_ptr->use_mesh_color = mesh.is_use_mesh_color();
+        if (auto uniforms_ptr =
+                (uniforms2d_t *)(&((uint8_t *)[currentUniformsBuffer contents])[_uniforms_buffer_offset])) {
+            uniforms_ptr->matrix = mesh.renderable().matrix();
+            uniforms_ptr->color = mesh.color();
+            uniforms_ptr->use_mesh_color = mesh.is_use_mesh_color();
+        }
 
         if (auto &texture = mesh.texture()) {
             [encoder setFragmentBuffer:currentUniformsBuffer offset:_uniforms_buffer_offset atIndex:0];
@@ -156,14 +152,19 @@ struct ui::metal_system::impl : base::impl {
             [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
 
-        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
+        auto &mesh_data = mesh.mesh_data();
+        auto &renderable_mesh_data = mesh_data.renderable();
+
+        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer()
+                          offset:renderable_mesh_data.vertex_buffer_byte_offset()
+                         atIndex:0];
         [encoder setVertexBuffer:currentUniformsBuffer offset:_uniforms_buffer_offset atIndex:1];
 
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh.primitive_type())
                             indexCount:mesh_data.index_count()
                              indexType:MTLIndexTypeUInt32
                            indexBuffer:renderable_mesh_data.indexBuffer()
-                     indexBufferOffset:index_buffer_byte_offset];
+                     indexBufferOffset:renderable_mesh_data.index_buffer_byte_offset()];
 
         _uniforms_buffer_offset += sizeof(uniforms2d_t);
         assert(_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
