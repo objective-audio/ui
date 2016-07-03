@@ -123,7 +123,7 @@ struct ui::metal_system::impl : base::impl {
         auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
         auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
         auto constant_buffer_offset = _constant_buffer_offset;
-        auto const currentConstantBuffer = _constant_buffers[constant_buffer_offset].object();
+        auto const currentConstantBuffer = _constant_buffers[_constant_buffer_index].object();
 
         auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
         auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
@@ -151,6 +151,7 @@ struct ui::metal_system::impl : base::impl {
                            indexBuffer:renderable_mesh_data.indexBuffer()
                      indexBufferOffset:index_buffer_byte_offset];
 
+        assert(constant_buffer_offset + sizeof(uniforms2d_t) < _buffer_max_bytes);
         _constant_buffer_offset = constant_buffer_offset;
     }
 
@@ -209,19 +210,6 @@ ui::metal_system::metal_system(std::nullptr_t) : base(nullptr) {
 
 id<MTLDevice> ui::metal_system::device() const {
     return impl_ptr<impl>()->_device.object();
-}
-
-id<MTLBuffer> ui::metal_system::currentConstantBuffer() const {
-    return impl_ptr<impl>()->_constant_buffers[impl_ptr<impl>()->_constant_buffer_index].object();
-}
-
-uint32_t ui::metal_system::constant_buffer_offset() const {
-    return impl_ptr<impl>()->_constant_buffer_offset;
-}
-
-void ui::metal_system::set_constant_buffer_offset(uint32_t const offset) {
-    assert(offset < _buffer_max_bytes);
-    impl_ptr<impl>()->_constant_buffer_offset = offset;
 }
 
 uint32_t ui::metal_system::sample_count() const {
