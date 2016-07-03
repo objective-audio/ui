@@ -25,7 +25,7 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_create {
+- (void)test_make_texture {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -36,16 +36,28 @@ using namespace yas;
 
     auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {2, 1}, .scale_factor = 2.0}).value();
 
-    XCTAssertNotNil(texture.sampler());
-    XCTAssertNotNil(texture.mtlTexture());
-    XCTAssertEqual(texture.target(), MTLTextureType2D);
     XCTAssertTrue(texture.point_size() == (ui::uint_size{2, 1}));
     XCTAssertTrue(texture.actual_size() == (ui::uint_size{4, 2}));
     XCTAssertEqual(texture.scale_factor(), 2.0);
     XCTAssertEqual(texture.depth(), 1);
-    XCTAssertEqual(texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
     XCTAssertEqual(texture.has_alpha(), false);
-    XCTAssertTrue(texture.metal());
+
+    XCTAssertTrue(texture.metal_texture());
+    XCTAssertEqual(texture.metal_texture().size(), (ui::uint_size{4, 2}));
+    XCTAssertTrue(texture.metal_texture().metal_system());
+    XCTAssertNotNil(texture.metal_texture().samplerState());
+    XCTAssertNotNil(texture.metal_texture().texture());
+}
+
+- (void)test_create_metal_texture {
+    ui::metal_texture metal_texture{ui::uint_size{1, 2}};
+
+    XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
+    XCTAssertNil(metal_texture.samplerState());
+    XCTAssertNil(metal_texture.texture());
+    XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
+    XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
+    XCTAssertFalse(metal_texture.metal_system());
 }
 
 - (void)test_add_image {
