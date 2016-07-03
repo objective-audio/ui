@@ -12,6 +12,8 @@
 namespace yas {
 namespace ui {
     class renderer;
+    class mesh;
+    class metal_encode_info;
 
     class metal_system : public base {
        public:
@@ -21,14 +23,12 @@ namespace ui {
         metal_system(std::nullptr_t);
 
         id<MTLDevice> device() const;
-        id<MTLBuffer> currentConstantBuffer() const;
-
-        uint32_t constant_buffer_offset() const;
-        void set_constant_buffer_offset(uint32_t const offset);
 
         uint32_t sample_count() const;
 
         void view_render(yas_objc_view *const view, ui::renderer &);
+        void mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
+                         ui::metal_encode_info const &encode_info);
     };
 }
 }

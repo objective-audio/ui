@@ -4,13 +4,17 @@
 
 #include "yas_each_index.h"
 #include "yas_objc_ptr.h"
+#include "yas_ui_mesh.h"
+#include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_metal_render_encoder.h"
 #include "yas_ui_metal_system.h"
+#include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
+#include "yas_ui_texture.h"
 
 using namespace yas;
 
@@ -99,7 +103,7 @@ struct ui::metal_system::impl : base::impl {
         auto renderPassDesc = view.currentRenderPassDescriptor;
         assert(renderPassDesc);
 
-        render(renderer, commandBuffer, renderPassDesc);
+        _render_nodes(renderer, commandBuffer, renderPassDesc);
 
         [commandBuffer addCompletedHandler:[semaphore = _inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
             dispatch_semaphore_signal(semaphore.object());
@@ -111,27 +115,44 @@ struct ui::metal_system::impl : base::impl {
         [commandBuffer commit];
     }
 
-    void render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
-                MTLRenderPassDescriptor *const renderPassDesc) {
-        ui::metal_render_encoder metal_render_encoder;
-        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state.object(),
-                                               _multi_sample_pipeline_state_without_texture.object()});
+    void mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
+                     ui::metal_encode_info const &encode_info) {
+        auto &renderable_mesh = mesh.renderable();
+        auto &mesh_data = mesh.mesh_data();
+        auto &renderable_mesh_data = mesh_data.renderable();
+        auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
+        auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
+        auto constant_buffer_offset = _constant_buffer_offset;
+        auto const currentConstantBuffer = _constant_buffers[_constant_buffer_index].object();
 
-        ui::render_info render_info{.collision_detector = renderer.collision_detector(),
-                                    .render_encodable = metal_render_encoder.encodable(),
-                                    .matrix = renderer.projection_matrix(),
-                                    .mesh_matrix = renderer.projection_matrix()};
+        auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
+        auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
+        uniforms_ptr->matrix = renderable_mesh.matrix();
+        uniforms_ptr->color = mesh.color();
+        uniforms_ptr->use_mesh_color = mesh.is_use_mesh_color();
 
-        auto metal_system = cast<ui::metal_system>();
-
-        renderer.root_node().metal().metal_setup(metal_system);
-        renderer.root_node().renderable().build_render_info(render_info);
-
-        for (auto &batch : render_info.batches) {
-            batch.metal().metal_setup(metal_system);
+        if (auto &texture = mesh.texture()) {
+            [encoder setFragmentBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:0];
+            [encoder setRenderPipelineState:encode_info.pipelineState()];
+            [encoder setFragmentTexture:texture.mtlTexture() atIndex:0];
+            [encoder setFragmentSamplerState:texture.sampler() atIndex:0];
+        } else {
+            [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
 
-        metal_render_encoder.render(renderer, commandBuffer);
+        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
+        [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
+
+        constant_buffer_offset += sizeof(uniforms2d_t);
+
+        [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh.primitive_type())
+                            indexCount:mesh_data.index_count()
+                             indexType:MTLIndexTypeUInt32
+                           indexBuffer:renderable_mesh_data.indexBuffer()
+                     indexBufferOffset:index_buffer_byte_offset];
+
+        assert(constant_buffer_offset + sizeof(uniforms2d_t) < _buffer_max_bytes);
+        _constant_buffer_offset = constant_buffer_offset;
     }
 
     uint32_t _sample_count = 4;
@@ -153,6 +174,30 @@ struct ui::metal_system::impl : base::impl {
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_without_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
+
+   private:
+    void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
+                       MTLRenderPassDescriptor *const renderPassDesc) {
+        ui::metal_render_encoder metal_render_encoder;
+        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state.object(),
+                                               _multi_sample_pipeline_state_without_texture.object()});
+
+        ui::render_info render_info{.collision_detector = renderer.collision_detector(),
+                                    .render_encodable = metal_render_encoder.encodable(),
+                                    .matrix = renderer.projection_matrix(),
+                                    .mesh_matrix = renderer.projection_matrix()};
+
+        auto metal_system = cast<ui::metal_system>();
+
+        renderer.root_node().metal().metal_setup(metal_system);
+        renderer.root_node().renderable().build_render_info(render_info);
+
+        for (auto &batch : render_info.batches) {
+            batch.metal().metal_setup(metal_system);
+        }
+
+        metal_render_encoder.render(renderer, commandBuffer);
+    }
 };
 
 #pragma mark - ui::metal_system
@@ -167,19 +212,6 @@ id<MTLDevice> ui::metal_system::device() const {
     return impl_ptr<impl>()->_device.object();
 }
 
-id<MTLBuffer> ui::metal_system::currentConstantBuffer() const {
-    return impl_ptr<impl>()->_constant_buffers[impl_ptr<impl>()->_constant_buffer_index].object();
-}
-
-uint32_t ui::metal_system::constant_buffer_offset() const {
-    return impl_ptr<impl>()->_constant_buffer_offset;
-}
-
-void ui::metal_system::set_constant_buffer_offset(uint32_t const offset) {
-    assert(offset < _buffer_max_bytes);
-    impl_ptr<impl>()->_constant_buffer_offset = offset;
-}
-
 uint32_t ui::metal_system::sample_count() const {
     return impl_ptr<impl>()->_sample_count;
 }
@@ -188,4 +220,9 @@ void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer &rend
     if ([view isKindOfClass:[YASUIMetalView class]]) {
         impl_ptr<impl>()->view_render((YASUIMetalView * const)view, renderer);
     }
+}
+
+void ui::metal_system::mesh_render(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
+                                   ui::metal_encode_info const &encode_info) {
+    impl_ptr<impl>()->mesh_render(mesh, encoder, encode_info);
 }

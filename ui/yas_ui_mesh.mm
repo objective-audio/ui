@@ -65,43 +65,6 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return false;
     }
 
-    void metal_render(ui::metal_system &metal_system, id<MTLRenderCommandEncoder> const encoder,
-                      ui::metal_encode_info const &encode_info) override {
-        auto &renderable_mesh_data = _mesh_data.renderable();
-        auto const vertex_buffer_byte_offset = renderable_mesh_data.vertex_buffer_byte_offset();
-        auto const index_buffer_byte_offset = renderable_mesh_data.index_buffer_byte_offset();
-        auto constant_buffer_offset = metal_system.constant_buffer_offset();
-        auto currentConstantBuffer = metal_system.currentConstantBuffer();
-
-        auto constant_ptr = (uint8_t *)[currentConstantBuffer contents];
-        auto uniforms_ptr = (uniforms2d_t *)(&constant_ptr[constant_buffer_offset]);
-        uniforms_ptr->matrix = _matrix;
-        uniforms_ptr->color = _color;
-        uniforms_ptr->use_mesh_color = _use_mesh_color;
-
-        if (_texture) {
-            [encoder setFragmentBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:0];
-            [encoder setRenderPipelineState:encode_info.pipelineState()];
-            [encoder setFragmentTexture:_texture.mtlTexture() atIndex:0];
-            [encoder setFragmentSamplerState:_texture.sampler() atIndex:0];
-        } else {
-            [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
-        }
-
-        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer() offset:vertex_buffer_byte_offset atIndex:0];
-        [encoder setVertexBuffer:currentConstantBuffer offset:constant_buffer_offset atIndex:1];
-
-        constant_buffer_offset += sizeof(uniforms2d_t);
-
-        [encoder drawIndexedPrimitives:to_mtl_primitive_type(_primitive_type)
-                            indexCount:_mesh_data.index_count()
-                             indexType:MTLIndexTypeUInt32
-                           indexBuffer:renderable_mesh_data.indexBuffer()
-                     indexBufferOffset:index_buffer_byte_offset];
-
-        metal_system.set_constant_buffer_offset(constant_buffer_offset);
-    }
-
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
         if (_needs_write(building_type)) {
             mesh_info.mesh_data.write([
