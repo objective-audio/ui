@@ -131,7 +131,7 @@ struct ui::metal_system::impl : base::impl {
             batch.metal().metal_setup(metal_system);
         }
 
-        metal_render_encoder.render(renderer, commandBuffer, renderPassDesc);
+        metal_render_encoder.render(renderer, commandBuffer);
     }
 
     uint32_t _sample_count = 4;
@@ -180,18 +180,12 @@ void ui::metal_system::set_constant_buffer_offset(uint32_t const offset) {
     impl_ptr<impl>()->_constant_buffer_offset = offset;
 }
 
-id<MTLRenderPipelineState> ui::metal_system::multiSamplePipelineState() const {
-    return impl_ptr<impl>()->_multi_sample_pipeline_state.object();
-}
-
-id<MTLRenderPipelineState> ui::metal_system::multiSamplePipelineStateWithoutTexture() const {
-    return impl_ptr<impl>()->_multi_sample_pipeline_state_without_texture.object();
-}
-
 uint32_t ui::metal_system::sample_count() const {
     return impl_ptr<impl>()->_sample_count;
 }
 
-void ui::metal_system::view_render(YASUIMetalView *const view, ui::renderer &renderer) {
-    impl_ptr<impl>()->view_render(view, renderer);
+void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer &renderer) {
+    if ([view isKindOfClass:[YASUIMetalView class]]) {
+        impl_ptr<impl>()->view_render((YASUIMetalView * const)view, renderer);
+    }
 }

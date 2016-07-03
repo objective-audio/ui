@@ -11,7 +11,7 @@
 
 namespace yas {
 namespace ui {
-    class renderer;
+    class metal_system;
     class metal_encode_info;
     class batch_render_mesh_info;
     enum class batch_building_type;
@@ -36,7 +36,7 @@ namespace ui {
             virtual std::size_t render_index_count() = 0;
             virtual mesh_updates_t const &updates() = 0;
             virtual bool pre_render() = 0;
-            virtual void metal_render(ui::renderer &, id<MTLRenderCommandEncoder> const,
+            virtual void metal_render(ui::metal_system &metal_system, id<MTLRenderCommandEncoder> const,
                                       ui::metal_encode_info const &) = 0;
             virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
             virtual bool is_rendering_color_exists() = 0;
@@ -52,7 +52,8 @@ namespace ui {
         std::size_t render_index_count();
         mesh_updates_t const &updates();
         bool pre_render();
-        void metal_render(ui::renderer &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
+        void metal_render(ui::metal_system &metal_system, id<MTLRenderCommandEncoder> const,
+                          ui::metal_encode_info const &);
         void batch_render(batch_render_mesh_info &, ui::batch_building_type const);
         bool is_rendering_color_exists();
         void clear_updates();

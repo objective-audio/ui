@@ -6,6 +6,7 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_metal_render_encoder.h"
+#include "yas_ui_renderer.h"
 
 using namespace yas;
 
@@ -38,8 +39,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
         }
     }
 
-    void render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
-                MTLRenderPassDescriptor *const renderPassDesc) {
+    void render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer) {
         for (auto &metal_encode_info : _all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
             auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
@@ -50,7 +50,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
             for (auto &mesh : metal_encode_info.meshes()) {
                 auto &mesh_renderable = mesh.renderable();
                 if (mesh_renderable.pre_render()) {
-                    mesh.renderable().metal_render(renderer, renderEncoder, metal_encode_info);
+                    mesh.renderable().metal_render(renderer.metal_system(), renderEncoder, metal_encode_info);
                 }
             }
 
@@ -85,9 +85,8 @@ ui::metal_encode_info const &ui::metal_render_encoder::current_encode_info() {
     return impl_ptr<impl>()->current_encode_info();
 }
 
-void ui::metal_render_encoder::render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
-                                      MTLRenderPassDescriptor *const renderPassDesc) {
-    impl_ptr<impl>()->render(renderer, commandBuffer, renderPassDesc);
+void ui::metal_render_encoder::render(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer) {
+    impl_ptr<impl>()->render(renderer, commandBuffer);
 }
 
 ui::render_encodable &ui::metal_render_encoder::encodable() {
