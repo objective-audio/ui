@@ -16,6 +16,28 @@ namespace yas {
 namespace ui {
     class image;
 
+    class metal_texture : public base {
+       public:
+        class impl;
+
+        metal_texture(ui::uint_size actual_size);
+        metal_texture(std::nullptr_t);
+
+        ui::setup_metal_result metal_setup(ui::metal_system const &);
+
+        ui::uint_size size() const;
+        id<MTLSamplerState> samplerState() const;
+        id<MTLTexture> texture() const;
+        MTLTextureType texture_type() const;
+        MTLPixelFormat pixel_format() const;
+
+        ui::metal_system &metal_system();
+        ui::metal_object &metal();
+
+       private:
+        ui::metal_object _metal_object = nullptr;
+    };
+
     class texture : public base {
        public:
         class impl;
@@ -24,7 +46,6 @@ namespace ui {
             ui::metal_system metal_system;
             ui::uint_size point_size;
             double scale_factor = 1.0;
-            MTLPixelFormat pixel_format = MTLPixelFormatRGBA8Unorm;
             uint32_t draw_padding = 2;
         };
 
@@ -42,9 +63,6 @@ namespace ui {
         bool operator==(texture const &) const;
         bool operator!=(texture const &) const;
 
-        id<MTLSamplerState> sampler() const;
-        id<MTLTexture> mtlTexture() const;
-        MTLTextureType target() const;
         uint_size point_size() const;
         uint_size actual_size() const;
         double scale_factor() const;
@@ -55,13 +73,10 @@ namespace ui {
         draw_image_result add_image(image const &image);
         draw_image_result replace_image(image const &image, uint_origin const actual_origin);
 
-        ui::metal_object &metal();
+        ui::metal_texture &metal();
 
        protected:
         texture(std::shared_ptr<impl> &&);
-
-       private:
-        ui::metal_object _metal_object = nullptr;
     };
 
     using make_texture_result = result<ui::texture, setup_metal_error>;
