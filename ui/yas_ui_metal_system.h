@@ -23,7 +23,6 @@ namespace ui {
         metal_system(std::nullptr_t);
 
         id<MTLDevice> device() const;
-
         uint32_t sample_count() const;
 
         void view_render(yas_objc_view *const view, ui::renderer &);
