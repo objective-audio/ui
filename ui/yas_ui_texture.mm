@@ -12,11 +12,11 @@ using namespace yas;
 
 #pragma mark - ui::metal_texture::impl
 
-struct ui::metal_texture::impl : base::impl {
+struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
     impl(ui::uint_size &&size) : _size(std::move(size)) {
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (!is_same(_metal_system, metal_system)) {
             _metal_system = metal_system;
             _texture_object.set_object(nil);
