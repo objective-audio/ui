@@ -553,6 +553,21 @@ using namespace yas;
     node.renderable().build_render_info(render_info);
 }
 
+- (void)test_node_method_to_string {
+    XCTAssertEqual(to_string(ui::node_method::added_to_super), "added_to_super");
+    XCTAssertEqual(to_string(ui::node_method::removed_from_super), "removed_from_super");
+    XCTAssertEqual(to_string(ui::node_method::parent_changed), "parent_changed");
+    XCTAssertEqual(to_string(ui::node_method::renderer_changed), "renderer_changed");
+    XCTAssertEqual(to_string(ui::node_method::position_changed), "position_changed");
+    XCTAssertEqual(to_string(ui::node_method::angle_changed), "angle_changed");
+    XCTAssertEqual(to_string(ui::node_method::scale_changed), "scale_changed");
+    XCTAssertEqual(to_string(ui::node_method::color_changed), "color_changed");
+    XCTAssertEqual(to_string(ui::node_method::alpha_changed), "alpha_changed");
+    XCTAssertEqual(to_string(ui::node_method::mesh_changed), "mesh_changed");
+    XCTAssertEqual(to_string(ui::node_method::collider_changed), "collider_changed");
+    XCTAssertEqual(to_string(ui::node_method::enabled_changed), "enabled_changed");
+}
+
 - (void)test_node_update_reason_to_string {
     XCTAssertEqual(to_string(ui::node_update_reason::geometry), "geometry");
     XCTAssertEqual(to_string(ui::node_update_reason::mesh), "mesh");

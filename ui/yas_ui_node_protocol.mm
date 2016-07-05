@@ -74,6 +74,35 @@ void ui::renderable_node::clear_updates() {
     impl_ptr<impl>()->clear_updates();
 }
 
+std::string yas::to_string(ui::node_method const &method) {
+    switch (method) {
+        case ui::node_method::added_to_super:
+            return "added_to_super";
+        case ui::node_method::removed_from_super:
+            return "removed_from_super";
+        case ui::node_method::parent_changed:
+            return "parent_changed";
+        case ui::node_method::renderer_changed:
+            return "renderer_changed";
+        case ui::node_method::position_changed:
+            return "position_changed";
+        case ui::node_method::angle_changed:
+            return "angle_changed";
+        case ui::node_method::scale_changed:
+            return "scale_changed";
+        case ui::node_method::color_changed:
+            return "color_changed";
+        case ui::node_method::alpha_changed:
+            return "alpha_changed";
+        case ui::node_method::mesh_changed:
+            return "mesh_changed";
+        case ui::node_method::collider_changed:
+            return "collider_changed";
+        case ui::node_method::enabled_changed:
+            return "enabled_changed";
+    }
+}
+
 std::string yas::to_string(ui::node_update_reason const &reason) {
     switch (reason) {
         case ui::node_update_reason::geometry:
@@ -91,6 +120,11 @@ std::string yas::to_string(ui::node_update_reason const &reason) {
         case ui::node_update_reason::count:
             return "count";
     }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::node_method const &method) {
+    os << to_string(method);
+    return os;
 }
 
 std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &reason) {

@@ -21,7 +21,8 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_text_node.strings_node().square_node().node());
     root_node.push_back_sub_node(_modifier_node.strings_node().square_node().node());
-    root_node.push_back_sub_node(_button_status_node.strings_node().square_node().node());
+    
+    _button_node.square_node().node().push_back_sub_node(_button_status_node.strings_node().square_node().node());
 
     _text_node.strings_node().set_font_atlas(_font_atlas);
     _modifier_node.strings_node().set_font_atlas(_font_atlas);
@@ -33,6 +34,14 @@ void sample::main::setup() {
             status_node.set_status(context.key);
         }
     });
+
+    auto button_pos_action =
+        ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
+                                                   .end_position = {150.0f, 0.0f},
+                                                   .continuous_action = {.duration = 5.0, .loop_count = 0}});
+    button_pos_action.set_target(_button_node.square_node().node());
+    button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
+    renderer.insert_action(std::move(button_pos_action));
 
     auto update_texture = [
         weak_font_atlas = to_weak(_font_atlas),

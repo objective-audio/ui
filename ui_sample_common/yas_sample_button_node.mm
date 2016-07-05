@@ -19,9 +19,11 @@ struct sample::button_node::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        square_node.node().dispatch_method(ui::node_method::renderer_changed);
+        auto &node = square_node.node();
 
-        _renderer_observer = square_node.node().subject().make_observer(
+        node.dispatch_method(ui::node_method::renderer_changed);
+
+        _renderer_observer = node.subject().make_observer(
             ui::node_method::renderer_changed,
             [event_observer = base{nullptr},
              weak_button_node = to_weak(cast<sample::button_node>())](auto const &context) mutable {
@@ -36,6 +38,48 @@ struct sample::button_node::impl : base::impl {
                         });
                 } else {
                     event_observer = nullptr;
+                }
+            });
+    }
+
+    void setup_geometry_changed_observer() {
+        auto &node = square_node.node();
+
+        node.dispatch_method(ui::node_method::position_changed);
+        node.dispatch_method(ui::node_method::angle_changed);
+        node.dispatch_method(ui::node_method::scale_changed);
+        node.dispatch_method(ui::node_method::collider_changed);
+        node.dispatch_method(ui::node_method::enabled_changed);
+
+        _geometry_changed_observer =
+            node.subject().make_wild_card_observer([weak_button_node =
+                                                        to_weak(cast<sample::button_node>())](auto const &context) {
+                if (auto node = weak_button_node.lock()) {
+                    if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                        ui::node_method const &method = context.key;
+                        switch (method) {
+                            case ui::node_method::position_changed:
+                            case ui::node_method::angle_changed:
+                            case ui::node_method::scale_changed: {
+                                node.impl_ptr<impl>()->leave_or_enter_tracking(tracking_event);
+                            } break;
+                            case ui::node_method::collider_changed: {
+                                ui::node const &node = context.value;
+                                if (!node.collider()) {
+                                    node.impl_ptr<impl>()->cancel_tracking(tracking_event);
+                                }
+                            } break;
+                            case ui::node_method::enabled_changed: {
+                                ui::node const &node = context.value;
+                                if (!node.is_enabled()) {
+                                    node.impl_ptr<impl>()->cancel_tracking(tracking_event);
+                                }
+                            } break;
+
+                            default:
+                                break;
+                        }
+                    }
                 }
             });
     }
@@ -112,15 +156,7 @@ struct sample::button_node::impl : base::impl {
                     break;
                 case ui::event_phase::stationary:
                 case ui::event_phase::changed: {
-                    bool const is_event_tracking = is_tracking(event);
-                    bool is_detected = detector.detect(touch_event.position(), node.collider());
-                    if (!is_event_tracking && is_detected) {
-                        set_tracking_event(event);
-                        subject.notify(sample::button_method::entered, button_node);
-                    } else if (is_event_tracking && !is_detected) {
-                        set_tracking_event(nullptr);
-                        subject.notify(sample::button_method::leaved, button_node);
-                    }
+                    leave_or_enter_tracking(event);
                 } break;
                 case ui::event_phase::ended:
                     if (is_tracking(event)) {
@@ -129,14 +165,35 @@ struct sample::button_node::impl : base::impl {
                     }
                     break;
                 case ui::event_phase::canceled:
-                    if (is_tracking(event)) {
-                        set_tracking_event(nullptr);
-                        subject.notify(sample::button_method::canceled, button_node);
-                    }
+                    cancel_tracking(event);
                     break;
                 default:
                     break;
             }
+        }
+    }
+
+    void leave_or_enter_tracking(ui::event const &event) {
+        auto &node = square_node.node();
+        if (auto renderer = node.renderer()) {
+            auto const &detector = renderer.collision_detector();
+            auto const &touch_event = event.get<ui::touch>();
+            bool const is_event_tracking = is_tracking(event);
+            bool is_detected = detector.detect(touch_event.position(), node.collider());
+            if (!is_event_tracking && is_detected) {
+                set_tracking_event(event);
+                subject.notify(sample::button_method::entered, cast<sample::button_node>());
+            } else if (is_event_tracking && !is_detected) {
+                set_tracking_event(nullptr);
+                subject.notify(sample::button_method::leaved, cast<sample::button_node>());
+            }
+        }
+    }
+
+    void cancel_tracking(ui::event const &event) {
+        if (is_tracking(event)) {
+            set_tracking_event(nullptr);
+            subject.notify(sample::button_method::canceled, cast<sample::button_node>());
         }
     }
 
@@ -164,6 +221,7 @@ struct sample::button_node::impl : base::impl {
     }
 
     base _renderer_observer = nullptr;
+    base _geometry_changed_observer = nullptr;
     ui::event _tracking_event = nullptr;
 };
 
@@ -171,6 +229,7 @@ struct sample::button_node::impl : base::impl {
 
 sample::button_node::button_node() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->setup_geometry_changed_observer();
 }
 
 sample::button_node::button_node(std::nullptr_t) : base(nullptr) {
