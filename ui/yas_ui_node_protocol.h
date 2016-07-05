@@ -76,7 +76,9 @@ namespace ui {
     };
 }
 
+std::string to_string(ui::node_method const &);
 std::string to_string(ui::node_update_reason const &);
 }
 
+std::ostream &operator<<(std::ostream &os, yas::ui::node_method const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &);
