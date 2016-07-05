@@ -15,6 +15,7 @@
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
+#include "yas_ui_metal_texture.h"
 
 using namespace yas;
 

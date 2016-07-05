@@ -7,6 +7,7 @@
 #import "yas_objc_macros.h"
 #import "yas_objc_ptr.h"
 #import "yas_ui_image.h"
+#import "yas_ui_metal_texture.h"
 #import "yas_ui_texture.h"
 
 using namespace yas;
@@ -47,17 +48,6 @@ using namespace yas;
     XCTAssertTrue(texture.metal_texture().metal_system());
     XCTAssertNotNil(texture.metal_texture().samplerState());
     XCTAssertNotNil(texture.metal_texture().texture());
-}
-
-- (void)test_create_metal_texture {
-    ui::metal_texture metal_texture{ui::uint_size{1, 2}};
-
-    XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
-    XCTAssertNil(metal_texture.samplerState());
-    XCTAssertNil(metal_texture.texture());
-    XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
-    XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
-    XCTAssertFalse(metal_texture.metal_system());
 }
 
 - (void)test_add_image {

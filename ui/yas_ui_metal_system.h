@@ -8,6 +8,7 @@
 #include "yas_base.h"
 #include "yas_ui_metal_system_protocol.h"
 
+
 namespace yas {
 namespace ui {
     class metal_system : public base {
@@ -25,5 +26,7 @@ namespace ui {
        private:
         ui::renderable_metal_system _renderable = nullptr;
     };
+
+    
 }
 }
