@@ -15,6 +15,7 @@
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
+#include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view_controller.h"
 #include "yas_ui_node.h"
