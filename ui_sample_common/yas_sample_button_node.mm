@@ -23,65 +23,29 @@ struct sample::button_node::impl : base::impl {
 
         node.dispatch_method(ui::node_method::renderer_changed);
 
-        _renderer_observer = node.subject().make_observer(
-            ui::node_method::renderer_changed,
-            [event_observer = base{nullptr},
-             weak_button_node = to_weak(cast<sample::button_node>())](auto const &context) mutable {
-                ui::node const &node = context.value;
+        _renderer_observer = node.subject().make_observer(ui::node_method::renderer_changed, [
+            event_observer = base{nullptr},
+            leave_observer = base{nullptr},
+            weak_button_node = to_weak(cast<sample::button_node>())
+        ](auto const &context) mutable {
+            ui::node const &node = context.value;
 
-                if (auto renderer = node.renderer()) {
-                    event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_method::touch_changed, [weak_button_node](auto const &context) {
-                            if (auto button_node = weak_button_node.lock()) {
-                                button_node.impl_ptr<impl>()->update_tracking(context.value);
-                            }
-                        });
-                } else {
-                    event_observer = nullptr;
-                }
-            });
-    }
-
-    void setup_geometry_changed_observer() {
-        auto &node = square_node.node();
-
-        node.dispatch_method(ui::node_method::position_changed);
-        node.dispatch_method(ui::node_method::angle_changed);
-        node.dispatch_method(ui::node_method::scale_changed);
-        node.dispatch_method(ui::node_method::collider_changed);
-        node.dispatch_method(ui::node_method::enabled_changed);
-
-        _geometry_changed_observer =
-            node.subject().make_wild_card_observer([weak_button_node =
-                                                        to_weak(cast<sample::button_node>())](auto const &context) {
-                if (auto node = weak_button_node.lock()) {
-                    if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                        ui::node_method const &method = context.key;
-                        switch (method) {
-                            case ui::node_method::position_changed:
-                            case ui::node_method::angle_changed:
-                            case ui::node_method::scale_changed: {
-                                node.impl_ptr<impl>()->leave_or_enter_tracking(tracking_event);
-                            } break;
-                            case ui::node_method::collider_changed: {
-                                ui::node const &node = context.value;
-                                if (!node.collider()) {
-                                    node.impl_ptr<impl>()->cancel_tracking(tracking_event);
-                                }
-                            } break;
-                            case ui::node_method::enabled_changed: {
-                                ui::node const &node = context.value;
-                                if (!node.is_enabled()) {
-                                    node.impl_ptr<impl>()->cancel_tracking(tracking_event);
-                                }
-                            } break;
-
-                            default:
-                                break;
+            if (auto renderer = node.renderer()) {
+                event_observer = renderer.event_manager().subject().make_observer(
+                    ui::event_method::touch_changed, [weak_button_node](auto const &context) {
+                        if (auto button_node = weak_button_node.lock()) {
+                            button_node.impl_ptr<impl>()->_update_tracking(context.value);
                         }
-                    }
+                    });
+
+                if (auto button_node = weak_button_node.lock()) {
+                    leave_observer = button_node.impl_ptr<impl>()->_make_leave_observer();
                 }
-            });
+            } else {
+                event_observer = nullptr;
+                leave_observer = nullptr;
+            }
+        });
     }
 
     bool is_tracking() {
@@ -138,65 +102,6 @@ struct sample::button_node::impl : base::impl {
         }
     }
 
-    void update_tracking(ui::event const &event) {
-        auto &node = square_node.node();
-        if (auto renderer = node.renderer()) {
-            auto const &detector = renderer.collision_detector();
-            auto button_node = cast<sample::button_node>();
-
-            auto const &touch_event = event.get<ui::touch>();
-            switch (event.phase()) {
-                case ui::event_phase::began:
-                    if (!is_tracking()) {
-                        if (detector.detect(touch_event.position(), node.collider())) {
-                            set_tracking_event(event);
-                            subject.notify(sample::button_method::began, button_node);
-                        }
-                    }
-                    break;
-                case ui::event_phase::stationary:
-                case ui::event_phase::changed: {
-                    leave_or_enter_tracking(event);
-                } break;
-                case ui::event_phase::ended:
-                    if (is_tracking(event)) {
-                        set_tracking_event(nullptr);
-                        subject.notify(sample::button_method::ended, button_node);
-                    }
-                    break;
-                case ui::event_phase::canceled:
-                    cancel_tracking(event);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    void leave_or_enter_tracking(ui::event const &event) {
-        auto &node = square_node.node();
-        if (auto renderer = node.renderer()) {
-            auto const &detector = renderer.collision_detector();
-            auto const &touch_event = event.get<ui::touch>();
-            bool const is_event_tracking = is_tracking(event);
-            bool is_detected = detector.detect(touch_event.position(), node.collider());
-            if (!is_event_tracking && is_detected) {
-                set_tracking_event(event);
-                subject.notify(sample::button_method::entered, cast<sample::button_node>());
-            } else if (is_event_tracking && !is_detected) {
-                set_tracking_event(nullptr);
-                subject.notify(sample::button_method::leaved, cast<sample::button_node>());
-            }
-        }
-    }
-
-    void cancel_tracking(ui::event const &event) {
-        if (is_tracking(event)) {
-            set_tracking_event(nullptr);
-            subject.notify(sample::button_method::canceled, cast<sample::button_node>());
-        }
-    }
-
    private:
     void _setup_node() {
         float const radius = 60;
@@ -220,8 +125,107 @@ struct sample::button_node::impl : base::impl {
         square_node.square_mesh_data().set_square_index(0, sq_idx);
     }
 
+    base _make_leave_observer() {
+        auto &node = square_node.node();
+
+        node.dispatch_method(ui::node_method::position_changed);
+        node.dispatch_method(ui::node_method::angle_changed);
+        node.dispatch_method(ui::node_method::scale_changed);
+        node.dispatch_method(ui::node_method::collider_changed);
+        node.dispatch_method(ui::node_method::enabled_changed);
+
+        return node.subject().make_wild_card_observer([weak_button_node =
+                                                           to_weak(cast<sample::button_node>())](auto const &context) {
+            if (auto node = weak_button_node.lock()) {
+                if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                    ui::node_method const &method = context.key;
+                    switch (method) {
+                        case ui::node_method::position_changed:
+                        case ui::node_method::angle_changed:
+                        case ui::node_method::scale_changed: {
+                            node.impl_ptr<impl>()->_leave_or_enter_tracking(tracking_event);
+                        } break;
+                        case ui::node_method::collider_changed: {
+                            ui::node const &node = context.value;
+                            if (!node.collider()) {
+                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                            }
+                        } break;
+                        case ui::node_method::enabled_changed: {
+                            ui::node const &node = context.value;
+                            if (!node.is_enabled()) {
+                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                            }
+                        } break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+    void _update_tracking(ui::event const &event) {
+        auto &node = square_node.node();
+        if (auto renderer = node.renderer()) {
+            auto const &detector = renderer.collision_detector();
+            auto button_node = cast<sample::button_node>();
+
+            auto const &touch_event = event.get<ui::touch>();
+            switch (event.phase()) {
+                case ui::event_phase::began:
+                    if (!is_tracking()) {
+                        if (detector.detect(touch_event.position(), node.collider())) {
+                            set_tracking_event(event);
+                            subject.notify(sample::button_method::began, button_node);
+                        }
+                    }
+                    break;
+                case ui::event_phase::stationary:
+                case ui::event_phase::changed: {
+                    _leave_or_enter_tracking(event);
+                } break;
+                case ui::event_phase::ended:
+                    if (is_tracking(event)) {
+                        set_tracking_event(nullptr);
+                        subject.notify(sample::button_method::ended, button_node);
+                    }
+                    break;
+                case ui::event_phase::canceled:
+                    _cancel_tracking(event);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    void _leave_or_enter_tracking(ui::event const &event) {
+        auto &node = square_node.node();
+        if (auto renderer = node.renderer()) {
+            auto const &detector = renderer.collision_detector();
+            auto const &touch_event = event.get<ui::touch>();
+            bool const is_event_tracking = is_tracking(event);
+            bool is_detected = detector.detect(touch_event.position(), node.collider());
+            if (!is_event_tracking && is_detected) {
+                set_tracking_event(event);
+                subject.notify(sample::button_method::entered, cast<sample::button_node>());
+            } else if (is_event_tracking && !is_detected) {
+                set_tracking_event(nullptr);
+                subject.notify(sample::button_method::leaved, cast<sample::button_node>());
+            }
+        }
+    }
+
+    void _cancel_tracking(ui::event const &event) {
+        if (is_tracking(event)) {
+            set_tracking_event(nullptr);
+            subject.notify(sample::button_method::canceled, cast<sample::button_node>());
+        }
+    }
+
     base _renderer_observer = nullptr;
-    base _geometry_changed_observer = nullptr;
     ui::event _tracking_event = nullptr;
 };
 
@@ -229,7 +233,6 @@ struct sample::button_node::impl : base::impl {
 
 sample::button_node::button_node() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
-    impl_ptr<impl>()->setup_geometry_changed_observer();
 }
 
 sample::button_node::button_node(std::nullptr_t) : base(nullptr) {
