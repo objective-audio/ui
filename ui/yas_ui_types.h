@@ -148,6 +148,7 @@ std::string to_string(ui::color const &);
 std::string to_string(simd::float2 const &);
 std::string to_string(simd::float3 const &);
 std::string to_string(simd::float4 const &);
+std::string to_string(simd::float4x4 const &);
 
 bool is_equal(simd::float2 const &, simd::float2 const &);
 bool is_equal(simd::float3 const &, simd::float3 const &);
