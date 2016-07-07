@@ -101,6 +101,10 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     pre_render_result pre_render() {
+        if (_subject.has_observer()) {
+            _subject.notify(renderer_method::pre_render, cast<ui::renderer>());
+        }
+
         _action.updatable().update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
