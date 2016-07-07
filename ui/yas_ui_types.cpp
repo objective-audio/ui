@@ -153,6 +153,11 @@ std::string yas::to_string(simd::float4 const &value) {
            std::to_string(value.w) + "}";
 }
 
+std::string yas::to_string(simd::float4x4 const &matrix) {
+    return "{" + to_string(matrix.columns[0]) + ", " + to_string(matrix.columns[1]) + ", " +
+           to_string(matrix.columns[2]) + ", " + to_string(matrix.columns[3]) + "}";
+}
+
 #pragma mark -
 
 bool yas::is_equal(simd::float2 const &lhs, simd::float2 const &rhs) {

@@ -273,6 +273,14 @@ using namespace yas;
     XCTAssertEqual(to_string(simd::float4{1.0f, 2.0f, 3.0f, 4.0f}), "{1.000000, 2.000000, 3.000000, 4.000000}");
 }
 
+- (void)test_simd_float4x4_to_string {
+    simd::float4x4 matrix{simd::float4{1.0f, 2.0f, 3.0f, 4.0f}, simd::float4{5.0f, 6.0f, 7.0f, 8.0f},
+                          simd::float4{9.0f, 10.0f, 11.0f, 12.0f}, simd::float4{13.0f, 14.0f, 15.0f, 16.0f}};
+    XCTAssertEqual(to_string(matrix),
+                   "{{1.000000, 2.000000, 3.000000, 4.000000}, {5.000000, 6.000000, 7.000000, 8.000000}, {9.000000, "
+                   "10.000000, 11.000000, 12.000000}, {13.000000, 14.000000, 15.000000, 16.000000}}");
+}
+
 - (void)test_ostream {
     std::cout << ui::uint_origin{1, 2} << std::endl;
     std::cout << ui::uint_size{3, 4} << std::endl;
