@@ -41,6 +41,9 @@ namespace ui {
         float alpha() const;
         bool is_enabled() const;
 
+        simd::float4x4 const &matrix() const;
+        simd::float4x4 const &local_matrix() const;
+
         ui::mesh const &mesh() const;
         ui::mesh &mesh();
         ui::collider const &collider() const;

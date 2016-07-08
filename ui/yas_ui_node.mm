@@ -147,13 +147,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void build_render_info(ui::render_info &render_info) override {
         if (_enabled_property.value()) {
-            if (_updates.test(ui::node_update_reason::geometry)) {
-                auto const &position = _position_property.value();
-                auto const &angle = _angle_property.value();
-                auto const &scale = _scale_property.value();
-                _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
-                                matrix::scale(scale.width, scale.height);
-            }
+            _update_local_matrix();
 
             _matrix = render_info.matrix * _local_matrix;
             auto const mesh_matrix = render_info.mesh_matrix * _local_matrix;
@@ -387,8 +381,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
+    simd::float4x4 &local_matrix() {
+        _update_local_matrix();
+        return _local_matrix;
+    }
+
+    simd::float4x4 &matrix() {
+        _update_matrix();
+        return _matrix;
+    }
+
     ui::point convert_position(ui::point const &loc) {
-        auto const loc4 = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
+        auto const loc4 = simd::float4x4(matrix_invert(matrix())) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
         return {loc4.x, loc4.y};
     }
 
@@ -463,6 +467,32 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     void _set_updated(ui::node_update_reason const reason) {
         _updates.set(reason);
     }
+
+    void _update_local_matrix() {
+        if (_updates.test(ui::node_update_reason::geometry)) {
+            auto const &position = _position_property.value();
+            auto const &angle = _angle_property.value();
+            auto const &scale = _scale_property.value();
+            _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+                            matrix::scale(scale.width, scale.height);
+        }
+    }
+
+    void _update_matrix() {
+        if (auto locked_parent = _parent_property.value().lock()) {
+            _matrix = locked_parent.matrix();
+        } else {
+            if (auto locked_renderer = renderer()) {
+                _matrix = locked_renderer.projection_matrix();
+            } else {
+                _matrix = matrix_identity_float4x4;
+            }
+        }
+
+        _update_local_matrix();
+
+        _matrix = _matrix * _local_matrix;
+    }
 };
 
 #pragma mark - node
@@ -504,6 +534,14 @@ float ui::node::alpha() const {
 
 bool ui::node::is_enabled() const {
     return impl_ptr<impl>()->_enabled_property.value();
+}
+
+simd::float4x4 const &ui::node::matrix() const {
+    return impl_ptr<impl>()->matrix();
+}
+
+simd::float4x4 const &ui::node::local_matrix() const {
+    return impl_ptr<impl>()->local_matrix();
 }
 
 ui::mesh const &ui::node::mesh() const {
