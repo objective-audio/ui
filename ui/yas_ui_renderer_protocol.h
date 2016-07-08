@@ -19,6 +19,7 @@ namespace ui {
         will_render,
         view_size_changed,
         scale_factor_changed,
+        pre_render,
     };
 
     struct view_renderable : protocol {
