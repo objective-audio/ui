@@ -9,13 +9,13 @@
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_metal_render_encoder.h"
 #include "yas_ui_metal_system.h"
+#include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
-#include "yas_ui_metal_texture.h"
 
 using namespace yas;
 
@@ -36,16 +36,17 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
 
         auto defaultLibrary = _default_library.object();
 
-        auto fragment_program = make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d"]);
+        auto fragment_program_with_texture =
+            make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_with_texture"]);
         auto fragment_program_without_texture =
             make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_without_texture"]);
         auto vertex_program = make_objc_ptr([defaultLibrary newFunctionWithName:@"vertex2d"]);
 
-        auto fragmentProgram = fragment_program.object();
+        auto fragmentProgramWithTexture = fragment_program_with_texture.object();
         auto fragmentProgramWithoutTexture = fragment_program_without_texture.object();
         auto vertexProgram = vertex_program.object();
 
-        assert(fragmentProgram);
+        assert(fragmentProgramWithTexture);
         assert(fragmentProgramWithoutTexture);
         assert(vertexProgram);
 
@@ -64,12 +65,12 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
         auto pipelineStateDesc = pipeline_state_desc.object();
         pipelineStateDesc.sampleCount = _sample_count;
         pipelineStateDesc.vertexFunction = vertexProgram;
-        pipelineStateDesc.fragmentFunction = fragmentProgram;
+        pipelineStateDesc.fragmentFunction = fragmentProgramWithTexture;
         [pipelineStateDesc.colorAttachments setObject:colorDesc atIndexedSubscript:0];
         pipelineStateDesc.depthAttachmentPixelFormat = _depth_pixel_format;
         pipelineStateDesc.stencilAttachmentPixelFormat = _stencil_pixel_format;
 
-        _multi_sample_pipeline_state.move_object(
+        _multi_sample_pipeline_state_with_texture.move_object(
             [device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
         pipelineStateDesc.fragmentFunction = fragmentProgramWithoutTexture;
@@ -82,9 +83,10 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
         _pipeline_state_without_texture.move_object(
             [device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
-        pipelineStateDesc.fragmentFunction = fragmentProgram;
+        pipelineStateDesc.fragmentFunction = fragmentProgramWithTexture;
 
-        _pipeline_state.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
+        _pipeline_state_with_texture.move_object(
+            [device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
     }
 
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override {
@@ -192,16 +194,16 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
 
     objc_ptr<dispatch_semaphore_t> _inflight_semaphore;
 
-    objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state;
+    objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_without_texture;
-    objc_ptr<id<MTLRenderPipelineState>> _pipeline_state;
+    objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
 
    private:
     void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         ui::metal_render_encoder metal_render_encoder;
-        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state.object(),
+        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state_with_texture.object(),
                                                _multi_sample_pipeline_state_without_texture.object()});
 
         ui::render_info render_info{.collision_detector = renderer.collision_detector(),

@@ -13,12 +13,12 @@ struct ui::metal_encode_info::impl : base::impl {
     impl(MTLRenderPassDescriptor *const renderPassDesc, id<MTLRenderPipelineState> const pipelineState,
          id<MTLRenderPipelineState> const pipelineStateWithoutTexture) {
         _render_pass_descriptor = renderPassDesc;
-        _pipe_line_state = pipelineState;
+        _pipe_line_state_with_texture = pipelineState;
         _pipe_line_state_without_texture = pipelineStateWithoutTexture;
     }
 
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
-    objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state;
+    objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_without_texture;
     std::vector<ui::mesh> _meshes;
 };
@@ -41,7 +41,7 @@ MTLRenderPassDescriptor *ui::metal_encode_info::renderPassDescriptor() const {
 }
 
 id<MTLRenderPipelineState> ui::metal_encode_info::pipelineState() const {
-    return impl_ptr<impl>()->_pipe_line_state.object();
+    return impl_ptr<impl>()->_pipe_line_state_with_texture.object();
 }
 
 id<MTLRenderPipelineState> ui::metal_encode_info::pipelineStateWithoutTexture() const {
