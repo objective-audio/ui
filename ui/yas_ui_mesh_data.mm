@@ -110,6 +110,8 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     std::vector<ui::vertex2d_t> _vertices;
     std::vector<ui::index2d_t> _indices;
 
+    ui::metal_system _metal_system = nullptr;
+
    protected:
     std::size_t _dynamic_buffer_index = 0;
 
@@ -117,9 +119,6 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     objc_ptr<id<MTLBuffer>> _index_buffer;
 
     mesh_data_updates_t _updates;
-
-   private:
-    ui::metal_system _metal_system = nullptr;
 };
 
 #pragma mark - ui::mesh_data
@@ -152,6 +151,10 @@ std::size_t ui::mesh_data::index_count() const {
 void ui::mesh_data::write(
     std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
     impl_ptr<impl>()->write(func);
+}
+
+ui::metal_system const &ui::mesh_data::metal_system() {
+    return impl_ptr<impl>()->_metal_system;
 }
 
 ui::metal_object &ui::mesh_data::metal() {

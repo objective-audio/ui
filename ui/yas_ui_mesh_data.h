@@ -29,6 +29,8 @@ namespace ui {
 
         void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
 
+        ui::metal_system const &metal_system();
+
         ui::metal_object &metal();
         ui::renderable_mesh_data &renderable();
 
