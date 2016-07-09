@@ -9,7 +9,7 @@ using namespace simd;
 using namespace yas;
 
 namespace yas {
-float4x4 to_float4x4(GLKMatrix4 const m) {
+static float4x4 to_float4x4(GLKMatrix4 const &m) {
     return float4x4{float4{m.m00, m.m01, m.m02, m.m03}, float4{m.m10, m.m11, m.m12, m.m13},
                     float4{m.m20, m.m21, m.m22, m.m23}, float4{m.m30, m.m31, m.m32, m.m33}};
 }
