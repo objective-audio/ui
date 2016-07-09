@@ -5,15 +5,8 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
-#import "yas_observing.h"
-#import "yas_ui_batch.h"
-#import "yas_ui_collider.h"
-#import "yas_ui_mesh.h"
-#import "yas_ui_mesh_data.h"
-#import "yas_ui_metal_system.h"
-#import "yas_ui_node.h"
+#import "yas_ui.h"
 #import "yas_ui_render_info.h"
-#import "yas_ui_renderer.h"
 
 using namespace yas;
 
@@ -562,6 +555,43 @@ using namespace yas;
                                 .mesh_matrix = matrix_identity_float4x4};
 
     node.renderable().build_render_info(render_info);
+}
+
+- (void)test_local_matrix {
+    ui::node node;
+    node.set_position(ui::point{10.0f, -20.0f});
+    node.set_scale(ui::size{2.0f, 0.5f});
+    node.set_angle(90.0f);
+
+    simd::float4x4 expected_matrix = ui::matrix::translation(node.position().x, node.position().y) *
+                                     ui::matrix::rotation(node.angle()) *
+                                     ui::matrix::scale(node.scale().width, node.scale().height);
+
+    XCTAssertTrue(is_equal(node.local_matrix(), expected_matrix));
+}
+
+- (void)test_matrix {
+    ui::node root_node;
+    root_node.set_position(ui::point{10.0f, -20.0f});
+    root_node.set_scale(ui::size{2.0f, 0.5f});
+    root_node.set_angle(90.0f);
+
+    ui::node sub_node;
+    sub_node.set_position(ui::point{-50.0f, 10.0f});
+    sub_node.set_scale(ui::size{0.25f, 3.0f});
+    sub_node.set_angle(-45.0f);
+
+    root_node.push_back_sub_node(sub_node);
+
+    simd::float4x4 root_local_matrix = ui::matrix::translation(root_node.position().x, root_node.position().y) *
+                                       ui::matrix::rotation(root_node.angle()) *
+                                       ui::matrix::scale(root_node.scale().width, root_node.scale().height);
+    simd::float4x4 sub_local_matrix = ui::matrix::translation(sub_node.position().x, sub_node.position().y) *
+                                      ui::matrix::rotation(sub_node.angle()) *
+                                      ui::matrix::scale(sub_node.scale().width, sub_node.scale().height);
+    simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
+
+    XCTAssertTrue(is_equal(sub_node.matrix(), expected_matrix));
 }
 
 - (void)test_node_method_to_string {

@@ -73,6 +73,22 @@ using namespace yas;
     XCTAssertFalse(is_equal(vector1_2_4_8a, vector3_2_4_8));
 }
 
+- (void)test_is_equal_float4x4 {
+    simd::float4x4 matrix_a1{simd::float4{1.0f, 2.0f, 3.0f, 4.0f}, simd::float4{5.0f, 6.0f, 7.0f, 8.0f},
+                             simd::float4{9.0f, 10.0f, 11.0f, 12.0f}, simd::float4{13.0f, 14.0f, 15.0f, 16.0f}};
+    simd::float4x4 matrix_a2{simd::float4{1.0f, 2.0f, 3.0f, 4.0f}, simd::float4{5.0f, 6.0f, 7.0f, 8.0f},
+                             simd::float4{9.0f, 10.0f, 11.0f, 12.0f}, simd::float4{13.0f, 14.0f, 15.0f, 16.0f}};
+    simd::float4x4 matrix_b{simd::float4{5.0f, 6.0f, 7.0f, 8.0f}, simd::float4{9.0f, 10.0f, 11.0f, 12.0f},
+                            simd::float4{13.0f, 14.0f, 15.0f, 16.0f}, simd::float4{1.0f, 2.0f, 3.0f, 4.0f}};
+    simd::float4x4 matrix_c{0};
+
+    XCTAssertTrue(is_equal(matrix_a1, matrix_a1));
+    XCTAssertTrue(is_equal(matrix_a1, matrix_a2));
+
+    XCTAssertFalse(is_equal(matrix_a1, matrix_b));
+    XCTAssertFalse(is_equal(matrix_a1, matrix_c));
+}
+
 - (void)test_is_equal_uint_origin {
     auto origin1_2a = ui::uint_origin{1, 2};
     auto origin1_2b = ui::uint_origin{1, 2};
