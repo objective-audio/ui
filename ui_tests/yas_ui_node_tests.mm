@@ -525,17 +525,28 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    ui::mesh mesh;
-    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
-    mesh.set_mesh_data(mesh_data);
+    ui::mesh root_mesh;
+    ui::mesh_data root_mesh_data{{.vertex_count = 1, .index_count = 1}};
+    root_mesh.set_mesh_data(root_mesh_data);
 
-    ui::node node;
-    node.set_mesh(mesh);
+    ui::mesh sub_mesh;
+    ui::mesh_data sub_mesh_data{{.vertex_count = 1, .index_count = 1}};
+    sub_mesh.set_mesh_data(sub_mesh_data);
+
+    ui::node root_node;
+    root_node.set_mesh(root_mesh);
 
     ui::node sub_node;
-    node.push_back_sub_node(sub_node);
+    sub_node.set_mesh(sub_mesh);
+    root_node.push_back_sub_node(sub_node);
 
-    XCTAssertTrue(node.metal().metal_setup(metal_system));
+    XCTAssertFalse(root_mesh_data.metal_system());
+    XCTAssertFalse(sub_mesh_data.metal_system());
+
+    XCTAssertTrue(root_node.metal().metal_setup(metal_system));
+
+    XCTAssertTrue(root_mesh_data.metal_system());
+    XCTAssertTrue(sub_mesh_data.metal_system());
 }
 
 - (void)test_build_render_info_smoke {
