@@ -172,6 +172,10 @@ bool yas::is_equal(simd::float4 const &lhs, simd::float4 const &rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
 }
 
+bool yas::is_equal(simd::float4x4 const &lhs, simd::float4x4 const &rhs) {
+    return (&lhs == &rhs) || memcmp(&lhs, &rhs, sizeof(simd::float4x4)) == 0;
+}
+
 bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
