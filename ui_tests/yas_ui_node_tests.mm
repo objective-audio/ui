@@ -5,15 +5,8 @@
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
-#import "yas_observing.h"
-#import "yas_ui_batch.h"
-#import "yas_ui_collider.h"
-#import "yas_ui_mesh.h"
-#import "yas_ui_mesh_data.h"
-#import "yas_ui_metal_system.h"
-#import "yas_ui_node.h"
+#import "yas_ui.h"
 #import "yas_ui_render_info.h"
-#import "yas_ui_renderer.h"
 
 using namespace yas;
 
@@ -525,17 +518,28 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    ui::mesh mesh;
-    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
-    mesh.set_mesh_data(mesh_data);
+    ui::mesh root_mesh;
+    ui::mesh_data root_mesh_data{{.vertex_count = 1, .index_count = 1}};
+    root_mesh.set_mesh_data(root_mesh_data);
 
-    ui::node node;
-    node.set_mesh(mesh);
+    ui::mesh sub_mesh;
+    ui::mesh_data sub_mesh_data{{.vertex_count = 1, .index_count = 1}};
+    sub_mesh.set_mesh_data(sub_mesh_data);
+
+    ui::node root_node;
+    root_node.set_mesh(root_mesh);
 
     ui::node sub_node;
-    node.push_back_sub_node(sub_node);
+    sub_node.set_mesh(sub_mesh);
+    root_node.push_back_sub_node(sub_node);
 
-    XCTAssertTrue(node.metal().metal_setup(metal_system));
+    XCTAssertFalse(root_mesh_data.metal_system());
+    XCTAssertFalse(sub_mesh_data.metal_system());
+
+    XCTAssertTrue(root_node.metal().metal_setup(metal_system));
+
+    XCTAssertTrue(root_mesh_data.metal_system());
+    XCTAssertTrue(sub_mesh_data.metal_system());
 }
 
 - (void)test_build_render_info_smoke {
@@ -551,6 +555,43 @@ using namespace yas;
                                 .mesh_matrix = matrix_identity_float4x4};
 
     node.renderable().build_render_info(render_info);
+}
+
+- (void)test_local_matrix {
+    ui::node node;
+    node.set_position(ui::point{10.0f, -20.0f});
+    node.set_scale(ui::size{2.0f, 0.5f});
+    node.set_angle(90.0f);
+
+    simd::float4x4 expected_matrix = ui::matrix::translation(node.position().x, node.position().y) *
+                                     ui::matrix::rotation(node.angle()) *
+                                     ui::matrix::scale(node.scale().width, node.scale().height);
+
+    XCTAssertTrue(is_equal(node.local_matrix(), expected_matrix));
+}
+
+- (void)test_matrix {
+    ui::node root_node;
+    root_node.set_position(ui::point{10.0f, -20.0f});
+    root_node.set_scale(ui::size{2.0f, 0.5f});
+    root_node.set_angle(90.0f);
+
+    ui::node sub_node;
+    sub_node.set_position(ui::point{-50.0f, 10.0f});
+    sub_node.set_scale(ui::size{0.25f, 3.0f});
+    sub_node.set_angle(-45.0f);
+
+    root_node.push_back_sub_node(sub_node);
+
+    simd::float4x4 root_local_matrix = ui::matrix::translation(root_node.position().x, root_node.position().y) *
+                                       ui::matrix::rotation(root_node.angle()) *
+                                       ui::matrix::scale(root_node.scale().width, root_node.scale().height);
+    simd::float4x4 sub_local_matrix = ui::matrix::translation(sub_node.position().x, sub_node.position().y) *
+                                      ui::matrix::rotation(sub_node.angle()) *
+                                      ui::matrix::scale(sub_node.scale().width, sub_node.scale().height);
+    simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
+
+    XCTAssertTrue(is_equal(sub_node.matrix(), expected_matrix));
 }
 
 - (void)test_node_method_to_string {
@@ -578,14 +619,31 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::node_update_reason::count), "count");
 }
 
+- (void)test_node_method_ostream {
+    auto const methods = {
+        ui::node_method::added_to_super,   ui::node_method::removed_from_super, ui::node_method::parent_changed,
+        ui::node_method::renderer_changed, ui::node_method::position_changed,   ui::node_method::angle_changed,
+        ui::node_method::scale_changed,    ui::node_method::color_changed,      ui::node_method::alpha_changed,
+        ui::node_method::mesh_changed,     ui::node_method::collider_changed,   ui::node_method::enabled_changed};
+
+    for (auto const &method : methods) {
+        std::ostringstream stream;
+        stream << method;
+        XCTAssertEqual(stream.str(), to_string(method));
+    }
+}
+
 - (void)test_node_update_reason_ostream {
-    std::cout << ui::node_update_reason::geometry << std::endl;
-    std::cout << ui::node_update_reason::mesh << std::endl;
-    std::cout << ui::node_update_reason::collider << std::endl;
-    std::cout << ui::node_update_reason::enabled << std::endl;
-    std::cout << ui::node_update_reason::children << std::endl;
-    std::cout << ui::node_update_reason::batch << std::endl;
-    std::cout << ui::node_update_reason::count << std::endl;
+    auto const reasons = {ui::node_update_reason::geometry, ui::node_update_reason::mesh,
+                          ui::node_update_reason::collider, ui::node_update_reason::enabled,
+                          ui::node_update_reason::children, ui::node_update_reason::batch,
+                          ui::node_update_reason::count};
+
+    for (auto const &reason : reasons) {
+        std::ostringstream stream;
+        stream << reason;
+        XCTAssertEqual(stream.str(), to_string(reason));
+    }
 }
 
 @end

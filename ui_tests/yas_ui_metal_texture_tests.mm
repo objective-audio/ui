@@ -3,6 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
+#import "yas_objc_ptr.h"
 #import "yas_ui.h"
 
 using namespace yas;
@@ -21,7 +23,7 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_create_metal_texture {
+- (void)test_create {
     ui::metal_texture metal_texture{ui::uint_size{1, 2}};
 
     XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
@@ -30,6 +32,23 @@ using namespace yas;
     XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
     XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
     XCTAssertFalse(metal_texture.metal_system());
+}
+
+- (void)test_metal_setup {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::metal_texture metal_texture{ui::uint_size{1, 2}};
+
+    ui::metal_system metal_system{device.object()};
+    XCTAssertTrue(metal_texture.metal().metal_setup(metal_system));
+
+    XCTAssertTrue(metal_texture.metal_system());
+    XCTAssertNotNil(metal_texture.samplerState());
+    XCTAssertNotNil(metal_texture.texture());
 }
 
 @end

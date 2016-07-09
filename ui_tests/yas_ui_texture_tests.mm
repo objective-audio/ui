@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import <sstream>
 #import "yas_objc_macros.h"
 #import "yas_objc_ptr.h"
 #import "yas_ui_image.h"
@@ -199,7 +200,14 @@ using namespace yas;
 }
 
 - (void)test_ostream {
-    std::cout << ui::texture::draw_image_error::unknown << std::endl;
+    auto const errors = {ui::texture::draw_image_error::unknown, ui::texture::draw_image_error::image_is_null,
+                         ui::texture::draw_image_error::no_setup, ui::texture::draw_image_error::out_of_range};
+
+    for (auto const &error : errors) {
+        std::ostringstream stream;
+        stream << error;
+        XCTAssertEqual(stream.str(), to_string(error));
+    }
 }
 
 @end

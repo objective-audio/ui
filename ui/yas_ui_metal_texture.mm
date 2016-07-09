@@ -110,7 +110,7 @@ MTLPixelFormat ui::metal_texture::pixel_format() const {
     return impl_ptr<impl>()->_pixel_format;
 }
 
-ui::metal_system &ui::metal_texture::metal_system() {
+ui::metal_system const &ui::metal_texture::metal_system() {
     return impl_ptr<impl>()->_metal_system;
 }
 

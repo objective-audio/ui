@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <iostream>
+#import <sstream>
 #import "yas_ui_collider.h"
 
 using namespace yas;
@@ -131,7 +131,14 @@ using namespace yas;
 }
 
 - (void)test_collider_shape_ostream {
-    std::cout << ui::collider_shape::circle << std::endl;
+    auto const shapes = {ui::collider_shape::none, ui::collider_shape::anywhere, ui::collider_shape::circle,
+                         ui::collider_shape::square};
+
+    for (auto const &shape : shapes) {
+        std::ostringstream stream;
+        stream << shape;
+        XCTAssertEqual(stream.str(), to_string(shape));
+    }
 }
 
 @end

@@ -26,7 +26,8 @@ namespace ui {
         MTLTextureType texture_type() const;
         MTLPixelFormat pixel_format() const;
 
-        ui::metal_system &metal_system();
+        ui::metal_system const &metal_system();
+
         ui::metal_object &metal();
 
        private:
