@@ -3,15 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
+#import "yas_objc_ptr.h"
 #import "yas_observing.h"
-#import "yas_ui_action.h"
-#import "yas_ui_batch.h"
-#import "yas_ui_collision_detector.h"
-#import "yas_ui_event.h"
-#import "yas_ui_metal_system.h"
-#import "yas_ui_node.h"
-#import "yas_ui_renderer.h"
-#import "yas_ui_types.h"
+#import "yas_ui.h"
 
 using namespace yas;
 
@@ -86,6 +81,31 @@ using namespace yas;
     renderer.erase_action(action2);
 
     XCTAssertEqual(renderer.actions().size(), 0);
+}
+
+- (void)test_view_configure {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+
+    auto view_ptr = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]);
+    auto view = view_ptr.object();
+
+    XCTAssertEqual(view.sampleCount, 1);
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
+
+    renderer.view_renderable().configure(view);
+
+    double const scale_factor = renderer.scale_factor();
+    XCTAssertEqual(view.sampleCount, 4);
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{256, 256}));
+    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{static_cast<uint32_t>(256 * scale_factor),
+                                                            static_cast<uint32_t>(256 * scale_factor)}));
 }
 
 @end
