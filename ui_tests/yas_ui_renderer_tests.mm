@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import "YASTestMetalViewController.h"
 #import "yas_objc_ptr.h"
 #import "yas_observing.h"
 #import "yas_ui.h"
@@ -14,13 +15,26 @@ using namespace yas;
 
 @end
 
-@implementation yas_ui_renderer_tests
+@implementation yas_ui_renderer_tests {
+    objc_ptr<NSWindow *> _window;
+    objc_ptr<YASUIMetalViewController *> _view_controller;
+}
 
 - (void)setUp {
     [super setUp];
+
+    _view_controller.move_object([[YASUIMetalViewController alloc] initWithNibName:nil bundle:nil]);
+    _window = make_objc_ptr<NSWindow *>([viewController = _view_controller.object()]() {
+        NSWindow *window = [NSWindow windowWithContentViewController:viewController];
+        window.styleMask = NSBorderlessWindowMask;
+        return window;
+    });
 }
 
 - (void)tearDown {
+    _view_controller.set_object(nil);
+    _window.set_object(nil);
+
     [super tearDown];
 }
 
@@ -90,10 +104,10 @@ using namespace yas;
         return;
     }
 
-    ui::renderer renderer{ui::metal_system{device.object()}};
+    [_window.object() setFrame:CGRectMake(0, 0, 256, 128) display:YES];
+    auto view = _view_controller.object().metalView;
 
-    auto view_ptr = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]);
-    auto view = view_ptr.object();
+    ui::renderer renderer{ui::metal_system{device.object()}};
 
     XCTAssertEqual(view.sampleCount, 1);
     XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
@@ -103,9 +117,9 @@ using namespace yas;
 
     double const scale_factor = renderer.scale_factor();
     XCTAssertEqual(view.sampleCount, 4);
-    XCTAssertEqual(renderer.view_size(), (ui::uint_size{256, 256}));
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{256, 128}));
     XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{static_cast<uint32_t>(256 * scale_factor),
-                                                            static_cast<uint32_t>(256 * scale_factor)}));
+                                                            static_cast<uint32_t>(128 * scale_factor)}));
 }
 
 @end
