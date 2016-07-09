@@ -4,13 +4,10 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import <sstream>
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
-#import "yas_ui_mesh.h"
-#import "yas_ui_mesh_data.h"
-#import "yas_ui_metal_system.h"
-#import "yas_ui_renderer.h"
-#import "yas_ui_texture.h"
+#import "yas_ui.h"
 
 using namespace yas;
 
@@ -377,12 +374,15 @@ using namespace yas;
 }
 
 - (void)test_mesh_update_reason_ostream {
-    std::cout << ui::mesh_update_reason::mesh_data << std::endl;
-    std::cout << ui::mesh_update_reason::texture << std::endl;
-    std::cout << ui::mesh_update_reason::primitive_type << std::endl;
-    std::cout << ui::mesh_update_reason::color << std::endl;
-    std::cout << ui::mesh_update_reason::use_mesh_color << std::endl;
-    std::cout << ui::mesh_update_reason::count << std::endl;
+    auto const reasons = {ui::mesh_update_reason::mesh_data,      ui::mesh_update_reason::texture,
+                          ui::mesh_update_reason::primitive_type, ui::mesh_update_reason::color,
+                          ui::mesh_update_reason::use_mesh_color, ui::mesh_update_reason::count};
+
+    for (auto const &reason : reasons) {
+        std::ostringstream stream;
+        stream << reason;
+        XCTAssertEqual(stream.str(), to_string(reason));
+    }
 }
 
 @end

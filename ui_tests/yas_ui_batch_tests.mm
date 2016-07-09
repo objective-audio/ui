@@ -5,6 +5,7 @@
 #import <Metal/Metal.h>
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import <sstream>
 #import "yas_objc_ptr.h"
 #import "yas_ui_batch.h"
 #import "yas_ui_batch_protocol.h"
@@ -254,9 +255,14 @@ using namespace yas;
 }
 
 - (void)test_batch_building_type_ostream {
-    std::cout << ui::batch_building_type::rebuild << std::endl;
-    std::cout << ui::batch_building_type::overwrite << std::endl;
-    std::cout << ui::batch_building_type::none << std::endl;
+    auto const types = {ui::batch_building_type::rebuild, ui::batch_building_type::overwrite,
+                        ui::batch_building_type::none};
+
+    for (auto const &type : types) {
+        std::ostringstream stream;
+        stream << type;
+        XCTAssertEqual(stream.str(), to_string(type));
+    }
 }
 
 @end

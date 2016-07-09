@@ -4,9 +4,9 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import <sstream>
 #import "yas_objc_ptr.h"
-#import "yas_ui_mesh_data.h"
-#import "yas_ui_metal_system.h"
+#import "yas_ui.h"
 
 using namespace yas;
 
@@ -193,11 +193,15 @@ using namespace yas;
 }
 
 - (void)test_mesh_data_update_reason_ostream {
-    std::cout << ui::mesh_data_update_reason::data << std::endl;
-    std::cout << ui::mesh_data_update_reason::vertex_count << std::endl;
-    std::cout << ui::mesh_data_update_reason::index_count << std::endl;
-    std::cout << ui::mesh_data_update_reason::render_buffer << std::endl;
-    std::cout << ui::mesh_data_update_reason::count << std::endl;
+    auto const reasons = {ui::mesh_data_update_reason::data, ui::mesh_data_update_reason::vertex_count,
+                          ui::mesh_data_update_reason::index_count, ui::mesh_data_update_reason::render_buffer,
+                          ui::mesh_data_update_reason::count};
+
+    for (auto const &reason : reasons) {
+        std::ostringstream stream;
+        stream << reason;
+        XCTAssertEqual(stream.str(), to_string(reason));
+    }
 }
 
 @end

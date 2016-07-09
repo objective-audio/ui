@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <iostream>
+#import <sstream>
 #import "yas_ui_metal_protocol.h"
 
 using namespace yas;
@@ -35,7 +35,19 @@ using namespace yas;
 }
 
 - (void)test_ostream {
-    std::cout << ui::setup_metal_error::create_texture_descriptor_failed << std::endl;
+    auto const errors = {ui::setup_metal_error::create_texture_descriptor_failed,
+                         ui::setup_metal_error::create_texture_failed,
+                         ui::setup_metal_error::create_sampler_descriptor_failed,
+                         ui::setup_metal_error::create_sampler_failed,
+                         ui::setup_metal_error::create_vertex_buffer_failed,
+                         ui::setup_metal_error::create_index_buffer_failed,
+                         ui::setup_metal_error::unknown};
+
+    for (auto const &error : errors) {
+        std::ostringstream stream;
+        stream << error;
+        XCTAssertEqual(stream.str(), to_string(error));
+    }
 }
 
 @end

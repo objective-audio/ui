@@ -619,14 +619,31 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::node_update_reason::count), "count");
 }
 
+- (void)test_node_method_ostream {
+    auto const methods = {
+        ui::node_method::added_to_super,   ui::node_method::removed_from_super, ui::node_method::parent_changed,
+        ui::node_method::renderer_changed, ui::node_method::position_changed,   ui::node_method::angle_changed,
+        ui::node_method::scale_changed,    ui::node_method::color_changed,      ui::node_method::alpha_changed,
+        ui::node_method::mesh_changed,     ui::node_method::collider_changed,   ui::node_method::enabled_changed};
+
+    for (auto const &method : methods) {
+        std::ostringstream stream;
+        stream << method;
+        XCTAssertEqual(stream.str(), to_string(method));
+    }
+}
+
 - (void)test_node_update_reason_ostream {
-    std::cout << ui::node_update_reason::geometry << std::endl;
-    std::cout << ui::node_update_reason::mesh << std::endl;
-    std::cout << ui::node_update_reason::collider << std::endl;
-    std::cout << ui::node_update_reason::enabled << std::endl;
-    std::cout << ui::node_update_reason::children << std::endl;
-    std::cout << ui::node_update_reason::batch << std::endl;
-    std::cout << ui::node_update_reason::count << std::endl;
+    auto const reasons = {ui::node_update_reason::geometry, ui::node_update_reason::mesh,
+                          ui::node_update_reason::collider, ui::node_update_reason::enabled,
+                          ui::node_update_reason::children, ui::node_update_reason::batch,
+                          ui::node_update_reason::count};
+
+    for (auto const &reason : reasons) {
+        std::ostringstream stream;
+        stream << reason;
+        XCTAssertEqual(stream.str(), to_string(reason));
+    }
 }
 
 @end

@@ -3,9 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <iostream>
-#import "yas_ui_event.h"
+#import <sstream>
 #import "yas_observing.h"
+#import "yas_ui_event.h"
 
 using namespace yas;
 
@@ -44,9 +44,28 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::modifier_flags::function), "function");
 }
 
-- (void)test_ostream {
-    std::cout << ui::event_phase::none << std::endl;
-    std::cout << ui::modifier_flags::alpha_shift << std::endl;
+- (void)test_event_phase_ostream {
+    auto const phases = {ui::event_phase::none,     ui::event_phase::began, ui::event_phase::stationary,
+                         ui::event_phase::changed,  ui::event_phase::ended, ui::event_phase::canceled,
+                         ui::event_phase::may_begin};
+
+    for (auto const &phase : phases) {
+        std::ostringstream stream;
+        stream << phase;
+        XCTAssertEqual(stream.str(), to_string(phase));
+    }
+}
+
+- (void)test_modifier_flags_ostream {
+    auto const flags = {ui::modifier_flags::alpha_shift, ui::modifier_flags::shift,   ui::modifier_flags::control,
+                        ui::modifier_flags::alternate,   ui::modifier_flags::command, ui::modifier_flags::numeric_pad,
+                        ui::modifier_flags::help,        ui::modifier_flags::function};
+
+    for (auto const &flag : flags) {
+        std::ostringstream stream;
+        stream << flag;
+        XCTAssertEqual(stream.str(), to_string(flag));
+    }
 }
 
 - (void)test_create_cursor_event {
