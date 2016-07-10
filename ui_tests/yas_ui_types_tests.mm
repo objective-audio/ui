@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <iostream>
+#import <sstream>
 #import "yas_ui_types.h"
 
 using namespace yas;
@@ -297,16 +297,58 @@ using namespace yas;
                    "10.000000, 11.000000, 12.000000}, {13.000000, 14.000000, 15.000000, 16.000000}}");
 }
 
-- (void)test_ostream {
-    std::cout << ui::uint_origin{1, 2} << std::endl;
-    std::cout << ui::uint_size{3, 4} << std::endl;
-    std::cout << ui::uint_region{5, 6, 7, 8} << std::endl;
-    std::cout << ui::float_origin{1.0f, 2.0f} << std::endl;
-    std::cout << ui::float_size{3.0f, 4.0f} << std::endl;
-    std::cout << ui::float_region{5.0f, 6.0f, 7.0f, 8.0f} << std::endl;
-    std::cout << ui::point{9.0f, 10.0f} << std::endl;
-    std::cout << ui::size{11.0f, 12.0f} << std::endl;
-    std::cout << ui::color{13.0f, 14.0f, 15.0f} << std::endl;
+- (void)test_uint_origin_ostream {
+    std::ostringstream stream;
+    stream << ui::uint_origin{1, 2};
+    XCTAssertEqual(stream.str(), "{1, 2}");
+}
+
+- (void)test_uint_region_ostream {
+    std::ostringstream stream;
+    stream << ui::uint_region{5, 6, 7, 8};
+    XCTAssertEqual(stream.str(), "{{5, 6}, {7, 8}}");
+}
+
+- (void)test_uint_size_ostream {
+    std::ostringstream stream;
+    stream << ui::uint_size{3, 4};
+    XCTAssertEqual(stream.str(), "{3, 4}");
+}
+
+- (void)test_float_origin_ostream {
+    std::ostringstream stream;
+    stream << ui::float_origin{1.0f, 2.0f};
+    XCTAssertEqual(stream.str(), "{1.000000, 2.000000}");
+}
+
+- (void)test_float_size_ostream {
+    std::ostringstream stream;
+    stream << ui::float_size{3.0f, 4.0f};
+    XCTAssertEqual(stream.str(), "{3.000000, 4.000000}");
+}
+
+- (void)test_float_region_ostream {
+    std::ostringstream stream;
+    stream << ui::float_region{5.0f, 6.0f, 7.0f, 8.0f};
+    XCTAssertEqual(stream.str(), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
+}
+
+- (void)test_point_ostream {
+    std::ostringstream stream;
+    stream << ui::point{9.0f, 10.0f};
+    XCTAssertEqual(stream.str(), "{9.000000, 10.000000}");
+}
+
+- (void)test_size_ostream {
+    std::ostringstream stream;
+    stream << ui::size{11.0f, 12.0f};
+    XCTAssertEqual(stream.str(), "{11.000000, 12.000000}");
+}
+
+- (void)test_color_ostream {
+    std::ostringstream stream;
+    stream << ui::color{13.0f, 14.0f, 15.0f};
+    XCTAssertEqual(stream.str(), "{13.000000, 14.000000, 15.000000}");
 }
 
 - (void)test_create_point {

@@ -57,9 +57,6 @@ namespace ui {
         auto view = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectZero device:nil]);
         self.view = view.object();
     }
-
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
-    self.metalView.device = device.object();
 }
 
 - (void)viewDidLoad {
@@ -74,7 +71,12 @@ namespace ui {
 
 - (void)setRenderable:(yas::ui::view_renderable)renderable {
     _cpp.renderable = renderable;
-    renderable.configure(self.metalView);
+
+    if (renderable) {
+        renderable.configure(self.metalView);
+    } else {
+        self.metalView.device = nil;
+    }
 }
 
 - (yas::ui::view_renderable const &)renderable {

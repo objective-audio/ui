@@ -3,15 +3,11 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
+#import "yas_objc_ptr.h"
 #import "yas_observing.h"
-#import "yas_ui_action.h"
-#import "yas_ui_batch.h"
-#import "yas_ui_collision_detector.h"
-#import "yas_ui_event.h"
-#import "yas_ui_metal_system.h"
-#import "yas_ui_node.h"
-#import "yas_ui_renderer.h"
-#import "yas_ui_types.h"
+#import "yas_test_metal_view_controller.h"
+#import "yas_ui.h"
 
 using namespace yas;
 
@@ -26,6 +22,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
+    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
     [super tearDown];
 }
 
@@ -86,6 +83,48 @@ using namespace yas;
     renderer.erase_action(action2);
 
     XCTAssertEqual(renderer.actions().size(), 0);
+}
+
+- (void)test_view_configure {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
+    [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
+
+    renderer.view_renderable().configure(view);
+
+    double const scale_factor = renderer.scale_factor();
+    XCTAssertEqual(view.sampleCount, 4);
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{256, 128}));
+    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{static_cast<uint32_t>(256 * scale_factor),
+                                                            static_cast<uint32_t>(128 * scale_factor)}));
+}
+
+- (void)test_pre_render {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+    auto observer = renderer.subject().make_observer(ui::renderer_method::pre_render,
+                                                     [expectation](auto const &context) { [expectation fulfill]; });
+
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
+
+    [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
 
 @end
