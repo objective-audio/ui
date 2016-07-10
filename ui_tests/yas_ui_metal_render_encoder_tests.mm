@@ -3,7 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_mesh.h"
+#import <iostream>
+#import "yas_objc_ptr.h"
+#import "yas_test_metal_view_controller.h"
+#import "yas_ui.h"
 #import "yas_ui_metal_encode_info.h"
 #import "yas_ui_metal_render_encoder.h"
 
@@ -20,6 +23,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
+    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
     [super tearDown];
 }
 
@@ -38,14 +42,14 @@ using namespace yas;
 - (void)test_push_and_pop_encode_info {
     ui::metal_render_encoder encoder;
 
-    encoder.push_encode_info({nil, nil, nil});
+    encoder.push_encode_info({{nil, nil, nil}});
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 1);
 
     auto encode_info1 = encoder.current_encode_info();
     XCTAssertTrue(encode_info1);
 
-    encoder.push_encode_info({nil, nil, nil});
+    encoder.push_encode_info({{nil, nil, nil}});
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 2);
 
@@ -66,7 +70,7 @@ using namespace yas;
 - (void)test_push_back_mesh {
     ui::metal_render_encoder encoder;
 
-    encoder.push_encode_info({nil, nil, nil});
+    encoder.push_encode_info({{nil, nil, nil}});
 
     auto encode_info = encoder.current_encode_info();
 
@@ -77,6 +81,65 @@ using namespace yas;
 
     XCTAssertEqual(encode_info.meshes().size(), 1);
     XCTAssertEqual(encode_info.meshes().at(0), mesh);
+}
+
+- (void)test_encode_smoke {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"encode"];
+
+    BOOL called = false;
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+    auto observer = renderer.subject().make_observer(
+        ui::renderer_method::pre_render, [expectation, self, &called](auto const &context) {
+            if (called) {
+                return;
+            }
+
+            auto metal_system = context.value.metal_system();
+            auto mtlDevice = metal_system.testable().mtlDevice();
+
+            auto view = [YASTestMetalViewController sharedViewController].metalView;
+            XCTAssertNotNil(view.currentRenderPassDescriptor);
+
+            auto const commandQueue = [mtlDevice newCommandQueue];
+            auto const commandBuffer = [commandQueue commandBuffer];
+
+            ui::metal_render_encoder encoder;
+
+            ui::metal_encode_info encode_info{{view.currentRenderPassDescriptor,
+                                               metal_system.testable().mtlRenderPipelineStateWithTexture(),
+                                               metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
+
+            encoder.push_encode_info(encode_info);
+
+            ui::mesh mesh1;
+            mesh1.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
+            mesh1.metal().metal_setup(metal_system);
+            encode_info.push_back_mesh(mesh1);
+
+            ui::mesh mesh2;
+            mesh2.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
+            auto texture_result = ui::make_texture({.metal_system = metal_system, .point_size = {1, 1}});
+            mesh2.set_texture(texture_result.value());
+            mesh2.metal().metal_setup(metal_system);
+            encode_info.push_back_mesh(mesh2);
+
+            encoder.encode(metal_system, commandBuffer);
+
+            [expectation fulfill];
+
+            called = true;
+        });
+
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
+
+    [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
 
 @end

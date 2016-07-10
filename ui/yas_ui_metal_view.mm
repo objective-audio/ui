@@ -106,22 +106,30 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #elif TARGET_OS_MAC
 
 - (void)_sendCursorEvent:(NSEvent *)event {
-    _cpp.event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event]});
+    if (_cpp.event_manager) {
+        _cpp.event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event]});
+    }
 }
 
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    _cpp.event_manager.inputtable().input_touch_event(
-        std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event]});
+    if (_cpp.event_manager) {
+        _cpp.event_manager.inputtable().input_touch_event(
+            std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event]});
+    }
 }
 
 - (void)_sendKeyEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    _cpp.event_manager.inputtable().input_key_event(
-        std::move(phase), ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
-                                        to_string((__bridge CFStringRef)event.charactersIgnoringModifiers)});
+    if (_cpp.event_manager) {
+        _cpp.event_manager.inputtable().input_key_event(
+            std::move(phase), ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
+                                            to_string((__bridge CFStringRef)event.charactersIgnoringModifiers)});
+    }
 }
 
 - (void)_sendModifierEvent:(NSEvent *)event {
-    _cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags));
+    if (_cpp.event_manager) {
+        _cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags));
+    }
 }
 
 - (ui::point)_position:(NSEvent *)event {

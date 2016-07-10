@@ -28,7 +28,7 @@ namespace ui {
 
 #pragma mark - ui::metal_system::impl
 
-struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
+struct ui::metal_system::impl : base::impl, renderable_metal_system::impl, testable_metal_system::impl {
     impl(id<MTLDevice> const device) : _device(device) {
         _command_queue.move_object([device newCommandQueue]);
         _default_library.move_object([device newDefaultLibrary]);
@@ -110,12 +110,22 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
         }
     }
 
+    void view_configure(yas_objc_view *const objc_view) override {
+        if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
+            return;
+        }
+
+        auto view = (YASUIMetalView * const)objc_view;
+        view.device = _device.object();
+        view.sampleCount = _sample_count;
+    }
+
     void view_render(yas_objc_view *const objc_view, ui::renderer &renderer) override {
         if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
             return;
         }
 
-        YASUIMetalView *view = (YASUIMetalView * const)objc_view;
+        auto view = (YASUIMetalView * const)objc_view;
 
         dispatch_semaphore_wait(_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
@@ -154,7 +164,7 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
 
         if (auto &texture = mesh.texture()) {
             [encoder setFragmentBuffer:currentUniformsBuffer offset:_uniforms_buffer_offset atIndex:0];
-            [encoder setRenderPipelineState:encode_info.pipelineState()];
+            [encoder setRenderPipelineState:encode_info.pipelineStateWithTexture()];
             [encoder setFragmentTexture:texture.metal_texture().texture() atIndex:0];
             [encoder setFragmentSamplerState:texture.metal_texture().samplerState() atIndex:0];
         } else {
@@ -179,6 +189,23 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
         assert(_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
     }
 
+    id<MTLDevice> mtlDevice() override {
+        return _device.object();
+    }
+
+    uint32_t sample_count() override {
+        return _sample_count;
+    }
+
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override {
+        return _pipeline_state_with_texture.object();
+    }
+
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override {
+        return _pipeline_state_without_texture.object();
+    }
+
+   private:
     uint32_t _sample_count = 4;
 
     objc_ptr<id<MTLBuffer>> _uniforms_buffers[_uniforms_buffer_count];
@@ -199,12 +226,13 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
 
-   private:
     void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         ui::metal_render_encoder metal_render_encoder;
-        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state_with_texture.object(),
-                                               _multi_sample_pipeline_state_without_texture.object()});
+        metal_render_encoder.push_encode_info(
+            {{.renderPassDescriptor = renderPassDesc,
+              .pipelineStateWithTexture = _multi_sample_pipeline_state_with_texture.object(),
+              .pipelineStateWithoutTexture = _multi_sample_pipeline_state_without_texture.object()}});
 
         ui::render_info render_info{.collision_detector = renderer.collision_detector(),
                                     .render_encodable = metal_render_encoder.encodable(),
@@ -232,18 +260,28 @@ ui::metal_system::metal_system(id<MTLDevice> const device) : base(std::make_shar
 ui::metal_system::metal_system(std::nullptr_t) : base(nullptr) {
 }
 
-id<MTLDevice> ui::metal_system::device() const {
-    return impl_ptr<impl>()->_device.object();
-}
-
-uint32_t ui::metal_system::sample_count() const {
-    return impl_ptr<impl>()->_sample_count;
-}
-
 ui::renderable_metal_system &ui::metal_system::renderable() {
     if (!_renderable) {
         _renderable = ui::renderable_metal_system{impl_ptr<ui::renderable_metal_system::impl>()};
     }
 
     return _renderable;
+}
+
+#if YAS_TEST
+ui::testable_metal_system ui::metal_system::testable() {
+    return ui::testable_metal_system{impl_ptr<ui::testable_metal_system::impl>()};
+}
+#endif
+
+id<MTLTexture> ui::metal_system::newMtlTexture(MTLTextureDescriptor *textureDesc) const {
+    return [impl_ptr<impl>()->mtlDevice() newTextureWithDescriptor:textureDesc];
+}
+
+id<MTLSamplerState> ui::metal_system::newMtlSamplerState(MTLSamplerDescriptor *samplerDesc) const {
+    return [impl_ptr<impl>()->mtlDevice() newSamplerStateWithDescriptor:samplerDesc];
+}
+
+id<MTLBuffer> ui::metal_system::newMtlBuffer(std::size_t const length) const {
+    return [impl_ptr<impl>()->mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault];
 }

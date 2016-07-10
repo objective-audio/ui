@@ -41,6 +41,9 @@ using namespace yas;
     XCTAssertTrue(renderer.view_renderable());
     XCTAssertTrue(renderer.event_manager());
     XCTAssertTrue(renderer.collision_detector());
+
+    XCTAssertEqual(renderer.system_type(), ui::system_type::none);
+    XCTAssertFalse(renderer.metal_system());
 }
 
 - (void)test_const_getter {
@@ -48,12 +51,26 @@ using namespace yas;
 
     XCTAssertTrue(renderer.root_node());
     XCTAssertTrue(renderer.collision_detector());
+    XCTAssertFalse(renderer.metal_system());
 }
 
 - (void)test_create_null {
     ui::renderer renderer{nullptr};
 
     XCTAssertFalse(renderer);
+}
+
+- (void)test_metal_system {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+
+    XCTAssertEqual(renderer.system_type(), ui::system_type::metal);
+    XCTAssertTrue(renderer.metal_system());
 }
 
 - (void)test_action {
