@@ -15,26 +15,13 @@ using namespace yas;
 
 @end
 
-@implementation yas_ui_renderer_tests {
-    objc_ptr<NSWindow *> _window;
-    objc_ptr<YASUIMetalViewController *> _view_controller;
-}
+@implementation yas_ui_renderer_tests
 
 - (void)setUp {
     [super setUp];
-
-    _view_controller.move_object([[YASUIMetalViewController alloc] initWithNibName:nil bundle:nil]);
-    _window = make_objc_ptr<NSWindow *>([viewController = _view_controller.object()]() {
-        NSWindow *window = [NSWindow windowWithContentViewController:viewController];
-        window.styleMask = NSBorderlessWindowMask;
-        return window;
-    });
 }
 
 - (void)tearDown {
-    _view_controller.set_object(nil);
-    _window.set_object(nil);
-
     [super tearDown];
 }
 
@@ -104,12 +91,11 @@ using namespace yas;
         return;
     }
 
-    [_window.object() setFrame:CGRectMake(0, 0, 256, 128) display:YES];
-    auto view = _view_controller.object().metalView;
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
+    [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
     ui::renderer renderer{ui::metal_system{device.object()}};
 
-    XCTAssertEqual(view.sampleCount, 1);
     XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
 
