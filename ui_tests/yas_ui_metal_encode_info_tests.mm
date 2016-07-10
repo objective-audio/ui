@@ -43,18 +43,33 @@ using namespace yas;
         return;
     }
 
-    auto view = [YASTestMetalViewController sharedViewController].metalView;
+    XCTestExpectation *expectation = [self expectationWithDescription:@"create_with_parameters"];
 
     ui::metal_system metal_system{device.object()};
+    ui::renderer renderer{metal_system};
+    auto observer = renderer.subject().make_observer(
+        ui::renderer_method::pre_render, [expectation, self](auto const &context) mutable {
+            ui::metal_system metal_system = context.value.metal_system();
 
-    ui::metal_encode_info info{{view.currentRenderPassDescriptor,
-                                metal_system.testable().mtlRenderPipelineStateWithTexture(),
-                                metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
+            auto view = [YASTestMetalViewController sharedViewController].metalView;
+            XCTAssertNotNil(view.currentRenderPassDescriptor);
 
-    XCTAssertEqualObjects(info.renderPassDescriptor(), view.currentRenderPassDescriptor);
-    XCTAssertEqualObjects(info.pipelineStateWithTexture(), metal_system.testable().mtlRenderPipelineStateWithTexture());
-    XCTAssertEqualObjects(info.pipelineStateWithoutTexture(),
-                          metal_system.testable().mtlRenderPipelineStateWithoutTexture());
+            ui::metal_encode_info info{{view.currentRenderPassDescriptor,
+                                        metal_system.testable().mtlRenderPipelineStateWithTexture(),
+                                        metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
+
+            XCTAssertEqualObjects(info.renderPassDescriptor(), view.currentRenderPassDescriptor);
+            XCTAssertEqualObjects(info.pipelineStateWithTexture(),
+                                  metal_system.testable().mtlRenderPipelineStateWithTexture());
+            XCTAssertEqualObjects(info.pipelineStateWithoutTexture(),
+                                  metal_system.testable().mtlRenderPipelineStateWithoutTexture());
+
+            [expectation fulfill];
+        });
+
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
+
+    [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
 
 - (void)test_create_null {
