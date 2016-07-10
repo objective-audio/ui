@@ -35,6 +35,8 @@ namespace ui {
         struct impl : protocol::impl {
             virtual id<MTLDevice> mtlDevice() = 0;
             virtual uint32_t sample_count() = 0;
+            virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() = 0;
+            virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() = 0;
         };
 
         explicit testable_metal_system(std::shared_ptr<impl>);
@@ -42,6 +44,8 @@ namespace ui {
 
         id<MTLDevice> mtlDevice();
         uint32_t sample_count();
+        id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture();
+        id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture();
     };
 }
 }

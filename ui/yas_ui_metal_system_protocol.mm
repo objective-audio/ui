@@ -46,3 +46,11 @@ id<MTLDevice> ui::testable_metal_system::mtlDevice() {
 uint32_t ui::testable_metal_system::sample_count() {
     return impl_ptr<impl>()->sample_count();
 }
+
+id<MTLRenderPipelineState> ui::testable_metal_system::mtlRenderPipelineStateWithTexture() {
+    return impl_ptr<impl>()->mtlRenderPipelineStateWithTexture();
+}
+
+id<MTLRenderPipelineState> ui::testable_metal_system::mtlRenderPipelineStateWithoutTexture() {
+    return impl_ptr<impl>()->mtlRenderPipelineStateWithoutTexture();
+}

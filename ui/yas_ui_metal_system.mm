@@ -197,6 +197,14 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl, testa
         return _sample_count;
     }
 
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override {
+        return _pipeline_state_with_texture.object();
+    }
+
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override {
+        return _pipeline_state_without_texture.object();
+    }
+
    private:
     uint32_t _sample_count = 4;
 
