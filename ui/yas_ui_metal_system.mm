@@ -154,7 +154,7 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
 
         if (auto &texture = mesh.texture()) {
             [encoder setFragmentBuffer:currentUniformsBuffer offset:_uniforms_buffer_offset atIndex:0];
-            [encoder setRenderPipelineState:encode_info.pipelineState()];
+            [encoder setRenderPipelineState:encode_info.pipelineStateWithTexture()];
             [encoder setFragmentTexture:texture.metal_texture().texture() atIndex:0];
             [encoder setFragmentSamplerState:texture.metal_texture().samplerState() atIndex:0];
         } else {

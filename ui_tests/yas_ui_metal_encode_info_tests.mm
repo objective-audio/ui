@@ -28,7 +28,7 @@ using namespace yas;
     XCTAssertTrue(info);
 
     XCTAssertNil(info.renderPassDescriptor());
-    XCTAssertNil(info.pipelineState());
+    XCTAssertNil(info.pipelineStateWithTexture());
     XCTAssertNil(info.pipelineStateWithoutTexture());
     XCTAssertEqual(info.meshes().size(), 0);
 }
