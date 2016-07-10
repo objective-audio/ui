@@ -74,7 +74,10 @@ namespace ui {
 
 - (void)setRenderable:(yas::ui::view_renderable)renderable {
     _cpp.renderable = renderable;
-    renderable.configure(self.metalView);
+
+    if (renderable) {
+        renderable.configure(self.metalView);
+    }
 }
 
 - (yas::ui::view_renderable const &)renderable {
