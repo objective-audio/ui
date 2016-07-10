@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_test_metal_view_controller.h"
 #import "yas_ui_metal_view_controller.h"
@@ -49,6 +50,24 @@ using namespace yas;
     viewController.paused = YES;
 
     XCTAssertTrue(viewController.paused);
+}
+
+- (void)test_renderable {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+
+    auto viewController = [YASTestMetalViewController sharedViewController];
+
+    XCTAssertFalse(viewController.renderable);
+
+    [viewController setRenderable:renderer.view_renderable()];
+
+    XCTAssertTrue(viewController.renderable);
 }
 
 @end
