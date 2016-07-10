@@ -34,7 +34,8 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto view = [YASTestMetalViewController sharedViewController].metalView;
+    auto view_ptr = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]);
+    auto view = view_ptr.object();
 
     XCTAssertNotNil(view);
     XCTAssertFalse([view event_manager]);
