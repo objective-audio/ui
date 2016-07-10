@@ -70,4 +70,35 @@ using namespace yas;
     XCTAssertTrue(viewController.renderable);
 }
 
+- (void)test_drawable_size_will_change {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+
+    auto viewController = [YASTestMetalViewController sharedViewController];
+
+    [viewController.view.window setFrame:CGRectMake(0, 0, 16, 16) display:YES];
+
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
+
+    [viewController setRenderable:renderer.view_renderable()];
+
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{16, 16}));
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"view_size_changed"];
+
+    auto observer = renderer.subject().make_observer(ui::renderer_method::view_size_changed,
+                                                     [expectation](auto const &context) { [expectation fulfill]; });
+
+    [viewController.view.window setFrame:CGRectMake(0, 0, 32, 32) display:YES];
+
+    [self waitForExpectationsWithTimeout:1.0 handler:NULL];
+
+    XCTAssertEqual(renderer.view_size(), (ui::uint_size{32, 32}));
+}
+
 @end
