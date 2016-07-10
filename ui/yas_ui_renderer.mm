@@ -62,6 +62,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         switch (system_type()) {
             case ui::system_type::metal: {
                 if (auto metalView = objc_cast<YASUIMetalView>(view)) {
+                    metalView.device = _metal_system.device();
                     metalView.sampleCount = _metal_system.sample_count();
                     auto const drawable_size = metalView.drawableSize;
                     view_size_will_change(view, drawable_size);
