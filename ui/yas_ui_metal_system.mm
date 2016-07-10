@@ -28,7 +28,7 @@ namespace ui {
 
 #pragma mark - ui::metal_system::impl
 
-struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
+struct ui::metal_system::impl : base::impl, renderable_metal_system::impl, testable_metal_system::impl {
     impl(id<MTLDevice> const device) : _device(device) {
         _command_queue.move_object([device newCommandQueue]);
         _default_library.move_object([device newDefaultLibrary]);
@@ -189,6 +189,15 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
         assert(_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
     }
 
+    id<MTLDevice> mtlDevice() override {
+        return _device.object();
+    }
+
+    uint32_t sample_count() override {
+        return _sample_count;
+    }
+
+   private:
     uint32_t _sample_count = 4;
 
     objc_ptr<id<MTLBuffer>> _uniforms_buffers[_uniforms_buffer_count];
@@ -209,7 +218,6 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
 
-   private:
     void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         ui::metal_render_encoder metal_render_encoder;
@@ -252,14 +260,18 @@ ui::renderable_metal_system &ui::metal_system::renderable() {
     return _renderable;
 }
 
+ui::testable_metal_system ui::metal_system::testable() {
+    return ui::testable_metal_system{impl_ptr<ui::testable_metal_system::impl>()};
+}
+
 id<MTLTexture> ui::metal_system::newMtlTexture(MTLTextureDescriptor *textureDesc) const {
-    return [impl_ptr<impl>()->_device.object() newTextureWithDescriptor:textureDesc];
+    return [impl_ptr<impl>()->mtlDevice() newTextureWithDescriptor:textureDesc];
 }
 
 id<MTLSamplerState> ui::metal_system::newMtlSamplerState(MTLSamplerDescriptor *samplerDesc) const {
-    return [impl_ptr<impl>()->_device.object() newSamplerStateWithDescriptor:samplerDesc];
+    return [impl_ptr<impl>()->mtlDevice() newSamplerStateWithDescriptor:samplerDesc];
 }
 
 id<MTLBuffer> ui::metal_system::newMtlBuffer(std::size_t const length) const {
-    return [impl_ptr<impl>()->_device.object() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault];
+    return [impl_ptr<impl>()->mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault];
 }

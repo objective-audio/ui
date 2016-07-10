@@ -30,5 +30,18 @@ namespace ui {
         void prepare_uniforms_buffer(uint32_t const uniforms_count);
         void mesh_encode(ui::mesh &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
     };
+
+    struct testable_metal_system : protocol {
+        struct impl : protocol::impl {
+            virtual id<MTLDevice> mtlDevice() = 0;
+            virtual uint32_t sample_count() = 0;
+        };
+
+        explicit testable_metal_system(std::shared_ptr<impl>);
+        testable_metal_system(std::nullptr_t);
+
+        id<MTLDevice> mtlDevice();
+        uint32_t sample_count();
+    };
 }
 }

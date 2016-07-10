@@ -33,6 +33,11 @@ using namespace yas;
     ui::metal_system system{device.object()};
 
     XCTAssertTrue(system);
+
+    ui::testable_metal_system testable = system.testable();
+
+    XCTAssertNotNil(testable.mtlDevice());
+    XCTAssertEqual(testable.sample_count(), 4);
 }
 
 - (void)test_create_null {

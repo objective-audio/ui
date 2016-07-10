@@ -22,6 +22,7 @@ namespace ui {
         id<MTLBuffer> newMtlBuffer(std::size_t const length) const;
 
         ui::renderable_metal_system &renderable();
+        ui::testable_metal_system testable();
 
        private:
         ui::renderable_metal_system _renderable = nullptr;
