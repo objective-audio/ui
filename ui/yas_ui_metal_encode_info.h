@@ -16,9 +16,13 @@ namespace ui {
         class impl;
 
        public:
-        metal_encode_info(MTLRenderPassDescriptor *const renderPassDesc,
-                          id<MTLRenderPipelineState> const pipelineStateWithTexture,
-                          id<MTLRenderPipelineState> const pipelineStateWithoutTexture);
+        struct args {
+            MTLRenderPassDescriptor *renderPassDescriptor = nil;
+            id<MTLRenderPipelineState> pipelineStateWithTexture = nil;
+            id<MTLRenderPipelineState> pipelineStateWithoutTexture = nil;
+        };
+
+        metal_encode_info(args);
         metal_encode_info(std::nullptr_t);
 
         void push_back_mesh(ui::mesh mesh);

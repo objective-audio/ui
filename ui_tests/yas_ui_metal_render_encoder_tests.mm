@@ -38,14 +38,14 @@ using namespace yas;
 - (void)test_push_and_pop_encode_info {
     ui::metal_render_encoder encoder;
 
-    encoder.push_encode_info({nil, nil, nil});
+    encoder.push_encode_info({{nil, nil, nil}});
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 1);
 
     auto encode_info1 = encoder.current_encode_info();
     XCTAssertTrue(encode_info1);
 
-    encoder.push_encode_info({nil, nil, nil});
+    encoder.push_encode_info({{nil, nil, nil}});
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 2);
 
@@ -66,7 +66,7 @@ using namespace yas;
 - (void)test_push_back_mesh {
     ui::metal_render_encoder encoder;
 
-    encoder.push_encode_info({nil, nil, nil});
+    encoder.push_encode_info({{nil, nil, nil}});
 
     auto encode_info = encoder.current_encode_info();
 

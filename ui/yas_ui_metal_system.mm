@@ -203,8 +203,10 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl {
     void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         ui::metal_render_encoder metal_render_encoder;
-        metal_render_encoder.push_encode_info({renderPassDesc, _multi_sample_pipeline_state_with_texture.object(),
-                                               _multi_sample_pipeline_state_without_texture.object()});
+        metal_render_encoder.push_encode_info(
+            {{.renderPassDescriptor = renderPassDesc,
+              .pipelineStateWithTexture = _multi_sample_pipeline_state_with_texture.object(),
+              .pipelineStateWithoutTexture = _multi_sample_pipeline_state_without_texture.object()}});
 
         ui::render_info render_info{.collision_detector = renderer.collision_detector(),
                                     .render_encodable = metal_render_encoder.encodable(),

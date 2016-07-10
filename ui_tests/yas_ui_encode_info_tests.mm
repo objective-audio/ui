@@ -23,7 +23,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::metal_encode_info info{nil, nil, nil};
+    ui::metal_encode_info info{{nil, nil, nil}};
 
     XCTAssertTrue(info);
     XCTAssertEqual(info.meshes().size(), 0);
@@ -36,7 +36,7 @@ using namespace yas;
 }
 
 - (void)test_push_back_mesh {
-    ui::metal_encode_info info{nil, nil, nil};
+    ui::metal_encode_info info{{nil, nil, nil}};
     ui::mesh mesh1;
     ui::mesh mesh2;
 

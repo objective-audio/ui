@@ -10,11 +10,10 @@
 using namespace yas;
 
 struct ui::metal_encode_info::impl : base::impl {
-    impl(MTLRenderPassDescriptor *const renderPassDesc, id<MTLRenderPipelineState> const pipelineStateWithTexture,
-         id<MTLRenderPipelineState> const pipelineStateWithoutTexture) {
-        _render_pass_descriptor = renderPassDesc;
-        _pipe_line_state_with_texture = pipelineStateWithTexture;
-        _pipe_line_state_without_texture = pipelineStateWithoutTexture;
+    impl(ui::metal_encode_info::args &&args) {
+        _render_pass_descriptor = args.renderPassDescriptor;
+        _pipe_line_state_with_texture = args.pipelineStateWithTexture;
+        _pipe_line_state_without_texture = args.pipelineStateWithoutTexture;
     }
 
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
@@ -23,10 +22,7 @@ struct ui::metal_encode_info::impl : base::impl {
     std::vector<ui::mesh> _meshes;
 };
 
-ui::metal_encode_info::metal_encode_info(MTLRenderPassDescriptor *const renderPassDesc,
-                                         id<MTLRenderPipelineState> const pipelineStateWithTexture,
-                                         id<MTLRenderPipelineState> const pipelineStateWithoutTexture)
-    : base(std::make_shared<impl>(renderPassDesc, pipelineStateWithTexture, pipelineStateWithoutTexture)) {
+ui::metal_encode_info::metal_encode_info(args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::metal_encode_info::metal_encode_info(std::nullptr_t) : base(nullptr) {
