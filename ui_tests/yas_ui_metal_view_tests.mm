@@ -3,9 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "YASTestMetalViewController.h"
 #import "yas_objc_ptr.h"
 #import "yas_observing.h"
+#import "yas_test_metal_view_controller.h"
 #import "yas_ui_event.h"
 #import "yas_ui_metal_view.h"
 

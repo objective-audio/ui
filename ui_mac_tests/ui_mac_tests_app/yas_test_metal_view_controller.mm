@@ -1,8 +1,8 @@
 //
-//  YASTestMetalViewController.mm
+//  yas_test_metal_view_controller.mm
 //
 
-#import "YASTestMetalViewController.h"
+#import "yas_test_metal_view_controller.h"
 
 static __weak YASTestMetalViewController *_shared = nil;
 
