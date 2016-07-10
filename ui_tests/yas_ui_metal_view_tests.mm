@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "YASTestMetalViewController.h"
 #import "yas_objc_ptr.h"
 #import "yas_observing.h"
 #import "yas_ui_event.h"
@@ -32,8 +33,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto view_ptr = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]);
-    auto view = view_ptr.object();
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
 
     XCTAssertNotNil(view);
     XCTAssertFalse([view event_manager]);
@@ -41,8 +41,8 @@ using namespace yas;
 }
 
 - (void)test_cursor_event {
-    auto view =
-        make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]).object();
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
+
     ui::event_manager event_manager;
     [view set_event_manager:event_manager];
 
@@ -98,8 +98,8 @@ using namespace yas;
 }
 
 - (void)test_touch_event {
-    auto view =
-        make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]).object();
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
+
     ui::event_manager event_manager;
     [view set_event_manager:event_manager];
 
@@ -208,8 +208,8 @@ using namespace yas;
 }
 
 - (void)test_key_event {
-    auto view =
-        make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]).object();
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
+
     ui::event_manager event_manager;
     [view set_event_manager:event_manager];
 
