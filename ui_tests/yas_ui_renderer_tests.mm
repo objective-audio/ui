@@ -51,6 +51,7 @@ using namespace yas;
 
     XCTAssertTrue(renderer.root_node());
     XCTAssertTrue(renderer.collision_detector());
+    XCTAssertFalse(renderer.metal_system());
 }
 
 - (void)test_create_null {
