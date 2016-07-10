@@ -6,6 +6,6 @@
 
 @interface YASTestMetalViewController : YASUIMetalViewController
 
-+ (instancetype)shared;
++ (instancetype)sharedViewController;
 
 @end

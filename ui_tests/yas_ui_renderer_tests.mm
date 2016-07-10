@@ -135,9 +135,7 @@ using namespace yas;
     auto observer = renderer.subject().make_observer(ui::renderer_method::pre_render,
                                                      [expectation](auto const &context) { [expectation fulfill]; });
 
-    auto sharedViewController = [YASTestMetalViewController shared];
-    XCTAssertNotNil(sharedViewController);
-    [sharedViewController setRenderable:renderer.view_renderable()];
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }

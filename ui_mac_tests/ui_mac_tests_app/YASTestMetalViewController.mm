@@ -12,7 +12,7 @@ static __weak YASTestMetalViewController *_shared = nil;
 
 @implementation YASTestMetalViewController
 
-+ (instancetype)shared {
++ (instancetype)sharedViewController {
     return _shared;
 }
 
