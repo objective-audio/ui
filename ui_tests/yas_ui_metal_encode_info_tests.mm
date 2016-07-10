@@ -22,6 +22,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
+    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
     [super tearDown];
 }
 
@@ -47,8 +48,8 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
     ui::renderer renderer{metal_system};
-    auto observer = renderer.subject().make_observer(
-        ui::renderer_method::pre_render, [expectation, self](auto const &context) mutable {
+    auto observer =
+        renderer.subject().make_observer(ui::renderer_method::pre_render, [expectation, self](auto const &context) {
             ui::metal_system metal_system = context.value.metal_system();
 
             auto view = [YASTestMetalViewController sharedViewController].metalView;
