@@ -105,13 +105,16 @@ using namespace yas;
 
     XCTAssertFalse(const_node.mesh());
     XCTAssertFalse(const_node.collider());
+    XCTAssertFalse(const_node.batch());
 
     node.set_mesh(ui::mesh{});
     node.set_collider(ui::collider{});
+    node.set_batch(ui::batch{});
 
     XCTAssertTrue(const_node.mesh());
     XCTAssertTrue(const_node.collider());
     XCTAssertEqual(const_node.children().size(), 0);
+    XCTAssertTrue(const_node.batch());
 }
 
 - (void)set_color_to_mesh {
