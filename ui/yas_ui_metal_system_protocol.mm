@@ -12,6 +12,10 @@ ui::renderable_metal_system::renderable_metal_system(std::shared_ptr<impl> impl)
 ui::renderable_metal_system::renderable_metal_system(std::nullptr_t) : protocol(nullptr) {
 }
 
+void ui::renderable_metal_system::view_configure(yas_objc_view *const view) {
+    impl_ptr<impl>()->view_configure(view);
+}
+
 void ui::renderable_metal_system::view_render(yas_objc_view *const view, ui::renderer &renderer) {
     impl_ptr<impl>()->view_render(view, renderer);
 }
