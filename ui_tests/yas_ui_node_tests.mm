@@ -10,6 +10,31 @@
 
 using namespace yas;
 
+namespace yas {
+namespace test {
+    struct test_render_encoder : base {
+        struct impl : base::impl, ui::render_encodable::impl {
+            void push_back_mesh(ui::mesh &&mesh) {
+                _meshes.emplace_back(std::move(mesh));
+            }
+
+            std::vector<ui::mesh> _meshes;
+        };
+
+        test_render_encoder() : base(std::make_shared<impl>()) {
+        }
+
+        ui::render_encodable encodable() {
+            return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+        }
+
+        std::vector<ui::mesh> &meshes() {
+            return impl_ptr<impl>()->_meshes;
+        }
+    };
+}
+}
+
 @interface yas_ui_node_tests : XCTestCase
 
 @end
@@ -548,16 +573,34 @@ using namespace yas;
 - (void)test_build_render_info_smoke {
     ui::node node;
     ui::node sub_node;
-    ui::batch batch;
-    sub_node.set_batch(batch);
-    node.push_back_sub_node(sub_node);
+    ui::node batch_node;
+    ui::node batch_sub_node;
 
-    ui::render_info render_info{.collision_detector = nullptr,
-                                .render_encodable = nullptr,
+    node.set_collider(ui::collider{{.shape = ui::collider_shape::circle}});
+    node.set_mesh(ui::mesh{});
+
+    sub_node.set_mesh(ui::mesh{});
+
+    batch_node.set_batch(ui::batch{});
+    batch_node.push_back_sub_node(batch_sub_node);
+
+    batch_sub_node.set_mesh(ui::mesh{});
+
+    node.push_back_sub_node(sub_node);
+    node.push_back_sub_node(batch_node);
+
+    ui::collision_detector detector;
+    test::test_render_encoder render_encoder;
+
+    ui::render_info render_info{.collision_detector = detector,
+                                .render_encodable = render_encoder.encodable(),
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 
     node.renderable().build_render_info(render_info);
+
+    XCTAssertEqual(render_encoder.meshes().size(), 3);
+    XCTAssertEqual(render_encoder.meshes().at(0), node.mesh());
 }
 
 - (void)test_local_matrix {
