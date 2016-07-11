@@ -25,11 +25,11 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
             return true;
         }
 
-        auto pos = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0, 1};
+        auto pos = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 1.0f};
 
         if (shape == ui::collider_shape::circle) {
-            return std::powf(pos.x - args.center.x, 2) + std::powf(pos.y - args.center.y, 2) <
-                   std::powf(args.radius, 2);
+            return std::powf(pos.x - args.center.x, 2.0f) + std::powf(pos.y - args.center.y, 2.0f) <
+                   std::powf(args.radius, 2.0f);
         } else if (shape == ui::collider_shape::square) {
             return contains(
                 {-args.radius + args.center.x, -args.radius + args.center.y, args.radius * 2.0f, args.radius * 2.0f},
