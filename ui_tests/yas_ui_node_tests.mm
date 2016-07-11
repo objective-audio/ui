@@ -573,6 +573,18 @@ using namespace yas;
     XCTAssertTrue(is_equal(node.local_matrix(), expected_matrix));
 }
 
+- (void)test_convert_position {
+    ui::node node;
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+    node.set_position({-1.0f, -1.0f});
+    node.set_scale({1.0f / 200.0f, 1.0f / 100.0f});
+
+    auto converted_position = sub_node.convert_position({1.0f, -0.5f});
+    XCTAssertEqualWithAccuracy(converted_position.x, 400.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(converted_position.y, 50.0f, 0.001f);
+}
+
 - (void)test_matrix {
     ui::node root_node;
     root_node.set_position(ui::point{10.0f, -20.0f});
