@@ -609,6 +609,19 @@ using namespace yas;
     XCTAssertTrue(is_equal(sub_node.matrix(), expected_matrix));
 }
 
+- (void)test_set_renderer_recursively {
+    ui::renderer renderer{};
+
+    ui::node node;
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+
+    renderer.root_node().push_back_sub_node(node);
+
+    XCTAssertTrue(node.renderer());
+    XCTAssertTrue(sub_node.renderer());
+}
+
 - (void)test_node_method_to_string {
     XCTAssertEqual(to_string(ui::node_method::added_to_super), "added_to_super");
     XCTAssertEqual(to_string(ui::node_method::removed_from_super), "removed_from_super");
