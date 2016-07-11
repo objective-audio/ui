@@ -392,7 +392,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     ui::point convert_position(ui::point const &loc) {
-        auto const loc4 = simd::float4x4(matrix_invert(matrix())) * simd::float4{loc.x, loc.y, 0.0f, 0.0f};
+        auto const loc4 = simd::float4x4(matrix_invert(matrix())) * to_float4(loc.v);
         return {loc4.x, loc4.y};
     }
 
