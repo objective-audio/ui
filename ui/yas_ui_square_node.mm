@@ -77,8 +77,7 @@ void ui::square_mesh_data::set_square_position(ui::float_region const &region, s
 
         auto &sq_vertex = sq_vertices[square_idx];
         for (auto const &idx : make_each(4)) {
-            auto pos = matrix * simd::float4{positions[idx].x, positions[idx].y, 0, 1};
-            sq_vertex.v[idx].position = simd::float2{pos.x, pos.y};
+            sq_vertex.v[idx].position = to_float2(matrix * to_float4(positions[idx]));
         }
     });
 }
@@ -112,8 +111,7 @@ void ui::square_mesh_data::set_square_vertex(const vertex2d_t *const in_ptr, std
     write([&in_ptr, &square_idx, &matrix](auto *sq_vertices, auto *) {
         auto &sq_vertex = sq_vertices[square_idx];
         for (auto const &idx : make_each(4)) {
-            auto pos = matrix * simd::float4{in_ptr[idx].position.x, in_ptr[idx].position.y, 0, 1};
-            sq_vertex.v[idx].position = {pos.x, pos.y};
+            sq_vertex.v[idx].position = to_float2(matrix * to_float4(in_ptr[idx].position));
             sq_vertex.v[idx].tex_coord = in_ptr[idx].tex_coord;
             sq_vertex.v[idx].color = in_ptr[idx].color;
         }

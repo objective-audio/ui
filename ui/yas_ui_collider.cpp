@@ -25,7 +25,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
             return true;
         }
 
-        auto pos = simd::float4x4(matrix_invert(_matrix)) * simd::float4{loc.x, loc.y, 0.0f, 1.0f};
+        auto pos = simd::float4x4(matrix_invert(_matrix)) * to_float4(loc.v);
 
         if (shape == ui::collider_shape::circle) {
             return std::powf(pos.x - args.center.x, 2.0f) + std::powf(pos.y - args.center.y, 2.0f) <
