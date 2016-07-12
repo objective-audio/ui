@@ -23,7 +23,6 @@ namespace ui {
     class collision_detector;
     class metal_system;
     enum class system_type;
-    enum class renderer_method;
 
     class renderer : public base {
        public:
