@@ -30,14 +30,14 @@ namespace ui {
         double _width;
     };
 
-    enum class font_atlas_method { texture_changed };
-
     class font_atlas : public base {
        public:
         class impl;
 
-        using subject_t = subject<font_atlas, font_atlas_method>;
-        using observer_t = observer<font_atlas, font_atlas_method>;
+        enum class method { texture_changed };
+
+        using subject_t = subject<font_atlas, method>;
+        using observer_t = observer<font_atlas, method>;
 
         struct args {
             std::string font_name;
@@ -62,5 +62,5 @@ namespace ui {
     };
 }
 
-std::string to_string(ui::font_atlas_method const &);
+std::string to_string(ui::font_atlas::method const &);
 }
