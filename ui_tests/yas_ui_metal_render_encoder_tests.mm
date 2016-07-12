@@ -92,12 +92,10 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"encode"];
 
-    BOOL called = false;
-
     ui::renderer renderer{ui::metal_system{device.object()}};
     auto observer = renderer.subject().make_observer(
-        ui::renderer_method::pre_render, [expectation, self, &called](auto const &context) {
-            if (called) {
+        ui::renderer_method::pre_render, [expectation, self](auto const &context) mutable {
+            if (!expectation) {
                 return;
             }
 
@@ -133,8 +131,7 @@ using namespace yas;
             encoder.encode(metal_system, commandBuffer);
 
             [expectation fulfill];
-
-            called = true;
+            expectation = nil;
         });
 
     [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];

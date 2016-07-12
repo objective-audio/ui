@@ -136,8 +136,11 @@ using namespace yas;
     XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
 
     ui::renderer renderer{ui::metal_system{device.object()}};
-    auto observer = renderer.subject().make_observer(ui::renderer_method::pre_render,
-                                                     [expectation](auto const &context) { [expectation fulfill]; });
+    auto observer =
+        renderer.subject().make_observer(ui::renderer_method::pre_render, [expectation](auto const &context) mutable {
+            [expectation fulfill];
+            expectation = nil;
+        });
 
     [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
 
