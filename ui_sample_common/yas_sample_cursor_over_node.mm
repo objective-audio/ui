@@ -64,7 +64,7 @@ struct sample::cursor_over_node::impl : base::impl {
 
         for (auto &node : nodes) {
             event_observers.emplace_back(renderer.event_manager().subject().make_observer(
-                ui::event_method::cursor_changed,
+                ui::event_manager::method::cursor_changed,
                 [weak_node = to_weak(node),
                  prev_detected = std::move(std::make_shared<bool>(false))](auto const &context) {
                     ui::event const &event = context.value;

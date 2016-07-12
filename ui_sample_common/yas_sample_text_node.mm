@@ -27,7 +27,7 @@ struct sample::text_node::impl : base::impl {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_method::key_changed, [weak_text_node](auto const &context) {
+                        ui::event_manager::method::key_changed, [weak_text_node](auto const &context) {
                             if (auto text_node = weak_text_node.lock()) {
                                 text_node.impl_ptr<text_node::impl>()->update_text(context.value);
                             }

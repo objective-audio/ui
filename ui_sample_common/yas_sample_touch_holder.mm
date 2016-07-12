@@ -31,7 +31,7 @@ struct sample::touch_holder::impl : base::impl {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_method::touch_changed, [weak_touch_holder](auto const &context) mutable {
+                        ui::event_manager::method::touch_changed, [weak_touch_holder](auto const &context) mutable {
                             if (auto touch_holder = weak_touch_holder.lock()) {
                                 ui::event const &event = context.value;
                                 touch_holder.impl_ptr<impl>()->update_touch_node(event);

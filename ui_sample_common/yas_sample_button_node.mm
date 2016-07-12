@@ -32,7 +32,7 @@ struct sample::button_node::impl : base::impl {
 
             if (auto renderer = node.renderer()) {
                 event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_method::touch_changed, [weak_button_node](auto const &context) {
+                    ui::event_manager::method::touch_changed, [weak_button_node](auto const &context) {
                         if (auto button_node = weak_button_node.lock()) {
                             button_node.impl_ptr<impl>()->_update_tracking(context.value);
                         }

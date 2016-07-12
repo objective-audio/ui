@@ -24,7 +24,7 @@ struct sample::modifier_node::impl : base::impl {
             auto node = context.value;
             if (auto renderer = node.renderer()) {
                 event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_method::modifier_changed,
+                    ui::event_manager::method::modifier_changed,
                     [weak_modifier_node,
                      flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
                         ui::event const &event = context.value;

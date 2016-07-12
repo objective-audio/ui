@@ -10,8 +10,6 @@
 
 namespace yas {
 namespace ui {
-    enum class event_method { cursor_changed, touch_changed, key_changed, modifier_changed };
-
     enum class event_phase {
         none,
         began,

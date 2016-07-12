@@ -56,10 +56,12 @@ namespace ui {
        public:
         class impl;
 
+        enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
+
         event_manager();
         event_manager(std::nullptr_t);
 
-        subject<event, event_method> &subject();
+        subject<event, method> &subject();
 
         ui::event_inputtable &inputtable();
 

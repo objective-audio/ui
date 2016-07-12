@@ -294,7 +294,7 @@ using namespace yas;
         auto const &method = context.key;
         ui::event const &event = context.value;
 
-        XCTAssertEqual(method, ui::event_method::cursor_changed);
+        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
         auto const &value = event.get<ui::cursor>();
         XCTAssertEqual(value.position().x, 0.25f);
@@ -317,7 +317,7 @@ using namespace yas;
         auto const &method = context.key;
         ui::event const &event = context.value;
 
-        XCTAssertEqual(method, ui::event_method::touch_changed);
+        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
         auto const &value = event.get<ui::touch>();
         XCTAssertEqual(value.identifier(), 100);
@@ -341,7 +341,7 @@ using namespace yas;
         auto const &method = context.key;
         ui::event const &event = context.value;
 
-        XCTAssertEqual(method, ui::event_method::key_changed);
+        XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
         auto const &value = event.get<ui::key>();
         XCTAssertEqual(value.key_code(), 200);
@@ -366,7 +366,7 @@ using namespace yas;
         auto const &method = context.key;
         ui::event const &event = context.value;
 
-        XCTAssertEqual(method, ui::event_method::modifier_changed);
+        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
 
         auto const &value = event.get<ui::modifier>();
 
@@ -397,7 +397,7 @@ using namespace yas;
             auto const &method = context.key;
             ui::event const &event = context.value;
 
-            XCTAssertEqual(method, ui::event_method::cursor_changed);
+            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
             if (event.phase() == ui::event_phase::began) {
                 began_called = true;
@@ -445,7 +445,7 @@ using namespace yas;
             auto const &method = context.key;
             ui::event const &event = context.value;
 
-            XCTAssertEqual(method, ui::event_method::touch_changed);
+            XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
             if (event.get<ui::touch>().identifier() == 1) {
                 if (event.phase() == ui::event_phase::began) {
@@ -505,7 +505,7 @@ using namespace yas;
             auto const &method = context.key;
             ui::event const &event = context.value;
 
-            XCTAssertEqual(method, ui::event_method::key_changed);
+            XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
             if (event.get<ui::key>().key_code() == 1) {
                 if (event.phase() == ui::event_phase::began) {
@@ -565,7 +565,7 @@ using namespace yas;
             auto const &method = context.key;
             ui::event const &event = context.value;
 
-            XCTAssertEqual(method, ui::event_method::modifier_changed);
+            XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
 
             if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
                 if (event.phase() == ui::event_phase::began) {
