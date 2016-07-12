@@ -266,3 +266,23 @@ ui::event_inputtable &ui::event_manager::inputtable() {
     }
     return _inputtable;
 }
+
+#pragma mark -
+
+std::string yas::to_string(ui::event_manager::method const &method) {
+    switch (method) {
+        case ui::event_manager::method::cursor_changed:
+            return "cursor_changed";
+        case ui::event_manager::method::touch_changed:
+            return "touch_changed";
+        case ui::event_manager::method::key_changed:
+            return "key_changed";
+        case ui::event_manager::method::modifier_changed:
+            return "modifier_changed";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::event_manager::method const &method) {
+    os << to_string(method);
+    return os;
+}

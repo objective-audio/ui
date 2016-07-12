@@ -44,6 +44,13 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::modifier_flags::function), "function");
 }
 
+- (void)test_event_manager_method_to_string {
+    XCTAssertEqual(to_string(ui::event_manager::method::cursor_changed), "cursor_changed");
+    XCTAssertEqual(to_string(ui::event_manager::method::touch_changed), "touch_changed");
+    XCTAssertEqual(to_string(ui::event_manager::method::key_changed), "key_changed");
+    XCTAssertEqual(to_string(ui::event_manager::method::modifier_changed), "modifier_changed");
+}
+
 - (void)test_event_phase_ostream {
     auto const phases = {ui::event_phase::none,     ui::event_phase::began, ui::event_phase::stationary,
                          ui::event_phase::changed,  ui::event_phase::ended, ui::event_phase::canceled,
@@ -65,6 +72,17 @@ using namespace yas;
         std::ostringstream stream;
         stream << flag;
         XCTAssertEqual(stream.str(), to_string(flag));
+    }
+}
+
+- (void)test_event_manager_method_ostream {
+    auto const methods = {ui::event_manager::method::cursor_changed, ui::event_manager::method::touch_changed,
+                          ui::event_manager::method::key_changed, ui::event_manager::method::modifier_changed};
+
+    for (auto const &method : methods) {
+        std::ostringstream stream;
+        stream << method;
+        XCTAssertEqual(stream.str(), to_string(method));
     }
 }
 

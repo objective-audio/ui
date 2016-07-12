@@ -69,7 +69,11 @@ namespace ui {
         ui::event_inputtable _inputtable = nullptr;
     };
 }
+
+std::string to_string(ui::event_manager::method const &);
 }
+
+std::ostream &operator<<(std::ostream &, yas::ui::event_manager::method const &);
 
 template <>
 struct std::hash<yas::ui::event> {
