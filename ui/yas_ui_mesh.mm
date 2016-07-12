@@ -90,8 +90,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
                 for (auto const &idx : make_each(src_mesh_data.vertex_count())) {
                     auto &dst_vertex = dst_vertices[idx];
                     auto &src_vertex = src_vertices[idx];
-                    auto pos = matrix * simd::float4{src_vertex.position[0], src_vertex.position[1], 0.0f, 1.0f};
-                    dst_vertex.position = simd::float2{pos.x, pos.y};
+                    dst_vertex.position = to_float2(matrix * to_float4(src_vertex.position));
                     dst_vertex.tex_coord = src_vertex.tex_coord;
                     dst_vertex.color = is_use_mesh_color ? src_vertex.color : color;
                 }

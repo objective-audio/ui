@@ -81,6 +81,14 @@ simd::float2 yas::to_float2(CGPoint const &point) {
     return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
 }
 
+simd::float2 yas::to_float2(simd::float4 const &vec) {
+    return simd::float2{vec.x, vec.y};
+}
+
+simd::float4 yas::to_float4(simd::float2 const &vec) {
+    return simd::float4{vec.x, vec.y, 0.0f, 1.0f};
+}
+
 bool yas::contains(ui::float_region const &region, ui::float_origin const &origin) {
     float const sum_x = region.origin.x + region.size.width;
     float const min_x = std::min(region.origin.x, sum_x);

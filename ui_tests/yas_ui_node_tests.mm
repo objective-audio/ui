@@ -10,6 +10,31 @@
 
 using namespace yas;
 
+namespace yas {
+namespace test {
+    struct test_render_encoder : base {
+        struct impl : base::impl, ui::render_encodable::impl {
+            void push_back_mesh(ui::mesh &&mesh) {
+                _meshes.emplace_back(std::move(mesh));
+            }
+
+            std::vector<ui::mesh> _meshes;
+        };
+
+        test_render_encoder() : base(std::make_shared<impl>()) {
+        }
+
+        ui::render_encodable encodable() {
+            return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+        }
+
+        std::vector<ui::mesh> &meshes() {
+            return impl_ptr<impl>()->_meshes;
+        }
+    };
+}
+}
+
 @interface yas_ui_node_tests : XCTestCase
 
 @end
@@ -105,13 +130,16 @@ using namespace yas;
 
     XCTAssertFalse(const_node.mesh());
     XCTAssertFalse(const_node.collider());
+    XCTAssertFalse(const_node.batch());
 
     node.set_mesh(ui::mesh{});
     node.set_collider(ui::collider{});
+    node.set_batch(ui::batch{});
 
     XCTAssertTrue(const_node.mesh());
     XCTAssertTrue(const_node.collider());
     XCTAssertEqual(const_node.children().size(), 0);
+    XCTAssertTrue(const_node.batch());
 }
 
 - (void)set_color_to_mesh {
@@ -545,16 +573,34 @@ using namespace yas;
 - (void)test_build_render_info_smoke {
     ui::node node;
     ui::node sub_node;
-    ui::batch batch;
-    sub_node.set_batch(batch);
-    node.push_back_sub_node(sub_node);
+    ui::node batch_node;
+    ui::node batch_sub_node;
 
-    ui::render_info render_info{.collision_detector = nullptr,
-                                .render_encodable = nullptr,
+    node.set_collider(ui::collider{{.shape = ui::collider_shape::circle}});
+    node.set_mesh(ui::mesh{});
+
+    sub_node.set_mesh(ui::mesh{});
+
+    batch_node.set_batch(ui::batch{});
+    batch_node.push_back_sub_node(batch_sub_node);
+
+    batch_sub_node.set_mesh(ui::mesh{});
+
+    node.push_back_sub_node(sub_node);
+    node.push_back_sub_node(batch_node);
+
+    ui::collision_detector detector;
+    test::test_render_encoder render_encoder;
+
+    ui::render_info render_info{.collision_detector = detector,
+                                .render_encodable = render_encoder.encodable(),
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 
     node.renderable().build_render_info(render_info);
+
+    XCTAssertEqual(render_encoder.meshes().size(), 3);
+    XCTAssertEqual(render_encoder.meshes().at(0), node.mesh());
 }
 
 - (void)test_local_matrix {
@@ -568,6 +614,18 @@ using namespace yas;
                                      ui::matrix::scale(node.scale().width, node.scale().height);
 
     XCTAssertTrue(is_equal(node.local_matrix(), expected_matrix));
+}
+
+- (void)test_convert_position {
+    ui::node node;
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+    node.set_position({-1.0f, -1.0f});
+    node.set_scale({1.0f / 200.0f, 1.0f / 100.0f});
+
+    auto converted_position = sub_node.convert_position({1.0f, -0.5f});
+    XCTAssertEqualWithAccuracy(converted_position.x, 400.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(converted_position.y, 50.0f, 0.001f);
 }
 
 - (void)test_matrix {
@@ -592,6 +650,19 @@ using namespace yas;
     simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
 
     XCTAssertTrue(is_equal(sub_node.matrix(), expected_matrix));
+}
+
+- (void)test_set_renderer_recursively {
+    ui::renderer renderer{};
+
+    ui::node node;
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+
+    renderer.root_node().push_back_sub_node(node);
+
+    XCTAssertTrue(node.renderer());
+    XCTAssertTrue(sub_node.renderer());
 }
 
 - (void)test_node_method_to_string {
