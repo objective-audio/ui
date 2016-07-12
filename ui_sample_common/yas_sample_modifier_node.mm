@@ -34,7 +34,7 @@ struct sample::modifier_node::impl : base::impl {
                     });
 
                 view_size_observer = renderer.subject().make_observer(
-                    ui::renderer_method::view_size_changed, [weak_modifier_node](auto const &context) {
+                    ui::renderer::method::view_size_changed, [weak_modifier_node](auto const &context) {
                         if (auto modifier_node = weak_modifier_node.lock()) {
                             auto const &renderer = context.value;
                             modifier_node.impl_ptr<modifier_node::impl>()->set_node_position(renderer.view_size());

@@ -73,7 +73,7 @@ void sample::main::setup() {
     };
 
     _scale_observer = renderer.subject().make_observer(
-        ui::renderer_method::scale_factor_changed,
+        ui::renderer::method::scale_factor_changed,
         [update_texture](auto const &context) mutable { update_texture(context.value); });
 
     update_texture(renderer);

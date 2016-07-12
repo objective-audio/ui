@@ -42,7 +42,7 @@ struct sample::bg_node::impl : base::impl {
         set_scale(node, renderer.view_size());
 
         return renderer.subject().make_observer(
-            ui::renderer_method::view_size_changed,
+            ui::renderer::method::view_size_changed,
             [weak_node = to_weak(node), set_scale = std::move(set_scale)](auto const &context) {
                 if (auto node = weak_node.lock()) {
                     auto const &renderer = context.value;

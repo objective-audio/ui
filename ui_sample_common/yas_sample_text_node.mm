@@ -34,7 +34,7 @@ struct sample::text_node::impl : base::impl {
                         });
 
                     view_size_observer = renderer.subject().make_observer(
-                        ui::renderer_method::view_size_changed, [weak_text_node](auto const &context) {
+                        ui::renderer::method::view_size_changed, [weak_text_node](auto const &context) {
                             if (auto text_node = weak_text_node.lock()) {
                                 auto const &renderer = context.value;
                                 text_node.impl_ptr<text_node::impl>()->set_text_position(renderer.view_size());

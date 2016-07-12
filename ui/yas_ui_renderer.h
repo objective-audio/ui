@@ -29,6 +29,15 @@ namespace ui {
        public:
         class impl;
 
+        enum class method {
+            will_render,
+            view_size_changed,
+            scale_factor_changed,
+            pre_render,
+        };
+
+        using subject_t = subject<ui::renderer, ui::renderer::method>;
+
         renderer();
         explicit renderer(ui::metal_system);
         renderer(std::nullptr_t);
@@ -47,7 +56,7 @@ namespace ui {
 
         ui::view_renderable &view_renderable();
 
-        subject<ui::renderer, ui::renderer_method> &subject();
+        subject_t &subject();
 
         ui::event_manager &event_manager();
 

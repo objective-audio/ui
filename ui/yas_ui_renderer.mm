@@ -89,12 +89,12 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
 
         if (to_bool(update_view_size_result)) {
             if (_subject.has_observer()) {
-                _subject.notify(renderer_method::view_size_changed, cast<ui::renderer>());
+                _subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
             }
 
             if (to_bool(update_scale_result)) {
                 if (_subject.has_observer()) {
-                    _subject.notify(renderer_method::scale_factor_changed, cast<ui::renderer>());
+                    _subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
                 }
             }
         }
@@ -102,7 +102,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
 
     pre_render_result pre_render() {
         if (_subject.has_observer()) {
-            _subject.notify(renderer_method::pre_render, cast<ui::renderer>());
+            _subject.notify(renderer::method::pre_render, cast<ui::renderer>());
         }
 
         _action.updatable().update(std::chrono::system_clock::now());
@@ -127,7 +127,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         }
 
         if (_subject.has_observer()) {
-            _subject.notify(renderer_method::will_render, cast<ui::renderer>());
+            _subject.notify(renderer::method::will_render, cast<ui::renderer>());
         }
 
         if (to_bool(pre_render())) {
@@ -167,7 +167,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     double _scale_factor = 0.0;
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 
-    yas::subject<ui::renderer, ui::renderer_method> _subject;
+    yas::ui::renderer::subject_t _subject;
 
     ui::node _root_node;
     ui::parallel_action _action;
@@ -270,7 +270,7 @@ ui::view_renderable &ui::renderer::view_renderable() {
     return _view_renderable;
 }
 
-subject<ui::renderer, ui::renderer_method> &ui::renderer::subject() {
+yas::ui::renderer::subject_t &ui::renderer::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
