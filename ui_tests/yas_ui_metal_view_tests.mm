@@ -63,7 +63,7 @@ using namespace yas;
             auto const &method = context.key;
             ui::event const &event = context.value;
 
-            XCTAssertEqual(method, ui::event_method::cursor_changed);
+            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
             if (event.phase() == ui::event_phase::began) {
                 began_called = true;
@@ -123,11 +123,11 @@ using namespace yas;
         auto const &method = context.key;
         ui::event const &event = context.value;
 
-        if (method == ui::event_method::cursor_changed) {
+        if (method == ui::event_manager::method::cursor_changed) {
             return;
         }
 
-        XCTAssertEqual(method, ui::event_method::touch_changed);
+        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
         if (event.phase() == ui::event_phase::began) {
             values.began_called = true;
@@ -239,7 +239,7 @@ using namespace yas;
         auto const &method = context.key;
         ui::event const &event = context.value;
 
-        XCTAssertEqual(method, ui::event_method::key_changed);
+        XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
         if (event.phase() == ui::event_phase::began) {
             values.began_called = true;

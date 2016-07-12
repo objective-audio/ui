@@ -15,13 +15,6 @@ namespace yas {
 namespace ui {
     class touch;
 
-    enum class renderer_method {
-        will_render,
-        view_size_changed,
-        scale_factor_changed,
-        pre_render,
-    };
-
     struct view_renderable : protocol {
         struct impl : protocol::impl {
             virtual void view_configure(yas_objc_view *const view) = 0;

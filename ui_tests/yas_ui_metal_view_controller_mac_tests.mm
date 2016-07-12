@@ -91,7 +91,7 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"view_size_changed"];
 
-    auto observer = renderer.subject().make_observer(ui::renderer_method::view_size_changed,
+    auto observer = renderer.subject().make_observer(ui::renderer::method::view_size_changed,
                                                      [expectation](auto const &context) mutable {
                                                          [expectation fulfill];
                                                          expectation = nil;

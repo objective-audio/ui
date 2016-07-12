@@ -15,8 +15,8 @@ struct sample::modifier_node::impl : base::impl {
 
     void setup_renderer_observer() {
         auto &node = strings_node.square_node().node();
-        node.dispatch_method(ui::node_method::renderer_changed);
-        _renderer_observer = node.subject().make_observer(ui::node_method::renderer_changed, [
+        node.dispatch_method(ui::node::method::renderer_changed);
+        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_modifier_node = to_weak(cast<modifier_node>()),
             event_observer = base{nullptr},
             view_size_observer = base{nullptr}
@@ -24,7 +24,7 @@ struct sample::modifier_node::impl : base::impl {
             auto node = context.value;
             if (auto renderer = node.renderer()) {
                 event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_method::modifier_changed,
+                    ui::event_manager::method::modifier_changed,
                     [weak_modifier_node,
                      flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
                         ui::event const &event = context.value;
@@ -34,7 +34,7 @@ struct sample::modifier_node::impl : base::impl {
                     });
 
                 view_size_observer = renderer.subject().make_observer(
-                    ui::renderer_method::view_size_changed, [weak_modifier_node](auto const &context) {
+                    ui::renderer::method::view_size_changed, [weak_modifier_node](auto const &context) {
                         if (auto modifier_node = weak_modifier_node.lock()) {
                             auto const &renderer = context.value;
                             modifier_node.impl_ptr<modifier_node::impl>()->set_node_position(renderer.view_size());

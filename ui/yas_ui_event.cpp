@@ -121,7 +121,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set<cursor>(std::move(value));
 
             if (subject.has_observer()) {
-                subject.notify(event_method::cursor_changed, cursor_event);
+                subject.notify(event_manager::method::cursor_changed, cursor_event);
             }
 
             if (phase == event_phase::ended) {
@@ -148,7 +148,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set<touch>(std::move(value));
 
             if (subject.has_observer()) {
-                subject.notify(event_method::touch_changed, event);
+                subject.notify(event_manager::method::touch_changed, event);
             }
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
@@ -174,7 +174,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             event.manageable().set<key>(value);
 
             if (subject.has_observer()) {
-                subject.notify(event_method::key_changed, event);
+                subject.notify(event_manager::method::key_changed, event);
             }
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
@@ -197,7 +197,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                     modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
                     if (subject.has_observer()) {
-                        subject.notify(event_method::modifier_changed, modifier_events.at(flag));
+                        subject.notify(event_manager::method::modifier_changed, modifier_events.at(flag));
                     }
                 }
             } else {
@@ -206,7 +206,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                     event.manageable().set_phase(ui::event_phase::ended);
 
                     if (subject.has_observer()) {
-                        subject.notify(event_method::modifier_changed, event);
+                        subject.notify(event_manager::method::modifier_changed, event);
                     }
 
                     modifier_events.erase(flag);
@@ -219,7 +219,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     std::unordered_map<uintptr_t, event> touch_events;
     std::unordered_map<uint16_t, event> key_events;
     std::unordered_map<uint32_t, event> modifier_events;
-    yas::subject<ui::event, ui::event_method> subject;
+    yas::subject<ui::event, ui::event_manager::method> subject;
 };
 
 #pragma mark - manageable_event
@@ -256,7 +256,7 @@ ui::event_manager::event_manager() : base(std::make_shared<impl>()) {
 ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 }
 
-subject<ui::event, ui::event_method> &ui::event_manager::subject() {
+subject<ui::event, ui::event_manager::method> &ui::event_manager::subject() {
     return impl_ptr<impl>()->subject;
 }
 
@@ -265,4 +265,24 @@ ui::event_inputtable &ui::event_manager::inputtable() {
         _inputtable = ui::event_inputtable{impl_ptr<ui::event_inputtable::impl>()};
     }
     return _inputtable;
+}
+
+#pragma mark -
+
+std::string yas::to_string(ui::event_manager::method const &method) {
+    switch (method) {
+        case ui::event_manager::method::cursor_changed:
+            return "cursor_changed";
+        case ui::event_manager::method::touch_changed:
+            return "touch_changed";
+        case ui::event_manager::method::key_changed:
+            return "key_changed";
+        case ui::event_manager::method::modifier_changed:
+            return "modifier_changed";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::event_manager::method const &method) {
+    os << to_string(method);
+    return os;
 }

@@ -17,9 +17,9 @@ struct sample::cursor_node::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        node.dispatch_method(ui::node_method::renderer_changed);
+        node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(
-            ui::node_method::renderer_changed,
+            ui::node::method::renderer_changed,
             [weak_cursor_node = to_weak(cast<cursor_node>()),
              event_observer = base{nullptr}](auto const &context) mutable {
                 if (auto cursor_node = weak_cursor_node.lock()) {
@@ -72,7 +72,7 @@ struct sample::cursor_node::impl : base::impl {
 
     static base _make_event_observer(ui::node &node, ui::renderer &renderer) {
         return renderer.event_manager().subject().make_observer(
-            ui::event_method::cursor_changed,
+            ui::event_manager::method::cursor_changed,
             [weak_node = to_weak(node), weak_action = weak<ui::action>{}](auto const &context) mutable {
                 if (auto node = weak_node.lock()) {
                     ui::event const &event = context.value;

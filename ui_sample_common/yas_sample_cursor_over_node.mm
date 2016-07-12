@@ -16,9 +16,9 @@ struct sample::cursor_over_node::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        root_node.dispatch_method(ui::node_method::renderer_changed);
+        root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
-            ui::node_method::renderer_changed,
+            ui::node::method::renderer_changed,
             [weak_touch_holder = to_weak(cast<cursor_over_node>()),
              event_observers = std::vector<base>{}](auto const &context) mutable {
                 if (auto touch_holder = weak_touch_holder.lock()) {
@@ -64,7 +64,7 @@ struct sample::cursor_over_node::impl : base::impl {
 
         for (auto &node : nodes) {
             event_observers.emplace_back(renderer.event_manager().subject().make_observer(
-                ui::event_method::cursor_changed,
+                ui::event_manager::method::cursor_changed,
                 [weak_node = to_weak(node),
                  prev_detected = std::move(std::make_shared<bool>(false))](auto const &context) {
                     ui::event const &event = context.value;

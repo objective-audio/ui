@@ -94,7 +94,7 @@ using namespace yas;
 
     ui::renderer renderer{ui::metal_system{device.object()}};
     auto observer = renderer.subject().make_observer(
-        ui::renderer_method::pre_render, [expectation, self](auto const &context) mutable {
+        ui::renderer::method::pre_render, [expectation, self](auto const &context) mutable {
             if (!expectation) {
                 return;
             }

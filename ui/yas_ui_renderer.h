@@ -23,11 +23,19 @@ namespace ui {
     class collision_detector;
     class metal_system;
     enum class system_type;
-    enum class renderer_method;
 
     class renderer : public base {
        public:
         class impl;
+
+        enum class method {
+            will_render,
+            view_size_changed,
+            scale_factor_changed,
+            pre_render,
+        };
+
+        using subject_t = subject<ui::renderer, ui::renderer::method>;
 
         renderer();
         explicit renderer(ui::metal_system);
@@ -47,7 +55,7 @@ namespace ui {
 
         ui::view_renderable &view_renderable();
 
-        subject<ui::renderer, ui::renderer_method> &subject();
+        subject_t &subject();
 
         ui::event_manager &event_manager();
 

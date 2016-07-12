@@ -17,27 +17,29 @@ namespace ui {
 namespace sample {
     class button_node;
 
-    enum class button_method {
-        began,
-        entered,
-        leaved,
-        ended,
-        canceled,
-    };
-
     struct button_node : public base {
         class impl;
+
+        enum class method {
+            began,
+            entered,
+            leaved,
+            ended,
+            canceled,
+        };
+
+        using subject_t = subject<button_node, method>;
 
         button_node();
         button_node(std::nullptr_t);
 
         void set_texture(ui::texture);
 
-        subject<button_node, button_method> &subject();
+        subject_t &subject();
 
         ui::square_node &square_node();
     };
 }
 
-std::string to_string(sample::button_method const &);
+std::string to_string(sample::button_node::method const &);
 }

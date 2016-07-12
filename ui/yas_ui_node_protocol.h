@@ -15,22 +15,6 @@ namespace ui {
     class render_info;
     enum class batch_building_type;
 
-    enum class node_method {
-        added_to_super,
-        removed_from_super,
-
-        parent_changed,
-        renderer_changed,
-        position_changed,
-        angle_changed,
-        scale_changed,
-        color_changed,
-        alpha_changed,
-        mesh_changed,
-        collider_changed,
-        enabled_changed,
-    };
-
     enum class node_update_reason : std::size_t {
         geometry,
         mesh,
@@ -76,9 +60,7 @@ namespace ui {
     };
 }
 
-std::string to_string(ui::node_method const &);
 std::string to_string(ui::node_update_reason const &);
 }
 
-std::ostream &operator<<(std::ostream &os, yas::ui::node_method const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &);

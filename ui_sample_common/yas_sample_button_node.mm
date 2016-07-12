@@ -11,7 +11,7 @@ using namespace yas;
 #pragma mark - button_node::impl
 
 struct sample::button_node::impl : base::impl {
-    yas::subject<sample::button_node, sample::button_method> subject;
+    yas::sample::button_node::subject_t subject;
     ui::square_node square_node = ui::make_square_node(2, 1);
 
     impl() {
@@ -21,9 +21,9 @@ struct sample::button_node::impl : base::impl {
     void setup_renderer_observer() {
         auto &node = square_node.node();
 
-        node.dispatch_method(ui::node_method::renderer_changed);
+        node.dispatch_method(ui::node::method::renderer_changed);
 
-        _renderer_observer = node.subject().make_observer(ui::node_method::renderer_changed, [
+        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             event_observer = base{nullptr},
             leave_observer = base{nullptr},
             weak_button_node = to_weak(cast<sample::button_node>())
@@ -32,7 +32,7 @@ struct sample::button_node::impl : base::impl {
 
             if (auto renderer = node.renderer()) {
                 event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_method::touch_changed, [weak_button_node](auto const &context) {
+                    ui::event_manager::method::touch_changed, [weak_button_node](auto const &context) {
                         if (auto button_node = weak_button_node.lock()) {
                             button_node.impl_ptr<impl>()->_update_tracking(context.value);
                         }
@@ -128,30 +128,30 @@ struct sample::button_node::impl : base::impl {
     base _make_leave_observer() {
         auto &node = square_node.node();
 
-        node.dispatch_method(ui::node_method::position_changed);
-        node.dispatch_method(ui::node_method::angle_changed);
-        node.dispatch_method(ui::node_method::scale_changed);
-        node.dispatch_method(ui::node_method::collider_changed);
-        node.dispatch_method(ui::node_method::enabled_changed);
+        node.dispatch_method(ui::node::method::position_changed);
+        node.dispatch_method(ui::node::method::angle_changed);
+        node.dispatch_method(ui::node::method::scale_changed);
+        node.dispatch_method(ui::node::method::collider_changed);
+        node.dispatch_method(ui::node::method::enabled_changed);
 
         return node.subject().make_wild_card_observer([weak_button_node =
                                                            to_weak(cast<sample::button_node>())](auto const &context) {
             if (auto node = weak_button_node.lock()) {
                 if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                    ui::node_method const &method = context.key;
+                    ui::node::method const &method = context.key;
                     switch (method) {
-                        case ui::node_method::position_changed:
-                        case ui::node_method::angle_changed:
-                        case ui::node_method::scale_changed: {
+                        case ui::node::method::position_changed:
+                        case ui::node::method::angle_changed:
+                        case ui::node::method::scale_changed: {
                             node.impl_ptr<impl>()->_leave_or_enter_tracking(tracking_event);
                         } break;
-                        case ui::node_method::collider_changed: {
+                        case ui::node::method::collider_changed: {
                             ui::node const &node = context.value;
                             if (!node.collider()) {
                                 node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                             }
                         } break;
-                        case ui::node_method::enabled_changed: {
+                        case ui::node::method::enabled_changed: {
                             ui::node const &node = context.value;
                             if (!node.is_enabled()) {
                                 node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
@@ -178,7 +178,7 @@ struct sample::button_node::impl : base::impl {
                     if (!is_tracking()) {
                         if (detector.detect(touch_event.position(), node.collider())) {
                             set_tracking_event(event);
-                            subject.notify(sample::button_method::began, button_node);
+                            subject.notify(sample::button_node::method::began, button_node);
                         }
                     }
                     break;
@@ -189,7 +189,7 @@ struct sample::button_node::impl : base::impl {
                 case ui::event_phase::ended:
                     if (is_tracking(event)) {
                         set_tracking_event(nullptr);
-                        subject.notify(sample::button_method::ended, button_node);
+                        subject.notify(sample::button_node::method::ended, button_node);
                     }
                     break;
                 case ui::event_phase::canceled:
@@ -210,10 +210,10 @@ struct sample::button_node::impl : base::impl {
             bool is_detected = detector.detect(touch_event.position(), node.collider());
             if (!is_event_tracking && is_detected) {
                 set_tracking_event(event);
-                subject.notify(sample::button_method::entered, cast<sample::button_node>());
+                subject.notify(sample::button_node::method::entered, cast<sample::button_node>());
             } else if (is_event_tracking && !is_detected) {
                 set_tracking_event(nullptr);
-                subject.notify(sample::button_method::leaved, cast<sample::button_node>());
+                subject.notify(sample::button_node::method::leaved, cast<sample::button_node>());
             }
         }
     }
@@ -221,7 +221,7 @@ struct sample::button_node::impl : base::impl {
     void _cancel_tracking(ui::event const &event) {
         if (is_tracking(event)) {
             set_tracking_event(nullptr);
-            subject.notify(sample::button_method::canceled, cast<sample::button_node>());
+            subject.notify(sample::button_node::method::canceled, cast<sample::button_node>());
         }
     }
 
@@ -242,7 +242,7 @@ void sample::button_node::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-subject<sample::button_node, sample::button_method> &sample::button_node::subject() {
+sample::button_node::subject_t &sample::button_node::subject() {
     return impl_ptr<impl>()->subject;
 }
 
@@ -250,17 +250,17 @@ ui::square_node &sample::button_node::square_node() {
     return impl_ptr<impl>()->square_node;
 }
 
-std::string yas::to_string(sample::button_method const &method) {
+std::string yas::to_string(sample::button_node::method const &method) {
     switch (method) {
-        case sample::button_method::began:
+        case sample::button_node::method::began:
             return "began";
-        case sample::button_method::entered:
+        case sample::button_node::method::entered:
             return "entered";
-        case sample::button_method::leaved:
+        case sample::button_node::method::leaved:
             return "leaved";
-        case sample::button_method::ended:
+        case sample::button_node::method::ended:
             return "ended";
-        case sample::button_method::canceled:
+        case sample::button_node::method::canceled:
             return "canceled";
     }
 }

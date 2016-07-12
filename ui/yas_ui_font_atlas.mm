@@ -89,7 +89,7 @@ struct ui::font_atlas::impl : base::impl {
             _update_texture();
 
             if (_subject.has_observer()) {
-                _subject.notify(ui::font_atlas_method::texture_changed, cast<ui::font_atlas>());
+                _subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
             }
         }
     }
@@ -306,9 +306,9 @@ ui::strings_layout ui::font_atlas::make_strings_layout(std::string const &text, 
 
 #pragma mark -
 
-std::string yas::to_string(ui::font_atlas_method const &method) {
+std::string yas::to_string(ui::font_atlas::method const &method) {
     switch (method) {
-        case ui::font_atlas_method::texture_changed:
+        case ui::font_atlas::method::texture_changed:
             return "texture_changed";
     }
 }

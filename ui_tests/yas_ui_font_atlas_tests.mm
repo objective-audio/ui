@@ -96,7 +96,7 @@ using namespace yas;
     ui::texture observed_texture = nullptr;
 
     auto observer = font_atlas.subject().make_observer(
-        ui::font_atlas_method::texture_changed,
+        ui::font_atlas::method::texture_changed,
         [&observed_texture](auto const &context) mutable { observed_texture = context.value.texture(); });
 
     ui::metal_system metal_system{device.object()};
@@ -114,7 +114,7 @@ using namespace yas;
 }
 
 - (void)test_method_to_string {
-    XCTAssertEqual(to_string(ui::font_atlas_method::texture_changed), "texture_changed");
+    XCTAssertEqual(to_string(ui::font_atlas::method::texture_changed), "texture_changed");
 }
 
 @end

@@ -285,89 +285,89 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void dispatch_method(ui::node_method const method) {
+    void dispatch_method(ui::node::method const method) {
         auto weak_node = to_weak(cast<ui::node>());
 
         base observer = nullptr;
 
         switch (method) {
-            case ui::node_method::position_changed:
+            case ui::node::method::position_changed:
                 observer = _position_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::position_changed, node);
+                            node.subject().notify(node::method::position_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::angle_changed:
+            case ui::node::method::angle_changed:
                 observer = _angle_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::angle_changed, node);
+                            node.subject().notify(node::method::angle_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::scale_changed:
+            case ui::node::method::scale_changed:
                 observer = _scale_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::scale_changed, node);
+                            node.subject().notify(node::method::scale_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::color_changed:
+            case ui::node::method::color_changed:
                 observer = _color_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::color_changed, node);
+                            node.subject().notify(node::method::color_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::alpha_changed:
+            case ui::node::method::alpha_changed:
                 observer = _alpha_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::alpha_changed, node);
+                            node.subject().notify(node::method::alpha_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::enabled_changed:
+            case ui::node::method::enabled_changed:
                 observer = _enabled_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::enabled_changed, node);
+                            node.subject().notify(node::method::enabled_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::mesh_changed:
+            case ui::node::method::mesh_changed:
                 observer = _mesh_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::mesh_changed, node);
+                            node.subject().notify(node::method::mesh_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::collider_changed:
+            case ui::node::method::collider_changed:
                 observer = _collider_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::collider_changed, node);
+                            node.subject().notify(node::method::collider_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::parent_changed:
+            case ui::node::method::parent_changed:
                 observer = _parent_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::parent_changed, node);
+                            node.subject().notify(node::method::parent_changed, node);
                         }
                     });
                 break;
-            case ui::node_method::renderer_changed:
+            case ui::node::method::renderer_changed:
                 observer = _renderer_property.subject().make_observer(
                     property_method::did_change, [weak_node](auto const &context) {
                         if (auto node = weak_node.lock()) {
-                            node.subject().notify(node_method::renderer_changed, node);
+                            node.subject().notify(node::method::renderer_changed, node);
                         }
                     });
                 break;
@@ -427,7 +427,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         sub_node_impl->_set_renderer_recursively(_renderer_property.value().lock());
 
         if (sub_node_impl->_subject.has_observer()) {
-            sub_node_impl->_subject.notify(node_method::added_to_super, sub_node);
+            sub_node_impl->_subject.notify(node::method::added_to_super, sub_node);
         }
 
         _set_updated(ui::node_update_reason::children);
@@ -442,7 +442,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
         if (sub_node_impl->_subject.has_observer()) {
-            sub_node_impl->_subject.notify(node_method::removed_from_super, sub_node);
+            sub_node_impl->_subject.notify(node::method::removed_from_super, sub_node);
         }
 
         _set_updated(ui::node_update_reason::children);
@@ -654,10 +654,44 @@ ui::node::subject_t &ui::node::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-void ui::node::dispatch_method(ui::node_method const method) {
+void ui::node::dispatch_method(ui::node::method const method) {
     impl_ptr<impl>()->dispatch_method(method);
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
+}
+
+std::string yas::to_string(ui::node::method const &method) {
+    switch (method) {
+        case ui::node::method::added_to_super:
+            return "added_to_super";
+        case ui::node::method::removed_from_super:
+            return "removed_from_super";
+        case ui::node::method::parent_changed:
+            return "parent_changed";
+        case ui::node::method::renderer_changed:
+            return "renderer_changed";
+        case ui::node::method::position_changed:
+            return "position_changed";
+        case ui::node::method::angle_changed:
+            return "angle_changed";
+        case ui::node::method::scale_changed:
+            return "scale_changed";
+        case ui::node::method::color_changed:
+            return "color_changed";
+        case ui::node::method::alpha_changed:
+            return "alpha_changed";
+        case ui::node::method::mesh_changed:
+            return "mesh_changed";
+        case ui::node::method::collider_changed:
+            return "collider_changed";
+        case ui::node::method::enabled_changed:
+            return "enabled_changed";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::node::method const &method) {
+    os << to_string(method);
+    return os;
 }

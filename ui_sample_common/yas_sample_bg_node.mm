@@ -17,9 +17,9 @@ struct sample::bg_node::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        square_node.node().dispatch_method(ui::node_method::renderer_changed);
+        square_node.node().dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = square_node.node().subject().make_observer(
-            ui::node_method::renderer_changed,
+            ui::node::method::renderer_changed,
             [weak_bg_node = to_weak(cast<bg_node>()), view_size_observer = base{nullptr}](auto const &context) mutable {
                 if (auto bg_node = weak_bg_node.lock()) {
                     auto impl = bg_node.impl_ptr<bg_node::impl>();
@@ -42,7 +42,7 @@ struct sample::bg_node::impl : base::impl {
         set_scale(node, renderer.view_size());
 
         return renderer.subject().make_observer(
-            ui::renderer_method::view_size_changed,
+            ui::renderer::method::view_size_changed,
             [weak_node = to_weak(node), set_scale = std::move(set_scale)](auto const &context) {
                 if (auto node = weak_node.lock()) {
                     auto const &renderer = context.value;

@@ -26,7 +26,23 @@ namespace ui {
        public:
         class impl;
 
-        using subject_t = subject<node, node_method>;
+        enum class method {
+            added_to_super,
+            removed_from_super,
+
+            parent_changed,
+            renderer_changed,
+            position_changed,
+            angle_changed,
+            scale_changed,
+            color_changed,
+            alpha_changed,
+            mesh_changed,
+            collider_changed,
+            enabled_changed,
+        };
+
+        using subject_t = subject<node, method>;
 
         node();
         node(std::nullptr_t);
@@ -76,7 +92,7 @@ namespace ui {
         ui::renderable_node &renderable();
 
         subject_t &subject();
-        void dispatch_method(ui::node_method const);
+        void dispatch_method(ui::node::method const);
 
         ui::point convert_position(ui::point const &) const;
 
@@ -85,4 +101,8 @@ namespace ui {
         ui::renderable_node _renderable = nullptr;
     };
 }
+
+std::string to_string(ui::node::method const &);
 }
+
+std::ostream &operator<<(std::ostream &os, yas::ui::node::method const &);
