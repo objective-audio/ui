@@ -15,8 +15,8 @@ struct sample::modifier_node::impl : base::impl {
 
     void setup_renderer_observer() {
         auto &node = strings_node.square_node().node();
-        node.dispatch_method(ui::node_method::renderer_changed);
-        _renderer_observer = node.subject().make_observer(ui::node_method::renderer_changed, [
+        node.dispatch_method(ui::node::method::renderer_changed);
+        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_modifier_node = to_weak(cast<modifier_node>()),
             event_observer = base{nullptr},
             view_size_observer = base{nullptr}

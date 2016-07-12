@@ -21,9 +21,9 @@ struct sample::button_node::impl : base::impl {
     void setup_renderer_observer() {
         auto &node = square_node.node();
 
-        node.dispatch_method(ui::node_method::renderer_changed);
+        node.dispatch_method(ui::node::method::renderer_changed);
 
-        _renderer_observer = node.subject().make_observer(ui::node_method::renderer_changed, [
+        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             event_observer = base{nullptr},
             leave_observer = base{nullptr},
             weak_button_node = to_weak(cast<sample::button_node>())
@@ -128,30 +128,30 @@ struct sample::button_node::impl : base::impl {
     base _make_leave_observer() {
         auto &node = square_node.node();
 
-        node.dispatch_method(ui::node_method::position_changed);
-        node.dispatch_method(ui::node_method::angle_changed);
-        node.dispatch_method(ui::node_method::scale_changed);
-        node.dispatch_method(ui::node_method::collider_changed);
-        node.dispatch_method(ui::node_method::enabled_changed);
+        node.dispatch_method(ui::node::method::position_changed);
+        node.dispatch_method(ui::node::method::angle_changed);
+        node.dispatch_method(ui::node::method::scale_changed);
+        node.dispatch_method(ui::node::method::collider_changed);
+        node.dispatch_method(ui::node::method::enabled_changed);
 
         return node.subject().make_wild_card_observer([weak_button_node =
                                                            to_weak(cast<sample::button_node>())](auto const &context) {
             if (auto node = weak_button_node.lock()) {
                 if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                    ui::node_method const &method = context.key;
+                    ui::node::method const &method = context.key;
                     switch (method) {
-                        case ui::node_method::position_changed:
-                        case ui::node_method::angle_changed:
-                        case ui::node_method::scale_changed: {
+                        case ui::node::method::position_changed:
+                        case ui::node::method::angle_changed:
+                        case ui::node::method::scale_changed: {
                             node.impl_ptr<impl>()->_leave_or_enter_tracking(tracking_event);
                         } break;
-                        case ui::node_method::collider_changed: {
+                        case ui::node::method::collider_changed: {
                             ui::node const &node = context.value;
                             if (!node.collider()) {
                                 node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                             }
                         } break;
-                        case ui::node_method::enabled_changed: {
+                        case ui::node::method::enabled_changed: {
                             ui::node const &node = context.value;
                             if (!node.is_enabled()) {
                                 node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
