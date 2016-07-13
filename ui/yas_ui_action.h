@@ -82,11 +82,11 @@ namespace ui {
 
         double duration() const;
         value_update_f const &value_updater() const;
-        action_transform_f const &value_transformer() const;
+        transform_f const &value_transformer() const;
         std::size_t loop_count() const;
 
         void set_value_updater(value_update_f);
-        void set_value_transformer(action_transform_f);
+        void set_value_transformer(transform_f);
     };
 
     namespace translate_action {

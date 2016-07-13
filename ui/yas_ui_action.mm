@@ -133,7 +133,7 @@ struct ui::continuous_action::impl : action::impl {
 
     double _duration = 0.3;
     value_update_f _value_updater;
-    action_transform_f _value_transformer;
+    transform_f _value_transformer;
     std::size_t _loop_count = 1;
     std::size_t _index = 0;
 };
@@ -183,7 +183,7 @@ ui::action::value_update_f const &ui::continuous_action::value_updater() const {
     return impl_ptr<impl>()->_value_updater;
 }
 
-ui::action_transform_f const &ui::continuous_action::value_transformer() const {
+ui::transform_f const &ui::continuous_action::value_transformer() const {
     return impl_ptr<impl>()->_value_transformer;
 }
 
@@ -195,7 +195,7 @@ void ui::continuous_action::set_value_updater(value_update_f updater) {
     impl_ptr<impl>()->_value_updater = std::move(updater);
 }
 
-void ui::continuous_action::set_value_transformer(action_transform_f transformer) {
+void ui::continuous_action::set_value_transformer(transform_f transformer) {
     impl_ptr<impl>()->_value_transformer = std::move(transformer);
 }
 
