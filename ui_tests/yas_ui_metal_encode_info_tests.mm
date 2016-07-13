@@ -48,30 +48,29 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
     ui::renderer renderer{metal_system};
-    auto observer = renderer.subject().make_observer(
-        ui::renderer::method::pre_render, [expectation, self](auto const &context) mutable {
-            if (!expectation) {
-                return;
-            }
 
-            ui::metal_system metal_system = context.value.metal_system();
+    ui::action pre_render_action;
+    
+    pre_render_action.set_time_updater([expectation, self, &metal_system](auto const &) mutable {
+        auto view = [YASTestMetalViewController sharedViewController].metalView;
+        XCTAssertNotNil(view.currentRenderPassDescriptor);
 
-            auto view = [YASTestMetalViewController sharedViewController].metalView;
-            XCTAssertNotNil(view.currentRenderPassDescriptor);
+        ui::metal_encode_info info{{view.currentRenderPassDescriptor,
+                                    metal_system.testable().mtlRenderPipelineStateWithTexture(),
+                                    metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
 
-            ui::metal_encode_info info{{view.currentRenderPassDescriptor,
-                                        metal_system.testable().mtlRenderPipelineStateWithTexture(),
-                                        metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
+        XCTAssertEqualObjects(info.renderPassDescriptor(), view.currentRenderPassDescriptor);
+        XCTAssertEqualObjects(info.pipelineStateWithTexture(),
+                              metal_system.testable().mtlRenderPipelineStateWithTexture());
+        XCTAssertEqualObjects(info.pipelineStateWithoutTexture(),
+                              metal_system.testable().mtlRenderPipelineStateWithoutTexture());
 
-            XCTAssertEqualObjects(info.renderPassDescriptor(), view.currentRenderPassDescriptor);
-            XCTAssertEqualObjects(info.pipelineStateWithTexture(),
-                                  metal_system.testable().mtlRenderPipelineStateWithTexture());
-            XCTAssertEqualObjects(info.pipelineStateWithoutTexture(),
-                                  metal_system.testable().mtlRenderPipelineStateWithoutTexture());
+        [expectation fulfill];
 
-            [expectation fulfill];
-            expectation = nil;
-        });
+        return true;
+    });
+    
+    renderer.insert_action(pre_render_action);
 
     [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
 
