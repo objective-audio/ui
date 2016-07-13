@@ -40,7 +40,7 @@ using namespace yas;
 
     XCTAssertTrue(renderer.view_renderable());
     XCTAssertTrue(renderer.event_manager());
-    XCTAssertTrue(renderer.collision_detector());
+    XCTAssertTrue(renderer.detector());
 
     XCTAssertEqual(renderer.system_type(), ui::system_type::none);
     XCTAssertFalse(renderer.metal_system());
@@ -50,7 +50,7 @@ using namespace yas;
     ui::renderer const renderer;
 
     XCTAssertTrue(renderer.root_node());
-    XCTAssertTrue(renderer.collision_detector());
+    XCTAssertTrue(renderer.detector());
     XCTAssertFalse(renderer.metal_system());
 }
 

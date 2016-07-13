@@ -169,7 +169,7 @@ struct sample::button_node::impl : base::impl {
     void _update_tracking(ui::event const &event) {
         auto &node = square_node.node();
         if (auto renderer = node.renderer()) {
-            auto const &detector = renderer.collision_detector();
+            auto const &detector = renderer.detector();
             auto button_node = cast<sample::button_node>();
 
             auto const &touch_event = event.get<ui::touch>();
@@ -204,7 +204,7 @@ struct sample::button_node::impl : base::impl {
     void _leave_or_enter_tracking(ui::event const &event) {
         auto &node = square_node.node();
         if (auto renderer = node.renderer()) {
-            auto const &detector = renderer.collision_detector();
+            auto const &detector = renderer.detector();
             auto const &touch_event = event.get<ui::touch>();
             bool const is_event_tracking = is_tracking(event);
             bool is_detected = detector.detect(touch_event.position(), node.collider());

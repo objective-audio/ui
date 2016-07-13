@@ -73,7 +73,7 @@ struct sample::cursor_over_node::impl : base::impl {
                     if (auto node = weak_node.lock()) {
                         if (auto renderer = node.renderer()) {
                             auto is_detected =
-                                renderer.collision_detector().detect(cursor_event.position(), node.collider());
+                                renderer.detector().detect(cursor_event.position(), node.collider());
 
                             auto make_color_action = [](ui::node &node, ui::color const &color) {
                                 auto action = ui::make_action({.start_color = node.color(), .end_color = color});

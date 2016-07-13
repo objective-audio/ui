@@ -1,16 +1,16 @@
 //
-//  yas_ui_collision_detector.cpp
+//  yas_ui_detector.cpp
 //
 
 #include <deque>
 #include "yas_ui_collider.h"
-#include "yas_ui_collision_detector.h"
+#include "yas_ui_detector.h"
 
 using namespace yas;
 
-#pragma mark - ui::collision_detector::impl
+#pragma mark - ui::detector::impl
 
-struct ui::collision_detector::impl : base::impl, updatable_collision_detector::impl {
+struct ui::detector::impl : base::impl, updatable_detector::impl {
     impl() {
         _updating = true;
     }
@@ -26,7 +26,7 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
 
     void push_front_collider(ui::collider &&collider) override {
         if (!_updating) {
-            throw "collision_detector is not updating.";
+            throw "detector is not updating.";
         }
 
         _colliders.emplace_front(std::move(collider));
@@ -59,25 +59,25 @@ struct ui::collision_detector::impl : base::impl, updatable_collision_detector::
     bool _updating = false;
 };
 
-#pragma mark - ui::collision_detector
+#pragma mark - ui::detector
 
-ui::collision_detector::collision_detector() : base(std::make_shared<impl>()) {
+ui::detector::detector() : base(std::make_shared<impl>()) {
 }
 
-ui::collision_detector::collision_detector(std::nullptr_t) : base(nullptr) {
+ui::detector::detector(std::nullptr_t) : base(nullptr) {
 }
 
-ui::collider ui::collision_detector::detect(ui::point const &location) const {
+ui::collider ui::detector::detect(ui::point const &location) const {
     return impl_ptr<impl>()->detect(location);
 }
 
-bool ui::collision_detector::detect(ui::point const &location, ui::collider const &collider) const {
+bool ui::detector::detect(ui::point const &location, ui::collider const &collider) const {
     return impl_ptr<impl>()->detect(location, collider);
 }
 
-ui::updatable_collision_detector &ui::collision_detector::updatable() {
+ui::updatable_detector &ui::detector::updatable() {
     if (!_updatable) {
-        _updatable = ui::updatable_collision_detector{impl_ptr<ui::updatable_collision_detector::impl>()};
+        _updatable = ui::updatable_detector{impl_ptr<ui::updatable_detector::impl>()};
     }
     return _updatable;
 }

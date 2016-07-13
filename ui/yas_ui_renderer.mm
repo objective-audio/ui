@@ -10,7 +10,7 @@
 #include "yas_observing.h"
 #include "yas_to_bool.h"
 #include "yas_ui_action.h"
-#include "yas_ui_collision_detector.h"
+#include "yas_ui_detector.h"
 #include "yas_ui_event.h"
 #include "yas_ui_math.h"
 #include "yas_ui_matrix.h"
@@ -171,7 +171,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
 
     ui::node _root_node;
     ui::parallel_action _action;
-    ui::collision_detector _detector;
+    ui::detector _detector;
     ui::event_manager _event_manager;
 
    private:
@@ -294,10 +294,10 @@ void ui::renderer::erase_action(ui::node const &target) {
     impl_ptr<impl>()->erase_action(target);
 }
 
-ui::collision_detector const &ui::renderer::collision_detector() const {
+ui::detector const &ui::renderer::detector() const {
     return impl_ptr<impl>()->_detector;
 }
 
-ui::collision_detector &ui::renderer::collision_detector() {
+ui::detector &ui::renderer::detector() {
     return impl_ptr<impl>()->_detector;
 }

@@ -589,10 +589,10 @@ namespace test {
     node.push_back_sub_node(sub_node);
     node.push_back_sub_node(batch_node);
 
-    ui::collision_detector detector;
+    ui::detector detector;
     test::test_render_encoder render_encoder;
 
-    ui::render_info render_info{.collision_detector = detector,
+    ui::render_info render_info{.detector = detector,
                                 .render_encodable = render_encoder.encodable(),
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};

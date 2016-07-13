@@ -20,7 +20,7 @@ namespace ui {
     class uint_size;
     class node;
     class action;
-    class collision_detector;
+    class detector;
     class metal_system;
     enum class system_type;
 
@@ -64,8 +64,8 @@ namespace ui {
         void erase_action(ui::action const &);
         void erase_action(ui::node const &target);
 
-        ui::collision_detector const &collision_detector() const;
-        ui::collision_detector &collision_detector();
+        ui::detector const &detector() const;
+        ui::detector &detector();
 
        private:
         ui::view_renderable _view_renderable = nullptr;
