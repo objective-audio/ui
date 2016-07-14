@@ -6,6 +6,7 @@
 
 #include <Metal/Metal.h>
 #include "yas_objc_macros.h"
+#include "yas_objc_ptr.h"
 #include "yas_protocol.h"
 
 namespace yas {
@@ -29,6 +30,21 @@ namespace ui {
         void view_render(yas_objc_view *const view, ui::renderer &);
         void prepare_uniforms_buffer(uint32_t const uniforms_count);
         void mesh_encode(ui::mesh &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info const &);
+    };
+
+    struct makable_metal_system : protocol {
+        struct impl : protocol::impl {
+            virtual objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) = 0;
+            virtual objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) = 0;
+            virtual objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) = 0;
+        };
+
+        explicit makable_metal_system(std::shared_ptr<impl>);
+        makable_metal_system(std::nullptr_t);
+
+        objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const);
+        objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const);
+        objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length);
     };
 
     struct testable_metal_system : protocol {

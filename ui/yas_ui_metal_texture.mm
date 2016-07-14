@@ -38,7 +38,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
 
             _target = textureDesc.textureType;
 
-            _texture_object.move_object(_metal_system.newMtlTexture(textureDesc));
+            _texture_object = _metal_system.makable().make_mtl_texture(textureDesc);
 
             if (!_texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
@@ -64,7 +64,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
             samplerDesc.lodMinClamp = 0;
             samplerDesc.lodMaxClamp = FLT_MAX;
 
-            _sampler_object.move_object(_metal_system.newMtlSamplerState(samplerDesc));
+            _sampler_object = _metal_system.makable().make_mtl_sampler_state(samplerDesc);
 
             if (!_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
