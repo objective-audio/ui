@@ -8,7 +8,7 @@
 #include "yas_ui_batch.h"
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_collider.h"
-#include "yas_ui_collision_detector.h"
+#include "yas_ui_detector.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
@@ -155,7 +155,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto &collider = _collider_property.value()) {
                 collider.renderable().set_matrix(_matrix);
 
-                if (auto &detector = render_info.collision_detector) {
+                if (auto &detector = render_info.detector) {
                     auto &detector_updatable = detector.updatable();
                     if (detector_updatable.is_updating()) {
                         detector_updatable.push_front_collider(collider);
@@ -179,7 +179,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
                 auto const building_type = tree_updates.batch_building_type();
 
-                ui::render_info batch_render_info{.collision_detector = render_info.collision_detector};
+                ui::render_info batch_render_info{.detector = render_info.detector};
                 auto &batch_renderable = batch.renderable();
 
                 if (to_bool(building_type)) {

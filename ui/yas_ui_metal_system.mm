@@ -234,7 +234,7 @@ struct ui::metal_system::impl : base::impl, renderable_metal_system::impl, testa
               .pipelineStateWithTexture = _multi_sample_pipeline_state_with_texture.object(),
               .pipelineStateWithoutTexture = _multi_sample_pipeline_state_without_texture.object()}});
 
-        ui::render_info render_info{.collision_detector = renderer.collision_detector(),
+        ui::render_info render_info{.detector = renderer.detector(),
                                     .render_encodable = metal_render_encoder.encodable(),
                                     .matrix = renderer.projection_matrix(),
                                     .mesh_matrix = renderer.projection_matrix()};

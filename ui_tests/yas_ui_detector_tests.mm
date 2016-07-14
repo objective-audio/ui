@@ -1,18 +1,18 @@
 //
-//  yas_ui_collision_detector_tests.mm
+//  yas_ui_detector_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import "yas_ui_collider.h"
-#import "yas_ui_collision_detector.h"
+#import "yas_ui_detector.h"
 
 using namespace yas;
 
-@interface yas_ui_collision_detector_tests : XCTestCase
+@interface yas_ui_detector_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_collision_detector_tests
+@implementation yas_ui_detector_tests
 
 - (void)setUp {
     [super setUp];
@@ -23,20 +23,20 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::collision_detector detector;
+    ui::detector detector;
 
     XCTAssertTrue(detector);
     XCTAssertTrue(detector.updatable());
 }
 
 - (void)test_create_null {
-    ui::collision_detector detector{nullptr};
+    ui::detector detector{nullptr};
 
     XCTAssertFalse(detector);
 }
 
 - (void)test_detect {
-    ui::collision_detector detector;
+    ui::detector detector;
 
     XCTAssertFalse(detector.detect(0.0f));
 
@@ -57,7 +57,7 @@ using namespace yas;
 }
 
 - (void)test_detect_with_collider {
-    ui::collision_detector detector;
+    ui::detector detector;
 
     ui::collider collider1{{.shape = ui::collider_shape::square}};
     ui::collider collider2{{.shape = ui::collider_shape::square}};
@@ -70,7 +70,7 @@ using namespace yas;
 }
 
 - (void)test_is_updating {
-    ui::collision_detector detector;
+    ui::detector detector;
 
     XCTAssertTrue(detector.updatable().is_updating());
 
