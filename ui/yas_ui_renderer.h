@@ -32,7 +32,6 @@ namespace ui {
             will_render,
             view_size_changed,
             scale_factor_changed,
-            pre_render,
         };
 
         using subject_t = subject<ui::renderer, ui::renderer::method>;

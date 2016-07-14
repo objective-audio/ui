@@ -126,25 +126,4 @@ using namespace yas;
                                                             static_cast<uint32_t>(128 * scale_factor)}));
 }
 
-- (void)test_pre_render {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
-
-    ui::renderer renderer{ui::metal_system{device.object()}};
-    auto observer =
-        renderer.subject().make_observer(ui::renderer::method::pre_render, [expectation](auto const &context) mutable {
-            [expectation fulfill];
-            expectation = nil;
-        });
-
-    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
-
-    [self waitForExpectationsWithTimeout:1.0 handler:NULL];
-}
-
 @end
