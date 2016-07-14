@@ -298,7 +298,7 @@ using namespace yas;
     XCTAssertTrue(completed);
 }
 
-- (void)test_aciton_with_delay {
+- (void)test_action_with_delay {
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args = {.duration = 1.0, .action = {.delay = 2.0, .start_time = time}};

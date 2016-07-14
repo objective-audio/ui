@@ -17,9 +17,6 @@ namespace ui {
 
     using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
     using duration_t = std::chrono::duration<double>;
-    using action_time_update_f = std::function<bool(time_point_t const &)>;
-    using action_value_update_f = std::function<void(double const)>;
-    using action_completion_f = std::function<void(void)>;
 
     struct updatable_action : protocol {
         struct impl : protocol::impl {
@@ -41,6 +38,10 @@ namespace ui {
             double delay = 0.0;
         };
 
+        using time_update_f = std::function<bool(time_point_t const &)>;
+        using value_update_f = std::function<void(double const)>;
+        using completion_f = std::function<void(void)>;
+
         action();
         explicit action(args);
         action(std::nullptr_t);
@@ -48,12 +49,12 @@ namespace ui {
         ui::node target() const;
         time_point_t const &start_time() const;
         double delay() const;
-        action_time_update_f const &time_updater() const;
-        action_completion_f const &completion_handler() const;
+        time_update_f const &time_updater() const;
+        completion_f const &completion_handler() const;
 
         void set_target(ui::node const &);
-        void set_time_updater(action_time_update_f);
-        void set_completion_handler(action_completion_f);
+        void set_time_updater(time_update_f);
+        void set_completion_handler(completion_f);
 
         ui::updatable_action &updatable();
 
@@ -80,12 +81,12 @@ namespace ui {
         continuous_action(std::nullptr_t);
 
         double duration() const;
-        action_value_update_f const &value_updater() const;
-        action_transform_f const &value_transformer() const;
+        value_update_f const &value_updater() const;
+        transform_f const &value_transformer() const;
         std::size_t loop_count() const;
 
-        void set_value_updater(action_value_update_f);
-        void set_value_transformer(action_transform_f);
+        void set_value_updater(value_update_f);
+        void set_value_transformer(transform_f);
     };
 
     namespace translate_action {

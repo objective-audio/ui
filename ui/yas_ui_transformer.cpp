@@ -37,8 +37,8 @@ namespace ui {
 }
 }
 
-ui::action_transform_f const &ui::ease_in_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
+ui::transform_f const &ui::ease_in_transformer() {
+    static transform_f const _transformer = [](float const pos) {
         static auto curve = _make_curve_vector([](float const pos) { return sinf((pos - 1.0f) * M_PI_2) + 1.0f; });
         return _convert_value(curve, pos);
     };
@@ -46,8 +46,8 @@ ui::action_transform_f const &ui::ease_in_transformer() {
     return _transformer;
 }
 
-ui::action_transform_f const &ui::ease_out_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
+ui::transform_f const &ui::ease_out_transformer() {
+    static transform_f const _transformer = [](float const pos) {
         static auto curve = _make_curve_vector([](float const pos) { return sinf(pos * M_PI_2); });
         return _convert_value(curve, pos);
     };
@@ -55,8 +55,8 @@ ui::action_transform_f const &ui::ease_out_transformer() {
     return _transformer;
 }
 
-ui::action_transform_f const &ui::ease_in_out_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
+ui::transform_f const &ui::ease_in_out_transformer() {
+    static transform_f const _transformer = [](float const pos) {
         static auto curve =
             _make_curve_vector([](float const pos) { return (sinf((pos * 2.0f - 1.0f) * M_PI_2) + 1.0f) * 0.5f; });
         return _convert_value(curve, pos);
@@ -65,8 +65,8 @@ ui::action_transform_f const &ui::ease_in_out_transformer() {
     return _transformer;
 }
 
-ui::action_transform_f const &ui::ping_pong_transformer() {
-    static action_transform_f const _transformer = [](float const pos) {
+ui::transform_f const &ui::ping_pong_transformer() {
+    static transform_f const _transformer = [](float const pos) {
         static auto curve = _make_curve_vector([](float const pos) {
             float _pos = pos * 2.0f;
             if (_pos > 1.0f) {
@@ -80,13 +80,13 @@ ui::action_transform_f const &ui::ping_pong_transformer() {
     return _transformer;
 }
 
-ui::action_transform_f const &ui::reverse_transformer() {
-    static action_transform_f const _transformer = [](float const pos) { return 1.0f - pos; };
+ui::transform_f const &ui::reverse_transformer() {
+    static transform_f const _transformer = [](float const pos) { return 1.0f - pos; };
 
     return _transformer;
 }
 
-ui::action_transform_f ui::connect(std::vector<action_transform_f> transformers) {
+ui::transform_f ui::connect(std::vector<transform_f> transformers) {
     auto transformer = [transformers = std::move(transformers)](float const value) {
         float _value = value;
         for (auto transformer : transformers) {
