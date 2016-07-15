@@ -17,10 +17,7 @@ namespace ui {
         explicit metal_system(id<MTLDevice> const);
         metal_system(std::nullptr_t);
 
-        id<MTLTexture> newMtlTexture(MTLTextureDescriptor *) const;
-        id<MTLSamplerState> newMtlSamplerState(MTLSamplerDescriptor *) const;
-        id<MTLBuffer> newMtlBuffer(std::size_t const length) const;
-
+        ui::makable_metal_system &makable();
         ui::renderable_metal_system &renderable();
 
 #if YAS_TEST
@@ -28,6 +25,7 @@ namespace ui {
 #endif
 
        private:
+        ui::makable_metal_system _makable = nullptr;
         ui::renderable_metal_system _renderable = nullptr;
     };
 }
