@@ -19,14 +19,14 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_button_node.square_node().node());
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_text_node.strings_node().square_node().node());
-    root_node.push_back_sub_node(_modifier_node.strings_node().square_node().node());
-    
-    _button_node.square_node().node().push_back_sub_node(_button_status_node.strings_node().square_node().node());
+    root_node.push_back_sub_node(_text_node.strings().square_node().node());
+    root_node.push_back_sub_node(_modifier_node.strings().square_node().node());
 
-    _text_node.strings_node().set_font_atlas(_font_atlas);
-    _modifier_node.strings_node().set_font_atlas(_font_atlas);
-    _button_status_node.strings_node().set_font_atlas(_font_atlas);
+    _button_node.square_node().node().push_back_sub_node(_button_status_node.strings().square_node().node());
+
+    _text_node.strings().set_font_atlas(_font_atlas);
+    _modifier_node.strings().set_font_atlas(_font_atlas);
+    _button_status_node.strings().set_font_atlas(_font_atlas);
 
     _button_observer = _button_node.subject().make_wild_card_observer([weak_status_node = to_weak(_button_status_node)](
         auto const &context) {

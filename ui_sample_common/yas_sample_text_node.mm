@@ -7,14 +7,14 @@
 using namespace yas;
 
 struct sample::text_node::impl : base::impl {
-    ui::strings_node strings_node;
+    ui::strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : strings_node({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
-        strings_node.set_pivot(ui::pivot::left);
+    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
+        _strings.set_pivot(ui::pivot::left);
     }
 
     void setup_renderer_observer() {
-        auto &node = strings_node.square_node().node();
+        auto &node = _strings.square_node().node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
@@ -56,19 +56,19 @@ struct sample::text_node::impl : base::impl {
 
             switch (key_code) {
                 case 51: {
-                    auto &text = strings_node.text();
+                    auto &text = _strings.text();
                     if (text.size() > 0) {
-                        strings_node.set_text(text.substr(0, text.size() - 1));
+                        _strings.set_text(text.substr(0, text.size() - 1));
                     }
                 } break;
 
-                default: { strings_node.set_text(strings_node.text() + event.get<ui::key>().characters()); } break;
+                default: { _strings.set_text(_strings.text() + event.get<ui::key>().characters()); } break;
             }
         }
     }
 
     void set_text_position(ui::uint_size const &view_size) {
-        auto &node = strings_node.square_node().node();
+        auto &node = _strings.square_node().node();
         node.set_position(
             {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
     }
@@ -84,6 +84,6 @@ sample::text_node::text_node(ui::font_atlas font_atlas) : base(std::make_shared<
 sample::text_node::text_node(std::nullptr_t) : base(nullptr) {
 }
 
-ui::strings_node &sample::text_node::strings_node() {
-    return impl_ptr<impl>()->strings_node;
+ui::strings &sample::text_node::strings() {
+    return impl_ptr<impl>()->_strings;
 }

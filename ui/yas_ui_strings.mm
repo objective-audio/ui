@@ -1,5 +1,5 @@
 //
-//  yas_ui_strings_node.mm
+//  yas_ui_strings.mm
 //
 
 #include "yas_each_index.h"
@@ -9,12 +9,12 @@
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
 #include "yas_ui_square_node.h"
-#include "yas_ui_strings_node.h"
+#include "yas_ui_strings.h"
 #include "yas_ui_texture.h"
 
 using namespace yas;
 
-struct ui::strings_node::impl : base::impl {
+struct ui::strings::impl : base::impl {
     impl(std::size_t const max_word_count) : _square_node(make_square_node(max_word_count)) {
     }
 
@@ -39,13 +39,13 @@ struct ui::strings_node::impl : base::impl {
 
         if (_font_atlas) {
             _square_node.node().mesh().set_texture(_font_atlas.texture());
-            _font_atlas_observer = _font_atlas.subject().make_observer(
-                ui::font_atlas::method::texture_changed,
-                [weak_strings_node = to_weak(cast<strings_node>())](auto const &context) {
-                    if (auto strings_node = weak_strings_node.lock()) {
-                        strings_node.impl_ptr<impl>()->update_mesh_data();
-                    }
-                });
+            _font_atlas_observer =
+                _font_atlas.subject().make_observer(ui::font_atlas::method::texture_changed,
+                                                    [weak_strings = to_weak(cast<strings>())](auto const &context) {
+                                                        if (auto strings = weak_strings.lock()) {
+                                                            strings.impl_ptr<impl>()->update_mesh_data();
+                                                        }
+                                                    });
         } else {
             _square_node.node().mesh().set_texture(nullptr);
             _font_atlas_observer = nullptr;
@@ -96,41 +96,41 @@ struct ui::strings_node::impl : base::impl {
     ui::font_atlas::observer_t _font_atlas_observer = nullptr;
 };
 
-ui::strings_node::strings_node(args args) : base(std::make_shared<impl>(args.max_word_count)) {
+ui::strings::strings(args args) : base(std::make_shared<impl>(args.max_word_count)) {
     set_font_atlas(std::move(args.font_atlas));
 }
 
-ui::strings_node::strings_node(std::nullptr_t) : base(nullptr) {
+ui::strings::strings(std::nullptr_t) : base(nullptr) {
 }
 
-ui::font_atlas const &ui::strings_node::font_atlas() const {
+ui::font_atlas const &ui::strings::font_atlas() const {
     return impl_ptr<impl>()->font_atlas();
 }
 
-std::string const &ui::strings_node::text() const {
+std::string const &ui::strings::text() const {
     return impl_ptr<impl>()->text();
 }
 
-ui::pivot ui::strings_node::pivot() const {
+ui::pivot ui::strings::pivot() const {
     return impl_ptr<impl>()->pivot();
 }
 
-float ui::strings_node::width() const {
+float ui::strings::width() const {
     return impl_ptr<impl>()->width();
 }
 
-void ui::strings_node::set_font_atlas(ui::font_atlas atlas) {
+void ui::strings::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->set_font_atlas(std::move(atlas));
 }
 
-void ui::strings_node::set_text(std::string text) {
+void ui::strings::set_text(std::string text) {
     impl_ptr<impl>()->set_text(std::move(text));
 }
 
-void ui::strings_node::set_pivot(ui::pivot const pivot) {
+void ui::strings::set_pivot(ui::pivot const pivot) {
     impl_ptr<impl>()->set_pivot(pivot);
 }
 
-ui::square_node &ui::strings_node::square_node() {
+ui::square_node &ui::strings::square_node() {
     return impl_ptr<impl>()->_square_node;
 }

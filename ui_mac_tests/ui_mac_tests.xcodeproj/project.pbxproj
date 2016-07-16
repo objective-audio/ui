@@ -51,7 +51,7 @@
 		B66BB7841D1F6C0D00AB3D48 /* yas_ui_renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB7591D1F6C0D00AB3D48 /* yas_ui_renderer.mm */; };
 		B66BB7851D1F6C0D00AB3D48 /* yas_ui_renderer_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB75B1D1F6C0D00AB3D48 /* yas_ui_renderer_protocol.mm */; };
 		B66BB7861D1F6C0D00AB3D48 /* yas_ui_square_node.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB75D1D1F6C0D00AB3D48 /* yas_ui_square_node.mm */; };
-		B66BB7871D1F6C0D00AB3D48 /* yas_ui_strings_node.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB75F1D1F6C0D00AB3D48 /* yas_ui_strings_node.mm */; };
+		B66BB7871D1F6C0D00AB3D48 /* yas_ui_strings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB75F1D1F6C0D00AB3D48 /* yas_ui_strings.mm */; };
 		B66BB7881D1F6C0D00AB3D48 /* yas_ui_texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB7611D1F6C0D00AB3D48 /* yas_ui_texture.mm */; };
 		B66BB7891D1F6C0D00AB3D48 /* yas_ui_transformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66BB7621D1F6C0D00AB3D48 /* yas_ui_transformer.cpp */; };
 		B66BB78A1D1F6C0D00AB3D48 /* yas_ui_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66BB7641D1F6C0D00AB3D48 /* yas_ui_types.cpp */; };
@@ -201,8 +201,8 @@
 		B66BB75B1D1F6C0D00AB3D48 /* yas_ui_renderer_protocol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_renderer_protocol.mm; sourceTree = "<group>"; };
 		B66BB75C1D1F6C0D00AB3D48 /* yas_ui_square_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_square_node.h; sourceTree = "<group>"; };
 		B66BB75D1D1F6C0D00AB3D48 /* yas_ui_square_node.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_square_node.mm; sourceTree = "<group>"; };
-		B66BB75E1D1F6C0D00AB3D48 /* yas_ui_strings_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings_node.h; sourceTree = "<group>"; };
-		B66BB75F1D1F6C0D00AB3D48 /* yas_ui_strings_node.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings_node.mm; sourceTree = "<group>"; };
+		B66BB75E1D1F6C0D00AB3D48 /* yas_ui_strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings.h; sourceTree = "<group>"; };
+		B66BB75F1D1F6C0D00AB3D48 /* yas_ui_strings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings.mm; sourceTree = "<group>"; };
 		B66BB7601D1F6C0D00AB3D48 /* yas_ui_texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture.h; sourceTree = "<group>"; };
 		B66BB7611D1F6C0D00AB3D48 /* yas_ui_texture.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_texture.mm; sourceTree = "<group>"; };
 		B66BB7621D1F6C0D00AB3D48 /* yas_ui_transformer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_transformer.cpp; sourceTree = "<group>"; };
@@ -449,8 +449,8 @@
 				B66BB7591D1F6C0D00AB3D48 /* yas_ui_renderer.mm */,
 				B66BB75C1D1F6C0D00AB3D48 /* yas_ui_square_node.h */,
 				B66BB75D1D1F6C0D00AB3D48 /* yas_ui_square_node.mm */,
-				B66BB75E1D1F6C0D00AB3D48 /* yas_ui_strings_node.h */,
-				B66BB75F1D1F6C0D00AB3D48 /* yas_ui_strings_node.mm */,
+				B66BB75E1D1F6C0D00AB3D48 /* yas_ui_strings.h */,
+				B66BB75F1D1F6C0D00AB3D48 /* yas_ui_strings.mm */,
 				B66BB7601D1F6C0D00AB3D48 /* yas_ui_texture.h */,
 				B66BB7611D1F6C0D00AB3D48 /* yas_ui_texture.mm */,
 				B66BB7621D1F6C0D00AB3D48 /* yas_ui_transformer.cpp */,
@@ -701,7 +701,7 @@
 				B66BB77C1D1F6C0D00AB3D48 /* yas_ui_metal_system.mm in Sources */,
 				B643EEFF1D29109B00179248 /* yas_ui_metal_system_protocol.mm in Sources */,
 				B66BB7841D1F6C0D00AB3D48 /* yas_ui_renderer.mm in Sources */,
-				B66BB7871D1F6C0D00AB3D48 /* yas_ui_strings_node.mm in Sources */,
+				B66BB7871D1F6C0D00AB3D48 /* yas_ui_strings.mm in Sources */,
 				B66BB7861D1F6C0D00AB3D48 /* yas_ui_square_node.mm in Sources */,
 				B66BB7831D1F6C0D00AB3D48 /* yas_ui_render_info.mm in Sources */,
 				B66BB8631D1F6C7D00AB3D48 /* yas_protocol.cpp in Sources */,

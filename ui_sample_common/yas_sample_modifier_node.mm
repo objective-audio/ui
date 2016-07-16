@@ -7,14 +7,14 @@
 using namespace yas;
 
 struct sample::modifier_node::impl : base::impl {
-    ui::strings_node strings_node;
+    ui::strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : strings_node({.font_atlas = font_atlas, .max_word_count = 64}) {
-        strings_node.set_pivot(ui::pivot::right);
+    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 64}) {
+        _strings.set_pivot(ui::pivot::right);
     }
 
     void setup_renderer_observer() {
-        auto &node = strings_node.square_node().node();
+        auto &node = _strings.square_node().node();
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_modifier_node = to_weak(cast<modifier_node>()),
@@ -67,11 +67,11 @@ struct sample::modifier_node::impl : base::impl {
             flag_texts.emplace_back(to_string(flg));
         }
 
-        strings_node.set_text(joined(flag_texts, " + "));
+        _strings.set_text(joined(flag_texts, " + "));
     }
 
     void set_node_position(ui::uint_size const &view_size) {
-        auto &node = strings_node.square_node().node();
+        auto &node = _strings.square_node().node();
         node.set_position(
             {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
     }
@@ -87,6 +87,6 @@ sample::modifier_node::modifier_node(ui::font_atlas font_atlas) : base(std::make
 sample::modifier_node::modifier_node(std::nullptr_t) : base(nullptr) {
 }
 
-ui::strings_node &sample::modifier_node::strings_node() {
-    return impl_ptr<impl>()->strings_node;
+ui::strings &sample::modifier_node::strings() {
+    return impl_ptr<impl>()->_strings;
 }

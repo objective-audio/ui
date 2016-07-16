@@ -14,7 +14,7 @@ namespace sample {
         explicit text_node(ui::font_atlas atlas = nullptr);
         text_node(std::nullptr_t);
 
-        ui::strings_node &strings_node();
+        ui::strings &strings();
     };
 }
 }
