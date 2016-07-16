@@ -8,9 +8,8 @@
 
 namespace yas {
 namespace ui {
-    class square_node;
+    class square;
     class texture;
-    class uint_region;
     class renderer;
 }
 
@@ -37,7 +36,7 @@ namespace sample {
 
         subject_t &subject();
 
-        ui::square_node &square_node();
+        ui::square &square();
     };
 }
 

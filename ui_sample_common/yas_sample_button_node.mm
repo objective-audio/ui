@@ -11,15 +11,15 @@ using namespace yas;
 #pragma mark - button_node::impl
 
 struct sample::button_node::impl : base::impl {
-    yas::sample::button_node::subject_t subject;
-    ui::square_node square_node = ui::make_square_node(2, 1);
+    yas::sample::button_node::subject_t _subject;
+    ui::square _square = ui::make_square(2, 1);
 
     impl() {
         _setup_node();
     }
 
     void setup_renderer_observer() {
-        auto &node = square_node.node();
+        auto &node = _square.node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
@@ -62,7 +62,7 @@ struct sample::button_node::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
-        auto &mesh = square_node.node().mesh();
+        auto &mesh = _square.node().mesh();
         mesh.set_texture(texture);
 
         if (!texture) {
@@ -72,7 +72,7 @@ struct sample::button_node::impl : base::impl {
         float const radius = 60;
         uint32_t const width = radius * 2;
 
-        auto &square_mesh_data = square_node.square_mesh_data();
+        auto &square_mesh_data = _square.square_mesh_data();
 
         ui::uint_size image_size{width, width};
         ui::image image{{.point_size = image_size, .scale_factor = texture.scale_factor()}};
@@ -105,7 +105,7 @@ struct sample::button_node::impl : base::impl {
    private:
     void _setup_node() {
         float const radius = 60;
-        auto &square_mesh_data = square_node.square_mesh_data();
+        auto &square_mesh_data = _square.square_mesh_data();
 
         ui::float_region region{-radius, -radius, radius * 2.0f, radius * 2.0f};
         for (auto const &idx : make_each(2)) {
@@ -115,18 +115,18 @@ struct sample::button_node::impl : base::impl {
         ui::collider collider;
         collider.set_shape(ui::collider_shape::circle);
         collider.set_radius(radius);
-        square_node.node().set_collider(std::move(collider));
+        _square.node().set_collider(std::move(collider));
 
         _update_square_index();
     }
 
     void _update_square_index() {
         std::size_t const sq_idx = _tracking_event ? 1 : 0;
-        square_node.square_mesh_data().set_square_index(0, sq_idx);
+        _square.square_mesh_data().set_square_index(0, sq_idx);
     }
 
     base _make_leave_observer() {
-        auto &node = square_node.node();
+        auto &node = _square.node();
 
         node.dispatch_method(ui::node::method::position_changed);
         node.dispatch_method(ui::node::method::angle_changed);
@@ -167,7 +167,7 @@ struct sample::button_node::impl : base::impl {
     }
 
     void _update_tracking(ui::event const &event) {
-        auto &node = square_node.node();
+        auto &node = _square.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
             auto button_node = cast<sample::button_node>();
@@ -178,7 +178,7 @@ struct sample::button_node::impl : base::impl {
                     if (!is_tracking()) {
                         if (detector.detect(touch_event.position(), node.collider())) {
                             set_tracking_event(event);
-                            subject.notify(sample::button_node::method::began, button_node);
+                            _subject.notify(sample::button_node::method::began, button_node);
                         }
                     }
                     break;
@@ -189,7 +189,7 @@ struct sample::button_node::impl : base::impl {
                 case ui::event_phase::ended:
                     if (is_tracking(event)) {
                         set_tracking_event(nullptr);
-                        subject.notify(sample::button_node::method::ended, button_node);
+                        _subject.notify(sample::button_node::method::ended, button_node);
                     }
                     break;
                 case ui::event_phase::canceled:
@@ -202,7 +202,7 @@ struct sample::button_node::impl : base::impl {
     }
 
     void _leave_or_enter_tracking(ui::event const &event) {
-        auto &node = square_node.node();
+        auto &node = _square.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
             auto const &touch_event = event.get<ui::touch>();
@@ -210,10 +210,10 @@ struct sample::button_node::impl : base::impl {
             bool is_detected = detector.detect(touch_event.position(), node.collider());
             if (!is_event_tracking && is_detected) {
                 set_tracking_event(event);
-                subject.notify(sample::button_node::method::entered, cast<sample::button_node>());
+                _subject.notify(sample::button_node::method::entered, cast<sample::button_node>());
             } else if (is_event_tracking && !is_detected) {
                 set_tracking_event(nullptr);
-                subject.notify(sample::button_node::method::leaved, cast<sample::button_node>());
+                _subject.notify(sample::button_node::method::leaved, cast<sample::button_node>());
             }
         }
     }
@@ -221,7 +221,7 @@ struct sample::button_node::impl : base::impl {
     void _cancel_tracking(ui::event const &event) {
         if (is_tracking(event)) {
             set_tracking_event(nullptr);
-            subject.notify(sample::button_node::method::canceled, cast<sample::button_node>());
+            _subject.notify(sample::button_node::method::canceled, cast<sample::button_node>());
         }
     }
 
@@ -243,11 +243,11 @@ void sample::button_node::set_texture(ui::texture texture) {
 }
 
 sample::button_node::subject_t &sample::button_node::subject() {
-    return impl_ptr<impl>()->subject;
+    return impl_ptr<impl>()->_subject;
 }
 
-ui::square_node &sample::button_node::square_node() {
-    return impl_ptr<impl>()->square_node;
+ui::square &sample::button_node::square() {
+    return impl_ptr<impl>()->_square;
 }
 
 std::string yas::to_string(sample::button_node::method const &method) {

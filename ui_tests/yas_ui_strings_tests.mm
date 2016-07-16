@@ -7,7 +7,7 @@
 #import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_ui_font_atlas.h"
-#import "yas_ui_square_node.h"
+#import "yas_ui_square.h"
 #import "yas_ui_strings.h"
 
 using namespace yas;
@@ -36,7 +36,7 @@ using namespace yas;
     XCTAssertEqual(strings.pivot(), ui::pivot::left);
     XCTAssertEqual(strings.width(), 0.0f);
 
-    XCTAssertEqual(strings.square_node().square_mesh_data().max_square_count(), 16);
+    XCTAssertEqual(strings.square().square_mesh_data().max_square_count(), 16);
 }
 
 - (void)test_create_with_font_atlas {

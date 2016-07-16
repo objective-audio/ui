@@ -1,5 +1,5 @@
 //
-//  yas_ui_square_node.h
+//  yas_ui_square.h
 //
 
 #pragma once
@@ -40,18 +40,18 @@ namespace ui {
     square_mesh_data make_square_mesh_data(std::size_t const max_square_count);
     square_mesh_data make_square_mesh_data(std::size_t const max_square_count, std::size_t const max_index_count);
 
-    class square_node : public base {
+    class square : public base {
         class impl;
 
        public:
-        explicit square_node(square_mesh_data);
-        square_node(std::nullptr_t);
+        explicit square(square_mesh_data);
+        square(std::nullptr_t);
 
         ui::node &node();
         ui::square_mesh_data &square_mesh_data();
     };
 
-    square_node make_square_node(std::size_t const max_square_count);
-    square_node make_square_node(std::size_t const max_square_count, std::size_t const max_index_count);
+    square make_square(std::size_t const max_square_count);
+    square make_square(std::size_t const max_square_count, std::size_t const max_index_count);
 }
 }

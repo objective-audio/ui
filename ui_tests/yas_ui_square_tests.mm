@@ -1,19 +1,19 @@
 //
-//  yas_ui_square_node_tests.mm
+//  yas_ui_square_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import "yas_each_index.h"
 #import "yas_ui_mesh_data.h"
-#import "yas_ui_square_node.h"
+#import "yas_ui_square.h"
 
 using namespace yas;
 
-@interface yas_ui_square_node_tests : XCTestCase
+@interface yas_ui_square_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_square_node_tests
+@implementation yas_ui_square_tests
 
 - (void)setUp {
     [super setUp];
@@ -24,15 +24,15 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto square_node = ui::make_square_node(2);
+    auto square = ui::make_square(2);
 
-    XCTAssertTrue(square_node);
-    XCTAssertTrue(square_node.square_mesh_data().dynamic_mesh_data());
+    XCTAssertTrue(square);
+    XCTAssertTrue(square.square_mesh_data().dynamic_mesh_data());
 
-    XCTAssertEqual(square_node.square_mesh_data().dynamic_mesh_data().vertex_count(), 2 * 4);
-    XCTAssertEqual(square_node.square_mesh_data().dynamic_mesh_data().index_count(), 2 * 6);
+    XCTAssertEqual(square.square_mesh_data().dynamic_mesh_data().vertex_count(), 2 * 4);
+    XCTAssertEqual(square.square_mesh_data().dynamic_mesh_data().index_count(), 2 * 6);
 
-    auto const indices = square_node.square_mesh_data().dynamic_mesh_data().indices();
+    auto const indices = square.square_mesh_data().dynamic_mesh_data().indices();
 
     XCTAssertEqual(indices[0], 0);
     XCTAssertEqual(indices[1], 2);
@@ -50,17 +50,17 @@ using namespace yas;
 }
 
 - (void)test_create_null {
-    ui::square_node square_node{nullptr};
+    ui::square square{nullptr};
 
-    XCTAssertFalse(square_node);
+    XCTAssertFalse(square);
 }
 
 - (void)test_set_index {
-    auto square_node = ui::make_square_node(2);
+    auto square = ui::make_square(2);
 
-    auto const indices = square_node.square_mesh_data().dynamic_mesh_data().indices();
+    auto const indices = square.square_mesh_data().dynamic_mesh_data().indices();
 
-    square_node.square_mesh_data().set_square_index(0, 1);
+    square.square_mesh_data().set_square_index(0, 1);
 
     XCTAssertEqual(indices[0], 4);
     XCTAssertEqual(indices[1], 6);
@@ -69,7 +69,7 @@ using namespace yas;
     XCTAssertEqual(indices[4], 6);
     XCTAssertEqual(indices[5], 7);
 
-    square_node.square_mesh_data().set_square_index(1, 0);
+    square.square_mesh_data().set_square_index(1, 0);
 
     XCTAssertEqual(indices[6], 0);
     XCTAssertEqual(indices[7], 2);
@@ -80,10 +80,10 @@ using namespace yas;
 }
 
 - (void)test_set_indices {
-    auto square_node = ui::make_square_node(2);
-    auto const indices = square_node.square_mesh_data().dynamic_mesh_data().indices();
+    auto square = ui::make_square(2);
+    auto const indices = square.square_mesh_data().dynamic_mesh_data().indices();
 
-    square_node.square_mesh_data().set_square_indices({{0, 1}, {1, 0}});
+    square.square_mesh_data().set_square_indices({{0, 1}, {1, 0}});
 
     XCTAssertEqual(indices[0], 4);
     XCTAssertEqual(indices[1], 6);
@@ -101,10 +101,10 @@ using namespace yas;
 }
 
 - (void)test_set_vertex_by_region {
-    auto square_node = ui::make_square_node(2);
-    auto vertices = square_node.square_mesh_data().dynamic_mesh_data().vertices();
+    auto square = ui::make_square(2);
+    auto vertices = square.square_mesh_data().dynamic_mesh_data().vertices();
 
-    square_node.square_mesh_data().set_square_position({1.0f, 2.0f, 3.0f, 4.0f}, 0);
+    square.square_mesh_data().set_square_position({1.0f, 2.0f, 3.0f, 4.0f}, 0);
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 2.0f);
@@ -115,7 +115,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].position.x, 4.0f);
     XCTAssertEqual(vertices[3].position.y, 6.0f);
 
-    square_node.square_mesh_data().set_square_position({2.0f, 3.0f, 4.0f, 5.0f}, 1);
+    square.square_mesh_data().set_square_position({2.0f, 3.0f, 4.0f, 5.0f}, 1);
 
     XCTAssertEqual(vertices[4].position.x, 2.0f);
     XCTAssertEqual(vertices[4].position.y, 3.0f);
@@ -128,10 +128,10 @@ using namespace yas;
 }
 
 - (void)test_set_tex_coords {
-    auto square_node = ui::make_square_node(2);
-    auto vertices = square_node.square_mesh_data().dynamic_mesh_data().vertices();
+    auto square = ui::make_square(2);
+    auto vertices = square.square_mesh_data().dynamic_mesh_data().vertices();
 
-    square_node.square_mesh_data().set_square_tex_coords(ui::uint_region{10, 20, 30, 40}, 0);
+    square.square_mesh_data().set_square_tex_coords(ui::uint_region{10, 20, 30, 40}, 0);
 
     XCTAssertEqual(vertices[0].tex_coord.x, 10.0f);
     XCTAssertEqual(vertices[0].tex_coord.y, 60.0f);
@@ -142,7 +142,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
     XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 
-    square_node.square_mesh_data().set_square_tex_coords(ui::uint_region{100, 200, 300, 400}, 0);
+    square.square_mesh_data().set_square_tex_coords(ui::uint_region{100, 200, 300, 400}, 0);
 
     XCTAssertEqual(vertices[0].tex_coord.x, 100.0f);
     XCTAssertEqual(vertices[0].tex_coord.y, 600.0f);
@@ -180,8 +180,8 @@ using namespace yas;
 }
 
 - (void)test_set_vertex_by_data {
-    auto square_node = ui::make_square_node(2);
-    auto vertices = square_node.square_mesh_data().dynamic_mesh_data().vertices();
+    auto square = ui::make_square(2);
+    auto vertices = square.square_mesh_data().dynamic_mesh_data().vertices();
 
     ui::vertex2d_t in_data[4];
 
@@ -220,7 +220,7 @@ using namespace yas;
     in_data[3].color[2] = 35.0f;
     in_data[3].color[3] = 36.0f;
 
-    square_node.square_mesh_data().set_square_vertex(in_data, 0);
+    square.square_mesh_data().set_square_vertex(in_data, 0);
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 2.0f);
@@ -292,7 +292,7 @@ using namespace yas;
     in_data[3].color[2] = 135.0f;
     in_data[3].color[3] = 136.0f;
 
-    square_node.square_mesh_data().set_square_vertex(in_data, 1);
+    square.square_mesh_data().set_square_vertex(in_data, 1);
 
     XCTAssertEqual(vertices[4].position.x, 101.0f);
     XCTAssertEqual(vertices[4].position.y, 102.0f);

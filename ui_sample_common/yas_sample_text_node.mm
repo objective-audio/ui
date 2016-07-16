@@ -14,7 +14,7 @@ struct sample::text_node::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        auto &node = _strings.square_node().node();
+        auto &node = _strings.square().node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
@@ -68,7 +68,7 @@ struct sample::text_node::impl : base::impl {
     }
 
     void set_text_position(ui::uint_size const &view_size) {
-        auto &node = _strings.square_node().node();
+        auto &node = _strings.square().node();
         node.set_position(
             {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
     }

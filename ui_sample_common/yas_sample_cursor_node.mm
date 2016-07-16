@@ -40,7 +40,7 @@ struct sample::cursor_node::impl : base::impl {
     void _setup_node() {
         auto const count = 5;
         auto const angle_dif = 360.0f / count;
-        auto mesh_node = ui::make_square_node(count);
+        auto mesh_node = ui::make_square(count);
 
         ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
         auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
