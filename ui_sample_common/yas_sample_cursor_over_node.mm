@@ -39,7 +39,7 @@ struct sample::cursor_over_node::impl : base::impl {
         _nodes.reserve(count);
 
         for (auto const &idx : make_each(count)) {
-            auto sq_node = ui::make_square_node(1);
+            auto sq_node = ui::make_square(1);
             sq_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
 
             auto &node = sq_node.node();

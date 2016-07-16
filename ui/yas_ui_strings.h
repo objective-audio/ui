@@ -1,5 +1,5 @@
 //
-//  yas_ui_strings_node.h
+//  yas_ui_strings.h
 //
 
 #pragma once
@@ -7,9 +7,9 @@
 namespace yas {
 namespace ui {
     class font_atlas;
-    class square_node;
+    class square;
 
-    class strings_node : public base {
+    class strings : public base {
        public:
         class impl;
 
@@ -18,8 +18,8 @@ namespace ui {
             std::size_t max_word_count = 16;
         };
 
-        strings_node(args);
-        strings_node(std::nullptr_t);
+        strings(args);
+        strings(std::nullptr_t);
 
         ui::font_atlas const &font_atlas() const;
         std::string const &text() const;
@@ -30,7 +30,7 @@ namespace ui {
         void set_text(std::string);
         void set_pivot(ui::pivot const);
 
-        ui::square_node &square_node();
+        ui::square &square();
     };
 }
 }

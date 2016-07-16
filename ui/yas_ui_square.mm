@@ -1,12 +1,12 @@
 //
-//  yas_ui_square_node.mm
+//  yas_ui_square.mm
 //
 
 #include "yas_each_index.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
-#include "yas_ui_square_node.h"
+#include "yas_ui_square.h"
 
 using namespace yas;
 
@@ -158,9 +158,9 @@ ui::square_mesh_data ui::make_square_mesh_data(std::size_t const square_count, s
     return sq_mesh_data;
 }
 
-#pragma mark - ui::square_node::impl
+#pragma mark - ui::square::impl
 
-struct yas::ui::square_node::impl : base::impl {
+struct yas::ui::square::impl : base::impl {
     impl(ui::square_mesh_data &&sq_mesh_data) : _square_mesh_data(std::move(sq_mesh_data)) {
     }
 
@@ -168,29 +168,28 @@ struct yas::ui::square_node::impl : base::impl {
     ui::square_mesh_data _square_mesh_data;
 };
 
-#pragma mark - ui::square_node
+#pragma mark - ui::square
 
-ui::square_node::square_node(ui::square_mesh_data sq_mesh_data)
-    : base(std::make_shared<impl>(std::move(sq_mesh_data))) {
+ui::square::square(ui::square_mesh_data sq_mesh_data) : base(std::make_shared<impl>(std::move(sq_mesh_data))) {
 }
 
-ui::square_node::square_node(std::nullptr_t) : base(nullptr) {
+ui::square::square(std::nullptr_t) : base(nullptr) {
 }
 
-ui::node &ui::square_node::node() {
+ui::node &ui::square::node() {
     return impl_ptr<impl>()->_node;
 }
 
-ui::square_mesh_data &ui::square_node::square_mesh_data() {
+ui::square_mesh_data &ui::square::square_mesh_data() {
     return impl_ptr<impl>()->_square_mesh_data;
 }
 
-ui::square_node ui::make_square_node(std::size_t const square_count) {
-    return make_square_node(square_count, square_count);
+ui::square ui::make_square(std::size_t const square_count) {
+    return make_square(square_count, square_count);
 }
 
-ui::square_node ui::make_square_node(std::size_t const square_count, std::size_t const index_count) {
-    ui::square_node node{make_square_mesh_data(square_count, index_count)};
+ui::square ui::make_square(std::size_t const square_count, std::size_t const index_count) {
+    ui::square node{make_square_mesh_data(square_count, index_count)};
     ui::mesh mesh;
     mesh.set_mesh_data(node.square_mesh_data().dynamic_mesh_data());
     node.node().set_mesh(std::move(mesh));
