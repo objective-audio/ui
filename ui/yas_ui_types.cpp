@@ -276,3 +276,23 @@ std::ostream &operator<<(std::ostream &os, yas::ui::color const &color) {
     os << to_string(color);
     return os;
 }
+
+std::ostream &operator<<(std::ostream &os, simd::float2 const &vec) {
+    os << to_string(vec);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, simd::float3 const &vec) {
+    os << to_string(vec);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, simd::float4 const &vec) {
+    os << to_string(vec);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, simd::float4x4 const &mat) {
+    os << to_string(mat);
+    return os;
+}

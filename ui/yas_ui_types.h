@@ -181,3 +181,8 @@ std::ostream &operator<<(std::ostream &, yas::ui::float_region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::color const &);
+
+std::ostream &operator<<(std::ostream &, simd::float2 const &);
+std::ostream &operator<<(std::ostream &, simd::float3 const &);
+std::ostream &operator<<(std::ostream &, simd::float4 const &);
+std::ostream &operator<<(std::ostream &, simd::float4x4 const &);
