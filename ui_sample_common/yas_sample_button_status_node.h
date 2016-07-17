@@ -14,7 +14,7 @@ namespace sample {
         explicit button_status_node(ui::font_atlas atlas = nullptr);
         button_status_node(std::nullptr_t);
 
-        void set_status(sample::button_node::method const);
+        void set_status(ui::button::method const);
 
         ui::strings &strings();
     };

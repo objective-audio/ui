@@ -62,7 +62,7 @@ struct sample::text_node::impl : base::impl {
                     }
                 } break;
 
-                default: { _strings.set_text(_strings.text() + event.get<ui::key>().characters()); } break;
+                default: { append_text(event.get<ui::key>().characters()); } break;
             }
         }
     }
@@ -71,6 +71,10 @@ struct sample::text_node::impl : base::impl {
         auto &node = _strings.square().node();
         node.set_position(
             {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
+    }
+
+    void append_text(std::string text) {
+        _strings.set_text(_strings.text() + text);
     }
 
    private:
@@ -82,6 +86,10 @@ sample::text_node::text_node(ui::font_atlas font_atlas) : base(std::make_shared<
 }
 
 sample::text_node::text_node(std::nullptr_t) : base(nullptr) {
+}
+
+void sample::text_node::append_text(std::string text) {
+    impl_ptr<impl>()->append_text(std::move(text));
 }
 
 ui::strings &sample::text_node::strings() {

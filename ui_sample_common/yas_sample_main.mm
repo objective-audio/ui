@@ -16,30 +16,40 @@ void sample::main::setup() {
     batch_node.push_back_sub_node(_cursor_over_node.node());
     root_node.push_back_sub_node(std::move(batch_node));
 
-    root_node.push_back_sub_node(_button_node.square().node());
+    root_node.push_back_sub_node(_soft_keyboard.node());
+    root_node.push_back_sub_node(_button_node.button().square().node());
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_text_node.strings().square().node());
     root_node.push_back_sub_node(_modifier_node.strings().square().node());
 
-    _button_node.square().node().push_back_sub_node(_button_status_node.strings().square().node());
+    _button_node.button().square().node().push_back_sub_node(_button_status_node.strings().square().node());
 
     _text_node.strings().set_font_atlas(_font_atlas);
     _modifier_node.strings().set_font_atlas(_font_atlas);
     _button_status_node.strings().set_font_atlas(_font_atlas);
+    _soft_keyboard.set_font_atlas(_font_atlas);
 
-    _button_observer = _button_node.subject().make_wild_card_observer([weak_status_node = to_weak(_button_status_node)](
-        auto const &context) {
-        if (auto status_node = weak_status_node.lock()) {
-            status_node.set_status(context.key);
-        }
-    });
+    _button_observer =
+        _button_node.button().subject().make_wild_card_observer([weak_status_node = to_weak(_button_status_node)](
+            auto const &context) {
+            if (auto status_node = weak_status_node.lock()) {
+                status_node.set_status(context.key);
+            }
+        });
+
+    _keyboard_observer =
+        _soft_keyboard.subject().make_wild_card_observer([weak_text_node = to_weak(_text_node)](auto const &context) {
+            if (auto text_node = weak_text_node.lock()) {
+                text_node.append_text(context.key);
+            }
+        });
 
     auto button_pos_action =
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
-                                                   .end_position = {150.0f, 0.0f},
+                                                   .end_position = {32.0f, 0.0f},
                                                    .continuous_action = {.duration = 5.0, .loop_count = 0}});
-    button_pos_action.set_target(_button_node.square().node());
+    button_pos_action.set_target(_button_node.button().square().node());
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     renderer.insert_action(std::move(button_pos_action));
 
