@@ -21,19 +21,19 @@ using namespace yas;
 
 #pragma mark - strings_layout
 
-ui::strings_layout::strings_layout(std::size_t const word_count) : _squares(word_count), _width(0.0) {
+ui::strings_layout::strings_layout(std::size_t const word_count) : _rects(word_count), _width(0.0) {
 }
 
-ui::vertex2d_square_t const &ui::strings_layout::square(std::size_t const word_index) const {
-    return _squares.at(word_index);
+ui::vertex2d_rect_t const &ui::strings_layout::rect(std::size_t const word_index) const {
+    return _rects.at(word_index);
 }
 
-std::vector<ui::vertex2d_square_t> const &ui::strings_layout::squares() const {
-    return _squares;
+std::vector<ui::vertex2d_rect_t> const &ui::strings_layout::rects() const {
+    return _rects;
 }
 
 std::size_t ui::strings_layout::word_count() const {
-    return _squares.size();
+    return _rects.size();
 }
 
 double ui::strings_layout::width() const {
@@ -48,8 +48,8 @@ namespace ui {
         mutable_strings_layout(std::size_t const word_size) : strings_layout(word_size) {
         }
 
-        ui::vertex2d_square_t &square(std::size_t const word_index) {
-            return _squares.at(word_index);
+        ui::vertex2d_rect_t &rect(std::size_t const word_index) {
+            return _rects.at(word_index);
         }
 
         void set_width(double const width) {
@@ -63,7 +63,7 @@ namespace ui {
 
 namespace yas {
 namespace ui {
-    static ui::vertex2d_square_t constexpr _empty_square{0.0f};
+    static ui::vertex2d_rect_t constexpr _empty_rect{0.0f};
     static CGSize constexpr _empty_advance{0.0f};
 }
 }
@@ -110,36 +110,36 @@ struct ui::font_atlas::impl : base::impl {
             for (auto const &idx : each_index<std::size_t>(word_size)) {
                 auto const &word_idx = word_size - idx - 1;
                 auto const word = text.substr(word_idx, 1);
-                auto const &str_square = _square(word);
+                auto const &str_rect = _rect(word);
 
                 width += _advance(word).width;
 
-                auto &layout_square = strings_layout.square(word_idx);
+                auto &layout_rect = strings_layout.rect(word_idx);
 
-                if (&str_square == &_empty_square) {
-                    layout_square = {0.0f};
+                if (&str_rect == &_empty_rect) {
+                    layout_rect = {0.0f};
                 } else {
-                    for (auto const &sq_idx : each_index<std::size_t>(4)) {
-                        layout_square.v[sq_idx] = str_square.v[sq_idx];
-                        layout_square.v[sq_idx].position.x =
-                            roundf(layout_square.v[sq_idx].position.x - width, scale_factor);
+                    for (auto const &rect_idx : each_index<std::size_t>(4)) {
+                        layout_rect.v[rect_idx] = str_rect.v[rect_idx];
+                        layout_rect.v[rect_idx].position.x =
+                            roundf(layout_rect.v[rect_idx].position.x - width, scale_factor);
                     }
                 }
             }
         } else {
             for (auto const &word_idx : each_index<std::size_t>(word_size)) {
                 auto const word = text.substr(word_idx, 1);
-                auto const &str_square = _square(word);
+                auto const &str_rect = _rect(word);
 
-                auto &layout_square = strings_layout.square(word_idx);
+                auto &layout_rect = strings_layout.rect(word_idx);
 
-                if (&str_square == &_empty_square) {
-                    layout_square = {0.0f};
+                if (&str_rect == &_empty_rect) {
+                    layout_rect = {0.0f};
                 } else {
-                    for (auto const &sq_idx : each_index<std::size_t>(4)) {
-                        layout_square.v[sq_idx] = str_square.v[sq_idx];
-                        layout_square.v[sq_idx].position.x =
-                            roundf(layout_square.v[sq_idx].position.x + width, scale_factor);
+                    for (auto const &rect_idx : each_index<std::size_t>(4)) {
+                        layout_rect.v[rect_idx] = str_rect.v[rect_idx];
+                        layout_rect.v[rect_idx].position.x =
+                            roundf(layout_rect.v[rect_idx].position.x + width, scale_factor);
                     }
                 }
 
@@ -152,8 +152,8 @@ struct ui::font_atlas::impl : base::impl {
         if (pivot == pivot::center) {
             double offset = roundf(-width * 0.5, scale_factor);
 
-            for (auto &square : strings_layout.squares()) {
-                for (auto &vertex : square.v) {
+            for (auto &rect : strings_layout.rects()) {
+                for (auto &vertex : rect.v) {
                     vertex.position.x += offset;
                 }
             }
@@ -163,13 +163,13 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    std::vector<ui::vertex2d_square_t> _squares;
+    std::vector<ui::vertex2d_rect_t> _rects;
     std::vector<CGSize> _advances;
     ui::texture _texture = nullptr;
 
     void _update_texture() {
         if (!_texture) {
-            _squares.clear();
+            _rects.clear();
             _advances.clear();
             return;
         }
@@ -178,7 +178,7 @@ struct ui::font_atlas::impl : base::impl {
 
         auto const word_size = _words.size();
 
-        _squares.resize(word_size);
+        _rects.resize(word_size);
         _advances.resize(word_size);
 
         CGGlyph glyphs[word_size];
@@ -227,36 +227,36 @@ struct ui::font_atlas::impl : base::impl {
         CFRelease(ct_font);
     }
 
-    ui::vertex2d_square_t const &_square(std::string const &word) {
+    ui::vertex2d_rect_t const &_rect(std::string const &word) {
         auto idx = _words.find_first_of(word);
         if (idx == std::string::npos) {
-            return _empty_square;
+            return _empty_rect;
         }
-        return _squares.at(idx);
+        return _rects.at(idx);
     }
 
     void _set_vertex_position(float_region const &region, std::size_t const word_idx) {
-        auto &square = _squares.at(word_idx);
+        auto &rect = _rects.at(word_idx);
         float const minX = region.origin.x;
         float const minY = region.origin.y;
         float const maxX = minX + region.size.width;
         float const maxY = minY + region.size.height;
-        square.v[0].position.x = square.v[2].position.x = minX;
-        square.v[0].position.y = square.v[1].position.y = minY;
-        square.v[1].position.x = square.v[3].position.x = maxX;
-        square.v[2].position.y = square.v[3].position.y = maxY;
+        rect.v[0].position.x = rect.v[2].position.x = minX;
+        rect.v[0].position.y = rect.v[1].position.y = minY;
+        rect.v[1].position.x = rect.v[3].position.x = maxX;
+        rect.v[2].position.y = rect.v[3].position.y = maxY;
     }
 
     void _set_vertex_tex_coords(uint_region const &region, std::size_t const word_idx) {
-        auto &square = _squares.at(word_idx);
+        auto &rect = _rects.at(word_idx);
         float const minX = region.origin.x;
         float const minY = region.origin.y;
         float const maxX = minX + region.size.width;
         float const maxY = minY + region.size.height;
-        square.v[0].tex_coord.x = square.v[2].tex_coord.x = minX;
-        square.v[0].tex_coord.y = square.v[1].tex_coord.y = maxY;
-        square.v[1].tex_coord.x = square.v[3].tex_coord.x = maxX;
-        square.v[2].tex_coord.y = square.v[3].tex_coord.y = minY;
+        rect.v[0].tex_coord.x = rect.v[2].tex_coord.x = minX;
+        rect.v[0].tex_coord.y = rect.v[1].tex_coord.y = maxY;
+        rect.v[1].tex_coord.x = rect.v[3].tex_coord.x = maxX;
+        rect.v[2].tex_coord.y = rect.v[3].tex_coord.y = minY;
     }
 
     CGSize const &_advance(std::string const &word) {

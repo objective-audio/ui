@@ -7,7 +7,7 @@
 namespace yas {
 namespace ui {
     class font_atlas;
-    class square;
+    class rect_plane;
 
     class strings : public base {
        public:
@@ -30,7 +30,7 @@ namespace ui {
         void set_text(std::string);
         void set_pivot(ui::pivot const);
 
-        ui::square &square();
+        ui::rect_plane &rect_plane();
     };
 }
 }

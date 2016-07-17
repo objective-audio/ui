@@ -14,7 +14,7 @@ namespace sample {
         bg_node();
         bg_node(std::nullptr_t);
 
-        ui::square &square();
+        ui::rect_plane &rect_plane();
     };
 }
 }

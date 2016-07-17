@@ -1,19 +1,19 @@
 //
-//  yas_ui_square_tests.mm
+//  yas_ui_rect_plane_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import "yas_each_index.h"
 #import "yas_ui_mesh_data.h"
-#import "yas_ui_square.h"
+#import "yas_ui_rect_plane.h"
 
 using namespace yas;
 
-@interface yas_ui_square_tests : XCTestCase
+@interface yas_ui_rect_plane_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_square_tests
+@implementation yas_ui_rect_plane_tests
 
 - (void)setUp {
     [super setUp];
@@ -24,15 +24,15 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto square = ui::make_square(2);
+    auto plane = ui::make_rect_plane(2);
 
-    XCTAssertTrue(square);
-    XCTAssertTrue(square.square_mesh_data().dynamic_mesh_data());
+    XCTAssertTrue(plane);
+    XCTAssertTrue(plane.data().dynamic_mesh_data());
 
-    XCTAssertEqual(square.square_mesh_data().dynamic_mesh_data().vertex_count(), 2 * 4);
-    XCTAssertEqual(square.square_mesh_data().dynamic_mesh_data().index_count(), 2 * 6);
+    XCTAssertEqual(plane.data().dynamic_mesh_data().vertex_count(), 2 * 4);
+    XCTAssertEqual(plane.data().dynamic_mesh_data().index_count(), 2 * 6);
 
-    auto const indices = square.square_mesh_data().dynamic_mesh_data().indices();
+    auto const indices = plane.data().dynamic_mesh_data().indices();
 
     XCTAssertEqual(indices[0], 0);
     XCTAssertEqual(indices[1], 2);
@@ -50,17 +50,17 @@ using namespace yas;
 }
 
 - (void)test_create_null {
-    ui::square square{nullptr};
+    ui::rect_plane plane{nullptr};
 
-    XCTAssertFalse(square);
+    XCTAssertFalse(plane);
 }
 
 - (void)test_set_index {
-    auto square = ui::make_square(2);
+    auto plane = ui::make_rect_plane(2);
 
-    auto const indices = square.square_mesh_data().dynamic_mesh_data().indices();
+    auto const indices = plane.data().dynamic_mesh_data().indices();
 
-    square.square_mesh_data().set_square_index(0, 1);
+    plane.data().set_rect_index(0, 1);
 
     XCTAssertEqual(indices[0], 4);
     XCTAssertEqual(indices[1], 6);
@@ -69,7 +69,7 @@ using namespace yas;
     XCTAssertEqual(indices[4], 6);
     XCTAssertEqual(indices[5], 7);
 
-    square.square_mesh_data().set_square_index(1, 0);
+    plane.data().set_rect_index(1, 0);
 
     XCTAssertEqual(indices[6], 0);
     XCTAssertEqual(indices[7], 2);
@@ -80,10 +80,10 @@ using namespace yas;
 }
 
 - (void)test_set_indices {
-    auto square = ui::make_square(2);
-    auto const indices = square.square_mesh_data().dynamic_mesh_data().indices();
+    auto plane = ui::make_rect_plane(2);
+    auto const indices = plane.data().dynamic_mesh_data().indices();
 
-    square.square_mesh_data().set_square_indices({{0, 1}, {1, 0}});
+    plane.data().set_rect_indices({{0, 1}, {1, 0}});
 
     XCTAssertEqual(indices[0], 4);
     XCTAssertEqual(indices[1], 6);
@@ -101,10 +101,10 @@ using namespace yas;
 }
 
 - (void)test_set_vertex_by_region {
-    auto square = ui::make_square(2);
-    auto vertices = square.square_mesh_data().dynamic_mesh_data().vertices();
+    auto plane = ui::make_rect_plane(2);
+    auto vertices = plane.data().dynamic_mesh_data().vertices();
 
-    square.square_mesh_data().set_square_position({1.0f, 2.0f, 3.0f, 4.0f}, 0);
+    plane.data().set_rect_position({1.0f, 2.0f, 3.0f, 4.0f}, 0);
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 2.0f);
@@ -115,7 +115,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].position.x, 4.0f);
     XCTAssertEqual(vertices[3].position.y, 6.0f);
 
-    square.square_mesh_data().set_square_position({2.0f, 3.0f, 4.0f, 5.0f}, 1);
+    plane.data().set_rect_position({2.0f, 3.0f, 4.0f, 5.0f}, 1);
 
     XCTAssertEqual(vertices[4].position.x, 2.0f);
     XCTAssertEqual(vertices[4].position.y, 3.0f);
@@ -128,10 +128,10 @@ using namespace yas;
 }
 
 - (void)test_set_tex_coords {
-    auto square = ui::make_square(2);
-    auto vertices = square.square_mesh_data().dynamic_mesh_data().vertices();
+    auto plane = ui::make_rect_plane(2);
+    auto vertices = plane.data().dynamic_mesh_data().vertices();
 
-    square.square_mesh_data().set_square_tex_coords(ui::uint_region{10, 20, 30, 40}, 0);
+    plane.data().set_rect_tex_coords(ui::uint_region{10, 20, 30, 40}, 0);
 
     XCTAssertEqual(vertices[0].tex_coord.x, 10.0f);
     XCTAssertEqual(vertices[0].tex_coord.y, 60.0f);
@@ -142,7 +142,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
     XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 
-    square.square_mesh_data().set_square_tex_coords(ui::uint_region{100, 200, 300, 400}, 0);
+    plane.data().set_rect_tex_coords(ui::uint_region{100, 200, 300, 400}, 0);
 
     XCTAssertEqual(vertices[0].tex_coord.x, 100.0f);
     XCTAssertEqual(vertices[0].tex_coord.y, 600.0f);
@@ -154,11 +154,11 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.y, 200.0f);
 }
 
-- (void)test_set_square_color {
-    auto sq_mesh_data = ui::make_square_mesh_data(1);
-    auto vertices = sq_mesh_data.dynamic_mesh_data().vertices();
+- (void)test_set_rect_color {
+    auto plane_data = ui::make_rect_plane_data(1);
+    auto vertices = plane_data.dynamic_mesh_data().vertices();
 
-    sq_mesh_data.set_square_color({0.1f, 0.2f, 0.3f, 0.4f}, 0);
+    plane_data.set_rect_color({0.1f, 0.2f, 0.3f, 0.4f}, 0);
 
     for (auto const &idx : make_each(4)) {
         auto &color = vertices[idx].color;
@@ -168,7 +168,7 @@ using namespace yas;
         XCTAssertEqual(color[3], 0.4f);
     }
 
-    sq_mesh_data.set_square_color({0.5f, 0.6f, 0.7f, 0.8f}, 0);
+    plane_data.set_rect_color({0.5f, 0.6f, 0.7f, 0.8f}, 0);
 
     for (auto const &idx : make_each(4)) {
         auto &color = vertices[idx].color;
@@ -180,8 +180,8 @@ using namespace yas;
 }
 
 - (void)test_set_vertex_by_data {
-    auto square = ui::make_square(2);
-    auto vertices = square.square_mesh_data().dynamic_mesh_data().vertices();
+    auto plane = ui::make_rect_plane(2);
+    auto vertices = plane.data().dynamic_mesh_data().vertices();
 
     ui::vertex2d_t in_data[4];
 
@@ -220,7 +220,7 @@ using namespace yas;
     in_data[3].color[2] = 35.0f;
     in_data[3].color[3] = 36.0f;
 
-    square.square_mesh_data().set_square_vertex(in_data, 0);
+    plane.data().set_rect_vertex(in_data, 0);
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 2.0f);
@@ -292,7 +292,7 @@ using namespace yas;
     in_data[3].color[2] = 135.0f;
     in_data[3].color[3] = 136.0f;
 
-    square.square_mesh_data().set_square_vertex(in_data, 1);
+    plane.data().set_rect_vertex(in_data, 1);
 
     XCTAssertEqual(vertices[4].position.x, 101.0f);
     XCTAssertEqual(vertices[4].position.y, 102.0f);
@@ -330,65 +330,65 @@ using namespace yas;
     XCTAssertEqual(vertices[7].color[3], 136.0f);
 }
 
-- (void)test_set_square_count {
-    auto sq_mesh_data = ui::make_square_mesh_data(4);
+- (void)test_set_rect_count {
+    auto plane_data = ui::make_rect_plane_data(4);
 
-    XCTAssertEqual(sq_mesh_data.dynamic_mesh_data().index_count(), 4 * 6);
+    XCTAssertEqual(plane_data.dynamic_mesh_data().index_count(), 4 * 6);
 
-    sq_mesh_data.set_square_count(2);
+    plane_data.set_rect_count(2);
 
-    XCTAssertEqual(sq_mesh_data.dynamic_mesh_data().index_count(), 2 * 6);
+    XCTAssertEqual(plane_data.dynamic_mesh_data().index_count(), 2 * 6);
 }
 
-- (void)test_max_square_count {
-    auto sq_mesh_data = ui::make_square_mesh_data(4);
+- (void)test_max_rect_count {
+    auto plane_data = ui::make_rect_plane_data(4);
 
-    XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
+    XCTAssertEqual(plane_data.max_rect_count(), 4);
 
-    sq_mesh_data.set_square_count(2);
+    plane_data.set_rect_count(2);
 
-    XCTAssertEqual(sq_mesh_data.max_square_count(), 4);
+    XCTAssertEqual(plane_data.max_rect_count(), 4);
 }
 
 - (void)test_write_vertex {
-    auto sq_mesh_data = ui::make_square_mesh_data(1);
-    auto vertices = sq_mesh_data.dynamic_mesh_data().vertices();
+    auto plane_data = ui::make_rect_plane_data(1);
+    auto vertices = plane_data.dynamic_mesh_data().vertices();
 
-    sq_mesh_data.write_vertex(0, [](ui::vertex2d_square_t &square) {
-        square.v[0].position.x = 0.1f;
-        square.v[0].position.y = 0.2f;
-        square.v[1].position.x = 0.3f;
-        square.v[1].position.y = 0.4f;
-        square.v[2].position.x = 0.5f;
-        square.v[2].position.y = 0.6f;
-        square.v[3].position.x = 0.7f;
-        square.v[3].position.y = 0.8f;
+    plane_data.write_vertex(0, [](ui::vertex2d_rect_t &rects) {
+        rects.v[0].position.x = 0.1f;
+        rects.v[0].position.y = 0.2f;
+        rects.v[1].position.x = 0.3f;
+        rects.v[1].position.y = 0.4f;
+        rects.v[2].position.x = 0.5f;
+        rects.v[2].position.y = 0.6f;
+        rects.v[3].position.x = 0.7f;
+        rects.v[3].position.y = 0.8f;
 
-        square.v[0].tex_coord.x = 1.1f;
-        square.v[0].tex_coord.y = 1.2f;
-        square.v[1].tex_coord.x = 1.3f;
-        square.v[1].tex_coord.y = 1.4f;
-        square.v[2].tex_coord.x = 1.5f;
-        square.v[2].tex_coord.y = 1.6f;
-        square.v[3].tex_coord.x = 1.7f;
-        square.v[3].tex_coord.y = 1.8f;
+        rects.v[0].tex_coord.x = 1.1f;
+        rects.v[0].tex_coord.y = 1.2f;
+        rects.v[1].tex_coord.x = 1.3f;
+        rects.v[1].tex_coord.y = 1.4f;
+        rects.v[2].tex_coord.x = 1.5f;
+        rects.v[2].tex_coord.y = 1.6f;
+        rects.v[3].tex_coord.x = 1.7f;
+        rects.v[3].tex_coord.y = 1.8f;
 
-        square.v[0].color[0] = 2.1f;
-        square.v[0].color[1] = 2.2f;
-        square.v[0].color[2] = 2.3f;
-        square.v[0].color[3] = 2.4f;
-        square.v[1].color[0] = 2.5f;
-        square.v[1].color[1] = 2.6f;
-        square.v[1].color[2] = 2.7f;
-        square.v[1].color[3] = 2.8f;
-        square.v[2].color[0] = 2.9f;
-        square.v[2].color[1] = 3.0f;
-        square.v[2].color[2] = 3.1f;
-        square.v[2].color[3] = 3.2f;
-        square.v[3].color[0] = 3.3f;
-        square.v[3].color[1] = 3.4f;
-        square.v[3].color[2] = 3.5f;
-        square.v[3].color[3] = 3.6f;
+        rects.v[0].color[0] = 2.1f;
+        rects.v[0].color[1] = 2.2f;
+        rects.v[0].color[2] = 2.3f;
+        rects.v[0].color[3] = 2.4f;
+        rects.v[1].color[0] = 2.5f;
+        rects.v[1].color[1] = 2.6f;
+        rects.v[1].color[2] = 2.7f;
+        rects.v[1].color[3] = 2.8f;
+        rects.v[2].color[0] = 2.9f;
+        rects.v[2].color[1] = 3.0f;
+        rects.v[2].color[2] = 3.1f;
+        rects.v[2].color[3] = 3.2f;
+        rects.v[3].color[0] = 3.3f;
+        rects.v[3].color[1] = 3.4f;
+        rects.v[3].color[2] = 3.5f;
+        rects.v[3].color[3] = 3.6f;
     });
 
     XCTAssertEqual(vertices[0].position.x, 0.1f);

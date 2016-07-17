@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <sstream>
 #import "yas_ui_button.h"
-#import "yas_ui_square.h"
+#import "yas_ui_rect_plane.h"
 
 using namespace yas;
 
@@ -27,7 +27,7 @@ using namespace yas;
     ui::button button{{0.0f, 1.0f, 2.0f, 3.0f}};
 
     XCTAssertTrue(button);
-    XCTAssertTrue(button.square());
+    XCTAssertTrue(button.rect_plane());
 }
 
 - (void)test_create_null {

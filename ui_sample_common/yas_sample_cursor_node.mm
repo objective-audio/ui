@@ -40,13 +40,12 @@ struct sample::cursor_node::impl : base::impl {
     void _setup_node() {
         auto const count = 5;
         auto const angle_dif = 360.0f / count;
-        auto mesh_node = ui::make_square(count);
+        auto mesh_node = ui::make_rect_plane(count);
 
         ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
         auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
         for (auto const &idx : make_each(count)) {
-            mesh_node.square_mesh_data().set_square_position(region, idx,
-                                                             ui::matrix::rotation(angle_dif * idx) * trans_matrix);
+            mesh_node.data().set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
         }
 
         mesh_node.node().set_color(0.0f);

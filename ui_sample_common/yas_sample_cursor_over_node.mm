@@ -39,10 +39,10 @@ struct sample::cursor_over_node::impl : base::impl {
         _nodes.reserve(count);
 
         for (auto const &idx : make_each(count)) {
-            auto sq_node = ui::make_square(1);
-            sq_node.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+            auto plane = ui::make_rect_plane(1);
+            plane.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
 
-            auto &node = sq_node.node();
+            auto &node = plane.node();
             node.set_position({100.0f, 0.0f});
             node.set_scale({10.0f, 30.0f});
             node.set_color(0.3f);
@@ -72,8 +72,7 @@ struct sample::cursor_over_node::impl : base::impl {
 
                     if (auto node = weak_node.lock()) {
                         if (auto renderer = node.renderer()) {
-                            auto is_detected =
-                                renderer.detector().detect(cursor_event.position(), node.collider());
+                            auto is_detected = renderer.detector().detect(cursor_event.position(), node.collider());
 
                             auto make_color_action = [](ui::node &node, ui::color const &color) {
                                 auto action = ui::make_action({.start_color = node.color(), .end_color = color});

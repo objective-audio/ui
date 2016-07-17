@@ -13,7 +13,7 @@ template <typename T, typename K>
 class subject;
 
 namespace ui {
-    class square;
+    class rect_plane;
 
     class button : public base {
        public:
@@ -46,7 +46,7 @@ namespace ui {
 
         subject_t &subject();
 
-        ui::square &square();
+        ui::rect_plane &rect_plane();
     };
 }
 

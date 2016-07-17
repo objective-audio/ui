@@ -11,8 +11,8 @@ struct sample::button_status_node::impl : base::impl {
     ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 32}) {
-        _strings.square().node().set_position(ui::point{0.0f, -7.0f});
-        _strings.square().node().set_alpha(0.5f);
+        _strings.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
+        _strings.rect_plane().node().set_alpha(0.5f);
         _strings.set_pivot(ui::pivot::center);
         _strings.set_text("-----");
     }

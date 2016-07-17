@@ -14,18 +14,18 @@ namespace sample {
                 : _button({0.0f, 0.0f, width, width}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 float const half_width = roundf(width * 0.5f);
 
-                _button.square().node().mesh().set_use_mesh_color(true);
-                _button.square().square_mesh_data().set_square_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-                _button.square().square_mesh_data().set_square_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
-                                                                     to_index({ui::button::state::press}));
-                _button.square().node().collider().set_center({half_width, half_width});
+                _button.rect_plane().node().mesh().set_use_mesh_color(true);
+                _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+                _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
+                                                           to_index({ui::button::state::press}));
+                _button.rect_plane().node().collider().set_center({half_width, half_width});
 
                 _strings.set_text(key);
                 _strings.set_pivot(ui::pivot::center);
 
                 float const font_size = _strings.font_atlas().font_size();
-                _strings.square().node().set_position({half_width, std::roundf(-font_size / 3.0f) + half_width});
-                _button.square().node().push_back_sub_node(_strings.square().node());
+                _strings.rect_plane().node().set_position({half_width, std::roundf(-font_size / 3.0f) + half_width});
+                _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
             }
 
             ui::button _button;
@@ -91,7 +91,7 @@ struct sample::soft_keyboard::impl : base::impl {
                 });
             _soft_key_observers.emplace_back(std::move(observer));
 
-            auto &node = soft_key.button().square().node();
+            auto &node = soft_key.button().rect_plane().node();
             node.set_position({x, 0.0f});
 
             _root_node.push_back_sub_node(node);

@@ -18,15 +18,15 @@ class observer;
 
 namespace ui {
     struct strings_layout {
-        vertex2d_square_t const &square(std::size_t const word_index) const;
-        std::vector<vertex2d_square_t> const &squares() const;
+        vertex2d_rect_t const &rect(std::size_t const word_index) const;
+        std::vector<vertex2d_rect_t> const &rects() const;
         std::size_t word_count() const;
         double width() const;
 
        protected:
         strings_layout(std::size_t const word_count);
 
-        std::vector<vertex2d_square_t> _squares;
+        std::vector<vertex2d_rect_t> _rects;
         double _width;
     };
 
