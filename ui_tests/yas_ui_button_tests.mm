@@ -36,6 +36,13 @@ using namespace yas;
     XCTAssertFalse(button);
 }
 
+- (void)test_state_to_index {
+    XCTAssertEqual(to_index(ui::button::states_t{}), 0);
+    XCTAssertEqual(to_index({ui::button::state::press}), 1);
+    XCTAssertEqual(to_index({ui::button::state::toggle}), 2);
+    XCTAssertEqual(to_index({ui::button::state::toggle, ui::button::state::press}), 3);
+}
+
 - (void)test_method_to_string {
     XCTAssertEqual(to_string(ui::button::method::began), "began");
     XCTAssertEqual(to_string(ui::button::method::entered), "entered");
