@@ -12,7 +12,7 @@ using namespace yas;
 
 struct sample::button_node::impl : base::impl {
     void set_texture(ui::texture &&texture) {
-        auto &mesh = _button.square().node().mesh();
+        auto &mesh = _button.rect_plane().node().mesh();
         mesh.set_texture(texture);
 
         if (!texture) {
@@ -21,14 +21,14 @@ struct sample::button_node::impl : base::impl {
 
         uint32_t const width = radius * 2;
 
-        auto &square_mesh_data = _button.square().square_mesh_data();
+        auto &rect_plane_data = _button.rect_plane().data();
 
         ui::uint_size image_size{width, width};
         ui::image image{{.point_size = image_size, .scale_factor = texture.scale_factor()}};
 
-        auto set_image_region = [&square_mesh_data](ui::uint_region const &pixel_region, bool const tracking) {
-            std::size_t const sq_idx = tracking ? 1 : 0;
-            square_mesh_data.set_square_tex_coords(pixel_region, sq_idx);
+        auto set_image_region = [&rect_plane_data](ui::uint_region const &pixel_region, bool const tracking) {
+            std::size_t const rect_idx = tracking ? 1 : 0;
+            rect_plane_data.set_rect_tex_coords(pixel_region, rect_idx);
         };
 
         image.draw([&image_size](const CGContextRef ctx) {

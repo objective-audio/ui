@@ -14,7 +14,7 @@ struct sample::modifier_node::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        auto &node = _strings.square().node();
+        auto &node = _strings.rect_plane().node();
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_modifier_node = to_weak(cast<modifier_node>()),
@@ -71,7 +71,7 @@ struct sample::modifier_node::impl : base::impl {
     }
 
     void set_node_position(ui::uint_size const &view_size) {
-        auto &node = _strings.square().node();
+        auto &node = _strings.rect_plane().node();
         node.set_position(
             {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
     }

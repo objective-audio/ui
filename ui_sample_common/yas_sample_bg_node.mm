@@ -7,18 +7,18 @@
 using namespace yas;
 
 struct sample::bg_node::impl : base::impl {
-    ui::square _square = ui::make_square(1);
+    ui::rect_plane _rect_plane = ui::make_rect_plane(1);
 
     impl() {
-        _square.square_mesh_data().set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
-        auto &node = _square.node();
+        _rect_plane.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+        auto &node = _rect_plane.node();
         node.set_scale(0.0f);
         node.set_color(0.75f);
     }
 
     void setup_renderer_observer() {
-        _square.node().dispatch_method(ui::node::method::renderer_changed);
-        _renderer_observer = _square.node().subject().make_observer(
+        _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
+        _renderer_observer = _rect_plane.node().subject().make_observer(
             ui::node::method::renderer_changed,
             [weak_bg_node = to_weak(cast<bg_node>()), view_size_observer = base{nullptr}](auto const &context) mutable {
                 if (auto bg_node = weak_bg_node.lock()) {
@@ -61,6 +61,6 @@ sample::bg_node::bg_node() : base(std::make_shared<impl>()) {
 sample::bg_node::bg_node(std::nullptr_t) : base(nullptr) {
 }
 
-ui::square &sample::bg_node::square() {
-    return impl_ptr<impl>()->_square;
+ui::rect_plane &sample::bg_node::rect_plane() {
+    return impl_ptr<impl>()->_rect_plane;
 }

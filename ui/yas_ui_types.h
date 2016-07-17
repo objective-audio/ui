@@ -18,13 +18,13 @@ namespace ui {
         //        open_gl,
     };
 
-    struct vertex2d_square_t {
+    struct vertex2d_rect_t {
         vertex2d_t v[4];
     };
 
     using index2d_t = uint32_t;
 
-    struct index2d_square_t {
+    struct index2d_rect_t {
         index2d_t v[6];
     };
 

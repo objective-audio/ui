@@ -8,14 +8,14 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
-#include "yas_ui_square.h"
+#include "yas_ui_rect_plane.h"
 #include "yas_ui_strings.h"
 #include "yas_ui_texture.h"
 
 using namespace yas;
 
 struct ui::strings::impl : base::impl {
-    impl(std::size_t const max_word_count) : _square(make_square(max_word_count)) {
+    impl(std::size_t const max_word_count) : _rect_plane(make_rect_plane(max_word_count)) {
     }
 
     ui::font_atlas &font_atlas() {
@@ -38,7 +38,7 @@ struct ui::strings::impl : base::impl {
         _font_atlas = std::move(atlas);
 
         if (_font_atlas) {
-            _square.node().mesh().set_texture(_font_atlas.texture());
+            _rect_plane.node().mesh().set_texture(_font_atlas.texture());
             _font_atlas_observer =
                 _font_atlas.subject().make_observer(ui::font_atlas::method::texture_changed,
                                                     [weak_strings = to_weak(cast<strings>())](auto const &context) {
@@ -47,7 +47,7 @@ struct ui::strings::impl : base::impl {
                                                         }
                                                     });
         } else {
-            _square.node().mesh().set_texture(nullptr);
+            _rect_plane.node().mesh().set_texture(nullptr);
             _font_atlas_observer = nullptr;
         }
 
@@ -65,27 +65,27 @@ struct ui::strings::impl : base::impl {
     }
 
     void update_mesh_data() {
-        auto &mesh_data = _square.square_mesh_data();
+        auto &mesh_data = _rect_plane.data();
 
         if (_font_atlas && _font_atlas.texture()) {
-            auto const count = std::min(_text.size(), mesh_data.max_square_count());
+            auto const count = std::min(_text.size(), mesh_data.max_rect_count());
             auto const layout = _font_atlas.make_strings_layout(_text, _pivot);
 
             for (auto const &idx : make_each(count)) {
-                mesh_data.write_vertex(idx, [&layout, &idx](auto &sq_vertex) { sq_vertex = layout.square(idx); });
+                mesh_data.write_vertex(idx, [&layout, &idx](auto &vertex_rect) { vertex_rect = layout.rect(idx); });
             }
 
             _width = layout.width();
-            mesh_data.set_square_count(count);
-            _square.node().mesh().set_texture(_font_atlas.texture());
+            mesh_data.set_rect_count(count);
+            _rect_plane.node().mesh().set_texture(_font_atlas.texture());
         } else {
             _width = 0;
-            mesh_data.set_square_count(0);
-            _square.node().mesh().set_texture(nullptr);
+            mesh_data.set_rect_count(0);
+            _rect_plane.node().mesh().set_texture(nullptr);
         }
     }
 
-    ui::square _square;
+    ui::rect_plane _rect_plane;
 
    private:
     ui::font_atlas _font_atlas = nullptr;
@@ -131,6 +131,6 @@ void ui::strings::set_pivot(ui::pivot const pivot) {
     impl_ptr<impl>()->set_pivot(pivot);
 }
 
-ui::square &ui::strings::square() {
-    return impl_ptr<impl>()->_square;
+ui::rect_plane &ui::strings::rect_plane() {
+    return impl_ptr<impl>()->_rect_plane;
 }

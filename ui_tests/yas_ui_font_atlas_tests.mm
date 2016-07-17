@@ -67,19 +67,19 @@ using namespace yas;
 
     auto strings_layout = font_atlas.make_strings_layout("a1z", ui::pivot::left);
 
-    XCTAssertEqual(strings_layout.squares().size(), 3);
+    XCTAssertEqual(strings_layout.rects().size(), 3);
     XCTAssertEqual(strings_layout.word_count(), 3);
     XCTAssertGreaterThan(strings_layout.width(), 0);
 
     for (auto const &vtx_idx : make_each(4)) {
-        XCTAssertGreaterThan(strings_layout.square(1).v[vtx_idx].position.x,
-                             strings_layout.square(0).v[vtx_idx].position.x);
-        XCTAssertEqual(strings_layout.square(1).v[vtx_idx].position.y, strings_layout.square(0).v[vtx_idx].position.y);
+        XCTAssertGreaterThan(strings_layout.rect(1).v[vtx_idx].position.x,
+                             strings_layout.rect(0).v[vtx_idx].position.x);
+        XCTAssertEqual(strings_layout.rect(1).v[vtx_idx].position.y, strings_layout.rect(0).v[vtx_idx].position.y);
     }
 
     for (auto const &vtx_idx : make_each(4)) {
         for (auto const &pos_idx : make_each(2)) {
-            XCTAssertEqual(strings_layout.square(2).v[vtx_idx].position[pos_idx], 0);
+            XCTAssertEqual(strings_layout.rect(2).v[vtx_idx].position[pos_idx], 0);
         }
     }
 }

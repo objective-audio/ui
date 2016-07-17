@@ -9,7 +9,7 @@ using namespace yas;
 void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
-    root_node.push_back_sub_node(_bg_node.square().node());
+    root_node.push_back_sub_node(_bg_node.rect_plane().node());
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
@@ -17,13 +17,13 @@ void sample::main::setup() {
     root_node.push_back_sub_node(std::move(batch_node));
 
     root_node.push_back_sub_node(_soft_keyboard.node());
-    root_node.push_back_sub_node(_button_node.button().square().node());
+    root_node.push_back_sub_node(_button_node.button().rect_plane().node());
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_text_node.strings().square().node());
-    root_node.push_back_sub_node(_modifier_node.strings().square().node());
+    root_node.push_back_sub_node(_text_node.strings().rect_plane().node());
+    root_node.push_back_sub_node(_modifier_node.strings().rect_plane().node());
 
-    _button_node.button().square().node().push_back_sub_node(_button_status_node.strings().square().node());
+    _button_node.button().rect_plane().node().push_back_sub_node(_button_status_node.strings().rect_plane().node());
 
     _text_node.strings().set_font_atlas(_font_atlas);
     _modifier_node.strings().set_font_atlas(_font_atlas);
@@ -49,7 +49,7 @@ void sample::main::setup() {
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
                                                    .end_position = {32.0f, 0.0f},
                                                    .continuous_action = {.duration = 5.0, .loop_count = 0}});
-    button_pos_action.set_target(_button_node.button().square().node());
+    button_pos_action.set_target(_button_node.button().rect_plane().node());
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     renderer.insert_action(std::move(button_pos_action));
 

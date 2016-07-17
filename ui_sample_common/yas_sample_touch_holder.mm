@@ -19,7 +19,7 @@ struct sample::touch_holder::impl : base::impl {
     ui::node root_node;
 
     impl() {
-        _square_mesh_data.set_square_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+        _rect_plane_data.set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
     }
 
     void setup_renderer_observer() {
@@ -60,7 +60,7 @@ struct sample::touch_holder::impl : base::impl {
         auto image_result = _texture.add_image(image);
         assert(image_result);
 
-        _square_mesh_data.set_square_tex_coords(image_result.value(), 0);
+        _rect_plane_data.set_rect_tex_coords(image_result.value(), 0);
     }
 
     void update_touch_node(ui::event const &event) {
@@ -105,7 +105,7 @@ struct sample::touch_holder::impl : base::impl {
 
         ui::node node;
         ui::mesh mesh;
-        mesh.set_mesh_data(_square_mesh_data.dynamic_mesh_data());
+        mesh.set_mesh_data(_rect_plane_data.dynamic_mesh_data());
         mesh.set_texture(_texture);
         node.set_mesh(mesh);
         node.set_scale(0.0f);
@@ -185,7 +185,7 @@ struct sample::touch_holder::impl : base::impl {
 
     std::unordered_map<uintptr_t, touch_object> _objects;
     ui::texture _texture = nullptr;
-    ui::square_mesh_data _square_mesh_data = ui::make_square_mesh_data(1);
+    ui::rect_plane_data _rect_plane_data = ui::make_rect_plane_data(1);
     base _renderer_observer = nullptr;
 };
 
