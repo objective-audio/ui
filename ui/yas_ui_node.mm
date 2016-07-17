@@ -38,37 +38,28 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _property_observers.emplace_back(
             _enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
                 if (auto node = weak_node.lock()) {
-                    auto imp_ptr = node.impl_ptr<impl>();
-                    if (!context.value.new_value || node.renderable().is_rendering_color_exists()) {
-                        imp_ptr->_set_updated(ui::node_update_reason::enabled);
-                    }
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::enabled);
                 }
             }));
 
         _property_observers.emplace_back(
             _position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
-                    if (node.renderable().is_rendering_color_exists()) {
-                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                    }
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
         _property_observers.emplace_back(
             _angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
-                    if (node.renderable().is_rendering_color_exists()) {
-                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                    }
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
         _property_observers.emplace_back(
             _scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
-                    if (node.renderable().is_rendering_color_exists()) {
-                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                    }
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
