@@ -1,12 +1,12 @@
 //
-//  yas_sample_text_node.mm
+//  yas_sample_inputted_text.mm
 //
 
-#include "yas_sample_text_node.h"
+#include "yas_sample_inputted_text.h"
 
 using namespace yas;
 
-struct sample::text_node::impl : base::impl {
+struct sample::inputted_text::impl : base::impl {
     ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
@@ -19,29 +19,29 @@ struct sample::text_node::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_text_node = to_weak(cast<text_node>()),
+            weak_inputted_text = to_weak(cast<inputted_text>()),
             event_observer = base{nullptr},
             view_size_observer = base{nullptr}
         ](auto const &context) mutable {
-            if (auto text_node = weak_text_node.lock()) {
+            if (auto inputted_text = weak_inputted_text.lock()) {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::key_changed, [weak_text_node](auto const &context) {
-                            if (auto text_node = weak_text_node.lock()) {
-                                text_node.impl_ptr<text_node::impl>()->update_text(context.value);
+                        ui::event_manager::method::key_changed, [weak_inputted_text](auto const &context) {
+                            if (auto inputted_text = weak_inputted_text.lock()) {
+                                inputted_text.impl_ptr<inputted_text::impl>()->update_text(context.value);
                             }
                         });
 
                     view_size_observer = renderer.subject().make_observer(
-                        ui::renderer::method::view_size_changed, [weak_text_node](auto const &context) {
-                            if (auto text_node = weak_text_node.lock()) {
+                        ui::renderer::method::view_size_changed, [weak_inputted_text](auto const &context) {
+                            if (auto inputted_text = weak_inputted_text.lock()) {
                                 auto const &renderer = context.value;
-                                text_node.impl_ptr<text_node::impl>()->set_text_position(renderer.view_size());
+                                inputted_text.impl_ptr<inputted_text::impl>()->set_text_position(renderer.view_size());
                             }
                         });
 
-                    text_node.impl_ptr<text_node::impl>()->set_text_position(renderer.view_size());
+                    inputted_text.impl_ptr<inputted_text::impl>()->set_text_position(renderer.view_size());
                 } else {
                     event_observer = nullptr;
                     view_size_observer = nullptr;
@@ -81,17 +81,17 @@ struct sample::text_node::impl : base::impl {
     base _renderer_observer = nullptr;
 };
 
-sample::text_node::text_node(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {
+sample::inputted_text::inputted_text(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {
     impl_ptr<impl>()->setup_renderer_observer();
 }
 
-sample::text_node::text_node(std::nullptr_t) : base(nullptr) {
+sample::inputted_text::inputted_text(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::text_node::append_text(std::string text) {
+void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::strings &sample::text_node::strings() {
+ui::strings &sample::inputted_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

@@ -20,12 +20,12 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_button_node.button().rect_plane().node());
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_text_node.strings().rect_plane().node());
+    root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
 
     _button_node.button().rect_plane().node().push_back_sub_node(_button_status_node.strings().rect_plane().node());
 
-    _text_node.strings().set_font_atlas(_font_atlas);
+    _inputted_text.strings().set_font_atlas(_font_atlas);
     _modifier_text.strings().set_font_atlas(_font_atlas);
     _button_status_node.strings().set_font_atlas(_font_atlas);
     _soft_keyboard.set_font_atlas(_font_atlas);
@@ -39,8 +39,8 @@ void sample::main::setup() {
         });
 
     _keyboard_observer =
-        _soft_keyboard.subject().make_wild_card_observer([weak_text_node = to_weak(_text_node)](auto const &context) {
-            if (auto text_node = weak_text_node.lock()) {
+        _soft_keyboard.subject().make_wild_card_observer([weak_inputted_text = to_weak(_inputted_text)](auto const &context) {
+            if (auto text_node = weak_inputted_text.lock()) {
                 text_node.append_text(context.key);
             }
         });

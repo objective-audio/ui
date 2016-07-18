@@ -10,9 +10,9 @@
 #include "yas_sample_button_status_node.h"
 #include "yas_sample_cursor_node.h"
 #include "yas_sample_cursor_over_node.h"
+#include "yas_sample_inputted_text.h"
 #include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
-#include "yas_sample_text_node.h"
 #include "yas_sample_touch_holder.h"
 #include "yas_ui.h"
 #include "yas_ui_metal_system.h"
@@ -27,7 +27,7 @@ namespace sample {
        private:
         sample::touch_holder _touch_holder;
         sample::cursor_node _cursor_node;
-        sample::text_node _text_node;
+        sample::inputted_text _inputted_text;
         sample::modifier_text _modifier_text;
         sample::bg _bg;
         sample::cursor_over_node _cursor_over_node;

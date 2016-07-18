@@ -8,11 +8,11 @@
 
 namespace yas {
 namespace sample {
-    struct text_node : base {
+    struct inputted_text : base {
         class impl;
 
-        explicit text_node(ui::font_atlas atlas = nullptr);
-        text_node(std::nullptr_t);
+        explicit inputted_text(ui::font_atlas atlas = nullptr);
+        inputted_text(std::nullptr_t);
 
         void append_text(std::string text);
 
