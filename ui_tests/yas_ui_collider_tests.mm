@@ -26,25 +26,23 @@ using namespace yas;
     ui::collider collider;
 
     XCTAssertTrue(collider);
-    XCTAssertEqual(collider.shape(), ui::collider_shape::none);
-    XCTAssertEqual(collider.center().x, 0.0f);
-    XCTAssertEqual(collider.center().y, 0.0f);
-    XCTAssertEqual(collider.radius(), 0.5f);
+    XCTAssertFalse(collider.shape());
 
     XCTAssertTrue(collider.renderable());
     XCTAssertTrue(collider.renderable().matrix() == simd::float4x4{matrix_identity_float4x4});
 }
 
 - (void)test_create_with_args {
-    ui::collider::args args{.shape = ui::collider_shape::circle, .center = {1.0f, 2.0f}, .radius = 3.0f};
-
-    ui::collider collider{std::move(args)};
+    ui::collider collider{ui::circle_shape{{.center = {1.0f, 2.0f}, .radius = 3.0f}}};
 
     XCTAssertTrue(collider);
-    XCTAssertEqual(collider.shape(), ui::collider_shape::circle);
-    XCTAssertEqual(collider.center().x, 1.0f);
-    XCTAssertEqual(collider.center().y, 2.0f);
-    XCTAssertEqual(collider.radius(), 3.0f);
+    XCTAssertTrue(collider.shape());
+
+    auto const circle_shape = cast<ui::circle_shape>(collider.shape());
+    XCTAssertTrue(circle_shape);
+    XCTAssertEqual(circle_shape.center().x, 1.0f);
+    XCTAssertEqual(circle_shape.center().y, 2.0f);
+    XCTAssertEqual(circle_shape.radius(), 3.0f);
 }
 
 - (void)test_create_null {
@@ -56,36 +54,35 @@ using namespace yas;
 - (void)test_set_variables {
     ui::collider collider;
 
-    collider.set_shape(ui::collider_shape::square);
+    XCTAssertFalse(collider.shape());
 
-    XCTAssertEqual(collider.shape(), ui::collider_shape::square);
+    collider.set_shape(ui::rect_shape{});
 
-    collider.set_center({11.0f, 12.0f});
+    XCTAssertTrue(collider.shape());
+    XCTAssertTrue(cast<ui::rect_shape>(collider.shape()));
+    XCTAssertFalse(cast<ui::circle_shape>(collider.shape()));
 
-    XCTAssertEqual(collider.center().x, 11.0f);
-    XCTAssertEqual(collider.center().y, 12.0f);
+    collider.set_shape(nullptr);
 
-    collider.set_radius(20.0f);
-
-    XCTAssertEqual(collider.radius(), 20.0f);
+    XCTAssertFalse(collider.shape());
 }
 
 - (void)test_hit_test_none {
-    ui::collider collider{{.shape = ui::collider_shape::none, .center = 0.0f, .radius = 0.5f}};
+    ui::collider collider;
 
     XCTAssertFalse(collider.hit_test(0.0f));
 }
 
 - (void)test_hit_test_anywhere {
-    ui::collider collider{{.shape = ui::collider_shape::anywhere, .center = 0.0f, .radius = 0.5f}};
+    ui::collider collider{ui::anywhere_shape{}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test(FLT_MAX));
     XCTAssertTrue(collider.hit_test(FLT_MIN));
 }
 
-- (void)test_hit_test_square {
-    ui::collider collider{{.shape = ui::collider_shape::square, .center = 0.0f, .radius = 0.5f}};
+- (void)test_hit_test_rect {
+    ui::collider collider{ui::rect_shape{{-0.5f, -0.5f, 1.0f, 1.0f}}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test(-0.5f));
@@ -98,7 +95,7 @@ using namespace yas;
 }
 
 - (void)test_hit_test_circle {
-    ui::collider collider{{.shape = ui::collider_shape::circle, .center = 0.0f, .radius = 0.5f}};
+    ui::collider collider{ui::circle_shape{{.center = 0.0f, .radius = 0.5f}}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test({-0.5f, 0.0f}));
@@ -121,24 +118,6 @@ using namespace yas;
     renderable.set_matrix(matrix);
 
     XCTAssertTrue(renderable.matrix() == matrix);
-}
-
-- (void)test_collider_shape_to_string {
-    XCTAssertEqual(to_string(ui::collider_shape::none), "none");
-    XCTAssertEqual(to_string(ui::collider_shape::anywhere), "anywhere");
-    XCTAssertEqual(to_string(ui::collider_shape::circle), "circle");
-    XCTAssertEqual(to_string(ui::collider_shape::square), "square");
-}
-
-- (void)test_collider_shape_ostream {
-    auto const shapes = {ui::collider_shape::none, ui::collider_shape::anywhere, ui::collider_shape::circle,
-                         ui::collider_shape::square};
-
-    for (auto const &shape : shapes) {
-        std::ostringstream stream;
-        stream << shape;
-        XCTAssertEqual(stream.str(), to_string(shape));
-    }
 }
 
 @end
