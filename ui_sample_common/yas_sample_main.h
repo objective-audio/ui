@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_objc_ptr.h"
-#include "yas_sample_bg_node.h"
+#include "yas_sample_bg.h"
 #include "yas_sample_button_node.h"
 #include "yas_sample_button_status_node.h"
 #include "yas_sample_cursor_node.h"
@@ -29,7 +29,7 @@ namespace sample {
         sample::cursor_node _cursor_node;
         sample::text_node _text_node;
         sample::modifier_node _modifier_node;
-        sample::bg_node _bg_node;
+        sample::bg _bg;
         sample::cursor_over_node _cursor_over_node;
         sample::button_node _button_node;
         sample::button_status_node _button_status_node;

@@ -9,7 +9,7 @@ using namespace yas;
 void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
-    root_node.push_back_sub_node(_bg_node.rect_plane().node());
+    root_node.push_back_sub_node(_bg.rect_plane().node());
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
