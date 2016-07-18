@@ -9,7 +9,7 @@
 #include "yas_sample_button_node.h"
 #include "yas_sample_button_status_node.h"
 #include "yas_sample_cursor_node.h"
-#include "yas_sample_cursor_over_node.h"
+#include "yas_sample_cursor_over_planes.h"
 #include "yas_sample_inputted_text.h"
 #include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
@@ -30,7 +30,7 @@ namespace sample {
         sample::inputted_text _inputted_text;
         sample::modifier_text _modifier_text;
         sample::bg _bg;
-        sample::cursor_over_node _cursor_over_node;
+        sample::cursor_over_planes _cursor_over_planes;
         sample::button_node _button_node;
         sample::button_status_node _button_status_node;
         sample::soft_keyboard _soft_keyboard;

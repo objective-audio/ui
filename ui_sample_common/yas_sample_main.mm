@@ -13,7 +13,7 @@ void sample::main::setup() {
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
-    batch_node.push_back_sub_node(_cursor_over_node.node());
+    batch_node.push_back_sub_node(_cursor_over_planes.node());
     root_node.push_back_sub_node(std::move(batch_node));
 
     root_node.push_back_sub_node(_soft_keyboard.node());
@@ -38,12 +38,12 @@ void sample::main::setup() {
             }
         });
 
-    _keyboard_observer =
-        _soft_keyboard.subject().make_wild_card_observer([weak_inputted_text = to_weak(_inputted_text)](auto const &context) {
-            if (auto text_node = weak_inputted_text.lock()) {
-                text_node.append_text(context.key);
-            }
-        });
+    _keyboard_observer = _soft_keyboard.subject().make_wild_card_observer([weak_inputted_text = to_weak(
+                                                                               _inputted_text)](auto const &context) {
+        if (auto text_node = weak_inputted_text.lock()) {
+            text_node.append_text(context.key);
+        }
+    });
 
     auto button_pos_action =
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
