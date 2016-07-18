@@ -1,12 +1,12 @@
 //
-//  yas_button_status_node.mm
+//  yas_big_button_text.mm
 //
 
-#include "yas_sample_button_status_node.h"
+#include "yas_sample_big_button_text.h"
 
 using namespace yas;
 
-struct sample::button_status_node::impl : base::impl {
+struct sample::big_button_text::impl : base::impl {
     ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 32}) {
@@ -24,17 +24,17 @@ struct sample::button_status_node::impl : base::impl {
     ui::button::method _status;
 };
 
-sample::button_status_node::button_status_node(ui::font_atlas font_atlas)
+sample::big_button_text::big_button_text(ui::font_atlas font_atlas)
     : base(std::make_shared<impl>(std::move(font_atlas))) {
 }
 
-sample::button_status_node::button_status_node(std::nullptr_t) : base(nullptr) {
+sample::big_button_text::big_button_text(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::button_status_node::set_status(ui::button::method const status) {
+void sample::big_button_text::set_status(ui::button::method const status) {
     impl_ptr<impl>()->set_status(status);
 }
 
-ui::strings &sample::button_status_node::strings() {
+ui::strings &sample::big_button_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

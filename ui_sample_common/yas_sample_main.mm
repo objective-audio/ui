@@ -23,16 +23,16 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
 
-    _big_button.button().rect_plane().node().push_back_sub_node(_button_status_node.strings().rect_plane().node());
+    _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text.strings().rect_plane().node());
 
     _inputted_text.strings().set_font_atlas(_font_atlas);
     _modifier_text.strings().set_font_atlas(_font_atlas);
-    _button_status_node.strings().set_font_atlas(_font_atlas);
+    _big_button_text.strings().set_font_atlas(_font_atlas);
     _soft_keyboard.set_font_atlas(_font_atlas);
 
     _button_observer =
         _big_button.button().subject().make_wild_card_observer([weak_status_node =
-                                                                    to_weak(_button_status_node)](auto const &context) {
+                                                                    to_weak(_big_button_text)](auto const &context) {
             if (auto status_node = weak_status_node.lock()) {
                 status_node.set_status(context.key);
             }
