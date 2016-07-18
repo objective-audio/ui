@@ -46,7 +46,7 @@ struct sample::cursor_over_node::impl : base::impl {
             node.set_position({100.0f, 0.0f});
             node.set_scale({10.0f, 30.0f});
             node.set_color(0.3f);
-            node.set_collider(ui::collider{ui::rect_shape{}});
+            node.set_collider(ui::collider{ui::shape{ui::rect_shape{}}});
 
             ui::node handle_node;
             handle_node.push_back_sub_node(node);

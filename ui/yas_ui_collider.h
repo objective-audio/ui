@@ -11,55 +11,53 @@
 
 namespace yas {
 namespace ui {
+    struct anywhere_shape {
+        bool hit_test(ui::point const &) const;
+    };
+
+    struct circle_shape {
+        ui::point center = 0.0f;
+        float radius = 0.5f;
+
+        bool hit_test(ui::point const &) const;
+    };
+
+    struct rect_shape {
+        ui::float_region rect = {-0.5f, -0.5f, 1.0f, 1.0f};
+
+        bool hit_test(ui::point const &pos) const;
+    };
+
     class shape : public base {
        public:
+        class impl_base;
+
+        template <typename T>
         class impl;
 
-        shape(std::nullptr_t);
-
-        bool hit_test(ui::point const &);
-
-       protected:
-        shape(std::shared_ptr<impl> &&);
-    };
-
-    class anywhere_shape : public shape {
-       public:
-        class impl;
-
-        anywhere_shape();
-        anywhere_shape(std::nullptr_t);
-    };
-
-    class circle_shape : public shape {
-       public:
-        class impl;
-
-        struct args {
-            ui::point center = 0.0f;
-            float radius = 0.5f;
+        struct anywhere {
+            using type = anywhere_shape;
         };
 
-        explicit circle_shape(args);
-        circle_shape(std::nullptr_t);
+        struct circle {
+            using type = circle_shape;
+        };
 
-        void set_center(ui::point);
-        void set_radius(float const);
+        struct rect {
+            using type = rect_shape;
+        };
 
-        ui::point center() const;
-        float radius() const;
-    };
+        explicit shape(anywhere::type);
+        explicit shape(circle::type);
+        explicit shape(rect::type);
+        shape(std::nullptr_t);
 
-    class rect_shape : public shape {
-       public:
-        class impl;
+        std::type_info const &type_info() const;
 
-        rect_shape();
-        explicit rect_shape(ui::float_region);
-        rect_shape(std::nullptr_t);
+        bool hit_test(ui::point const &) const;
 
-        void set_rect(ui::float_region);
-        ui::float_region const &rect() const;
+        template <typename T>
+        typename T::type const &get() const;
     };
 
     class collider : public base {
@@ -81,7 +79,4 @@ namespace ui {
         ui::renderable_collider _renderable = nullptr;
     };
 }
-
-template <typename T>
-T cast(ui::shape const &);
 }
