@@ -18,7 +18,7 @@ void sample::main::setup() {
 
     root_node.push_back_sub_node(_soft_keyboard.node());
     root_node.push_back_sub_node(_button_node.button().rect_plane().node());
-    root_node.push_back_sub_node(_cursor_node.node());
+    root_node.push_back_sub_node(_cursor.node());
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());

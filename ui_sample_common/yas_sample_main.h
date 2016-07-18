@@ -8,7 +8,7 @@
 #include "yas_sample_bg.h"
 #include "yas_sample_button_node.h"
 #include "yas_sample_button_status_node.h"
-#include "yas_sample_cursor_node.h"
+#include "yas_sample_cursor.h"
 #include "yas_sample_cursor_over_planes.h"
 #include "yas_sample_inputted_text.h"
 #include "yas_sample_modifier_text.h"
@@ -26,7 +26,7 @@ namespace sample {
 
        private:
         sample::touch_holder _touch_holder;
-        sample::cursor_node _cursor_node;
+        sample::cursor _cursor;
         sample::inputted_text _inputted_text;
         sample::modifier_text _modifier_text;
         sample::bg _bg;
