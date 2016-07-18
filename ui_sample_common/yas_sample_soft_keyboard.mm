@@ -70,13 +70,15 @@ struct sample::soft_keyboard::impl : base::impl {
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
-        auto keys = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        auto keys = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
         _soft_keys.reserve(keys.size());
         _soft_key_observers.reserve(keys.size());
 
-        float x = 0.0f;
+        std::size_t x_idx = 0, y_idx = 0;
+        std::size_t const line_count = 3;
         float const width = 36.0f;
+        float const offset = width + 4.0f;
 
         for (auto const &key : keys) {
             sample::soft_key soft_key{key, width, atlas};
@@ -91,12 +93,16 @@ struct sample::soft_keyboard::impl : base::impl {
             _soft_key_observers.emplace_back(std::move(observer));
 
             auto &node = soft_key.button().rect_plane().node();
-            node.set_position({x, 0.0f});
+            node.set_position({(float)x_idx * offset, (float)y_idx * offset});
 
             _root_node.push_back_sub_node(node);
             _soft_keys.emplace_back(std::move(soft_key));
 
-            x += width + 4.0f;
+            ++x_idx;
+            if (x_idx == line_count) {
+                ++y_idx;
+                x_idx = 0;
+            }
         }
     }
 
