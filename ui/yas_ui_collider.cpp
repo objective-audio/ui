@@ -9,98 +9,72 @@ using namespace yas;
 
 #pragma mark - shape
 
-struct ui::shape::impl : base::impl {
-    virtual bool hit_test(ui::point const &) {
-        return false;
+bool ui::anywhere_shape::hit_test(ui::point const &) const {
+    return true;
+}
+
+bool ui::circle_shape::hit_test(ui::point const &pos) const {
+    return std::powf(pos.x - center.x, 2.0f) + std::powf(pos.y - center.y, 2.0f) < std::powf(radius, 2.0f);
+}
+
+bool ui::rect_shape::hit_test(ui::point const &pos) const {
+    return contains(rect, pos);
+}
+
+struct ui::shape::impl_base : base::impl {
+    virtual std::type_info const &type() const = 0;
+    virtual bool hit_test(ui::point const &) = 0;
+};
+
+template <typename T>
+struct ui::shape::impl : impl_base {
+    typename T::type _value;
+
+    impl(typename T::type &&value) : _value(std::move(value)) {
+    }
+
+    std::type_info const &type() const override {
+        return typeid(T);
+    }
+
+    bool hit_test(ui::point const &pos) override {
+        return _value.hit_test(pos);
     }
 };
 
-ui::shape::shape(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
+ui::shape::shape(anywhere::type shape) : base(std::make_shared<impl<anywhere>>(std::move(shape))) {
+}
+
+ui::shape::shape(circle::type shape) : base(std::make_shared<impl<circle>>(std::move(shape))) {
+}
+
+ui::shape::shape(rect::type shape) : base(std::make_shared<impl<rect>>(std::move(shape))) {
 }
 
 ui::shape::shape(std::nullptr_t) : base(nullptr) {
 }
 
-bool ui::shape::hit_test(ui::point const &pos) {
-    return impl_ptr<impl>()->hit_test(pos);
+std::type_info const &ui::shape::type_info() const {
+    return impl_ptr<impl_base>()->type();
 }
 
-struct ui::anywhere_shape::impl : ui::shape::impl {
-    bool hit_test(ui::point const &) override {
-        return true;
-    }
-};
-
-ui::anywhere_shape::anywhere_shape() : ui::shape(std::make_shared<impl>()) {
+bool ui::shape::hit_test(ui::point const &pos) const {
+    return impl_ptr<impl_base>()->hit_test(pos);
 }
 
-ui::anywhere_shape::anywhere_shape(std::nullptr_t) : ui::shape(nullptr) {
-}
-
-struct ui::circle_shape::impl : ui::shape::impl {
-    impl(args &&args) : _args(std::move(args)) {
+template <typename T>
+typename T::type const &ui::shape::get() const {
+    if (auto ip = std::dynamic_pointer_cast<impl<T>>(impl_ptr())) {
+        return ip->_value;
     }
 
-    bool hit_test(ui::point const &pos) override {
-        return std::powf(pos.x - _args.center.x, 2.0f) + std::powf(pos.y - _args.center.y, 2.0f) <
-               std::powf(_args.radius, 2.0f);
-    }
-
-    args _args;
-};
-
-ui::circle_shape::circle_shape(args args) : ui::shape(std::make_shared<impl>(std::move(args))) {
+    static const typename T::type _default{};
+    return _default;
 }
 
-ui::circle_shape::circle_shape(std::nullptr_t) : ui::shape(nullptr) {
-}
-
-void ui::circle_shape::set_center(ui::point center) {
-    impl_ptr<impl>()->_args.center = std::move(center);
-}
-
-void ui::circle_shape::set_radius(float const radius) {
-    impl_ptr<impl>()->_args.radius = radius;
-}
-
-ui::point ui::circle_shape::center() const {
-    return impl_ptr<impl>()->_args.center;
-}
-
-float ui::circle_shape::radius() const {
-    return impl_ptr<impl>()->_args.radius;
-}
-
-struct ui::rect_shape::impl : ui::shape::impl {
-    impl() {
-    }
-
-    impl(ui::float_region &&rect) : _rect(std::move(rect)) {
-    }
-
-    bool hit_test(ui::point const &pos) override {
-        return contains(_rect, pos);
-    }
-
-    ui::float_region _rect = {-0.5f, -0.5f, 1.0f, 1.0f};
-};
-
-ui::rect_shape::rect_shape() : ui::shape(std::make_shared<impl>()) {
-}
-
-ui::rect_shape::rect_shape(ui::float_region rect) : ui::shape(std::make_shared<impl>(std::move(rect))) {
-}
-
-ui::rect_shape::rect_shape(std::nullptr_t) : ui::shape(nullptr) {
-}
-
-void ui::rect_shape::set_rect(ui::float_region rect) {
-    impl_ptr<impl>()->_rect = std::move(rect);
-}
-
-ui::float_region const &ui::rect_shape::rect() const {
-    return impl_ptr<impl>()->_rect;
-}
+template ui::anywhere_shape const &ui::shape::get<ui::shape::anywhere>() const;
+template ui::circle_shape const &ui::shape::get<ui::shape::circle>() const;
+template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 
 #pragma mark - collider
 
@@ -149,6 +123,7 @@ void ui::collider::set_shape(ui::shape shape) {
 ui::shape const &ui::collider::shape() const {
     return impl_ptr<impl>()->_shape;
 }
+
 bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
 }
@@ -159,18 +134,3 @@ ui::renderable_collider &ui::collider::renderable() {
     }
     return _renderable;
 }
-
-#pragma mark -
-
-template <typename T>
-T yas::cast(ui::shape const &src) {
-    static_assert(std::is_base_of<ui::shape, T>(), "base class is not yas::ui::shape.");
-
-    auto obj = T(nullptr);
-    obj.set_impl_ptr(std::dynamic_pointer_cast<typename T::impl>(src.impl_ptr()));
-    return obj;
-}
-
-template ui::anywhere_shape yas::cast<ui::anywhere_shape>(ui::shape const &);
-template ui::circle_shape yas::cast<ui::circle_shape>(ui::shape const &);
-template ui::rect_shape yas::cast<ui::rect_shape>(ui::shape const &);

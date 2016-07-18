@@ -33,16 +33,16 @@ using namespace yas;
 }
 
 - (void)test_create_with_args {
-    ui::collider collider{ui::circle_shape{{.center = {1.0f, 2.0f}, .radius = 3.0f}}};
+    ui::collider collider{ui::shape{{.center = {1.0f, 2.0f}, .radius = 3.0f}}};
 
     XCTAssertTrue(collider);
     XCTAssertTrue(collider.shape());
+    XCTAssertTrue(collider.shape().type_info() == typeid(ui::shape::circle));
 
-    auto const circle_shape = cast<ui::circle_shape>(collider.shape());
-    XCTAssertTrue(circle_shape);
-    XCTAssertEqual(circle_shape.center().x, 1.0f);
-    XCTAssertEqual(circle_shape.center().y, 2.0f);
-    XCTAssertEqual(circle_shape.radius(), 3.0f);
+    auto const &circle_shape = collider.shape().get<ui::shape::circle>();
+    XCTAssertEqual(circle_shape.center.x, 1.0f);
+    XCTAssertEqual(circle_shape.center.y, 2.0f);
+    XCTAssertEqual(circle_shape.radius, 3.0f);
 }
 
 - (void)test_create_null {
@@ -56,11 +56,11 @@ using namespace yas;
 
     XCTAssertFalse(collider.shape());
 
-    collider.set_shape(ui::rect_shape{});
+    collider.set_shape(ui::shape{ui::rect_shape{}});
 
     XCTAssertTrue(collider.shape());
-    XCTAssertTrue(cast<ui::rect_shape>(collider.shape()));
-    XCTAssertFalse(cast<ui::circle_shape>(collider.shape()));
+
+    XCTAssertTrue(collider.shape().type_info() == typeid(ui::shape::rect));
 
     collider.set_shape(nullptr);
 
@@ -74,7 +74,7 @@ using namespace yas;
 }
 
 - (void)test_hit_test_anywhere {
-    ui::collider collider{ui::anywhere_shape{}};
+    ui::collider collider{ui::shape{ui::anywhere_shape{}}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test(FLT_MAX));
@@ -82,7 +82,7 @@ using namespace yas;
 }
 
 - (void)test_hit_test_rect {
-    ui::collider collider{ui::rect_shape{{-0.5f, -0.5f, 1.0f, 1.0f}}};
+    ui::collider collider{ui::shape{{-0.5f, -0.5f, 1.0f, 1.0f}}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test(-0.5f));
@@ -95,7 +95,7 @@ using namespace yas;
 }
 
 - (void)test_hit_test_circle {
-    ui::collider collider{ui::circle_shape{{.center = 0.0f, .radius = 0.5f}}};
+    ui::collider collider{ui::shape{{.center = 0.0f, .radius = 0.5f}}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test({-0.5f, 0.0f}));

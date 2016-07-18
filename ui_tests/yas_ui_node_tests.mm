@@ -576,7 +576,7 @@ namespace test {
     ui::node batch_node;
     ui::node batch_sub_node;
 
-    node.set_collider(ui::collider{ui::circle_shape{{}}});
+    node.set_collider(ui::collider{ui::shape{ui::circle_shape{}}});
     node.set_mesh(ui::mesh{});
 
     sub_node.set_mesh(ui::mesh{});
