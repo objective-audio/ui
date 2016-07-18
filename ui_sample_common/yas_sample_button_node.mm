@@ -11,6 +11,10 @@ using namespace yas;
 #pragma mark - button_node::impl
 
 struct sample::button_node::impl : base::impl {
+    impl() {
+        _button.rect_plane().node().set_collider(ui::collider{ui::shape{ui::circle_shape{.radius = _radius}}});
+    }
+
     void set_texture(ui::texture &&texture) {
         auto &mesh = _button.rect_plane().node().mesh();
         mesh.set_texture(texture);
@@ -19,7 +23,7 @@ struct sample::button_node::impl : base::impl {
             return;
         }
 
-        uint32_t const width = radius * 2;
+        uint32_t const width = _radius * 2;
 
         auto &rect_plane_data = _button.rect_plane().data();
 
@@ -51,8 +55,8 @@ struct sample::button_node::impl : base::impl {
         }
     }
 
-    float const radius = 60;
-    ui::button _button{{-radius, -radius, radius * 2.0f, radius * 2.0f}};
+    float const _radius = 60;
+    ui::button _button{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
 };
 
 #pragma mark - button_node
