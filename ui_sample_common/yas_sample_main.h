@@ -5,14 +5,14 @@
 #pragma once
 
 #include "yas_objc_ptr.h"
-#include "yas_sample_bg_node.h"
-#include "yas_sample_button_node.h"
-#include "yas_sample_button_status_node.h"
-#include "yas_sample_cursor_node.h"
-#include "yas_sample_cursor_over_node.h"
-#include "yas_sample_modifier_node.h"
+#include "yas_sample_bg.h"
+#include "yas_sample_big_button.h"
+#include "yas_sample_big_button_text.h"
+#include "yas_sample_cursor.h"
+#include "yas_sample_cursor_over_planes.h"
+#include "yas_sample_inputted_text.h"
+#include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
-#include "yas_sample_text_node.h"
 #include "yas_sample_touch_holder.h"
 #include "yas_ui.h"
 #include "yas_ui_metal_system.h"
@@ -26,13 +26,13 @@ namespace sample {
 
        private:
         sample::touch_holder _touch_holder;
-        sample::cursor_node _cursor_node;
-        sample::text_node _text_node;
-        sample::modifier_node _modifier_node;
-        sample::bg_node _bg_node;
-        sample::cursor_over_node _cursor_over_node;
-        sample::button_node _button_node;
-        sample::button_status_node _button_status_node;
+        sample::cursor _cursor;
+        sample::inputted_text _inputted_text;
+        sample::modifier_text _modifier_text;
+        sample::bg _bg;
+        sample::cursor_over_planes _cursor_over_planes;
+        sample::big_button _big_button;
+        sample::big_button_text _big_button_text;
         sample::soft_keyboard _soft_keyboard;
 
         ui::font_atlas _font_atlas{{.font_name = "TrebuchetMS-Bold",

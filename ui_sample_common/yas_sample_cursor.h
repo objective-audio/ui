@@ -1,5 +1,5 @@
 //
-//  yas_sample_cursor_node.h
+//  yas_sample_cursor.h
 //
 
 #pragma once
@@ -8,11 +8,11 @@
 
 namespace yas {
 namespace sample {
-    struct cursor_node : base {
+    struct cursor : base {
         class impl;
 
-        cursor_node();
-        cursor_node(std::nullptr_t);
+        cursor();
+        cursor(std::nullptr_t);
 
         ui::node &node();
     };

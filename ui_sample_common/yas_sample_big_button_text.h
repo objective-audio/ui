@@ -1,5 +1,5 @@
 //
-//  yas_button_status_node.h
+//  yas_big_button_text.h
 //
 
 #pragma once
@@ -8,11 +8,11 @@
 
 namespace yas {
 namespace sample {
-    struct button_status_node : base {
+    struct big_button_text : base {
         class impl;
 
-        explicit button_status_node(ui::font_atlas atlas = nullptr);
-        button_status_node(std::nullptr_t);
+        explicit big_button_text(ui::font_atlas atlas = nullptr);
+        big_button_text(std::nullptr_t);
 
         void set_status(ui::button::method const);
 

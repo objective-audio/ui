@@ -1,14 +1,14 @@
 //
-//  yas_sample_cursor_over_node.mm
+//  yas_sample_cursor_over_planes.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_cursor_over_node.h"
+#include "yas_sample_cursor_over_planes.h"
 #include "yas_ui_collider.h"
 
 using namespace yas;
 
-struct sample::cursor_over_node::impl : base::impl {
+struct sample::cursor_over_planes::impl : base::impl {
     ui::node root_node;
 
     impl() {
@@ -19,10 +19,10 @@ struct sample::cursor_over_node::impl : base::impl {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_touch_holder = to_weak(cast<cursor_over_node>()),
+            [weak_touch_holder = to_weak(cast<cursor_over_planes>()),
              event_observers = std::vector<base>{}](auto const &context) mutable {
                 if (auto touch_holder = weak_touch_holder.lock()) {
-                    auto impl = touch_holder.impl_ptr<cursor_over_node::impl>();
+                    auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
                         event_observers = _make_event_observers(impl->_nodes, renderer);
@@ -101,13 +101,13 @@ struct sample::cursor_over_node::impl : base::impl {
     base _renderer_observer = nullptr;
 };
 
-sample::cursor_over_node::cursor_over_node() : base(std::make_shared<impl>()) {
+sample::cursor_over_planes::cursor_over_planes() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
 }
 
-sample::cursor_over_node::cursor_over_node(std::nullptr_t) : base(nullptr) {
+sample::cursor_over_planes::cursor_over_planes(std::nullptr_t) : base(nullptr) {
 }
 
-ui::node &sample::cursor_over_node::node() {
+ui::node &sample::cursor_over_planes::node() {
     return impl_ptr<impl>()->root_node;
 }

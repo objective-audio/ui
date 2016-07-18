@@ -1,16 +1,16 @@
 //
-//  yas_ui_button_node.mm
+//  yas_ui_big_button.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_button_node.h"
+#include "yas_sample_big_button.h"
 #include "yas_ui_collider.h"
 
 using namespace yas;
 
-#pragma mark - button_node::impl
+#pragma mark - big_button::impl
 
-struct sample::button_node::impl : base::impl {
+struct sample::big_button::impl : base::impl {
     impl() {
         _button.rect_plane().node().set_collider(ui::collider{ui::shape{ui::circle_shape{.radius = _radius}}});
     }
@@ -59,18 +59,18 @@ struct sample::button_node::impl : base::impl {
     ui::button _button{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
 };
 
-#pragma mark - button_node
+#pragma mark - big_button
 
-sample::button_node::button_node() : base(std::make_shared<impl>()) {
+sample::big_button::big_button() : base(std::make_shared<impl>()) {
 }
 
-sample::button_node::button_node(std::nullptr_t) : base(nullptr) {
+sample::big_button::big_button(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::button_node::set_texture(ui::texture texture) {
+void sample::big_button::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-ui::button &sample::button_node::button() {
+ui::button &sample::big_button::button() {
     return impl_ptr<impl>()->_button;
 }

@@ -8,11 +8,11 @@
 
 namespace yas {
 namespace sample {
-    struct bg_node : base {
+    struct bg : base {
         class impl;
 
-        bg_node();
-        bg_node(std::nullptr_t);
+        bg();
+        bg(std::nullptr_t);
 
         ui::rect_plane &rect_plane();
     };
