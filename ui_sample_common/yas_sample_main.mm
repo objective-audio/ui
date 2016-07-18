@@ -21,12 +21,12 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_cursor_node.node());
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_text_node.strings().rect_plane().node());
-    root_node.push_back_sub_node(_modifier_node.strings().rect_plane().node());
+    root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
 
     _button_node.button().rect_plane().node().push_back_sub_node(_button_status_node.strings().rect_plane().node());
 
     _text_node.strings().set_font_atlas(_font_atlas);
-    _modifier_node.strings().set_font_atlas(_font_atlas);
+    _modifier_text.strings().set_font_atlas(_font_atlas);
     _button_status_node.strings().set_font_atlas(_font_atlas);
     _soft_keyboard.set_font_atlas(_font_atlas);
 
