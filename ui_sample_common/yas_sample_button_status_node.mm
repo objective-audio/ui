@@ -2,7 +2,6 @@
 //  yas_button_status_node.mm
 //
 
-#include "yas_sample_button_node.h"
 #include "yas_sample_button_status_node.h"
 
 using namespace yas;

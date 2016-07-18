@@ -1,5 +1,5 @@
 //
-//  yas_ui_button_node.h
+//  yas_ui_big_button.h
 //
 
 #pragma once
@@ -12,11 +12,11 @@ namespace ui {
 }
 
 namespace sample {
-    struct button_node : public base {
+    struct big_button : public base {
         class impl;
 
-        button_node();
-        button_node(std::nullptr_t);
+        big_button();
+        big_button(std::nullptr_t);
 
         void set_texture(ui::texture);
 

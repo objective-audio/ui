@@ -17,13 +17,13 @@ void sample::main::setup() {
     root_node.push_back_sub_node(std::move(batch_node));
 
     root_node.push_back_sub_node(_soft_keyboard.node());
-    root_node.push_back_sub_node(_button_node.button().rect_plane().node());
+    root_node.push_back_sub_node(_big_button.button().rect_plane().node());
     root_node.push_back_sub_node(_cursor.node());
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
 
-    _button_node.button().rect_plane().node().push_back_sub_node(_button_status_node.strings().rect_plane().node());
+    _big_button.button().rect_plane().node().push_back_sub_node(_button_status_node.strings().rect_plane().node());
 
     _inputted_text.strings().set_font_atlas(_font_atlas);
     _modifier_text.strings().set_font_atlas(_font_atlas);
@@ -31,8 +31,8 @@ void sample::main::setup() {
     _soft_keyboard.set_font_atlas(_font_atlas);
 
     _button_observer =
-        _button_node.button().subject().make_wild_card_observer([weak_status_node = to_weak(_button_status_node)](
-            auto const &context) {
+        _big_button.button().subject().make_wild_card_observer([weak_status_node =
+                                                                    to_weak(_button_status_node)](auto const &context) {
             if (auto status_node = weak_status_node.lock()) {
                 status_node.set_status(context.key);
             }
@@ -49,13 +49,13 @@ void sample::main::setup() {
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
                                                    .end_position = {32.0f, 0.0f},
                                                    .continuous_action = {.duration = 5.0, .loop_count = 0}});
-    button_pos_action.set_target(_button_node.button().rect_plane().node());
+    button_pos_action.set_target(_big_button.button().rect_plane().node());
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     renderer.insert_action(std::move(button_pos_action));
 
     auto update_texture = [
         weak_font_atlas = to_weak(_font_atlas),
-        weak_button_node = to_weak(_button_node),
+        weak_big_button = to_weak(_big_button),
         weak_touch_holder = to_weak(_touch_holder)
     ](ui::renderer const &renderer) {
         auto const scale_factor = renderer.scale_factor();
@@ -73,8 +73,8 @@ void sample::main::setup() {
             font_atlas.set_texture(texture);
         }
 
-        if (auto button_node = weak_button_node.lock()) {
-            button_node.set_texture(texture);
+        if (auto big_button = weak_big_button.lock()) {
+            big_button.set_texture(texture);
         }
 
         if (auto touch_holder = weak_touch_holder.lock()) {
