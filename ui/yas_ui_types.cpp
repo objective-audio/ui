@@ -89,7 +89,7 @@ simd::float4 yas::to_float4(simd::float2 const &vec) {
     return simd::float4{vec.x, vec.y, 0.0f, 1.0f};
 }
 
-bool yas::contains(ui::float_region const &region, ui::float_origin const &origin) {
+bool yas::contains(ui::float_region const &region, ui::point const &pos) {
     float const sum_x = region.origin.x + region.size.width;
     float const min_x = std::min(region.origin.x, sum_x);
     float const max_x = std::max(region.origin.x, sum_x);
@@ -97,7 +97,7 @@ bool yas::contains(ui::float_region const &region, ui::float_origin const &origi
     float const min_y = std::min(region.origin.y, sum_y);
     float const max_y = std::max(region.origin.y, sum_y);
 
-    return min_x <= origin.x && origin.x < max_x && min_y <= origin.y && origin.y < max_y;
+    return min_x <= pos.x && pos.x < max_x && min_y <= pos.y && pos.y < max_y;
 }
 
 std::string yas::to_string(ui::pivot const &pivot) {

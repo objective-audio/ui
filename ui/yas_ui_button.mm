@@ -87,9 +87,7 @@ struct ui::button::impl : base::impl {
             _rect_plane.data().set_rect_position(region, idx);
         }
 
-        ui::collider collider;
-        collider.set_shape(ui::collider_shape::square);
-        collider.set_radius(region.size.width * 0.5f);
+        ui::collider collider{ui::rect_shape{region}};
         _rect_plane.node().set_collider(std::move(collider));
 
         _update_rect_index();

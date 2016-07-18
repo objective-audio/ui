@@ -18,7 +18,6 @@ namespace sample {
                 _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
                 _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
                                                            to_index({ui::button::state::press}));
-                _button.rect_plane().node().collider().set_center({half_width, half_width});
 
                 _strings.set_text(key);
                 _strings.set_pivot(ui::pivot::center);

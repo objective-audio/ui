@@ -11,34 +11,67 @@
 
 namespace yas {
 namespace ui {
-    enum class collider_shape {
-        none,
-        anywhere,
-        circle,
-        square,
+    class shape : public base {
+       public:
+        class impl;
+
+        shape(std::nullptr_t);
+
+        bool hit_test(ui::point const &);
+
+       protected:
+        shape(std::shared_ptr<impl> &&);
+    };
+
+    class anywhere_shape : public shape {
+       public:
+        class impl;
+
+        anywhere_shape();
+        anywhere_shape(std::nullptr_t);
+    };
+
+    class circle_shape : public shape {
+       public:
+        class impl;
+
+        struct args {
+            ui::point center = 0.0f;
+            float radius = 0.5f;
+        };
+
+        explicit circle_shape(args);
+        circle_shape(std::nullptr_t);
+
+        void set_center(ui::point);
+        void set_radius(float const);
+
+        ui::point center() const;
+        float radius() const;
+    };
+
+    class rect_shape : public shape {
+       public:
+        class impl;
+
+        rect_shape();
+        explicit rect_shape(ui::float_region);
+        rect_shape(std::nullptr_t);
+
+        void set_rect(ui::float_region);
+        ui::float_region const &rect() const;
     };
 
     class collider : public base {
         class impl;
 
        public:
-        struct args {
-            collider_shape shape = collider_shape::none;
-            ui::point center = 0.0f;
-            float radius = 0.5f;
-        };
-
         collider();
-        explicit collider(args);
+        explicit collider(ui::shape);
         collider(std::nullptr_t);
 
-        void set_shape(collider_shape);
-        void set_center(ui::point);
-        void set_radius(float const);
-
-        collider_shape shape() const;
-        ui::point const &center() const;
-        float radius() const;
+        void set_shape(ui::shape);
+        ui::shape const &shape() const;
 
         bool hit_test(ui::point const &) const;
 
@@ -49,7 +82,6 @@ namespace ui {
     };
 }
 
-std::string to_string(ui::collider_shape const &);
+template <typename T>
+T cast(ui::shape const &);
 }
-
-std::ostream &operator<<(std::ostream &, yas::ui::collider_shape const &);
