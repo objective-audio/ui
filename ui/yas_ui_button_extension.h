@@ -1,5 +1,5 @@
 //
-//  yas_ui_button.h
+//  yas_ui_button_extension.h
 //
 
 #pragma once
@@ -15,7 +15,7 @@ class subject;
 namespace ui {
     class rect_plane_extension;
 
-    class button : public base {
+    class button_extension : public base {
        public:
         class impl;
 
@@ -29,7 +29,7 @@ namespace ui {
         using states_t = flagset<state>;
         using state_size_t = typename std::underlying_type<state>::type;
 
-        static std::size_t const state_count = static_cast<state_size_t>(ui::button::state::count);
+        static std::size_t const state_count = static_cast<state_size_t>(ui::button_extension::state::count);
 
         enum class method {
             began,
@@ -39,10 +39,10 @@ namespace ui {
             canceled,
         };
 
-        using subject_t = subject<button, method>;
+        using subject_t = subject<button_extension, method>;
 
-        button(ui::float_region const &region);
-        button(std::nullptr_t);
+        button_extension(ui::float_region const &region);
+        button_extension(std::nullptr_t);
 
         subject_t &subject();
 
@@ -50,10 +50,10 @@ namespace ui {
     };
 }
 
-std::size_t to_index(ui::button::states_t const &);
-std::string to_string(ui::button::state const &);
-std::string to_string(ui::button::method const &);
+std::size_t to_index(ui::button_extension::states_t const &);
+std::string to_string(ui::button_extension::state const &);
+std::string to_string(ui::button_extension::method const &);
 }
 
-std::ostream &operator<<(std::ostream &, yas::ui::button::state const &);
-std::ostream &operator<<(std::ostream &, yas::ui::button::method const &);
+std::ostream &operator<<(std::ostream &, yas::ui::button_extension::state const &);
+std::ostream &operator<<(std::ostream &, yas::ui::button_extension::method const &);

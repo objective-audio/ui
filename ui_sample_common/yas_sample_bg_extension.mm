@@ -1,12 +1,12 @@
 //
-//  yas_sample_bg.mm
+//  yas_sample_bg_extension.mm
 //
 
-#include "yas_sample_bg.h"
+#include "yas_sample_bg_extension.h"
 
 using namespace yas;
 
-struct sample::bg::impl : base::impl {
+struct sample::bg_extension::impl : base::impl {
     ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(1);
 
     impl() {
@@ -20,9 +20,10 @@ struct sample::bg::impl : base::impl {
         _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = _rect_plane_ext.node().subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_bg = to_weak(cast<bg>()), view_size_observer = base{nullptr}](auto const &context) mutable {
-                if (auto bg = weak_bg.lock()) {
-                    auto impl = bg.impl_ptr<bg::impl>();
+            [weak_bg_ext = to_weak(cast<sample::bg_extension>()),
+             view_size_observer = base{nullptr}](auto const &context) mutable {
+                if (auto bg_ext = weak_bg_ext.lock()) {
+                    auto impl = bg_ext.impl_ptr<sample::bg_extension::impl>();
                     auto node = context.value;
                     if (auto renderer = node.renderer()) {
                         view_size_observer = _make_view_size_observer(node, renderer);
@@ -54,13 +55,13 @@ struct sample::bg::impl : base::impl {
     base _renderer_observer = nullptr;
 };
 
-sample::bg::bg() : base(std::make_shared<impl>()) {
+sample::bg_extension::bg_extension() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
 }
 
-sample::bg::bg(std::nullptr_t) : base(nullptr) {
+sample::bg_extension::bg_extension(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane_extension &sample::bg::rect_plane_extension() {
+ui::rect_plane_extension &sample::bg_extension::rect_plane_extension() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }

@@ -9,39 +9,40 @@ using namespace yas;
 void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
-    root_node.push_back_sub_node(_bg.rect_plane_extension().node());
+    root_node.push_back_sub_node(_bg_ext.rect_plane_extension().node());
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
-    batch_node.push_back_sub_node(_cursor_over_planes.node());
+    batch_node.push_back_sub_node(_cursor_over_planes_ext.node());
     root_node.push_back_sub_node(std::move(batch_node));
 
-    root_node.push_back_sub_node(_soft_keyboard.node());
-    root_node.push_back_sub_node(_big_button.button().rect_plane_extension().node());
-    root_node.push_back_sub_node(_cursor.node());
-    root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_inputted_text.strings_extension().rect_plane_extension().node());
-    root_node.push_back_sub_node(_modifier_text.strings_extension().rect_plane_extension().node());
+    root_node.push_back_sub_node(_soft_keyboard_ext.node());
+    root_node.push_back_sub_node(_big_button_ext.button_extension().rect_plane_extension().node());
+    root_node.push_back_sub_node(_cursor_ext.node());
+    root_node.push_back_sub_node(_touch_holder_ext.node());
+    root_node.push_back_sub_node(_inputted_text_ext.strings_extension().rect_plane_extension().node());
+    root_node.push_back_sub_node(_modifier_text_ext.strings_extension().rect_plane_extension().node());
 
-    _big_button.button().rect_plane_extension().node().push_back_sub_node(_big_button_text.strings_extension().rect_plane_extension().node());
+    _big_button_ext.button_extension().rect_plane_extension().node().push_back_sub_node(
+        _big_button_text_ext.strings_extension().rect_plane_extension().node());
 
-    _inputted_text.strings_extension().set_font_atlas(_font_atlas);
-    _modifier_text.strings_extension().set_font_atlas(_font_atlas);
-    _big_button_text.strings_extension().set_font_atlas(_font_atlas);
-    _soft_keyboard.set_font_atlas(_font_atlas);
+    _inputted_text_ext.strings_extension().set_font_atlas(_font_atlas);
+    _modifier_text_ext.strings_extension().set_font_atlas(_font_atlas);
+    _big_button_text_ext.strings_extension().set_font_atlas(_font_atlas);
+    _soft_keyboard_ext.set_font_atlas(_font_atlas);
 
     _button_observer =
-        _big_button.button().subject().make_wild_card_observer([weak_status_node =
-                                                                    to_weak(_big_button_text)](auto const &context) {
-            if (auto status_node = weak_status_node.lock()) {
-                status_node.set_status(context.key);
+        _big_button_ext.button_extension().subject().make_wild_card_observer([weak_ext = to_weak(_big_button_text_ext)](
+            auto const &context) {
+            if (auto ext = weak_ext.lock()) {
+                ext.set_status(context.key);
             }
         });
 
-    _keyboard_observer = _soft_keyboard.subject().make_wild_card_observer([weak_inputted_text = to_weak(
-                                                                               _inputted_text)](auto const &context) {
-        if (auto text_node = weak_inputted_text.lock()) {
-            text_node.append_text(context.key);
+    _keyboard_observer = _soft_keyboard_ext.subject().make_wild_card_observer([weak_ext = to_weak(_inputted_text_ext)](
+        auto const &context) {
+        if (auto ext = weak_ext.lock()) {
+            ext.append_text(context.key);
         }
     });
 
@@ -49,14 +50,14 @@ void sample::main::setup() {
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
                                                    .end_position = {32.0f, 0.0f},
                                                    .continuous_action = {.duration = 5.0, .loop_count = 0}});
-    button_pos_action.set_target(_big_button.button().rect_plane_extension().node());
+    button_pos_action.set_target(_big_button_ext.button_extension().rect_plane_extension().node());
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     renderer.insert_action(std::move(button_pos_action));
 
     auto update_texture = [
         weak_font_atlas = to_weak(_font_atlas),
-        weak_big_button = to_weak(_big_button),
-        weak_touch_holder = to_weak(_touch_holder)
+        weak_big_button_ext = to_weak(_big_button_ext),
+        weak_touch_holder_ext = to_weak(_touch_holder_ext)
     ](ui::renderer const &renderer) {
         auto const scale_factor = renderer.scale_factor();
 
@@ -73,12 +74,12 @@ void sample::main::setup() {
             font_atlas.set_texture(texture);
         }
 
-        if (auto big_button = weak_big_button.lock()) {
-            big_button.set_texture(texture);
+        if (auto big_button_ext = weak_big_button_ext.lock()) {
+            big_button_ext.set_texture(texture);
         }
 
-        if (auto touch_holder = weak_touch_holder.lock()) {
-            touch_holder.set_texture(texture);
+        if (auto touch_holder_ext = weak_touch_holder_ext.lock()) {
+            touch_holder_ext.set_texture(texture);
         }
     };
 

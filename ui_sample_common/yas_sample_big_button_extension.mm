@@ -1,22 +1,23 @@
 //
-//  yas_ui_big_button.mm
+//  yas_ui_big_button_extension.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_big_button.h"
+#include "yas_sample_big_button_extension.h"
 #include "yas_ui_collider.h"
 
 using namespace yas;
 
-#pragma mark - big_button::impl
+#pragma mark - big_button_extension::impl
 
-struct sample::big_button::impl : base::impl {
+struct sample::big_button_extension::impl : base::impl {
     impl() {
-        _button.rect_plane_extension().node().set_collider(ui::collider{ui::shape{ui::circle_shape{.radius = _radius}}});
+        _button_ext.rect_plane_extension().node().set_collider(
+            ui::collider{ui::shape{ui::circle_shape{.radius = _radius}}});
     }
 
     void set_texture(ui::texture &&texture) {
-        auto &mesh = _button.rect_plane_extension().node().mesh();
+        auto &mesh = _button_ext.rect_plane_extension().node().mesh();
         mesh.set_texture(texture);
 
         if (!texture) {
@@ -25,7 +26,7 @@ struct sample::big_button::impl : base::impl {
 
         uint32_t const width = _radius * 2;
 
-        auto &rect_plane_data = _button.rect_plane_extension().data();
+        auto &rect_plane_data = _button_ext.rect_plane_extension().data();
 
         ui::uint_size image_size{width, width};
         ui::image image{{.point_size = image_size, .scale_factor = texture.scale_factor()}};
@@ -56,21 +57,21 @@ struct sample::big_button::impl : base::impl {
     }
 
     float const _radius = 60;
-    ui::button _button{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
+    ui::button_extension _button_ext{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
 };
 
-#pragma mark - big_button
+#pragma mark - big_button_extension
 
-sample::big_button::big_button() : base(std::make_shared<impl>()) {
+sample::big_button_extension::big_button_extension() : base(std::make_shared<impl>()) {
 }
 
-sample::big_button::big_button(std::nullptr_t) : base(nullptr) {
+sample::big_button_extension::big_button_extension(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::big_button::set_texture(ui::texture texture) {
+void sample::big_button_extension::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-ui::button &sample::big_button::button() {
-    return impl_ptr<impl>()->_button;
+ui::button_extension &sample::big_button_extension::button_extension() {
+    return impl_ptr<impl>()->_button_ext;
 }
