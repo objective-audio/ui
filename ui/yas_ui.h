@@ -24,7 +24,7 @@
 #include "yas_ui_rect_plane.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
-#include "yas_ui_strings.h"
+#include "yas_ui_strings_extension.h"
 #include "yas_ui_texture.h"
 
 #include "yas_observing.h"

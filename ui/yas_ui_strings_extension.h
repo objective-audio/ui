@@ -9,7 +9,7 @@ namespace ui {
     class font_atlas;
     class rect_plane;
 
-    class strings : public base {
+    class strings_extension : public base {
        public:
         class impl;
 
@@ -18,8 +18,8 @@ namespace ui {
             std::size_t max_word_count = 16;
         };
 
-        strings(args);
-        strings(std::nullptr_t);
+        strings_extension(args);
+        strings_extension(std::nullptr_t);
 
         ui::font_atlas const &font_atlas() const;
         std::string const &text() const;
