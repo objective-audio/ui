@@ -26,16 +26,16 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::button button{{0.0f, 1.0f, 2.0f, 3.0f}};
+    ui::button_extension button_ext{{0.0f, 1.0f, 2.0f, 3.0f}};
 
-    XCTAssertTrue(button);
-    XCTAssertTrue(button.rect_plane_extension());
+    XCTAssertTrue(button_ext);
+    XCTAssertTrue(button_ext.rect_plane_extension());
 }
 
 - (void)test_create_null {
-    ui::button button{nullptr};
+    ui::button_extension button_ext{nullptr};
 
-    XCTAssertFalse(button);
+    XCTAssertFalse(button_ext);
 }
 
 - (void)test_method_changed {
@@ -59,12 +59,12 @@ using namespace yas;
     });
     renderer.insert_action(pre_render_action);
 
-    ui::button button{{-0.5f, -0.5f, 1.0f, 1.0f}};
-    renderer.root_node().push_back_sub_node(button.rect_plane_extension().node());
+    ui::button_extension button_ext{{-0.5f, -0.5f, 1.0f, 1.0f}};
+    renderer.root_node().push_back_sub_node(button_ext.rect_plane_extension().node());
 
     std::vector<ui::button_extension::method> observed_methods;
 
-    auto observer = button.subject().make_wild_card_observer(
+    auto observer = button_ext.subject().make_wild_card_observer(
         [&observed_methods](auto const &context) { observed_methods.push_back(context.key); });
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
@@ -123,8 +123,9 @@ using namespace yas;
 }
 
 - (void)test_method_ostream {
-    auto const methods = {ui::button_extension::method::began, ui::button_extension::method::entered, ui::button_extension::method::leaved,
-                          ui::button_extension::method::ended, ui::button_extension::method::canceled};
+    auto const methods = {ui::button_extension::method::began, ui::button_extension::method::entered,
+                          ui::button_extension::method::leaved, ui::button_extension::method::ended,
+                          ui::button_extension::method::canceled};
 
     for (auto const &method : methods) {
         std::ostringstream stream;
@@ -134,7 +135,8 @@ using namespace yas;
 }
 
 - (void)test_state_ostream {
-    auto const states = {ui::button_extension::state::toggle, ui::button_extension::state::press, ui::button_extension::state::count};
+    auto const states = {ui::button_extension::state::toggle, ui::button_extension::state::press,
+                         ui::button_extension::state::count};
 
     for (auto const &state : states) {
         std::ostringstream stream;
