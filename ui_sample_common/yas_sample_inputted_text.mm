@@ -7,14 +7,14 @@
 using namespace yas;
 
 struct sample::inputted_text::impl : base::impl {
-    ui::strings _strings;
+    ui::strings_extension _strings;
 
     impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
         _strings.set_pivot(ui::pivot::left);
     }
 
     void setup_renderer_observer() {
-        auto &node = _strings.rect_plane().node();
+        auto &node = _strings.rect_plane_extension().node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
@@ -68,7 +68,7 @@ struct sample::inputted_text::impl : base::impl {
     }
 
     void set_text_position(ui::uint_size const &view_size) {
-        auto &node = _strings.rect_plane().node();
+        auto &node = _strings.rect_plane_extension().node();
         node.set_position(
             {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
     }
@@ -92,6 +92,6 @@ void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::strings &sample::inputted_text::strings() {
+ui::strings_extension &sample::inputted_text::strings_extension() {
     return impl_ptr<impl>()->_strings;
 }

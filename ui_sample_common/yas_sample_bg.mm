@@ -7,18 +7,18 @@
 using namespace yas;
 
 struct sample::bg::impl : base::impl {
-    ui::rect_plane _rect_plane = ui::make_rect_plane(1);
+    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(1);
 
     impl() {
-        _rect_plane.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
-        auto &node = _rect_plane.node();
+        _rect_plane_ext.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+        auto &node = _rect_plane_ext.node();
         node.set_scale(0.0f);
         node.set_color(0.75f);
     }
 
     void setup_renderer_observer() {
-        _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
-        _renderer_observer = _rect_plane.node().subject().make_observer(
+        _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
+        _renderer_observer = _rect_plane_ext.node().subject().make_observer(
             ui::node::method::renderer_changed,
             [weak_bg = to_weak(cast<bg>()), view_size_observer = base{nullptr}](auto const &context) mutable {
                 if (auto bg = weak_bg.lock()) {
@@ -61,6 +61,6 @@ sample::bg::bg() : base(std::make_shared<impl>()) {
 sample::bg::bg(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane &sample::bg::rect_plane() {
-    return impl_ptr<impl>()->_rect_plane;
+ui::rect_plane_extension &sample::bg::rect_plane_extension() {
+    return impl_ptr<impl>()->_rect_plane_ext;
 }

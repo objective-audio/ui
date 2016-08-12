@@ -7,14 +7,14 @@
 using namespace yas;
 
 struct sample::modifier_text::impl : base::impl {
-    ui::strings _strings;
+    ui::strings_extension _strings;
 
     impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 64}) {
         _strings.set_pivot(ui::pivot::right);
     }
 
     void setup_renderer_observer() {
-        auto &node = _strings.rect_plane().node();
+        auto &node = _strings.rect_plane_extension().node();
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_modifier_text = to_weak(cast<modifier_text>()),
@@ -71,7 +71,7 @@ struct sample::modifier_text::impl : base::impl {
     }
 
     void set_node_position(ui::uint_size const &view_size) {
-        auto &node = _strings.rect_plane().node();
+        auto &node = _strings.rect_plane_extension().node();
         node.set_position(
             {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
     }
@@ -87,6 +87,6 @@ sample::modifier_text::modifier_text(ui::font_atlas font_atlas) : base(std::make
 sample::modifier_text::modifier_text(std::nullptr_t) : base(nullptr) {
 }
 
-ui::strings &sample::modifier_text::strings() {
+ui::strings_extension &sample::modifier_text::strings_extension() {
     return impl_ptr<impl>()->_strings;
 }

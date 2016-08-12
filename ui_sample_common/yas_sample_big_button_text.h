@@ -16,7 +16,7 @@ namespace sample {
 
         void set_status(ui::button::method const);
 
-        ui::strings &strings();
+        ui::strings_extension &strings_extension();
     };
 }
 }

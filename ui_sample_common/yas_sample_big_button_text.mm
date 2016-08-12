@@ -7,11 +7,11 @@
 using namespace yas;
 
 struct sample::big_button_text::impl : base::impl {
-    ui::strings _strings;
+    ui::strings_extension _strings;
 
     impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 32}) {
-        _strings.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
-        _strings.rect_plane().node().set_alpha(0.5f);
+        _strings.rect_plane_extension().node().set_position(ui::point{0.0f, -7.0f});
+        _strings.rect_plane_extension().node().set_alpha(0.5f);
         _strings.set_pivot(ui::pivot::center);
         _strings.set_text("-----");
     }
@@ -35,6 +35,6 @@ void sample::big_button_text::set_status(ui::button::method const status) {
     impl_ptr<impl>()->set_status(status);
 }
 
-ui::strings &sample::big_button_text::strings() {
+ui::strings_extension &sample::big_button_text::strings_extension() {
     return impl_ptr<impl>()->_strings;
 }

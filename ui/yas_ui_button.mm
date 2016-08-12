@@ -10,7 +10,7 @@
 #include "yas_ui_event.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_node.h"
-#include "yas_ui_rect_plane.h"
+#include "yas_ui_rect_plane_extension.h"
 #include "yas_ui_renderer.h"
 
 using namespace yas;
@@ -23,7 +23,7 @@ struct ui::button::impl : base::impl {
     }
 
     void setup_renderer_observer() {
-        auto &node = _rect_plane.node();
+        auto &node = _rect_plane_ext.node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
@@ -76,7 +76,7 @@ struct ui::button::impl : base::impl {
     }
 
     states_t _states;
-    ui::rect_plane _rect_plane = ui::make_rect_plane(ui::button::state_count * 2, 1);
+    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(ui::button::state_count * 2, 1);
     ui::button::subject_t _subject;
 
    private:
@@ -84,21 +84,21 @@ struct ui::button::impl : base::impl {
         _states.flags.reset();
 
         for (auto const &idx : make_each(ui::button::state_count * 2)) {
-            _rect_plane.data().set_rect_position(region, idx);
+            _rect_plane_ext.data().set_rect_position(region, idx);
         }
 
         ui::collider collider{ui::shape{{.rect = region}}};
-        _rect_plane.node().set_collider(std::move(collider));
+        _rect_plane_ext.node().set_collider(std::move(collider));
 
         _update_rect_index();
     }
 
     void _update_rect_index() {
-        _rect_plane.data().set_rect_index(0, to_index(_states));
+        _rect_plane_ext.data().set_rect_index(0, to_index(_states));
     }
 
     base _make_leave_observer() {
-        auto &node = _rect_plane.node();
+        auto &node = _rect_plane_ext.node();
 
         node.dispatch_method(ui::node::method::position_changed);
         node.dispatch_method(ui::node::method::angle_changed);
@@ -138,7 +138,7 @@ struct ui::button::impl : base::impl {
     }
 
     void _update_tracking(ui::event const &event) {
-        auto &node = _rect_plane.node();
+        auto &node = _rect_plane_ext.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
             auto button = cast<ui::button>();
@@ -173,7 +173,7 @@ struct ui::button::impl : base::impl {
     }
 
     void _leave_or_enter_tracking(ui::event const &event) {
-        auto &node = _rect_plane.node();
+        auto &node = _rect_plane_ext.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
             auto const &touch_event = event.get<ui::touch>();
@@ -213,8 +213,8 @@ ui::button::subject_t &ui::button::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-ui::rect_plane &ui::button::rect_plane() {
-    return impl_ptr<impl>()->_rect_plane;
+ui::rect_plane_extension &ui::button::rect_plane_extension() {
+    return impl_ptr<impl>()->_rect_plane_ext;
 }
 
 #pragma mark -

@@ -13,7 +13,7 @@ template <typename T, typename K>
 class subject;
 
 namespace ui {
-    class rect_plane;
+    class rect_plane_extension;
 
     class button : public base {
        public:
@@ -46,7 +46,7 @@ namespace ui {
 
         subject_t &subject();
 
-        ui::rect_plane &rect_plane();
+        ui::rect_plane_extension &rect_plane_extension();
     };
 }
 

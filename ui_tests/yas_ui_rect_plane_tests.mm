@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "yas_each_index.h"
 #import "yas_ui_mesh_data.h"
-#import "yas_ui_rect_plane.h"
+#import "yas_ui_rect_plane_extension.h"
 
 using namespace yas;
 
@@ -24,7 +24,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto plane = ui::make_rect_plane(2);
+    auto plane = ui::make_rect_plane_extension(2);
 
     XCTAssertTrue(plane);
     XCTAssertTrue(plane.data().dynamic_mesh_data());
@@ -50,13 +50,13 @@ using namespace yas;
 }
 
 - (void)test_create_null {
-    ui::rect_plane plane{nullptr};
+    ui::rect_plane_extension plane{nullptr};
 
     XCTAssertFalse(plane);
 }
 
 - (void)test_set_index {
-    auto plane = ui::make_rect_plane(2);
+    auto plane = ui::make_rect_plane_extension(2);
 
     auto const indices = plane.data().dynamic_mesh_data().indices();
 
@@ -80,7 +80,7 @@ using namespace yas;
 }
 
 - (void)test_set_indices {
-    auto plane = ui::make_rect_plane(2);
+    auto plane = ui::make_rect_plane_extension(2);
     auto const indices = plane.data().dynamic_mesh_data().indices();
 
     plane.data().set_rect_indices({{0, 1}, {1, 0}});
@@ -101,7 +101,7 @@ using namespace yas;
 }
 
 - (void)test_set_vertex_by_region {
-    auto plane = ui::make_rect_plane(2);
+    auto plane = ui::make_rect_plane_extension(2);
     auto vertices = plane.data().dynamic_mesh_data().vertices();
 
     plane.data().set_rect_position({1.0f, 2.0f, 3.0f, 4.0f}, 0);
@@ -128,7 +128,7 @@ using namespace yas;
 }
 
 - (void)test_set_tex_coords {
-    auto plane = ui::make_rect_plane(2);
+    auto plane = ui::make_rect_plane_extension(2);
     auto vertices = plane.data().dynamic_mesh_data().vertices();
 
     plane.data().set_rect_tex_coords(ui::uint_region{10, 20, 30, 40}, 0);
@@ -180,7 +180,7 @@ using namespace yas;
 }
 
 - (void)test_set_vertex_by_data {
-    auto plane = ui::make_rect_plane(2);
+    auto plane = ui::make_rect_plane_extension(2);
     auto vertices = plane.data().dynamic_mesh_data().vertices();
 
     ui::vertex2d_t in_data[4];

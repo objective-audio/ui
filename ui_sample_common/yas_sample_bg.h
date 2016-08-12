@@ -14,7 +14,7 @@ namespace sample {
         bg();
         bg(std::nullptr_t);
 
-        ui::rect_plane &rect_plane();
+        ui::rect_plane_extension &rect_plane_extension();
     };
 }
 }

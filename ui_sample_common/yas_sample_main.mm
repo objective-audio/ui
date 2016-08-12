@@ -9,7 +9,7 @@ using namespace yas;
 void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
-    root_node.push_back_sub_node(_bg.rect_plane().node());
+    root_node.push_back_sub_node(_bg.rect_plane_extension().node());
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
@@ -17,17 +17,17 @@ void sample::main::setup() {
     root_node.push_back_sub_node(std::move(batch_node));
 
     root_node.push_back_sub_node(_soft_keyboard.node());
-    root_node.push_back_sub_node(_big_button.button().rect_plane().node());
+    root_node.push_back_sub_node(_big_button.button().rect_plane_extension().node());
     root_node.push_back_sub_node(_cursor.node());
     root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
-    root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
+    root_node.push_back_sub_node(_inputted_text.strings_extension().rect_plane_extension().node());
+    root_node.push_back_sub_node(_modifier_text.strings_extension().rect_plane_extension().node());
 
-    _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text.strings().rect_plane().node());
+    _big_button.button().rect_plane_extension().node().push_back_sub_node(_big_button_text.strings_extension().rect_plane_extension().node());
 
-    _inputted_text.strings().set_font_atlas(_font_atlas);
-    _modifier_text.strings().set_font_atlas(_font_atlas);
-    _big_button_text.strings().set_font_atlas(_font_atlas);
+    _inputted_text.strings_extension().set_font_atlas(_font_atlas);
+    _modifier_text.strings_extension().set_font_atlas(_font_atlas);
+    _big_button_text.strings_extension().set_font_atlas(_font_atlas);
     _soft_keyboard.set_font_atlas(_font_atlas);
 
     _button_observer =
@@ -49,7 +49,7 @@ void sample::main::setup() {
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
                                                    .end_position = {32.0f, 0.0f},
                                                    .continuous_action = {.duration = 5.0, .loop_count = 0}});
-    button_pos_action.set_target(_big_button.button().rect_plane().node());
+    button_pos_action.set_target(_big_button.button().rect_plane_extension().node());
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     renderer.insert_action(std::move(button_pos_action));
 

@@ -21,7 +21,7 @@
 #include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view_controller.h"
 #include "yas_ui_node.h"
-#include "yas_ui_rect_plane.h"
+#include "yas_ui_rect_plane_extension.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
 #include "yas_ui_strings_extension.h"
