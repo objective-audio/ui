@@ -7,16 +7,16 @@
 #import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_ui_font_atlas.h"
-#import "yas_ui_rect_plane.h"
-#import "yas_ui_strings.h"
+#import "yas_ui_rect_plane_extension.h"
+#import "yas_ui_strings_extension.h"
 
 using namespace yas;
 
-@interface yas_ui_strings_tests : XCTestCase
+@interface yas_ui_strings_extension_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_strings_tests
+@implementation yas_ui_strings_extension_tests
 
 - (void)setUp {
     [super setUp];
@@ -27,7 +27,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::strings strings{{.font_atlas = nullptr, .max_word_count = 16}};
+    ui::strings_extension strings{{.font_atlas = nullptr, .max_word_count = 16}};
 
     XCTAssertTrue(strings);
 
@@ -36,13 +36,13 @@ using namespace yas;
     XCTAssertEqual(strings.pivot(), ui::pivot::left);
     XCTAssertEqual(strings.width(), 0.0f);
 
-    XCTAssertEqual(strings.rect_plane().data().max_rect_count(), 16);
+    XCTAssertEqual(strings.rect_plane_extension().data().max_rect_count(), 16);
 }
 
 - (void)test_create_with_font_atlas {
     ui::font_atlas font_atlas{{.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}};
 
-    ui::strings strings{{.font_atlas = font_atlas, .max_word_count = 8}};
+    ui::strings_extension strings{{.font_atlas = font_atlas, .max_word_count = 8}};
 
     XCTAssertTrue(strings);
 
@@ -51,7 +51,7 @@ using namespace yas;
 }
 
 - (void)test_create_null {
-    ui::strings strings{nullptr};
+    ui::strings_extension strings{nullptr};
 
     XCTAssertFalse(strings);
 }
@@ -65,7 +65,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    ui::strings strings{{.font_atlas = nullptr, .max_word_count = 4}};
+    ui::strings_extension strings{{.font_atlas = nullptr, .max_word_count = 4}};
 
     auto texture =
         ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}, .scale_factor = 1.0}).value();

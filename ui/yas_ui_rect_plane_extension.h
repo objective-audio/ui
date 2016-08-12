@@ -1,5 +1,5 @@
 //
-//  yas_ui_rect_plane.h
+//  yas_ui_rect_plane_extension.h
 //
 
 #pragma once
@@ -40,18 +40,18 @@ namespace ui {
     rect_plane_data make_rect_plane_data(std::size_t const max_rect_count);
     rect_plane_data make_rect_plane_data(std::size_t const max_rect_count, std::size_t const max_index_count);
 
-    class rect_plane : public base {
+    class rect_plane_extension : public base {
         class impl;
 
        public:
-        explicit rect_plane(rect_plane_data);
-        rect_plane(std::nullptr_t);
+        explicit rect_plane_extension(rect_plane_data);
+        rect_plane_extension(std::nullptr_t);
 
         ui::node &node();
         ui::rect_plane_data &data();
     };
 
-    rect_plane make_rect_plane(std::size_t const max_rect_count);
-    rect_plane make_rect_plane(std::size_t const max_rect_count, std::size_t const max_index_count);
+    rect_plane_extension make_rect_plane_extension(std::size_t const max_rect_count);
+    rect_plane_extension make_rect_plane_extension(std::size_t const max_rect_count, std::size_t const max_index_count);
 }
 }

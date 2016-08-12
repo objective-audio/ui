@@ -1,15 +1,15 @@
 //
-//  yas_sample_cursor.mm
+//  yas_sample_cursor_extension.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_cursor.h"
+#include "yas_sample_cursor_extension.h"
 
 using namespace yas;
 
 #pragma mark -
 
-struct sample::cursor::impl : base::impl {
+struct sample::cursor_extension::impl : base::impl {
     ui::node node;
 
     impl() {
@@ -20,9 +20,10 @@ struct sample::cursor::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_cursor = to_weak(cast<cursor>()), event_observer = base{nullptr}](auto const &context) mutable {
-                if (auto cursor = weak_cursor.lock()) {
-                    auto impl = cursor.impl_ptr<cursor::impl>();
+            [weak_cursor_ext = to_weak(cast<sample::cursor_extension>()),
+             event_observer = base{nullptr}](auto const &context) mutable {
+                if (auto cursor_ext = weak_cursor_ext.lock()) {
+                    auto impl = cursor_ext.impl_ptr<sample::cursor_extension::impl>();
                     auto node = context.value;
                     if (auto renderer = node.renderer()) {
                         event_observer = _make_event_observer(node, renderer);
@@ -39,7 +40,7 @@ struct sample::cursor::impl : base::impl {
     void _setup_node() {
         auto const count = 5;
         auto const angle_dif = 360.0f / count;
-        auto mesh_node = ui::make_rect_plane(count);
+        auto mesh_node = ui::make_rect_plane_extension(count);
 
         ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
         auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
@@ -136,13 +137,13 @@ struct sample::cursor::impl : base::impl {
     base _renderer_observer = nullptr;
 };
 
-sample::cursor::cursor() : base(std::make_shared<impl>()) {
+sample::cursor_extension::cursor_extension() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->setup_renderer_observer();
 }
 
-sample::cursor::cursor(std::nullptr_t) : base(nullptr) {
+sample::cursor_extension::cursor_extension(std::nullptr_t) : base(nullptr) {
 }
 
-ui::node &sample::cursor::node() {
+ui::node &sample::cursor_extension::node() {
     return impl_ptr<impl>()->node;
 }

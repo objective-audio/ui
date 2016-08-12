@@ -6,7 +6,7 @@
 
 #include "yas_ui_action.h"
 #include "yas_ui_batch.h"
-#include "yas_ui_button.h"
+#include "yas_ui_button_extension.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_event.h"
@@ -21,10 +21,10 @@
 #include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view_controller.h"
 #include "yas_ui_node.h"
-#include "yas_ui_rect_plane.h"
+#include "yas_ui_rect_plane_extension.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
-#include "yas_ui_strings.h"
+#include "yas_ui_strings_extension.h"
 #include "yas_ui_texture.h"
 
 #include "yas_observing.h"
