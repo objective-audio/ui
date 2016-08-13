@@ -68,6 +68,8 @@ ui::event::event(modifier const &) : base(std::make_shared<impl<ui::modifier>>()
 ui::event::event(std::nullptr_t) : base(nullptr) {
 }
 
+ui::event::~event() = default;
+
 ui::event_phase ui::event::phase() const {
     return impl_ptr<impl_base>()->phase;
 }
@@ -255,6 +257,8 @@ ui::event_manager::event_manager() : base(std::make_shared<impl>()) {
 
 ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 }
+
+ui::event_manager::~event_manager() = default;
 
 subject<ui::event, ui::event_manager::method> &ui::event_manager::subject() {
     return impl_ptr<impl>()->subject;

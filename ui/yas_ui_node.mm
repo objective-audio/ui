@@ -495,6 +495,8 @@ ui::node::node() : base(std::make_shared<impl>()) {
 ui::node::node(std::nullptr_t) : base(nullptr) {
 }
 
+ui::node::~node() = default;
+
 bool ui::node::operator==(ui::node const &rhs) const {
     return base::operator==(rhs);
 }

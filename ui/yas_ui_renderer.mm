@@ -223,6 +223,8 @@ ui::renderer::renderer(ui::metal_system metal_system) : renderer(std::make_share
 ui::renderer::renderer(std::nullptr_t) : base(nullptr) {
 }
 
+ui::renderer::~renderer() = default;
+
 ui::uint_size const &ui::renderer::view_size() const {
     return impl_ptr<impl>()->_view_size;
 }

@@ -175,6 +175,8 @@ ui::continuous_action::continuous_action(continuous_action::args args)
 ui::continuous_action::continuous_action(std::nullptr_t) : action(nullptr) {
 }
 
+ui::continuous_action::~continuous_action() = default;
+
 double ui::continuous_action::duration() const {
     return impl_ptr<impl>()->_duration;
 }
@@ -325,6 +327,8 @@ ui::parallel_action::parallel_action(action::args args) : action(std::make_share
 
 ui::parallel_action::parallel_action(std::nullptr_t) : action(nullptr) {
 }
+
+ui::parallel_action::~parallel_action() = default;
 
 std::vector<ui::action> ui::parallel_action::actions() const {
     return to_vector(impl_ptr<impl>()->actions);

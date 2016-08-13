@@ -276,6 +276,8 @@ ui::font_atlas::font_atlas(args args)
 ui::font_atlas::font_atlas(std::nullptr_t) : base(nullptr) {
 }
 
+ui::font_atlas::~font_atlas() = default;
+
 std::string const &ui::font_atlas::font_name() const {
     return impl_ptr<impl>()->_font_name;
 }

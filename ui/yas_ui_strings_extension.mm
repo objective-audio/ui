@@ -103,6 +103,8 @@ ui::strings_extension::strings_extension(args args) : base(std::make_shared<impl
 ui::strings_extension::strings_extension(std::nullptr_t) : base(nullptr) {
 }
 
+ui::strings_extension::~strings_extension() = default;
+
 ui::font_atlas const &ui::strings_extension::font_atlas() const {
     return impl_ptr<impl>()->font_atlas();
 }

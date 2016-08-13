@@ -80,6 +80,8 @@ ui::metal_render_encoder::metal_render_encoder() : base(std::make_shared<impl>()
 ui::metal_render_encoder::metal_render_encoder(std::nullptr_t) : base(nullptr) {
 }
 
+ui::metal_render_encoder::~metal_render_encoder() = default;
+
 std::deque<ui::metal_encode_info> const &ui::metal_render_encoder::all_encode_infos() {
     return impl_ptr<impl>()->all_encode_infos();
 }

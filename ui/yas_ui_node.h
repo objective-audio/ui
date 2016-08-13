@@ -47,6 +47,8 @@ namespace ui {
         node();
         node(std::nullptr_t);
 
+        virtual ~node() final;
+
         bool operator==(node const &) const;
         bool operator!=(node const &) const;
 

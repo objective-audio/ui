@@ -211,6 +211,8 @@ ui::button_extension::button_extension(ui::float_region const &region) : base(st
 ui::button_extension::button_extension(std::nullptr_t) : base(nullptr) {
 }
 
+ui::button_extension::~button_extension() = default;
+
 ui::button_extension::subject_t &ui::button_extension::subject() {
     return impl_ptr<impl>()->_subject;
 }

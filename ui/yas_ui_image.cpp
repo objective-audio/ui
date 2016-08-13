@@ -50,6 +50,8 @@ ui::image::image(ui::image::args args) : base(std::make_shared<impl>(args.point_
 ui::image::image(std::nullptr_t) : base(nullptr) {
 }
 
+ui::image::~image() = default;
+
 ui::uint_size ui::image::point_size() const {
     return impl_ptr<impl>()->_point_size;
 }

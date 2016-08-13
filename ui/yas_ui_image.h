@@ -25,6 +25,8 @@ namespace ui {
         image(args);
         image(std::nullptr_t);
 
+        virtual ~image() final;
+
         ui::uint_size point_size() const;
         ui::uint_size actual_size() const;
         double scale_factor() const;

@@ -15,6 +15,8 @@ using namespace yas;
 ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data mesh_data) : _dynamic_mesh_data(std::move(mesh_data)) {
 }
 
+ui::rect_plane_data::~rect_plane_data() = default;
+
 std::size_t ui::rect_plane_data::max_rect_count() const {
     auto const max_index_count = _dynamic_mesh_data.max_index_count();
     if (max_index_count > 0) {
@@ -176,6 +178,8 @@ ui::rect_plane_extension::rect_plane_extension(ui::rect_plane_data rect_plane_da
 
 ui::rect_plane_extension::rect_plane_extension(std::nullptr_t) : base(nullptr) {
 }
+
+ui::rect_plane_extension::~rect_plane_extension() = default;
 
 ui::node &ui::rect_plane_extension::node() {
     return impl_ptr<impl>()->_node;

@@ -15,6 +15,8 @@ namespace ui {
     struct rect_plane_data {
         explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
 
+        virtual ~rect_plane_data() final;
+
         void write(std::function<void(ui::vertex2d_rect_t *, ui::index2d_rect_t *)> const &);
         void write_vertex(std::size_t const rect_idx, std::function<void(ui::vertex2d_rect_t &)> const &);
         void write_index(std::size_t const rect_idx, std::function<void(ui::index2d_rect_t &)> const &);
@@ -46,6 +48,8 @@ namespace ui {
        public:
         explicit rect_plane_extension(rect_plane_data);
         rect_plane_extension(std::nullptr_t);
+
+        virtual ~rect_plane_extension() final;
 
         ui::node &node();
         ui::rect_plane_data &data();

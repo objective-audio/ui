@@ -51,6 +51,8 @@ namespace ui {
         dynamic_mesh_data(args);
         dynamic_mesh_data(std::nullptr_t);
 
+        virtual ~dynamic_mesh_data() final;
+
         std::size_t max_vertex_count() const;
         std::size_t max_index_count() const;
 

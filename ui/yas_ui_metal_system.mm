@@ -274,6 +274,8 @@ ui::metal_system::metal_system(id<MTLDevice> const device) : base(std::make_shar
 ui::metal_system::metal_system(std::nullptr_t) : base(nullptr) {
 }
 
+ui::metal_system::~metal_system() = default;
+
 ui::makable_metal_system &ui::metal_system::makable() {
     if (!_makable) {
         _makable = ui::makable_metal_system{impl_ptr<ui::makable_metal_system::impl>()};

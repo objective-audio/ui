@@ -25,6 +25,8 @@ namespace ui {
         metal_encode_info(args);
         metal_encode_info(std::nullptr_t);
 
+        virtual ~metal_encode_info() final;
+
         void push_back_mesh(ui::mesh mesh);
 
         MTLRenderPassDescriptor *renderPassDescriptor() const;

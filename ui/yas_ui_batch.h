@@ -20,6 +20,8 @@ namespace ui {
         batch();
         batch(std::nullptr_t);
 
+        virtual ~batch() final;
+
         ui::renderable_batch &renderable();
         ui::render_encodable &encodable();
         ui::metal_object &metal();

@@ -54,6 +54,8 @@ ui::shape::shape(rect::type shape) : base(std::make_shared<impl<rect>>(std::move
 ui::shape::shape(std::nullptr_t) : base(nullptr) {
 }
 
+ui::shape::~shape() = default;
+
 std::type_info const &ui::shape::type_info() const {
     return impl_ptr<impl_base>()->type();
 }
@@ -115,6 +117,8 @@ ui::collider::collider(ui::shape shape) : base(std::make_shared<impl>(std::move(
 
 ui::collider::collider(std::nullptr_t) : base(nullptr) {
 }
+
+ui::collider::~collider() = default;
 
 void ui::collider::set_shape(ui::shape shape) {
     impl_ptr<impl>()->_shape = std::move(shape);
