@@ -223,6 +223,8 @@ ui::dynamic_mesh_data::dynamic_mesh_data(mesh_data::args args) : mesh_data(std::
 ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : mesh_data(nullptr) {
 }
 
+ui::dynamic_mesh_data::~dynamic_mesh_data() = default;
+
 std::size_t ui::dynamic_mesh_data::max_vertex_count() const {
     return impl_ptr<impl>()->_vertices.size();
 }

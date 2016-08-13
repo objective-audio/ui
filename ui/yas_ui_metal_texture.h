@@ -19,6 +19,8 @@ namespace ui {
 
         metal_texture(ui::uint_size size);
         metal_texture(std::nullptr_t);
+        
+        virtual ~metal_texture() final;
 
         ui::uint_size size() const;
         id<MTLSamplerState> samplerState() const;

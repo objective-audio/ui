@@ -21,6 +21,8 @@ namespace ui {
         mesh();
         mesh(std::nullptr_t);
 
+        virtual ~mesh() final;
+
         ui::mesh_data const &mesh_data() const;
         ui::texture const &texture() const;
         simd::float4 const &color() const;

@@ -80,6 +80,8 @@ namespace ui {
         continuous_action(continuous_action::args args);
         continuous_action(std::nullptr_t);
 
+        virtual ~continuous_action() final;
+
         double duration() const;
         value_update_f const &value_updater() const;
         transform_f const &value_transformer() const;
@@ -148,6 +150,8 @@ namespace ui {
         parallel_action();
         parallel_action(action::args);
         parallel_action(std::nullptr_t);
+
+        virtual ~parallel_action() final;
 
         std::vector<action> actions() const;
 

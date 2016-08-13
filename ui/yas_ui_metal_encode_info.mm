@@ -28,6 +28,8 @@ ui::metal_encode_info::metal_encode_info(args args) : base(std::make_shared<impl
 ui::metal_encode_info::metal_encode_info(std::nullptr_t) : base(nullptr) {
 }
 
+ui::metal_encode_info::~metal_encode_info() = default;
+
 void ui::metal_encode_info::push_back_mesh(ui::mesh mesh) {
     impl_ptr<impl>()->_meshes.emplace_back(std::move(mesh));
 }

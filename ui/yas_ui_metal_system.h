@@ -17,6 +17,8 @@ namespace ui {
         explicit metal_system(id<MTLDevice> const);
         metal_system(std::nullptr_t);
 
+        virtual ~metal_system() final;
+
         ui::makable_metal_system &makable();
         ui::renderable_metal_system &renderable();
 

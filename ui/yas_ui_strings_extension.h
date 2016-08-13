@@ -21,6 +21,8 @@ namespace ui {
         strings_extension(args);
         strings_extension(std::nullptr_t);
 
+        virtual ~strings_extension() final;
+
         ui::font_atlas const &font_atlas() const;
         std::string const &text() const;
         ui::pivot pivot() const;

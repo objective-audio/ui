@@ -40,6 +40,8 @@ namespace ui {
         explicit renderer(ui::metal_system);
         renderer(std::nullptr_t);
 
+        virtual ~renderer() final;
+
         ui::uint_size const &view_size() const;
         ui::uint_size const &drawable_size() const;
         double scale_factor() const;

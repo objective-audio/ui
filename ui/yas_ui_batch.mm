@@ -116,6 +116,8 @@ ui::batch::batch() : base(std::make_shared<impl>()) {
 ui::batch::batch(std::nullptr_t) : base(nullptr) {
 }
 
+ui::batch::~batch() = default;
+
 ui::renderable_batch &ui::batch::renderable() {
     if (!_renderable) {
         _renderable = ui::renderable_batch{impl_ptr<ui::renderable_batch::impl>()};

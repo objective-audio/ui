@@ -39,6 +39,8 @@ namespace ui {
         explicit event(modifier const &);
         event(std::nullptr_t);
 
+        virtual ~event() final;
+
         event_phase phase() const;
 
         std::type_info const &type_info() const;
@@ -60,6 +62,8 @@ namespace ui {
 
         event_manager();
         event_manager(std::nullptr_t);
+
+        virtual ~event_manager() final;
 
         subject<event, method> &subject();
 

@@ -90,6 +90,8 @@ ui::metal_texture::metal_texture(ui::uint_size actual_size) : base(std::make_sha
 ui::metal_texture::metal_texture(std::nullptr_t) : base(nullptr) {
 }
 
+ui::metal_texture::~metal_texture() = default;
+
 ui::uint_size ui::metal_texture::size() const {
     return impl_ptr<impl>()->_size;
 }

@@ -49,6 +49,8 @@ namespace ui {
         font_atlas(args);
         font_atlas(std::nullptr_t);
 
+        virtual ~font_atlas() final;
+
         std::string const &font_name() const;
         double const &font_size() const;
         std::string const &words() const;

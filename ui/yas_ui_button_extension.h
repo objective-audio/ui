@@ -44,6 +44,8 @@ namespace ui {
         button_extension(ui::float_region const &region);
         button_extension(std::nullptr_t);
 
+        virtual ~button_extension() final;
+
         subject_t &subject();
 
         ui::rect_plane_extension &rect_plane_extension();

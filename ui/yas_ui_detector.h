@@ -17,6 +17,8 @@ namespace ui {
         detector();
         detector(std::nullptr_t);
 
+        virtual ~detector() final;
+
         ui::collider detect(ui::point const &) const;
         bool detect(ui::point const &, ui::collider const &) const;
 

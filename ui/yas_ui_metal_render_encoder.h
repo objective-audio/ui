@@ -20,6 +20,8 @@ namespace ui {
         metal_render_encoder();
         metal_render_encoder(std::nullptr_t);
 
+        virtual ~metal_render_encoder() final;
+
         std::deque<ui::metal_encode_info> const &all_encode_infos();
 
         void push_encode_info(ui::metal_encode_info);

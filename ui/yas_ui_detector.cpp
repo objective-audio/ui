@@ -67,6 +67,8 @@ ui::detector::detector() : base(std::make_shared<impl>()) {
 ui::detector::detector(std::nullptr_t) : base(nullptr) {
 }
 
+ui::detector::~detector() = default;
+
 ui::collider ui::detector::detect(ui::point const &location) const {
     return impl_ptr<impl>()->detect(location);
 }

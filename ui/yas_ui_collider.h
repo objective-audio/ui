@@ -52,6 +52,8 @@ namespace ui {
         explicit shape(rect::type);
         shape(std::nullptr_t);
 
+        virtual ~shape() final;
+
         std::type_info const &type_info() const;
 
         bool hit_test(ui::point const &) const;
@@ -67,6 +69,8 @@ namespace ui {
         collider();
         explicit collider(ui::shape);
         collider(std::nullptr_t);
+
+        virtual ~collider() final;
 
         void set_shape(ui::shape);
         ui::shape const &shape() const;
