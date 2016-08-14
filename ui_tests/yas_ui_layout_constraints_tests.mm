@@ -22,8 +22,8 @@ using namespace yas;
 }
 
 - (void)test_fixed_layout_constraint_value {
-    ui::layout_guide src_guide = 2.0f;
-    ui::layout_guide dst_guide = -4.0f;
+    ui::layout_guide src_guide{2.0f};
+    ui::layout_guide dst_guide{-4.0f};
 
     ui::fixed_layout_constraint constraint{
         {.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide}};
