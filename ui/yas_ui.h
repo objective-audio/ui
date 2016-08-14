@@ -12,6 +12,7 @@
 #include "yas_ui_event.h"
 #include "yas_ui_font_atlas.h"
 #include "yas_ui_image.h"
+#include "yas_ui_layout_constraints.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
