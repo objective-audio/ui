@@ -1,5 +1,5 @@
 //
-//  yas_ui_layout_constraint.h
+//  yas_ui_fixed_layout.h
 //
 
 #pragma once
@@ -11,7 +11,7 @@ namespace yas {
 namespace ui {
     class layout_guide;
 
-    class fixed_layout_constraint : public base {
+    class fixed_layout : public base {
         class impl;
 
        public:
@@ -21,10 +21,10 @@ namespace ui {
             ui::layout_guide destination_guide;
         };
 
-        fixed_layout_constraint(args);
-        fixed_layout_constraint(std::nullptr_t);
+        fixed_layout(args);
+        fixed_layout(std::nullptr_t);
 
-        virtual ~fixed_layout_constraint() final;
+        virtual ~fixed_layout() final;
 
         void set_distance(float const);
         float const &distance() const;
