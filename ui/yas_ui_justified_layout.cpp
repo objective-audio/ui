@@ -27,19 +27,17 @@ struct ui::justified_layout::impl : base::impl {
     void prepare(ui::justified_layout &layout) {
         auto weak_layout = to_weak(layout);
 
-        _first_src_observer = _args.first_source_guide.subject().make_observer(
-            ui::layout_guide::method::value_changed, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    layout.impl_ptr<impl>()->update_destination_values();
-                }
-            });
+        auto handler = [weak_layout](auto const &context) {
+            if (auto layout = weak_layout.lock()) {
+                layout.impl_ptr<impl>()->update_destination_values();
+            }
+        };
 
-        _second_src_observer = _args.second_source_guide.subject().make_observer(
-            ui::layout_guide::method::value_changed, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    layout.impl_ptr<impl>()->update_destination_values();
-                }
-            });
+        _first_src_observer =
+            _args.first_source_guide.subject().make_observer(ui::layout_guide::method::value_changed, handler);
+
+        _second_src_observer =
+            _args.second_source_guide.subject().make_observer(ui::layout_guide::method::value_changed, handler);
 
         update_destination_values();
     }
