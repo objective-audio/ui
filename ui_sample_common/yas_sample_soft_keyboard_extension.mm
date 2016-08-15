@@ -3,6 +3,7 @@
 //
 
 #include "yas_sample_soft_keyboard_extension.h"
+#include "yas_ui_fixed_layout.h"
 
 using namespace yas;
 
@@ -46,28 +47,34 @@ namespace sample {
 }
 
 struct sample::soft_keyboard_extension::impl : base::impl {
-    void setup_renderer_observer() {
-        _root_node.dispatch_method(ui::node::method::renderer_changed);
+    impl() {
+        _root_node.attach_x_layout_guide(_x_guide);
+        _root_node.attach_y_layout_guide(_y_guide);
 
+        _root_node.dispatch_method(ui::node::method::renderer_changed);
+    }
+
+    void prepare(sample::soft_keyboard_extension &ext) {
         _renderer_observer = _root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_keyboard_ext = to_weak(cast<soft_keyboard_extension>()),
-             view_size_observer = base{nullptr}](auto const &context) mutable {
+            [weak_keyboard_ext = to_weak(ext), bottom_layout = base{nullptr}, left_layout = base{nullptr}](
+                auto const &context) mutable {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
-                    view_size_observer = renderer.subject().make_observer(
-                        ui::renderer::method::view_size_changed, [weak_keyboard_ext](auto const &context) {
-                            if (auto keyboard_ext = weak_keyboard_ext.lock()) {
-                                auto const &renderer = context.value;
-                                keyboard_ext.impl_ptr<impl>()->set_text_position(renderer.view_size());
-                            }
-                        });
-
                     if (auto keyboard_ext = weak_keyboard_ext.lock()) {
-                        keyboard_ext.impl_ptr<impl>()->set_text_position(renderer.view_size());
+                        auto keyboard_impl = keyboard_ext.impl_ptr<impl>();
+
+                        left_layout = ui::fixed_layout{{.distance = 4.0f,
+                                                        .source_guide = renderer.view_layout_rect().left_guide(),
+                                                        .destination_guide = keyboard_impl->_x_guide}};
+
+                        bottom_layout = ui::fixed_layout{{.distance = 4.0f,
+                                                          .source_guide = renderer.view_layout_rect().bottom_guide(),
+                                                          .destination_guide = keyboard_impl->_y_guide}};
                     }
                 } else {
-                    view_size_observer = nullptr;
+                    bottom_layout = nullptr;
+                    left_layout = nullptr;
                 }
             });
     }
@@ -109,11 +116,6 @@ struct sample::soft_keyboard_extension::impl : base::impl {
         }
     }
 
-    void set_text_position(ui::uint_size const &view_size) {
-        _root_node.set_position(
-            {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * -0.5f});
-    }
-
     ui::node _root_node;
     sample::soft_keyboard_extension::subject_t _subject;
 
@@ -121,10 +123,13 @@ struct sample::soft_keyboard_extension::impl : base::impl {
     std::vector<sample::soft_key> _soft_keys;
     std::vector<base> _soft_key_observers;
     base _renderer_observer = nullptr;
+
+    ui::layout_guide _x_guide;
+    ui::layout_guide _y_guide;
 };
 
 sample::soft_keyboard_extension::soft_keyboard_extension() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::soft_keyboard_extension::soft_keyboard_extension(std::nullptr_t) : base(nullptr) {

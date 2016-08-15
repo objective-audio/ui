@@ -11,42 +11,45 @@ struct sample::inputted_text_extension::impl : base::impl {
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
         _strings_ext.set_pivot(ui::pivot::left);
-    }
 
-    void setup_renderer_observer() {
         auto &node = _strings_ext.rect_plane_extension().node();
+        node.attach_x_layout_guide(_x_guide);
+        node.attach_y_layout_guide(_y_guide);
 
         node.dispatch_method(ui::node::method::renderer_changed);
+    }
+
+    void prepare(sample::inputted_text_extension &ext) {
+        auto &node = _strings_ext.rect_plane_extension().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_inputted_text_ext = to_weak(cast<inputted_text_extension>()),
+            weak_ext = to_weak(ext),
             event_observer = base{nullptr},
-            view_size_observer = base{nullptr}
+            left_layout = base{nullptr},
+            top_layout = base{nullptr}
         ](auto const &context) mutable {
-            if (auto inputted_text_extension = weak_inputted_text_ext.lock()) {
+            if (auto ext = weak_ext.lock()) {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
+                    auto ext_impl = ext.impl_ptr<inputted_text_extension::impl>();
+
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::key_changed, [weak_inputted_text_ext](auto const &context) {
-                            if (auto inputted_text_ext = weak_inputted_text_ext.lock()) {
-                                inputted_text_ext.impl_ptr<inputted_text_extension::impl>()->update_text(context.value);
+                        ui::event_manager::method::key_changed, [weak_ext](auto const &context) {
+                            if (auto ext = weak_ext.lock()) {
+                                ext.impl_ptr<inputted_text_extension::impl>()->update_text(context.value);
                             }
                         });
 
-                    view_size_observer = renderer.subject().make_observer(
-                        ui::renderer::method::view_size_changed, [weak_inputted_text_ext](auto const &context) {
-                            if (auto inputted_text_ext = weak_inputted_text_ext.lock()) {
-                                auto const &renderer = context.value;
-                                inputted_text_ext.impl_ptr<inputted_text_extension::impl>()->set_text_position(
-                                    renderer.view_size());
-                            }
-                        });
-
-                    inputted_text_extension.impl_ptr<inputted_text_extension::impl>()->set_text_position(
-                        renderer.view_size());
+                    left_layout = ui::fixed_layout{{.distance = 4.0f,
+                                                    .source_guide = renderer.view_layout_rect().left_guide(),
+                                                    .destination_guide = ext_impl->_x_guide}};
+                    top_layout = ui::fixed_layout{{.distance = -22.0f,
+                                                   .source_guide = renderer.view_layout_rect().top_guide(),
+                                                   .destination_guide = ext_impl->_y_guide}};
                 } else {
                     event_observer = nullptr;
-                    view_size_observer = nullptr;
+                    left_layout = nullptr;
+                    top_layout = nullptr;
                 }
             }
         });
@@ -69,23 +72,19 @@ struct sample::inputted_text_extension::impl : base::impl {
         }
     }
 
-    void set_text_position(ui::uint_size const &view_size) {
-        auto &node = _strings_ext.rect_plane_extension().node();
-        node.set_position(
-            {static_cast<float>(view_size.width) * -0.5f, static_cast<float>(view_size.height) * 0.5f - 22.0f});
-    }
-
     void append_text(std::string text) {
         _strings_ext.set_text(_strings_ext.text() + text);
     }
 
    private:
     base _renderer_observer = nullptr;
+    ui::layout_guide _x_guide;
+    ui::layout_guide _y_guide;
 };
 
 sample::inputted_text_extension::inputted_text_extension(ui::font_atlas font_atlas)
     : base(std::make_shared<impl>(std::move(font_atlas))) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::inputted_text_extension::inputted_text_extension(std::nullptr_t) : base(nullptr) {
