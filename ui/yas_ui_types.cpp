@@ -6,6 +6,70 @@
 
 using namespace yas;
 
+#pragma mark - ui::uint_region
+
+uint32_t ui::uint_region::left() const {
+    return std::min(origin.x, origin.x + size.width);
+}
+
+uint32_t ui::uint_region::right() const {
+    return std::max(origin.x, origin.x + size.width);
+}
+
+uint32_t ui::uint_region::bottom() const {
+    return std::min(origin.y, origin.y + size.height);
+}
+
+uint32_t ui::uint_region::top() const {
+    return std::max(origin.y, origin.y + size.height);
+}
+
+#pragma mark - ui:uint_range
+
+uint32_t ui::uint_range::min() const {
+    return std::min(location, location + length);
+}
+
+uint32_t ui::uint_range::max() const {
+    return std::max(location, location + length);
+}
+
+#pragma mark - ui::float_range
+
+float ui::float_range::min() const {
+    return std::min(location, location + length);
+}
+
+float ui::float_range::max() const {
+    return std::max(location, location + length);
+}
+
+#pragma mark - ui::float_region
+
+ui::float_range ui::float_region::horizontal_range() const {
+    return ui::float_range{.location = origin.x, .length = size.width};
+}
+
+ui::float_range ui::float_region::vertical_range() const {
+    return ui::float_range{.location = origin.y, .length = size.height};
+}
+
+float ui::float_region::left() const {
+    return std::min(origin.x, origin.x + size.width);
+}
+
+float ui::float_region::right() const {
+    return std::max(origin.x, origin.x + size.width);
+}
+
+float ui::float_region::bottom() const {
+    return std::min(origin.y, origin.y + size.height);
+}
+
+float ui::float_region::top() const {
+    return std::max(origin.y, origin.y + size.height);
+}
+
 #pragma mark - ui::point
 
 ui::point::point() {

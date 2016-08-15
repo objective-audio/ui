@@ -471,4 +471,56 @@ using namespace yas;
     XCTAssertFalse(cz1 != cz2);
 }
 
+- (void)test_uint_region_getter {
+    ui::uint_region region;
+
+    region = {.origin = {0, 1}, .size = {2, 3}};
+
+    XCTAssertEqual(region.left(), 0);
+    XCTAssertEqual(region.right(), 2);
+    XCTAssertEqual(region.bottom(), 1);
+    XCTAssertEqual(region.top(), 4);
+}
+
+- (void)test_uint_range_getter {
+    ui::uint_range range;
+
+    range = {.location = 1, .length = 2};
+
+    XCTAssertEqual(range.min(), 1);
+    XCTAssertEqual(range.max(), 3);
+}
+
+- (void)test_float_region_getter {
+    ui::float_region region;
+
+    region = {.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}};
+
+    XCTAssertEqual(region.left(), 0.0f);
+    XCTAssertEqual(region.right(), 2.0f);
+    XCTAssertEqual(region.bottom(), 1.0f);
+    XCTAssertEqual(region.top(), 4.0f);
+
+    region = {.origin = {4.0f, 5.0f}, .size = {-7.0f, -6.0f}};
+
+    XCTAssertEqual(region.left(), -3.0f);
+    XCTAssertEqual(region.right(), 4.0f);
+    XCTAssertEqual(region.bottom(), -1.0f);
+    XCTAssertEqual(region.top(), 5.0f);
+}
+
+- (void)test_float_range_getter {
+    ui::float_range range;
+
+    range = {.location = 1.0f, .length = 2.0f};
+
+    XCTAssertEqual(range.min(), 1.0f);
+    XCTAssertEqual(range.max(), 3.0f);
+
+    range = {.location = 3.0f, .length = -1.0f};
+
+    XCTAssertEqual(range.min(), 2.0f);
+    XCTAssertEqual(range.max(), 3.0f);
+}
+
 @end
