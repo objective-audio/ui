@@ -41,6 +41,19 @@ namespace ui {
     struct uint_region {
         uint_origin origin;
         uint_size size;
+
+        uint32_t left() const;
+        uint32_t right() const;
+        uint32_t bottom() const;
+        uint32_t top() const;
+    };
+
+    struct uint_range {
+        uint32_t location;
+        uint32_t length;
+
+        uint32_t min() const;
+        uint32_t max() const;
     };
 
     struct float_origin {
@@ -53,9 +66,24 @@ namespace ui {
         float height = 0.0f;
     };
 
+    struct float_range {
+        float location;
+        float length;
+
+        float min() const;
+        float max() const;
+    };
+
     struct float_region {
         float_origin origin;
         float_size size;
+
+        float_range horizontal_range() const;
+        float_range vertical_range() const;
+        float left() const;
+        float right() const;
+        float bottom() const;
+        float top() const;
     };
 
     struct point {

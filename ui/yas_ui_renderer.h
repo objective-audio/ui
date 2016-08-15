@@ -21,6 +21,7 @@ namespace ui {
     class node;
     class action;
     class detector;
+    class layout_rect;
     class metal_system;
     enum class system_type;
 
@@ -67,6 +68,8 @@ namespace ui {
 
         ui::detector const &detector() const;
         ui::detector &detector();
+
+        ui::layout_rect &view_layout_rect();
 
        private:
         ui::view_renderable _view_renderable = nullptr;

@@ -9,6 +9,7 @@
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
+#include "yas_ui_layout_guide.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
@@ -653,6 +654,36 @@ void ui::node::dispatch_method(ui::node::method const method) {
 
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
+}
+
+void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
+    auto observer = impl_ptr<impl>()->_position_property.subject().make_observer(
+        property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
+            if (auto guide = weak_guide.lock()) {
+                guide.set_value(context.value.new_value.x);
+            }
+        });
+
+    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const value) {
+        if (auto node = weak_node.lock()) {
+            node.set_position({value, node.position().y});
+        }
+    });
+}
+
+void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
+    auto observer = impl_ptr<impl>()->_position_property.subject().make_observer(
+        property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
+            if (auto guide = weak_guide.lock()) {
+                guide.set_value(context.value.new_value.y);
+            }
+        });
+
+    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const value) {
+        if (auto node = weak_node.lock()) {
+            node.set_position({node.position().x, value});
+        }
+    });
 }
 
 std::string yas::to_string(ui::node::method const &method) {

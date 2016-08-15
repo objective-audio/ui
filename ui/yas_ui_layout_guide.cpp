@@ -12,6 +12,7 @@ using namespace yas;
 struct ui::layout_guide::impl : base::impl {
     property<float> _value;
     subject_t _subject;
+    value_changed_f _value_changed_handler = nullptr;
 
     impl(float const value) : _value({.value = value}) {
     }
@@ -20,6 +21,10 @@ struct ui::layout_guide::impl : base::impl {
         _observer = _value.subject().make_observer(
             property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
                 if (auto guide = weak_guide.lock()) {
+                    if (auto handler = guide.impl_ptr<impl>()->_value_changed_handler) {
+                        handler(context.value.new_value);
+                    }
+
                     guide.subject().notify(method::value_changed, change_context{.old_value = context.value.old_value,
                                                                                  .new_value = context.value.new_value,
                                                                                  .layout_guide = guide});
@@ -53,80 +58,71 @@ float const &ui::layout_guide::value() const {
     return impl_ptr<impl>()->_value.value();
 }
 
+void ui::layout_guide::set_value_changed_handler(value_changed_f handler) {
+    impl_ptr<impl>()->_value_changed_handler = std::move(handler);
+}
+
 ui::layout_guide::subject_t &ui::layout_guide::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-#pragma mark - ui::layout_vertical_range::impl
+#pragma mark - ui::layout_range::impl
 
-struct ui::layout_vertical_range::impl : base::impl {
-    layout_guide _top_guide;
-    layout_guide _bottom_guide;
+struct ui::layout_range::impl : base::impl {
+    layout_guide _min_guide;
+    layout_guide _max_guide;
 
-    impl(args &&args) : _top_guide(args.top_value), _bottom_guide(args.bottom_value) {
+    impl(ui::float_range &&range) : _min_guide(range.min()), _max_guide(range.max()) {
+    }
+
+    void set_range(ui::float_range &&range) {
+        _min_guide.set_value(range.min());
+        _max_guide.set_value(range.max());
     }
 };
 
-#pragma mark - ui::layout_vertical_range
+#pragma mark - ui::layout_range
 
-ui::layout_vertical_range::layout_vertical_range() : layout_vertical_range(args{}) {
+ui::layout_range::layout_range() : layout_range(ui::float_range{}) {
 }
 
-ui::layout_vertical_range::layout_vertical_range(args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::layout_range::layout_range(ui::float_range range) : base(std::make_shared<impl>(std::move(range))) {
 }
 
-ui::layout_vertical_range::layout_vertical_range(std::nullptr_t) : base(nullptr) {
+ui::layout_range::layout_range(std::nullptr_t) : base(nullptr) {
 }
 
-ui::layout_vertical_range::~layout_vertical_range() = default;
+ui::layout_range::~layout_range() = default;
 
-ui::layout_guide &ui::layout_vertical_range::top_guide() {
-    return impl_ptr<impl>()->_top_guide;
+ui::layout_guide &ui::layout_range::min_guide() {
+    return impl_ptr<impl>()->_min_guide;
 }
 
-ui::layout_guide &ui::layout_vertical_range::bottom_guide() {
-    return impl_ptr<impl>()->_bottom_guide;
+ui::layout_guide &ui::layout_range::max_guide() {
+    return impl_ptr<impl>()->_max_guide;
 }
 
-#pragma mark - ui::layout_horizontal_range::impl
-
-struct ui::layout_horizontal_range::impl : base::impl {
-    layout_guide _left_guide;
-    layout_guide _right_guide;
-
-    impl(args &&args) : _left_guide(args.left_value), _right_guide(args.right_value) {
-    }
-};
-
-#pragma mark - ui::layout_horizontal_range
-
-ui::layout_horizontal_range::layout_horizontal_range() : layout_horizontal_range(args{}) {
-}
-
-ui::layout_horizontal_range::layout_horizontal_range(args args) : base(std::make_shared<impl>(std::move(args))) {
-}
-
-ui::layout_horizontal_range::layout_horizontal_range(std::nullptr_t) : base(nullptr) {
-}
-
-ui::layout_horizontal_range::~layout_horizontal_range() = default;
-
-ui::layout_guide &ui::layout_horizontal_range::left_guide() {
-    return impl_ptr<impl>()->_left_guide;
-}
-
-ui::layout_guide &ui::layout_horizontal_range::right_guide() {
-    return impl_ptr<impl>()->_right_guide;
+void ui::layout_range::set_range(ui::float_range range) {
+    impl_ptr<impl>()->set_range(std::move(range));
 }
 
 #pragma mark - ui::layout_rect::impl
 
 struct ui::layout_rect::impl : base::impl {
-    layout_vertical_range _vertical_range;
-    layout_horizontal_range _horizontal_range;
+    layout_range _vertical_range;
+    layout_range _horizontal_range;
 
     impl(args &&args)
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
+    }
+
+    void set_ranges(args &&args) {
+        _vertical_range.set_range(std::move(args.vertical_range));
+        _horizontal_range.set_range(std::move(args.horizontal_range));
+    }
+
+    void set_region(ui::float_region &&region) {
+        set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
     }
 };
 
@@ -143,9 +139,34 @@ ui::layout_rect::layout_rect(std::nullptr_t) : base(nullptr) {
 
 ui::layout_rect::~layout_rect() = default;
 
-ui::layout_vertical_range &ui::layout_rect::vertical_range() {
+ui::layout_range &ui::layout_rect::vertical_range() {
     return impl_ptr<impl>()->_vertical_range;
 }
-ui::layout_horizontal_range &ui::layout_rect::horizontal_range() {
+
+ui::layout_range &ui::layout_rect::horizontal_range() {
     return impl_ptr<impl>()->_horizontal_range;
+}
+
+ui::layout_guide &ui::layout_rect::left_guide() {
+    return horizontal_range().min_guide();
+}
+
+ui::layout_guide &ui::layout_rect::right_guide() {
+    return horizontal_range().max_guide();
+}
+
+ui::layout_guide &ui::layout_rect::bottom_guide() {
+    return vertical_range().min_guide();
+}
+
+ui::layout_guide &ui::layout_rect::top_guide() {
+    return vertical_range().max_guide();
+}
+
+void ui::layout_rect::set_ranges(args args) {
+    impl_ptr<impl>()->set_ranges(std::move(args));
+}
+
+void ui::layout_rect::set_region(ui::float_region region) {
+    impl_ptr<impl>()->set_region(std::move(region));
 }

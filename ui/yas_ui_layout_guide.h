@@ -26,6 +26,7 @@ namespace ui {
 
         using subject_t = subject<change_context, method>;
         using observer_t = observer<change_context, method>;
+        using value_changed_f = std::function<void(float const)>;
 
         layout_guide();
         explicit layout_guide(float const);
@@ -36,45 +37,25 @@ namespace ui {
         void set_value(float const);
         float const &value() const;
 
+        void set_value_changed_handler(value_changed_f);
+
         subject_t &subject();
     };
 
-    class layout_vertical_range : public base {
+    class layout_range : public base {
         class impl;
 
        public:
-        struct args {
-            float top_value = 0.0f;
-            float bottom_value = 0.0f;
-        };
+        layout_range();
+        explicit layout_range(ui::float_range);
+        layout_range(std::nullptr_t);
 
-        layout_vertical_range();
-        explicit layout_vertical_range(args);
-        layout_vertical_range(std::nullptr_t);
+        virtual ~layout_range() final;
 
-        virtual ~layout_vertical_range() final;
+        layout_guide &min_guide();
+        layout_guide &max_guide();
 
-        layout_guide &top_guide();
-        layout_guide &bottom_guide();
-    };
-
-    class layout_horizontal_range : public base {
-        class impl;
-
-       public:
-        struct args {
-            float left_value = 0.0f;
-            float right_value = 0.0f;
-        };
-
-        layout_horizontal_range();
-        explicit layout_horizontal_range(args);
-        layout_horizontal_range(std::nullptr_t);
-
-        virtual ~layout_horizontal_range() final;
-
-        layout_guide &left_guide();
-        layout_guide &right_guide();
+        void set_range(ui::float_range);
     };
 
     class layout_rect : public base {
@@ -82,8 +63,8 @@ namespace ui {
 
        public:
         struct args {
-            layout_vertical_range::args vertical_range;
-            layout_horizontal_range::args horizontal_range;
+            ui::float_range vertical_range;
+            ui::float_range horizontal_range;
         };
 
         layout_rect();
@@ -92,8 +73,16 @@ namespace ui {
 
         virtual ~layout_rect() final;
 
-        layout_vertical_range &vertical_range();
-        layout_horizontal_range &horizontal_range();
+        layout_range &vertical_range();
+        layout_range &horizontal_range();
+
+        layout_guide &left_guide();
+        layout_guide &right_guide();
+        layout_guide &bottom_guide();
+        layout_guide &top_guide();
+
+        void set_ranges(args);
+        void set_region(ui::float_region);
     };
 }
 }
