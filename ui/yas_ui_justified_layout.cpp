@@ -44,14 +44,19 @@ struct ui::justified_layout::impl : base::impl {
 
     void update_destination_values() {
         auto const count = _args.destination_guides.size();
-        auto const rate = 1.0f / static_cast<float>(count + 1);
         auto const first_value = _args.first_source_guide.value();
         auto const distance = _args.second_source_guide.value() - first_value;
-        auto idx = 1;
 
-        for (auto &dst_guide : _args.destination_guides) {
-            dst_guide.set_value(first_value + distance * rate * idx);
-            ++idx;
+        if (count == 1) {
+            _args.destination_guides.at(0).set_value(first_value + distance * 0.5f);
+        } else {
+            auto const rate = 1.0f / static_cast<float>(count - 1);
+            auto idx = 0;
+
+            for (auto &dst_guide : _args.destination_guides) {
+                dst_guide.set_value(first_value + distance * rate * idx);
+                ++idx;
+            }
         }
     }
 

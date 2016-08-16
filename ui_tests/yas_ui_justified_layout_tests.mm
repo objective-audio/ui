@@ -84,9 +84,9 @@ using namespace yas;
                                  .second_source_guide = second_src_guide,
                                  .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2}}};
 
-    XCTAssertEqual(dst_guide_0.value(), 0.0f);
+    XCTAssertEqual(dst_guide_0.value(), -1.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
-    XCTAssertEqual(dst_guide_2.value(), 2.0f);
+    XCTAssertEqual(dst_guide_2.value(), 3.0f);
 }
 
 @end
