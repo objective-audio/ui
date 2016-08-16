@@ -13,6 +13,8 @@
 namespace yas {
 template <typename T, typename K>
 class subject;
+template <typename T, typename K>
+class observer;
 
 namespace ui {
     class view_renderable;
@@ -36,6 +38,7 @@ namespace ui {
         };
 
         using subject_t = subject<ui::renderer, ui::renderer::method>;
+        using observer_t = observer<ui::renderer, ui::renderer::method>;
 
         renderer();
         explicit renderer(ui::metal_system);
