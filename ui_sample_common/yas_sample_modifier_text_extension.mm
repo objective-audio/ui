@@ -3,6 +3,7 @@
 //
 
 #include "yas_sample_modifier_text_extension.h"
+#include "yas_ui_fixed_layout.h"
 
 using namespace yas;
 
@@ -11,45 +12,51 @@ struct sample::modifier_text_extension::impl : base::impl {
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = font_atlas, .max_word_count = 64}) {
         _strings_ext.set_pivot(ui::pivot::right);
+
+        auto &node = _strings_ext.rect_plane_extension().node();
+        node.attach_x_layout_guide(_x_guide);
+        node.attach_y_layout_guide(_y_guide);
+
+        node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void setup_renderer_observer() {
+    void prepare(sample::modifier_text_extension &ext) {
         auto &node = _strings_ext.rect_plane_extension().node();
-        node.dispatch_method(ui::node::method::renderer_changed);
+
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_modifier_text_ext = to_weak(cast<sample::modifier_text_extension>()),
+            weak_ext = to_weak(ext),
             event_observer = base{nullptr},
-            view_size_observer = base{nullptr}
+            right_layout = base{nullptr},
+            bottom_layout = base{nullptr}
         ](auto const &context) mutable {
-            auto node = context.value;
-            if (auto renderer = node.renderer()) {
-                event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_manager::method::modifier_changed,
-                    [weak_modifier_text_ext,
-                     flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
-                        ui::event const &event = context.value;
-                        if (auto modifier_text_ext = weak_modifier_text_ext.lock()) {
-                            modifier_text_ext.impl_ptr<sample::modifier_text_extension::impl>()->update_text(event,
-                                                                                                             flags);
-                        }
-                    });
+            if (auto ext = weak_ext.lock()) {
+                auto node = context.value;
+                if (auto renderer = node.renderer()) {
+                    event_observer = renderer.event_manager().subject().make_observer(
+                        ui::event_manager::method::modifier_changed,
+                        [weak_ext, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
+                            ui::event const &event = context.value;
+                            if (auto modifier_text_ext = weak_ext.lock()) {
+                                auto ext_impl = modifier_text_ext.impl_ptr<sample::modifier_text_extension::impl>();
 
-                view_size_observer = renderer.subject().make_observer(
-                    ui::renderer::method::view_size_changed, [weak_modifier_text_ext](auto const &context) {
-                        if (auto modifier_text_ext = weak_modifier_text_ext.lock()) {
-                            auto const &renderer = context.value;
-                            modifier_text_ext.impl_ptr<modifier_text_extension::impl>()->set_node_position(
-                                renderer.view_size());
-                        }
-                    });
+                                ext_impl->update_text(event, flags);
+                            }
+                        });
 
-                if (auto modifier_text_ext = weak_modifier_text_ext.lock()) {
-                    modifier_text_ext.impl_ptr<sample::modifier_text_extension::impl>()->set_node_position(
-                        renderer.view_size());
+                    auto ext_impl = ext.impl_ptr<sample::modifier_text_extension::impl>();
+
+                    right_layout = ui::fixed_layout{{.distance = -4.0f,
+                                                     .source_guide = renderer.view_layout_rect().right_guide(),
+                                                     .destination_guide = ext_impl->_x_guide}};
+                    bottom_layout = ui::fixed_layout{{.distance = 4.0f,
+                                                      .source_guide = renderer.view_layout_rect().bottom_guide(),
+                                                      .destination_guide = ext_impl->_y_guide}};
+
+                } else {
+                    event_observer = nullptr;
+                    right_layout = nullptr;
+                    bottom_layout = nullptr;
                 }
-            } else {
-                event_observer = nullptr;
-                view_size_observer = nullptr;
             }
         });
     }
@@ -73,19 +80,15 @@ struct sample::modifier_text_extension::impl : base::impl {
         _strings_ext.set_text(joined(flag_texts, " + "));
     }
 
-    void set_node_position(ui::uint_size const &view_size) {
-        auto &node = _strings_ext.rect_plane_extension().node();
-        node.set_position(
-            {static_cast<float>(view_size.width) * 0.5f, static_cast<float>(view_size.height) * -0.5f + 6.0f});
-    }
-
    private:
     base _renderer_observer = nullptr;
+    ui::layout_guide _x_guide;
+    ui::layout_guide _y_guide;
 };
 
 sample::modifier_text_extension::modifier_text_extension(ui::font_atlas font_atlas)
     : base(std::make_shared<impl>(std::move(font_atlas))) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::modifier_text_extension::modifier_text_extension(std::nullptr_t) : base(nullptr) {
