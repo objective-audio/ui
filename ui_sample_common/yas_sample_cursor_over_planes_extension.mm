@@ -15,12 +15,11 @@ struct sample::cursor_over_planes_extension::impl : base::impl {
         _setup_nodes();
     }
 
-    void setup_renderer_observer() {
+    void prepare(sample::cursor_over_planes_extension &ext) {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_touch_holder = to_weak(cast<cursor_over_planes_extension>()),
-             event_observers = std::vector<base>{}](auto const &context) mutable {
+            [weak_touch_holder = to_weak(ext), event_observers = std::vector<base>{}](auto const &context) mutable {
                 if (auto touch_holder_ext = weak_touch_holder.lock()) {
                     auto impl = touch_holder_ext.impl_ptr<cursor_over_planes_extension::impl>();
                     auto &node = context.value;
@@ -102,7 +101,7 @@ struct sample::cursor_over_planes_extension::impl : base::impl {
 };
 
 sample::cursor_over_planes_extension::cursor_over_planes_extension() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::cursor_over_planes_extension::cursor_over_planes_extension(std::nullptr_t) : base(nullptr) {

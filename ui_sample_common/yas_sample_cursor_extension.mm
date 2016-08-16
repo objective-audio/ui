@@ -16,12 +16,11 @@ struct sample::cursor_extension::impl : base::impl {
         _setup_node();
     }
 
-    void setup_renderer_observer() {
+    void prepare(sample::cursor_extension &ext) {
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_cursor_ext = to_weak(cast<sample::cursor_extension>()),
-             event_observer = base{nullptr}](auto const &context) mutable {
+            [weak_cursor_ext = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
                 if (auto cursor_ext = weak_cursor_ext.lock()) {
                     auto impl = cursor_ext.impl_ptr<sample::cursor_extension::impl>();
                     auto node = context.value;
@@ -138,7 +137,7 @@ struct sample::cursor_extension::impl : base::impl {
 };
 
 sample::cursor_extension::cursor_extension() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::cursor_extension::cursor_extension(std::nullptr_t) : base(nullptr) {

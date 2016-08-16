@@ -22,12 +22,11 @@ struct sample::touch_holder_extension::impl : base::impl {
         _rect_plane_data.set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
     }
 
-    void setup_renderer_observer() {
+    void prepare(sample::touch_holder_extension &ext) {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_touch_holder_ext = to_weak(cast<sample::touch_holder_extension>()),
-             event_observer = base{nullptr}](auto const &context) mutable {
+            [weak_touch_holder_ext = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
@@ -190,7 +189,7 @@ struct sample::touch_holder_extension::impl : base::impl {
 };
 
 sample::touch_holder_extension::touch_holder_extension() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::touch_holder_extension::touch_holder_extension(std::nullptr_t) : base(nullptr) {
