@@ -22,6 +22,7 @@ namespace ui {
     class color;
     class batch;
     class layout_guide;
+    class layout_point;
 
     class node : public base {
        public:
@@ -101,6 +102,7 @@ namespace ui {
 
         void attach_x_layout_guide(ui::layout_guide &);
         void attach_y_layout_guide(ui::layout_guide &);
+        void attach_layout_point(ui::layout_point &);
 
        private:
         ui::metal_object _metal_object = nullptr;
