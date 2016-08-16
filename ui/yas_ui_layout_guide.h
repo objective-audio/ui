@@ -42,6 +42,20 @@ namespace ui {
         subject_t &subject();
     };
 
+    class layout_point : public base {
+        class impl;
+
+       public:
+        layout_point();
+        explicit layout_point(ui::float_origin);
+        layout_point(std::nullptr_t);
+
+        virtual ~layout_point() final;
+
+        ui::layout_guide &x_guide();
+        ui::layout_guide &y_guide();
+    };
+
     class layout_range : public base {
         class impl;
 
