@@ -89,4 +89,21 @@ using namespace yas;
     XCTAssertEqual(dst_guide_2.value(), 3.0f);
 }
 
+- (void)test_ratios {
+    ui::layout_guide first_src_guide{0.0f};
+    ui::layout_guide second_src_guide{3.0f};
+    ui::layout_guide dst_guide_0;
+    ui::layout_guide dst_guide_1;
+    ui::layout_guide dst_guide_2;
+
+    ui::justified_layout layout{{.first_source_guide = first_src_guide,
+                                 .second_source_guide = second_src_guide,
+                                 .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2},
+                                 .ratios = {1.0f, 2.0f}}};
+
+    XCTAssertEqual(dst_guide_0.value(), 0.0f);
+    XCTAssertEqual(dst_guide_1.value(), 1.0f);
+    XCTAssertEqual(dst_guide_2.value(), 3.0f);
+}
+
 @end

@@ -19,6 +19,7 @@ namespace ui {
             ui::layout_guide first_source_guide = nullptr;
             ui::layout_guide second_source_guide = nullptr;
             std::vector<ui::layout_guide> destination_guides;
+            std::vector<float> ratios;
         };
 
         justified_layout(args);
@@ -29,6 +30,7 @@ namespace ui {
         ui::layout_guide const &first_source_guide() const;
         ui::layout_guide const &second_source_guide() const;
         std::vector<ui::layout_guide> const &destination_guides() const;
+        std::vector<float> const &ratios() const;
     };
 }
 }
