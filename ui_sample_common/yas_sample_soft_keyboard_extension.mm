@@ -48,9 +48,7 @@ namespace sample {
 
 struct sample::soft_keyboard_extension::impl : base::impl {
     impl() {
-        _root_node.attach_x_layout_guide(_x_guide);
-        _root_node.attach_y_layout_guide(_y_guide);
-
+        _root_node.attach_layout_point(_layout_point);
         _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
@@ -66,11 +64,11 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
                         left_layout = ui::fixed_layout{{.distance = 4.0f,
                                                         .source_guide = renderer.view_layout_rect().left_guide(),
-                                                        .destination_guide = keyboard_impl->_x_guide}};
+                                                        .destination_guide = keyboard_impl->_layout_point.x_guide()}};
 
                         bottom_layout = ui::fixed_layout{{.distance = 4.0f,
                                                           .source_guide = renderer.view_layout_rect().bottom_guide(),
-                                                          .destination_guide = keyboard_impl->_y_guide}};
+                                                          .destination_guide = keyboard_impl->_layout_point.y_guide()}};
                     }
                 } else {
                     bottom_layout = nullptr;
@@ -124,8 +122,7 @@ struct sample::soft_keyboard_extension::impl : base::impl {
     std::vector<base> _soft_key_observers;
     base _renderer_observer = nullptr;
 
-    ui::layout_guide _x_guide;
-    ui::layout_guide _y_guide;
+    ui::layout_point _layout_point;
 };
 
 sample::soft_keyboard_extension::soft_keyboard_extension() : base(std::make_shared<impl>()) {

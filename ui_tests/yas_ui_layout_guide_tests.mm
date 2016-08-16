@@ -77,6 +77,34 @@ using namespace yas;
     XCTAssertEqual(handled_value, 1.0f);
 }
 
+#pragma mark - ui::layout_point
+
+- (void)test_create_point {
+    ui::layout_point point;
+
+    XCTAssertTrue(point);
+    XCTAssertTrue(point.x_guide());
+    XCTAssertTrue(point.y_guide());
+    XCTAssertEqual(point.x_guide().value(), 0.0f);
+    XCTAssertEqual(point.y_guide().value(), 0.0f);
+}
+
+- (void)test_create_point_with_args {
+    ui::layout_point point{{.x = 1.0f, .y = 2.0f}};
+
+    XCTAssertTrue(point);
+    XCTAssertTrue(point.x_guide());
+    XCTAssertTrue(point.y_guide());
+    XCTAssertEqual(point.x_guide().value(), 1.0f);
+    XCTAssertEqual(point.y_guide().value(), 2.0f);
+}
+
+- (void)test_create_point_null {
+    ui::layout_point point{nullptr};
+
+    XCTAssertFalse(point);
+}
+
 #pragma mark - ui::layout_range
 
 - (void)test_create_range {
