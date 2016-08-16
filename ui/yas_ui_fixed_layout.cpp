@@ -44,7 +44,7 @@ struct ui::fixed_layout::impl : base::impl {
 
    private:
     property<float>::observer_t _distance_observer;
-    ui::layout_guide::subject_t::observer_t _src_observer;
+    ui::layout_guide::observer_t _src_observer;
 };
 
 ui::fixed_layout::fixed_layout(args args) : base(std::make_shared<impl>(std::move(args))) {

@@ -66,8 +66,8 @@ struct ui::justified_layout::impl : base::impl {
     }
 
    private:
-    ui::layout_guide::subject_t::observer_t _first_src_observer;
-    ui::layout_guide::subject_t::observer_t _second_src_observer;
+    ui::layout_guide::observer_t _first_src_observer;
+    ui::layout_guide::observer_t _second_src_observer;
     std::vector<float> _normalized_rates;
 
     void _setup_normalized_rates() {
