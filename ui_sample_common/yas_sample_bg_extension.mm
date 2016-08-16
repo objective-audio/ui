@@ -16,12 +16,11 @@ struct sample::bg_extension::impl : base::impl {
         node.set_color(0.75f);
     }
 
-    void setup_renderer_observer() {
+    void prepare(sample::bg_extension &ext) {
         _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = _rect_plane_ext.node().subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_bg_ext = to_weak(cast<sample::bg_extension>()),
-             view_size_observer = base{nullptr}](auto const &context) mutable {
+            [weak_bg_ext = to_weak(ext), view_size_observer = base{nullptr}](auto const &context) mutable {
                 if (auto bg_ext = weak_bg_ext.lock()) {
                     auto impl = bg_ext.impl_ptr<sample::bg_extension::impl>();
                     auto node = context.value;
@@ -56,7 +55,7 @@ struct sample::bg_extension::impl : base::impl {
 };
 
 sample::bg_extension::bg_extension() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::bg_extension::bg_extension(std::nullptr_t) : base(nullptr) {

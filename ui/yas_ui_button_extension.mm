@@ -22,34 +22,33 @@ struct ui::button_extension::impl : base::impl {
         _setup(region);
     }
 
-    void setup_renderer_observer() {
+    void prepare(ui::button_extension &ext) {
         auto &node = _rect_plane_ext.node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
-        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            event_observer = base{nullptr},
-            leave_observer = base{nullptr},
-            weak_button_ext = to_weak(cast<ui::button_extension>())
-        ](auto const &context) mutable {
-            ui::node const &node = context.value;
+        _renderer_observer = node.subject().make_observer(
+            ui::node::method::renderer_changed,
+            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button_ext = to_weak(ext)](
+                auto const &context) mutable {
+                ui::node const &node = context.value;
 
-            if (auto renderer = node.renderer()) {
-                event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_manager::method::touch_changed, [weak_button_ext](auto const &context) {
-                        if (auto button_ext = weak_button_ext.lock()) {
-                            button_ext.impl_ptr<impl>()->_update_tracking(context.value);
-                        }
-                    });
+                if (auto renderer = node.renderer()) {
+                    event_observer = renderer.event_manager().subject().make_observer(
+                        ui::event_manager::method::touch_changed, [weak_button_ext](auto const &context) {
+                            if (auto button_ext = weak_button_ext.lock()) {
+                                button_ext.impl_ptr<impl>()->_update_tracking(context.value);
+                            }
+                        });
 
-                if (auto button_ext = weak_button_ext.lock()) {
-                    leave_observer = button_ext.impl_ptr<impl>()->_make_leave_observer();
+                    if (auto button_ext = weak_button_ext.lock()) {
+                        leave_observer = button_ext.impl_ptr<impl>()->_make_leave_observer();
+                    }
+                } else {
+                    event_observer = nullptr;
+                    leave_observer = nullptr;
                 }
-            } else {
-                event_observer = nullptr;
-                leave_observer = nullptr;
-            }
-        });
+            });
     }
 
     void set_state(ui::button_extension::state const &state, bool const enabled) {
@@ -205,7 +204,7 @@ struct ui::button_extension::impl : base::impl {
 #pragma mark - ui::button
 
 ui::button_extension::button_extension(ui::float_region const &region) : base(std::make_shared<impl>(region)) {
-    impl_ptr<impl>()->setup_renderer_observer();
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::button_extension::button_extension(std::nullptr_t) : base(nullptr) {
