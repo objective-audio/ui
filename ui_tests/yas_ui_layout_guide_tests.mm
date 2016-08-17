@@ -83,20 +83,20 @@ using namespace yas;
     ui::layout_guide_point point;
 
     XCTAssertTrue(point);
-    XCTAssertTrue(point.x_guide());
-    XCTAssertTrue(point.y_guide());
-    XCTAssertEqual(point.x_guide().value(), 0.0f);
-    XCTAssertEqual(point.y_guide().value(), 0.0f);
+    XCTAssertTrue(point.x());
+    XCTAssertTrue(point.y());
+    XCTAssertEqual(point.x().value(), 0.0f);
+    XCTAssertEqual(point.y().value(), 0.0f);
 }
 
 - (void)test_create_point_with_args {
     ui::layout_guide_point point{{.x = 1.0f, .y = 2.0f}};
 
     XCTAssertTrue(point);
-    XCTAssertTrue(point.x_guide());
-    XCTAssertTrue(point.y_guide());
-    XCTAssertEqual(point.x_guide().value(), 1.0f);
-    XCTAssertEqual(point.y_guide().value(), 2.0f);
+    XCTAssertTrue(point.x());
+    XCTAssertTrue(point.y());
+    XCTAssertEqual(point.x().value(), 1.0f);
+    XCTAssertEqual(point.y().value(), 2.0f);
 }
 
 - (void)test_create_point_null {
@@ -111,25 +111,25 @@ using namespace yas;
     ui::layout_guide_range range;
 
     XCTAssertTrue(range);
-    XCTAssertTrue(range.min_guide());
-    XCTAssertTrue(range.max_guide());
-    XCTAssertEqual(range.min_guide().value(), 0.0f);
-    XCTAssertEqual(range.max_guide().value(), 0.0f);
+    XCTAssertTrue(range.min());
+    XCTAssertTrue(range.max());
+    XCTAssertEqual(range.min().value(), 0.0f);
+    XCTAssertEqual(range.max().value(), 0.0f);
 }
 
 - (void)test_create_range_with_args {
     ui::layout_guide_range range{{.location = 1.0f, .length = 2.0f}};
 
     XCTAssertTrue(range);
-    XCTAssertTrue(range.min_guide());
-    XCTAssertTrue(range.max_guide());
-    XCTAssertEqual(range.min_guide().value(), 1.0f);
-    XCTAssertEqual(range.max_guide().value(), 3.0f);
+    XCTAssertTrue(range.min());
+    XCTAssertTrue(range.max());
+    XCTAssertEqual(range.min().value(), 1.0f);
+    XCTAssertEqual(range.max().value(), 3.0f);
 
     range = ui::layout_guide_range{{.location = 4.0f, .length = -6.0f}};
 
-    XCTAssertEqual(range.min_guide().value(), -2.0f);
-    XCTAssertEqual(range.max_guide().value(), 4.0f);
+    XCTAssertEqual(range.min().value(), -2.0f);
+    XCTAssertEqual(range.max().value(), 4.0f);
 }
 
 - (void)test_create_range_null {
@@ -146,19 +146,19 @@ using namespace yas;
     XCTAssertTrue(rect);
     XCTAssertTrue(rect.vertical_range());
     XCTAssertTrue(rect.horizontal_range());
-    XCTAssertTrue(rect.left_guide());
-    XCTAssertTrue(rect.right_guide());
-    XCTAssertTrue(rect.bottom_guide());
-    XCTAssertTrue(rect.top_guide());
+    XCTAssertTrue(rect.left());
+    XCTAssertTrue(rect.right());
+    XCTAssertTrue(rect.bottom());
+    XCTAssertTrue(rect.top());
 
-    XCTAssertEqual(rect.vertical_range().min_guide().value(), 0.0f);
-    XCTAssertEqual(rect.vertical_range().max_guide().value(), 0.0f);
-    XCTAssertEqual(rect.horizontal_range().min_guide().value(), 0.0f);
-    XCTAssertEqual(rect.horizontal_range().max_guide().value(), 0.0f);
-    XCTAssertEqual(rect.left_guide().value(), 0.0f);
-    XCTAssertEqual(rect.right_guide().value(), 0.0f);
-    XCTAssertEqual(rect.bottom_guide().value(), 0.0f);
-    XCTAssertEqual(rect.top_guide().value(), 0.0f);
+    XCTAssertEqual(rect.vertical_range().min().value(), 0.0f);
+    XCTAssertEqual(rect.vertical_range().max().value(), 0.0f);
+    XCTAssertEqual(rect.horizontal_range().min().value(), 0.0f);
+    XCTAssertEqual(rect.horizontal_range().max().value(), 0.0f);
+    XCTAssertEqual(rect.left().value(), 0.0f);
+    XCTAssertEqual(rect.right().value(), 0.0f);
+    XCTAssertEqual(rect.bottom().value(), 0.0f);
+    XCTAssertEqual(rect.top().value(), 0.0f);
 }
 
 - (void)test_create_rect_with_args {
@@ -168,19 +168,19 @@ using namespace yas;
     XCTAssertTrue(rect);
     XCTAssertTrue(rect.vertical_range());
     XCTAssertTrue(rect.horizontal_range());
-    XCTAssertTrue(rect.left_guide());
-    XCTAssertTrue(rect.right_guide());
-    XCTAssertTrue(rect.bottom_guide());
-    XCTAssertTrue(rect.top_guide());
+    XCTAssertTrue(rect.left());
+    XCTAssertTrue(rect.right());
+    XCTAssertTrue(rect.bottom());
+    XCTAssertTrue(rect.top());
 
-    XCTAssertEqual(rect.vertical_range().min_guide().value(), 11.0f);
-    XCTAssertEqual(rect.vertical_range().max_guide().value(), 12.0f);
-    XCTAssertEqual(rect.horizontal_range().min_guide().value(), 13.0f);
-    XCTAssertEqual(rect.horizontal_range().max_guide().value(), 14.0f);
-    XCTAssertEqual(rect.bottom_guide().value(), 11.0f);
-    XCTAssertEqual(rect.top_guide().value(), 12.0f);
-    XCTAssertEqual(rect.left_guide().value(), 13.0f);
-    XCTAssertEqual(rect.right_guide().value(), 14.0f);
+    XCTAssertEqual(rect.vertical_range().min().value(), 11.0f);
+    XCTAssertEqual(rect.vertical_range().max().value(), 12.0f);
+    XCTAssertEqual(rect.horizontal_range().min().value(), 13.0f);
+    XCTAssertEqual(rect.horizontal_range().max().value(), 14.0f);
+    XCTAssertEqual(rect.bottom().value(), 11.0f);
+    XCTAssertEqual(rect.top().value(), 12.0f);
+    XCTAssertEqual(rect.left().value(), 13.0f);
+    XCTAssertEqual(rect.right().value(), 14.0f);
 }
 
 - (void)test_create_rect_null {
@@ -195,10 +195,10 @@ using namespace yas;
     rect.set_ranges({.vertical_range = {.location = 11.0f, .length = 1.0f},
                      .horizontal_range = {.location = 13.0f, .length = 1.0f}});
 
-    XCTAssertEqual(rect.bottom_guide().value(), 11.0f);
-    XCTAssertEqual(rect.top_guide().value(), 12.0f);
-    XCTAssertEqual(rect.left_guide().value(), 13.0f);
-    XCTAssertEqual(rect.right_guide().value(), 14.0f);
+    XCTAssertEqual(rect.bottom().value(), 11.0f);
+    XCTAssertEqual(rect.top().value(), 12.0f);
+    XCTAssertEqual(rect.left().value(), 13.0f);
+    XCTAssertEqual(rect.right().value(), 14.0f);
 }
 
 - (void)test_rect_set_region {
@@ -206,10 +206,10 @@ using namespace yas;
 
     rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
-    XCTAssertEqual(rect.bottom_guide().value(), 2.0f);
-    XCTAssertEqual(rect.top_guide().value(), 6.0f);
-    XCTAssertEqual(rect.left_guide().value(), 1.0f);
-    XCTAssertEqual(rect.right_guide().value(), 4.0f);
+    XCTAssertEqual(rect.bottom().value(), 2.0f);
+    XCTAssertEqual(rect.top().value(), 6.0f);
+    XCTAssertEqual(rect.left().value(), 1.0f);
+    XCTAssertEqual(rect.right().value(), 4.0f);
 }
 
 @end

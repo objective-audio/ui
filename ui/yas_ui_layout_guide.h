@@ -52,8 +52,8 @@ namespace ui {
 
         virtual ~layout_guide_point() final;
 
-        ui::layout_guide &x_guide();
-        ui::layout_guide &y_guide();
+        ui::layout_guide &x();
+        ui::layout_guide &y();
     };
 
     class layout_guide_range : public base {
@@ -66,8 +66,8 @@ namespace ui {
 
         virtual ~layout_guide_range() final;
 
-        layout_guide &min_guide();
-        layout_guide &max_guide();
+        layout_guide &min();
+        layout_guide &max();
 
         void set_range(ui::float_range);
     };
@@ -90,10 +90,10 @@ namespace ui {
         layout_guide_range &vertical_range();
         layout_guide_range &horizontal_range();
 
-        layout_guide &left_guide();
-        layout_guide &right_guide();
-        layout_guide &bottom_guide();
-        layout_guide &top_guide();
+        layout_guide &left();
+        layout_guide &right();
+        layout_guide &bottom();
+        layout_guide &top();
 
         void set_ranges(args);
         void set_region(ui::float_region);

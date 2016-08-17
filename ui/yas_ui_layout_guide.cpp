@@ -89,11 +89,11 @@ ui::layout_guide_point::layout_guide_point(std::nullptr_t) : base(nullptr) {
 
 ui::layout_guide_point::~layout_guide_point() = default;
 
-ui::layout_guide &ui::layout_guide_point::x_guide() {
+ui::layout_guide &ui::layout_guide_point::x() {
     return impl_ptr<impl>()->_x_guide;
 }
 
-ui::layout_guide &ui::layout_guide_point::y_guide() {
+ui::layout_guide &ui::layout_guide_point::y() {
     return impl_ptr<impl>()->_y_guide;
 }
 
@@ -125,11 +125,11 @@ ui::layout_guide_range::layout_guide_range(std::nullptr_t) : base(nullptr) {
 
 ui::layout_guide_range::~layout_guide_range() = default;
 
-ui::layout_guide &ui::layout_guide_range::min_guide() {
+ui::layout_guide &ui::layout_guide_range::min() {
     return impl_ptr<impl>()->_min_guide;
 }
 
-ui::layout_guide &ui::layout_guide_range::max_guide() {
+ui::layout_guide &ui::layout_guide_range::max() {
     return impl_ptr<impl>()->_max_guide;
 }
 
@@ -178,20 +178,20 @@ ui::layout_guide_range &ui::layout_guide_rect::horizontal_range() {
     return impl_ptr<impl>()->_horizontal_range;
 }
 
-ui::layout_guide &ui::layout_guide_rect::left_guide() {
-    return horizontal_range().min_guide();
+ui::layout_guide &ui::layout_guide_rect::left() {
+    return horizontal_range().min();
 }
 
-ui::layout_guide &ui::layout_guide_rect::right_guide() {
-    return horizontal_range().max_guide();
+ui::layout_guide &ui::layout_guide_rect::right() {
+    return horizontal_range().max();
 }
 
-ui::layout_guide &ui::layout_guide_rect::bottom_guide() {
-    return vertical_range().min_guide();
+ui::layout_guide &ui::layout_guide_rect::bottom() {
+    return vertical_range().min();
 }
 
-ui::layout_guide &ui::layout_guide_rect::top_guide() {
-    return vertical_range().max_guide();
+ui::layout_guide &ui::layout_guide_rect::top() {
+    return vertical_range().max();
 }
 
 void ui::layout_guide_rect::set_ranges(args args) {
