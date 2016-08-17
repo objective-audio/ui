@@ -22,6 +22,7 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_touch_holder_ext.node());
     root_node.push_back_sub_node(_inputted_text_ext.strings_extension().rect_plane_extension().node());
     root_node.push_back_sub_node(_modifier_text_ext.strings_extension().rect_plane_extension().node());
+    root_node.push_back_sub_node(_justified_points_extension.rect_plane_ext().node());
 
     _big_button_ext.button_extension().rect_plane_extension().node().push_back_sub_node(
         _big_button_text_ext.strings_extension().rect_plane_extension().node());
