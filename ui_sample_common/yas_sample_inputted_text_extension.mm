@@ -13,7 +13,7 @@ struct sample::inputted_text_extension::impl : base::impl {
         _strings_ext.set_pivot(ui::pivot::left);
 
         auto &node = _strings_ext.rect_plane_extension().node();
-        node.attach_layout_point(_layout_point);
+        node.attach_position_layout_guides(_layout_guide_point);
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
@@ -40,10 +40,10 @@ struct sample::inputted_text_extension::impl : base::impl {
 
                     left_layout = ui::fixed_layout{{.distance = 4.0f,
                                                     .source_guide = renderer.view_layout_rect().left_guide(),
-                                                    .destination_guide = ext_impl->_layout_point.x_guide()}};
+                                                    .destination_guide = ext_impl->_layout_guide_point.x_guide()}};
                     top_layout = ui::fixed_layout{{.distance = -22.0f,
                                                    .source_guide = renderer.view_layout_rect().top_guide(),
-                                                   .destination_guide = ext_impl->_layout_point.y_guide()}};
+                                                   .destination_guide = ext_impl->_layout_guide_point.y_guide()}};
                 } else {
                     event_observer = nullptr;
                     left_layout = nullptr;
@@ -76,7 +76,7 @@ struct sample::inputted_text_extension::impl : base::impl {
 
    private:
     base _renderer_observer = nullptr;
-    ui::layout_point _layout_point;
+    ui::layout_guide_point _layout_guide_point;
 };
 
 sample::inputted_text_extension::inputted_text_extension(ui::font_atlas font_atlas)

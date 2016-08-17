@@ -686,7 +686,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     });
 }
 
-void ui::node::attach_layout_point(ui::layout_point &point) {
+void ui::node::attach_position_layout_guides(ui::layout_guide_point &point) {
     attach_x_layout_guide(point.x_guide());
     attach_y_layout_guide(point.y_guide());
 }

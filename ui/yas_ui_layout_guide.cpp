@@ -66,9 +66,9 @@ ui::layout_guide::subject_t &ui::layout_guide::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-#pragma mark - ui::layout_point::impl
+#pragma mark - ui::layout_guide_point::impl
 
-struct ui::layout_point::impl : base::impl {
+struct ui::layout_guide_point::impl : base::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
@@ -76,24 +76,24 @@ struct ui::layout_point::impl : base::impl {
     }
 };
 
-#pragma mark - ui::layout_point
+#pragma mark - ui::layout_guide_point
 
-ui::layout_point::layout_point() : layout_point(ui::float_origin{}) {
+ui::layout_guide_point::layout_guide_point() : layout_guide_point(ui::float_origin{}) {
 }
 
-ui::layout_point::layout_point(ui::float_origin origin) : base(std::make_shared<impl>(std::move(origin))) {
+ui::layout_guide_point::layout_guide_point(ui::float_origin origin) : base(std::make_shared<impl>(std::move(origin))) {
 }
 
-ui::layout_point::layout_point(std::nullptr_t) : base(nullptr) {
+ui::layout_guide_point::layout_guide_point(std::nullptr_t) : base(nullptr) {
 }
 
-ui::layout_point::~layout_point() = default;
+ui::layout_guide_point::~layout_guide_point() = default;
 
-ui::layout_guide &ui::layout_point::x_guide() {
+ui::layout_guide &ui::layout_guide_point::x_guide() {
     return impl_ptr<impl>()->_x_guide;
 }
 
-ui::layout_guide &ui::layout_point::y_guide() {
+ui::layout_guide &ui::layout_guide_point::y_guide() {
     return impl_ptr<impl>()->_y_guide;
 }
 

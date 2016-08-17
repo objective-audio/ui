@@ -77,10 +77,10 @@ using namespace yas;
     XCTAssertEqual(handled_value, 1.0f);
 }
 
-#pragma mark - ui::layout_point
+#pragma mark - ui::layout_guide_point
 
 - (void)test_create_point {
-    ui::layout_point point;
+    ui::layout_guide_point point;
 
     XCTAssertTrue(point);
     XCTAssertTrue(point.x_guide());
@@ -90,7 +90,7 @@ using namespace yas;
 }
 
 - (void)test_create_point_with_args {
-    ui::layout_point point{{.x = 1.0f, .y = 2.0f}};
+    ui::layout_guide_point point{{.x = 1.0f, .y = 2.0f}};
 
     XCTAssertTrue(point);
     XCTAssertTrue(point.x_guide());
@@ -100,7 +100,7 @@ using namespace yas;
 }
 
 - (void)test_create_point_null {
-    ui::layout_point point{nullptr};
+    ui::layout_guide_point point{nullptr};
 
     XCTAssertFalse(point);
 }
