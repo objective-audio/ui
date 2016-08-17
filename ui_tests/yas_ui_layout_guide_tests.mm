@@ -189,6 +189,28 @@ using namespace yas;
     XCTAssertFalse(rect);
 }
 
+- (void)test_rect_set_vertical_ranges {
+    ui::layout_guide_rect rect;
+
+    rect.set_vertical_range({.location = 100.0f, .length = 101.0f});
+
+    XCTAssertEqual(rect.bottom().value(), 100.0f);
+    XCTAssertEqual(rect.top().value(), 201.0f);
+    XCTAssertEqual(rect.left().value(), 0.0f);
+    XCTAssertEqual(rect.right().value(), 0.0f);
+}
+
+- (void)test_rect_set_horizontal_ranges {
+    ui::layout_guide_rect rect;
+
+    rect.set_horizontal_range({.location = 300.0f, .length = 102.0f});
+
+    XCTAssertEqual(rect.bottom().value(), 0.0f);
+    XCTAssertEqual(rect.top().value(), 0.0f);
+    XCTAssertEqual(rect.left().value(), 300.0f);
+    XCTAssertEqual(rect.right().value(), 402.0f);
+}
+
 - (void)test_rect_set_ranges {
     ui::layout_guide_rect rect;
 
