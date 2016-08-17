@@ -44,10 +44,10 @@ struct sample::modifier_text_extension::impl : base::impl {
                     auto ext_impl = ext.impl_ptr<sample::modifier_text_extension::impl>();
 
                     right_layout = ui::fixed_layout{{.distance = -4.0f,
-                                                     .source_guide = renderer.view_layout_rect().right_guide(),
+                                                     .source_guide = renderer.view_layout_guide_rect().right_guide(),
                                                      .destination_guide = ext_impl->_layout_guide_point.x_guide()}};
                     bottom_layout = ui::fixed_layout{{.distance = 4.0f,
-                                                      .source_guide = renderer.view_layout_rect().bottom_guide(),
+                                                      .source_guide = renderer.view_layout_guide_rect().bottom_guide(),
                                                       .destination_guide = ext_impl->_layout_guide_point.y_guide()}};
 
                 } else {

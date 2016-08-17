@@ -72,7 +72,7 @@ namespace ui {
         void set_range(ui::float_range);
     };
 
-    class layout_rect : public base {
+    class layout_guide_rect : public base {
         class impl;
 
        public:
@@ -81,11 +81,11 @@ namespace ui {
             ui::float_range horizontal_range;
         };
 
-        layout_rect();
-        explicit layout_rect(args);
-        layout_rect(std::nullptr_t);
+        layout_guide_rect();
+        explicit layout_guide_rect(args);
+        layout_guide_rect(std::nullptr_t);
 
-        virtual ~layout_rect() final;
+        virtual ~layout_guide_rect() final;
 
         layout_guide_range &vertical_range();
         layout_guide_range &horizontal_range();

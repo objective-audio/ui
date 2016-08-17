@@ -138,10 +138,10 @@ using namespace yas;
     XCTAssertFalse(range);
 }
 
-#pragma mark - ui::layout_rect
+#pragma mark - ui::layout_guide_rect
 
 - (void)test_create_rect {
-    ui::layout_rect rect;
+    ui::layout_guide_rect rect;
 
     XCTAssertTrue(rect);
     XCTAssertTrue(rect.vertical_range());
@@ -162,8 +162,8 @@ using namespace yas;
 }
 
 - (void)test_create_rect_with_args {
-    ui::layout_rect rect{{.vertical_range = {.location = 11.0f, .length = 1.0f},
-                          .horizontal_range = {.location = 13.0f, .length = 1.0f}}};
+    ui::layout_guide_rect rect{{.vertical_range = {.location = 11.0f, .length = 1.0f},
+                                .horizontal_range = {.location = 13.0f, .length = 1.0f}}};
 
     XCTAssertTrue(rect);
     XCTAssertTrue(rect.vertical_range());
@@ -184,13 +184,13 @@ using namespace yas;
 }
 
 - (void)test_create_rect_null {
-    ui::layout_rect rect{nullptr};
+    ui::layout_guide_rect rect{nullptr};
 
     XCTAssertFalse(rect);
 }
 
 - (void)test_rect_set_ranges {
-    ui::layout_rect rect;
+    ui::layout_guide_rect rect;
 
     rect.set_ranges({.vertical_range = {.location = 11.0f, .length = 1.0f},
                      .horizontal_range = {.location = 13.0f, .length = 1.0f}});
@@ -202,7 +202,7 @@ using namespace yas;
 }
 
 - (void)test_rect_set_region {
-    ui::layout_rect rect;
+    ui::layout_guide_rect rect;
 
     rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 

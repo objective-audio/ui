@@ -39,10 +39,10 @@ struct sample::inputted_text_extension::impl : base::impl {
                         });
 
                     left_layout = ui::fixed_layout{{.distance = 4.0f,
-                                                    .source_guide = renderer.view_layout_rect().left_guide(),
+                                                    .source_guide = renderer.view_layout_guide_rect().left_guide(),
                                                     .destination_guide = ext_impl->_layout_guide_point.x_guide()}};
                     top_layout = ui::fixed_layout{{.distance = -22.0f,
-                                                   .source_guide = renderer.view_layout_rect().top_guide(),
+                                                   .source_guide = renderer.view_layout_guide_rect().top_guide(),
                                                    .destination_guide = ext_impl->_layout_guide_point.y_guide()}};
                 } else {
                     event_observer = nullptr;

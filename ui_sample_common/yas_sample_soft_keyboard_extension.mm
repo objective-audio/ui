@@ -64,12 +64,12 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
                         left_layout =
                             ui::fixed_layout{{.distance = 4.0f,
-                                              .source_guide = renderer.view_layout_rect().left_guide(),
+                                              .source_guide = renderer.view_layout_guide_rect().left_guide(),
                                               .destination_guide = keyboard_impl->_layout_guide_point.x_guide()}};
 
                         bottom_layout =
                             ui::fixed_layout{{.distance = 4.0f,
-                                              .source_guide = renderer.view_layout_rect().bottom_guide(),
+                                              .source_guide = renderer.view_layout_guide_rect().bottom_guide(),
                                               .destination_guide = keyboard_impl->_layout_guide_point.y_guide()}};
                     }
                 } else {
