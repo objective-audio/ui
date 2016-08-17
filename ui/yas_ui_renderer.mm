@@ -89,7 +89,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         auto const update_scale_result = _update_scale_factor();
 
         if (to_bool(update_view_size_result)) {
-            _update_layout_rect();
+            _update_layout_guide_rect();
 
             if (_subject.has_observer()) {
                 _subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
@@ -172,7 +172,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::parallel_action _action;
     ui::detector _detector;
     ui::event_manager _event_manager;
-    ui::layout_rect _view_layout_rect;
+    ui::layout_guide_rect _view_layout_guide_rect;
 
    private:
     update_result _update_view_size(CGSize const v_size, CGSize const d_size) {
@@ -211,11 +211,11 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         }
     }
 
-    void _update_layout_rect() {
+    void _update_layout_guide_rect() {
         float const view_width = _view_size.width;
         float const view_height = _view_size.height;
 
-        _view_layout_rect.set_region(
+        _view_layout_guide_rect.set_region(
             {.origin = {-view_width * 0.5f, -view_height * 0.5f}, .size = {view_width, view_height}});
     }
 };
@@ -312,6 +312,6 @@ ui::detector &ui::renderer::detector() {
     return impl_ptr<impl>()->_detector;
 }
 
-ui::layout_rect &ui::renderer::view_layout_rect() {
-    return impl_ptr<impl>()->_view_layout_rect;
+ui::layout_guide_rect &ui::renderer::view_layout_guide_rect() {
+    return impl_ptr<impl>()->_view_layout_guide_rect;
 }

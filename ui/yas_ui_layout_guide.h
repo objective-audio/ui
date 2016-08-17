@@ -42,37 +42,37 @@ namespace ui {
         subject_t &subject();
     };
 
-    class layout_point : public base {
+    class layout_guide_point : public base {
         class impl;
 
        public:
-        layout_point();
-        explicit layout_point(ui::float_origin);
-        layout_point(std::nullptr_t);
+        layout_guide_point();
+        explicit layout_guide_point(ui::float_origin);
+        layout_guide_point(std::nullptr_t);
 
-        virtual ~layout_point() final;
+        virtual ~layout_guide_point() final;
 
-        ui::layout_guide &x_guide();
-        ui::layout_guide &y_guide();
+        ui::layout_guide &x();
+        ui::layout_guide &y();
     };
 
-    class layout_range : public base {
+    class layout_guide_range : public base {
         class impl;
 
        public:
-        layout_range();
-        explicit layout_range(ui::float_range);
-        layout_range(std::nullptr_t);
+        layout_guide_range();
+        explicit layout_guide_range(ui::float_range);
+        layout_guide_range(std::nullptr_t);
 
-        virtual ~layout_range() final;
+        virtual ~layout_guide_range() final;
 
-        layout_guide &min_guide();
-        layout_guide &max_guide();
+        layout_guide &min();
+        layout_guide &max();
 
         void set_range(ui::float_range);
     };
 
-    class layout_rect : public base {
+    class layout_guide_rect : public base {
         class impl;
 
        public:
@@ -81,20 +81,22 @@ namespace ui {
             ui::float_range horizontal_range;
         };
 
-        layout_rect();
-        explicit layout_rect(args);
-        layout_rect(std::nullptr_t);
+        layout_guide_rect();
+        explicit layout_guide_rect(args);
+        layout_guide_rect(std::nullptr_t);
 
-        virtual ~layout_rect() final;
+        virtual ~layout_guide_rect() final;
 
-        layout_range &vertical_range();
-        layout_range &horizontal_range();
+        layout_guide_range &vertical_range();
+        layout_guide_range &horizontal_range();
 
-        layout_guide &left_guide();
-        layout_guide &right_guide();
-        layout_guide &bottom_guide();
-        layout_guide &top_guide();
+        layout_guide &left();
+        layout_guide &right();
+        layout_guide &bottom();
+        layout_guide &top();
 
+        void set_vertical_range(ui::float_range);
+        void set_horizontal_range(ui::float_range);
         void set_ranges(args);
         void set_region(ui::float_region);
     };
