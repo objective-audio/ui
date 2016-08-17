@@ -95,6 +95,8 @@ namespace ui {
         layout_guide &bottom();
         layout_guide &top();
 
+        void set_vertical_range(ui::float_range);
+        void set_horizontal_range(ui::float_range);
         void set_ranges(args);
         void set_region(ui::float_region);
     };

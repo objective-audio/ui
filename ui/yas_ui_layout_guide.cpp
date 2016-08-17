@@ -147,9 +147,17 @@ struct ui::layout_guide_rect::impl : base::impl {
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
     }
 
+    void set_vertical_range(ui::float_range &&range) {
+        _vertical_range.set_range(std::move(range));
+    }
+
+    void set_horizontal_range(ui::float_range &&range) {
+        _horizontal_range.set_range(std::move(range));
+    }
+
     void set_ranges(args &&args) {
-        _vertical_range.set_range(std::move(args.vertical_range));
-        _horizontal_range.set_range(std::move(args.horizontal_range));
+        set_vertical_range(std::move(args.vertical_range));
+        set_horizontal_range(std::move(args.horizontal_range));
     }
 
     void set_region(ui::float_region &&region) {
@@ -192,6 +200,14 @@ ui::layout_guide &ui::layout_guide_rect::bottom() {
 
 ui::layout_guide &ui::layout_guide_rect::top() {
     return vertical_range().max();
+}
+
+void ui::layout_guide_rect::set_vertical_range(ui::float_range range) {
+    impl_ptr<impl>()->set_vertical_range(std::move(range));
+}
+
+void ui::layout_guide_rect::set_horizontal_range(ui::float_range range) {
+    impl_ptr<impl>()->set_horizontal_range(std::move(range));
 }
 
 void ui::layout_guide_rect::set_ranges(args args) {
