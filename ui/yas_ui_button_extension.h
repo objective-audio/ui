@@ -11,6 +11,8 @@
 namespace yas {
 template <typename T, typename K>
 class subject;
+template <typename T, typename K>
+class observer;
 
 namespace ui {
     class rect_plane_extension;
@@ -40,6 +42,7 @@ namespace ui {
         };
 
         using subject_t = subject<button_extension, method>;
+        using observer_t = observer<button_extension, method>;
 
         button_extension(ui::float_region const &region);
         button_extension(std::nullptr_t);

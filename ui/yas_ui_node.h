@@ -12,6 +12,8 @@
 namespace yas {
 template <typename T, typename K>
 class subject;
+template <typename T, typename K>
+class observer;
 
 namespace ui {
     class mesh;
@@ -45,6 +47,7 @@ namespace ui {
         };
 
         using subject_t = subject<node, method>;
+        using observer_t = observer<node, method>;
 
         node();
         node(std::nullptr_t);

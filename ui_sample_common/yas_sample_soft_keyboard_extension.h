@@ -12,6 +12,7 @@ namespace sample {
         class impl;
 
         using subject_t = subject<soft_keyboard_extension, std::string>;
+        using observer_t = subject_t::observer_t;
 
         explicit soft_keyboard_extension();
         soft_keyboard_extension(std::nullptr_t);
