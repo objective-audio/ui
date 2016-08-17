@@ -56,15 +56,15 @@ namespace ui {
         ui::layout_guide &y_guide();
     };
 
-    class layout_range : public base {
+    class layout_guide_range : public base {
         class impl;
 
        public:
-        layout_range();
-        explicit layout_range(ui::float_range);
-        layout_range(std::nullptr_t);
+        layout_guide_range();
+        explicit layout_guide_range(ui::float_range);
+        layout_guide_range(std::nullptr_t);
 
-        virtual ~layout_range() final;
+        virtual ~layout_guide_range() final;
 
         layout_guide &min_guide();
         layout_guide &max_guide();
@@ -87,8 +87,8 @@ namespace ui {
 
         virtual ~layout_rect() final;
 
-        layout_range &vertical_range();
-        layout_range &horizontal_range();
+        layout_guide_range &vertical_range();
+        layout_guide_range &horizontal_range();
 
         layout_guide &left_guide();
         layout_guide &right_guide();

@@ -97,9 +97,9 @@ ui::layout_guide &ui::layout_guide_point::y_guide() {
     return impl_ptr<impl>()->_y_guide;
 }
 
-#pragma mark - ui::layout_range::impl
+#pragma mark - ui::layout_guide_range::impl
 
-struct ui::layout_range::impl : base::impl {
+struct ui::layout_guide_range::impl : base::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
 
@@ -112,36 +112,36 @@ struct ui::layout_range::impl : base::impl {
     }
 };
 
-#pragma mark - ui::layout_range
+#pragma mark - ui::layout_guide_range
 
-ui::layout_range::layout_range() : layout_range(ui::float_range{}) {
+ui::layout_guide_range::layout_guide_range() : layout_guide_range(ui::float_range{}) {
 }
 
-ui::layout_range::layout_range(ui::float_range range) : base(std::make_shared<impl>(std::move(range))) {
+ui::layout_guide_range::layout_guide_range(ui::float_range range) : base(std::make_shared<impl>(std::move(range))) {
 }
 
-ui::layout_range::layout_range(std::nullptr_t) : base(nullptr) {
+ui::layout_guide_range::layout_guide_range(std::nullptr_t) : base(nullptr) {
 }
 
-ui::layout_range::~layout_range() = default;
+ui::layout_guide_range::~layout_guide_range() = default;
 
-ui::layout_guide &ui::layout_range::min_guide() {
+ui::layout_guide &ui::layout_guide_range::min_guide() {
     return impl_ptr<impl>()->_min_guide;
 }
 
-ui::layout_guide &ui::layout_range::max_guide() {
+ui::layout_guide &ui::layout_guide_range::max_guide() {
     return impl_ptr<impl>()->_max_guide;
 }
 
-void ui::layout_range::set_range(ui::float_range range) {
+void ui::layout_guide_range::set_range(ui::float_range range) {
     impl_ptr<impl>()->set_range(std::move(range));
 }
 
 #pragma mark - ui::layout_rect::impl
 
 struct ui::layout_rect::impl : base::impl {
-    layout_range _vertical_range;
-    layout_range _horizontal_range;
+    layout_guide_range _vertical_range;
+    layout_guide_range _horizontal_range;
 
     impl(args &&args)
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
@@ -170,11 +170,11 @@ ui::layout_rect::layout_rect(std::nullptr_t) : base(nullptr) {
 
 ui::layout_rect::~layout_rect() = default;
 
-ui::layout_range &ui::layout_rect::vertical_range() {
+ui::layout_guide_range &ui::layout_rect::vertical_range() {
     return impl_ptr<impl>()->_vertical_range;
 }
 
-ui::layout_range &ui::layout_rect::horizontal_range() {
+ui::layout_guide_range &ui::layout_rect::horizontal_range() {
     return impl_ptr<impl>()->_horizontal_range;
 }
 

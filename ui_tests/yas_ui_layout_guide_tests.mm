@@ -105,10 +105,10 @@ using namespace yas;
     XCTAssertFalse(point);
 }
 
-#pragma mark - ui::layout_range
+#pragma mark - ui::layout_guide_range
 
 - (void)test_create_range {
-    ui::layout_range range;
+    ui::layout_guide_range range;
 
     XCTAssertTrue(range);
     XCTAssertTrue(range.min_guide());
@@ -118,7 +118,7 @@ using namespace yas;
 }
 
 - (void)test_create_range_with_args {
-    ui::layout_range range{{.location = 1.0f, .length = 2.0f}};
+    ui::layout_guide_range range{{.location = 1.0f, .length = 2.0f}};
 
     XCTAssertTrue(range);
     XCTAssertTrue(range.min_guide());
@@ -126,14 +126,14 @@ using namespace yas;
     XCTAssertEqual(range.min_guide().value(), 1.0f);
     XCTAssertEqual(range.max_guide().value(), 3.0f);
 
-    range = ui::layout_range{{.location = 4.0f, .length = -6.0f}};
+    range = ui::layout_guide_range{{.location = 4.0f, .length = -6.0f}};
 
     XCTAssertEqual(range.min_guide().value(), -2.0f);
     XCTAssertEqual(range.max_guide().value(), 4.0f);
 }
 
 - (void)test_create_range_null {
-    ui::layout_range range{nullptr};
+    ui::layout_guide_range range{nullptr};
 
     XCTAssertFalse(range);
 }
