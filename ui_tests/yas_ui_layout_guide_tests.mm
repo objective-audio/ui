@@ -5,6 +5,8 @@
 #import <XCTest/XCTest.h>
 #import "yas_ui_layout_guide.h"
 
+#import <iostream>
+
 using namespace yas;
 
 @interface yas_ui_layout_guide_tests : XCTestCase
@@ -77,6 +79,68 @@ using namespace yas;
     XCTAssertEqual(handled_value, 1.0f);
 }
 
+- (void)test_notify_delayed {
+    ui::layout_guide guide;
+
+    float handled_value = 0.0f;
+    float notified_old_value = 0.0f;
+    float notified_new_value = 0.0f;
+
+    auto clear_values = [&handled_value, &notified_old_value, &notified_new_value]() {
+        handled_value = notified_old_value = notified_new_value = 0.0f;
+    };
+
+    guide.set_value_changed_handler([&handled_value](auto const value) { handled_value = value; });
+    auto observer = guide.subject().make_observer(ui::layout_guide::method::value_changed,
+                                                  [&notified_old_value, &notified_new_value](auto const &context) {
+                                                      notified_old_value = context.value.old_value;
+                                                      notified_new_value = context.value.new_value;
+                                                  });
+
+    guide.set_value(1.0f);
+
+    XCTAssertEqual(handled_value, 1.0f);
+    XCTAssertEqual(notified_old_value, 0.0f);
+    XCTAssertEqual(notified_new_value, 1.0f);
+
+    clear_values();
+
+    guide.push_notify_delayed();
+    guide.set_value(2.0f);
+
+    XCTAssertEqual(handled_value, 0.0f);
+    XCTAssertEqual(notified_old_value, 0.0f);
+    XCTAssertEqual(notified_new_value, 0.0f);
+
+    guide.push_notify_delayed();
+    guide.set_value(3.0f);
+
+    XCTAssertEqual(handled_value, 0.0f);
+    XCTAssertEqual(notified_old_value, 0.0f);
+    XCTAssertEqual(notified_new_value, 0.0f);
+
+    guide.pop_notify_delayed();
+    guide.set_value(4.0f);
+
+    XCTAssertEqual(handled_value, 0.0f);
+    XCTAssertEqual(notified_old_value, 0.0f);
+    XCTAssertEqual(notified_new_value, 0.0f);
+
+    guide.pop_notify_delayed();
+
+    XCTAssertEqual(handled_value, 4.0f);
+    XCTAssertEqual(notified_old_value, 1.0f);
+    XCTAssertEqual(notified_new_value, 4.0f);
+
+    clear_values();
+
+    guide.set_value(5.0f);
+
+    XCTAssertEqual(handled_value, 5.0f);
+    XCTAssertEqual(notified_old_value, 4.0f);
+    XCTAssertEqual(notified_new_value, 5.0f);
+}
+
 #pragma mark - ui::layout_guide_point
 
 - (void)test_create_point {
@@ -103,6 +167,93 @@ using namespace yas;
     ui::layout_guide_point point{nullptr};
 
     XCTAssertFalse(point);
+}
+
+- (void)test_point_notify_delayed {
+    ui::layout_guide_point point;
+
+    ui::float_origin handled_point;
+    ui::float_origin notified_old_point;
+    ui::float_origin notified_new_point;
+
+    auto is_all_zero = [](ui::float_origin const &origin) { return origin.x == 0 && origin.y == 0; };
+
+    auto clear_points = [&handled_point, &notified_old_point, &notified_new_point]() {
+        handled_point.x = handled_point.y = 0.0f;
+        notified_old_point.x = notified_old_point.y = 0.0f;
+        notified_new_point.x = notified_new_point.y = 0.0f;
+    };
+
+    point.x().set_value_changed_handler([&handled_x = handled_point.x](float const x) { handled_x = x; });
+    point.y().set_value_changed_handler([&handled_y = handled_point.y](float const y) { handled_y = y; });
+
+    auto x_observer = point.x().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_x = notified_old_point.x, &notified_new_x = notified_new_point.x](auto const &context) {
+            notified_old_x = context.value.old_value;
+            notified_new_x = context.value.new_value;
+        });
+
+    auto y_observer = point.y().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_y = notified_old_point.y, &notified_new_y = notified_new_point.y](auto const &context) {
+            notified_old_y = context.value.old_value;
+            notified_new_y = context.value.new_value;
+        });
+
+    point.set_point({1.0f, 2.0f});
+
+    XCTAssertEqual(handled_point.x, 1.0f);
+    XCTAssertEqual(handled_point.y, 2.0f);
+    XCTAssertTrue(is_all_zero(notified_old_point));
+    XCTAssertEqual(notified_new_point.x, 1.0f);
+    XCTAssertEqual(notified_new_point.y, 2.0f);
+
+    clear_points();
+
+    point.push_notify_delayed();
+
+    point.set_point({3.0f, 4.0f});
+
+    XCTAssertTrue(is_all_zero(handled_point));
+    XCTAssertTrue(is_all_zero(notified_old_point));
+    XCTAssertTrue(is_all_zero(notified_new_point));
+
+    point.push_notify_delayed();
+
+    point.set_point({5.0f, 6.0f});
+
+    XCTAssertTrue(is_all_zero(handled_point));
+    XCTAssertTrue(is_all_zero(notified_old_point));
+    XCTAssertTrue(is_all_zero(notified_new_point));
+
+    point.pop_notify_delayed();
+
+    point.set_point({7.0f, 8.0f});
+
+    XCTAssertTrue(is_all_zero(handled_point));
+    XCTAssertTrue(is_all_zero(notified_old_point));
+    XCTAssertTrue(is_all_zero(notified_new_point));
+
+    point.pop_notify_delayed();
+
+    XCTAssertEqual(handled_point.x, 7.0f);
+    XCTAssertEqual(handled_point.y, 8.0f);
+    XCTAssertEqual(notified_old_point.x, 1.0f);
+    XCTAssertEqual(notified_old_point.y, 2.0f);
+    XCTAssertEqual(notified_new_point.x, 7.0f);
+    XCTAssertEqual(notified_new_point.y, 8.0f);
+
+    clear_points();
+
+    point.set_point({9.0f, 10.0f});
+
+    XCTAssertEqual(handled_point.x, 9.0f);
+    XCTAssertEqual(handled_point.y, 10.0f);
+    XCTAssertEqual(notified_old_point.x, 7.0f);
+    XCTAssertEqual(notified_old_point.y, 8.0f);
+    XCTAssertEqual(notified_new_point.x, 9.0f);
+    XCTAssertEqual(notified_new_point.y, 10.0f);
 }
 
 #pragma mark - ui::layout_guide_range
@@ -136,6 +287,104 @@ using namespace yas;
     ui::layout_guide_range range{nullptr};
 
     XCTAssertFalse(range);
+}
+
+- (void)test_range_notify_delayed {
+    ui::layout_guide_range range;
+
+    struct edge {
+        float min = 0.0f;
+        float max = 0.0f;
+
+        void clear() {
+            min = max = 0.0f;
+        }
+
+        bool is_all_zero() {
+            return min == 0.0f && max == 0.0f;
+        }
+    };
+
+    edge handled_edge;
+    edge notified_old_edge;
+    edge notified_new_edge;
+
+    auto clear_edges = [&handled_edge, &notified_old_edge, &notified_new_edge]() {
+        handled_edge.clear();
+        notified_old_edge.clear();
+        notified_new_edge.clear();
+    };
+
+    range.min().set_value_changed_handler([&handled_min = handled_edge.min](float const min) { handled_min = min; });
+    range.max().set_value_changed_handler([&handled_max = handled_edge.max](float const max) { handled_max = max; });
+
+    auto min_observer = range.min().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_min = notified_old_edge.min, &notified_new_min = notified_new_edge.min](auto const &context) {
+            notified_old_min = context.value.old_value;
+            notified_new_min = context.value.new_value;
+        });
+
+    auto max_observer = range.max().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_max = notified_old_edge.max, &notified_new_max = notified_new_edge.max](auto const &context) {
+            notified_old_max = context.value.old_value;
+            notified_new_max = context.value.new_value;
+        });
+
+    range.set_range({1.0f, 2.0f});
+
+    XCTAssertEqual(handled_edge.min, 1.0f);
+    XCTAssertEqual(handled_edge.max, 3.0f);
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertEqual(notified_new_edge.min, 1.0f);
+    XCTAssertEqual(notified_new_edge.max, 3.0f);
+
+    clear_edges();
+
+    range.push_notify_delayed();
+
+    range.set_range({3.0f, 4.0f});
+
+    XCTAssertTrue(handled_edge.is_all_zero());
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+
+    range.push_notify_delayed();
+
+    range.set_range({5.0f, 6.0f});
+
+    XCTAssertTrue(handled_edge.is_all_zero());
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+
+    range.pop_notify_delayed();
+
+    range.set_range({7.0f, 8.0f});
+
+    XCTAssertTrue(handled_edge.is_all_zero());
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+
+    range.pop_notify_delayed();
+
+    XCTAssertEqual(handled_edge.min, 7.0f);
+    XCTAssertEqual(handled_edge.max, 15.0f);
+    XCTAssertEqual(notified_old_edge.min, 1.0f);
+    XCTAssertEqual(notified_old_edge.max, 3.0f);
+    XCTAssertEqual(notified_new_edge.min, 7.0f);
+    XCTAssertEqual(notified_new_edge.max, 15.0f);
+
+    clear_edges();
+
+    range.set_range({9.0f, 10.0f});
+
+    XCTAssertEqual(handled_edge.min, 9.0f);
+    XCTAssertEqual(handled_edge.max, 19.0f);
+    XCTAssertEqual(notified_old_edge.min, 7.0f);
+    XCTAssertEqual(notified_old_edge.max, 15.0f);
+    XCTAssertEqual(notified_new_edge.min, 9.0f);
+    XCTAssertEqual(notified_new_edge.max, 19.0f);
 }
 
 #pragma mark - ui::layout_guide_rect
@@ -232,6 +481,151 @@ using namespace yas;
     XCTAssertEqual(rect.top().value(), 6.0f);
     XCTAssertEqual(rect.left().value(), 1.0f);
     XCTAssertEqual(rect.right().value(), 4.0f);
+}
+
+- (void)test_rect_notify_delayed {
+    ui::layout_guide_rect rect;
+
+    struct edge {
+        float left = 0.0f;
+        float right = 0.0f;
+        float bottom = 0.0f;
+        float top = 0.0f;
+
+        void clear() {
+            left = right = bottom = top = 0.0f;
+        }
+
+        bool is_all_zero() {
+            return (left == 0.0f && right == 0.0f && bottom == 0.0f && top == 0.0f);
+        }
+    };
+
+    edge handled_edge;
+    edge notified_old_edge;
+    edge notified_new_edge;
+
+    auto clear_edges = [&handled_edge, &notified_old_edge, &notified_new_edge]() {
+        handled_edge.clear();
+        notified_old_edge.clear();
+        notified_new_edge.clear();
+    };
+
+    rect.left().set_value_changed_handler([&handled_left = handled_edge.left](float const left) {
+        handled_left = left;
+    });
+    rect.right().set_value_changed_handler([&handled_right = handled_edge.right](float const right) {
+        handled_right = right;
+    });
+    rect.bottom().set_value_changed_handler([&handled_bottom = handled_edge.bottom](float const bottom) {
+        handled_bottom = bottom;
+    });
+    rect.top().set_value_changed_handler([&handled_top = handled_edge.top](float const top) { handled_top = top; });
+
+    auto left_observer = rect.left().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_left = notified_old_edge.left,
+         &notified_new_left = notified_new_edge.left](auto const &context) {
+            notified_old_left = context.value.old_value;
+            notified_new_left = context.value.new_value;
+        });
+
+    auto right_observer = rect.right().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_right = notified_old_edge.right,
+         &notified_new_right = notified_new_edge.right](auto const &context) {
+            notified_old_right = context.value.old_value;
+            notified_new_right = context.value.new_value;
+        });
+
+    auto bottom_observer = rect.bottom().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_bottom = notified_old_edge.bottom,
+         &notified_new_bottom = notified_new_edge.bottom](auto const &context) {
+            notified_old_bottom = context.value.old_value;
+            notified_new_bottom = context.value.new_value;
+        });
+
+    auto top_observer = rect.top().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_top = notified_old_edge.top, &notified_new_top = notified_new_edge.top](auto const &context) {
+            notified_old_top = context.value.old_value;
+            notified_new_top = context.value.new_value;
+        });
+
+    rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+
+    XCTAssertEqual(handled_edge.left, 1.0f);
+    XCTAssertEqual(handled_edge.right, 4.0f);
+    XCTAssertEqual(handled_edge.bottom, 2.0f);
+    XCTAssertEqual(handled_edge.top, 6.0f);
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertEqual(notified_new_edge.left, 1.0f);
+    XCTAssertEqual(notified_new_edge.right, 4.0f);
+    XCTAssertEqual(notified_new_edge.bottom, 2.0f);
+    XCTAssertEqual(notified_new_edge.top, 6.0f);
+
+    clear_edges();
+
+    rect.push_notify_delayed();
+
+    rect.set_region({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
+
+    XCTAssertTrue(handled_edge.is_all_zero());
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+
+    rect.push_notify_delayed();
+
+    rect.set_region({.origin = {9.0f, 10.0f}, .size = {11.0f, 12.0f}});
+
+    XCTAssertTrue(handled_edge.is_all_zero());
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+
+    rect.pop_notify_delayed();
+
+    rect.set_region({.origin = {13.0f, 14.0f}, .size = {15.0f, 16.0f}});
+
+    XCTAssertTrue(handled_edge.is_all_zero());
+    XCTAssertTrue(notified_old_edge.is_all_zero());
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+
+    rect.pop_notify_delayed();
+
+    XCTAssertEqual(handled_edge.left, 13.0f);
+    XCTAssertEqual(handled_edge.right, 28.0f);
+    XCTAssertEqual(handled_edge.bottom, 14.0f);
+    XCTAssertEqual(handled_edge.top, 30.0f);
+
+    XCTAssertEqual(notified_old_edge.left, 1.0f);
+    XCTAssertEqual(notified_old_edge.right, 4.0f);
+    XCTAssertEqual(notified_old_edge.bottom, 2.0f);
+    XCTAssertEqual(notified_old_edge.top, 6.0f);
+
+    XCTAssertEqual(notified_new_edge.left, 13.0f);
+    XCTAssertEqual(notified_new_edge.right, 28.0f);
+    XCTAssertEqual(notified_new_edge.bottom, 14.0f);
+    XCTAssertEqual(notified_new_edge.top, 30.0f);
+
+    clear_edges();
+
+    rect.set_region({.origin = {17.0f, 18.0f}, .size = {19.0f, 20.0f}});
+
+    XCTAssertEqual(handled_edge.left, 17.0f);
+    XCTAssertEqual(handled_edge.right, 36.0f);
+    XCTAssertEqual(handled_edge.bottom, 18.0f);
+    XCTAssertEqual(handled_edge.top, 38.0f);
+
+    XCTAssertEqual(notified_old_edge.left, 13.0f);
+    XCTAssertEqual(notified_old_edge.right, 28.0f);
+    XCTAssertEqual(notified_old_edge.bottom, 14.0f);
+    XCTAssertEqual(notified_old_edge.top, 30.0f);
+
+    XCTAssertEqual(notified_new_edge.left, 17.0f);
+    XCTAssertEqual(notified_new_edge.right, 36.0f);
+    XCTAssertEqual(notified_new_edge.bottom, 18.0f);
+    XCTAssertEqual(notified_new_edge.top, 38.0f);
 }
 
 @end
