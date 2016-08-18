@@ -40,6 +40,9 @@ namespace ui {
         void set_value_changed_handler(value_changed_f);
 
         subject_t &subject();
+
+        void push_notify_delayed();
+        void pop_notify_delayed();
     };
 
     class layout_guide_point : public base {
@@ -54,6 +57,11 @@ namespace ui {
 
         ui::layout_guide &x();
         ui::layout_guide &y();
+
+        void set_point(ui::float_origin);
+
+        void push_notify_delayed();
+        void pop_notify_delayed();
     };
 
     class layout_guide_range : public base {
@@ -70,6 +78,9 @@ namespace ui {
         layout_guide &max();
 
         void set_range(ui::float_range);
+
+        void push_notify_delayed();
+        void pop_notify_delayed();
     };
 
     class layout_guide_rect : public base {
@@ -99,6 +110,9 @@ namespace ui {
         void set_horizontal_range(ui::float_range);
         void set_ranges(args);
         void set_region(ui::float_region);
+
+        void push_notify_delayed();
+        void pop_notify_delayed();
     };
 }
 }
