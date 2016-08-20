@@ -2,6 +2,7 @@
 //  yas_ui_layout_guide.cpp
 //
 
+#include "yas_delaying_caller.h"
 #include "yas_property.h"
 #include "yas_ui_layout_guide.h"
 
@@ -21,46 +22,31 @@ struct ui::layout_guide::impl : base::impl {
         _observer = _value.subject().make_observer(
             property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
                 if (auto guide = weak_guide.lock()) {
-                    guide.impl_ptr<ui::layout_guide::impl>()->_notify_or_delay_value_changed(context, guide);
+                    guide.impl_ptr<ui::layout_guide::impl>()->_request_notify_value_changed(context, guide);
                 }
             });
     }
 
-    bool is_delayed() {
-        return _delayed_count != 0;
+    void push_notify_caller() {
+        _notify_caller.push();
     }
 
-    void push_notify_delayed() {
-        ++_delayed_count;
-    }
-
-    void pop_notify_delayed() {
-        if (_delayed_count == 0) {
-            throw "delayed_count decrease failed.";
-        }
-
-        --_delayed_count;
-
-        if (_delayed_count == 0 && _notify_handler) {
-            _notify_handler();
-            _notify_handler = nullptr;
-            _old_value = nullopt;
-        }
+    void pop_notify_caller() {
+        _notify_caller.pop();
     }
 
    private:
     property<float>::observer_t _observer;
-    std::size_t _delayed_count = 0;
-    std::function<void(void)> _notify_handler = nullptr;
+    delaying_caller _notify_caller;
     std::experimental::optional<float> _old_value = nullopt;
 
-    void _notify_or_delay_value_changed(property<float>::observer_t::change_context const &context,
-                                        ui::layout_guide const &guide) {
+    void _request_notify_value_changed(property<float>::observer_t::change_context const &context,
+                                       ui::layout_guide const &guide) {
         if (!_old_value) {
             _old_value = context.value.old_value;
         }
 
-        auto handler = [new_value = context.value.new_value, weak_guide = to_weak(guide)]() {
+        _notify_caller.request([new_value = context.value.new_value, weak_guide = to_weak(guide)]() {
             if (auto guide = weak_guide.lock()) {
                 auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
 
@@ -71,15 +57,10 @@ struct ui::layout_guide::impl : base::impl {
                 guide.subject().notify(method::value_changed, change_context{.old_value = *guide_impl->_old_value,
                                                                              .new_value = new_value,
                                                                              .layout_guide = guide});
-            }
-        };
 
-        if (is_delayed()) {
-            _notify_handler = std::move(handler);
-        } else {
-            handler();
-            _old_value = nullopt;
-        }
+                guide_impl->_old_value = nullopt;
+            }
+        });
     }
 };
 
@@ -113,12 +94,12 @@ ui::layout_guide::subject_t &ui::layout_guide::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-void ui::layout_guide::push_notify_delayed() {
-    impl_ptr<impl>()->push_notify_delayed();
+void ui::layout_guide::push_notify_caller() {
+    impl_ptr<impl>()->push_notify_caller();
 }
 
-void ui::layout_guide::pop_notify_delayed() {
-    impl_ptr<impl>()->pop_notify_delayed();
+void ui::layout_guide::pop_notify_caller() {
+    impl_ptr<impl>()->pop_notify_caller();
 }
 
 #pragma mark - ui::layout_guide_point::impl
@@ -131,22 +112,22 @@ struct ui::layout_guide_point::impl : base::impl {
     }
 
     void set_point(ui::float_origin &&point) {
-        push_notify_delayed();
+        push_notify_caller();
 
         _x_guide.set_value(std::move(point.x));
         _y_guide.set_value(std::move(point.y));
 
-        pop_notify_delayed();
+        pop_notify_caller();
     }
 
-    void push_notify_delayed() {
-        _x_guide.push_notify_delayed();
-        _y_guide.push_notify_delayed();
+    void push_notify_caller() {
+        _x_guide.push_notify_caller();
+        _y_guide.push_notify_caller();
     }
 
-    void pop_notify_delayed() {
-        _x_guide.pop_notify_delayed();
-        _y_guide.pop_notify_delayed();
+    void pop_notify_caller() {
+        _x_guide.pop_notify_caller();
+        _y_guide.pop_notify_caller();
     }
 };
 
@@ -175,12 +156,12 @@ void ui::layout_guide_point::set_point(ui::float_origin point) {
     impl_ptr<impl>()->set_point(std::move(point));
 }
 
-void ui::layout_guide_point::push_notify_delayed() {
-    impl_ptr<impl>()->push_notify_delayed();
+void ui::layout_guide_point::push_notify_caller() {
+    impl_ptr<impl>()->push_notify_caller();
 }
 
-void ui::layout_guide_point::pop_notify_delayed() {
-    impl_ptr<impl>()->pop_notify_delayed();
+void ui::layout_guide_point::pop_notify_caller() {
+    impl_ptr<impl>()->pop_notify_caller();
 }
 
 #pragma mark - ui::layout_guide_range::impl
@@ -193,22 +174,22 @@ struct ui::layout_guide_range::impl : base::impl {
     }
 
     void set_range(ui::float_range &&range) {
-        push_notify_delayed();
+        push_notify_caller();
 
         _min_guide.set_value(range.min());
         _max_guide.set_value(range.max());
 
-        pop_notify_delayed();
+        pop_notify_caller();
     }
 
-    void push_notify_delayed() {
-        _min_guide.push_notify_delayed();
-        _max_guide.push_notify_delayed();
+    void push_notify_caller() {
+        _min_guide.push_notify_caller();
+        _max_guide.push_notify_caller();
     }
 
-    void pop_notify_delayed() {
-        _min_guide.pop_notify_delayed();
-        _max_guide.pop_notify_delayed();
+    void pop_notify_caller() {
+        _min_guide.pop_notify_caller();
+        _max_guide.pop_notify_caller();
     }
 };
 
@@ -237,12 +218,12 @@ void ui::layout_guide_range::set_range(ui::float_range range) {
     impl_ptr<impl>()->set_range(std::move(range));
 }
 
-void ui::layout_guide_range::push_notify_delayed() {
-    impl_ptr<impl>()->push_notify_delayed();
+void ui::layout_guide_range::push_notify_caller() {
+    impl_ptr<impl>()->push_notify_caller();
 }
 
-void ui::layout_guide_range::pop_notify_delayed() {
-    impl_ptr<impl>()->pop_notify_delayed();
+void ui::layout_guide_range::pop_notify_caller() {
+    impl_ptr<impl>()->pop_notify_caller();
 }
 
 #pragma mark - ui::layout_guide_rect::impl
@@ -272,14 +253,14 @@ struct ui::layout_guide_rect::impl : base::impl {
         set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
     }
 
-    void push_notify_delayed() {
-        _vertical_range.push_notify_delayed();
-        _horizontal_range.push_notify_delayed();
+    void push_notify_caller() {
+        _vertical_range.push_notify_caller();
+        _horizontal_range.push_notify_caller();
     }
 
-    void pop_notify_delayed() {
-        _vertical_range.pop_notify_delayed();
-        _horizontal_range.pop_notify_delayed();
+    void pop_notify_caller() {
+        _vertical_range.pop_notify_caller();
+        _horizontal_range.pop_notify_caller();
     }
 };
 
@@ -336,10 +317,10 @@ void ui::layout_guide_rect::set_region(ui::float_region region) {
     impl_ptr<impl>()->set_region(std::move(region));
 }
 
-void ui::layout_guide_rect::push_notify_delayed() {
-    impl_ptr<impl>()->push_notify_delayed();
+void ui::layout_guide_rect::push_notify_caller() {
+    impl_ptr<impl>()->push_notify_caller();
 }
 
-void ui::layout_guide_rect::pop_notify_delayed() {
-    impl_ptr<impl>()->pop_notify_delayed();
+void ui::layout_guide_rect::pop_notify_caller() {
+    impl_ptr<impl>()->pop_notify_caller();
 }
