@@ -111,6 +111,7 @@
 		B6E42C101D60217400FB483D /* yas_ui_fixed_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0F1D60217400FB483D /* yas_ui_fixed_layout_tests.mm */; };
 		B6E42C1F1D609F7A00FB483D /* yas_ui_justified_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C1D1D609F7A00FB483D /* yas_ui_justified_layout.cpp */; };
 		B6E42C211D60A22200FB483D /* yas_ui_justified_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */; };
+		B6F58D271D681D9D00807724 /* yas_delaying_caller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F58D251D681D9D00807724 /* yas_delaying_caller.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -307,6 +308,8 @@
 		B6E42C1D1D609F7A00FB483D /* yas_ui_justified_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_justified_layout.cpp; sourceTree = "<group>"; };
 		B6E42C1E1D609F7A00FB483D /* yas_ui_justified_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_justified_layout.h; sourceTree = "<group>"; };
 		B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_justified_layout_tests.mm; sourceTree = "<group>"; };
+		B6F58D251D681D9D00807724 /* yas_delaying_caller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_delaying_caller.cpp; sourceTree = "<group>"; };
+		B6F58D261D681D9D00807724 /* yas_delaying_caller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_delaying_caller.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,6 +526,8 @@
 				B66BB8351D1F6C7D00AB3D48 /* yas_chain.cpp */,
 				B66BB8361D1F6C7D00AB3D48 /* yas_chain.h */,
 				B66BB8371D1F6C7D00AB3D48 /* yas_chain_private.h */,
+				B6F58D251D681D9D00807724 /* yas_delaying_caller.cpp */,
+				B6F58D261D681D9D00807724 /* yas_delaying_caller.h */,
 				B66BB8381D1F6C7D00AB3D48 /* yas_each_dictionary.cpp */,
 				B66BB8391D1F6C7D00AB3D48 /* yas_each_dictionary.h */,
 				B66BB83A1D1F6C7D00AB3D48 /* yas_each_index.h */,
@@ -718,6 +723,7 @@
 				B66BB76F1D1F6C0D00AB3D48 /* yas_ui_event.cpp in Sources */,
 				B66BB85F1D1F6C7D00AB3D48 /* yas_exception.cpp in Sources */,
 				B66BB7791D1F6C0D00AB3D48 /* yas_ui_metal_encode_info.mm in Sources */,
+				B6F58D271D681D9D00807724 /* yas_delaying_caller.cpp in Sources */,
 				B66BB7681D1F6C0D00AB3D48 /* yas_ui_action.mm in Sources */,
 				B66BB7691D1F6C0D00AB3D48 /* yas_ui_batch.mm in Sources */,
 				B66BB77D1D1F6C0D00AB3D48 /* yas_ui_metal_types.mm in Sources */,
