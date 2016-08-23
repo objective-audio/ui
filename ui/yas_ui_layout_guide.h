@@ -57,8 +57,11 @@ namespace ui {
 
         ui::layout_guide &x();
         ui::layout_guide &y();
+        ui::layout_guide const &x() const;
+        ui::layout_guide const &y() const;
 
         void set_point(ui::float_origin);
+        ui::float_origin point() const;
 
         void push_notify_caller();
         void pop_notify_caller();
@@ -76,8 +79,11 @@ namespace ui {
 
         layout_guide &min();
         layout_guide &max();
+        layout_guide const &min() const;
+        layout_guide const &max() const;
 
         void set_range(ui::float_range);
+        ui::float_range range() const;
 
         void push_notify_caller();
         void pop_notify_caller();
@@ -87,29 +93,42 @@ namespace ui {
         class impl;
 
        public:
-        struct args {
+        using value_changed_f = std::function<void(void)>;
+
+        struct ranges_args {
             ui::float_range vertical_range;
             ui::float_range horizontal_range;
         };
 
         layout_guide_rect();
-        explicit layout_guide_rect(args);
+        explicit layout_guide_rect(ranges_args);
+        explicit layout_guide_rect(ui::float_region);
         layout_guide_rect(std::nullptr_t);
 
         virtual ~layout_guide_rect() final;
 
         layout_guide_range &vertical_range();
         layout_guide_range &horizontal_range();
+        layout_guide_range const &vertical_range() const;
+        layout_guide_range const &horizontal_range() const;
 
         layout_guide &left();
         layout_guide &right();
         layout_guide &bottom();
         layout_guide &top();
+        layout_guide const &left() const;
+        layout_guide const &right() const;
+        layout_guide const &bottom() const;
+        layout_guide const &top() const;
 
         void set_vertical_range(ui::float_range);
         void set_horizontal_range(ui::float_range);
-        void set_ranges(args);
+        void set_ranges(ranges_args);
         void set_region(ui::float_region);
+
+        ui::float_region region() const;
+
+        void set_value_changed_handler(value_changed_f);
 
         void push_notify_caller();
         void pop_notify_caller();
