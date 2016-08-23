@@ -288,6 +288,14 @@ bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) 
     return lhs.width != rhs.width || lhs.height != rhs.height;
 }
 
+bool operator==(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs) {
+    return lhs.location == rhs.location && lhs.length == rhs.length;
+}
+
+bool operator!=(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs) {
+    return lhs.location != rhs.location || lhs.length != rhs.length;
+}
+
 bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs) {
     return lhs.origin == rhs.origin && lhs.size == rhs.size;
 }

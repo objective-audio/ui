@@ -197,6 +197,8 @@ bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &r
 bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
 bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
 bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
+bool operator==(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs);
+bool operator!=(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs);
 bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
 bool operator!=(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
 
