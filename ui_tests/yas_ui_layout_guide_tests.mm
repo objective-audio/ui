@@ -169,6 +169,16 @@ using namespace yas;
     XCTAssertFalse(point);
 }
 
+- (void)test_point_accessor {
+    ui::layout_guide_point point;
+
+    XCTAssertEqual(point.point(), (ui::float_origin{0.0f, 0.0f}));
+
+    point.set_point({1.0f, -1.0f});
+
+    XCTAssertEqual(point.point(), (ui::float_origin{1.0f, -1.0f}));
+}
+
 - (void)test_point_notify_caller {
     ui::layout_guide_point point;
 
@@ -287,6 +297,16 @@ using namespace yas;
     ui::layout_guide_range range{nullptr};
 
     XCTAssertFalse(range);
+}
+
+- (void)test_range_accessor {
+    ui::layout_guide_range range;
+
+    XCTAssertEqual(range.range(), (ui::float_range{.location = 0.0f, .length = 0.0f}));
+
+    range.set_range({.location = 1.0f, .length = 2.0f});
+
+    XCTAssertEqual(range.range(), (ui::float_range{1.0f, 2.0f}));
 }
 
 - (void)test_range_notify_caller {

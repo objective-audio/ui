@@ -22,7 +22,7 @@ namespace ui {
             std::vector<float> ratios;
         };
 
-        justified_layout(args);
+        explicit justified_layout(args);
         justified_layout(std::nullptr_t);
 
         virtual ~justified_layout() final;
