@@ -21,7 +21,7 @@ namespace ui {
             ui::layout_guide destination_guide;
         };
 
-        fixed_layout(args);
+        explicit fixed_layout(args);
         fixed_layout(std::nullptr_t);
 
         virtual ~fixed_layout() final;
