@@ -7,6 +7,7 @@
 #include "yas_ui_action.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_button_extension.h"
+#include "yas_ui_collection_layout.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_event.h"
