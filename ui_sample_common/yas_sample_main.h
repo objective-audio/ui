@@ -35,7 +35,7 @@ namespace sample {
         sample::big_button_extension _big_button_ext;
         sample::big_button_text_extension _big_button_text_ext;
         sample::soft_keyboard_extension _soft_keyboard_ext;
-        sample::justified_points_extension _justified_points_extension;
+        sample::justified_points_extension _justified_points_ext;
 
         ui::font_atlas _font_atlas{{.font_name = "TrebuchetMS-Bold",
                                     .font_size = 26.0f,
