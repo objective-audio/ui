@@ -133,7 +133,7 @@ struct sample::cursor_extension::impl : base::impl {
             });
     }
 
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
 };
 
 sample::cursor_extension::cursor_extension() : base(std::make_shared<impl>()) {

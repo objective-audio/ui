@@ -197,7 +197,7 @@ struct ui::button_extension::impl : base::impl {
         }
     }
 
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
 };
 

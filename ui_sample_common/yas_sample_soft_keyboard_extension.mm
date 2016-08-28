@@ -121,8 +121,8 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
    private:
     std::vector<sample::soft_key> _soft_keys;
-    std::vector<base> _soft_key_observers;
-    base _renderer_observer = nullptr;
+    std::vector<ui::button_extension::observer_t> _soft_key_observers;
+    ui::node::observer_t _renderer_observer = nullptr;
 
     ui::layout_guide_point _layout_guide_point;
 };

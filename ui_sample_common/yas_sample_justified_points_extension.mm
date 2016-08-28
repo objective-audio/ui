@@ -65,7 +65,7 @@ struct sample::justified_points_extension::impl : base::impl {
     }
 
    private:
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
 
     void _setup_colors() {
         _rect_plane_ext.node().mesh().set_use_mesh_color(true);

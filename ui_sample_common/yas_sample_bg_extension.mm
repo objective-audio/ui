@@ -51,7 +51,7 @@ struct sample::bg_extension::impl : base::impl {
             });
     }
 
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
 };
 
 sample::bg_extension::bg_extension() : base(std::make_shared<impl>()) {
