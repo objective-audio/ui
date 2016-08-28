@@ -20,6 +20,7 @@ struct ui::collection_layout::impl : base::impl {
     ui::fixed_layout _right_border_layout;
     ui::fixed_layout _bottom_border_layout;
     ui::fixed_layout _top_border_layout;
+    subject_t _subject;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -61,7 +62,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     void prepare(ui::collection_layout &layout) {
-        _border_guide_rect.set_value_changed_handler([weak_layout = to_weak(layout)]() {
+        _border_guide_rect.set_value_changed_handler([weak_layout = to_weak(layout)](auto const &) {
             if (auto layout = weak_layout.lock()) {
                 layout.impl_ptr<impl>()->_update_layout();
             }
@@ -218,6 +219,7 @@ struct ui::collection_layout::impl : base::impl {
         float row_max_diff = 0.0f;
         ui::float_origin origin;
         std::vector<ui::float_region> row_regions;
+        auto const prev_actual_cell_count = _cell_guide_rects.size();
         std::size_t actual_cell_count = 0;
 
         for (auto const &idx : make_each(_preferred_cell_count)) {
@@ -288,6 +290,10 @@ struct ui::collection_layout::impl : base::impl {
         }
 
         pop_notify_caller();
+
+        if (prev_actual_cell_count != actual_cell_count && _subject.has_observer()) {
+            _subject.notify(ui::collection_layout::method::actual_cell_count_changed, cast<ui::collection_layout>());
+        }
     }
 
     ui::float_size _transformed_cell_size(std::size_t const idx) {
@@ -542,12 +548,12 @@ ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
     return impl_ptr<impl>()->_frame_guide_rect;
 }
 
-ui::layout_guide_rect const &ui::collection_layout::frame_layout_guide_rect() const {
-    return impl_ptr<impl>()->_frame_guide_rect;
+std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rects() {
+    return impl_ptr<impl>()->_cell_guide_rects;
 }
 
-std::vector<ui::layout_guide_rect> const &ui::collection_layout::cell_layout_guide_rects() const {
-    return impl_ptr<impl>()->_cell_guide_rects;
+ui::collection_layout::subject_t &ui::collection_layout::subject() {
+    return impl_ptr<impl>()->_subject;
 }
 
 #pragma mark - to_string

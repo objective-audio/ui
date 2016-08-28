@@ -8,11 +8,11 @@
 
 using namespace yas;
 
-@interface yas_ui_fixed_colleciton_layout_tests : XCTestCase
+@interface yas_ui_collection_layout_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_fixed_colleciton_layout_tests
+@implementation yas_ui_collection_layout_tests
 
 - (void)setUp {
     [super setUp];
@@ -122,6 +122,24 @@ using namespace yas;
     layout.set_preferred_cell_count(2);
 
     XCTAssertEqual(layout.actual_cell_count(), 2);
+}
+
+- (void)test_notify_actual_cell_count {
+    ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}}, .preferred_cell_count = 1}};
+
+    std::size_t notified_count = 0;
+
+    auto observer = layout.subject().make_observer(
+        ui::collection_layout::method::actual_cell_count_changed,
+        [&notified_count](auto const &context) { notified_count = context.value.actual_cell_count(); });
+
+    layout.set_preferred_cell_count(5);
+
+    XCTAssertEqual(notified_count, 4);
+
+    layout.set_preferred_cell_count(2);
+
+    XCTAssertEqual(notified_count, 2);
 }
 
 - (void)test_set_frame {

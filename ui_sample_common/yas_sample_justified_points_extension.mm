@@ -84,19 +84,20 @@ struct sample::justified_points_extension::impl : base::impl {
     void _setup_layout_guides() {
         for (auto const &idx : make_each(sample::x_point_count)) {
             _x_layout_guides.at(idx)
-                .set_value_changed_handler([weak_ext = to_weak(_rect_plane_ext), idx](auto const value) {
+                .set_value_changed_handler([weak_ext = to_weak(_rect_plane_ext), idx](auto const &context) {
                     if (auto ext = weak_ext.lock()) {
-                        ext.data().set_rect_position({.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
+                        ext.data().set_rect_position(
+                            {.origin = {context.new_value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
                     }
                 });
         }
 
         for (auto const &idx : make_each(sample::y_point_count)) {
             _y_layout_guides.at(idx)
-                .set_value_changed_handler([weak_ext = to_weak(_rect_plane_ext), idx](auto const value) {
+                .set_value_changed_handler([weak_ext = to_weak(_rect_plane_ext), idx](auto const &context) {
                     if (auto ext = weak_ext.lock()) {
-                        ext.data().set_rect_position({.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
-                                                     idx + x_point_count);
+                        ext.data().set_rect_position(
+                            {.origin = {-2.0f, context.new_value - 2.0f}, .size = {4.0f, 4.0f}}, idx + x_point_count);
                     }
                 });
         }

@@ -35,6 +35,10 @@ struct ui::layout_guide::impl : base::impl {
         _notify_caller.pop();
     }
 
+    float old_value_in_notify() {
+        return *_old_value;
+    }
+
    private:
     property<float>::observer_t _observer;
     delaying_caller _notify_caller;
@@ -50,13 +54,14 @@ struct ui::layout_guide::impl : base::impl {
             if (auto guide = weak_guide.lock()) {
                 auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
 
+                auto const context =
+                    change_context{.old_value = *guide_impl->_old_value, .new_value = new_value, .layout_guide = guide};
+
                 if (auto handler = guide_impl->_value_changed_handler) {
-                    handler(new_value);
+                    handler(context);
                 }
 
-                guide.subject().notify(method::value_changed, change_context{.old_value = *guide_impl->_old_value,
-                                                                             .new_value = new_value,
-                                                                             .layout_guide = guide});
+                guide.subject().notify(method::value_changed, context);
 
                 guide_impl->_old_value = nullopt;
             }
@@ -124,6 +129,20 @@ struct ui::layout_guide_point::impl : base::impl {
         return ui::float_origin{_x_guide.value(), _y_guide.value()};
     }
 
+    void set_value_changed_handler(value_changed_f &&handler) {
+        auto guide_handler =
+            [handler = std::move(handler), weak_point = to_weak(cast<ui::layout_guide_point>())](auto const &context) {
+            if (auto point = weak_point.lock()) {
+                handler(change_context{.old_value = point.impl_ptr<impl>()->old_point_in_notify(),
+                                       .new_value = point.impl_ptr<impl>()->point(),
+                                       .layout_guide_point = point});
+            }
+        };
+
+        _x_guide.set_value_changed_handler(guide_handler);
+        _y_guide.set_value_changed_handler(guide_handler);
+    }
+
     void push_notify_caller() {
         _x_guide.push_notify_caller();
         _y_guide.push_notify_caller();
@@ -132,6 +151,11 @@ struct ui::layout_guide_point::impl : base::impl {
     void pop_notify_caller() {
         _x_guide.pop_notify_caller();
         _y_guide.pop_notify_caller();
+    }
+
+    ui::float_origin old_point_in_notify() {
+        return ui::float_origin{_x_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify(),
+                                _y_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify()};
     }
 };
 
@@ -172,6 +196,10 @@ ui::float_origin ui::layout_guide_point::point() const {
     return impl_ptr<impl>()->point();
 }
 
+void ui::layout_guide_point::set_value_changed_handler(value_changed_f handler) {
+    impl_ptr<impl>()->set_value_changed_handler(std::move(handler));
+}
+
 void ui::layout_guide_point::push_notify_caller() {
     impl_ptr<impl>()->push_notify_caller();
 }
@@ -205,6 +233,20 @@ struct ui::layout_guide_range::impl : base::impl {
         return ui::float_range{.location = min, .length = max - min};
     }
 
+    void set_value_changed_handler(value_changed_f &&handler) {
+        auto guide_handler =
+            [handler = std::move(handler), weak_guide_range = to_weak(cast<ui::layout_guide_range>())](auto const &) {
+            if (auto guide_range = weak_guide_range.lock()) {
+                handler(change_context{.old_value = guide_range.impl_ptr<impl>()->old_range_in_notify(),
+                                       .new_value = guide_range.impl_ptr<impl>()->range(),
+                                       .layout_guide_range = guide_range});
+            }
+        };
+
+        _min_guide.set_value_changed_handler(guide_handler);
+        _max_guide.set_value_changed_handler(guide_handler);
+    }
+
     void push_notify_caller() {
         _min_guide.push_notify_caller();
         _max_guide.push_notify_caller();
@@ -213,6 +255,12 @@ struct ui::layout_guide_range::impl : base::impl {
     void pop_notify_caller() {
         _min_guide.pop_notify_caller();
         _max_guide.pop_notify_caller();
+    }
+
+    ui::float_range old_range_in_notify() {
+        auto const loc = _min_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify();
+        auto const len = _max_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify() - loc;
+        return ui::float_range{.location = loc, .length = len};
     }
 };
 
@@ -251,6 +299,10 @@ void ui::layout_guide_range::set_range(ui::float_range range) {
 
 ui::float_range ui::layout_guide_range::range() const {
     return impl_ptr<impl>()->range();
+}
+
+void ui::layout_guide_range::set_value_changed_handler(value_changed_f handler) {
+    impl_ptr<impl>()->set_value_changed_handler(std::move(handler));
 }
 
 void ui::layout_guide_range::push_notify_caller() {
@@ -297,7 +349,13 @@ struct ui::layout_guide_rect::impl : base::impl {
     }
 
     void set_value_changed_handler(value_changed_f &&handler) {
-        auto guide_handler = [handler](auto const) { handler(); };
+        auto guide_handler = [handler, weak_guide_rect = to_weak(cast<ui::layout_guide_rect>())](auto const &) {
+            if (auto const guide_rect = weak_guide_rect.lock()) {
+                handler(change_context{.old_value = guide_rect.impl_ptr<impl>()->old_region_in_notify(),
+                                       .new_value = guide_rect.impl_ptr<impl>()->region(),
+                                       .layout_guide_rect = guide_rect});
+            }
+        };
 
         _vertical_range.min().set_value_changed_handler(guide_handler);
         _vertical_range.max().set_value_changed_handler(guide_handler);
@@ -313,6 +371,13 @@ struct ui::layout_guide_rect::impl : base::impl {
     void pop_notify_caller() {
         _vertical_range.pop_notify_caller();
         _horizontal_range.pop_notify_caller();
+    }
+
+    ui::float_region old_region_in_notify() {
+        auto const h_range = _horizontal_range.impl_ptr<ui::layout_guide_range::impl>()->old_range_in_notify();
+        auto const v_range = _vertical_range.impl_ptr<ui::layout_guide_range::impl>()->old_range_in_notify();
+        return ui::float_region{.origin = {h_range.location, v_range.location},
+                                .size = {h_range.length, v_range.length}};
     }
 };
 
@@ -333,20 +398,20 @@ ui::layout_guide_rect::layout_guide_rect(std::nullptr_t) : base(nullptr) {
 
 ui::layout_guide_rect::~layout_guide_rect() = default;
 
-ui::layout_guide_range &ui::layout_guide_rect::vertical_range() {
-    return impl_ptr<impl>()->_vertical_range;
-}
-
 ui::layout_guide_range &ui::layout_guide_rect::horizontal_range() {
     return impl_ptr<impl>()->_horizontal_range;
 }
 
-ui::layout_guide_range const &ui::layout_guide_rect::vertical_range() const {
+ui::layout_guide_range &ui::layout_guide_rect::vertical_range() {
     return impl_ptr<impl>()->_vertical_range;
 }
 
 ui::layout_guide_range const &ui::layout_guide_rect::horizontal_range() const {
     return impl_ptr<impl>()->_horizontal_range;
+}
+
+ui::layout_guide_range const &ui::layout_guide_rect::vertical_range() const {
+    return impl_ptr<impl>()->_vertical_range;
 }
 
 ui::layout_guide &ui::layout_guide_rect::left() {
@@ -381,12 +446,12 @@ ui::layout_guide const &ui::layout_guide_rect::top() const {
     return vertical_range().max();
 }
 
-void ui::layout_guide_rect::set_vertical_range(ui::float_range range) {
-    impl_ptr<impl>()->set_vertical_range(std::move(range));
-}
-
 void ui::layout_guide_rect::set_horizontal_range(ui::float_range range) {
     impl_ptr<impl>()->set_horizontal_range(std::move(range));
+}
+
+void ui::layout_guide_rect::set_vertical_range(ui::float_range range) {
+    impl_ptr<impl>()->set_vertical_range(std::move(range));
 }
 
 void ui::layout_guide_rect::set_ranges(ranges_args args) {
