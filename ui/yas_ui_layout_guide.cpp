@@ -50,22 +50,28 @@ struct ui::layout_guide::impl : base::impl {
             _old_value = context.value.old_value;
         }
 
-        _notify_caller.request([new_value = context.value.new_value, weak_guide = to_weak(guide)]() {
-            if (auto guide = weak_guide.lock()) {
-                auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
+        auto const &new_value = context.value.new_value;
 
-                auto const context =
-                    change_context{.old_value = *guide_impl->_old_value, .new_value = new_value, .layout_guide = guide};
+        if (_old_value == new_value) {
+            _notify_caller.cancel();
+        } else {
+            _notify_caller.request([new_value = context.value.new_value, weak_guide = to_weak(guide)]() {
+                if (auto guide = weak_guide.lock()) {
+                    auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
 
-                if (auto handler = guide_impl->_value_changed_handler) {
-                    handler(context);
+                    auto const context = change_context{
+                        .old_value = *guide_impl->_old_value, .new_value = new_value, .layout_guide = guide};
+
+                    if (auto handler = guide_impl->_value_changed_handler) {
+                        handler(context);
+                    }
+
+                    guide.subject().notify(method::value_changed, context);
+
+                    guide_impl->_old_value = nullopt;
                 }
-
-                guide.subject().notify(method::value_changed, context);
-
-                guide_impl->_old_value = nullopt;
-            }
-        });
+            });
+        }
     }
 };
 
