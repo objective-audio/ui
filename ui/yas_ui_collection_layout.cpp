@@ -213,6 +213,7 @@ struct ui::collection_layout::impl : base::impl {
             return;
         }
 
+        auto const is_row_limiting = _swap_direction_if_horizontal(_frame_guide_rect.region()).size.height != 0;
         auto const border_rect = _transformed_border_rect();
         auto const border_abs_size = ui::float_size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
         std::vector<std::vector<ui::float_region>> regions;
@@ -239,7 +240,7 @@ struct ui::collection_layout::impl : base::impl {
                 row_max_diff = 0.0f;
             }
 
-            if (border_abs_size.height > 0.0f && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
+            if (is_row_limiting && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
                 break;
             }
 
@@ -344,20 +345,20 @@ struct ui::collection_layout::impl : base::impl {
 
         switch (_row_order) {
             case ui::layout_order::ascending: {
-                result.origin.y = original.bottom();
+                result.origin.y = original.origin.y;
             } break;
             case ui::layout_order::descending: {
-                result.origin.y = original.top();
+                result.origin.y = original.origin.y + original.size.height;
                 result.size.height *= -1.0f;
             } break;
         }
 
         switch (_col_order) {
             case ui::layout_order::ascending: {
-                result.origin.x = original.left();
+                result.origin.x = original.origin.x;
             } break;
             case ui::layout_order::descending: {
-                result.origin.x = original.right();
+                result.origin.x = original.origin.x + original.size.width;
                 result.size.width *= -1.0f;
             } break;
         }

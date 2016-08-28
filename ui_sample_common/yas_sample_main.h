@@ -8,6 +8,7 @@
 #include "yas_sample_bg_extension.h"
 #include "yas_sample_big_button_extension.h"
 #include "yas_sample_big_button_text_extension.h"
+#include "yas_sample_collection_extension.h"
 #include "yas_sample_cursor_extension.h"
 #include "yas_sample_cursor_over_planes_extension.h"
 #include "yas_sample_inputted_text_extension.h"
@@ -36,6 +37,7 @@ namespace sample {
         sample::big_button_text_extension _big_button_text_ext;
         sample::soft_keyboard_extension _soft_keyboard_ext;
         sample::justified_points_extension _justified_points_ext;
+        sample::collection_extension _collection_ext;
 
         ui::font_atlas _font_atlas{{.font_name = "TrebuchetMS-Bold",
                                     .font_size = 26.0f,
