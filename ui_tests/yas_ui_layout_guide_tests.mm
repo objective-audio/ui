@@ -70,13 +70,22 @@ using namespace yas;
 - (void)test_value_changed_handler {
     ui::layout_guide guide;
 
-    float handled_value = 0.0f;
+    float handled_new_value = -1.0f;
+    float handled_old_value = -1.0f;
+    ui::layout_guide handled_layout_guide{nullptr};
 
-    guide.set_value_changed_handler([&handled_value](auto const value) { handled_value = value; });
+    guide.set_value_changed_handler(
+        [&handled_new_value, &handled_old_value, &handled_layout_guide](auto const &context) {
+            handled_new_value = context.new_value;
+            handled_old_value = context.old_value;
+            handled_layout_guide = context.layout_guide;
+        });
 
     guide.set_value(1.0f);
 
-    XCTAssertEqual(handled_value, 1.0f);
+    XCTAssertEqual(handled_new_value, 1.0f);
+    XCTAssertEqual(handled_old_value, 0.0f);
+    XCTAssertEqual(handled_layout_guide, guide);
 }
 
 - (void)test_notify_caller {
@@ -90,7 +99,7 @@ using namespace yas;
         handled_value = notified_old_value = notified_new_value = 0.0f;
     };
 
-    guide.set_value_changed_handler([&handled_value](auto const value) { handled_value = value; });
+    guide.set_value_changed_handler([&handled_value](auto const &context) { handled_value = context.new_value; });
     auto observer = guide.subject().make_observer(ui::layout_guide::method::value_changed,
                                                   [&notified_old_value, &notified_new_value](auto const &context) {
                                                       notified_old_value = context.value.old_value;
@@ -179,6 +188,27 @@ using namespace yas;
     XCTAssertEqual(point.point(), (ui::float_origin{1.0f, -1.0f}));
 }
 
+- (void)test_point_value_changed_handler {
+    ui::layout_guide_point guide_point;
+
+    ui::float_origin handled_new_value{-1.0f, -1.0f};
+    ui::float_origin handled_old_value{-1.0f, -1.0f};
+    ui::layout_guide_point handled_guide_point{nullptr};
+
+    guide_point.set_value_changed_handler(
+        [&handled_new_value, &handled_old_value, &handled_guide_point](auto const &context) {
+            handled_new_value = context.new_value;
+            handled_old_value = context.old_value;
+            handled_guide_point = context.layout_guide_point;
+        });
+
+    guide_point.set_point({1.0f, 2.0f});
+
+    XCTAssertEqual(handled_new_value, (ui::float_origin{1.0f, 2.0f}));
+    XCTAssertEqual(handled_old_value, (ui::float_origin{0.0f, 0.0f}));
+    XCTAssertEqual(handled_guide_point, guide_point);
+}
+
 - (void)test_point_notify_caller {
     ui::layout_guide_point point;
 
@@ -194,8 +224,12 @@ using namespace yas;
         notified_new_point.x = notified_new_point.y = 0.0f;
     };
 
-    point.x().set_value_changed_handler([&handled_x = handled_point.x](float const x) { handled_x = x; });
-    point.y().set_value_changed_handler([&handled_y = handled_point.y](float const y) { handled_y = y; });
+    point.x().set_value_changed_handler([&handled_x = handled_point.x](auto const &context) {
+        handled_x = context.new_value;
+    });
+    point.y().set_value_changed_handler([&handled_y = handled_point.y](auto const &context) {
+        handled_y = context.new_value;
+    });
 
     auto x_observer = point.x().subject().make_observer(
         ui::layout_guide::method::value_changed,
@@ -309,6 +343,27 @@ using namespace yas;
     XCTAssertEqual(range.range(), (ui::float_range{1.0f, 2.0f}));
 }
 
+- (void)test_range_value_changed_handler {
+    ui::layout_guide_range guide_range;
+
+    ui::float_range handled_new_value{-1.0f, -1.0f};
+    ui::float_range handled_old_value{-1.0f, -1.0f};
+    ui::layout_guide_range handled_guide_range{nullptr};
+
+    guide_range.set_value_changed_handler(
+        [&handled_new_value, &handled_old_value, &handled_guide_range](auto const &context) {
+            handled_new_value = context.new_value;
+            handled_old_value = context.old_value;
+            handled_guide_range = context.layout_guide_range;
+        });
+
+    guide_range.set_range({1.0f, 2.0f});
+
+    XCTAssertEqual(handled_new_value, (ui::float_range{1.0f, 2.0f}));
+    XCTAssertEqual(handled_old_value, (ui::float_range{0.0f, 0.0f}));
+    XCTAssertEqual(handled_guide_range, guide_range);
+}
+
 - (void)test_range_notify_caller {
     ui::layout_guide_range range;
 
@@ -335,8 +390,12 @@ using namespace yas;
         notified_new_edge.clear();
     };
 
-    range.min().set_value_changed_handler([&handled_min = handled_edge.min](float const min) { handled_min = min; });
-    range.max().set_value_changed_handler([&handled_max = handled_edge.max](float const max) { handled_max = max; });
+    range.min().set_value_changed_handler([&handled_min = handled_edge.min](auto const &context) {
+        handled_min = context.new_value;
+    });
+    range.max().set_value_changed_handler([&handled_max = handled_edge.max](auto const &context) {
+        handled_max = context.new_value;
+    });
 
     auto min_observer = range.min().subject().make_observer(
         ui::layout_guide::method::value_changed,
@@ -503,6 +562,27 @@ using namespace yas;
     XCTAssertEqual(rect.right().value(), 4.0f);
 }
 
+- (void)test_rect_value_changed_handler {
+    ui::layout_guide_rect guide_range;
+
+    ui::float_region handled_new_value{-1.0f, -1.0f, -1.0f, -1.0f};
+    ui::float_region handled_old_value{-1.0f, -1.0f, -1.0f, -1.0f};
+    ui::layout_guide_rect handled_guide_rect{nullptr};
+
+    guide_range.set_value_changed_handler(
+        [&handled_new_value, &handled_old_value, &handled_guide_rect](auto const &context) {
+            handled_new_value = context.new_value;
+            handled_old_value = context.old_value;
+            handled_guide_rect = context.layout_guide_rect;
+        });
+
+    guide_range.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+
+    XCTAssertEqual(handled_new_value, (ui::float_region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
+    XCTAssertEqual(handled_old_value, (ui::float_region{}));
+    XCTAssertEqual(handled_guide_rect, guide_range);
+}
+
 - (void)test_rect_notify_caller {
     ui::layout_guide_rect rect;
 
@@ -531,16 +611,21 @@ using namespace yas;
         notified_new_edge.clear();
     };
 
-    rect.left().set_value_changed_handler([&handled_left = handled_edge.left](float const left) {
-        handled_left = left;
+    rect.left().set_value_changed_handler([&handled_left = handled_edge.left](auto const &context) {
+        handled_left = context.new_value;
     });
-    rect.right().set_value_changed_handler([&handled_right = handled_edge.right](float const right) {
-        handled_right = right;
+
+    rect.right().set_value_changed_handler([&handled_right = handled_edge.right](auto const &context) {
+        handled_right = context.new_value;
     });
-    rect.bottom().set_value_changed_handler([&handled_bottom = handled_edge.bottom](float const bottom) {
-        handled_bottom = bottom;
+
+    rect.bottom().set_value_changed_handler([&handled_bottom = handled_edge.bottom](auto const &context) {
+        handled_bottom = context.new_value;
     });
-    rect.top().set_value_changed_handler([&handled_top = handled_edge.top](float const top) { handled_top = top; });
+
+    rect.top().set_value_changed_handler([&handled_top = handled_edge.top](auto const &context) {
+        handled_top = context.new_value;
+    });
 
     auto left_observer = rect.left().subject().make_observer(
         ui::layout_guide::method::value_changed,

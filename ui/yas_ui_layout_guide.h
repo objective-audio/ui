@@ -11,9 +11,9 @@
 namespace yas {
 namespace ui {
     class layout_guide : public base {
+       public:
         class impl;
 
-       public:
         struct change_context {
             float const &old_value;
             float const &new_value;
@@ -26,7 +26,7 @@ namespace ui {
 
         using subject_t = subject<change_context, method>;
         using observer_t = observer<change_context, method>;
-        using value_changed_f = std::function<void(float const)>;
+        using value_changed_f = std::function<void(change_context const &)>;
 
         layout_guide();
         explicit layout_guide(float const);
@@ -46,9 +46,17 @@ namespace ui {
     };
 
     class layout_guide_point : public base {
+       public:
         class impl;
 
-       public:
+        struct change_context {
+            ui::float_origin const &old_value;
+            ui::float_origin const &new_value;
+            layout_guide_point const &layout_guide_point;
+        };
+
+        using value_changed_f = std::function<void(change_context const &)>;
+
         layout_guide_point();
         explicit layout_guide_point(ui::float_origin);
         layout_guide_point(std::nullptr_t);
@@ -63,14 +71,24 @@ namespace ui {
         void set_point(ui::float_origin);
         ui::float_origin point() const;
 
+        void set_value_changed_handler(value_changed_f);
+
         void push_notify_caller();
         void pop_notify_caller();
     };
 
     class layout_guide_range : public base {
+       public:
         class impl;
 
-       public:
+        struct change_context {
+            ui::float_range const &old_value;
+            ui::float_range const &new_value;
+            layout_guide_range const &layout_guide_range;
+        };
+
+        using value_changed_f = std::function<void(change_context const &)>;
+
         layout_guide_range();
         explicit layout_guide_range(ui::float_range);
         layout_guide_range(std::nullptr_t);
@@ -85,19 +103,27 @@ namespace ui {
         void set_range(ui::float_range);
         ui::float_range range() const;
 
+        void set_value_changed_handler(value_changed_f);
+
         void push_notify_caller();
         void pop_notify_caller();
     };
 
     class layout_guide_rect : public base {
+       public:
         class impl;
 
-       public:
-        using value_changed_f = std::function<void(void)>;
+        struct change_context {
+            ui::float_region const &old_value;
+            ui::float_region const &new_value;
+            layout_guide_rect const &layout_guide_rect;
+        };
+
+        using value_changed_f = std::function<void(change_context const &)>;
 
         struct ranges_args {
-            ui::float_range vertical_range;
             ui::float_range horizontal_range;
+            ui::float_range vertical_range;
         };
 
         layout_guide_rect();
@@ -107,10 +133,10 @@ namespace ui {
 
         virtual ~layout_guide_rect() final;
 
-        layout_guide_range &vertical_range();
         layout_guide_range &horizontal_range();
-        layout_guide_range const &vertical_range() const;
+        layout_guide_range &vertical_range();
         layout_guide_range const &horizontal_range() const;
+        layout_guide_range const &vertical_range() const;
 
         layout_guide &left();
         layout_guide &right();
@@ -121,8 +147,8 @@ namespace ui {
         layout_guide const &bottom() const;
         layout_guide const &top() const;
 
-        void set_vertical_range(ui::float_range);
         void set_horizontal_range(ui::float_range);
+        void set_vertical_range(ui::float_range);
         void set_ranges(ranges_args);
         void set_region(ui::float_region);
 

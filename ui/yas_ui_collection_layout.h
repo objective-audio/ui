@@ -9,6 +9,11 @@
 #include "yas_ui_types.h"
 
 namespace yas {
+template <typename T, typename K>
+class subject;
+template <typename T, typename K>
+class observer;
+
 namespace ui {
     class layout_guide_rect;
 
@@ -36,9 +41,16 @@ namespace ui {
     };
 
     class collection_layout : public base {
+       public:
         class impl;
 
-       public:
+        enum class method {
+            actual_cell_count_changed,
+        };
+
+        using subject_t = subject<collection_layout, method>;
+        using observer_t = observer<collection_layout, method>;
+
         struct args {
             ui::float_region frame;
             std::size_t preferred_cell_count = 0;
@@ -97,8 +109,9 @@ namespace ui {
         float top_border() const;
 
         ui::layout_guide_rect &frame_layout_guide_rect();
-        ui::layout_guide_rect const &frame_layout_guide_rect() const;
-        std::vector<ui::layout_guide_rect> const &cell_layout_guide_rects() const;
+        std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
+
+        subject_t &subject();
     };
 }
 

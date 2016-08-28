@@ -664,9 +664,9 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
             }
         });
 
-    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const value) {
+    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const &context) {
         if (auto node = weak_node.lock()) {
-            node.set_position({value, node.position().y});
+            node.set_position({context.new_value, node.position().y});
         }
     });
 }
@@ -679,9 +679,9 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
             }
         });
 
-    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const value) {
+    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const &context) {
         if (auto node = weak_node.lock()) {
-            node.set_position({node.position().x, value});
+            node.set_position({node.position().x, context.new_value});
         }
     });
 }
