@@ -150,6 +150,23 @@ using namespace yas;
     XCTAssertEqual(notified_new_value, 5.0f);
 }
 
+- (void)test_notify_caller_canceled {
+    ui::layout_guide guide{1.0f};
+
+    bool called = false;
+
+    guide.set_value_changed_handler([&called](auto const &) { called = true; });
+
+    guide.push_notify_caller();
+
+    guide.set_value(2.0f);
+    guide.set_value(1.0f);
+
+    guide.pop_notify_caller();
+    
+    XCTAssertFalse(called);
+}
+
 #pragma mark - ui::layout_guide_point
 
 - (void)test_create_point {
