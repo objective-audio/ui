@@ -235,12 +235,12 @@ struct ui::collection_layout::impl : base::impl {
                 origin.x = 0.0f;
                 origin.y += row_max_diff;
 
-                if (border_abs_size.height > 0.0f && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
-                    break;
-                }
-
                 row_regions.clear();
                 row_max_diff = 0.0f;
+            }
+
+            if (border_abs_size.height > 0.0f && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
+                break;
             }
 
             row_regions.emplace_back(ui::float_region{
