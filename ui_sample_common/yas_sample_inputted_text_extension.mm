@@ -75,7 +75,7 @@ struct sample::inputted_text_extension::impl : base::impl {
     }
 
    private:
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
     ui::layout_guide_point _layout_guide_point;
 };
 

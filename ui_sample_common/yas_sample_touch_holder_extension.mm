@@ -185,7 +185,7 @@ struct sample::touch_holder_extension::impl : base::impl {
     std::unordered_map<uintptr_t, touch_object> _objects;
     ui::texture _texture = nullptr;
     ui::rect_plane_data _rect_plane_data = ui::make_rect_plane_data(1);
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
 };
 
 sample::touch_holder_extension::touch_holder_extension() : base(std::make_shared<impl>()) {

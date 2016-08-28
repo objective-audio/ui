@@ -97,7 +97,7 @@ struct sample::cursor_over_planes_extension::impl : base::impl {
     }
 
     std::vector<ui::node> _nodes;
-    base _renderer_observer = nullptr;
+    ui::node::observer_t _renderer_observer = nullptr;
 };
 
 sample::cursor_over_planes_extension::cursor_over_planes_extension() : base(std::make_shared<impl>()) {
