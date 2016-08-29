@@ -87,7 +87,7 @@ sample::collection_planes::collection_planes() : base(std::make_shared<impl>()) 
 sample::collection_planes::collection_planes(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane &sample::collection_planes::rect_plane_ext() {
+ui::rect_plane &sample::collection_planes::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
 

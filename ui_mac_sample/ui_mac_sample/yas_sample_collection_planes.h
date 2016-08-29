@@ -14,7 +14,7 @@ namespace sample {
         collection_planes();
         collection_planes(std::nullptr_t);
 
-        ui::rect_plane &rect_plane_ext();
+        ui::rect_plane &rect_plane();
         ui::layout_guide_rect &frame_layout_guide_rect();
     };
 }

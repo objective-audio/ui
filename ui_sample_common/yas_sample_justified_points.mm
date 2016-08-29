@@ -114,6 +114,6 @@ sample::justified_points::justified_points(std::nullptr_t) : base(nullptr) {
 
 sample::justified_points::~justified_points() = default;
 
-ui::rect_plane &sample::justified_points::rect_plane_ext() {
+ui::rect_plane &sample::justified_points::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
