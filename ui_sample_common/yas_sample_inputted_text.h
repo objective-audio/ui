@@ -1,5 +1,5 @@
 //
-//  yas_sample_text_node_extension.h
+//  yas_sample_inputted_text.h
 //
 
 #pragma once
