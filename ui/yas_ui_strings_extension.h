@@ -7,7 +7,7 @@
 namespace yas {
 namespace ui {
     class font_atlas;
-    class rect_plane_extension;
+    class rect_plane;
 
     class strings_extension : public base {
        public:
@@ -32,7 +32,7 @@ namespace ui {
         void set_text(std::string);
         void set_pivot(ui::pivot const);
 
-        ui::rect_plane_extension &rect_plane_extension();
+        ui::rect_plane &rect_plane();
     };
 }
 }

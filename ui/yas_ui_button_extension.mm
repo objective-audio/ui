@@ -10,7 +10,7 @@
 #include "yas_ui_event.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_node.h"
-#include "yas_ui_rect_plane_extension.h"
+#include "yas_ui_rect_plane.h"
 #include "yas_ui_renderer.h"
 
 using namespace yas;
@@ -76,7 +76,7 @@ struct ui::button_extension::impl : base::impl {
     }
 
     states_t _states;
-    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(ui::button_extension::state_count * 2, 1);
+    ui::rect_plane _rect_plane_ext = ui::make_rect_plane(ui::button_extension::state_count * 2, 1);
     ui::button_extension::subject_t _subject;
 
    private:
@@ -216,7 +216,7 @@ ui::button_extension::subject_t &ui::button_extension::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-ui::rect_plane_extension &ui::button_extension::rect_plane_extension() {
+ui::rect_plane &ui::button_extension::rect_plane() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }
 

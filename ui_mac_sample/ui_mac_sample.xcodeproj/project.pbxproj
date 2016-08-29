@@ -10,7 +10,7 @@
 		B60428281D3904D70076769D /* yas_sample_soft_keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */; };
 		B604282E1D3929830076769D /* yas_ui_button_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B604282C1D3929830076769D /* yas_ui_button_extension.mm */; };
 		B619146A1CB54BF80014A0D7 /* yas_ui_event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61914681CB54BF80014A0D7 /* yas_ui_event.cpp */; };
-		B61A2DC31CBF35EF0086D813 /* yas_ui_rect_plane_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane_extension.mm */; };
+		B61A2DC31CBF35EF0086D813 /* yas_ui_rect_plane.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane.mm */; };
 		B61A2F181CC13E6E0086D813 /* yas_ui_mesh_data.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A2F161CC13E6E0086D813 /* yas_ui_mesh_data.mm */; };
 		B61AE4CF1CF9869C001479E3 /* yas_ui_metal_render_encoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61AE4CE1CF9869C001479E3 /* yas_ui_metal_render_encoder.mm */; };
 		B62661A01CB8FEA700F7B221 /* yas_ui_transformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B626619E1CB8FEA700F7B221 /* yas_ui_transformer.cpp */; };
@@ -92,8 +92,8 @@
 		B604282D1D3929830076769D /* yas_ui_button_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_button_extension.h; sourceTree = "<group>"; };
 		B61914681CB54BF80014A0D7 /* yas_ui_event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_event.cpp; sourceTree = "<group>"; };
 		B61914691CB54BF80014A0D7 /* yas_ui_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_event.h; sourceTree = "<group>"; };
-		B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_rect_plane_extension.mm; sourceTree = "<group>"; };
-		B61A2DC21CBF35EF0086D813 /* yas_ui_rect_plane_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_rect_plane_extension.h; sourceTree = "<group>"; };
+		B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_rect_plane.mm; sourceTree = "<group>"; };
+		B61A2DC21CBF35EF0086D813 /* yas_ui_rect_plane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_rect_plane.h; sourceTree = "<group>"; };
 		B61A2F161CC13E6E0086D813 /* yas_ui_mesh_data.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_mesh_data.mm; sourceTree = "<group>"; };
 		B61A2F171CC13E6E0086D813 /* yas_ui_mesh_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_mesh_data.h; sourceTree = "<group>"; };
 		B61AE4CD1CF9869C001479E3 /* yas_ui_metal_render_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_render_encoder.h; sourceTree = "<group>"; };
@@ -488,8 +488,8 @@
 				B6C760E91CA79A5300BEE95A /* yas_ui_node_protocol.mm */,
 				B6F501CE1C9D923500A0B4A1 /* yas_ui_node.h */,
 				B6F501CD1C9D923500A0B4A1 /* yas_ui_node.mm */,
-				B61A2DC21CBF35EF0086D813 /* yas_ui_rect_plane_extension.h */,
-				B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane_extension.mm */,
+				B61A2DC21CBF35EF0086D813 /* yas_ui_rect_plane.h */,
+				B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane.mm */,
 				B63C414B1CF93207005A8E60 /* yas_ui_render_encoder_protocol.h */,
 				B63C414A1CF93207005A8E60 /* yas_ui_render_encoder_protocol.mm */,
 				B6F501D71C9E355B00A0B4A1 /* yas_ui_render_info.h */,
@@ -611,7 +611,7 @@
 				B6F501DB1C9E927E00A0B4A1 /* yas_ui_mesh.mm in Sources */,
 				B6E42C161D60434D00FB483D /* yas_ui_layout_guide.cpp in Sources */,
 				B6F501D51C9E355200A0B4A1 /* yas_ui_metal_encode_info.mm in Sources */,
-				B61A2DC31CBF35EF0086D813 /* yas_ui_rect_plane_extension.mm in Sources */,
+				B61A2DC31CBF35EF0086D813 /* yas_ui_rect_plane.mm in Sources */,
 				B67B8A021CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm in Sources */,
 				B644A9F61CB52D7800E8F81B /* yas_ui_metal_view.mm in Sources */,
 				B67B8A041CDAFD9A0081848D /* yas_sample_inputted_text.mm in Sources */,

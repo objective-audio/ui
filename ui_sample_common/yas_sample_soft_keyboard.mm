@@ -17,19 +17,19 @@ namespace sample {
                   _strings_ext({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 float const half_width = roundf(width * 0.5f);
 
-                _button_ext.rect_plane_extension().node().mesh().set_use_mesh_color(true);
-                _button_ext.rect_plane_extension().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-                _button_ext.rect_plane_extension().data().set_rect_color(
+                _button_ext.rect_plane().node().mesh().set_use_mesh_color(true);
+                _button_ext.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+                _button_ext.rect_plane().data().set_rect_color(
                     simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, to_index({ui::button_extension::state::press}));
 
                 _strings_ext.set_text(key);
                 _strings_ext.set_pivot(ui::pivot::center);
 
                 float const &font_size = _strings_ext.font_atlas().font_size();
-                _strings_ext.rect_plane_extension().node().set_position(
+                _strings_ext.rect_plane().node().set_position(
                     {half_width, std::roundf(-font_size / 3.0f) + half_width});
-                _button_ext.rect_plane_extension().node().push_back_sub_node(
-                    _strings_ext.rect_plane_extension().node());
+                _button_ext.rect_plane().node().push_back_sub_node(
+                    _strings_ext.rect_plane().node());
             }
 
             ui::button_extension _button_ext;
@@ -147,7 +147,7 @@ struct sample::soft_keyboard::impl : base::impl {
                 });
             _soft_key_observers.emplace_back(std::move(observer));
 
-            auto &node = soft_key.button_extension().rect_plane_extension().node();
+            auto &node = soft_key.button_extension().rect_plane().node();
 
             _root_node.push_back_sub_node(node);
             _soft_keys.emplace_back(std::move(soft_key));
@@ -184,21 +184,21 @@ struct sample::soft_keyboard::impl : base::impl {
             auto &soft_key = _soft_keys.at(idx);
 
             if (idx < layout_count) {
-                soft_key.button_extension().rect_plane_extension().node().set_enabled(true);
+                soft_key.button_extension().rect_plane().node().set_enabled(true);
 
                 auto &layout = _collection_layout.cell_layout_guide_rects().at(idx);
                 layout.set_value_changed_handler([weak_soft_key = to_weak(soft_key)](auto const &context) {
                     if (auto soft_key = weak_soft_key.lock()) {
-                        soft_key.button_extension().rect_plane_extension().node().set_position(
+                        soft_key.button_extension().rect_plane().node().set_position(
                             {context.new_value.origin.x, context.new_value.origin.y});
                     }
                 });
 
                 auto const region = layout.region();
-                soft_key.button_extension().rect_plane_extension().node().set_position(
+                soft_key.button_extension().rect_plane().node().set_position(
                     {region.origin.x, region.origin.y});
             } else {
-                soft_key.button_extension().rect_plane_extension().node().set_enabled(false);
+                soft_key.button_extension().rect_plane().node().set_enabled(false);
             }
         }
     }

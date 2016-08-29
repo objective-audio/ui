@@ -7,7 +7,7 @@
 #import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_ui_font_atlas.h"
-#import "yas_ui_rect_plane_extension.h"
+#import "yas_ui_rect_plane.h"
 #import "yas_ui_strings_extension.h"
 
 using namespace yas;
@@ -36,7 +36,7 @@ using namespace yas;
     XCTAssertEqual(strings.pivot(), ui::pivot::left);
     XCTAssertEqual(strings.width(), 0.0f);
 
-    XCTAssertEqual(strings.rect_plane_extension().data().max_rect_count(), 16);
+    XCTAssertEqual(strings.rect_plane().data().max_rect_count(), 16);
 }
 
 - (void)test_create_with_font_atlas {

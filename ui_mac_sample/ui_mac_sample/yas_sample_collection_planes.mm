@@ -9,7 +9,7 @@ using namespace yas;
 
 struct sample::collection_planes::impl : base::impl {
     static std::size_t const max_cell_count = 16;
-    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(max_cell_count);
+    ui::rect_plane _rect_plane_ext = ui::make_rect_plane(max_cell_count);
     ui::collection_layout _collection_layout{{.preferred_cell_count = max_cell_count,
                                               .frame = {.size = {200.0f, 200.0f}},
                                               .cell_sizes = {{40.0f, 40.0f}},
@@ -87,7 +87,7 @@ sample::collection_planes::collection_planes() : base(std::make_shared<impl>()) 
 sample::collection_planes::collection_planes(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane_extension &sample::collection_planes::rect_plane_ext() {
+ui::rect_plane &sample::collection_planes::rect_plane_ext() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }
 

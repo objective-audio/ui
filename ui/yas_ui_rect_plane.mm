@@ -1,12 +1,12 @@
 //
-//  yas_ui_rect_plane_extension.mm
+//  yas_ui_rect_plane.mm
 //
 
 #include "yas_each_index.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
-#include "yas_ui_rect_plane_extension.h"
+#include "yas_ui_rect_plane.h"
 
 using namespace yas;
 
@@ -160,9 +160,9 @@ ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count, std::
     return plane_data;
 }
 
-#pragma mark - ui::rect_plane_extension::impl
+#pragma mark - ui::rect_plane::impl
 
-struct yas::ui::rect_plane_extension::impl : base::impl {
+struct yas::ui::rect_plane::impl : base::impl {
     impl(ui::rect_plane_data &&plane_data) : _rect_plane_data(std::move(plane_data)) {
     }
 
@@ -172,29 +172,29 @@ struct yas::ui::rect_plane_extension::impl : base::impl {
 
 #pragma mark - ui::rect_plane
 
-ui::rect_plane_extension::rect_plane_extension(ui::rect_plane_data rect_plane_data)
+ui::rect_plane::rect_plane(ui::rect_plane_data rect_plane_data)
     : base(std::make_shared<impl>(std::move(rect_plane_data))) {
 }
 
-ui::rect_plane_extension::rect_plane_extension(std::nullptr_t) : base(nullptr) {
+ui::rect_plane::rect_plane(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane_extension::~rect_plane_extension() = default;
+ui::rect_plane::~rect_plane() = default;
 
-ui::node &ui::rect_plane_extension::node() {
+ui::node &ui::rect_plane::node() {
     return impl_ptr<impl>()->_node;
 }
 
-ui::rect_plane_data &ui::rect_plane_extension::data() {
+ui::rect_plane_data &ui::rect_plane::data() {
     return impl_ptr<impl>()->_rect_plane_data;
 }
 
-ui::rect_plane_extension ui::make_rect_plane_extension(std::size_t const rect_count) {
-    return make_rect_plane_extension(rect_count, rect_count);
+ui::rect_plane ui::make_rect_plane(std::size_t const rect_count) {
+    return make_rect_plane(rect_count, rect_count);
 }
 
-ui::rect_plane_extension ui::make_rect_plane_extension(std::size_t const rect_count, std::size_t const index_count) {
-    ui::rect_plane_extension ext{make_rect_plane_data(rect_count, index_count)};
+ui::rect_plane ui::make_rect_plane(std::size_t const rect_count, std::size_t const index_count) {
+    ui::rect_plane ext{make_rect_plane_data(rect_count, index_count)};
     ui::mesh mesh;
     mesh.set_mesh_data(ext.data().dynamic_mesh_data());
     ext.node().set_mesh(std::move(mesh));

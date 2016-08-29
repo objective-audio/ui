@@ -8,14 +8,14 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
-#include "yas_ui_rect_plane_extension.h"
+#include "yas_ui_rect_plane.h"
 #include "yas_ui_strings_extension.h"
 #include "yas_ui_texture.h"
 
 using namespace yas;
 
 struct ui::strings_extension::impl : base::impl {
-    impl(std::size_t const max_word_count) : _rect_plane_ext(make_rect_plane_extension(max_word_count)) {
+    impl(std::size_t const max_word_count) : _rect_plane_ext(make_rect_plane(max_word_count)) {
     }
 
     ui::font_atlas &font_atlas() {
@@ -85,7 +85,7 @@ struct ui::strings_extension::impl : base::impl {
         }
     }
 
-    ui::rect_plane_extension _rect_plane_ext;
+    ui::rect_plane _rect_plane_ext;
 
    private:
     ui::font_atlas _font_atlas = nullptr;
@@ -133,6 +133,6 @@ void ui::strings_extension::set_pivot(ui::pivot const pivot) {
     impl_ptr<impl>()->set_pivot(pivot);
 }
 
-ui::rect_plane_extension &ui::strings_extension::rect_plane_extension() {
+ui::rect_plane &ui::strings_extension::rect_plane() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }

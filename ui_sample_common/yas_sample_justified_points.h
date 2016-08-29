@@ -16,7 +16,7 @@ namespace sample {
 
         virtual ~justified_points() final;
 
-        ui::rect_plane_extension &rect_plane_ext();
+        ui::rect_plane &rect_plane_ext();
     };
 }
 }

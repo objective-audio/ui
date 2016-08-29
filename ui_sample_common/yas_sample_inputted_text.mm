@@ -12,13 +12,13 @@ struct sample::inputted_text::impl : base::impl {
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
         _strings_ext.set_pivot(ui::pivot::left);
 
-        auto &node = _strings_ext.rect_plane_extension().node();
+        auto &node = _strings_ext.rect_plane().node();
         node.attach_position_layout_guides(_layout_guide_point);
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::inputted_text &ext) {
-        auto &node = _strings_ext.rect_plane_extension().node();
+        auto &node = _strings_ext.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_ext = to_weak(ext),

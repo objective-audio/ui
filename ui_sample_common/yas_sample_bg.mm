@@ -7,7 +7,7 @@
 using namespace yas;
 
 struct sample::bg::impl : base::impl {
-    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(1);
+    ui::rect_plane _rect_plane_ext = ui::make_rect_plane(1);
 
     impl() {
         _rect_plane_ext.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
@@ -61,6 +61,6 @@ sample::bg::bg() : base(std::make_shared<impl>()) {
 sample::bg::bg(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane_extension &sample::bg::rect_plane_extension() {
+ui::rect_plane &sample::bg::rect_plane() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }

@@ -15,7 +15,7 @@ template <typename T, typename K>
 class observer;
 
 namespace ui {
-    class rect_plane_extension;
+    class rect_plane;
 
     class button_extension : public base {
        public:
@@ -51,7 +51,7 @@ namespace ui {
 
         subject_t &subject();
 
-        ui::rect_plane_extension &rect_plane_extension();
+        ui::rect_plane &rect_plane();
     };
 }
 

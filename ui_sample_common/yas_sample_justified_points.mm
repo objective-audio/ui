@@ -16,7 +16,7 @@ namespace sample {
 }
 
 struct sample::justified_points::impl : base::impl {
-    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(sample::all_point_count);
+    ui::rect_plane _rect_plane_ext = ui::make_rect_plane(sample::all_point_count);
     std::vector<ui::layout_guide> _x_layout_guides{sample::x_point_count};
     std::vector<ui::layout_guide> _y_layout_guides{sample::y_point_count};
 
@@ -114,6 +114,6 @@ sample::justified_points::justified_points(std::nullptr_t) : base(nullptr) {
 
 sample::justified_points::~justified_points() = default;
 
-ui::rect_plane_extension &sample::justified_points::rect_plane_ext() {
+ui::rect_plane &sample::justified_points::rect_plane_ext() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }

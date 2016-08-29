@@ -10,8 +10,8 @@ struct sample::big_button_text::impl : base::impl {
     ui::strings_extension _strings_ext;
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = font_atlas, .max_word_count = 32}) {
-        _strings_ext.rect_plane_extension().node().set_position(ui::point{0.0f, -7.0f});
-        _strings_ext.rect_plane_extension().node().set_alpha(0.5f);
+        _strings_ext.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
+        _strings_ext.rect_plane().node().set_alpha(0.5f);
         _strings_ext.set_pivot(ui::pivot::center);
         _strings_ext.set_text("-----");
     }

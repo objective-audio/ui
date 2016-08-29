@@ -29,7 +29,7 @@ using namespace yas;
     ui::button_extension button_ext{{0.0f, 1.0f, 2.0f, 3.0f}};
 
     XCTAssertTrue(button_ext);
-    XCTAssertTrue(button_ext.rect_plane_extension());
+    XCTAssertTrue(button_ext.rect_plane());
 }
 
 - (void)test_create_null {
@@ -60,7 +60,7 @@ using namespace yas;
     renderer.insert_action(pre_render_action);
 
     ui::button_extension button_ext{{-0.5f, -0.5f, 1.0f, 1.0f}};
-    renderer.root_node().push_back_sub_node(button_ext.rect_plane_extension().node());
+    renderer.root_node().push_back_sub_node(button_ext.rect_plane().node());
 
     std::vector<ui::button_extension::method> observed_methods;
 
