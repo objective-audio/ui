@@ -1,8 +1,8 @@
 //
-//  yas_sample_touch_holder_extension.cpp
+//  yas_sample_touch_holder.cpp
 //
 
-#include "yas_sample_touch_holder_extension.h"
+#include "yas_sample_touch_holder.h"
 
 using namespace yas;
 
@@ -15,14 +15,14 @@ namespace sample {
 }
 }
 
-struct sample::touch_holder_extension::impl : base::impl {
+struct sample::touch_holder::impl : base::impl {
     ui::node root_node;
 
     impl() {
         _rect_plane_data.set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
     }
 
-    void prepare(sample::touch_holder_extension &ext) {
+    void prepare(sample::touch_holder &ext) {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
@@ -188,17 +188,17 @@ struct sample::touch_holder_extension::impl : base::impl {
     ui::node::observer_t _renderer_observer = nullptr;
 };
 
-sample::touch_holder_extension::touch_holder_extension() : base(std::make_shared<impl>()) {
+sample::touch_holder::touch_holder() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::touch_holder_extension::touch_holder_extension(std::nullptr_t) : base(nullptr) {
+sample::touch_holder::touch_holder(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::touch_holder_extension::set_texture(ui::texture texture) {
+void sample::touch_holder::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-ui::node &sample::touch_holder_extension::node() {
+ui::node &sample::touch_holder::node() {
     return impl_ptr<impl>()->root_node;
 }
