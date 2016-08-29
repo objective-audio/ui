@@ -14,33 +14,33 @@ void sample::main::setup() {
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
-    batch_node.push_back_sub_node(_cursor_over_planes_ext.node());
+    batch_node.push_back_sub_node(_cursor_over_planes.node());
     root_node.push_back_sub_node(std::move(batch_node));
 
-    root_node.push_back_sub_node(_soft_keyboard_ext.node());
+    root_node.push_back_sub_node(_soft_keyboard.node());
     root_node.push_back_sub_node(_big_button.button().rect_plane().node());
     root_node.push_back_sub_node(_cursor.node());
     root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
-    root_node.push_back_sub_node(_justified_points_ext.rect_plane_ext().node());
+    root_node.push_back_sub_node(_justified_points.rect_plane_ext().node());
 
-    _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text_ext.strings().rect_plane().node());
+    _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text.strings().rect_plane().node());
 
     _inputted_text.strings().set_font_atlas(_font_atlas);
     _modifier_text.strings().set_font_atlas(_font_atlas);
-    _big_button_text_ext.strings().set_font_atlas(_font_atlas);
-    _soft_keyboard_ext.set_font_atlas(_font_atlas);
+    _big_button_text.strings().set_font_atlas(_font_atlas);
+    _soft_keyboard.set_font_atlas(_font_atlas);
 
     _button_observer =
-        _big_button.button().subject().make_wild_card_observer([weak_ext = to_weak(_big_button_text_ext)](
+        _big_button.button().subject().make_wild_card_observer([weak_ext = to_weak(_big_button_text)](
             auto const &context) {
             if (auto ext = weak_ext.lock()) {
                 ext.set_status(context.key);
             }
         });
 
-    _keyboard_observer = _soft_keyboard_ext.subject().make_wild_card_observer([weak_ext = to_weak(_inputted_text)](
+    _keyboard_observer = _soft_keyboard.subject().make_wild_card_observer([weak_ext = to_weak(_inputted_text)](
         auto const &context) {
         if (auto ext = weak_ext.lock()) {
             ext.append_text(context.key);

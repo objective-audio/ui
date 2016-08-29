@@ -32,11 +32,11 @@ namespace sample {
         sample::inputted_text _inputted_text;
         sample::modifier_text _modifier_text;
         sample::bg _bg;
-        sample::cursor_over_planes _cursor_over_planes_ext;
+        sample::cursor_over_planes _cursor_over_planes;
         sample::big_button _big_button;
-        sample::big_button_text _big_button_text_ext;
-        sample::soft_keyboard _soft_keyboard_ext;
-        sample::justified_points _justified_points_ext;
+        sample::big_button_text _big_button_text;
+        sample::soft_keyboard _soft_keyboard;
+        sample::justified_points _justified_points;
         sample::collection_planes _collection_ext;
 
         ui::font_atlas _font_atlas{{.font_name = "TrebuchetMS-Bold",
