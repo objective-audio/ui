@@ -30,7 +30,7 @@ namespace sample {
         sample::touch_holder _touch_holder;
         sample::cursor _cursor;
         sample::inputted_text _inputted_text;
-        sample::modifier_text _modifier_text_ext;
+        sample::modifier_text _modifier_text;
         sample::bg _bg;
         sample::cursor_over_planes _cursor_over_planes_ext;
         sample::big_button _big_button;
