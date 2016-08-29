@@ -17,24 +17,24 @@ struct sample::inputted_text::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::inputted_text &ext) {
+    void prepare(sample::inputted_text &text) {
         auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_ext = to_weak(ext),
+            weak_text = to_weak(text),
             event_observer = base{nullptr},
             left_layout = ui::layout{nullptr},
             top_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
-            if (auto ext = weak_ext.lock()) {
+            if (auto text = weak_text.lock()) {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
-                    auto ext_impl = ext.impl_ptr<inputted_text::impl>();
+                    auto ext_impl = text.impl_ptr<inputted_text::impl>();
 
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::key_changed, [weak_ext](auto const &context) {
-                            if (auto ext = weak_ext.lock()) {
-                                ext.impl_ptr<inputted_text::impl>()->update_text(context.value);
+                        ui::event_manager::method::key_changed, [weak_text](auto const &context) {
+                            if (auto text = weak_text.lock()) {
+                                text.impl_ptr<inputted_text::impl>()->update_text(context.value);
                             }
                         });
 
