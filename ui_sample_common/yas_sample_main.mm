@@ -10,6 +10,7 @@ void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
     root_node.push_back_sub_node(_bg_ext.rect_plane_extension().node());
+    root_node.push_back_sub_node(_collection_ext.rect_plane_ext().node());
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});

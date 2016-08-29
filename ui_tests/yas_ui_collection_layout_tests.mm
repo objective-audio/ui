@@ -189,6 +189,23 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(3).top().value(), 13.0f);
 }
 
+- (void)test_limiting_row {
+    ui::collection_layout layout{
+        {.frame = {.size = {1.0f, 0.0f}}, .preferred_cell_count = 8, .cell_sizes = {{1.0f, 1.0f}}}};
+
+    XCTAssertEqual(layout.actual_cell_count(), 8);
+
+    layout.set_frame({.size = {0.0f, 1.0f}});
+
+    XCTAssertEqual(layout.actual_cell_count(), 0);
+
+    layout.set_direction(ui::layout_direction::horizontal);
+
+    XCTAssertEqual(layout.actual_cell_count(), 8);
+
+    layout.set_frame({.size = {1.0f, 0.0f}});
+}
+
 - (void)test_set_preferred_cell_count {
     ui::collection_layout layout{{.preferred_cell_count = 2}};
 
