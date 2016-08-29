@@ -15,7 +15,7 @@
 using namespace yas;
 
 struct ui::strings::impl : base::impl {
-    impl(std::size_t const max_word_count) : _rect_plane_ext(make_rect_plane(max_word_count)) {
+    impl(std::size_t const max_word_count) : _rect_plane(make_rect_plane(max_word_count)) {
     }
 
     ui::font_atlas &font_atlas() {
@@ -38,7 +38,7 @@ struct ui::strings::impl : base::impl {
         _font_atlas = std::move(atlas);
 
         if (_font_atlas) {
-            _rect_plane_ext.node().mesh().set_texture(_font_atlas.texture());
+            _rect_plane.node().mesh().set_texture(_font_atlas.texture());
             _font_atlas_observer =
                 _font_atlas.subject().make_observer(ui::font_atlas::method::texture_changed,
                                                     [weak_strings = to_weak(cast<ui::strings>())](auto const &context) {
@@ -47,7 +47,7 @@ struct ui::strings::impl : base::impl {
                                                         }
                                                     });
         } else {
-            _rect_plane_ext.node().mesh().set_texture(nullptr);
+            _rect_plane.node().mesh().set_texture(nullptr);
             _font_atlas_observer = nullptr;
         }
 
@@ -65,7 +65,7 @@ struct ui::strings::impl : base::impl {
     }
 
     void update_mesh_data() {
-        auto &mesh_data = _rect_plane_ext.data();
+        auto &mesh_data = _rect_plane.data();
 
         if (_font_atlas && _font_atlas.texture()) {
             auto const count = std::min(_text.size(), mesh_data.max_rect_count());
@@ -77,15 +77,15 @@ struct ui::strings::impl : base::impl {
 
             _width = layout.width();
             mesh_data.set_rect_count(count);
-            _rect_plane_ext.node().mesh().set_texture(_font_atlas.texture());
+            _rect_plane.node().mesh().set_texture(_font_atlas.texture());
         } else {
             _width = 0;
             mesh_data.set_rect_count(0);
-            _rect_plane_ext.node().mesh().set_texture(nullptr);
+            _rect_plane.node().mesh().set_texture(nullptr);
         }
     }
 
-    ui::rect_plane _rect_plane_ext;
+    ui::rect_plane _rect_plane;
 
    private:
     ui::font_atlas _font_atlas = nullptr;
@@ -134,5 +134,5 @@ void ui::strings::set_pivot(ui::pivot const pivot) {
 }
 
 ui::rect_plane &ui::strings::rect_plane() {
-    return impl_ptr<impl>()->_rect_plane_ext;
+    return impl_ptr<impl>()->_rect_plane;
 }
