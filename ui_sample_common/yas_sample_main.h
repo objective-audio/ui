@@ -14,7 +14,7 @@
 #include "yas_sample_inputted_text.h"
 #include "yas_sample_justified_points.h"
 #include "yas_sample_modifier_text.h"
-#include "yas_sample_soft_keyboard_extension.h"
+#include "yas_sample_soft_keyboard.h"
 #include "yas_sample_touch_holder_extension.h"
 #include "yas_ui.h"
 #include "yas_ui_metal_system.h"
@@ -35,7 +35,7 @@ namespace sample {
         sample::cursor_over_planes _cursor_over_planes_ext;
         sample::big_button _big_button_ext;
         sample::big_button_text _big_button_text_ext;
-        sample::soft_keyboard_extension _soft_keyboard_ext;
+        sample::soft_keyboard _soft_keyboard_ext;
         sample::justified_points _justified_points_ext;
         sample::collection_extension _collection_ext;
 
@@ -47,7 +47,7 @@ namespace sample {
 
         ui::button_extension::observer_t _button_observer = nullptr;
         ui::renderer::observer_t _scale_observer = nullptr;
-        sample::soft_keyboard_extension::observer_t _keyboard_observer = nullptr;
+        sample::soft_keyboard::observer_t _keyboard_observer = nullptr;
     };
 }
 }

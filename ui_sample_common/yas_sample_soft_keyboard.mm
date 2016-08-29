@@ -1,9 +1,9 @@
 //
-//  yas_sample_soft_keyboard_extension.mm
+//  yas_sample_soft_keyboard.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_soft_keyboard_extension.h"
+#include "yas_sample_soft_keyboard.h"
 #include "yas_ui_fixed_layout.h"
 
 using namespace yas;
@@ -50,13 +50,13 @@ namespace sample {
 }
 }
 
-struct sample::soft_keyboard_extension::impl : base::impl {
+struct sample::soft_keyboard::impl : base::impl {
     impl() {
         _root_node.attach_position_layout_guides(_layout_guide_point);
         _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::soft_keyboard_extension &ext) {
+    void prepare(sample::soft_keyboard &ext) {
         auto weak_ext = to_weak(ext);
 
         _renderer_observer = _root_node.subject().make_observer(
@@ -97,7 +97,7 @@ struct sample::soft_keyboard_extension::impl : base::impl {
     }
 
     ui::node _root_node;
-    sample::soft_keyboard_extension::subject_t _subject;
+    sample::soft_keyboard::subject_t _subject;
 
    private:
     std::vector<sample::soft_key> _soft_keys;
@@ -140,7 +140,7 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
             auto observer = soft_key.button_extension().subject().make_observer(
                 ui::button_extension::method::ended,
-                [weak_keyboard_ext = to_weak(cast<sample::soft_keyboard_extension>()), key](auto const &context) {
+                [weak_keyboard_ext = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
                     if (auto keyboard = weak_keyboard_ext.lock()) {
                         keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
                     }
@@ -155,7 +155,7 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
         _collection_layout_observer = _collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed,
-            [weak_ext = to_weak(cast<sample::soft_keyboard_extension>())](auto const &context) {
+            [weak_ext = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
                 if (auto ext = weak_ext.lock()) {
                     ext.impl_ptr<impl>()->_update_soft_keys_position();
                 }
@@ -204,21 +204,21 @@ struct sample::soft_keyboard_extension::impl : base::impl {
     }
 };
 
-sample::soft_keyboard_extension::soft_keyboard_extension() : base(std::make_shared<impl>()) {
+sample::soft_keyboard::soft_keyboard() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::soft_keyboard_extension::soft_keyboard_extension(std::nullptr_t) : base(nullptr) {
+sample::soft_keyboard::soft_keyboard(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::soft_keyboard_extension::set_font_atlas(ui::font_atlas atlas) {
+void sample::soft_keyboard::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->set_font_atlas(std::move(atlas));
 }
 
-ui::node &sample::soft_keyboard_extension::node() {
+ui::node &sample::soft_keyboard::node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-sample::soft_keyboard_extension::subject_t &sample::soft_keyboard_extension::subject() {
+sample::soft_keyboard::subject_t &sample::soft_keyboard::subject() {
     return impl_ptr<impl>()->_subject;
 }
