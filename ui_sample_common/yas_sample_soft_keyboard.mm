@@ -14,7 +14,7 @@ namespace sample {
         struct impl : base::impl {
             impl(std::string &&key, float const width, ui::font_atlas &&atlas)
                 : _button({0.0f, 0.0f, width, width}),
-                  _strings_ext({.font_atlas = std::move(atlas), .max_word_count = 1}) {
+                  _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 float const half_width = roundf(width * 0.5f);
 
                 _button.rect_plane().node().mesh().set_use_mesh_color(true);
@@ -22,17 +22,17 @@ namespace sample {
                 _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
                                                            to_index({ui::button::state::press}));
 
-                _strings_ext.set_text(key);
-                _strings_ext.set_pivot(ui::pivot::center);
+                _strings.set_text(key);
+                _strings.set_pivot(ui::pivot::center);
 
-                float const &font_size = _strings_ext.font_atlas().font_size();
-                _strings_ext.rect_plane().node().set_position(
+                float const &font_size = _strings.font_atlas().font_size();
+                _strings.rect_plane().node().set_position(
                     {half_width, std::roundf(-font_size / 3.0f) + half_width});
-                _button.rect_plane().node().push_back_sub_node(_strings_ext.rect_plane().node());
+                _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
             }
 
             ui::button _button;
-            ui::strings _strings_ext;
+            ui::strings _strings;
         };
 
         soft_key(std::string key, float const width, ui::font_atlas atlas)

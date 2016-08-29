@@ -8,18 +8,18 @@
 using namespace yas;
 
 struct sample::modifier_text::impl : base::impl {
-    ui::strings _strings_ext;
+    ui::strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = font_atlas, .max_word_count = 64}) {
-        _strings_ext.set_pivot(ui::pivot::right);
+    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 64}) {
+        _strings.set_pivot(ui::pivot::right);
 
-        auto &node = _strings_ext.rect_plane().node();
+        auto &node = _strings.rect_plane().node();
         node.attach_position_layout_guides(_layout_guide_point);
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::modifier_text &ext) {
-        auto &node = _strings_ext.rect_plane().node();
+        auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_ext = to_weak(ext),
@@ -74,7 +74,7 @@ struct sample::modifier_text::impl : base::impl {
             flag_texts.emplace_back(to_string(flg));
         }
 
-        _strings_ext.set_text(joined(flag_texts, " + "));
+        _strings.set_text(joined(flag_texts, " + "));
     }
 
    private:
@@ -90,5 +90,5 @@ sample::modifier_text::modifier_text(std::nullptr_t) : base(nullptr) {
 }
 
 ui::strings &sample::modifier_text::strings() {
-    return impl_ptr<impl>()->_strings_ext;
+    return impl_ptr<impl>()->_strings;
 }

@@ -7,18 +7,18 @@
 using namespace yas;
 
 struct sample::inputted_text::impl : base::impl {
-    ui::strings _strings_ext;
+    ui::strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
-        _strings_ext.set_pivot(ui::pivot::left);
+    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
+        _strings.set_pivot(ui::pivot::left);
 
-        auto &node = _strings_ext.rect_plane().node();
+        auto &node = _strings.rect_plane().node();
         node.attach_position_layout_guides(_layout_guide_point);
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::inputted_text &ext) {
-        auto &node = _strings_ext.rect_plane().node();
+        auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_ext = to_weak(ext),
@@ -59,9 +59,9 @@ struct sample::inputted_text::impl : base::impl {
 
             switch (key_code) {
                 case 51: {
-                    auto &text = _strings_ext.text();
+                    auto &text = _strings.text();
                     if (text.size() > 0) {
-                        _strings_ext.set_text(text.substr(0, text.size() - 1));
+                        _strings.set_text(text.substr(0, text.size() - 1));
                     }
                 } break;
 
@@ -71,7 +71,7 @@ struct sample::inputted_text::impl : base::impl {
     }
 
     void append_text(std::string text) {
-        _strings_ext.set_text(_strings_ext.text() + text);
+        _strings.set_text(_strings.text() + text);
     }
 
    private:
@@ -91,5 +91,5 @@ void sample::inputted_text::append_text(std::string text) {
 }
 
 ui::strings &sample::inputted_text::strings() {
-    return impl_ptr<impl>()->_strings_ext;
+    return impl_ptr<impl>()->_strings;
 }

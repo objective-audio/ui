@@ -7,17 +7,17 @@
 using namespace yas;
 
 struct sample::big_button_text::impl : base::impl {
-    ui::strings _strings_ext;
+    ui::strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = font_atlas, .max_word_count = 32}) {
-        _strings_ext.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
-        _strings_ext.rect_plane().node().set_alpha(0.5f);
-        _strings_ext.set_pivot(ui::pivot::center);
-        _strings_ext.set_text("-----");
+    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 32}) {
+        _strings.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
+        _strings.rect_plane().node().set_alpha(0.5f);
+        _strings.set_pivot(ui::pivot::center);
+        _strings.set_text("-----");
     }
 
     void set_status(ui::button::method const status) {
-        _strings_ext.set_text(to_string(status));
+        _strings.set_text(to_string(status));
     }
 
    private:
@@ -36,5 +36,5 @@ void sample::big_button_text::set_status(ui::button::method const status) {
 }
 
 ui::strings &sample::big_button_text::strings() {
-    return impl_ptr<impl>()->_strings_ext;
+    return impl_ptr<impl>()->_strings;
 }
