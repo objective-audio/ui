@@ -6,6 +6,7 @@
 #include "yas_each_index.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_fixed_layout.h"
+#include "yas_ui_layout.h"
 #include "yas_ui_layout_guide.h"
 
 using namespace yas;
@@ -16,10 +17,11 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    ui::fixed_layout _left_border_layout;
-    ui::fixed_layout _right_border_layout;
-    ui::fixed_layout _bottom_border_layout;
-    ui::fixed_layout _top_border_layout;
+    ui::layout _left_border_layout;
+    ui::layout _right_border_layout;
+    ui::layout _bottom_border_layout;
+    ui::layout _top_border_layout;
+    ui::layout_borders const _borders;
     subject_t _subject;
 
     impl(args &&args)
@@ -32,18 +34,19 @@ struct ui::collection_layout::impl : base::impl {
           _direction(args.direction),
           _row_order(args.row_order),
           _col_order(args.col_order),
-          _left_border_layout({.source_guide = _frame_guide_rect.left(),
-                               .destination_guide = _border_guide_rect.left(),
-                               .distance = args.borders.left}),
-          _right_border_layout({.source_guide = _frame_guide_rect.right(),
-                                .destination_guide = _border_guide_rect.right(),
-                                .distance = -args.borders.right}),
-          _bottom_border_layout({.source_guide = _frame_guide_rect.bottom(),
-                                 .destination_guide = _border_guide_rect.bottom(),
-                                 .distance = args.borders.bottom}),
-          _top_border_layout({.source_guide = _frame_guide_rect.top(),
-                              .destination_guide = _border_guide_rect.top(),
-                              .distance = -args.borders.top}) {
+          _left_border_layout(ui::make_fixed_layout({.source_guide = _frame_guide_rect.left(),
+                                                     .destination_guide = _border_guide_rect.left(),
+                                                     .distance = args.borders.left})),
+          _right_border_layout(ui::make_fixed_layout({.source_guide = _frame_guide_rect.right(),
+                                                      .destination_guide = _border_guide_rect.right(),
+                                                      .distance = -args.borders.right})),
+          _bottom_border_layout(ui::make_fixed_layout({.source_guide = _frame_guide_rect.bottom(),
+                                                       .destination_guide = _border_guide_rect.bottom(),
+                                                       .distance = args.borders.bottom})),
+          _top_border_layout(ui::make_fixed_layout({.source_guide = _frame_guide_rect.top(),
+                                                    .destination_guide = _border_guide_rect.top(),
+                                                    .distance = -args.borders.top})),
+          _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";
         }
@@ -481,68 +484,8 @@ ui::layout_order ui::collection_layout::col_order() const {
     return impl_ptr<impl>()->col_order();
 }
 
-void ui::collection_layout::set_borders(ui::layout_borders borders) {
-    impl_ptr<impl>()->push_notify_caller();
-
-    set_left_border(borders.left);
-    set_right_border(borders.right);
-    set_bottom_border(borders.bottom);
-    set_top_border(borders.top);
-
-    impl_ptr<impl>()->pop_notify_caller();
-}
-
-void ui::collection_layout::set_left_border(float const value) {
-    if (value < 0) {
-        throw "value is negative.";
-    }
-
-    impl_ptr<impl>()->_left_border_layout.set_distance(value);
-}
-
-void ui::collection_layout::set_right_border(float const value) {
-    if (value < 0) {
-        throw "value is negative.";
-    }
-
-    impl_ptr<impl>()->_right_border_layout.set_distance(-value);
-}
-
-void ui::collection_layout::set_bottom_border(float const value) {
-    if (value < 0) {
-        throw "value is negative.";
-    }
-
-    impl_ptr<impl>()->_bottom_border_layout.set_distance(value);
-}
-
-void ui::collection_layout::set_top_border(float const value) {
-    if (value < 0) {
-        throw "value is negative.";
-    }
-
-    impl_ptr<impl>()->_top_border_layout.set_distance(-value);
-}
-
-ui::layout_borders ui::collection_layout::borders() const {
-    return ui::layout_borders{
-        .left = left_border(), .right = right_border(), .bottom = bottom_border(), .top = top_border()};
-}
-
-float ui::collection_layout::left_border() const {
-    return impl_ptr<impl>()->_left_border_layout.distance();
-}
-
-float ui::collection_layout::right_border() const {
-    return -impl_ptr<impl>()->_right_border_layout.distance();
-}
-
-float ui::collection_layout::bottom_border() const {
-    return impl_ptr<impl>()->_bottom_border_layout.distance();
-}
-
-float ui::collection_layout::top_border() const {
-    return -impl_ptr<impl>()->_top_border_layout.distance();
+ui::layout_borders const &ui::collection_layout::borders() const {
+    return impl_ptr<impl>()->_borders;
 }
 
 ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {

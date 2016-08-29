@@ -61,20 +61,23 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
         _renderer_observer = _root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext, bottom_layout = base{nullptr}, left_layout = base{nullptr}](auto const &context) mutable {
+            [weak_ext, bottom_layout = ui::layout{nullptr}, left_layout = ui::layout{nullptr}](
+                auto const &context) mutable {
                 auto &node = context.value;
                 if (auto keyboard_ext = weak_ext.lock()) {
                     auto keyboard_impl = keyboard_ext.impl_ptr<impl>();
                     if (auto renderer = node.renderer()) {
                         keyboard_impl->_setup_soft_keys_if_needed();
 
-                        left_layout = ui::fixed_layout{{.distance = 0.0f,
-                                                        .source_guide = renderer.view_layout_guide_rect().left(),
-                                                        .destination_guide = keyboard_impl->_layout_guide_point.x()}};
+                        left_layout =
+                            ui::make_fixed_layout({.distance = 0.0f,
+                                                   .source_guide = renderer.view_layout_guide_rect().left(),
+                                                   .destination_guide = keyboard_impl->_layout_guide_point.x()});
 
-                        bottom_layout = ui::fixed_layout{{.distance = 0.0f,
-                                                          .source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                          .destination_guide = keyboard_impl->_layout_guide_point.y()}};
+                        bottom_layout =
+                            ui::make_fixed_layout({.distance = 0.0f,
+                                                   .source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                   .destination_guide = keyboard_impl->_layout_guide_point.y()});
                     } else {
                         keyboard_impl->_dispose_soft_keys();
 

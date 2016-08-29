@@ -4,33 +4,19 @@
 
 #pragma once
 
-#include "yas_base.h"
 #include "yas_ui_layout_guide.h"
 
 namespace yas {
 namespace ui {
-    class layout_guide;
+    class layout;
 
-    class justified_layout : public base {
-        class impl;
-
-       public:
-        struct args {
-            ui::layout_guide first_source_guide = nullptr;
-            ui::layout_guide second_source_guide = nullptr;
-            std::vector<ui::layout_guide> destination_guides;
-            std::vector<float> ratios;
-        };
-
-        explicit justified_layout(args);
-        justified_layout(std::nullptr_t);
-
-        virtual ~justified_layout() final;
-
-        ui::layout_guide const &first_source_guide() const;
-        ui::layout_guide const &second_source_guide() const;
-        std::vector<ui::layout_guide> const &destination_guides() const;
-        std::vector<float> const &ratios() const;
+    struct jusitified_layout_args {
+        ui::layout_guide first_source_guide = nullptr;
+        ui::layout_guide second_source_guide = nullptr;
+        std::vector<ui::layout_guide> destination_guides;
+        std::vector<float> ratios;
     };
+
+    ui::layout make_justified_layout(jusitified_layout_args);
 }
 }

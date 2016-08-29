@@ -61,10 +61,6 @@ using namespace yas;
     XCTAssertEqual(layout.row_spacing(), 4.0f);
     XCTAssertEqual(layout.col_spacing(), 4.0f);
     XCTAssertEqual(layout.borders(), (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
-    XCTAssertEqual(layout.left_border(), 5.0f);
-    XCTAssertEqual(layout.right_border(), 6.0f);
-    XCTAssertEqual(layout.bottom_border(), 7.0f);
-    XCTAssertEqual(layout.top_border(), 8.0f);
     XCTAssertEqual(layout.alignment(), ui::layout_alignment::max);
     XCTAssertEqual(layout.direction(), ui::layout_direction::horizontal);
     XCTAssertEqual(layout.row_order(), ui::layout_order::descending);
@@ -361,31 +357,6 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
-}
-
-- (void)test_set_borders {
-    ui::collection_layout layout{
-        {.frame = {.size = {3.0f, 1000.0f}}, .preferred_cell_count = 3, .cell_sizes = {{1.0f, 1.0f}}}};
-
-    auto const &cell_guide_rects = layout.cell_layout_guide_rects();
-
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
-
-    layout.set_borders({0.5f, 0.5f, 0.5f, 0.5f});
-
-    XCTAssertEqual(layout.borders(), (ui::layout_borders{0.5f, 0.5f, 0.5f, 0.5f}));
-
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.5f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.5f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.5f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.5f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.5f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.5f);
 }
 
 - (void)test_set_aligmnent {
