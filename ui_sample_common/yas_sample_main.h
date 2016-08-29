@@ -28,7 +28,7 @@ namespace sample {
 
        private:
         sample::touch_holder _touch_holder_ext;
-        sample::cursor _cursor_ext;
+        sample::cursor _cursor;
         sample::inputted_text _inputted_text_ext;
         sample::modifier_text _modifier_text_ext;
         sample::bg _bg;

@@ -20,9 +20,9 @@ struct sample::cursor::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_cursor_ext = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
-                if (auto cursor_ext = weak_cursor_ext.lock()) {
-                    auto impl = cursor_ext.impl_ptr<sample::cursor::impl>();
+            [weak_cursor = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
+                if (auto cursor = weak_cursor.lock()) {
+                    auto impl = cursor.impl_ptr<sample::cursor::impl>();
                     auto node = context.value;
                     if (auto renderer = node.renderer()) {
                         event_observer = _make_event_observer(node, renderer);

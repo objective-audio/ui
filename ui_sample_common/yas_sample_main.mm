@@ -19,7 +19,7 @@ void sample::main::setup() {
 
     root_node.push_back_sub_node(_soft_keyboard_ext.node());
     root_node.push_back_sub_node(_big_button.button().rect_plane().node());
-    root_node.push_back_sub_node(_cursor_ext.node());
+    root_node.push_back_sub_node(_cursor.node());
     root_node.push_back_sub_node(_touch_holder_ext.node());
     root_node.push_back_sub_node(_inputted_text_ext.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text_ext.strings().rect_plane().node());
