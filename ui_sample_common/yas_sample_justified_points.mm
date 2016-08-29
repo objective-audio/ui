@@ -27,20 +27,20 @@ struct sample::justified_points::impl : base::impl {
         _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::justified_points &ext) {
+    void prepare(sample::justified_points &points) {
         auto &node = _rect_plane.node();
 
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext = to_weak(ext), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}](
+            [weak_points = to_weak(points), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
-                if (auto ext = weak_ext.lock()) {
+                if (auto points = weak_points.lock()) {
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
-                        x_layout =
-                            ui::make_justified_layout({.first_source_guide = renderer.view_layout_guide_rect().left(),
-                                                       .second_source_guide = renderer.view_layout_guide_rect().right(),
-                                                       .destination_guides = ext.impl_ptr<impl>()->_x_layout_guides});
+                        x_layout = ui::make_justified_layout(
+                            {.first_source_guide = renderer.view_layout_guide_rect().left(),
+                             .second_source_guide = renderer.view_layout_guide_rect().right(),
+                             .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
 
                         std::vector<float> ratios;
                         ratios.reserve(sample::y_point_count - 1);
@@ -55,7 +55,7 @@ struct sample::justified_points::impl : base::impl {
                         y_layout =
                             ui::make_justified_layout({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
                                                        .second_source_guide = renderer.view_layout_guide_rect().top(),
-                                                       .destination_guides = ext.impl_ptr<impl>()->_y_layout_guides,
+                                                       .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
                                                        .ratios = std::move(ratios)});
                     } else {
                         x_layout = nullptr;
@@ -85,9 +85,9 @@ struct sample::justified_points::impl : base::impl {
     void _setup_layout_guides() {
         for (auto const &idx : make_each(sample::x_point_count)) {
             _x_layout_guides.at(idx)
-                .set_value_changed_handler([weak_ext = to_weak(_rect_plane), idx](auto const &context) {
-                    if (auto ext = weak_ext.lock()) {
-                        ext.data().set_rect_position(
+                .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+                    if (auto plane = weak_plane.lock()) {
+                        plane.data().set_rect_position(
                             {.origin = {context.new_value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
                     }
                 });
@@ -95,9 +95,9 @@ struct sample::justified_points::impl : base::impl {
 
         for (auto const &idx : make_each(sample::y_point_count)) {
             _y_layout_guides.at(idx)
-                .set_value_changed_handler([weak_ext = to_weak(_rect_plane), idx](auto const &context) {
-                    if (auto ext = weak_ext.lock()) {
-                        ext.data().set_rect_position(
+                .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+                    if (auto plane = weak_plane.lock()) {
+                        plane.data().set_rect_position(
                             {.origin = {-2.0f, context.new_value - 2.0f}, .size = {4.0f, 4.0f}}, idx + x_point_count);
                     }
                 });
