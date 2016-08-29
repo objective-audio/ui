@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_objc_ptr.h"
-#include "yas_sample_bg_extension.h"
+#include "yas_sample_bg.h"
 #include "yas_sample_big_button_extension.h"
 #include "yas_sample_big_button_text_extension.h"
 #include "yas_sample_collection_extension.h"
@@ -31,7 +31,7 @@ namespace sample {
         sample::cursor_extension _cursor_ext;
         sample::inputted_text_extension _inputted_text_ext;
         sample::modifier_text_extension _modifier_text_ext;
-        sample::bg_extension _bg_ext;
+        sample::bg _bg;
         sample::cursor_over_planes_extension _cursor_over_planes_ext;
         sample::big_button_extension _big_button_ext;
         sample::big_button_text_extension _big_button_text_ext;

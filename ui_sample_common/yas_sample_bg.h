@@ -1,5 +1,5 @@
 //
-//  yas_sample_bg_extension.h
+//  yas_sample_bg.h
 //
 
 #pragma once
@@ -8,11 +8,11 @@
 
 namespace yas {
 namespace sample {
-    struct bg_extension : base {
+    struct bg : base {
         class impl;
 
-        bg_extension();
-        bg_extension(std::nullptr_t);
+        bg();
+        bg(std::nullptr_t);
 
         ui::rect_plane_extension &rect_plane_extension();
     };
