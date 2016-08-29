@@ -77,7 +77,7 @@
 		B6E42C241D60A5EB00FB483D /* yas_ui_justified_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C221D60A5EB00FB483D /* yas_ui_justified_layout.cpp */; };
 		B6F58D211D681D5700807724 /* yas_delaying_caller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F58D1F1D681D5700807724 /* yas_delaying_caller.cpp */; };
 		B6F73BA11CDB7D7E009FD0DD /* yas_sample_bg.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B941CDB7D7E009FD0DD /* yas_sample_bg.mm */; };
-		B6F73BA21CDB7D7E009FD0DD /* yas_sample_big_button_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B961CDB7D7E009FD0DD /* yas_sample_big_button_extension.mm */; };
+		B6F73BA21CDB7D7E009FD0DD /* yas_sample_big_button.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B961CDB7D7E009FD0DD /* yas_sample_big_button.mm */; };
 		B6F73BA31CDB7D7E009FD0DD /* yas_sample_cursor_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B981CDB7D7E009FD0DD /* yas_sample_cursor_extension.mm */; };
 		B6F73BA41CDB7D7E009FD0DD /* yas_sample_cursor_over_planes_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B9A1CDB7D7E009FD0DD /* yas_sample_cursor_over_planes_extension.mm */; };
 		B6F73BA51CDB7D7E009FD0DD /* yas_sample_modifier_text_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B9C1CDB7D7E009FD0DD /* yas_sample_modifier_text_extension.mm */; };
@@ -246,8 +246,8 @@
 		B6F58D201D681D5700807724 /* yas_delaying_caller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_delaying_caller.h; sourceTree = "<group>"; };
 		B6F73B931CDB7D7E009FD0DD /* yas_sample_bg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_bg.h; path = ../../ui_sample_common/yas_sample_bg.h; sourceTree = "<group>"; };
 		B6F73B941CDB7D7E009FD0DD /* yas_sample_bg.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_bg.mm; path = ../../ui_sample_common/yas_sample_bg.mm; sourceTree = "<group>"; };
-		B6F73B951CDB7D7E009FD0DD /* yas_sample_big_button_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_big_button_extension.h; path = ../../ui_sample_common/yas_sample_big_button_extension.h; sourceTree = "<group>"; };
-		B6F73B961CDB7D7E009FD0DD /* yas_sample_big_button_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_big_button_extension.mm; path = ../../ui_sample_common/yas_sample_big_button_extension.mm; sourceTree = "<group>"; };
+		B6F73B951CDB7D7E009FD0DD /* yas_sample_big_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_big_button.h; path = ../../ui_sample_common/yas_sample_big_button.h; sourceTree = "<group>"; };
+		B6F73B961CDB7D7E009FD0DD /* yas_sample_big_button.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_big_button.mm; path = ../../ui_sample_common/yas_sample_big_button.mm; sourceTree = "<group>"; };
 		B6F73B971CDB7D7E009FD0DD /* yas_sample_cursor_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_cursor_extension.h; path = ../../ui_sample_common/yas_sample_cursor_extension.h; sourceTree = "<group>"; };
 		B6F73B981CDB7D7E009FD0DD /* yas_sample_cursor_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_cursor_extension.mm; path = ../../ui_sample_common/yas_sample_cursor_extension.mm; sourceTree = "<group>"; };
 		B6F73B991CDB7D7E009FD0DD /* yas_sample_cursor_over_planes_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_cursor_over_planes_extension.h; path = ../../ui_sample_common/yas_sample_cursor_over_planes_extension.h; sourceTree = "<group>"; };
@@ -319,8 +319,8 @@
 				B6F73B941CDB7D7E009FD0DD /* yas_sample_bg.mm */,
 				B6C413F31CDC612B0012095F /* yas_sample_big_button_text.h */,
 				B6C413F41CDC612B0012095F /* yas_sample_big_button_text.mm */,
-				B6F73B951CDB7D7E009FD0DD /* yas_sample_big_button_extension.h */,
-				B6F73B961CDB7D7E009FD0DD /* yas_sample_big_button_extension.mm */,
+				B6F73B951CDB7D7E009FD0DD /* yas_sample_big_button.h */,
+				B6F73B961CDB7D7E009FD0DD /* yas_sample_big_button.mm */,
 				B6F73B991CDB7D7E009FD0DD /* yas_sample_cursor_over_planes_extension.h */,
 				B6F73B9A1CDB7D7E009FD0DD /* yas_sample_cursor_over_planes_extension.mm */,
 				B6F73B971CDB7D7E009FD0DD /* yas_sample_cursor_extension.h */,
@@ -650,7 +650,7 @@
 				B6F73BA71CDB7D7E009FD0DD /* yas_sample_touch_holder_extension.mm in Sources */,
 				B6F73BA61CDB7D7E009FD0DD /* yas_sample_inputted_text_extension.mm in Sources */,
 				B64F91131CF2953000365111 /* yas_ui_batch.mm in Sources */,
-				B6F73BA21CDB7D7E009FD0DD /* yas_sample_big_button_extension.mm in Sources */,
+				B6F73BA21CDB7D7E009FD0DD /* yas_sample_big_button.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

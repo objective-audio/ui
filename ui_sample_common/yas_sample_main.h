@@ -6,7 +6,7 @@
 
 #include "yas_objc_ptr.h"
 #include "yas_sample_bg.h"
-#include "yas_sample_big_button_extension.h"
+#include "yas_sample_big_button.h"
 #include "yas_sample_big_button_text.h"
 #include "yas_sample_collection_extension.h"
 #include "yas_sample_cursor_extension.h"
@@ -33,7 +33,7 @@ namespace sample {
         sample::modifier_text_extension _modifier_text_ext;
         sample::bg _bg;
         sample::cursor_over_planes_extension _cursor_over_planes_ext;
-        sample::big_button_extension _big_button_ext;
+        sample::big_button _big_button_ext;
         sample::big_button_text _big_button_text_ext;
         sample::soft_keyboard_extension _soft_keyboard_ext;
         sample::justified_points_extension _justified_points_ext;
