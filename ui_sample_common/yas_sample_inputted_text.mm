@@ -1,12 +1,12 @@
 //
-//  yas_sample_inputted_text_extension.mm
+//  yas_sample_inputted_text.mm
 //
 
-#include "yas_sample_inputted_text_extension.h"
+#include "yas_sample_inputted_text.h"
 
 using namespace yas;
 
-struct sample::inputted_text_extension::impl : base::impl {
+struct sample::inputted_text::impl : base::impl {
     ui::strings_extension _strings_ext;
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
@@ -17,7 +17,7 @@ struct sample::inputted_text_extension::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::inputted_text_extension &ext) {
+    void prepare(sample::inputted_text &ext) {
         auto &node = _strings_ext.rect_plane_extension().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
@@ -29,12 +29,12 @@ struct sample::inputted_text_extension::impl : base::impl {
             if (auto ext = weak_ext.lock()) {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
-                    auto ext_impl = ext.impl_ptr<inputted_text_extension::impl>();
+                    auto ext_impl = ext.impl_ptr<inputted_text::impl>();
 
                     event_observer = renderer.event_manager().subject().make_observer(
                         ui::event_manager::method::key_changed, [weak_ext](auto const &context) {
                             if (auto ext = weak_ext.lock()) {
-                                ext.impl_ptr<inputted_text_extension::impl>()->update_text(context.value);
+                                ext.impl_ptr<inputted_text::impl>()->update_text(context.value);
                             }
                         });
 
@@ -79,18 +79,17 @@ struct sample::inputted_text_extension::impl : base::impl {
     ui::layout_guide_point _layout_guide_point;
 };
 
-sample::inputted_text_extension::inputted_text_extension(ui::font_atlas font_atlas)
-    : base(std::make_shared<impl>(std::move(font_atlas))) {
+sample::inputted_text::inputted_text(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::inputted_text_extension::inputted_text_extension(std::nullptr_t) : base(nullptr) {
+sample::inputted_text::inputted_text(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::inputted_text_extension::append_text(std::string text) {
+void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::strings_extension &sample::inputted_text_extension::strings_extension() {
+ui::strings_extension &sample::inputted_text::strings_extension() {
     return impl_ptr<impl>()->_strings_ext;
 }

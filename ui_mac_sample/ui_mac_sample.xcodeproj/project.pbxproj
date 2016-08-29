@@ -33,7 +33,7 @@
 		B67B8A011CDAFD9A0081848D /* yas_sample_cursor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89F81CDAFD9A0081848D /* yas_sample_cursor.mm */; };
 		B67B8A021CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89FA1CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm */; };
 		B67B8A031CDAFD9A0081848D /* yas_sample_modifier_text_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89FC1CDAFD9A0081848D /* yas_sample_modifier_text_extension.mm */; };
-		B67B8A041CDAFD9A0081848D /* yas_sample_inputted_text_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text_extension.mm */; };
+		B67B8A041CDAFD9A0081848D /* yas_sample_inputted_text.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text.mm */; };
 		B67B8A051CDAFD9A0081848D /* yas_sample_touch_holder_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B8A001CDAFD9A0081848D /* yas_sample_touch_holder_extension.mm */; };
 		B684E71D1CC23F8400289FD9 /* yas_ui_strings_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B684E71B1CC23F8400289FD9 /* yas_ui_strings_extension.mm */; };
 		B684E7231CC475BD00289FD9 /* yas_ui_font_atlas.mm in Sources */ = {isa = PBXBuildFile; fileRef = B684E7221CC475BD00289FD9 /* yas_ui_font_atlas.mm */; };
@@ -144,8 +144,8 @@
 		B67B89FA1CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_cursor_over_planes.mm; path = ../../ui_sample_common/yas_sample_cursor_over_planes.mm; sourceTree = "<group>"; };
 		B67B89FB1CDAFD9A0081848D /* yas_sample_modifier_text_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_modifier_text_extension.h; path = ../../ui_sample_common/yas_sample_modifier_text_extension.h; sourceTree = "<group>"; };
 		B67B89FC1CDAFD9A0081848D /* yas_sample_modifier_text_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_modifier_text_extension.mm; path = ../../ui_sample_common/yas_sample_modifier_text_extension.mm; sourceTree = "<group>"; };
-		B67B89FD1CDAFD9A0081848D /* yas_sample_inputted_text_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_inputted_text_extension.h; path = ../../ui_sample_common/yas_sample_inputted_text_extension.h; sourceTree = "<group>"; };
-		B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_inputted_text_extension.mm; path = ../../ui_sample_common/yas_sample_inputted_text_extension.mm; sourceTree = "<group>"; };
+		B67B89FD1CDAFD9A0081848D /* yas_sample_inputted_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_inputted_text.h; path = ../../ui_sample_common/yas_sample_inputted_text.h; sourceTree = "<group>"; };
+		B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_inputted_text.mm; path = ../../ui_sample_common/yas_sample_inputted_text.mm; sourceTree = "<group>"; };
 		B67B89FF1CDAFD9A0081848D /* yas_sample_touch_holder_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_touch_holder_extension.h; path = ../../ui_sample_common/yas_sample_touch_holder_extension.h; sourceTree = "<group>"; };
 		B67B8A001CDAFD9A0081848D /* yas_sample_touch_holder_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_touch_holder_extension.mm; path = ../../ui_sample_common/yas_sample_touch_holder_extension.mm; sourceTree = "<group>"; };
 		B684E71B1CC23F8400289FD9 /* yas_ui_strings_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings_extension.mm; sourceTree = "<group>"; };
@@ -316,8 +316,8 @@
 				B67B89F81CDAFD9A0081848D /* yas_sample_cursor.mm */,
 				B67B89F91CDAFD9A0081848D /* yas_sample_cursor_over_planes.h */,
 				B67B89FA1CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm */,
-				B67B89FD1CDAFD9A0081848D /* yas_sample_inputted_text_extension.h */,
-				B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text_extension.mm */,
+				B67B89FD1CDAFD9A0081848D /* yas_sample_inputted_text.h */,
+				B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text.mm */,
 				B65553851D6400C5000FB98F /* yas_sample_justified_points_extension.h */,
 				B65553841D6400C5000FB98F /* yas_sample_justified_points_extension.mm */,
 				B6C413EA1CDC5FBE0012095F /* yas_sample_main.h */,
@@ -614,7 +614,7 @@
 				B61A2DC31CBF35EF0086D813 /* yas_ui_rect_plane_extension.mm in Sources */,
 				B67B8A021CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm in Sources */,
 				B644A9F61CB52D7800E8F81B /* yas_ui_metal_view.mm in Sources */,
-				B67B8A041CDAFD9A0081848D /* yas_sample_inputted_text_extension.mm in Sources */,
+				B67B8A041CDAFD9A0081848D /* yas_sample_inputted_text.mm in Sources */,
 				B67B89E71CDA212B0081848D /* yas_sample_big_button.mm in Sources */,
 				B6F501B31C9BFFD500A0B4A1 /* yas_ui_types.cpp in Sources */,
 				B639BB171CBA4BB100E081B9 /* yas_ui_event_protocol.cpp in Sources */,

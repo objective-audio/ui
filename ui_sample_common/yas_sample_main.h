@@ -11,7 +11,7 @@
 #include "yas_sample_collection_extension.h"
 #include "yas_sample_cursor.h"
 #include "yas_sample_cursor_over_planes.h"
-#include "yas_sample_inputted_text_extension.h"
+#include "yas_sample_inputted_text.h"
 #include "yas_sample_justified_points_extension.h"
 #include "yas_sample_modifier_text_extension.h"
 #include "yas_sample_soft_keyboard_extension.h"
@@ -29,7 +29,7 @@ namespace sample {
        private:
         sample::touch_holder_extension _touch_holder_ext;
         sample::cursor _cursor_ext;
-        sample::inputted_text_extension _inputted_text_ext;
+        sample::inputted_text _inputted_text_ext;
         sample::modifier_text_extension _modifier_text_ext;
         sample::bg _bg;
         sample::cursor_over_planes _cursor_over_planes_ext;
