@@ -26,7 +26,7 @@ struct sample::collection_extension::impl : base::impl {
         _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = _rect_plane_ext.node().subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext, top_layout = ui::fixed_layout{nullptr}, right_layout = ui::fixed_layout{nullptr}](
+            [weak_ext, top_layout = ui::layout{nullptr}, right_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
                 if (auto ext = weak_ext.lock()) {
                     auto impl = ext.impl_ptr<sample::collection_extension::impl>();
@@ -34,10 +34,10 @@ struct sample::collection_extension::impl : base::impl {
                     if (auto renderer = node.renderer()) {
                         auto const &view_guide_rect = renderer.view_layout_guide_rect();
                         auto &collection_guide_rect = impl->_collection_layout.frame_layout_guide_rect();
-                        top_layout = ui::fixed_layout{
-                            {.source_guide = view_guide_rect.top(), .destination_guide = collection_guide_rect.top()}};
-                        right_layout = ui::fixed_layout{{.source_guide = view_guide_rect.right(),
-                                                         .destination_guide = collection_guide_rect.right()}};
+                        top_layout = ui::make_fixed_layout(
+                            {.source_guide = view_guide_rect.top(), .destination_guide = collection_guide_rect.top()});
+                        right_layout = ui::make_fixed_layout({.source_guide = view_guide_rect.right(),
+                                                              .destination_guide = collection_guide_rect.right()});
                     } else {
                         top_layout = nullptr;
                         right_layout = nullptr;

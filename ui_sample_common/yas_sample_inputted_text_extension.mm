@@ -23,8 +23,8 @@ struct sample::inputted_text_extension::impl : base::impl {
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_ext = to_weak(ext),
             event_observer = base{nullptr},
-            left_layout = base{nullptr},
-            top_layout = base{nullptr}
+            left_layout = ui::layout{nullptr},
+            top_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto ext = weak_ext.lock()) {
                 auto &node = context.value;
@@ -38,12 +38,12 @@ struct sample::inputted_text_extension::impl : base::impl {
                             }
                         });
 
-                    left_layout = ui::fixed_layout{{.distance = 4.0f,
-                                                    .source_guide = renderer.view_layout_guide_rect().left(),
-                                                    .destination_guide = ext_impl->_layout_guide_point.x()}};
-                    top_layout = ui::fixed_layout{{.distance = -22.0f,
-                                                   .source_guide = renderer.view_layout_guide_rect().top(),
-                                                   .destination_guide = ext_impl->_layout_guide_point.y()}};
+                    left_layout = ui::make_fixed_layout({.distance = 4.0f,
+                                                         .source_guide = renderer.view_layout_guide_rect().left(),
+                                                         .destination_guide = ext_impl->_layout_guide_point.x()});
+                    top_layout = ui::make_fixed_layout({.distance = -22.0f,
+                                                        .source_guide = renderer.view_layout_guide_rect().top(),
+                                                        .destination_guide = ext_impl->_layout_guide_point.y()});
                 } else {
                     event_observer = nullptr;
                     left_layout = nullptr;

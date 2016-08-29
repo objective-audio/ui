@@ -24,8 +24,8 @@ struct sample::modifier_text_extension::impl : base::impl {
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             weak_ext = to_weak(ext),
             event_observer = base{nullptr},
-            right_layout = base{nullptr},
-            bottom_layout = base{nullptr}
+            right_layout = ui::layout{nullptr},
+            bottom_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto ext = weak_ext.lock()) {
                 auto node = context.value;
@@ -43,12 +43,12 @@ struct sample::modifier_text_extension::impl : base::impl {
 
                     auto ext_impl = ext.impl_ptr<sample::modifier_text_extension::impl>();
 
-                    right_layout = ui::fixed_layout{{.distance = -4.0f,
-                                                     .source_guide = renderer.view_layout_guide_rect().right(),
-                                                     .destination_guide = ext_impl->_layout_guide_point.x()}};
-                    bottom_layout = ui::fixed_layout{{.distance = 4.0f,
-                                                      .source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                      .destination_guide = ext_impl->_layout_guide_point.y()}};
+                    right_layout = ui::make_fixed_layout({.distance = -4.0f,
+                                                          .source_guide = renderer.view_layout_guide_rect().right(),
+                                                          .destination_guide = ext_impl->_layout_guide_point.x()});
+                    bottom_layout = ui::make_fixed_layout({.distance = 4.0f,
+                                                           .source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                           .destination_guide = ext_impl->_layout_guide_point.y()});
 
                 } else {
                     event_observer = nullptr;

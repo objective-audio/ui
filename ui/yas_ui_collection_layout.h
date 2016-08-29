@@ -96,17 +96,7 @@ namespace ui {
         void set_col_order(ui::layout_order);
         ui::layout_order col_order() const;
 
-        void set_borders(ui::layout_borders);
-        void set_left_border(float const);
-        void set_right_border(float const);
-        void set_bottom_border(float const);
-        void set_top_border(float const);
-
-        ui::layout_borders borders() const;
-        float left_border() const;
-        float right_border() const;
-        float bottom_border() const;
-        float top_border() const;
+        ui::layout_borders const &borders() const;
 
         ui::layout_guide_rect &frame_layout_guide_rect();
         std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
