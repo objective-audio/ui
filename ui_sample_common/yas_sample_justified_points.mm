@@ -1,9 +1,9 @@
 //
-//  yas_sample_justified_points_extension.mm
+//  yas_sample_justified_points.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_justified_points_extension.h"
+#include "yas_sample_justified_points.h"
 
 using namespace yas;
 
@@ -15,7 +15,7 @@ namespace sample {
 }
 }
 
-struct sample::justified_points_extension::impl : base::impl {
+struct sample::justified_points::impl : base::impl {
     ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(sample::all_point_count);
     std::vector<ui::layout_guide> _x_layout_guides{sample::x_point_count};
     std::vector<ui::layout_guide> _y_layout_guides{sample::y_point_count};
@@ -27,7 +27,7 @@ struct sample::justified_points_extension::impl : base::impl {
         _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::justified_points_extension &ext) {
+    void prepare(sample::justified_points &ext) {
         auto &node = _rect_plane_ext.node();
 
         _renderer_observer = node.subject().make_observer(
@@ -105,15 +105,15 @@ struct sample::justified_points_extension::impl : base::impl {
     }
 };
 
-sample::justified_points_extension::justified_points_extension() : base(std::make_shared<impl>()) {
+sample::justified_points::justified_points() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::justified_points_extension::justified_points_extension(std::nullptr_t) : base(nullptr) {
+sample::justified_points::justified_points(std::nullptr_t) : base(nullptr) {
 }
 
-sample::justified_points_extension::~justified_points_extension() = default;
+sample::justified_points::~justified_points() = default;
 
-ui::rect_plane_extension &sample::justified_points_extension::rect_plane_ext() {
+ui::rect_plane_extension &sample::justified_points::rect_plane_ext() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }
