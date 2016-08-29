@@ -20,8 +20,8 @@ struct sample::cursor_over_planes::impl : base::impl {
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
             [weak_touch_holder = to_weak(ext), event_observers = std::vector<base>{}](auto const &context) mutable {
-                if (auto touch_holder_ext = weak_touch_holder.lock()) {
-                    auto impl = touch_holder_ext.impl_ptr<cursor_over_planes::impl>();
+                if (auto touch_holder = weak_touch_holder.lock()) {
+                    auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
                         event_observers = _make_event_observers(impl->_nodes, renderer);

@@ -26,14 +26,14 @@ struct sample::touch_holder::impl : base::impl {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_touch_holder_ext = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
+            [weak_touch_holder = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::touch_changed, [weak_touch_holder_ext](auto const &context) mutable {
-                            if (auto touch_holder_ext = weak_touch_holder_ext.lock()) {
+                        ui::event_manager::method::touch_changed, [weak_touch_holder](auto const &context) mutable {
+                            if (auto touch_holder = weak_touch_holder.lock()) {
                                 ui::event const &event = context.value;
-                                touch_holder_ext.impl_ptr<impl>()->update_touch_node(event);
+                                touch_holder.impl_ptr<impl>()->update_touch_node(event);
                             }
                         });
                 } else {

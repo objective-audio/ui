@@ -20,7 +20,7 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_soft_keyboard_ext.node());
     root_node.push_back_sub_node(_big_button.button().rect_plane().node());
     root_node.push_back_sub_node(_cursor.node());
-    root_node.push_back_sub_node(_touch_holder_ext.node());
+    root_node.push_back_sub_node(_touch_holder.node());
     root_node.push_back_sub_node(_inputted_text_ext.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text_ext.strings().rect_plane().node());
     root_node.push_back_sub_node(_justified_points_ext.rect_plane_ext().node());
@@ -58,7 +58,7 @@ void sample::main::setup() {
     auto update_texture = [
         weak_font_atlas = to_weak(_font_atlas),
         weak_big_button = to_weak(_big_button),
-        weak_touch_holder_ext = to_weak(_touch_holder_ext)
+        weak_touch_holder = to_weak(_touch_holder)
     ](ui::renderer const &renderer) {
         auto const scale_factor = renderer.scale_factor();
 
@@ -79,8 +79,8 @@ void sample::main::setup() {
             big_button.set_texture(texture);
         }
 
-        if (auto touch_holder_ext = weak_touch_holder_ext.lock()) {
-            touch_holder_ext.set_texture(texture);
+        if (auto touch_holder = weak_touch_holder.lock()) {
+            touch_holder.set_texture(texture);
         }
     };
 
