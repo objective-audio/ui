@@ -1,28 +1,28 @@
 //
-//  yas_sample_cursor_extension.mm
+//  yas_sample_cursor.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_cursor_extension.h"
+#include "yas_sample_cursor.h"
 
 using namespace yas;
 
 #pragma mark -
 
-struct sample::cursor_extension::impl : base::impl {
+struct sample::cursor::impl : base::impl {
     ui::node node;
 
     impl() {
         _setup_node();
     }
 
-    void prepare(sample::cursor_extension &ext) {
+    void prepare(sample::cursor &ext) {
         node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
             [weak_cursor_ext = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
                 if (auto cursor_ext = weak_cursor_ext.lock()) {
-                    auto impl = cursor_ext.impl_ptr<sample::cursor_extension::impl>();
+                    auto impl = cursor_ext.impl_ptr<sample::cursor::impl>();
                     auto node = context.value;
                     if (auto renderer = node.renderer()) {
                         event_observer = _make_event_observer(node, renderer);
@@ -136,13 +136,13 @@ struct sample::cursor_extension::impl : base::impl {
     ui::node::observer_t _renderer_observer = nullptr;
 };
 
-sample::cursor_extension::cursor_extension() : base(std::make_shared<impl>()) {
+sample::cursor::cursor() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::cursor_extension::cursor_extension(std::nullptr_t) : base(nullptr) {
+sample::cursor::cursor(std::nullptr_t) : base(nullptr) {
 }
 
-ui::node &sample::cursor_extension::node() {
+ui::node &sample::cursor::node() {
     return impl_ptr<impl>()->node;
 }

@@ -9,7 +9,7 @@
 #include "yas_sample_big_button.h"
 #include "yas_sample_big_button_text.h"
 #include "yas_sample_collection_extension.h"
-#include "yas_sample_cursor_extension.h"
+#include "yas_sample_cursor.h"
 #include "yas_sample_cursor_over_planes.h"
 #include "yas_sample_inputted_text_extension.h"
 #include "yas_sample_justified_points_extension.h"
@@ -28,7 +28,7 @@ namespace sample {
 
        private:
         sample::touch_holder_extension _touch_holder_ext;
-        sample::cursor_extension _cursor_ext;
+        sample::cursor _cursor_ext;
         sample::inputted_text_extension _inputted_text_ext;
         sample::modifier_text_extension _modifier_text_ext;
         sample::bg _bg;
