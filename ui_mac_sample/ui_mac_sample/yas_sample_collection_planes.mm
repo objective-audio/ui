@@ -1,13 +1,13 @@
 //
-//  yas_sample_collection_extension.cpp
+//  yas_sample_collection_planes.cpp
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_collection_extension.h"
+#include "yas_sample_collection_planes.h"
 
 using namespace yas;
 
-struct sample::collection_extension::impl : base::impl {
+struct sample::collection_planes::impl : base::impl {
     static std::size_t const max_cell_count = 16;
     ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(max_cell_count);
     ui::collection_layout _collection_layout{{.preferred_cell_count = max_cell_count,
@@ -16,11 +16,11 @@ struct sample::collection_extension::impl : base::impl {
                                               .alignment = ui::layout_alignment::max,
                                               .row_order = ui::layout_order::descending,
                                               .row_spacing = 8.0f,
-                                              .col_spacing = 8.0,
+                                              .col_spacing = 8.0f,
                                               .borders = {10.0f, 10.0f, 10.0f, 10.0f}}};
     ui::collection_layout::observer_t _collection_layout_observer = nullptr;
 
-    void prepare(sample::collection_extension &ext) {
+    void prepare(sample::collection_planes &ext) {
         auto weak_ext = to_weak(ext);
 
         _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
@@ -29,7 +29,7 @@ struct sample::collection_extension::impl : base::impl {
             [weak_ext, top_layout = ui::layout{nullptr}, right_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
                 if (auto ext = weak_ext.lock()) {
-                    auto impl = ext.impl_ptr<sample::collection_extension::impl>();
+                    auto impl = ext.impl_ptr<sample::collection_planes::impl>();
                     auto node = context.value;
                     if (auto renderer = node.renderer()) {
                         auto const &view_guide_rect = renderer.view_layout_guide_rect();
@@ -80,17 +80,17 @@ struct sample::collection_extension::impl : base::impl {
     }
 };
 
-sample::collection_extension::collection_extension() : base(std::make_shared<impl>()) {
+sample::collection_planes::collection_planes() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::collection_extension::collection_extension(std::nullptr_t) : base(nullptr) {
+sample::collection_planes::collection_planes(std::nullptr_t) : base(nullptr) {
 }
 
-ui::rect_plane_extension &sample::collection_extension::rect_plane_ext() {
+ui::rect_plane_extension &sample::collection_planes::rect_plane_ext() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }
 
-ui::layout_guide_rect &sample::collection_extension::frame_layout_guide_rect() {
+ui::layout_guide_rect &sample::collection_planes::frame_layout_guide_rect() {
     return impl_ptr<impl>()->_collection_layout.frame_layout_guide_rect();
 }

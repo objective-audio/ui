@@ -1,5 +1,5 @@
 //
-//  yas_sample_collection_extension.h
+//  yas_sample_collection_planes.h
 //
 
 #pragma once
@@ -8,11 +8,11 @@
 
 namespace yas {
 namespace sample {
-    struct collection_extension : public base {
+    struct collection_planes : public base {
         class impl;
 
-        collection_extension();
-        collection_extension(std::nullptr_t);
+        collection_planes();
+        collection_planes(std::nullptr_t);
 
         ui::rect_plane_extension &rect_plane_ext();
         ui::layout_guide_rect &frame_layout_guide_rect();
