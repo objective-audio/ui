@@ -57,7 +57,7 @@ struct sample::big_button::impl : base::impl {
     }
 
     float const _radius = 60;
-    ui::button_extension _button_ext{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
+    ui::button _button_ext{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
 };
 
 #pragma mark - big_button
@@ -72,6 +72,6 @@ void sample::big_button::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-ui::button_extension &sample::big_button::button_extension() {
+ui::button &sample::big_button::button() {
     return impl_ptr<impl>()->_button_ext;
 }

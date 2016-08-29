@@ -16,12 +16,12 @@ struct sample::big_button_text::impl : base::impl {
         _strings_ext.set_text("-----");
     }
 
-    void set_status(ui::button_extension::method const status) {
+    void set_status(ui::button::method const status) {
         _strings_ext.set_text(to_string(status));
     }
 
    private:
-    ui::button_extension::method _status;
+    ui::button::method _status;
 };
 
 sample::big_button_text::big_button_text(ui::font_atlas font_atlas)
@@ -31,7 +31,7 @@ sample::big_button_text::big_button_text(ui::font_atlas font_atlas)
 sample::big_button_text::big_button_text(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::big_button_text::set_status(ui::button_extension::method const status) {
+void sample::big_button_text::set_status(ui::button::method const status) {
     impl_ptr<impl>()->set_status(status);
 }
 

@@ -14,7 +14,7 @@ namespace sample {
         explicit big_button_text(ui::font_atlas atlas = nullptr);
         big_button_text(std::nullptr_t);
 
-        void set_status(ui::button_extension::method const);
+        void set_status(ui::button::method const);
 
         ui::strings &strings();
     };

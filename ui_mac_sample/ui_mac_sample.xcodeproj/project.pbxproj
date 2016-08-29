@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B60428281D3904D70076769D /* yas_sample_soft_keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */; };
-		B604282E1D3929830076769D /* yas_ui_button_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B604282C1D3929830076769D /* yas_ui_button_extension.mm */; };
+		B604282E1D3929830076769D /* yas_ui_button.mm in Sources */ = {isa = PBXBuildFile; fileRef = B604282C1D3929830076769D /* yas_ui_button.mm */; };
 		B619146A1CB54BF80014A0D7 /* yas_ui_event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61914681CB54BF80014A0D7 /* yas_ui_event.cpp */; };
 		B61A2DC31CBF35EF0086D813 /* yas_ui_rect_plane.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane.mm */; };
 		B61A2F181CC13E6E0086D813 /* yas_ui_mesh_data.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61A2F161CC13E6E0086D813 /* yas_ui_mesh_data.mm */; };
@@ -88,8 +88,8 @@
 /* Begin PBXFileReference section */
 		B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_soft_keyboard.mm; path = ../../ui_sample_common/yas_sample_soft_keyboard.mm; sourceTree = "<group>"; };
 		B60428271D3904D70076769D /* yas_sample_soft_keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_soft_keyboard.h; path = ../../ui_sample_common/yas_sample_soft_keyboard.h; sourceTree = "<group>"; };
-		B604282C1D3929830076769D /* yas_ui_button_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_button_extension.mm; sourceTree = "<group>"; };
-		B604282D1D3929830076769D /* yas_ui_button_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_button_extension.h; sourceTree = "<group>"; };
+		B604282C1D3929830076769D /* yas_ui_button.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_button.mm; sourceTree = "<group>"; };
+		B604282D1D3929830076769D /* yas_ui_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_button.h; sourceTree = "<group>"; };
 		B61914681CB54BF80014A0D7 /* yas_ui_event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_event.cpp; sourceTree = "<group>"; };
 		B61914691CB54BF80014A0D7 /* yas_ui_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_event.h; sourceTree = "<group>"; };
 		B61A2DC11CBF35EF0086D813 /* yas_ui_rect_plane.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_rect_plane.mm; sourceTree = "<group>"; };
@@ -426,8 +426,8 @@
 				B63085861CFC91D2009FCAEC /* yas_ui_batch_render_mesh_info.h */,
 				B64F910F1CF2930800365111 /* yas_ui_batch.h */,
 				B64F910E1CF2930800365111 /* yas_ui_batch.mm */,
-				B604282D1D3929830076769D /* yas_ui_button_extension.h */,
-				B604282C1D3929830076769D /* yas_ui_button_extension.mm */,
+				B604282D1D3929830076769D /* yas_ui_button.h */,
+				B604282C1D3929830076769D /* yas_ui_button.mm */,
 				B6301DDB1D6BEB5A0068DB1B /* yas_ui_collection_layout.cpp */,
 				B6301DDC1D6BEB5A0068DB1B /* yas_ui_collection_layout.h */,
 				B69FF9DD1CCFBD520036B0FA /* yas_ui_collider_protocol.cpp */,
@@ -589,7 +589,7 @@
 				B6F58D241D681D6700807724 /* yas_delaying_caller.cpp in Sources */,
 				B6D1A9AD1CAEA5330003C6CF /* yas_objc_ptr.mm in Sources */,
 				B6C62F9C1D02C404001952EC /* yas_ui_detector_protocol.cpp in Sources */,
-				B604282E1D3929830076769D /* yas_ui_button_extension.mm in Sources */,
+				B604282E1D3929830076769D /* yas_ui_button.mm in Sources */,
 				B684E7231CC475BD00289FD9 /* yas_ui_font_atlas.mm in Sources */,
 				B6F501A61C9BFFD500A0B4A1 /* yas_flex_ptr.cpp in Sources */,
 				B6EA82011CAAAC82009C870A /* yas_ui_metal_protocol.mm in Sources */,

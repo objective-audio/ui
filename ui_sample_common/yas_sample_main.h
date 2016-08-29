@@ -45,7 +45,7 @@ namespace sample {
 
         ui::batch _batch;
 
-        ui::button_extension::observer_t _button_observer = nullptr;
+        ui::button::observer_t _button_observer = nullptr;
         ui::renderer::observer_t _scale_observer = nullptr;
         sample::soft_keyboard::observer_t _keyboard_observer = nullptr;
     };

@@ -20,7 +20,7 @@ namespace sample {
 
         void set_texture(ui::texture);
 
-        ui::button_extension &button_extension();
+        ui::button &button();
     };
 }
 }

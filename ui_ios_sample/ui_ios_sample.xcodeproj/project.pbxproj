@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B60428361D3B2EAF0076769D /* yas_ui_button_extension.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428351D3B2EAF0076769D /* yas_ui_button_extension.mm */; };
+		B60428361D3B2EAF0076769D /* yas_ui_button.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428351D3B2EAF0076769D /* yas_ui_button.mm */; };
 		B60428391D3B2F820076769D /* yas_sample_soft_keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428381D3B2F820076769D /* yas_sample_soft_keyboard.mm */; };
 		B61AE4CC1CF9868C001479E3 /* yas_ui_metal_render_encoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61AE4CB1CF9868C001479E3 /* yas_ui_metal_render_encoder.mm */; };
 		B6301DE41D6BEB640068DB1B /* yas_ui_collection_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6301DE11D6BEB640068DB1B /* yas_ui_collection_layout.cpp */; };
@@ -86,8 +86,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B60428341D3B2EAF0076769D /* yas_ui_button_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_button_extension.h; sourceTree = "<group>"; };
-		B60428351D3B2EAF0076769D /* yas_ui_button_extension.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_button_extension.mm; sourceTree = "<group>"; };
+		B60428341D3B2EAF0076769D /* yas_ui_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_button.h; sourceTree = "<group>"; };
+		B60428351D3B2EAF0076769D /* yas_ui_button.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_button.mm; sourceTree = "<group>"; };
 		B60428371D3B2F820076769D /* yas_sample_soft_keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_soft_keyboard.h; path = ../../ui_sample_common/yas_sample_soft_keyboard.h; sourceTree = "<group>"; };
 		B60428381D3B2F820076769D /* yas_sample_soft_keyboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_soft_keyboard.mm; path = ../../ui_sample_common/yas_sample_soft_keyboard.mm; sourceTree = "<group>"; };
 		B61AE4CA1CF9868C001479E3 /* yas_ui_metal_render_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_render_encoder.h; sourceTree = "<group>"; };
@@ -362,8 +362,8 @@
 				B63085871CFC91DC009FCAEC /* yas_ui_batch_render_mesh_info.h */,
 				B64F91111CF2953000365111 /* yas_ui_batch.h */,
 				B64F91121CF2953000365111 /* yas_ui_batch.mm */,
-				B60428341D3B2EAF0076769D /* yas_ui_button_extension.h */,
-				B60428351D3B2EAF0076769D /* yas_ui_button_extension.mm */,
+				B60428341D3B2EAF0076769D /* yas_ui_button.h */,
+				B60428351D3B2EAF0076769D /* yas_ui_button.mm */,
 				B6301DE11D6BEB640068DB1B /* yas_ui_collection_layout.cpp */,
 				B6301DE21D6BEB640068DB1B /* yas_ui_collection_layout.h */,
 				B69FF9DA1CCFBD450036B0FA /* yas_ui_collider_protocol.cpp */,
@@ -633,7 +633,7 @@
 				B65F6DF51CC87DB6007C3523 /* yas_ui_image.cpp in Sources */,
 				B65F6E331CC87DDF007C3523 /* yas_chain.cpp in Sources */,
 				B65F6E341CC87DDF007C3523 /* yas_each_dictionary.cpp in Sources */,
-				B60428361D3B2EAF0076769D /* yas_ui_button_extension.mm in Sources */,
+				B60428361D3B2EAF0076769D /* yas_ui_button.mm in Sources */,
 				B65F6E371CC87DDF007C3523 /* yas_objc_ptr.mm in Sources */,
 				B6F73BA31CDB7D7E009FD0DD /* yas_sample_cursor.mm in Sources */,
 				B6D963341CD37C7700F332FD /* yas_ui_detector.cpp in Sources */,
