@@ -21,13 +21,13 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_big_button.button().rect_plane().node());
     root_node.push_back_sub_node(_cursor.node());
     root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_inputted_text_ext.strings().rect_plane().node());
+    root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text_ext.strings().rect_plane().node());
     root_node.push_back_sub_node(_justified_points_ext.rect_plane_ext().node());
 
     _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text_ext.strings().rect_plane().node());
 
-    _inputted_text_ext.strings().set_font_atlas(_font_atlas);
+    _inputted_text.strings().set_font_atlas(_font_atlas);
     _modifier_text_ext.strings().set_font_atlas(_font_atlas);
     _big_button_text_ext.strings().set_font_atlas(_font_atlas);
     _soft_keyboard_ext.set_font_atlas(_font_atlas);
@@ -40,7 +40,7 @@ void sample::main::setup() {
             }
         });
 
-    _keyboard_observer = _soft_keyboard_ext.subject().make_wild_card_observer([weak_ext = to_weak(_inputted_text_ext)](
+    _keyboard_observer = _soft_keyboard_ext.subject().make_wild_card_observer([weak_ext = to_weak(_inputted_text)](
         auto const &context) {
         if (auto ext = weak_ext.lock()) {
             ext.append_text(context.key);
