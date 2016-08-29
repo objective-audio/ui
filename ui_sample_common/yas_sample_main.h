@@ -33,7 +33,7 @@ namespace sample {
         sample::modifier_text _modifier_text_ext;
         sample::bg _bg;
         sample::cursor_over_planes _cursor_over_planes_ext;
-        sample::big_button _big_button_ext;
+        sample::big_button _big_button;
         sample::big_button_text _big_button_text_ext;
         sample::soft_keyboard _soft_keyboard_ext;
         sample::justified_points _justified_points_ext;

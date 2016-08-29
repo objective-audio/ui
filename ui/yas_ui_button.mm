@@ -29,19 +29,19 @@ struct ui::button::impl : base::impl {
 
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button_ext = to_weak(ext)](
+            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button = to_weak(ext)](
                 auto const &context) mutable {
                 ui::node const &node = context.value;
 
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::touch_changed, [weak_button_ext](auto const &context) {
-                            if (auto button_ext = weak_button_ext.lock()) {
+                        ui::event_manager::method::touch_changed, [weak_button](auto const &context) {
+                            if (auto button_ext = weak_button.lock()) {
                                 button_ext.impl_ptr<impl>()->_update_tracking(context.value);
                             }
                         });
 
-                    if (auto button_ext = weak_button_ext.lock()) {
+                    if (auto button_ext = weak_button.lock()) {
                         leave_observer = button_ext.impl_ptr<impl>()->_make_leave_observer();
                     }
                 } else {
@@ -106,9 +106,8 @@ struct ui::button::impl : base::impl {
         node.dispatch_method(ui::node::method::collider_changed);
         node.dispatch_method(ui::node::method::enabled_changed);
 
-        return node.subject().make_wild_card_observer([weak_button_ext =
-                                                           to_weak(cast<ui::button>())](auto const &context) {
-            if (auto node = weak_button_ext.lock()) {
+        return node.subject().make_wild_card_observer([weak_button = to_weak(cast<ui::button>())](auto const &context) {
+            if (auto node = weak_button.lock()) {
                 if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
                     ui::node::method const &method = context.key;
                     switch (method) {
