@@ -8,7 +8,7 @@
 using namespace yas;
 
 struct sample::modifier_text::impl : base::impl {
-    ui::strings_extension _strings_ext;
+    ui::strings _strings_ext;
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = font_atlas, .max_word_count = 64}) {
         _strings_ext.set_pivot(ui::pivot::right);
@@ -89,6 +89,6 @@ sample::modifier_text::modifier_text(ui::font_atlas font_atlas) : base(std::make
 sample::modifier_text::modifier_text(std::nullptr_t) : base(nullptr) {
 }
 
-ui::strings_extension &sample::modifier_text::strings_extension() {
+ui::strings &sample::modifier_text::strings() {
     return impl_ptr<impl>()->_strings_ext;
 }

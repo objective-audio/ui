@@ -9,12 +9,12 @@
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
-#include "yas_ui_strings_extension.h"
+#include "yas_ui_strings.h"
 #include "yas_ui_texture.h"
 
 using namespace yas;
 
-struct ui::strings_extension::impl : base::impl {
+struct ui::strings::impl : base::impl {
     impl(std::size_t const max_word_count) : _rect_plane_ext(make_rect_plane(max_word_count)) {
     }
 
@@ -39,13 +39,13 @@ struct ui::strings_extension::impl : base::impl {
 
         if (_font_atlas) {
             _rect_plane_ext.node().mesh().set_texture(_font_atlas.texture());
-            _font_atlas_observer = _font_atlas.subject().make_observer(
-                ui::font_atlas::method::texture_changed,
-                [weak_strings = to_weak(cast<ui::strings_extension>())](auto const &context) {
-                    if (auto strings = weak_strings.lock()) {
-                        strings.impl_ptr<impl>()->update_mesh_data();
-                    }
-                });
+            _font_atlas_observer =
+                _font_atlas.subject().make_observer(ui::font_atlas::method::texture_changed,
+                                                    [weak_strings = to_weak(cast<ui::strings>())](auto const &context) {
+                                                        if (auto strings = weak_strings.lock()) {
+                                                            strings.impl_ptr<impl>()->update_mesh_data();
+                                                        }
+                                                    });
         } else {
             _rect_plane_ext.node().mesh().set_texture(nullptr);
             _font_atlas_observer = nullptr;
@@ -96,43 +96,43 @@ struct ui::strings_extension::impl : base::impl {
     ui::font_atlas::observer_t _font_atlas_observer = nullptr;
 };
 
-ui::strings_extension::strings_extension(args args) : base(std::make_shared<impl>(args.max_word_count)) {
+ui::strings::strings(args args) : base(std::make_shared<impl>(args.max_word_count)) {
     set_font_atlas(std::move(args.font_atlas));
 }
 
-ui::strings_extension::strings_extension(std::nullptr_t) : base(nullptr) {
+ui::strings::strings(std::nullptr_t) : base(nullptr) {
 }
 
-ui::strings_extension::~strings_extension() = default;
+ui::strings::~strings() = default;
 
-ui::font_atlas const &ui::strings_extension::font_atlas() const {
+ui::font_atlas const &ui::strings::font_atlas() const {
     return impl_ptr<impl>()->font_atlas();
 }
 
-std::string const &ui::strings_extension::text() const {
+std::string const &ui::strings::text() const {
     return impl_ptr<impl>()->text();
 }
 
-ui::pivot ui::strings_extension::pivot() const {
+ui::pivot ui::strings::pivot() const {
     return impl_ptr<impl>()->pivot();
 }
 
-float ui::strings_extension::width() const {
+float ui::strings::width() const {
     return impl_ptr<impl>()->width();
 }
 
-void ui::strings_extension::set_font_atlas(ui::font_atlas atlas) {
+void ui::strings::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->set_font_atlas(std::move(atlas));
 }
 
-void ui::strings_extension::set_text(std::string text) {
+void ui::strings::set_text(std::string text) {
     impl_ptr<impl>()->set_text(std::move(text));
 }
 
-void ui::strings_extension::set_pivot(ui::pivot const pivot) {
+void ui::strings::set_pivot(ui::pivot const pivot) {
     impl_ptr<impl>()->set_pivot(pivot);
 }
 
-ui::rect_plane &ui::strings_extension::rect_plane() {
+ui::rect_plane &ui::strings::rect_plane() {
     return impl_ptr<impl>()->_rect_plane_ext;
 }

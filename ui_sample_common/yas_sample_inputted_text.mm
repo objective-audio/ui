@@ -7,7 +7,7 @@
 using namespace yas;
 
 struct sample::inputted_text::impl : base::impl {
-    ui::strings_extension _strings_ext;
+    ui::strings _strings_ext;
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
         _strings_ext.set_pivot(ui::pivot::left);
@@ -90,6 +90,6 @@ void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::strings_extension &sample::inputted_text::strings_extension() {
+ui::strings &sample::inputted_text::strings() {
     return impl_ptr<impl>()->_strings_ext;
 }

@@ -33,7 +33,7 @@ namespace sample {
             }
 
             ui::button_extension _button_ext;
-            ui::strings_extension _strings_ext;
+            ui::strings _strings_ext;
         };
 
         soft_key(std::string key, float const width, ui::font_atlas atlas)

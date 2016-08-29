@@ -7,7 +7,7 @@
 using namespace yas;
 
 struct sample::big_button_text::impl : base::impl {
-    ui::strings_extension _strings_ext;
+    ui::strings _strings_ext;
 
     impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = font_atlas, .max_word_count = 32}) {
         _strings_ext.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
@@ -35,6 +35,6 @@ void sample::big_button_text::set_status(ui::button_extension::method const stat
     impl_ptr<impl>()->set_status(status);
 }
 
-ui::strings_extension &sample::big_button_text::strings_extension() {
+ui::strings &sample::big_button_text::strings() {
     return impl_ptr<impl>()->_strings_ext;
 }
