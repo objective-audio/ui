@@ -3,7 +3,6 @@
 //
 
 #include "yas_sample_modifier_text.h"
-#include "yas_ui_fixed_layout.h"
 
 using namespace yas;
 
