@@ -13,8 +13,7 @@ namespace sample {
     struct soft_key : base {
         struct impl : base::impl {
             impl(std::string &&key, float const width, ui::font_atlas &&atlas)
-                : _button({0.0f, 0.0f, width, width}),
-                  _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
+                : _button({0.0f, 0.0f, width, width}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 float const half_width = roundf(width * 0.5f);
 
                 _button.rect_plane().node().mesh().set_use_mesh_color(true);
@@ -26,8 +25,7 @@ namespace sample {
                 _strings.set_pivot(ui::pivot::center);
 
                 float const &font_size = _strings.font_atlas().font_size();
-                _strings.rect_plane().node().set_position(
-                    {half_width, std::roundf(-font_size / 3.0f) + half_width});
+                _strings.rect_plane().node().set_position({half_width, std::roundf(-font_size / 3.0f) + half_width});
                 _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
             }
 
@@ -55,16 +53,16 @@ struct sample::soft_keyboard::impl : base::impl {
         _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::soft_keyboard &ext) {
-        auto weak_ext = to_weak(ext);
+    void prepare(sample::soft_keyboard &keyboard) {
+        auto weak_keyboard = to_weak(keyboard);
 
         _renderer_observer = _root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext, bottom_layout = ui::layout{nullptr}, left_layout = ui::layout{nullptr}](
+            [weak_keyboard, bottom_layout = ui::layout{nullptr}, left_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
                 auto &node = context.value;
-                if (auto keyboard_ext = weak_ext.lock()) {
-                    auto keyboard_impl = keyboard_ext.impl_ptr<impl>();
+                if (auto keyboard = weak_keyboard.lock()) {
+                    auto keyboard_impl = keyboard.impl_ptr<impl>();
                     if (auto renderer = node.renderer()) {
                         keyboard_impl->_setup_soft_keys_if_needed();
 
@@ -139,8 +137,8 @@ struct sample::soft_keyboard::impl : base::impl {
 
             auto observer = soft_key.button().subject().make_observer(
                 ui::button::method::ended,
-                [weak_keyboard_ext = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
-                    if (auto keyboard = weak_keyboard_ext.lock()) {
+                [weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
+                    if (auto keyboard = weak_keyboard.lock()) {
                         keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
                     }
                 });
@@ -154,9 +152,9 @@ struct sample::soft_keyboard::impl : base::impl {
 
         _collection_layout_observer = _collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed,
-            [weak_ext = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
-                if (auto ext = weak_ext.lock()) {
-                    ext.impl_ptr<impl>()->_update_soft_keys_position();
+            [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
+                if (auto keyboard = weak_keyboard.lock()) {
+                    keyboard.impl_ptr<impl>()->_update_soft_keys_position();
                 }
             });
 
