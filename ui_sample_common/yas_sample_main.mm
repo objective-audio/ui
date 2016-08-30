@@ -32,20 +32,19 @@ void sample::main::setup() {
     _big_button_text.strings().set_font_atlas(_font_atlas);
     _soft_keyboard.set_font_atlas(_font_atlas);
 
-    _button_observer =
-        _big_button.button().subject().make_wild_card_observer([weak_ext = to_weak(_big_button_text)](
-            auto const &context) {
-            if (auto ext = weak_ext.lock()) {
-                ext.set_status(context.key);
-            }
-        });
-
-    _keyboard_observer = _soft_keyboard.subject().make_wild_card_observer([weak_ext = to_weak(_inputted_text)](
+    _button_observer = _big_button.button().subject().make_wild_card_observer([weak_text = to_weak(_big_button_text)](
         auto const &context) {
-        if (auto ext = weak_ext.lock()) {
-            ext.append_text(context.key);
+        if (auto text = weak_text.lock()) {
+            text.set_status(context.key);
         }
     });
+
+    _keyboard_observer =
+        _soft_keyboard.subject().make_wild_card_observer([weak_text = to_weak(_inputted_text)](auto const &context) {
+            if (auto text = weak_text.lock()) {
+                text.append_text(context.key);
+            }
+        });
 
     auto button_pos_action =
         ui::make_action(ui::translate_action::args{.start_position = {0.0f, 0.0f},
@@ -55,7 +54,7 @@ void sample::main::setup() {
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     renderer.insert_action(std::move(button_pos_action));
 
-    auto update_texture = [
+    auto update_texture_handler = [
         weak_font_atlas = to_weak(_font_atlas),
         weak_big_button = to_weak(_big_button),
         weak_touch_holder = to_weak(_touch_holder)
@@ -86,7 +85,7 @@ void sample::main::setup() {
 
     _scale_observer = renderer.subject().make_observer(
         ui::renderer::method::scale_factor_changed,
-        [update_texture](auto const &context) mutable { update_texture(context.value); });
+        [update_texture_handler](auto const &context) mutable { update_texture_handler(context.value); });
 
-    update_texture(renderer);
+    update_texture_handler(renderer);
 }

@@ -18,37 +18,37 @@ struct sample::modifier_text::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::modifier_text &ext) {
+    void prepare(sample::modifier_text &text) {
         auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_ext = to_weak(ext),
+            weak_text = to_weak(text),
             event_observer = base{nullptr},
             right_layout = ui::layout{nullptr},
             bottom_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
-            if (auto ext = weak_ext.lock()) {
+            if (auto text = weak_text.lock()) {
                 auto node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
                         ui::event_manager::method::modifier_changed,
-                        [weak_ext, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
+                        [weak_text, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
                             ui::event const &event = context.value;
-                            if (auto modifier_text_ext = weak_ext.lock()) {
-                                auto ext_impl = modifier_text_ext.impl_ptr<sample::modifier_text::impl>();
+                            if (auto text = weak_text.lock()) {
+                                auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
-                                ext_impl->update_text(event, flags);
+                                text_impl->update_text(event, flags);
                             }
                         });
 
-                    auto ext_impl = ext.impl_ptr<sample::modifier_text::impl>();
+                    auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
                     right_layout = ui::make_fixed_layout({.distance = -4.0f,
                                                           .source_guide = renderer.view_layout_guide_rect().right(),
-                                                          .destination_guide = ext_impl->_layout_guide_point.x()});
+                                                          .destination_guide = text_impl->_layout_guide_point.x()});
                     bottom_layout = ui::make_fixed_layout({.distance = 4.0f,
                                                            .source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                           .destination_guide = ext_impl->_layout_guide_point.y()});
+                                                           .destination_guide = text_impl->_layout_guide_point.y()});
                 } else {
                     event_observer = nullptr;
                     right_layout = nullptr;
