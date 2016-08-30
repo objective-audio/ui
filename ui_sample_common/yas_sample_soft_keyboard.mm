@@ -4,7 +4,6 @@
 
 #include "yas_each_index.h"
 #include "yas_sample_soft_keyboard.h"
-#include "yas_ui_fixed_layout.h"
 
 using namespace yas;
 

@@ -3,7 +3,6 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_justified_layout.h"
 #import "yas_ui_layout.h"
 
 using namespace yas;
