@@ -3,7 +3,6 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_fixed_layout.h"
 #import "yas_ui_layout.h"
 
 using namespace yas;
@@ -35,7 +34,7 @@ using namespace yas;
     XCTAssertEqual(layout.destination_guides().at(0).value(), 8.5f);
 }
 
-- (void)test_value_changed {
+- (void)test_fixed_layout_value_changed {
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
