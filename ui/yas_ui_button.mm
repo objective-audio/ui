@@ -36,13 +36,13 @@ struct ui::button::impl : base::impl {
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(
                         ui::event_manager::method::touch_changed, [weak_button](auto const &context) {
-                            if (auto button_ext = weak_button.lock()) {
-                                button_ext.impl_ptr<impl>()->_update_tracking(context.value);
+                            if (auto button = weak_button.lock()) {
+                                button.impl_ptr<impl>()->_update_tracking(context.value);
                             }
                         });
 
-                    if (auto button_ext = weak_button.lock()) {
-                        leave_observer = button_ext.impl_ptr<impl>()->_make_leave_observer();
+                    if (auto button = weak_button.lock()) {
+                        leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
                     }
                 } else {
                     event_observer = nullptr;
