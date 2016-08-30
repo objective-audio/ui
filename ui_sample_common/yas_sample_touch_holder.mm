@@ -22,11 +22,11 @@ struct sample::touch_holder::impl : base::impl {
         _rect_plane_data.set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
     }
 
-    void prepare(sample::touch_holder &ext) {
+    void prepare(sample::touch_holder &holder) {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_touch_holder = to_weak(ext), event_observer = base{nullptr}](auto const &context) mutable {
+            [weak_touch_holder = to_weak(holder), event_observer = base{nullptr}](auto const &context) mutable {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
                     event_observer = renderer.event_manager().subject().make_observer(

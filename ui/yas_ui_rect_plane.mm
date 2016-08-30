@@ -194,10 +194,10 @@ ui::rect_plane ui::make_rect_plane(std::size_t const rect_count) {
 }
 
 ui::rect_plane ui::make_rect_plane(std::size_t const rect_count, std::size_t const index_count) {
-    ui::rect_plane ext{make_rect_plane_data(rect_count, index_count)};
+    ui::rect_plane plane{make_rect_plane_data(rect_count, index_count)};
     ui::mesh mesh;
-    mesh.set_mesh_data(ext.data().dynamic_mesh_data());
-    ext.node().set_mesh(std::move(mesh));
+    mesh.set_mesh_data(plane.data().dynamic_mesh_data());
+    plane.node().set_mesh(std::move(mesh));
 
-    return ext;
+    return plane;
 }

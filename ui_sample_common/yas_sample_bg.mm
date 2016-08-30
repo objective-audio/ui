@@ -16,11 +16,11 @@ struct sample::bg::impl : base::impl {
         node.set_color(0.75f);
     }
 
-    void prepare(sample::bg &ext) {
+    void prepare(sample::bg &bg) {
         _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = _rect_plane.node().subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_bg = to_weak(ext), view_size_observer = base{nullptr}](auto const &context) mutable {
+            [weak_bg = to_weak(bg), view_size_observer = base{nullptr}](auto const &context) mutable {
                 if (auto bg = weak_bg.lock()) {
                     auto impl = bg.impl_ptr<sample::bg::impl>();
                     auto node = context.value;

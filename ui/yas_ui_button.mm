@@ -22,14 +22,14 @@ struct ui::button::impl : base::impl {
         _setup(region);
     }
 
-    void prepare(ui::button &ext) {
+    void prepare(ui::button &button) {
         auto &node = _rect_plane.node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button = to_weak(ext)](
+            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button = to_weak(button)](
                 auto const &context) mutable {
                 ui::node const &node = context.value;
 
