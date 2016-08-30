@@ -1,40 +1,40 @@
 //
-//  yas_sample_inputted_text_extension.mm
+//  yas_sample_inputted_text.mm
 //
 
-#include "yas_sample_inputted_text_extension.h"
+#include "yas_sample_inputted_text.h"
 
 using namespace yas;
 
-struct sample::inputted_text_extension::impl : base::impl {
-    ui::strings_extension _strings_ext;
+struct sample::inputted_text::impl : base::impl {
+    ui::strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : _strings_ext({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
-        _strings_ext.set_pivot(ui::pivot::left);
+    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
+        _strings.set_pivot(ui::pivot::left);
 
-        auto &node = _strings_ext.rect_plane_extension().node();
+        auto &node = _strings.rect_plane().node();
         node.attach_position_layout_guides(_layout_guide_point);
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::inputted_text_extension &ext) {
-        auto &node = _strings_ext.rect_plane_extension().node();
+    void prepare(sample::inputted_text &text) {
+        auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_ext = to_weak(ext),
+            weak_text = to_weak(text),
             event_observer = base{nullptr},
             left_layout = ui::layout{nullptr},
             top_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
-            if (auto ext = weak_ext.lock()) {
+            if (auto text = weak_text.lock()) {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
-                    auto ext_impl = ext.impl_ptr<inputted_text_extension::impl>();
+                    auto ext_impl = text.impl_ptr<inputted_text::impl>();
 
                     event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::key_changed, [weak_ext](auto const &context) {
-                            if (auto ext = weak_ext.lock()) {
-                                ext.impl_ptr<inputted_text_extension::impl>()->update_text(context.value);
+                        ui::event_manager::method::key_changed, [weak_text](auto const &context) {
+                            if (auto text = weak_text.lock()) {
+                                text.impl_ptr<inputted_text::impl>()->update_text(context.value);
                             }
                         });
 
@@ -59,9 +59,9 @@ struct sample::inputted_text_extension::impl : base::impl {
 
             switch (key_code) {
                 case 51: {
-                    auto &text = _strings_ext.text();
+                    auto &text = _strings.text();
                     if (text.size() > 0) {
-                        _strings_ext.set_text(text.substr(0, text.size() - 1));
+                        _strings.set_text(text.substr(0, text.size() - 1));
                     }
                 } break;
 
@@ -71,7 +71,7 @@ struct sample::inputted_text_extension::impl : base::impl {
     }
 
     void append_text(std::string text) {
-        _strings_ext.set_text(_strings_ext.text() + text);
+        _strings.set_text(_strings.text() + text);
     }
 
    private:
@@ -79,18 +79,17 @@ struct sample::inputted_text_extension::impl : base::impl {
     ui::layout_guide_point _layout_guide_point;
 };
 
-sample::inputted_text_extension::inputted_text_extension(ui::font_atlas font_atlas)
-    : base(std::make_shared<impl>(std::move(font_atlas))) {
+sample::inputted_text::inputted_text(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::inputted_text_extension::inputted_text_extension(std::nullptr_t) : base(nullptr) {
+sample::inputted_text::inputted_text(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::inputted_text_extension::append_text(std::string text) {
+void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::strings_extension &sample::inputted_text_extension::strings_extension() {
-    return impl_ptr<impl>()->_strings_ext;
+ui::strings &sample::inputted_text::strings() {
+    return impl_ptr<impl>()->_strings;
 }

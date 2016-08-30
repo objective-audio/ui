@@ -1,9 +1,9 @@
 //
-//  yas_sample_soft_keyboard_extension.mm
+//  yas_sample_soft_keyboard.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_soft_keyboard_extension.h"
+#include "yas_sample_soft_keyboard.h"
 #include "yas_ui_fixed_layout.h"
 
 using namespace yas;
@@ -13,27 +13,24 @@ namespace sample {
     struct soft_key : base {
         struct impl : base::impl {
             impl(std::string &&key, float const width, ui::font_atlas &&atlas)
-                : _button_ext({0.0f, 0.0f, width, width}),
-                  _strings_ext({.font_atlas = std::move(atlas), .max_word_count = 1}) {
+                : _button({0.0f, 0.0f, width, width}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 float const half_width = roundf(width * 0.5f);
 
-                _button_ext.rect_plane_extension().node().mesh().set_use_mesh_color(true);
-                _button_ext.rect_plane_extension().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-                _button_ext.rect_plane_extension().data().set_rect_color(
-                    simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, to_index({ui::button_extension::state::press}));
+                _button.rect_plane().node().mesh().set_use_mesh_color(true);
+                _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+                _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
+                                                           to_index({ui::button::state::press}));
 
-                _strings_ext.set_text(key);
-                _strings_ext.set_pivot(ui::pivot::center);
+                _strings.set_text(key);
+                _strings.set_pivot(ui::pivot::center);
 
-                float const &font_size = _strings_ext.font_atlas().font_size();
-                _strings_ext.rect_plane_extension().node().set_position(
-                    {half_width, std::roundf(-font_size / 3.0f) + half_width});
-                _button_ext.rect_plane_extension().node().push_back_sub_node(
-                    _strings_ext.rect_plane_extension().node());
+                float const &font_size = _strings.font_atlas().font_size();
+                _strings.rect_plane().node().set_position({half_width, std::roundf(-font_size / 3.0f) + half_width});
+                _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
             }
 
-            ui::button_extension _button_ext;
-            ui::strings_extension _strings_ext;
+            ui::button _button;
+            ui::strings _strings;
         };
 
         soft_key(std::string key, float const width, ui::font_atlas atlas)
@@ -43,29 +40,29 @@ namespace sample {
         soft_key(std::nullptr_t) : base(nullptr) {
         }
 
-        ui::button_extension &button_extension() {
-            return impl_ptr<impl>()->_button_ext;
+        ui::button &button() {
+            return impl_ptr<impl>()->_button;
         }
     };
 }
 }
 
-struct sample::soft_keyboard_extension::impl : base::impl {
+struct sample::soft_keyboard::impl : base::impl {
     impl() {
         _root_node.attach_position_layout_guides(_layout_guide_point);
         _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::soft_keyboard_extension &ext) {
-        auto weak_ext = to_weak(ext);
+    void prepare(sample::soft_keyboard &keyboard) {
+        auto weak_keyboard = to_weak(keyboard);
 
         _renderer_observer = _root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext, bottom_layout = ui::layout{nullptr}, left_layout = ui::layout{nullptr}](
+            [weak_keyboard, bottom_layout = ui::layout{nullptr}, left_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
                 auto &node = context.value;
-                if (auto keyboard_ext = weak_ext.lock()) {
-                    auto keyboard_impl = keyboard_ext.impl_ptr<impl>();
+                if (auto keyboard = weak_keyboard.lock()) {
+                    auto keyboard_impl = keyboard.impl_ptr<impl>();
                     if (auto renderer = node.renderer()) {
                         keyboard_impl->_setup_soft_keys_if_needed();
 
@@ -97,7 +94,7 @@ struct sample::soft_keyboard_extension::impl : base::impl {
     }
 
     ui::node _root_node;
-    sample::soft_keyboard_extension::subject_t _subject;
+    sample::soft_keyboard::subject_t _subject;
 
    private:
     std::vector<sample::soft_key> _soft_keys;
@@ -105,7 +102,7 @@ struct sample::soft_keyboard_extension::impl : base::impl {
     ui::collection_layout _collection_layout = nullptr;
     ui::layout_guide_point _layout_guide_point;
 
-    std::vector<ui::button_extension::observer_t> _soft_key_observers;
+    std::vector<ui::button::observer_t> _soft_key_observers;
     ui::node::observer_t _renderer_observer = nullptr;
     ui::collection_layout::observer_t _collection_layout_observer;
 
@@ -138,16 +135,16 @@ struct sample::soft_keyboard_extension::impl : base::impl {
         for (auto const &key : keys) {
             sample::soft_key soft_key{key, width, _font_atlas};
 
-            auto observer = soft_key.button_extension().subject().make_observer(
-                ui::button_extension::method::ended,
-                [weak_keyboard_ext = to_weak(cast<sample::soft_keyboard_extension>()), key](auto const &context) {
-                    if (auto keyboard = weak_keyboard_ext.lock()) {
+            auto observer = soft_key.button().subject().make_observer(
+                ui::button::method::ended,
+                [weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
+                    if (auto keyboard = weak_keyboard.lock()) {
                         keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
                     }
                 });
             _soft_key_observers.emplace_back(std::move(observer));
 
-            auto &node = soft_key.button_extension().rect_plane_extension().node();
+            auto &node = soft_key.button().rect_plane().node();
 
             _root_node.push_back_sub_node(node);
             _soft_keys.emplace_back(std::move(soft_key));
@@ -155,9 +152,9 @@ struct sample::soft_keyboard_extension::impl : base::impl {
 
         _collection_layout_observer = _collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed,
-            [weak_ext = to_weak(cast<sample::soft_keyboard_extension>())](auto const &context) {
-                if (auto ext = weak_ext.lock()) {
-                    ext.impl_ptr<impl>()->_update_soft_keys_position();
+            [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
+                if (auto keyboard = weak_keyboard.lock()) {
+                    keyboard.impl_ptr<impl>()->_update_soft_keys_position();
                 }
             });
 
@@ -184,41 +181,40 @@ struct sample::soft_keyboard_extension::impl : base::impl {
             auto &soft_key = _soft_keys.at(idx);
 
             if (idx < layout_count) {
-                soft_key.button_extension().rect_plane_extension().node().set_enabled(true);
+                soft_key.button().rect_plane().node().set_enabled(true);
 
                 auto &layout = _collection_layout.cell_layout_guide_rects().at(idx);
                 layout.set_value_changed_handler([weak_soft_key = to_weak(soft_key)](auto const &context) {
                     if (auto soft_key = weak_soft_key.lock()) {
-                        soft_key.button_extension().rect_plane_extension().node().set_position(
+                        soft_key.button().rect_plane().node().set_position(
                             {context.new_value.origin.x, context.new_value.origin.y});
                     }
                 });
 
                 auto const region = layout.region();
-                soft_key.button_extension().rect_plane_extension().node().set_position(
-                    {region.origin.x, region.origin.y});
+                soft_key.button().rect_plane().node().set_position({region.origin.x, region.origin.y});
             } else {
-                soft_key.button_extension().rect_plane_extension().node().set_enabled(false);
+                soft_key.button().rect_plane().node().set_enabled(false);
             }
         }
     }
 };
 
-sample::soft_keyboard_extension::soft_keyboard_extension() : base(std::make_shared<impl>()) {
+sample::soft_keyboard::soft_keyboard() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::soft_keyboard_extension::soft_keyboard_extension(std::nullptr_t) : base(nullptr) {
+sample::soft_keyboard::soft_keyboard(std::nullptr_t) : base(nullptr) {
 }
 
-void sample::soft_keyboard_extension::set_font_atlas(ui::font_atlas atlas) {
+void sample::soft_keyboard::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->set_font_atlas(std::move(atlas));
 }
 
-ui::node &sample::soft_keyboard_extension::node() {
+ui::node &sample::soft_keyboard::node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-sample::soft_keyboard_extension::subject_t &sample::soft_keyboard_extension::subject() {
+sample::soft_keyboard::subject_t &sample::soft_keyboard::subject() {
     return impl_ptr<impl>()->_subject;
 }

@@ -1,9 +1,9 @@
 //
-//  yas_sample_justified_points_extension.mm
+//  yas_sample_justified_points.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_justified_points_extension.h"
+#include "yas_sample_justified_points.h"
 
 using namespace yas;
 
@@ -15,8 +15,8 @@ namespace sample {
 }
 }
 
-struct sample::justified_points_extension::impl : base::impl {
-    ui::rect_plane_extension _rect_plane_ext = ui::make_rect_plane_extension(sample::all_point_count);
+struct sample::justified_points::impl : base::impl {
+    ui::rect_plane _rect_plane = ui::make_rect_plane(sample::all_point_count);
     std::vector<ui::layout_guide> _x_layout_guides{sample::x_point_count};
     std::vector<ui::layout_guide> _y_layout_guides{sample::y_point_count};
 
@@ -24,23 +24,23 @@ struct sample::justified_points_extension::impl : base::impl {
         _setup_colors();
         _setup_layout_guides();
 
-        _rect_plane_ext.node().dispatch_method(ui::node::method::renderer_changed);
+        _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
     }
 
-    void prepare(sample::justified_points_extension &ext) {
-        auto &node = _rect_plane_ext.node();
+    void prepare(sample::justified_points &points) {
+        auto &node = _rect_plane.node();
 
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext = to_weak(ext), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}](
+            [weak_points = to_weak(points), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
-                if (auto ext = weak_ext.lock()) {
+                if (auto points = weak_points.lock()) {
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
-                        x_layout =
-                            ui::make_justified_layout({.first_source_guide = renderer.view_layout_guide_rect().left(),
-                                                       .second_source_guide = renderer.view_layout_guide_rect().right(),
-                                                       .destination_guides = ext.impl_ptr<impl>()->_x_layout_guides});
+                        x_layout = ui::make_justified_layout(
+                            {.first_source_guide = renderer.view_layout_guide_rect().left(),
+                             .second_source_guide = renderer.view_layout_guide_rect().right(),
+                             .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
 
                         std::vector<float> ratios;
                         ratios.reserve(sample::y_point_count - 1);
@@ -55,7 +55,7 @@ struct sample::justified_points_extension::impl : base::impl {
                         y_layout =
                             ui::make_justified_layout({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
                                                        .second_source_guide = renderer.view_layout_guide_rect().top(),
-                                                       .destination_guides = ext.impl_ptr<impl>()->_y_layout_guides,
+                                                       .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
                                                        .ratios = std::move(ratios)});
                     } else {
                         x_layout = nullptr;
@@ -69,9 +69,9 @@ struct sample::justified_points_extension::impl : base::impl {
     ui::node::observer_t _renderer_observer = nullptr;
 
     void _setup_colors() {
-        _rect_plane_ext.node().mesh().set_use_mesh_color(true);
+        _rect_plane.node().mesh().set_use_mesh_color(true);
 
-        auto &rect_plane_data = _rect_plane_ext.data();
+        auto &rect_plane_data = _rect_plane.data();
 
         for (auto const &idx : make_each(sample::all_point_count)) {
             if (idx < sample::x_point_count) {
@@ -85,9 +85,9 @@ struct sample::justified_points_extension::impl : base::impl {
     void _setup_layout_guides() {
         for (auto const &idx : make_each(sample::x_point_count)) {
             _x_layout_guides.at(idx)
-                .set_value_changed_handler([weak_ext = to_weak(_rect_plane_ext), idx](auto const &context) {
-                    if (auto ext = weak_ext.lock()) {
-                        ext.data().set_rect_position(
+                .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+                    if (auto plane = weak_plane.lock()) {
+                        plane.data().set_rect_position(
                             {.origin = {context.new_value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
                     }
                 });
@@ -95,9 +95,9 @@ struct sample::justified_points_extension::impl : base::impl {
 
         for (auto const &idx : make_each(sample::y_point_count)) {
             _y_layout_guides.at(idx)
-                .set_value_changed_handler([weak_ext = to_weak(_rect_plane_ext), idx](auto const &context) {
-                    if (auto ext = weak_ext.lock()) {
-                        ext.data().set_rect_position(
+                .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+                    if (auto plane = weak_plane.lock()) {
+                        plane.data().set_rect_position(
                             {.origin = {-2.0f, context.new_value - 2.0f}, .size = {4.0f, 4.0f}}, idx + x_point_count);
                     }
                 });
@@ -105,15 +105,15 @@ struct sample::justified_points_extension::impl : base::impl {
     }
 };
 
-sample::justified_points_extension::justified_points_extension() : base(std::make_shared<impl>()) {
+sample::justified_points::justified_points() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::justified_points_extension::justified_points_extension(std::nullptr_t) : base(nullptr) {
+sample::justified_points::justified_points(std::nullptr_t) : base(nullptr) {
 }
 
-sample::justified_points_extension::~justified_points_extension() = default;
+sample::justified_points::~justified_points() = default;
 
-ui::rect_plane_extension &sample::justified_points_extension::rect_plane_ext() {
-    return impl_ptr<impl>()->_rect_plane_ext;
+ui::rect_plane &sample::justified_points::rect_plane() {
+    return impl_ptr<impl>()->_rect_plane;
 }

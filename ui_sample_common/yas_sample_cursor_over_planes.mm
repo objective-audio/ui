@@ -1,27 +1,27 @@
 //
-//  yas_sample_cursor_over_planes_extension.mm
+//  yas_sample_cursor_over_planes.mm
 //
 
 #include "yas_each_index.h"
-#include "yas_sample_cursor_over_planes_extension.h"
+#include "yas_sample_cursor_over_planes.h"
 #include "yas_ui_collider.h"
 
 using namespace yas;
 
-struct sample::cursor_over_planes_extension::impl : base::impl {
+struct sample::cursor_over_planes::impl : base::impl {
     ui::node root_node;
 
     impl() {
         _setup_nodes();
     }
 
-    void prepare(sample::cursor_over_planes_extension &ext) {
+    void prepare(sample::cursor_over_planes &planes) {
         root_node.dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = root_node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_touch_holder = to_weak(ext), event_observers = std::vector<base>{}](auto const &context) mutable {
-                if (auto touch_holder_ext = weak_touch_holder.lock()) {
-                    auto impl = touch_holder_ext.impl_ptr<cursor_over_planes_extension::impl>();
+            [weak_touch_holder = to_weak(planes), event_observers = std::vector<base>{}](auto const &context) mutable {
+                if (auto touch_holder = weak_touch_holder.lock()) {
+                    auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
                         event_observers = _make_event_observers(impl->_nodes, renderer);
@@ -38,7 +38,7 @@ struct sample::cursor_over_planes_extension::impl : base::impl {
         _nodes.reserve(count);
 
         for (auto const &idx : make_each(count)) {
-            auto plane = ui::make_rect_plane_extension(1);
+            auto plane = ui::make_rect_plane(1);
             plane.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
 
             auto &node = plane.node();
@@ -100,13 +100,13 @@ struct sample::cursor_over_planes_extension::impl : base::impl {
     ui::node::observer_t _renderer_observer = nullptr;
 };
 
-sample::cursor_over_planes_extension::cursor_over_planes_extension() : base(std::make_shared<impl>()) {
+sample::cursor_over_planes::cursor_over_planes() : base(std::make_shared<impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-sample::cursor_over_planes_extension::cursor_over_planes_extension(std::nullptr_t) : base(nullptr) {
+sample::cursor_over_planes::cursor_over_planes(std::nullptr_t) : base(nullptr) {
 }
 
-ui::node &sample::cursor_over_planes_extension::node() {
+ui::node &sample::cursor_over_planes::node() {
     return impl_ptr<impl>()->root_node;
 }
