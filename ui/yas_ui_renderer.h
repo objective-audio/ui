@@ -72,6 +72,7 @@ namespace ui {
         ui::detector const &detector() const;
         ui::detector &detector();
 
+        ui::layout_guide_rect const &view_layout_guide_rect() const;
         ui::layout_guide_rect &view_layout_guide_rect();
 
        private:

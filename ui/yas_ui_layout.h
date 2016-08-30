@@ -46,7 +46,15 @@ namespace ui {
         std::vector<float> ratios;
     };
 
+    struct constant_layout_args {
+        std::vector<ui::layout_guide> source_guides;
+        ui::layout_guide destination_guide;
+    };
+
     ui::layout make_fixed_layout(fixed_layout_args);
     ui::layout make_justified_layout(justified_layout_args);
+
+    ui::layout make_min_layout(constant_layout_args);
+    ui::layout make_max_layout(constant_layout_args);
 }
 }

@@ -110,7 +110,7 @@
 		B687A1CB1D2BFDA400E503B9 /* yas_ui_metal_texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = B687A1C91D2BFDA400E503B9 /* yas_ui_metal_texture.mm */; };
 		B687A1CD1D2BFF2B00E503B9 /* yas_ui_metal_texture_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B687A1CC1D2BFF2B00E503B9 /* yas_ui_metal_texture_tests.mm */; };
 		B6E42C0E1D60192600FB483D /* yas_ui_layout_guide_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */; };
-		B6E42C101D60217400FB483D /* yas_ui_fixed_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0F1D60217400FB483D /* yas_ui_fixed_layout_tests.mm */; };
+		B6E42C101D60217400FB483D /* yas_ui_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */; };
 		B6E42C211D60A22200FB483D /* yas_ui_justified_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */; };
 		B6F58D171D67DA8700807724 /* yas_ui_collection_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F58D161D67DA8700807724 /* yas_ui_collection_layout_tests.mm */; };
 		B6F58D271D681D9D00807724 /* yas_delaying_caller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F58D251D681D9D00807724 /* yas_delaying_caller.cpp */; };
@@ -309,7 +309,7 @@
 		B687A1CA1D2BFDA400E503B9 /* yas_ui_metal_texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_texture.h; sourceTree = "<group>"; };
 		B687A1CC1D2BFF2B00E503B9 /* yas_ui_metal_texture_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_texture_tests.mm; sourceTree = "<group>"; };
 		B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_guide_tests.mm; sourceTree = "<group>"; };
-		B6E42C0F1D60217400FB483D /* yas_ui_fixed_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_fixed_layout_tests.mm; sourceTree = "<group>"; };
+		B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_tests.mm; sourceTree = "<group>"; };
 		B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_justified_layout_tests.mm; sourceTree = "<group>"; };
 		B6F58D161D67DA8700807724 /* yas_ui_collection_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_collection_layout_tests.mm; sourceTree = "<group>"; };
 		B6F58D251D681D9D00807724 /* yas_delaying_caller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_delaying_caller.cpp; sourceTree = "<group>"; };
@@ -606,7 +606,7 @@
 				B66BB8BF1D1F701B00AB3D48 /* yas_ui_tree_updates_tests.mm */,
 				B66BB8C01D1F701B00AB3D48 /* yas_ui_types_tests.mm */,
 				B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */,
-				B6E42C0F1D60217400FB483D /* yas_ui_fixed_layout_tests.mm */,
+				B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */,
 				B6301DD71D69FE990068DB1B /* yas_ui_collection_layout_types_tests.mm */,
 				B6F58D161D67DA8700807724 /* yas_ui_collection_layout_tests.mm */,
 				B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */,
@@ -783,7 +783,7 @@
 				B66BB8D41D1F701B00AB3D48 /* yas_ui_render_info_tests.mm in Sources */,
 				B66BB8D61D1F701B00AB3D48 /* yas_ui_rect_plane_tests.mm in Sources */,
 				B66BB8C31D1F701B00AB3D48 /* yas_ui_collider_tests.mm in Sources */,
-				B6E42C101D60217400FB483D /* yas_ui_fixed_layout_tests.mm in Sources */,
+				B6E42C101D60217400FB483D /* yas_ui_layout_tests.mm in Sources */,
 				B66BB8C21D1F701B00AB3D48 /* yas_ui_batch_tests.mm in Sources */,
 				B66BB8C41D1F701B00AB3D48 /* yas_ui_detector_tests.mm in Sources */,
 				B6301DD81D69FE990068DB1B /* yas_ui_collection_layout_types_tests.mm in Sources */,

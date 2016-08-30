@@ -48,40 +48,24 @@ namespace sample {
 
 struct sample::soft_keyboard::impl : base::impl {
     impl() {
-        _root_node.attach_position_layout_guides(_layout_guide_point);
         _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::soft_keyboard &keyboard) {
         auto weak_keyboard = to_weak(keyboard);
 
-        _renderer_observer = _root_node.subject().make_observer(
-            ui::node::method::renderer_changed,
-            [weak_keyboard, bottom_layout = ui::layout{nullptr}, left_layout = ui::layout{nullptr}](
-                auto const &context) mutable {
-                auto &node = context.value;
-                if (auto keyboard = weak_keyboard.lock()) {
-                    auto keyboard_impl = keyboard.impl_ptr<impl>();
-                    if (auto renderer = node.renderer()) {
-                        keyboard_impl->_setup_soft_keys_if_needed();
-
-                        left_layout =
-                            ui::make_fixed_layout({.distance = 0.0f,
-                                                   .source_guide = renderer.view_layout_guide_rect().left(),
-                                                   .destination_guide = keyboard_impl->_layout_guide_point.x()});
-
-                        bottom_layout =
-                            ui::make_fixed_layout({.distance = 0.0f,
-                                                   .source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                   .destination_guide = keyboard_impl->_layout_guide_point.y()});
-                    } else {
-                        keyboard_impl->_dispose_soft_keys();
-
-                        bottom_layout = nullptr;
-                        left_layout = nullptr;
-                    }
-                }
-            });
+        _renderer_observer = _root_node.subject().make_observer(ui::node::method::renderer_changed,
+                                                                [weak_keyboard](auto const &context) mutable {
+                                                                    auto &node = context.value;
+                                                                    if (auto keyboard = weak_keyboard.lock()) {
+                                                                        auto keyboard_impl = keyboard.impl_ptr<impl>();
+                                                                        if (auto renderer = node.renderer()) {
+                                                                            keyboard_impl->_setup_soft_keys_if_needed();
+                                                                        } else {
+                                                                            keyboard_impl->_dispose_soft_keys();
+                                                                        }
+                                                                    }
+                                                                });
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
@@ -98,16 +82,18 @@ struct sample::soft_keyboard::impl : base::impl {
    private:
     std::vector<sample::soft_key> _soft_keys;
     ui::font_atlas _font_atlas = nullptr;
+
     ui::collection_layout _collection_layout = nullptr;
-    ui::layout_guide_point _layout_guide_point;
+    std::vector<ui::layout> _layouts;
+    ui::layout_guide _right_min_guide;
 
     std::vector<ui::button::observer_t> _soft_key_observers;
     ui::node::observer_t _renderer_observer = nullptr;
-    ui::collection_layout::observer_t _collection_layout_observer;
+    ui::collection_layout::observer_t _collection_observer;
 
     void _setup_soft_keys_if_needed() {
-        if (_soft_keys.size() > 0 && _soft_key_observers.size() > 0 && _collection_layout &&
-            _collection_layout_observer) {
+        if (_soft_keys.size() > 0 && _soft_key_observers.size() > 0 && _collection_layout && _layouts.size() > 0 &&
+            _collection_observer) {
             return;
         }
 
@@ -115,24 +101,35 @@ struct sample::soft_keyboard::impl : base::impl {
             return;
         }
 
-        auto const keys = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        auto const keys = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
         auto const key_count = keys.size();
-        float const width = 36.0f;
-        float const spacing = 4.0f;
+        auto const key_width = 36.0f;
+        auto const spacing = 4.0f;
+        auto const width = key_width * 3.0f + spacing * 5.0f;
+
+        std::vector<ui::float_size> cell_sizes;
+        cell_sizes.reserve(key_count);
+        for (auto const &idx : make_each(key_count)) {
+            if (idx == 0) {
+                cell_sizes.emplace_back(ui::float_size{0.0f, key_width});
+            } else {
+                cell_sizes.emplace_back(ui::float_size{key_width, key_width});
+            }
+        }
 
         _soft_keys.reserve(key_count);
         _soft_key_observers.reserve(key_count);
 
         _collection_layout =
-            ui::collection_layout{{.frame = {.size = {width * 3.0f + spacing * 5.0f, 0.0f}},
+            ui::collection_layout{{.frame = {.size = {width, 0.0f}},
                                    .preferred_cell_count = key_count,
-                                   .cell_sizes = {{width, width}},
+                                   .cell_sizes = std::move(cell_sizes),
                                    .row_spacing = spacing,
                                    .col_spacing = spacing,
                                    .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}}};
 
         for (auto const &key : keys) {
-            sample::soft_key soft_key{key, width, _font_atlas};
+            sample::soft_key soft_key{key, key_width, _font_atlas};
 
             auto observer = soft_key.button().subject().make_observer(
                 ui::button::method::ended,
@@ -149,7 +146,7 @@ struct sample::soft_keyboard::impl : base::impl {
             _soft_keys.emplace_back(std::move(soft_key));
         }
 
-        _collection_layout_observer = _collection_layout.subject().make_observer(
+        _collection_observer = _collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed,
             [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
                 if (auto keyboard = weak_keyboard.lock()) {
@@ -157,14 +154,34 @@ struct sample::soft_keyboard::impl : base::impl {
                 }
             });
 
+        auto const renderer = _root_node.renderer();
+        auto const &view_guide_rect = renderer.view_layout_guide_rect();
+        auto const &frame_guide_rect = _collection_layout.frame_layout_guide_rect();
+
+        _layouts.emplace_back(ui::make_fixed_layout(
+            {.source_guide = view_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
+
+        _layouts.emplace_back(ui::make_fixed_layout(
+            {.source_guide = view_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
+
+        _layouts.emplace_back(ui::make_fixed_layout(
+            {.source_guide = view_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
+
+        _layouts.emplace_back(ui::make_fixed_layout(
+            {.distance = width, .source_guide = view_guide_rect.left(), .destination_guide = _right_min_guide}));
+
+        _layouts.emplace_back(ui::make_min_layout({.source_guides = {_right_min_guide, view_guide_rect.right()},
+                                                   .destination_guide = frame_guide_rect.right()}));
+
         _update_soft_keys_position();
     }
 
     void _dispose_soft_keys() {
         _soft_keys.clear();
         _soft_key_observers.clear();
+        _layouts.clear();
         _collection_layout = nullptr;
-        _collection_layout_observer = nullptr;
+        _collection_observer = nullptr;
     }
 
     void _update_soft_keys_position() {
