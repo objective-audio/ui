@@ -26,16 +26,16 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::button button_ext{{0.0f, 1.0f, 2.0f, 3.0f}};
+    ui::button button{{0.0f, 1.0f, 2.0f, 3.0f}};
 
-    XCTAssertTrue(button_ext);
-    XCTAssertTrue(button_ext.rect_plane());
+    XCTAssertTrue(button);
+    XCTAssertTrue(button.rect_plane());
 }
 
 - (void)test_create_null {
-    ui::button button_ext{nullptr};
+    ui::button button{nullptr};
 
-    XCTAssertFalse(button_ext);
+    XCTAssertFalse(button);
 }
 
 - (void)test_method_changed {
@@ -59,12 +59,12 @@ using namespace yas;
     });
     renderer.insert_action(pre_render_action);
 
-    ui::button button_ext{{-0.5f, -0.5f, 1.0f, 1.0f}};
-    renderer.root_node().push_back_sub_node(button_ext.rect_plane().node());
+    ui::button button{{-0.5f, -0.5f, 1.0f, 1.0f}};
+    renderer.root_node().push_back_sub_node(button.rect_plane().node());
 
     std::vector<ui::button::method> observed_methods;
 
-    auto observer = button_ext.subject().make_wild_card_observer(
+    auto observer = button.subject().make_wild_card_observer(
         [&observed_methods](auto const &context) { observed_methods.push_back(context.key); });
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
@@ -123,9 +123,8 @@ using namespace yas;
 }
 
 - (void)test_method_ostream {
-    auto const methods = {ui::button::method::began, ui::button::method::entered,
-                          ui::button::method::leaved, ui::button::method::ended,
-                          ui::button::method::canceled};
+    auto const methods = {ui::button::method::began, ui::button::method::entered, ui::button::method::leaved,
+                          ui::button::method::ended, ui::button::method::canceled};
 
     for (auto const &method : methods) {
         std::ostringstream stream;
@@ -135,8 +134,7 @@ using namespace yas;
 }
 
 - (void)test_state_ostream {
-    auto const states = {ui::button::state::toggle, ui::button::state::press,
-                         ui::button::state::count};
+    auto const states = {ui::button::state::toggle, ui::button::state::press, ui::button::state::count};
 
     for (auto const &state : states) {
         std::ostringstream stream;
