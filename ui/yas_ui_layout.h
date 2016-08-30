@@ -39,7 +39,7 @@ namespace ui {
         ui::layout_guide destination_guide;
     };
 
-    struct jusitified_layout_args {
+    struct justified_layout_args {
         ui::layout_guide first_source_guide = nullptr;
         ui::layout_guide second_source_guide = nullptr;
         std::vector<ui::layout_guide> destination_guides;
@@ -47,6 +47,6 @@ namespace ui {
     };
 
     ui::layout make_fixed_layout(fixed_layout_args);
-    ui::layout make_justified_layout(jusitified_layout_args);
+    ui::layout make_justified_layout(justified_layout_args);
 }
 }

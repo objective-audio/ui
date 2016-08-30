@@ -78,7 +78,7 @@ ui::layout ui::make_fixed_layout(fixed_layout_args args) {
 
 #pragma mark - jusitified_layout
 
-ui::layout ui::make_justified_layout(jusitified_layout_args args) {
+ui::layout ui::make_justified_layout(justified_layout_args args) {
     if (!args.first_source_guide) {
         throw "first_source_guide is null.";
     }
