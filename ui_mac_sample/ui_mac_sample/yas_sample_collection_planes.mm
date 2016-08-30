@@ -20,16 +20,16 @@ struct sample::collection_planes::impl : base::impl {
                                               .borders = {10.0f, 10.0f, 10.0f, 10.0f}}};
     ui::collection_layout::observer_t _collection_layout_observer = nullptr;
 
-    void prepare(sample::collection_planes &ext) {
-        auto weak_ext = to_weak(ext);
+    void prepare(sample::collection_planes &planes) {
+        auto weak_planes = to_weak(planes);
 
         _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
         _renderer_observer = _rect_plane.node().subject().make_observer(
             ui::node::method::renderer_changed,
-            [weak_ext, top_layout = ui::layout{nullptr}, right_layout = ui::layout{nullptr}](
+            [weak_planes, top_layout = ui::layout{nullptr}, right_layout = ui::layout{nullptr}](
                 auto const &context) mutable {
-                if (auto ext = weak_ext.lock()) {
-                    auto impl = ext.impl_ptr<sample::collection_planes::impl>();
+                if (auto planes = weak_planes.lock()) {
+                    auto impl = planes.impl_ptr<sample::collection_planes::impl>();
                     auto node = context.value;
                     if (auto renderer = node.renderer()) {
                         auto const &view_guide_rect = renderer.view_layout_guide_rect();
@@ -46,9 +46,9 @@ struct sample::collection_planes::impl : base::impl {
             });
 
         _collection_layout_observer = _collection_layout.subject().make_observer(
-            ui::collection_layout::method::actual_cell_count_changed, [weak_ext](auto const &context) {
-                if (auto ext = weak_ext.lock()) {
-                    ext.impl_ptr<impl>()->_update_plane_position();
+            ui::collection_layout::method::actual_cell_count_changed, [weak_planes](auto const &context) {
+                if (auto planes = weak_planes.lock()) {
+                    planes.impl_ptr<impl>()->_update_plane_position();
                 }
             });
 
@@ -68,12 +68,11 @@ struct sample::collection_planes::impl : base::impl {
 
         for (auto const &idx : make_each(actual_cell_count)) {
             auto &cell_guide_rect = _collection_layout.cell_layout_guide_rects().at(idx);
-            cell_guide_rect.set_value_changed_handler(
-                [weak_plane_ext = to_weak(_rect_plane), idx](auto const &context) {
-                    if (auto plane_ext = weak_plane_ext.lock()) {
-                        plane_ext.data().set_rect_position(context.new_value, idx);
-                    }
-                });
+            cell_guide_rect.set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+                if (auto plane = weak_plane.lock()) {
+                    plane.data().set_rect_position(context.new_value, idx);
+                }
+            });
 
             data.set_rect_position(cell_guide_rect.region(), idx);
         }
