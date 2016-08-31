@@ -312,6 +312,10 @@ ui::detector &ui::renderer::detector() {
     return impl_ptr<impl>()->_detector;
 }
 
+ui::layout_guide_rect const &ui::renderer::view_layout_guide_rect() const {
+    return impl_ptr<impl>()->_view_layout_guide_rect;
+}
+
 ui::layout_guide_rect &ui::renderer::view_layout_guide_rect() {
     return impl_ptr<impl>()->_view_layout_guide_rect;
 }

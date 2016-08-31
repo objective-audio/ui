@@ -141,3 +141,61 @@ ui::layout ui::make_justified_layout(justified_layout_args args) {
                        .destination_guides = std::move(args.destination_guides),
                        .handler = std::move(handler)}};
 }
+
+#pragma mark - other layouts
+
+ui::layout ui::make_min_layout(constant_layout_args args) {
+    if (args.source_guides.size() == 0) {
+        throw "source_guides is empty.";
+    }
+
+    if (!args.destination_guide) {
+        throw "destination_guide is null.";
+    }
+
+    auto handler = [](auto const &src_guides, auto &dst_guides) {
+        std::experimental::optional<float> value;
+
+        for (auto const &src_guide : src_guides) {
+            if (value) {
+                value = std::min(src_guide.value(), *value);
+            } else {
+                value = src_guide.value();
+            }
+        }
+
+        dst_guides.at(0).set_value(*value);
+    };
+
+    return ui::layout{{.source_guides = std::move(args.source_guides),
+                       .destination_guides = {std::move(args.destination_guide)},
+                       .handler = std::move(handler)}};
+}
+
+ui::layout ui::make_max_layout(constant_layout_args args) {
+    if (args.source_guides.size() == 0) {
+        throw "source_guides is empty.";
+    }
+
+    if (!args.destination_guide) {
+        throw "destination_guide is null.";
+    }
+
+    auto handler = [](auto const &src_guides, auto &dst_guides) {
+        std::experimental::optional<float> value;
+
+        for (auto const &src_guide : src_guides) {
+            if (value) {
+                value = std::max(src_guide.value(), *value);
+            } else {
+                value = src_guide.value();
+            }
+        }
+
+        dst_guides.at(0).set_value(*value);
+    };
+
+    return ui::layout{{.source_guides = std::move(args.source_guides),
+                       .destination_guides = {std::move(args.destination_guide)},
+                       .handler = std::move(handler)}};
+}
