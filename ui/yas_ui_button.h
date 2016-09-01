@@ -16,6 +16,7 @@ class observer;
 
 namespace ui {
     class rect_plane;
+    class layout_guide_rect;
 
     class button : public base {
        public:
@@ -52,6 +53,8 @@ namespace ui {
         subject_t &subject();
 
         ui::rect_plane &rect_plane();
+
+        ui::layout_guide_rect &layout_guide_rect();
     };
 }
 

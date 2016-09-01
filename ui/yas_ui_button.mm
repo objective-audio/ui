@@ -8,6 +8,7 @@
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_event.h"
+#include "yas_ui_layout_guide.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
@@ -18,19 +19,24 @@ using namespace yas;
 #pragma mark - ui::button::impl
 
 struct ui::button::impl : base::impl {
-    impl(ui::float_region const &region) {
-        _setup(region);
+    impl(ui::float_region const &region) : _layout_guide_rect(region) {
+        _states.flags.reset();
+
+        _rect_plane.node().set_collider(ui::collider{});
+
+        _update_rect_positions(_layout_guide_rect.region());
+        _update_rect_index();
     }
 
     void prepare(ui::button &button) {
+        auto const weak_button = to_weak(button);
         auto &node = _rect_plane.node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
         _renderer_observer = node.subject().make_observer(
             ui::node::method::renderer_changed,
-            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button = to_weak(button)](
-                auto const &context) mutable {
+            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button](auto const &context) mutable {
                 ui::node const &node = context.value;
 
                 if (auto renderer = node.renderer()) {
@@ -49,6 +55,12 @@ struct ui::button::impl : base::impl {
                     leave_observer = nullptr;
                 }
             });
+
+        _layout_guide_rect.set_value_changed_handler([weak_button](auto const &context) {
+            if (auto button = weak_button.lock()) {
+                button.impl_ptr<impl>()->_update_rect_positions(context.new_value);
+            }
+        });
     }
 
     void set_state(ui::button::state const &state, bool const enabled) {
@@ -77,20 +89,16 @@ struct ui::button::impl : base::impl {
 
     states_t _states;
     ui::rect_plane _rect_plane = ui::make_rect_plane(ui::button::state_count * 2, 1);
+    ui::layout_guide_rect _layout_guide_rect;
     ui::button::subject_t _subject;
 
    private:
-    void _setup(ui::float_region const &region) {
-        _states.flags.reset();
-
+    void _update_rect_positions(ui::float_region const &region) {
         for (auto const &idx : make_each(ui::button::state_count * 2)) {
             _rect_plane.data().set_rect_position(region, idx);
         }
 
-        ui::collider collider{ui::shape{{.rect = region}}};
-        _rect_plane.node().set_collider(std::move(collider));
-
-        _update_rect_index();
+        _rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
     }
 
     void _update_rect_index() {
@@ -217,6 +225,10 @@ ui::button::subject_t &ui::button::subject() {
 
 ui::rect_plane &ui::button::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
+}
+
+ui::layout_guide_rect &ui::button::layout_guide_rect() {
+    return impl_ptr<impl>()->_layout_guide_rect;
 }
 
 #pragma mark -

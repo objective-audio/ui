@@ -13,8 +13,6 @@ namespace sample {
         struct impl : base::impl {
             impl(std::string &&key, float const width, ui::font_atlas &&atlas)
                 : _button({0.0f, 0.0f, width, width}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
-                float const half_width = roundf(width * 0.5f);
-
                 _button.rect_plane().node().mesh().set_use_mesh_color(true);
                 _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
                 _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
@@ -23,13 +21,31 @@ namespace sample {
                 _strings.set_text(key);
                 _strings.set_pivot(ui::pivot::center);
 
-                float const &font_size = _strings.font_atlas().font_size();
-                _strings.rect_plane().node().set_position({half_width, std::roundf(-font_size / 3.0f) + half_width});
                 _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
+
+                _strings.rect_plane().node().attach_x_layout_guide(_strings_guide_point.x());
+                _strings.rect_plane().node().attach_y_layout_guide(_y_offset_guide);
+
+                float const &font_size = _strings.font_atlas().font_size();
+                _layouts.emplace_back(ui::make_fixed_layout({.distance = std::roundf(-font_size / 3.0f),
+                                                             .source_guide = _strings_guide_point.y(),
+                                                             .destination_guide = _y_offset_guide}));
+
+                auto const &button_guide_rect = _button.layout_guide_rect();
+                _layouts.emplace_back(ui::make_justified_layout({.first_source_guide = button_guide_rect.left(),
+                                                                 .second_source_guide = button_guide_rect.right(),
+                                                                 .destination_guides = {_strings_guide_point.x()}}));
+
+                _layouts.emplace_back(ui::make_justified_layout({.first_source_guide = button_guide_rect.bottom(),
+                                                                 .second_source_guide = button_guide_rect.top(),
+                                                                 .destination_guides = {_strings_guide_point.y()}}));
             }
 
             ui::button _button;
             ui::strings _strings;
+            std::vector<ui::layout> _layouts;
+            ui::layout_guide _y_offset_guide;
+            ui::layout_guide_point _strings_guide_point;
         };
 
         soft_key(std::string key, float const width, ui::font_atlas atlas)
@@ -105,7 +121,7 @@ struct sample::soft_keyboard::impl : base::impl {
         auto const key_count = keys.size();
         auto const key_width = 36.0f;
         auto const spacing = 4.0f;
-        auto const width = key_width * 3.0f + spacing * 5.0f;
+        auto const width = key_width * 3.0f + spacing * 4.0f;
 
         std::vector<ui::float_size> cell_sizes;
         cell_sizes.reserve(key_count);
@@ -193,6 +209,11 @@ struct sample::soft_keyboard::impl : base::impl {
 
         auto const layout_count = _collection_layout.actual_cell_count();
 
+        auto handler = [](sample::soft_key &soft_key, ui::float_region const &region) {
+            soft_key.button().rect_plane().node().set_position({region.origin.x, region.origin.y});
+            soft_key.button().layout_guide_rect().set_region({.size = region.size});
+        };
+
         for (auto const &idx : make_each(key_count)) {
             auto &soft_key = _soft_keys.at(idx);
 
@@ -200,15 +221,13 @@ struct sample::soft_keyboard::impl : base::impl {
                 soft_key.button().rect_plane().node().set_enabled(true);
 
                 auto &layout = _collection_layout.cell_layout_guide_rects().at(idx);
-                layout.set_value_changed_handler([weak_soft_key = to_weak(soft_key)](auto const &context) {
+                layout.set_value_changed_handler([weak_soft_key = to_weak(soft_key), handler](auto const &context) {
                     if (auto soft_key = weak_soft_key.lock()) {
-                        soft_key.button().rect_plane().node().set_position(
-                            {context.new_value.origin.x, context.new_value.origin.y});
+                        handler(soft_key, context.new_value);
                     }
                 });
 
-                auto const region = layout.region();
-                soft_key.button().rect_plane().node().set_position({region.origin.x, region.origin.y});
+                handler(soft_key, layout.region());
             } else {
                 soft_key.button().rect_plane().node().set_enabled(false);
             }
