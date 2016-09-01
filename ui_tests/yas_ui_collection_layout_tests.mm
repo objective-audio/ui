@@ -282,25 +282,27 @@ using namespace yas;
 }
 
 - (void)test_set_cell_sizes_zero_width {
-    ui::collection_layout layout{
-        {.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 3, .cell_sizes = {{0.0f, 1.0f}}}};
+    ui::collection_layout layout{{.frame = {.size = {3.0f, 0.0f}},
+                                  .preferred_cell_count = 3,
+                                  .cell_sizes = {{0.0f, 1.0f}},
+                                  .borders = {.left = 1.0f, .right = 1.0f}}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
 
     XCTAssertEqual(layout.actual_cell_count(), 3);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 2.0f);
     XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 2.0f);
     XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 1.0f);
     XCTAssertEqual(cell_guide_rects.at(1).top().value(), 2.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 2.0f);
     XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 2.0f);
     XCTAssertEqual(cell_guide_rects.at(2).top().value(), 3.0f);
 }
