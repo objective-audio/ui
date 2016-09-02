@@ -112,27 +112,20 @@ struct sample::touch_holder::impl : base::impl {
 
         root_node.push_back_sub_node(node);
 
-        auto scale_action1 =
-            ui::make_action({.start_scale = 0.1f, .end_scale = 200.0f, .continuous_action = {.duration = 0.1}});
+        auto scale_action1 = ui::make_action(
+            {.target = node, .start_scale = 0.1f, .end_scale = 200.0f, .continuous_action = {.duration = 0.1}});
         scale_action1.set_value_transformer(ui::ease_in_transformer());
-        scale_action1.set_target(node);
 
-        auto scale_action2 =
-            ui::make_action({.start_scale = 200.0f, .end_scale = 100.0f, .continuous_action = {.duration = 0.2}});
+        auto scale_action2 = ui::make_action(
+            {.target = node, .start_scale = 200.0f, .end_scale = 100.0f, .continuous_action = {.duration = 0.2}});
         scale_action2.set_value_transformer(ui::ease_out_transformer());
-        scale_action2.set_target(node);
 
         auto scale_action = ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
-        scale_action.set_target(node);
 
-        auto alpha_action =
-            ui::make_action({.start_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});
-        alpha_action.set_target(node);
+        auto alpha_action = ui::make_action(
+            {.target = node, .start_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});
 
-        ui::parallel_action action;
-        action.insert_action(scale_action);
-        action.insert_action(alpha_action);
-        action.set_target(node);
+        ui::parallel_action action{{.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}}};
 
         root_node.renderer().insert_action(action);
 
@@ -159,22 +152,20 @@ struct sample::touch_holder::impl : base::impl {
 
             auto const &node = touch_object.node;
 
-            auto scale_action = ui::make_action({.start_scale = touch_object.node.scale(),
+            auto scale_action = ui::make_action({.target = node,
+                                                 .start_scale = touch_object.node.scale(),
                                                  .end_scale = 300.0f,
                                                  .continuous_action = {.duration = 0.3}});
             scale_action.set_value_transformer(ui::ease_out_transformer());
-            scale_action.set_target(node);
             scale_action.set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
 
-            auto alpha_action = ui::make_action(
-                {.start_alpha = node.alpha(), .end_alpha = 0.0f, .continuous_action = {.duration = 0.3}});
+            auto alpha_action = ui::make_action({.target = node,
+                                                 .start_alpha = node.alpha(),
+                                                 .end_alpha = 0.0f,
+                                                 .continuous_action = {.duration = 0.3}});
             alpha_action.set_value_transformer(ui::connect({ui::ease_out_transformer(), ui::ease_out_transformer()}));
-            alpha_action.set_target(node);
 
-            ui::parallel_action action;
-            action.insert_action(scale_action);
-            action.insert_action(alpha_action);
-            action.set_target(node);
+            ui::parallel_action action{{.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}}};
 
             renderer.insert_action(action);
 

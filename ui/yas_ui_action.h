@@ -5,16 +5,16 @@
 #pragma once
 
 #include <chrono>
+#include <unordered_set>
 #include <vector>
 #include "yas_base.h"
 #include "yas_protocol.h"
+#include "yas_ui_node.h"
 #include "yas_ui_transformer.h"
 #include "yas_ui_types.h"
 
 namespace yas {
 namespace ui {
-    class node;
-
     using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
     using duration_t = std::chrono::duration<double>;
 
@@ -46,13 +46,13 @@ namespace ui {
         explicit action(args);
         action(std::nullptr_t);
 
-        ui::node target() const;
+        base target() const;
         time_point_t const &start_time() const;
         double delay() const;
         time_update_f const &time_updater() const;
         completion_f const &completion_handler() const;
 
-        void set_target(ui::node const &);
+        void set_target(weak<base> const &);
         void set_time_updater(time_update_f);
         void set_completion_handler(completion_f);
 
@@ -64,7 +64,18 @@ namespace ui {
        private:
         ui::updatable_action _updatable = nullptr;
     };
+}
+}
 
+template <>
+struct std::hash<yas::ui::action> {
+    std::size_t operator()(yas::ui::action const &key) const {
+        return std::hash<uintptr_t>()(key.identifier());
+    }
+};
+
+namespace yas {
+namespace ui {
     class continuous_action : public action {
        public:
         class impl;
@@ -93,6 +104,7 @@ namespace ui {
 
     namespace translate_action {
         struct args {
+            weak<ui::node> target;
             ui::point start_position = 0.0f;
             ui::point end_position = 0.0f;
 
@@ -102,6 +114,7 @@ namespace ui {
 
     namespace rotate_action {
         struct args {
+            weak<ui::node> target;
             float start_angle = 0.0f;
             float end_angle = 0.0f;
             bool is_shortest = false;
@@ -112,6 +125,7 @@ namespace ui {
 
     namespace scale_action {
         struct args {
+            weak<ui::node> target;
             ui::size start_scale = 1.0f;
             ui::size end_scale = 1.0f;
 
@@ -121,6 +135,7 @@ namespace ui {
 
     namespace color_action {
         struct args {
+            weak<ui::node> target;
             ui::color start_color = 1.0f;
             ui::color end_color = 1.0f;
 
@@ -130,6 +145,7 @@ namespace ui {
 
     namespace alpha_action {
         struct args {
+            weak<ui::node> target;
             float start_alpha = 1.0f;
             float end_alpha = 1.0f;
 
@@ -147,8 +163,15 @@ namespace ui {
        public:
         class impl;
 
+        struct args {
+            weak<base> target;
+            std::unordered_set<action> actions;
+
+            action::args action;
+        };
+
         parallel_action();
-        parallel_action(action::args);
+        parallel_action(args);
         parallel_action(std::nullptr_t);
 
         virtual ~parallel_action() final;
@@ -162,10 +185,3 @@ namespace ui {
     parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &start_time);
 }
 }
-
-template <>
-struct std::hash<yas::ui::action> {
-    std::size_t operator()(yas::ui::action const &key) const {
-        return std::hash<uintptr_t>()(key.identifier());
-    }
-};

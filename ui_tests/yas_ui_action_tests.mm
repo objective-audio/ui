@@ -108,9 +108,10 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action(
-        {.start_position = {0.0f, -1.0f}, .end_position = {1.0f, 1.0f}, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action({.target = target,
+                                   .start_position = {0.0f, -1.0f},
+                                   .end_position = {1.0f, 1.0f},
+                                   .continuous_action = std::move(args)});
 
     auto &updatable = action.updatable();
 
@@ -134,9 +135,11 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action(
-        {.start_angle = 0.0f, .end_angle = 360.0f, .is_shortest = false, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action({.target = target,
+                                   .start_angle = 0.0f,
+                                   .end_angle = 360.0f,
+                                   .is_shortest = false,
+                                   .continuous_action = std::move(args)});
 
     auto &updatable = action.updatable();
 
@@ -157,9 +160,11 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action(
-        {.start_angle = 0.0f, .end_angle = 270.0f, .is_shortest = true, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action({.target = target,
+                                   .start_angle = 0.0f,
+                                   .end_angle = 270.0f,
+                                   .is_shortest = true,
+                                   .continuous_action = std::move(args)});
 
     auto &updatable = action.updatable();
 
@@ -180,9 +185,12 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action(
-        {.start_angle = -180.0f, .end_angle = 90.0f, .is_shortest = true, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action({.target = target,
+                                   .start_angle = -180.0f,
+                                   .end_angle = 90.0f,
+                                   .is_shortest = true,
+                                   .continuous_action = std::move(args)});
+
     auto &updatable = action.updatable();
 
     updatable.update(time);
@@ -202,9 +210,10 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action(
-        {.start_scale = {0.0f, -1.0f}, .end_scale = {1.0f, 1.0f}, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action({.target = target,
+                                   .start_scale = {0.0f, -1.0f},
+                                   .end_scale = {1.0f, 1.0f},
+                                   .continuous_action = std::move(args)});
 
     auto &updatable = action.updatable();
 
@@ -228,9 +237,11 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action(
-        {.start_color = {0.0f, 0.25f, 0.5f}, .end_color = {1.0f, 0.75f, 0.5f}, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action({.target = target,
+                                   .start_color = {0.0f, 0.25f, 0.5f},
+                                   .end_color = {1.0f, 0.75f, 0.5f},
+                                   .continuous_action = std::move(args)});
+
     ui::mesh mesh;
     target.set_mesh(mesh);
     auto &updatable = action.updatable();
@@ -258,8 +269,9 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
-    auto action = ui::make_action({.start_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action(
+        {.target = target, .start_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
+
     ui::mesh mesh;
     target.set_mesh(mesh);
     auto &updatable = action.updatable();
@@ -302,8 +314,8 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args = {.duration = 1.0, .action = {.delay = 2.0, .start_time = time}};
-    auto action = ui::make_action({.start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action(
+        {.target = target, .start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
 
     auto &updatable = action.updatable();
 
@@ -336,8 +348,8 @@ using namespace yas;
     ui::node target;
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args = {.duration = 1.0, .loop_count = 2, .action = {.start_time = time}};
-    auto action = ui::make_action({.start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
-    action.set_target(target);
+    auto action = ui::make_action(
+        {.target = target, .start_angle = 0.0f, .end_angle = 1.0f, .continuous_action = std::move(args)});
 
     auto &updatable = action.updatable();
 
@@ -379,15 +391,12 @@ using namespace yas;
 }
 
 - (void)test_parallel_action {
-    ui::parallel_action parallel_action;
-
     auto time = std::chrono::system_clock::now();
 
     ui::continuous_action action1{{.duration = 1.0, .action = {.start_time = time}}};
-    parallel_action.insert_action(std::move(action1));
-
     ui::continuous_action action2{{.duration = 2.0, .action = {.start_time = time}}};
-    parallel_action.insert_action(std::move(action2));
+
+    ui::parallel_action parallel_action{{.actions = {std::move(action1), std::move(action2)}}};
 
     ui::continuous_action action3{{.duration = 3.0, .action = {.start_time = time}}};
     parallel_action.insert_action(std::move(action3));

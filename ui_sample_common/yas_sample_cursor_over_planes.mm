@@ -74,9 +74,8 @@ struct sample::cursor_over_planes::impl : base::impl {
                             auto is_detected = renderer.detector().detect(cursor_event.position(), node.collider());
 
                             auto make_color_action = [](ui::node &node, ui::color const &color) {
-                                auto action = ui::make_action({.start_color = node.color(), .end_color = color});
-                                action.set_target(node);
-                                return action;
+                                return ui::make_action(
+                                    {.target = node, .start_color = node.color(), .end_color = color});
                             };
 
                             if (is_detected && !*prev_detected) {

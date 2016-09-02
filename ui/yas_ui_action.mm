@@ -2,7 +2,6 @@
 //  yas_ui_action.mm
 //
 
-#include <unordered_set>
 #include "yas_stl_utils.h"
 #include "yas_ui_action.h"
 #include "yas_ui_node.h"
@@ -51,7 +50,7 @@ struct ui::action::impl : base::impl, updatable_action::impl {
         return time - _start_time - _delay;
     }
 
-    weak<ui::node> _target{nullptr};
+    weak<base> _target{nullptr};
     time_point_t _start_time = system_clock::now();
     duration_t _delay{0.0};
     time_update_f _time_updater;
@@ -72,7 +71,7 @@ ui::action::action(std::nullptr_t) : base(nullptr) {
 ui::action::action(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
 }
 
-ui::node ui::action::target() const {
+base ui::action::target() const {
     return impl_ptr<impl>()->_target.lock();
 }
 
@@ -92,7 +91,7 @@ ui::action::completion_f const &ui::action::completion_handler() const {
     return impl_ptr<impl>()->_completion_handler;
 }
 
-void ui::action::set_target(ui::node const &target) {
+void ui::action::set_target(weak<base> const &target) {
     impl_ptr<impl>()->_target = target;
 }
 
@@ -204,11 +203,13 @@ void ui::continuous_action::set_value_transformer(transform_f transformer) {
 #pragma mark - translate_action
 
 ui::continuous_action ui::make_action(translate_action::args args) {
+    auto target = args.target;
     ui::continuous_action action{std::move(args.continuous_action)};
+    action.set_target(target);
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
-            if (auto target = action.target()) {
+            if (auto target = args.target.lock()) {
                 target.set_position((args.end_position.v - args.start_position.v) * (float)value +
                                     args.start_position.v);
             }
@@ -221,11 +222,13 @@ ui::continuous_action ui::make_action(translate_action::args args) {
 #pragma mark - rotate_action
 
 ui::continuous_action ui::make_action(rotate_action::args args) {
+    auto target = args.target;
     ui::continuous_action action{std::move(args.continuous_action)};
+    action.set_target(target);
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
-            if (auto target = action.target()) {
+            if (auto target = args.target.lock()) {
                 auto const end_angle = args.end_angle;
                 auto start_angle = args.start_angle;
 
@@ -248,11 +251,13 @@ ui::continuous_action ui::make_action(rotate_action::args args) {
 #pragma mark - scale_action
 
 ui::continuous_action ui::make_action(ui::scale_action::args args) {
+    auto target = args.target;
     ui::continuous_action action{std::move(args.continuous_action)};
+    action.set_target(target);
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
-            if (auto target = action.target()) {
+            if (auto target = args.target.lock()) {
                 target.set_scale((args.end_scale.v - args.start_scale.v) * (float)value + args.start_scale.v);
             }
         }
@@ -264,11 +269,13 @@ ui::continuous_action ui::make_action(ui::scale_action::args args) {
 #pragma mark - color_action
 
 ui::continuous_action ui::make_action(ui::color_action::args args) {
+    auto target = args.target;
     ui::continuous_action action{std::move(args.continuous_action)};
+    action.set_target(target);
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
-            if (auto target = action.target()) {
+            if (auto target = args.target.lock()) {
                 target.set_color((args.end_color.v - args.start_color.v) * (float)value + args.start_color.v);
             }
         }
@@ -280,11 +287,13 @@ ui::continuous_action ui::make_action(ui::color_action::args args) {
 #pragma mark - alpha_action
 
 ui::continuous_action ui::make_action(ui::alpha_action::args args) {
+    auto target = args.target;
     ui::continuous_action action{std::move(args.continuous_action)};
+    action.set_target(target);
 
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
-            if (auto target = action.target()) {
+            if (auto target = args.target.lock()) {
                 target.set_alpha((args.end_alpha - args.start_alpha) * (float)value + args.start_alpha);
             }
         }
@@ -304,10 +313,10 @@ struct ui::parallel_action::impl : action::impl {
 
 #pragma mark - parallel_action
 
-ui::parallel_action::parallel_action() : parallel_action(action::args{}) {
+ui::parallel_action::parallel_action() : parallel_action(args{}) {
 }
 
-ui::parallel_action::parallel_action(action::args args) : action(std::make_shared<impl>(std::move(args))) {
+ui::parallel_action::parallel_action(args args) : action(std::make_shared<impl>(std::move(args.action))) {
     set_time_updater([weak_action = to_weak(*this)](auto const &time) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action.impl_ptr<parallel_action::impl>()->actions;
@@ -323,6 +332,10 @@ ui::parallel_action::parallel_action(action::args args) : action(std::make_share
 
         return true;
     });
+
+    set_target(std::move(args.target));
+
+    impl_ptr<impl>()->actions = std::move(args.actions);
 }
 
 ui::parallel_action::parallel_action(std::nullptr_t) : action(nullptr) {
@@ -345,7 +358,7 @@ void ui::parallel_action::erase_action(action const &action) {
 #pragma mark -
 
 ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_point_t const &start_time) {
-    parallel_action sequence{{.start_time = start_time}};
+    parallel_action sequence{{.action = {.start_time = start_time}}};
 
     duration_t delay{0.0};
 
