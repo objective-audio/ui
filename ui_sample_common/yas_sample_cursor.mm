@@ -53,19 +53,16 @@ struct sample::cursor::impl : base::impl {
     }
 
     static ui::action _make_rotate_action(ui::node &target) {
-        auto rotate_action =
-            ui::make_action({.end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
-        rotate_action.set_target(target);
+        auto rotate_action = ui::make_action(
+            {.target = target, .end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
 
-        auto scale_action = ui::make_action(
-            {.start_scale = 10.0f, .end_scale = 15.0f, .continuous_action = {.duration = 5.0f, .loop_count = 0}});
+        auto scale_action = ui::make_action({.target = target,
+                                             .start_scale = 10.0f,
+                                             .end_scale = 15.0f,
+                                             .continuous_action = {.duration = 5.0f, .loop_count = 0}});
         scale_action.set_value_transformer(ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_transformer()}));
-        scale_action.set_target(target);
 
-        ui::parallel_action action;
-        action.insert_action(std::move(rotate_action));
-        action.insert_action(std::move(scale_action));
-        return action;
+        return ui::parallel_action{{.actions = {std::move(rotate_action), std::move(scale_action)}}};
     }
 
     static base _make_event_observer(ui::node &node, ui::renderer &renderer) {
@@ -83,23 +80,18 @@ struct sample::cursor::impl : base::impl {
                             auto make_fade_action = [](ui::node &node, simd::float3 const &color, float const alpha) {
                                 double const duration = 0.5;
 
-                                ui::parallel_action action;
-
-                                auto color_action = ui::make_action({.start_color = node.color(),
+                                auto color_action = ui::make_action({.target = node,
+                                                                     .start_color = node.color(),
                                                                      .end_color = color,
                                                                      .continuous_action = {.duration = duration}});
-                                color_action.set_target(node);
-                                action.insert_action(std::move(color_action));
 
-                                auto alpha_action = ui::make_action({.start_alpha = node.alpha(),
+                                auto alpha_action = ui::make_action({.target = node,
+                                                                     .start_alpha = node.alpha(),
                                                                      .end_alpha = alpha,
                                                                      .continuous_action = {.duration = duration}});
-                                alpha_action.set_target(node);
-                                action.insert_action(std::move(alpha_action));
 
-                                action.set_target(node);
-
-                                return action;
+                                return ui::parallel_action{
+                                    {.target = node, .actions = {std::move(color_action), std::move(alpha_action)}}};
                             };
 
                             switch (event.phase()) {
