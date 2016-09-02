@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "yas_ui_action.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_button.h"
 #include "yas_ui_collection_layout.h"
@@ -23,6 +22,7 @@
 #include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view_controller.h"
 #include "yas_ui_node.h"
+#include "yas_ui_node_actions.h"
 #include "yas_ui_rect_plane.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
