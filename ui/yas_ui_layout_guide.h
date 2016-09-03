@@ -82,15 +82,15 @@ namespace ui {
         class impl;
 
         struct change_context {
-            ui::float_range const &old_value;
-            ui::float_range const &new_value;
+            ui::range const &old_value;
+            ui::range const &new_value;
             layout_guide_range const &layout_guide_range;
         };
 
         using value_changed_f = std::function<void(change_context const &)>;
 
         layout_guide_range();
-        explicit layout_guide_range(ui::float_range);
+        explicit layout_guide_range(ui::range);
         layout_guide_range(std::nullptr_t);
 
         virtual ~layout_guide_range() final;
@@ -100,8 +100,8 @@ namespace ui {
         layout_guide const &min() const;
         layout_guide const &max() const;
 
-        void set_range(ui::float_range);
-        ui::float_range range() const;
+        void set_range(ui::range);
+        ui::range range() const;
 
         void set_value_changed_handler(value_changed_f);
 
@@ -122,8 +122,8 @@ namespace ui {
         using value_changed_f = std::function<void(change_context const &)>;
 
         struct ranges_args {
-            ui::float_range horizontal_range;
-            ui::float_range vertical_range;
+            ui::range horizontal_range;
+            ui::range vertical_range;
         };
 
         layout_guide_rect();
@@ -147,8 +147,8 @@ namespace ui {
         layout_guide const &bottom() const;
         layout_guide const &top() const;
 
-        void set_horizontal_range(ui::float_range);
-        void set_vertical_range(ui::float_range);
+        void set_horizontal_range(ui::range);
+        void set_vertical_range(ui::range);
         void set_ranges(ranges_args);
         void set_region(ui::region);
 

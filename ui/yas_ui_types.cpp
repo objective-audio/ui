@@ -34,24 +34,24 @@ uint32_t ui::uint_range::max() const {
     return std::max(location, location + length);
 }
 
-#pragma mark - ui::float_range
+#pragma mark - ui::range
 
-float ui::float_range::min() const {
+float ui::range::min() const {
     return std::min(location, location + length);
 }
 
-float ui::float_range::max() const {
+float ui::range::max() const {
     return std::max(location, location + length);
 }
 
 #pragma mark - ui::region
 
-ui::float_range ui::region::horizontal_range() const {
-    return ui::float_range{.location = origin.x, .length = size.width};
+ui::range ui::region::horizontal_range() const {
+    return ui::range{.location = origin.x, .length = size.width};
 }
 
-ui::float_range ui::region::vertical_range() const {
-    return ui::float_range{.location = origin.y, .length = size.height};
+ui::range ui::region::vertical_range() const {
+    return ui::range{.location = origin.y, .length = size.height};
 }
 
 float ui::region::left() const {
@@ -288,11 +288,11 @@ bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) 
     return lhs.width != rhs.width || lhs.height != rhs.height;
 }
 
-bool operator==(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs) {
+bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs) {
     return lhs.location == rhs.location && lhs.length == rhs.length;
 }
 
-bool operator!=(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs) {
+bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs) {
     return lhs.location != rhs.location || lhs.length != rhs.length;
 }
 

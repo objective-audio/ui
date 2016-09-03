@@ -353,18 +353,18 @@ using namespace yas;
 - (void)test_range_accessor {
     ui::layout_guide_range range;
 
-    XCTAssertEqual(range.range(), (ui::float_range{.location = 0.0f, .length = 0.0f}));
+    XCTAssertEqual(range.range(), (ui::range{.location = 0.0f, .length = 0.0f}));
 
     range.set_range({.location = 1.0f, .length = 2.0f});
 
-    XCTAssertEqual(range.range(), (ui::float_range{1.0f, 2.0f}));
+    XCTAssertEqual(range.range(), (ui::range{1.0f, 2.0f}));
 }
 
 - (void)test_range_value_changed_handler {
     ui::layout_guide_range guide_range;
 
-    ui::float_range handled_new_value{-1.0f, -1.0f};
-    ui::float_range handled_old_value{-1.0f, -1.0f};
+    ui::range handled_new_value{-1.0f, -1.0f};
+    ui::range handled_old_value{-1.0f, -1.0f};
     ui::layout_guide_range handled_guide_range{nullptr};
 
     guide_range.set_value_changed_handler(
@@ -376,8 +376,8 @@ using namespace yas;
 
     guide_range.set_range({1.0f, 2.0f});
 
-    XCTAssertEqual(handled_new_value, (ui::float_range{1.0f, 2.0f}));
-    XCTAssertEqual(handled_old_value, (ui::float_range{0.0f, 0.0f}));
+    XCTAssertEqual(handled_new_value, (ui::range{1.0f, 2.0f}));
+    XCTAssertEqual(handled_old_value, (ui::range{0.0f, 0.0f}));
     XCTAssertEqual(handled_guide_range, guide_range);
 }
 

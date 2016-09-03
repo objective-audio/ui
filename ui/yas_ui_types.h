@@ -66,26 +66,6 @@ namespace ui {
         float height = 0.0f;
     };
 
-    struct float_range {
-        float location;
-        float length;
-
-        float min() const;
-        float max() const;
-    };
-
-    struct region {
-        float_origin origin;
-        float_size size;
-
-        float_range horizontal_range() const;
-        float_range vertical_range() const;
-        float left() const;
-        float right() const;
-        float bottom() const;
-        float top() const;
-    };
-
     struct point {
         union {
             struct {
@@ -122,6 +102,26 @@ namespace ui {
         bool operator!=(size const &rhs) const;
 
         explicit operator bool() const;
+    };
+
+    struct range {
+        float location;
+        float length;
+
+        float min() const;
+        float max() const;
+    };
+
+    struct region {
+        float_origin origin;
+        float_size size;
+
+        range horizontal_range() const;
+        range vertical_range() const;
+        float left() const;
+        float right() const;
+        float bottom() const;
+        float top() const;
     };
 
     struct color {
@@ -197,8 +197,8 @@ bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &r
 bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
 bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
 bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
-bool operator==(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs);
-bool operator!=(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs);
+bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs);
+bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
 bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs);
 
