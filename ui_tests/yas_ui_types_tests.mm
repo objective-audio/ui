@@ -509,8 +509,8 @@ using namespace yas;
     XCTAssertEqual(region.top(), 5.0f);
 }
 
-- (void)test_float_range_getter {
-    ui::float_range range;
+- (void)test_range_getter {
+    ui::range range;
 
     range = {.location = 1.0f, .length = 2.0f};
 
