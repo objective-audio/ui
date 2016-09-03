@@ -342,16 +342,15 @@ struct ui::layout_guide_rect::impl : base::impl {
         set_horizontal_range(std::move(args.horizontal_range));
     }
 
-    void set_region(ui::float_region &&region) {
+    void set_region(ui::region &&region) {
         set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
     }
 
-    ui::float_region region() {
+    ui::region region() {
         auto h_range = _horizontal_range.range();
         auto v_range = _vertical_range.range();
 
-        return ui::float_region{.origin = {h_range.location, v_range.location},
-                                .size = {h_range.length, v_range.length}};
+        return ui::region{.origin = {h_range.location, v_range.location}, .size = {h_range.length, v_range.length}};
     }
 
     void set_value_changed_handler(value_changed_f &&handler) {
@@ -379,11 +378,10 @@ struct ui::layout_guide_rect::impl : base::impl {
         _horizontal_range.pop_notify_caller();
     }
 
-    ui::float_region old_region_in_notify() {
+    ui::region old_region_in_notify() {
         auto const h_range = _horizontal_range.impl_ptr<ui::layout_guide_range::impl>()->old_range_in_notify();
         auto const v_range = _vertical_range.impl_ptr<ui::layout_guide_range::impl>()->old_range_in_notify();
-        return ui::float_region{.origin = {h_range.location, v_range.location},
-                                .size = {h_range.length, v_range.length}};
+        return ui::region{.origin = {h_range.location, v_range.location}, .size = {h_range.length, v_range.length}};
     }
 };
 
@@ -395,7 +393,7 @@ ui::layout_guide_rect::layout_guide_rect() : layout_guide_rect(ranges_args{}) {
 ui::layout_guide_rect::layout_guide_rect(ranges_args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
-ui::layout_guide_rect::layout_guide_rect(ui::float_region region)
+ui::layout_guide_rect::layout_guide_rect(ui::region region)
     : layout_guide_rect({.horizontal_range = region.horizontal_range(), .vertical_range = region.vertical_range()}) {
 }
 
@@ -464,11 +462,11 @@ void ui::layout_guide_rect::set_ranges(ranges_args args) {
     impl_ptr<impl>()->set_ranges(std::move(args));
 }
 
-void ui::layout_guide_rect::set_region(ui::float_region region) {
+void ui::layout_guide_rect::set_region(ui::region region) {
     impl_ptr<impl>()->set_region(std::move(region));
 }
 
-ui::float_region ui::layout_guide_rect::region() const {
+ui::region ui::layout_guide_rect::region() const {
     return impl_ptr<impl>()->region();
 }
 

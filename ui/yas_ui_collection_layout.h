@@ -52,7 +52,7 @@ namespace ui {
         using observer_t = observer<collection_layout, method>;
 
         struct args {
-            ui::float_region frame;
+            ui::region frame;
             std::size_t preferred_cell_count = 0;
             std::vector<ui::float_size> cell_sizes = {{1.0f, 1.0f}};
             float row_spacing = 0.0f;
@@ -68,8 +68,8 @@ namespace ui {
         collection_layout(args);
         collection_layout(std::nullptr_t);
 
-        void set_frame(ui::float_region);
-        ui::float_region frame() const;
+        void set_frame(ui::region);
+        ui::region frame() const;
 
         void set_preferred_cell_count(std::size_t const);
         std::size_t preferred_cell_count() const;

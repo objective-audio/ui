@@ -68,7 +68,7 @@ void ui::rect_plane_data::set_rect_indices(std::vector<std::pair<std::size_t, st
     }
 }
 
-void ui::rect_plane_data::set_rect_position(ui::float_region const &region, std::size_t const rect_idx,
+void ui::rect_plane_data::set_rect_position(ui::region const &region, std::size_t const rect_idx,
                                             simd::float4x4 const &matrix) {
     write([&region, &rect_idx, &matrix](auto *rect_vertices, auto *) {
         simd::float2 positions[4];

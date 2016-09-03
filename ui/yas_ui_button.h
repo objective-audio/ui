@@ -45,7 +45,7 @@ namespace ui {
         using subject_t = subject<button, method>;
         using observer_t = observer<button, method>;
 
-        button(ui::float_region const &region);
+        button(ui::region const &region);
         button(std::nullptr_t);
 
         virtual ~button() final;

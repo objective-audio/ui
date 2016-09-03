@@ -196,9 +196,8 @@ struct ui::font_atlas::impl : base::impl {
         for (auto const &idx : each_index<std::size_t>(word_size)) {
             ui::uint_size const image_size = {uint32_t(std::ceilf(_advances[idx].width)),
                                               uint32_t(std::ceilf(string_height))};
-            ui::float_region const image_region = {0.0f, roundf(-descent, scale_factor),
-                                                   static_cast<float>(image_size.width),
-                                                   static_cast<float>(image_size.height)};
+            ui::region const image_region = {0.0f, roundf(-descent, scale_factor), static_cast<float>(image_size.width),
+                                             static_cast<float>(image_size.height)};
 
             _set_vertex_position(image_region, idx);
 
@@ -235,7 +234,7 @@ struct ui::font_atlas::impl : base::impl {
         return _rects.at(idx);
     }
 
-    void _set_vertex_position(float_region const &region, std::size_t const word_idx) {
+    void _set_vertex_position(region const &region, std::size_t const word_idx) {
         auto &rect = _rects.at(word_idx);
         float const minX = region.origin.x;
         float const minY = region.origin.y;

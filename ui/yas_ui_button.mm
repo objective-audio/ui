@@ -19,7 +19,7 @@ using namespace yas;
 #pragma mark - ui::button::impl
 
 struct ui::button::impl : base::impl {
-    impl(ui::float_region const &region) : _layout_guide_rect(region) {
+    impl(ui::region const &region) : _layout_guide_rect(region) {
         _states.flags.reset();
 
         _rect_plane.node().set_collider(ui::collider{});
@@ -93,7 +93,7 @@ struct ui::button::impl : base::impl {
     ui::button::subject_t _subject;
 
    private:
-    void _update_rect_positions(ui::float_region const &region) {
+    void _update_rect_positions(ui::region const &region) {
         for (auto const &idx : make_each(ui::button::state_count * 2)) {
             _rect_plane.data().set_rect_position(region, idx);
         }
@@ -210,7 +210,7 @@ struct ui::button::impl : base::impl {
 
 #pragma mark - ui::button
 
-ui::button::button(ui::float_region const &region) : base(std::make_shared<impl>(region)) {
+ui::button::button(ui::region const &region) : base(std::make_shared<impl>(region)) {
     impl_ptr<impl>()->prepare(*this);
 }
 
