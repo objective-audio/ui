@@ -82,7 +82,7 @@ using namespace yas;
 }
 
 - (void)test_hit_test_rect {
-    ui::collider collider{ui::shape{{-0.5f, -0.5f, 1.0f, 1.0f}}};
+    ui::collider collider{ui::shape{{{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
 
     XCTAssertTrue(collider.hit_test(0.0f));
     XCTAssertTrue(collider.hit_test(-0.5f));

@@ -180,7 +180,7 @@ using namespace yas;
 }
 
 - (void)test_create_point_with_args {
-    ui::layout_guide_point point{{.x = 1.0f, .y = 2.0f}};
+    ui::layout_guide_point point{{1.0f, 2.0f}};
 
     XCTAssertTrue(point);
     XCTAssertTrue(point.x());
@@ -198,18 +198,18 @@ using namespace yas;
 - (void)test_point_accessor {
     ui::layout_guide_point point;
 
-    XCTAssertEqual(point.point(), (ui::float_origin{0.0f, 0.0f}));
+    XCTAssertTrue(point.point() == (ui::point{0.0f, 0.0f}));
 
     point.set_point({1.0f, -1.0f});
 
-    XCTAssertEqual(point.point(), (ui::float_origin{1.0f, -1.0f}));
+    XCTAssertTrue(point.point() == (ui::point{1.0f, -1.0f}));
 }
 
 - (void)test_point_value_changed_handler {
     ui::layout_guide_point guide_point;
 
-    ui::float_origin handled_new_value{-1.0f, -1.0f};
-    ui::float_origin handled_old_value{-1.0f, -1.0f};
+    ui::point handled_new_value{-1.0f, -1.0f};
+    ui::point handled_old_value{-1.0f, -1.0f};
     ui::layout_guide_point handled_guide_point{nullptr};
 
     guide_point.set_value_changed_handler(
@@ -221,19 +221,19 @@ using namespace yas;
 
     guide_point.set_point({1.0f, 2.0f});
 
-    XCTAssertEqual(handled_new_value, (ui::float_origin{1.0f, 2.0f}));
-    XCTAssertEqual(handled_old_value, (ui::float_origin{0.0f, 0.0f}));
-    XCTAssertEqual(handled_guide_point, guide_point);
+    XCTAssertTrue(handled_new_value == (ui::point{1.0f, 2.0f}));
+    XCTAssertTrue(handled_old_value == (ui::point{0.0f, 0.0f}));
+    XCTAssertTrue(handled_guide_point == guide_point);
 }
 
 - (void)test_point_notify_caller {
     ui::layout_guide_point point;
 
-    ui::float_origin handled_point;
-    ui::float_origin notified_old_point;
-    ui::float_origin notified_new_point;
+    ui::point handled_point;
+    ui::point notified_old_point;
+    ui::point notified_new_point;
 
-    auto is_all_zero = [](ui::float_origin const &origin) { return origin.x == 0 && origin.y == 0; };
+    auto is_all_zero = [](ui::point const &origin) { return origin.x == 0 && origin.y == 0; };
 
     auto clear_points = [&handled_point, &notified_old_point, &notified_new_point]() {
         handled_point.x = handled_point.y = 0.0f;
@@ -580,24 +580,24 @@ using namespace yas;
 }
 
 - (void)test_rect_value_changed_handler {
-    ui::layout_guide_rect guide_range;
+    ui::layout_guide_rect guide_rect;
 
-    ui::region handled_new_value{-1.0f, -1.0f, -1.0f, -1.0f};
-    ui::region handled_old_value{-1.0f, -1.0f, -1.0f, -1.0f};
+    ui::region handled_new_value{.origin = {-1.0f, -1.0f}, .size = {-1.0f, -1.0f}};
+    ui::region handled_old_value{.origin = {-1.0f, -1.0f}, .size = {-1.0f, -1.0f}};
     ui::layout_guide_rect handled_guide_rect{nullptr};
 
-    guide_range.set_value_changed_handler(
+    guide_rect.set_value_changed_handler(
         [&handled_new_value, &handled_old_value, &handled_guide_rect](auto const &context) {
             handled_new_value = context.new_value;
             handled_old_value = context.old_value;
             handled_guide_rect = context.layout_guide_rect;
         });
 
-    guide_range.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+    guide_rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
-    XCTAssertEqual(handled_new_value, (ui::region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
-    XCTAssertEqual(handled_old_value, (ui::region{}));
-    XCTAssertEqual(handled_guide_rect, guide_range);
+    XCTAssertTrue(handled_new_value == (ui::region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
+    XCTAssertTrue(handled_old_value == (ui::region{}));
+    XCTAssertEqual(handled_guide_rect, guide_rect);
 }
 
 - (void)test_rect_notify_caller {

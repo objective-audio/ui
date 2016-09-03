@@ -104,7 +104,7 @@ using namespace yas;
     auto plane = ui::make_rect_plane(2);
     auto vertices = plane.data().dynamic_mesh_data().vertices();
 
-    plane.data().set_rect_position({1.0f, 2.0f, 3.0f, 4.0f}, 0);
+    plane.data().set_rect_position({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}, 0);
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 2.0f);
@@ -115,7 +115,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].position.x, 4.0f);
     XCTAssertEqual(vertices[3].position.y, 6.0f);
 
-    plane.data().set_rect_position({2.0f, 3.0f, 4.0f, 5.0f}, 1);
+    plane.data().set_rect_position({.origin = {2.0f, 3.0f}, .size = {4.0f, 5.0f}}, 1);
 
     XCTAssertEqual(vertices[4].position.x, 2.0f);
     XCTAssertEqual(vertices[4].position.y, 3.0f);

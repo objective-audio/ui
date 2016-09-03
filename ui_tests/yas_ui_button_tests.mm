@@ -26,7 +26,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::button button{{0.0f, 1.0f, 2.0f, 3.0f}};
+    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}};
 
     XCTAssertTrue(button);
     XCTAssertTrue(button.rect_plane());
@@ -59,7 +59,7 @@ using namespace yas;
     });
     renderer.insert_action(pre_render_action);
 
-    ui::button button{{-0.5f, -0.5f, 1.0f, 1.0f}};
+    ui::button button{{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}};
     renderer.root_node().push_back_sub_node(button.rect_plane().node());
 
     std::vector<ui::button::method> observed_methods;

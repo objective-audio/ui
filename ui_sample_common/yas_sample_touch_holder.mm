@@ -19,7 +19,7 @@ struct sample::touch_holder::impl : base::impl {
     ui::node root_node;
 
     impl() {
-        _rect_plane_data.set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+        _rect_plane_data.set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
     }
 
     void prepare(sample::touch_holder &holder) {

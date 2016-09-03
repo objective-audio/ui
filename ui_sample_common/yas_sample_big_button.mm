@@ -56,7 +56,7 @@ struct sample::big_button::impl : base::impl {
     }
 
     float const _radius = 60;
-    ui::button _button{{-_radius, -_radius, _radius * 2.0f, _radius * 2.0f}};
+    ui::button _button{{.origin = {-_radius, -_radius}, .size = {_radius * 2.0f, _radius * 2.0f}}};
 };
 
 #pragma mark - big_button
