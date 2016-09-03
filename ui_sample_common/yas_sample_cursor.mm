@@ -41,7 +41,7 @@ struct sample::cursor::impl : base::impl {
         auto const angle_dif = 360.0f / count;
         auto mesh_node = ui::make_rect_plane(count);
 
-        ui::float_region region{-0.5f, -0.5f, 1.0f, 1.0f};
+        ui::region region{-0.5f, -0.5f, 1.0f, 1.0f};
         auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
         for (auto const &idx : make_each(count)) {
             mesh_node.data().set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);

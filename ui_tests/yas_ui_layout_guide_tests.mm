@@ -163,7 +163,7 @@ using namespace yas;
     guide.set_value(1.0f);
 
     guide.pop_notify_caller();
-    
+
     XCTAssertFalse(called);
 }
 
@@ -582,8 +582,8 @@ using namespace yas;
 - (void)test_rect_value_changed_handler {
     ui::layout_guide_rect guide_range;
 
-    ui::float_region handled_new_value{-1.0f, -1.0f, -1.0f, -1.0f};
-    ui::float_region handled_old_value{-1.0f, -1.0f, -1.0f, -1.0f};
+    ui::region handled_new_value{-1.0f, -1.0f, -1.0f, -1.0f};
+    ui::region handled_old_value{-1.0f, -1.0f, -1.0f, -1.0f};
     ui::layout_guide_rect handled_guide_rect{nullptr};
 
     guide_range.set_value_changed_handler(
@@ -595,8 +595,8 @@ using namespace yas;
 
     guide_range.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
-    XCTAssertEqual(handled_new_value, (ui::float_region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
-    XCTAssertEqual(handled_old_value, (ui::float_region{}));
+    XCTAssertEqual(handled_new_value, (ui::region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
+    XCTAssertEqual(handled_old_value, (ui::region{}));
     XCTAssertEqual(handled_guide_rect, guide_range);
 }
 

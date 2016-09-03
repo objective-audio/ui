@@ -114,8 +114,8 @@ namespace ui {
         class impl;
 
         struct change_context {
-            ui::float_region const &old_value;
-            ui::float_region const &new_value;
+            ui::region const &old_value;
+            ui::region const &new_value;
             layout_guide_rect const &layout_guide_rect;
         };
 
@@ -128,7 +128,7 @@ namespace ui {
 
         layout_guide_rect();
         explicit layout_guide_rect(ranges_args);
-        explicit layout_guide_rect(ui::float_region);
+        explicit layout_guide_rect(ui::region);
         layout_guide_rect(std::nullptr_t);
 
         virtual ~layout_guide_rect() final;
@@ -150,9 +150,9 @@ namespace ui {
         void set_horizontal_range(ui::float_range);
         void set_vertical_range(ui::float_range);
         void set_ranges(ranges_args);
-        void set_region(ui::float_region);
+        void set_region(ui::region);
 
-        ui::float_region region() const;
+        ui::region region() const;
 
         void set_value_changed_handler(value_changed_f);
 

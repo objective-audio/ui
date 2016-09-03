@@ -26,7 +26,7 @@ namespace ui {
 
         void set_rect_index(std::size_t const index_idx, std::size_t const vertex_idx);
         void set_rect_indices(std::vector<std::pair<std::size_t, std::size_t>> const &idx_pairs);
-        void set_rect_position(ui::float_region const &region, std::size_t const rect_idx,
+        void set_rect_position(ui::region const &region, std::size_t const rect_idx,
                                simd::float4x4 const &matrix = matrix_identity_float4x4);
         void set_rect_color(simd::float4 const &color, std::size_t const rect_idx);
         void set_rect_tex_coords(ui::uint_region const &pixel_region, std::size_t const rect_idx);

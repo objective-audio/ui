@@ -209,7 +209,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
         auto const layout_count = _collection_layout.actual_cell_count();
 
-        auto handler = [](sample::soft_key &soft_key, ui::float_region const &region) {
+        auto handler = [](sample::soft_key &soft_key, ui::region const &region) {
             soft_key.button().rect_plane().node().set_position({region.origin.x, region.origin.y});
             soft_key.button().layout_guide_rect().set_region({.size = region.size});
         };

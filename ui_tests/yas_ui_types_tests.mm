@@ -185,7 +185,7 @@ using namespace yas;
     XCTAssertTrue(size1_2a != size2_2);
 }
 
-- (void)test_is_equal_float_region {
+- (void)test_is_equal_region {
     auto origin_a1 = ui::float_origin{1.0f, 2.0f};
     auto origin_a2 = ui::float_origin{1.0f, 2.0f};
     auto origin_b = ui::float_origin{3.0f, 4.0f};
@@ -194,11 +194,11 @@ using namespace yas;
     auto size_a2 = ui::float_size{5.0f, 6.0f};
     auto size_b = ui::float_size{7.0f, 8.0f};
 
-    auto region_a1_a1 = ui::float_region{origin_a1, size_a1};
-    auto region_a1_a2 = ui::float_region{origin_a1, size_a2};
-    auto region_a2_a1 = ui::float_region{origin_a2, size_a1};
-    auto region_a2_a2 = ui::float_region{origin_a2, size_a2};
-    auto region_b = ui::float_region{origin_b, size_b};
+    auto region_a1_a1 = ui::region{origin_a1, size_a1};
+    auto region_a1_a2 = ui::region{origin_a1, size_a2};
+    auto region_a2_a1 = ui::region{origin_a2, size_a1};
+    auto region_a2_a2 = ui::region{origin_a2, size_a2};
+    auto region_b = ui::region{origin_b, size_b};
 
     XCTAssertTrue(region_a1_a1 == region_a1_a1);
     XCTAssertTrue(region_a1_a1 == region_a1_a2);
@@ -222,7 +222,7 @@ using namespace yas;
 }
 
 - (void)test_contains {
-    ui::float_region region = {0.0f, -1.0f, 1.0f, 2.0f};
+    ui::region region = {0.0f, -1.0f, 1.0f, 2.0f};
 
     XCTAssertTrue(contains(region, {0.0f, 0.0f}));
     XCTAssertTrue(contains(region, {0.0f, -1.0f}));
@@ -261,8 +261,8 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::float_size{3.0f, 4.0f}), "{3.000000, 4.000000}");
 }
 
-- (void)test_float_region_to_string {
-    XCTAssertEqual(to_string(ui::float_region{5.0f, 6.0f, 7.0f, 8.0f}), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
+- (void)test_region_to_string {
+    XCTAssertEqual(to_string(ui::region{5.0f, 6.0f, 7.0f, 8.0f}), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
 }
 
 - (void)test_point_to_string {
@@ -327,9 +327,9 @@ using namespace yas;
     XCTAssertEqual(stream.str(), "{3.000000, 4.000000}");
 }
 
-- (void)test_float_region_ostream {
+- (void)test_region_ostream {
     std::ostringstream stream;
-    stream << ui::float_region{5.0f, 6.0f, 7.0f, 8.0f};
+    stream << ui::region{5.0f, 6.0f, 7.0f, 8.0f};
     XCTAssertEqual(stream.str(), "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
 }
 
@@ -491,8 +491,8 @@ using namespace yas;
     XCTAssertEqual(range.max(), 3);
 }
 
-- (void)test_float_region_getter {
-    ui::float_region region;
+- (void)test_region_getter {
+    ui::region region;
 
     region = {.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}};
 

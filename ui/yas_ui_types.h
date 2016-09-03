@@ -74,7 +74,7 @@ namespace ui {
         float max() const;
     };
 
-    struct float_region {
+    struct region {
         float_origin origin;
         float_size size;
 
@@ -163,7 +163,7 @@ simd::float2 to_float2(CGPoint const &);
 simd::float2 to_float2(simd::float4 const &);
 simd::float4 to_float4(simd::float2 const &);
 
-bool contains(ui::float_region const &, ui::point const &);
+bool contains(ui::region const &, ui::point const &);
 
 std::string to_string(ui::pivot const &);
 std::string to_string(ui::uint_origin const &);
@@ -171,7 +171,7 @@ std::string to_string(ui::uint_size const &);
 std::string to_string(ui::uint_region const &);
 std::string to_string(ui::float_origin const &);
 std::string to_string(ui::float_size const &);
-std::string to_string(ui::float_region const &);
+std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
 std::string to_string(ui::color const &);
@@ -199,15 +199,15 @@ bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
 bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
 bool operator==(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs);
 bool operator!=(yas::ui::float_range const &lhs, yas::ui::float_range const &rhs);
-bool operator==(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
-bool operator!=(yas::ui::float_region const &lhs, yas::ui::float_region const &rhs);
+bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
+bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs);
 
 std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::float_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::float_size const &);
-std::ostream &operator<<(std::ostream &, yas::ui::float_region const &);
+std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::color const &);

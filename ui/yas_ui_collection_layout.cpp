@@ -73,7 +73,7 @@ struct ui::collection_layout::impl : base::impl {
         _update_layout();
     }
 
-    void set_frame(ui::float_region &&frame) {
+    void set_frame(ui::region &&frame) {
         if (_frame_guide_rect.region() != frame) {
             _frame_guide_rect.set_region(frame);
 
@@ -218,10 +218,10 @@ struct ui::collection_layout::impl : base::impl {
         auto const is_row_limiting = _swap_direction_if_horizontal(_frame_guide_rect.region()).size.height != 0;
         auto const border_rect = _transformed_border_rect();
         auto const border_abs_size = ui::float_size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
-        std::vector<std::vector<ui::float_region>> regions;
+        std::vector<std::vector<ui::region>> regions;
         float row_max_diff = 0.0f;
         ui::float_origin origin;
-        std::vector<ui::float_region> row_regions;
+        std::vector<ui::region> row_regions;
         auto const prev_actual_cell_count = _cell_guide_rects.size();
         std::size_t actual_cell_count = 0;
 
@@ -246,7 +246,7 @@ struct ui::collection_layout::impl : base::impl {
                 break;
             }
 
-            row_regions.emplace_back(ui::float_region{
+            row_regions.emplace_back(ui::region{
                 .origin = {origin.x + border_rect.origin.x, origin.y + border_rect.origin.y}, .size = cell_size});
 
             ++actual_cell_count;
@@ -284,8 +284,8 @@ struct ui::collection_layout::impl : base::impl {
             }
 
             for (auto const &region : row_regions) {
-                ui::float_region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
-                                                .size = region.size};
+                ui::region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
+                                          .size = region.size};
                 _cell_guide_rects.at(idx).set_region(_swap_direction_if_horizontal(aligned_region));
 
                 ++idx;
@@ -341,9 +341,9 @@ struct ui::collection_layout::impl : base::impl {
         return diff;
     }
 
-    ui::float_region _transformed_border_rect() {
+    ui::region _transformed_border_rect() {
         auto const original = _swap_direction_if_horizontal(_border_guide_rect.region());
-        ui::float_region result{.size = original.size};
+        ui::region result{.size = original.size};
 
         switch (_row_order) {
             case ui::layout_order::ascending: {
@@ -368,10 +368,10 @@ struct ui::collection_layout::impl : base::impl {
         return result;
     }
 
-    ui::float_region _swap_direction_if_horizontal(ui::float_region const &region) {
+    ui::region _swap_direction_if_horizontal(ui::region const &region) {
         if (_direction == ui::layout_direction::horizontal) {
-            return ui::float_region{.origin = {region.origin.y, region.origin.x},
-                                    .size = {region.size.height, region.size.width}};
+            return ui::region{.origin = {region.origin.y, region.origin.x},
+                              .size = {region.size.height, region.size.width}};
         } else {
             return region;
         }
@@ -407,11 +407,11 @@ ui::collection_layout::collection_layout(args args) : base(std::make_shared<impl
 ui::collection_layout::collection_layout(std::nullptr_t) : base(nullptr) {
 }
 
-void ui::collection_layout::set_frame(ui::float_region frame) {
+void ui::collection_layout::set_frame(ui::region frame) {
     impl_ptr<impl>()->set_frame(std::move(frame));
 }
 
-ui::float_region ui::collection_layout::frame() const {
+ui::region ui::collection_layout::frame() const {
     return impl_ptr<impl>()->_frame_guide_rect.region();
 }
 
