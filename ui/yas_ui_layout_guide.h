@@ -50,15 +50,15 @@ namespace ui {
         class impl;
 
         struct change_context {
-            ui::float_origin const &old_value;
-            ui::float_origin const &new_value;
+            ui::point const &old_value;
+            ui::point const &new_value;
             layout_guide_point const &layout_guide_point;
         };
 
         using value_changed_f = std::function<void(change_context const &)>;
 
         layout_guide_point();
-        explicit layout_guide_point(ui::float_origin);
+        explicit layout_guide_point(ui::point);
         layout_guide_point(std::nullptr_t);
 
         virtual ~layout_guide_point() final;
@@ -68,8 +68,8 @@ namespace ui {
         ui::layout_guide const &x() const;
         ui::layout_guide const &y() const;
 
-        void set_point(ui::float_origin);
-        ui::float_origin point() const;
+        void set_point(ui::point);
+        ui::point point() const;
 
         void set_value_changed_handler(value_changed_f);
 

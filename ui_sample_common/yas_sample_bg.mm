@@ -10,7 +10,7 @@ struct sample::bg::impl : base::impl {
     ui::rect_plane _rect_plane = ui::make_rect_plane(1);
 
     impl() {
-        _rect_plane.data().set_rect_position({-0.5f, -0.5f, 1.0f, 1.0f}, 0);
+        _rect_plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
         auto &node = _rect_plane.node();
         node.set_scale(0.0f);
         node.set_color(0.75f);

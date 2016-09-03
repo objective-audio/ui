@@ -12,7 +12,7 @@ namespace sample {
     struct soft_key : base {
         struct impl : base::impl {
             impl(std::string &&key, float const width, ui::font_atlas &&atlas)
-                : _button({0.0f, 0.0f, width, width}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
+                : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 _button.rect_plane().node().mesh().set_use_mesh_color(true);
                 _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
                 _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
@@ -123,13 +123,13 @@ struct sample::soft_keyboard::impl : base::impl {
         auto const spacing = 4.0f;
         auto const width = key_width * 3.0f + spacing * 4.0f;
 
-        std::vector<ui::float_size> cell_sizes;
+        std::vector<ui::size> cell_sizes;
         cell_sizes.reserve(key_count);
         for (auto const &idx : make_each(key_count)) {
             if (idx == 0) {
-                cell_sizes.emplace_back(ui::float_size{0.0f, key_width});
+                cell_sizes.emplace_back(ui::size{0.0f, key_width});
             } else {
-                cell_sizes.emplace_back(ui::float_size{key_width, key_width});
+                cell_sizes.emplace_back(ui::size{key_width, key_width});
             }
         }
 

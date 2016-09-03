@@ -54,7 +54,7 @@ namespace ui {
         struct args {
             ui::region frame;
             std::size_t preferred_cell_count = 0;
-            std::vector<ui::float_size> cell_sizes = {{1.0f, 1.0f}};
+            std::vector<ui::size> cell_sizes = {{1.0f, 1.0f}};
             float row_spacing = 0.0f;
             float col_spacing = 0.0f;
             ui::layout_borders borders;
@@ -75,8 +75,8 @@ namespace ui {
         std::size_t preferred_cell_count() const;
         std::size_t actual_cell_count() const;
 
-        void set_cell_sizes(std::vector<ui::float_size>);
-        std::vector<ui::float_size> const &cell_sizes() const;
+        void set_cell_sizes(std::vector<ui::size>);
+        std::vector<ui::size> const &cell_sizes() const;
 
         void set_row_spacing(float const);
         float row_spacing() const;

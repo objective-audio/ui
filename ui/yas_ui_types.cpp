@@ -34,42 +34,6 @@ uint32_t ui::uint_range::max() const {
     return std::max(location, location + length);
 }
 
-#pragma mark - ui::range
-
-float ui::range::min() const {
-    return std::min(location, location + length);
-}
-
-float ui::range::max() const {
-    return std::max(location, location + length);
-}
-
-#pragma mark - ui::region
-
-ui::range ui::region::horizontal_range() const {
-    return ui::range{.location = origin.x, .length = size.width};
-}
-
-ui::range ui::region::vertical_range() const {
-    return ui::range{.location = origin.y, .length = size.height};
-}
-
-float ui::region::left() const {
-    return std::min(origin.x, origin.x + size.width);
-}
-
-float ui::region::right() const {
-    return std::max(origin.x, origin.x + size.width);
-}
-
-float ui::region::bottom() const {
-    return std::min(origin.y, origin.y + size.height);
-}
-
-float ui::region::top() const {
-    return std::max(origin.y, origin.y + size.height);
-}
-
 #pragma mark - ui::point
 
 ui::point::point() {
@@ -116,7 +80,43 @@ ui::size::operator bool() const {
     return width != 0 || height != 0;
 }
 
-#pragma mark -
+#pragma mark - ui::range
+
+float ui::range::min() const {
+    return std::min(location, location + length);
+}
+
+float ui::range::max() const {
+    return std::max(location, location + length);
+}
+
+#pragma mark - ui::region
+
+ui::range ui::region::horizontal_range() const {
+    return ui::range{.location = origin.x, .length = size.width};
+}
+
+ui::range ui::region::vertical_range() const {
+    return ui::range{.location = origin.y, .length = size.height};
+}
+
+float ui::region::left() const {
+    return std::min(origin.x, origin.x + size.width);
+}
+
+float ui::region::right() const {
+    return std::max(origin.x, origin.x + size.width);
+}
+
+float ui::region::bottom() const {
+    return std::min(origin.y, origin.y + size.height);
+}
+
+float ui::region::top() const {
+    return std::max(origin.y, origin.y + size.height);
+}
+
+#pragma mark - color
 
 ui::color::color() {
 }
@@ -185,14 +185,6 @@ std::string yas::to_string(ui::uint_size const &size) {
 
 std::string yas::to_string(ui::uint_region const &region) {
     return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
-}
-
-std::string yas::to_string(ui::float_origin const &origin) {
-    return "{" + std::to_string(origin.x) + ", " + std::to_string(origin.y) + "}";
-}
-
-std::string yas::to_string(ui::float_size const &size) {
-    return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
 }
 
 std::string yas::to_string(ui::region const &region) {
@@ -272,22 +264,6 @@ bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs
     return lhs.origin != rhs.origin || lhs.size != rhs.size;
 }
 
-bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y;
-}
-
-bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs) {
-    return lhs.x != rhs.x || lhs.y != rhs.y;
-}
-
-bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) {
-    return lhs.width == rhs.width && lhs.height == rhs.height;
-}
-
-bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs) {
-    return lhs.width != rhs.width || lhs.height != rhs.height;
-}
-
 bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs) {
     return lhs.location == rhs.location && lhs.length == rhs.length;
 }
@@ -316,16 +292,6 @@ std::ostream &operator<<(std::ostream &os, yas::ui::uint_size const &size) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::uint_region const &region) {
     os << to_string(region);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::float_origin const &origin) {
-    os << to_string(origin);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::float_size const &size) {
-    os << to_string(size);
     return os;
 }
 

@@ -93,7 +93,7 @@ struct ui::collection_layout::impl : base::impl {
         return _preferred_cell_count;
     }
 
-    void set_cell_sizes(std::vector<ui::float_size> &&sizes) {
+    void set_cell_sizes(std::vector<ui::size> &&sizes) {
         _cell_sizes = std::move(sizes);
 
         if (!_validate_cell_sizes()) {
@@ -103,7 +103,7 @@ struct ui::collection_layout::impl : base::impl {
         _update_layout();
     }
 
-    std::vector<ui::float_size> const &cell_sizes() {
+    std::vector<ui::size> const &cell_sizes() {
         return _cell_sizes;
     }
 
@@ -201,7 +201,7 @@ struct ui::collection_layout::impl : base::impl {
 
    private:
     std::size_t _preferred_cell_count;
-    std::vector<ui::float_size> _cell_sizes;
+    std::vector<ui::size> _cell_sizes;
     float _row_spacing;
     float _col_spacing;
     ui::layout_alignment _alignment;
@@ -217,10 +217,10 @@ struct ui::collection_layout::impl : base::impl {
 
         auto const is_row_limiting = _swap_direction_if_horizontal(_frame_guide_rect.region()).size.height != 0;
         auto const border_rect = _transformed_border_rect();
-        auto const border_abs_size = ui::float_size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
+        auto const border_abs_size = ui::size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
         std::vector<std::vector<ui::region>> regions;
         float row_max_diff = 0.0f;
-        ui::float_origin origin;
+        ui::point origin;
         std::vector<ui::region> row_regions;
         auto const prev_actual_cell_count = _cell_guide_rects.size();
         std::size_t actual_cell_count = 0;
@@ -246,8 +246,9 @@ struct ui::collection_layout::impl : base::impl {
                 break;
             }
 
-            row_regions.emplace_back(ui::region{
-                .origin = {origin.x + border_rect.origin.x, origin.y + border_rect.origin.y}, .size = cell_size});
+            row_regions.emplace_back(
+                ui::region{.origin = {origin.x + border_rect.origin.x, origin.y + border_rect.origin.y},
+                           .size = {cell_size.width, cell_size.height}});
 
             ++actual_cell_count;
 
@@ -299,13 +300,13 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    ui::float_size _transformed_cell_size(std::size_t const idx) {
-        ui::float_size result;
+    ui::size _transformed_cell_size(std::size_t const idx) {
+        ui::size result;
         auto const &cell_size = _cell_sizes.at(idx % _cell_sizes.size());
 
         switch (_direction) {
             case ui::layout_direction::horizontal:
-                result = ui::float_size{cell_size.height, cell_size.width};
+                result = ui::size{cell_size.height, cell_size.width};
             case ui::layout_direction::vertical:
                 result = cell_size;
         }
@@ -427,11 +428,11 @@ std::size_t ui::collection_layout::actual_cell_count() const {
     return impl_ptr<impl>()->_cell_guide_rects.size();
 }
 
-void ui::collection_layout::set_cell_sizes(std::vector<ui::float_size> sizes) {
+void ui::collection_layout::set_cell_sizes(std::vector<ui::size> sizes) {
     impl_ptr<impl>()->set_cell_sizes(std::move(sizes));
 }
 
-std::vector<ui::float_size> const &ui::collection_layout::cell_sizes() const {
+std::vector<ui::size> const &ui::collection_layout::cell_sizes() const {
     return impl_ptr<impl>()->cell_sizes();
 }
 

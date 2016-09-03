@@ -119,10 +119,10 @@ struct ui::layout_guide_point::impl : base::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
-    impl(ui::float_origin &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
+    impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
     }
 
-    void set_point(ui::float_origin &&point) {
+    void set_point(ui::point &&point) {
         push_notify_caller();
 
         _x_guide.set_value(std::move(point.x));
@@ -131,8 +131,8 @@ struct ui::layout_guide_point::impl : base::impl {
         pop_notify_caller();
     }
 
-    ui::float_origin point() {
-        return ui::float_origin{_x_guide.value(), _y_guide.value()};
+    ui::point point() {
+        return ui::point{_x_guide.value(), _y_guide.value()};
     }
 
     void set_value_changed_handler(value_changed_f &&handler) {
@@ -159,18 +159,18 @@ struct ui::layout_guide_point::impl : base::impl {
         _y_guide.pop_notify_caller();
     }
 
-    ui::float_origin old_point_in_notify() {
-        return ui::float_origin{_x_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify(),
+    ui::point old_point_in_notify() {
+        return ui::point{_x_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify(),
                                 _y_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify()};
     }
 };
 
 #pragma mark - ui::layout_guide_point
 
-ui::layout_guide_point::layout_guide_point() : layout_guide_point(ui::float_origin{}) {
+ui::layout_guide_point::layout_guide_point() : layout_guide_point(ui::point{}) {
 }
 
-ui::layout_guide_point::layout_guide_point(ui::float_origin origin) : base(std::make_shared<impl>(std::move(origin))) {
+ui::layout_guide_point::layout_guide_point(ui::point origin) : base(std::make_shared<impl>(std::move(origin))) {
 }
 
 ui::layout_guide_point::layout_guide_point(std::nullptr_t) : base(nullptr) {
@@ -194,11 +194,11 @@ ui::layout_guide const &ui::layout_guide_point::y() const {
     return impl_ptr<impl>()->_y_guide;
 }
 
-void ui::layout_guide_point::set_point(ui::float_origin point) {
+void ui::layout_guide_point::set_point(ui::point point) {
     impl_ptr<impl>()->set_point(std::move(point));
 }
 
-ui::float_origin ui::layout_guide_point::point() const {
+ui::point ui::layout_guide_point::point() const {
     return impl_ptr<impl>()->point();
 }
 

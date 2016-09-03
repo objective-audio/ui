@@ -56,16 +56,6 @@ namespace ui {
         uint32_t max() const;
     };
 
-    struct float_origin {
-        float x = 0.0f;
-        float y = 0.0f;
-    };
-
-    struct float_size {
-        float width = 0.0f;
-        float height = 0.0f;
-    };
-
     struct point {
         union {
             struct {
@@ -113,8 +103,8 @@ namespace ui {
     };
 
     struct region {
-        float_origin origin;
-        float_size size;
+        ui::point origin;
+        ui::size size;
 
         range horizontal_range() const;
         range vertical_range() const;
@@ -169,8 +159,6 @@ std::string to_string(ui::pivot const &);
 std::string to_string(ui::uint_origin const &);
 std::string to_string(ui::uint_size const &);
 std::string to_string(ui::uint_region const &);
-std::string to_string(ui::float_origin const &);
-std::string to_string(ui::float_size const &);
 std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
@@ -193,10 +181,6 @@ bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
 bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
 bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
-bool operator==(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
-bool operator!=(yas::ui::float_origin const &lhs, yas::ui::float_origin const &rhs);
-bool operator==(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
-bool operator!=(yas::ui::float_size const &lhs, yas::ui::float_size const &rhs);
 bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
@@ -205,8 +189,6 @@ bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
-std::ostream &operator<<(std::ostream &, yas::ui::float_origin const &);
-std::ostream &operator<<(std::ostream &, yas::ui::float_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);

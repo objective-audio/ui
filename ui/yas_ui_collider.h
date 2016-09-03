@@ -23,7 +23,7 @@ namespace ui {
     };
 
     struct rect_shape {
-        ui::region rect = {-0.5f, -0.5f, 1.0f, 1.0f};
+        ui::region rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}};
 
         bool hit_test(ui::point const &pos) const;
     };
