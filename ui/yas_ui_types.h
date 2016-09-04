@@ -95,8 +95,13 @@ namespace ui {
     };
 
     struct range {
-        float location;
-        float length;
+        union {
+            struct {
+                float location;
+                float length;
+            };
+            simd::float2 v;
+        };
 
         float min() const;
         float max() const;

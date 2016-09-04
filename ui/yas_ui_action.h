@@ -9,7 +9,6 @@
 #include <vector>
 #include "yas_base.h"
 #include "yas_protocol.h"
-#include "yas_ui_node.h"
 #include "yas_ui_transformer.h"
 #include "yas_ui_types.h"
 

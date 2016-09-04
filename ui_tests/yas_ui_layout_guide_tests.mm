@@ -353,11 +353,11 @@ using namespace yas;
 - (void)test_range_accessor {
     ui::layout_guide_range range;
 
-    XCTAssertEqual(range.range(), (ui::range{.location = 0.0f, .length = 0.0f}));
+    XCTAssertTrue(range.range() == (ui::range{.location = 0.0f, .length = 0.0f}));
 
     range.set_range({.location = 1.0f, .length = 2.0f});
 
-    XCTAssertEqual(range.range(), (ui::range{1.0f, 2.0f}));
+    XCTAssertTrue(range.range() == (ui::range{1.0f, 2.0f}));
 }
 
 - (void)test_range_value_changed_handler {
@@ -376,8 +376,8 @@ using namespace yas;
 
     guide_range.set_range({1.0f, 2.0f});
 
-    XCTAssertEqual(handled_new_value, (ui::range{1.0f, 2.0f}));
-    XCTAssertEqual(handled_old_value, (ui::range{0.0f, 0.0f}));
+    XCTAssertTrue(handled_new_value == (ui::range{1.0f, 2.0f}));
+    XCTAssertTrue(handled_old_value == (ui::range{0.0f, 0.0f}));
     XCTAssertEqual(handled_guide_range, guide_range);
 }
 

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "yas_ui_action.h"
+#include "yas_ui_node.h"
 
 namespace yas {
 namespace ui {
