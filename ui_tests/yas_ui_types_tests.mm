@@ -383,6 +383,15 @@ using namespace yas;
     XCTAssertEqual(c.blue, 3.0f);
 }
 
+- (void)test_create_region_with_float4 {
+    ui::region region{.v = simd::float4{1.0f, 2.0f, 3.0f, 4.0f}};
+
+    XCTAssertEqual(region.origin.x, 1.0f);
+    XCTAssertEqual(region.origin.y, 2.0f);
+    XCTAssertEqual(region.size.width, 3.0f);
+    XCTAssertEqual(region.size.height, 4.0f);
+}
+
 - (void)test_is_equal_points {
     ui::point p1{1.0f, 2.0f};
     ui::point p2{1.0f, 2.0f};
