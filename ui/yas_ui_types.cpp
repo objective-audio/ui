@@ -45,14 +45,6 @@ ui::point::point(float const x, float const y) : x(x), y(y) {
 ui::point::point(simd::float2 v) : v(std::move(v)) {
 }
 
-bool ui::point::operator==(point const &rhs) const {
-    return x == rhs.x && y == rhs.y;
-}
-
-bool ui::point::operator!=(point const &rhs) const {
-    return x != rhs.x || y != rhs.y;
-}
-
 ui::point::operator bool() const {
     return x != 0 || y != 0;
 }
@@ -262,6 +254,14 @@ bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs
 
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
     return lhs.origin != rhs.origin || lhs.size != rhs.size;
+}
+
+bool operator==(yas::ui::point const &lhs, yas::ui::point const &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+bool operator!=(yas::ui::point const &lhs, yas::ui::point const &rhs) {
+    return lhs.x != rhs.x || lhs.y != rhs.y;
 }
 
 bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs) {

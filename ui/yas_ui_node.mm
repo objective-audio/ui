@@ -2,6 +2,8 @@
 //  yas_ui_node.mm
 //
 
+#include "yas_ui_types.h"
+// workaround for equation
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_to_bool.h"
@@ -18,7 +20,6 @@
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
-#include "yas_ui_types.h"
 #include "yas_unless.h"
 
 using namespace yas;
