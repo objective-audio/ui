@@ -161,7 +161,7 @@ struct ui::layout_guide_point::impl : base::impl {
 
     ui::point old_point_in_notify() {
         return ui::point{_x_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify(),
-                                _y_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify()};
+                         _y_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify()};
     }
 };
 
@@ -387,7 +387,8 @@ struct ui::layout_guide_rect::impl : base::impl {
 
 #pragma mark - ui::layout_guide_rect
 
-ui::layout_guide_rect::layout_guide_rect() : layout_guide_rect(ranges_args{}) {
+ui::layout_guide_rect::layout_guide_rect()
+    : layout_guide_rect(ranges_args{.horizontal_range = {.v = 0.0f}, .vertical_range = {.v = 0.0f}}) {
 }
 
 ui::layout_guide_rect::layout_guide_rect(ranges_args args) : base(std::make_shared<impl>(std::move(args))) {

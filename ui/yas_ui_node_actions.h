@@ -12,8 +12,8 @@ namespace ui {
     namespace translate_action {
         struct args {
             weak<ui::node> target;
-            ui::point start_position = 0.0f;
-            ui::point end_position = 0.0f;
+            ui::point start_position = {.v = 0.0f};
+            ui::point end_position = {.v = 0.0f};
 
             continuous_action::args continuous_action;
         };

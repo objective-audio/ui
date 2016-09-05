@@ -224,10 +224,10 @@ using namespace yas;
     ui::event touch_event2{ui::touch_tag};
     ui::event touch_event3{ui::touch_tag};
 
-    cursor_event.manageable().set<ui::cursor>(ui::cursor_event{0.0f});
-    touch_event1.manageable().set<ui::touch>(ui::touch_event{1, 0.0f});
-    touch_event2.manageable().set<ui::touch>(ui::touch_event{1, 0.0f});
-    touch_event3.manageable().set<ui::touch>(ui::touch_event{2, 0.0f});
+    cursor_event.manageable().set<ui::cursor>(ui::cursor_event{{.v = 0.0f}});
+    touch_event1.manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}});
+    touch_event2.manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}});
+    touch_event3.manageable().set<ui::touch>(ui::touch_event{2, {.v = 0.0f}});
 
     XCTAssertTrue(touch_event1 == touch_event1);
     XCTAssertTrue(touch_event1 == touch_event2);
@@ -424,29 +424,29 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{2.0f});  // outsize of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{0.0f});  // inside of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{0.0f});  // inside of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{-2.0f});  // outsize of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{-2.0f});  // outsize of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -474,39 +474,39 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {.v = 0.0f}});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, 0.0f});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);

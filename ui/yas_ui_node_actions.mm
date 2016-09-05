@@ -18,8 +18,8 @@ ui::continuous_action ui::make_action(translate_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_position((args.end_position.v - args.start_position.v) * (float)value +
-                                    args.start_position.v);
+                target.set_position(
+                    {.v = (args.end_position.v - args.start_position.v) * (float)value + args.start_position.v});
             }
         }
     });

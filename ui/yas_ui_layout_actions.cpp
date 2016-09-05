@@ -30,7 +30,7 @@ ui::continuous_action ui::make_action(layout_point_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_point((args.end_point.v - args.start_point.v) * (float)value + args.start_point.v);
+                target.set_point({.v = (args.end_point.v - args.start_point.v) * (float)value + args.start_point.v});
             }
         }
     });
@@ -66,7 +66,7 @@ ui::continuous_action ui::make_action(layout_rect_action::args args) {
                     (args.end_region.origin.v - args.start_region.origin.v) * (float)value + args.start_region.origin.v;
                 auto const size =
                     (args.end_region.size.v - args.start_region.size.v) * (float)value + args.start_region.size.v;
-                target.set_region({.origin = origin, .size = {.v = size}});
+                target.set_region({.origin = {.v = origin}, .size = {.v = size}});
             }
         }
     });

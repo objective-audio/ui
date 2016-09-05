@@ -65,10 +65,6 @@ namespace ui {
             simd::float2 v;
         };
 
-        point();
-        point(float const x, float const y);
-        point(simd::float2);
-
         explicit operator bool() const;
     };
 

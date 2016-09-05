@@ -36,15 +36,6 @@ uint32_t ui::uint_range::max() const {
 
 #pragma mark - ui::point
 
-ui::point::point() : v(0.0f) {
-}
-
-ui::point::point(float const x, float const y) : x(x), y(y) {
-}
-
-ui::point::point(simd::float2 v) : v(std::move(v)) {
-}
-
 ui::point::operator bool() const {
     return x != 0 || y != 0;
 }

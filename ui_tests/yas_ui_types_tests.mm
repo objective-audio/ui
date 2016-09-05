@@ -347,7 +347,7 @@ using namespace yas;
 }
 
 - (void)test_create_point_with_float2 {
-    ui::point p{simd::float2{3.0f, 4.0f}};
+    ui::point p{.v = simd::float2{3.0f, 4.0f}};
 
     XCTAssertEqual(p.x, 3.0f);
     XCTAssertEqual(p.y, 4.0f);
