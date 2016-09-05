@@ -43,8 +43,8 @@ namespace ui {
     namespace color_action {
         struct args {
             weak<ui::node> target;
-            ui::color start_color = 1.0f;
-            ui::color end_color = 1.0f;
+            ui::color start_color = {.v = 1.0f};
+            ui::color end_color = {.v = 1.0f};
 
             continuous_action::args continuous_action;
         };

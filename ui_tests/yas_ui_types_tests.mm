@@ -368,7 +368,7 @@ using namespace yas;
 }
 
 - (void)test_create_color {
-    ui::color c;
+    ui::color c = {.v = 1.0f};
 
     XCTAssertEqual(c.red, 1.0f);
     XCTAssertEqual(c.green, 1.0f);

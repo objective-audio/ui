@@ -92,15 +92,6 @@ float ui::region::top() const {
 
 #pragma mark - color
 
-ui::color::color() {
-}
-
-ui::color::color(float const r, float const g, float const b) : red(r), green(g), blue(b) {
-}
-
-ui::color::color(simd::float3 v) : v(std::move(v)) {
-}
-
 ui::color::operator bool() const {
     return red != 0 || green != 0 || blue != 0;
 }

@@ -119,10 +119,6 @@ namespace ui {
             simd::float3 v;
         };
 
-        color();
-        color(float const r, float const g, float const b);
-        color(simd::float3);
-
         explicit operator bool() const;
     };
 
