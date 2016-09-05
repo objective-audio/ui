@@ -89,6 +89,8 @@ namespace ui {
             simd::float2 v;
         };
 
+        explicit operator bool() const;
+
         float min() const;
         float max() const;
     };
@@ -96,6 +98,8 @@ namespace ui {
     struct region {
         ui::point origin;
         ui::size size;
+
+        explicit operator bool() const;
 
         range horizontal_range() const;
         range vertical_range() const;

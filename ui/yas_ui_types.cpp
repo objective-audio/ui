@@ -37,16 +37,20 @@ uint32_t ui::uint_range::max() const {
 #pragma mark - ui::point
 
 ui::point::operator bool() const {
-    return x != 0 || y != 0;
+    return x != 0.0f || y != 0.0f;
 }
 
 #pragma mark - ui::size
 
 ui::size::operator bool() const {
-    return width != 0 || height != 0;
+    return width != 0.0f || height != 0.0f;
 }
 
 #pragma mark - ui::range
+
+ui::range::operator bool() const {
+    return location != 0.0f || length != 0.0f;
+}
 
 float ui::range::min() const {
     return std::min(location, location + length);
@@ -57,6 +61,10 @@ float ui::range::max() const {
 }
 
 #pragma mark - ui::region
+
+ui::region::operator bool() const {
+    return origin || size;
+}
 
 ui::range ui::region::horizontal_range() const {
     return ui::range{.location = origin.x, .length = size.width};
