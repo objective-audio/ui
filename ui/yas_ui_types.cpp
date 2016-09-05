@@ -60,14 +60,6 @@ ui::size::size(float const w, float const h) : width(w), height(h) {
 ui::size::size(simd::float2 v) : v(std::move(v)) {
 }
 
-bool ui::size::operator==(size const &rhs) const {
-    return width == rhs.width && height == rhs.height;
-}
-
-bool ui::size::operator!=(size const &rhs) const {
-    return width != rhs.width || height != rhs.height;
-}
-
 ui::size::operator bool() const {
     return width != 0 || height != 0;
 }
@@ -262,6 +254,14 @@ bool operator==(yas::ui::point const &lhs, yas::ui::point const &rhs) {
 
 bool operator!=(yas::ui::point const &lhs, yas::ui::point const &rhs) {
     return lhs.x != rhs.x || lhs.y != rhs.y;
+}
+
+bool operator==(yas::ui::size const &lhs, yas::ui::size const &rhs) {
+    return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
+bool operator!=(yas::ui::size const &lhs, yas::ui::size const &rhs) {
+    return lhs.width != rhs.width || lhs.height != rhs.height;
 }
 
 bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs) {

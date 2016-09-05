@@ -85,9 +85,6 @@ namespace ui {
         size(float const w, float const h);
         size(simd::float2);
 
-        bool operator==(size const &rhs) const;
-        bool operator!=(size const &rhs) const;
-
         explicit operator bool() const;
     };
 
@@ -185,6 +182,8 @@ bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
 bool operator==(yas::ui::point const &lhs, yas::ui::point const &rhs);
 bool operator!=(yas::ui::point const &lhs, yas::ui::point const &rhs);
+bool operator==(yas::ui::size const &lhs, yas::ui::size const &rhs);
+bool operator!=(yas::ui::size const &lhs, yas::ui::size const &rhs);
 bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
