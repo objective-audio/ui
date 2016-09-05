@@ -101,14 +101,6 @@ ui::color::color(float const r, float const g, float const b) : red(r), green(g)
 ui::color::color(simd::float3 v) : v(std::move(v)) {
 }
 
-bool ui::color::operator==(color const &rhs) const {
-    return red == rhs.red && green == rhs.green && blue == rhs.blue;
-}
-
-bool ui::color::operator!=(color const &rhs) const {
-    return red != rhs.red || green != rhs.green || blue != rhs.blue;
-}
-
 ui::color::operator bool() const {
     return red != 0 || green != 0 || blue != 0;
 }
@@ -268,6 +260,14 @@ bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs) {
 
 bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs) {
     return lhs.origin != rhs.origin || lhs.size != rhs.size;
+}
+
+bool operator==(yas::ui::color const &lhs, yas::ui::color const &rhs) {
+    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue;
+}
+
+bool operator!=(yas::ui::color const &lhs, yas::ui::color const &rhs) {
+    return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue;
 }
 
 std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {

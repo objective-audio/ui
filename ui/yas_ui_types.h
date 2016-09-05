@@ -123,9 +123,6 @@ namespace ui {
         color(float const r, float const g, float const b);
         color(simd::float3);
 
-        bool operator==(color const &) const;
-        bool operator!=(color const &) const;
-
         explicit operator bool() const;
     };
 
@@ -184,6 +181,8 @@ bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
 bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs);
+bool operator==(yas::ui::color const &lhs, yas::ui::color const &rhs);
+bool operator!=(yas::ui::color const &lhs, yas::ui::color const &rhs);
 
 std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
