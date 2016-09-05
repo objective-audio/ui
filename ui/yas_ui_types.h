@@ -81,10 +81,6 @@ namespace ui {
             simd::float2 v;
         };
 
-        size();
-        size(float const w, float const h);
-        size(simd::float2);
-
         explicit operator bool() const;
     };
 

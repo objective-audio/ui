@@ -66,7 +66,7 @@ ui::continuous_action ui::make_action(ui::scale_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_scale((args.end_scale.v - args.start_scale.v) * (float)value + args.start_scale.v);
+                target.set_scale({.v = (args.end_scale.v - args.start_scale.v) * (float)value + args.start_scale.v});
             }
         }
     });

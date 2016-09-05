@@ -51,15 +51,6 @@ ui::point::operator bool() const {
 
 #pragma mark - ui::size
 
-ui::size::size() : v(0.0f) {
-}
-
-ui::size::size(float const w, float const h) : width(w), height(h) {
-}
-
-ui::size::size(simd::float2 v) : v(std::move(v)) {
-}
-
 ui::size::operator bool() const {
     return width != 0 || height != 0;
 }

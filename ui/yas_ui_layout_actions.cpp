@@ -66,7 +66,7 @@ ui::continuous_action ui::make_action(layout_rect_action::args args) {
                     (args.end_region.origin.v - args.start_region.origin.v) * (float)value + args.start_region.origin.v;
                 auto const size =
                     (args.end_region.size.v - args.start_region.size.v) * (float)value + args.start_region.size.v;
-                target.set_region({.origin = origin, .size = size});
+                target.set_region({.origin = origin, .size = {.v = size}});
             }
         }
     });

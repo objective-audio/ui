@@ -33,8 +33,8 @@ namespace ui {
     namespace scale_action {
         struct args {
             weak<ui::node> target;
-            ui::size start_scale = 1.0f;
-            ui::size end_scale = 1.0f;
+            ui::size start_scale = {.v = 1.0f};
+            ui::size end_scale = {.v = 1.0f};
 
             continuous_action::args continuous_action;
         };
