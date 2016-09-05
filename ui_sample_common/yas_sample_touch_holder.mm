@@ -107,7 +107,7 @@ struct sample::touch_holder::impl : base::impl {
         mesh.set_mesh_data(_rect_plane_data.dynamic_mesh_data());
         mesh.set_texture(_texture);
         node.set_mesh(mesh);
-        node.set_scale(0.0f);
+        node.set_scale({.v = 0.0f});
         node.set_alpha(0.0f);
 
         root_node.push_back_sub_node(node);

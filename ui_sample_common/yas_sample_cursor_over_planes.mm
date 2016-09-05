@@ -44,7 +44,7 @@ struct sample::cursor_over_planes::impl : base::impl {
             auto &node = plane.node();
             node.set_position({100.0f, 0.0f});
             node.set_scale({10.0f, 30.0f});
-            node.set_color(0.3f);
+            node.set_color({.v = 0.3f});
             node.set_collider(ui::collider{ui::shape{ui::rect_shape{}}});
 
             ui::node handle_node;

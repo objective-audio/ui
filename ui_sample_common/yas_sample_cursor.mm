@@ -47,7 +47,7 @@ struct sample::cursor::impl : base::impl {
             mesh_node.data().set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
         }
 
-        mesh_node.node().set_color(0.0f);
+        mesh_node.node().set_color({.v = 0.0f});
         mesh_node.node().set_alpha(0.0f);
         node.push_back_sub_node(mesh_node.node());
     }
@@ -77,7 +77,7 @@ struct sample::cursor::impl : base::impl {
 
                     if (auto renderer = node.renderer()) {
                         for (auto child_node : node.children()) {
-                            auto make_fade_action = [](ui::node &node, simd::float3 const &color, float const alpha) {
+                            auto make_fade_action = [](ui::node &node, ui::color const &color, float const alpha) {
                                 double const duration = 0.5;
 
                                 auto color_action = ui::make_action({.target = node,
@@ -100,7 +100,7 @@ struct sample::cursor::impl : base::impl {
                                         renderer.erase_action(prev_action);
                                     }
 
-                                    auto action = make_fade_action(child_node, simd::float3{0.0f, 0.6f, 1.0f}, 1.0f);
+                                    auto action = make_fade_action(child_node, {0.0f, 0.6f, 1.0f}, 1.0f);
                                     renderer.insert_action(action);
                                     weak_action = action;
                                 } break;
@@ -110,7 +110,7 @@ struct sample::cursor::impl : base::impl {
                                         renderer.erase_action(prev_action);
                                     }
 
-                                    auto action = make_fade_action(child_node, simd::float3{0.0f}, 0.0f);
+                                    auto action = make_fade_action(child_node, {.v = 0.0f}, 0.0f);
                                     renderer.insert_action(action);
                                     weak_action = action;
                                 } break;
