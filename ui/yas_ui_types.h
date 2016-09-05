@@ -59,8 +59,8 @@ namespace ui {
     struct point {
         union {
             struct {
-                float x = 0.0f;
-                float y = 0.0f;
+                float x;
+                float y;
             };
             simd::float2 v;
         };
@@ -78,8 +78,8 @@ namespace ui {
     struct size {
         union {
             struct {
-                float width = 0.0f;
-                float height = 0.0f;
+                float width;
+                float height;
             };
             simd::float2 v;
         };
