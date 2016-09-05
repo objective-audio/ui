@@ -96,8 +96,13 @@ namespace ui {
     };
 
     struct region {
-        ui::point origin;
-        ui::size size;
+        union {
+            struct {
+                ui::point origin;
+                ui::size size;
+            };
+            simd::float4 v;
+        };
 
         explicit operator bool() const;
 
