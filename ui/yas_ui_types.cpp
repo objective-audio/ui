@@ -36,7 +36,7 @@ uint32_t ui::uint_range::max() const {
 
 #pragma mark - ui::point
 
-ui::point::point() {
+ui::point::point() : v(0.0f) {
 }
 
 ui::point::point(float const x, float const y) : x(x), y(y) {
@@ -59,7 +59,7 @@ ui::point::operator bool() const {
 
 #pragma mark - ui::size
 
-ui::size::size() {
+ui::size::size() : v(0.0f) {
 }
 
 ui::size::size(float const w, float const h) : width(w), height(h) {
