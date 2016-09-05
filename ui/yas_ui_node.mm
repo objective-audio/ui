@@ -395,7 +395,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<ui::point> _position_property{{.value = 0.0f}};
     property<float> _angle_property{{.value = 0.0f}};
     property<ui::size> _scale_property{{.value = {.v = 1.0f}}};
-    property<ui::color> _color_property{{.value = 1.0f}};
+    property<ui::color> _color_property{{.value = {.v = 1.0f}}};
     property<float> _alpha_property{{.value = 1.0f}};
     property<ui::mesh> _mesh_property{{.value = nullptr}};
     property<ui::collider> _collider_property{{.value = nullptr}};
