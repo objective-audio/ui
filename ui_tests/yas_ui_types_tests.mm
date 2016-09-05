@@ -436,6 +436,28 @@ using namespace yas;
     XCTAssertFalse(sz1 != sz2);
 }
 
+- (void)test_is_equal_ranges {
+    ui::range r1{1.0f, 2.0f};
+    ui::range r2{1.0f, 2.0f};
+    ui::range r3{1.1f, 2.0f};
+    ui::range r4{1.0f, 2.1f};
+    ui::range r5{1.1f, 2.1f};
+    ui::range rz1{0.0f, 0.0f};
+    ui::range rz2{0.0f, 0.0f};
+
+    XCTAssertTrue(r1 == r2);
+    XCTAssertFalse(r1 == r3);
+    XCTAssertFalse(r1 == r4);
+    XCTAssertFalse(r1 == r5);
+    XCTAssertTrue(rz1 == rz2);
+
+    XCTAssertFalse(r1 != r2);
+    XCTAssertTrue(r1 != r3);
+    XCTAssertTrue(r1 != r4);
+    XCTAssertTrue(r1 != r5);
+    XCTAssertFalse(rz1 != rz2);
+}
+
 - (void)test_is_equal_colors {
     ui::color c1{1.0f, 2.0f, 3.0f};
     ui::color c2{1.0f, 2.0f, 3.0f};
