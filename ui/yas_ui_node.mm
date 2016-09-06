@@ -2,6 +2,8 @@
 //  yas_ui_node.mm
 //
 
+#include "yas_ui_types.h"
+// workaround for equation
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_to_bool.h"
@@ -18,7 +20,6 @@
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
-#include "yas_ui_types.h"
 #include "yas_unless.h"
 
 using namespace yas;
@@ -393,8 +394,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     property<ui::point> _position_property{{.value = 0.0f}};
     property<float> _angle_property{{.value = 0.0f}};
-    property<ui::size> _scale_property{{.value = 1.0f}};
-    property<ui::color> _color_property{{.value = 1.0f}};
+    property<ui::size> _scale_property{{.value = {.v = 1.0f}}};
+    property<ui::color> _color_property{{.value = {.v = 1.0f}}};
     property<float> _alpha_property{{.value = 1.0f}};
     property<ui::mesh> _mesh_property{{.value = nullptr}};
     property<ui::collider> _collider_property{{.value = nullptr}};

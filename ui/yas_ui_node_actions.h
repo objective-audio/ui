@@ -12,8 +12,8 @@ namespace ui {
     namespace translate_action {
         struct args {
             weak<ui::node> target;
-            ui::point start_position = 0.0f;
-            ui::point end_position = 0.0f;
+            ui::point start_position = {.v = 0.0f};
+            ui::point end_position = {.v = 0.0f};
 
             continuous_action::args continuous_action;
         };
@@ -33,8 +33,8 @@ namespace ui {
     namespace scale_action {
         struct args {
             weak<ui::node> target;
-            ui::size start_scale = 1.0f;
-            ui::size end_scale = 1.0f;
+            ui::size start_scale = {.v = 1.0f};
+            ui::size end_scale = {.v = 1.0f};
 
             continuous_action::args continuous_action;
         };
@@ -43,8 +43,8 @@ namespace ui {
     namespace color_action {
         struct args {
             weak<ui::node> target;
-            ui::color start_color = 1.0f;
-            ui::color end_color = 1.0f;
+            ui::color start_color = {.v = 1.0f};
+            ui::color end_color = {.v = 1.0f};
 
             continuous_action::args continuous_action;
         };

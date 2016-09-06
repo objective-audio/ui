@@ -12,8 +12,8 @@ struct sample::bg::impl : base::impl {
     impl() {
         _rect_plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
         auto &node = _rect_plane.node();
-        node.set_scale(0.0f);
-        node.set_color(0.75f);
+        node.set_scale({.v = 0.0f});
+        node.set_color({.v = 0.75f});
     }
 
     void prepare(sample::bg &bg) {

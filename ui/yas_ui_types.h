@@ -59,18 +59,11 @@ namespace ui {
     struct point {
         union {
             struct {
-                float x = 0.0f;
-                float y = 0.0f;
+                float x;
+                float y;
             };
             simd::float2 v;
         };
-
-        point();
-        point(float const x, float const y);
-        point(simd::float2);
-
-        bool operator==(point const &rhs) const;
-        bool operator!=(point const &rhs) const;
 
         explicit operator bool() const;
     };
@@ -78,18 +71,11 @@ namespace ui {
     struct size {
         union {
             struct {
-                float width = 0.0f;
-                float height = 0.0f;
+                float width;
+                float height;
             };
             simd::float2 v;
         };
-
-        size();
-        size(float const w, float const h);
-        size(simd::float2);
-
-        bool operator==(size const &rhs) const;
-        bool operator!=(size const &rhs) const;
 
         explicit operator bool() const;
     };
@@ -103,13 +89,22 @@ namespace ui {
             simd::float2 v;
         };
 
+        explicit operator bool() const;
+
         float min() const;
         float max() const;
     };
 
     struct region {
-        ui::point origin;
-        ui::size size;
+        union {
+            struct {
+                ui::point origin;
+                ui::size size;
+            };
+            simd::float4 v;
+        };
+
+        explicit operator bool() const;
 
         range horizontal_range() const;
         range vertical_range() const;
@@ -128,13 +123,6 @@ namespace ui {
             };
             simd::float3 v;
         };
-
-        color();
-        color(float const r, float const g, float const b);
-        color(simd::float3);
-
-        bool operator==(color const &) const;
-        bool operator!=(color const &) const;
 
         explicit operator bool() const;
     };
@@ -186,10 +174,16 @@ bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
 bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
 bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
 bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
+bool operator==(yas::ui::point const &lhs, yas::ui::point const &rhs);
+bool operator!=(yas::ui::point const &lhs, yas::ui::point const &rhs);
+bool operator==(yas::ui::size const &lhs, yas::ui::size const &rhs);
+bool operator!=(yas::ui::size const &lhs, yas::ui::size const &rhs);
 bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs);
 bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
 bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs);
+bool operator==(yas::ui::color const &lhs, yas::ui::color const &rhs);
+bool operator!=(yas::ui::color const &lhs, yas::ui::color const &rhs);
 
 std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);

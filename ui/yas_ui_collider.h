@@ -16,7 +16,7 @@ namespace ui {
     };
 
     struct circle_shape {
-        ui::point center = 0.0f;
+        ui::point center = {.v = 0.0f};
         float radius = 0.5f;
 
         bool hit_test(ui::point const &) const;

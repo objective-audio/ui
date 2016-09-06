@@ -107,7 +107,7 @@ using namespace yas;
 }
 
 - (void)test_actual_cell_count {
-    ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}}, .preferred_cell_count = 1}};
+    ui::collection_layout layout{{.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1}};
 
     XCTAssertEqual(layout.actual_cell_count(), 1);
 
@@ -121,7 +121,7 @@ using namespace yas;
 }
 
 - (void)test_notify_actual_cell_count {
-    ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}}, .preferred_cell_count = 1}};
+    ui::collection_layout layout{{.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1}};
 
     std::size_t notified_count = 0;
 

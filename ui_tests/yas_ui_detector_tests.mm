@@ -38,7 +38,7 @@ using namespace yas;
 - (void)test_detect {
     ui::detector detector;
 
-    XCTAssertFalse(detector.detect(0.0f));
+    XCTAssertFalse(detector.detect({.v = 0.0f}));
 
     ui::collider collider1{ui::shape{{.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
     ui::collider collider2{ui::shape{{.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
@@ -48,12 +48,12 @@ using namespace yas;
     detector.updatable().push_front_collider(collider2);
     detector.updatable().end_update();
 
-    XCTAssertEqual(detector.detect(0.0f), collider2);
+    XCTAssertEqual(detector.detect({.v = 0.0f}), collider2);
 
     detector.updatable().begin_update();
     detector.updatable().end_update();
 
-    XCTAssertFalse(detector.detect(0.0f));
+    XCTAssertFalse(detector.detect({.v = 0.0f}));
 }
 
 - (void)test_detect_with_collider {
@@ -65,8 +65,8 @@ using namespace yas;
     detector.updatable().push_front_collider(collider1);
     detector.updatable().push_front_collider(collider2);
 
-    XCTAssertFalse(detector.detect(0.0f, collider1));
-    XCTAssertTrue(detector.detect(0.0f, collider2));
+    XCTAssertFalse(detector.detect({.v = 0.0f}, collider1));
+    XCTAssertTrue(detector.detect({.v = 0.0f}, collider2));
 }
 
 - (void)test_is_updating {

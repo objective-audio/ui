@@ -18,8 +18,8 @@ ui::continuous_action ui::make_action(translate_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_position((args.end_position.v - args.start_position.v) * (float)value +
-                                    args.start_position.v);
+                target.set_position(
+                    {.v = (args.end_position.v - args.start_position.v) * (float)value + args.start_position.v});
             }
         }
     });
@@ -66,7 +66,7 @@ ui::continuous_action ui::make_action(ui::scale_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_scale((args.end_scale.v - args.start_scale.v) * (float)value + args.start_scale.v);
+                target.set_scale({.v = (args.end_scale.v - args.start_scale.v) * (float)value + args.start_scale.v});
             }
         }
     });
@@ -84,7 +84,7 @@ ui::continuous_action ui::make_action(ui::color_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_color((args.end_color.v - args.start_color.v) * (float)value + args.start_color.v);
+                target.set_color({.v = (args.end_color.v - args.start_color.v) * (float)value + args.start_color.v});
             }
         }
     });

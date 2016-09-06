@@ -347,7 +347,7 @@ using namespace yas;
 }
 
 - (void)test_create_point_with_float2 {
-    ui::point p{simd::float2{3.0f, 4.0f}};
+    ui::point p{.v = simd::float2{3.0f, 4.0f}};
 
     XCTAssertEqual(p.x, 3.0f);
     XCTAssertEqual(p.y, 4.0f);
@@ -368,7 +368,7 @@ using namespace yas;
 }
 
 - (void)test_create_color {
-    ui::color c;
+    ui::color c = {.v = 1.0f};
 
     XCTAssertEqual(c.red, 1.0f);
     XCTAssertEqual(c.green, 1.0f);
@@ -381,6 +381,15 @@ using namespace yas;
     XCTAssertEqual(c.red, 1.0f);
     XCTAssertEqual(c.green, 2.0f);
     XCTAssertEqual(c.blue, 3.0f);
+}
+
+- (void)test_create_region_with_float4 {
+    ui::region region{.v = simd::float4{1.0f, 2.0f, 3.0f, 4.0f}};
+
+    XCTAssertEqual(region.origin.x, 1.0f);
+    XCTAssertEqual(region.origin.y, 2.0f);
+    XCTAssertEqual(region.size.width, 3.0f);
+    XCTAssertEqual(region.size.height, 4.0f);
 }
 
 - (void)test_is_equal_points {
@@ -425,6 +434,28 @@ using namespace yas;
     XCTAssertTrue(s1 != s4);
     XCTAssertTrue(s1 != s5);
     XCTAssertFalse(sz1 != sz2);
+}
+
+- (void)test_is_equal_ranges {
+    ui::range r1{1.0f, 2.0f};
+    ui::range r2{1.0f, 2.0f};
+    ui::range r3{1.1f, 2.0f};
+    ui::range r4{1.0f, 2.1f};
+    ui::range r5{1.1f, 2.1f};
+    ui::range rz1{0.0f, 0.0f};
+    ui::range rz2{0.0f, 0.0f};
+
+    XCTAssertTrue(r1 == r2);
+    XCTAssertFalse(r1 == r3);
+    XCTAssertFalse(r1 == r4);
+    XCTAssertFalse(r1 == r5);
+    XCTAssertTrue(rz1 == rz2);
+
+    XCTAssertFalse(r1 != r2);
+    XCTAssertTrue(r1 != r3);
+    XCTAssertTrue(r1 != r4);
+    XCTAssertTrue(r1 != r5);
+    XCTAssertFalse(rz1 != rz2);
 }
 
 - (void)test_is_equal_colors {

@@ -8,7 +8,7 @@ using namespace yas;
 
 #pragma mark - cursor_event
 
-ui::cursor_event::cursor_event() : _position(0.0f) {
+ui::cursor_event::cursor_event() : _position({.v = 0.0f}) {
 }
 
 ui::cursor_event::cursor_event(ui::point pos) : _position(std::move(pos)) {
@@ -32,7 +32,7 @@ bool ui::cursor_event::contains_in_window() const {
 
 #pragma mark - touch_event
 
-ui::touch_event::touch_event() : _identifier(-1), _position(0.0f) {
+ui::touch_event::touch_event() : _identifier(-1), _position({.v = {0.0f}}) {
 }
 
 ui::touch_event::touch_event(uintptr_t const identifier, ui::point pos)

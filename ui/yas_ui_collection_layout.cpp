@@ -220,7 +220,7 @@ struct ui::collection_layout::impl : base::impl {
         auto const border_abs_size = ui::size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
         std::vector<std::vector<ui::region>> regions;
         float row_max_diff = 0.0f;
-        ui::point origin;
+        ui::point origin = {.v = 0.0f};
         std::vector<ui::region> row_regions;
         auto const prev_actual_cell_count = _cell_guide_rects.size();
         std::size_t actual_cell_count = 0;

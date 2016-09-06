@@ -70,23 +70,23 @@ using namespace yas;
 - (void)test_hit_test_none {
     ui::collider collider;
 
-    XCTAssertFalse(collider.hit_test(0.0f));
+    XCTAssertFalse(collider.hit_test({.v = 0.0f}));
 }
 
 - (void)test_hit_test_anywhere {
     ui::collider collider{ui::shape{ui::anywhere_shape{}}};
 
-    XCTAssertTrue(collider.hit_test(0.0f));
-    XCTAssertTrue(collider.hit_test(FLT_MAX));
-    XCTAssertTrue(collider.hit_test(FLT_MIN));
+    XCTAssertTrue(collider.hit_test({.v = 0.0f}));
+    XCTAssertTrue(collider.hit_test({.v = FLT_MAX}));
+    XCTAssertTrue(collider.hit_test({.v = FLT_MIN}));
 }
 
 - (void)test_hit_test_rect {
     ui::collider collider{ui::shape{{{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
 
-    XCTAssertTrue(collider.hit_test(0.0f));
-    XCTAssertTrue(collider.hit_test(-0.5f));
-    XCTAssertTrue(collider.hit_test(0.5f));
+    XCTAssertTrue(collider.hit_test({.v = 0.0f}));
+    XCTAssertTrue(collider.hit_test({.v = -0.5f}));
+    XCTAssertTrue(collider.hit_test({.v = 0.5f}));
 
     XCTAssertFalse(collider.hit_test({-0.51f, 0.0f}));
     XCTAssertFalse(collider.hit_test({0.51f, 0.0f}));
@@ -97,14 +97,14 @@ using namespace yas;
 - (void)test_hit_test_circle {
     ui::collider collider{ui::shape{{.center = 0.0f, .radius = 0.5f}}};
 
-    XCTAssertTrue(collider.hit_test(0.0f));
+    XCTAssertTrue(collider.hit_test({.v = 0.0f}));
     XCTAssertTrue(collider.hit_test({-0.5f, 0.0f}));
     XCTAssertTrue(collider.hit_test({0.5f, 0.0f}));
     XCTAssertTrue(collider.hit_test({0.0f, -0.5f}));
     XCTAssertTrue(collider.hit_test({0.0f, 0.5f}));
 
-    XCTAssertFalse(collider.hit_test(-0.4f));
-    XCTAssertFalse(collider.hit_test(0.4f));
+    XCTAssertFalse(collider.hit_test({.v = -0.4f}));
+    XCTAssertFalse(collider.hit_test({.v = 0.4f}));
 }
 
 - (void)test_renderable_variables {
