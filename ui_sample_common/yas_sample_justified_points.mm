@@ -37,7 +37,7 @@ struct sample::justified_points::impl : base::impl {
                 if (auto points = weak_points.lock()) {
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
-                        x_layout = ui::make_justified_layout(
+                        x_layout = ui::make_layout(
                             {.first_source_guide = renderer.view_layout_guide_rect().left(),
                              .second_source_guide = renderer.view_layout_guide_rect().right(),
                              .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
@@ -53,7 +53,7 @@ struct sample::justified_points::impl : base::impl {
                         }
 
                         y_layout =
-                            ui::make_justified_layout({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
+                            ui::make_layout({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
                                                        .second_source_guide = renderer.view_layout_guide_rect().top(),
                                                        .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
                                                        .ratios = std::move(ratios)});

@@ -21,11 +21,11 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_make_fixed_layout {
+- (void)test_make_layout {
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
-    auto layout = ui::make_fixed_layout({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = ui::make_layout({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
 
     XCTAssertTrue(layout);
     XCTAssertEqual(layout.source_guides().size(), 1);
@@ -38,7 +38,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = ui::make_fixed_layout({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = ui::make_layout({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 
@@ -54,7 +54,8 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{-1.0f};
 
-    auto layout = ui::make_min_layout({.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
+    auto layout = ui::make_layout(
+        ui::min_layout::args{.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 1.0f);
 
@@ -76,7 +77,8 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{3.0f};
 
-    auto layout = ui::make_max_layout({.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
+    auto layout = ui::make_layout(
+        ui::max_layout::args{.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 2.0f);
 

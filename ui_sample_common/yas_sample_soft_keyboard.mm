@@ -27,18 +27,18 @@ namespace sample {
                 _strings.rect_plane().node().attach_y_layout_guide(_y_offset_guide);
 
                 float const &font_size = _strings.font_atlas().font_size();
-                _layouts.emplace_back(ui::make_fixed_layout({.distance = std::roundf(-font_size / 3.0f),
-                                                             .source_guide = _strings_guide_point.y(),
-                                                             .destination_guide = _y_offset_guide}));
+                _layouts.emplace_back(ui::make_layout({.distance = std::roundf(-font_size / 3.0f),
+                                                       .source_guide = _strings_guide_point.y(),
+                                                       .destination_guide = _y_offset_guide}));
 
                 auto const &button_guide_rect = _button.layout_guide_rect();
-                _layouts.emplace_back(ui::make_justified_layout({.first_source_guide = button_guide_rect.left(),
-                                                                 .second_source_guide = button_guide_rect.right(),
-                                                                 .destination_guides = {_strings_guide_point.x()}}));
+                _layouts.emplace_back(ui::make_layout({.first_source_guide = button_guide_rect.left(),
+                                                       .second_source_guide = button_guide_rect.right(),
+                                                       .destination_guides = {_strings_guide_point.x()}}));
 
-                _layouts.emplace_back(ui::make_justified_layout({.first_source_guide = button_guide_rect.bottom(),
-                                                                 .second_source_guide = button_guide_rect.top(),
-                                                                 .destination_guides = {_strings_guide_point.y()}}));
+                _layouts.emplace_back(ui::make_layout({.first_source_guide = button_guide_rect.bottom(),
+                                                       .second_source_guide = button_guide_rect.top(),
+                                                       .destination_guides = {_strings_guide_point.y()}}));
             }
 
             ui::button _button;
@@ -174,20 +174,21 @@ struct sample::soft_keyboard::impl : base::impl {
         auto const &view_guide_rect = renderer.view_layout_guide_rect();
         auto const &frame_guide_rect = _collection_layout.frame_layout_guide_rect();
 
-        _layouts.emplace_back(ui::make_fixed_layout(
-            {.source_guide = view_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
+        _layouts.emplace_back(
+            ui::make_layout({.source_guide = view_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
 
-        _layouts.emplace_back(ui::make_fixed_layout(
+        _layouts.emplace_back(ui::make_layout(
             {.source_guide = view_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
 
-        _layouts.emplace_back(ui::make_fixed_layout(
-            {.source_guide = view_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
+        _layouts.emplace_back(
+            ui::make_layout({.source_guide = view_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
 
-        _layouts.emplace_back(ui::make_fixed_layout(
+        _layouts.emplace_back(ui::make_layout(
             {.distance = width, .source_guide = view_guide_rect.left(), .destination_guide = _right_min_guide}));
 
-        _layouts.emplace_back(ui::make_min_layout({.source_guides = {_right_min_guide, view_guide_rect.right()},
-                                                   .destination_guide = frame_guide_rect.right()}));
+        _layouts.emplace_back(
+            ui::make_layout(ui::min_layout::args{.source_guides = {_right_min_guide, view_guide_rect.right()},
+                                                 .destination_guide = frame_guide_rect.right()}));
 
         _update_soft_keys_position();
     }
