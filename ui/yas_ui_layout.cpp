@@ -62,7 +62,7 @@ std::vector<ui::layout_guide> const &ui::layout::destination_guides() const {
 
 #pragma mark - fixed_layout
 
-ui::layout ui::make_fixed_layout(fixed_layout_args args) {
+ui::layout ui::make_layout(fixed_layout::args args) {
     if (!args.source_guide || !args.destination_guide) {
         throw "argument is null.";
     }
@@ -78,7 +78,7 @@ ui::layout ui::make_fixed_layout(fixed_layout_args args) {
 
 #pragma mark - jusitified_layout
 
-ui::layout ui::make_justified_layout(justified_layout_args args) {
+ui::layout ui::make_layout(justified_layout::args args) {
     if (!args.first_source_guide) {
         throw "first_source_guide is null.";
     }
@@ -144,7 +144,7 @@ ui::layout ui::make_justified_layout(justified_layout_args args) {
 
 #pragma mark - other layouts
 
-ui::layout ui::make_min_layout(constant_layout_args args) {
+ui::layout ui::make_layout(min_layout::args args) {
     if (args.source_guides.size() == 0) {
         throw "source_guides is empty.";
     }
@@ -172,7 +172,7 @@ ui::layout ui::make_min_layout(constant_layout_args args) {
                        .handler = std::move(handler)}};
 }
 
-ui::layout ui::make_max_layout(constant_layout_args args) {
+ui::layout ui::make_layout(max_layout::args args) {
     if (args.source_guides.size() == 0) {
         throw "source_guides is empty.";
     }

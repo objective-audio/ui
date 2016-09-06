@@ -38,10 +38,10 @@ struct sample::inputted_text::impl : base::impl {
                             }
                         });
 
-                    left_layout = ui::make_fixed_layout({.distance = 4.0f,
+                    left_layout = ui::make_layout({.distance = 4.0f,
                                                          .source_guide = renderer.view_layout_guide_rect().left(),
                                                          .destination_guide = ext_impl->_layout_guide_point.x()});
-                    top_layout = ui::make_fixed_layout({.distance = -22.0f,
+                    top_layout = ui::make_layout({.distance = -22.0f,
                                                         .source_guide = renderer.view_layout_guide_rect().top(),
                                                         .destination_guide = ext_impl->_layout_guide_point.y()});
                 } else {

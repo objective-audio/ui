@@ -21,13 +21,13 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_make_justified_layout {
+- (void)test_make_layout {
     ui::layout_guide first_src_guide;
     ui::layout_guide second_src_guide;
     ui::layout_guide first_dst_guide;
     ui::layout_guide second_dst_guide;
 
-    auto layout = ui::make_justified_layout({.first_source_guide = first_src_guide,
+    auto layout = ui::make_layout({.first_source_guide = first_src_guide,
                                              .second_source_guide = second_src_guide,
                                              .destination_guides = {first_dst_guide, second_dst_guide}});
 
@@ -46,7 +46,7 @@ using namespace yas;
     ui::layout_guide second_src_guide{0.0f};
     ui::layout_guide dst_guide{100.0f};
 
-    auto layout = ui::make_justified_layout({.first_source_guide = first_src_guide,
+    auto layout = ui::make_layout({.first_source_guide = first_src_guide,
                                              .second_source_guide = second_src_guide,
                                              .destination_guides = {dst_guide}});
 
@@ -73,7 +73,7 @@ using namespace yas;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
 
-    auto layout = ui::make_justified_layout({.first_source_guide = first_src_guide,
+    auto layout = ui::make_layout({.first_source_guide = first_src_guide,
                                              .second_source_guide = second_src_guide,
                                              .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2}});
 
@@ -89,7 +89,7 @@ using namespace yas;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
 
-    auto layout = ui::make_justified_layout({.first_source_guide = first_src_guide,
+    auto layout = ui::make_layout({.first_source_guide = first_src_guide,
                                              .second_source_guide = second_src_guide,
                                              .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2},
                                              .ratios = {1.0f, 2.0f}});

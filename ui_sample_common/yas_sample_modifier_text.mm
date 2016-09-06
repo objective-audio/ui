@@ -42,10 +42,10 @@ struct sample::modifier_text::impl : base::impl {
 
                     auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
-                    right_layout = ui::make_fixed_layout({.distance = -4.0f,
+                    right_layout = ui::make_layout({.distance = -4.0f,
                                                           .source_guide = renderer.view_layout_guide_rect().right(),
                                                           .destination_guide = text_impl->_layout_guide_point.x()});
-                    bottom_layout = ui::make_fixed_layout({.distance = 4.0f,
+                    bottom_layout = ui::make_layout({.distance = 4.0f,
                                                            .source_guide = renderer.view_layout_guide_rect().bottom(),
                                                            .destination_guide = text_impl->_layout_guide_point.y()});
                 } else {
