@@ -4,7 +4,9 @@
 
 #import <XCTest/XCTest.h>
 #import <sstream>
+#import "yas_observing.h"
 #import "yas_ui_collider.h"
+#import "yas_ui_renderer.h"
 
 using namespace yas;
 
@@ -55,6 +57,7 @@ using namespace yas;
     ui::collider collider;
 
     XCTAssertFalse(collider.shape());
+    XCTAssertTrue(collider.is_enabled());
 
     collider.set_shape(ui::shape{ui::rect_shape{}});
 
@@ -65,6 +68,10 @@ using namespace yas;
     collider.set_shape(nullptr);
 
     XCTAssertFalse(collider.shape());
+
+    collider.set_enabled(false);
+
+    XCTAssertFalse(collider.is_enabled());
 }
 
 - (void)test_hit_test_none {
@@ -118,6 +125,62 @@ using namespace yas;
     renderable.set_matrix(matrix);
 
     XCTAssertTrue(renderable.matrix() == matrix);
+}
+
+- (void)test_hit_test_enabled {
+    ui::collider collider{ui::shape{ui::anywhere_shape{}}};
+
+    collider.set_enabled(true);
+
+    XCTAssertTrue(collider.hit_test({.v = 0.0f}));
+
+    collider.set_enabled(false);
+
+    XCTAssertFalse(collider.hit_test({.v = 0.0f}));
+}
+
+- (void)test_method_undispatched {
+    ui::collider collider;
+    ui::renderer renderer;
+
+    std::shared_ptr<ui::collider::method> called_method = nullptr;
+
+    auto observer = collider.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
+        called_method = std::make_shared<ui::collider::method>(context.key);
+    });
+
+    collider.set_enabled(false);
+    XCTAssertFalse(called_method);
+    collider.set_shape(ui::shape{ui::anywhere_shape{}});
+    XCTAssertFalse(called_method);
+}
+
+- (void)test_method_dispatched {
+    std::shared_ptr<ui::collider::method> called_method = nullptr;
+
+    auto make_observer = [&called_method](ui::collider &collider) {
+        return collider.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
+            called_method = std::make_shared<ui::collider::method>(context.key);
+        });
+    };
+
+    {
+        ui::collider collider;
+        collider.dispatch_method(ui::collider::method::shape_changed);
+        auto observer = make_observer(collider);
+        collider.set_shape(ui::shape{ui::anywhere_shape{}});
+        XCTAssertEqual(*called_method, ui::collider::method::shape_changed);
+    }
+
+    called_method = nullptr;
+
+    {
+        ui::collider collider;
+        collider.dispatch_method(ui::collider::method::enabled_changed);
+        auto observer = make_observer(collider);
+        collider.set_enabled(false);
+        XCTAssertEqual(*called_method, ui::collider::method::enabled_changed);
+    }
 }
 
 @end
