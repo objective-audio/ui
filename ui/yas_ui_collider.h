@@ -10,6 +10,11 @@
 #include "yas_ui_types.h"
 
 namespace yas {
+template <typename T, typename K>
+class subject;
+template <typename T, typename K>
+class observer;
+
 namespace ui {
     struct anywhere_shape {
         bool hit_test(ui::point const &) const;
@@ -63,9 +68,17 @@ namespace ui {
     };
 
     class collider : public base {
+       public:
         class impl;
 
-       public:
+        enum class method {
+            shape_changed,
+            enabled_changed,
+        };
+
+        using subject_t = subject<collider, method>;
+        using observer_t = observer<collider, method>;
+
         collider();
         explicit collider(ui::shape);
         collider(std::nullptr_t);
@@ -75,7 +88,13 @@ namespace ui {
         void set_shape(ui::shape);
         ui::shape const &shape() const;
 
+        void set_enabled(bool const);
+        bool is_enabled() const;
+
         bool hit_test(ui::point const &) const;
+
+        subject_t &subject();
+        void dispatch_method(ui::collider::method const);
 
         ui::renderable_collider &renderable();
 
