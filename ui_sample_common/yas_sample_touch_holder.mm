@@ -112,12 +112,16 @@ struct sample::touch_holder::impl : base::impl {
 
         root_node.push_back_sub_node(node);
 
-        auto scale_action1 = ui::make_action(
-            {.target = node, .start_scale = 0.1f, .end_scale = 200.0f, .continuous_action = {.duration = 0.1}});
+        auto scale_action1 = ui::make_action({.target = node,
+                                              .start_scale = {.v = 0.1f},
+                                              .end_scale = {.v = 200.0f},
+                                              .continuous_action = {.duration = 0.1}});
         scale_action1.set_value_transformer(ui::ease_in_transformer());
 
-        auto scale_action2 = ui::make_action(
-            {.target = node, .start_scale = 200.0f, .end_scale = 100.0f, .continuous_action = {.duration = 0.2}});
+        auto scale_action2 = ui::make_action({.target = node,
+                                              .start_scale = {.v = 200.0f},
+                                              .end_scale = {.v = 100.0f},
+                                              .continuous_action = {.duration = 0.2}});
         scale_action2.set_value_transformer(ui::ease_out_transformer());
 
         auto scale_action = ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
@@ -154,7 +158,7 @@ struct sample::touch_holder::impl : base::impl {
 
             auto scale_action = ui::make_action({.target = node,
                                                  .start_scale = touch_object.node.scale(),
-                                                 .end_scale = 300.0f,
+                                                 .end_scale = {.v = 300.0f},
                                                  .continuous_action = {.duration = 0.3}});
             scale_action.set_value_transformer(ui::ease_out_transformer());
             scale_action.set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
