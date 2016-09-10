@@ -28,9 +28,9 @@ vertex color_inout2d vertex2d(device ui::vertex2d_t *vertex_array[[buffer(0)]],
 
 fragment float4 fragment2d_with_texture(color_inout2d in[[stage_in]], texture2d<float> tex2D[[texture(0)]],
                                         sampler sampler2D[[sampler(0)]]) {
-    return tex2D.sample(sampler2D, in.tex_coord) * float4(float3(in.color.a), 1.0) * in.color;
+    return tex2D.sample(sampler2D, in.tex_coord) * in.color * float4(float3(in.color.a), 1.0);
 }
 
 fragment float4 fragment2d_without_texture(color_inout2d in[[stage_in]]) {
-    return in.color;
+    return in.color * float4(float3(in.color.a), 1.0);
 }
