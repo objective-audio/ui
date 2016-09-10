@@ -20,7 +20,7 @@ vertex color_inout2d vertex2d(device ui::vertex2d_t *vertex_array[[buffer(0)]],
     color_inout2d out;
 
     out.position = uniforms.matrix * float4(float2(vertex_array[vid].position), 0.0, 1.0);
-    out.color = uniforms.use_mesh_color ? vertex_array[vid].color : uniforms.color;
+    out.color = uniforms.use_mesh_color ? vertex_array[vid].color * uniforms.color : uniforms.color;
     out.tex_coord = vertex_array[vid].tex_coord;
 
     return out;

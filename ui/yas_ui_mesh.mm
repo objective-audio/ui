@@ -92,7 +92,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
                     auto &src_vertex = src_vertices[idx];
                     dst_vertex.position = to_float2(matrix * to_float4(src_vertex.position));
                     dst_vertex.tex_coord = src_vertex.tex_coord;
-                    dst_vertex.color = is_use_mesh_color ? src_vertex.color : color;
+                    dst_vertex.color = is_use_mesh_color ? src_vertex.color * color : color;
                 }
             });
         }
