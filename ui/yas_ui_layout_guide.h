@@ -45,6 +45,11 @@ namespace ui {
         void pop_notify_caller();
     };
 
+    struct layout_guide_pair {
+        ui::layout_guide source;
+        ui::layout_guide destination;
+    };
+
     class layout_guide_point : public base {
        public:
         class impl;

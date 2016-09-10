@@ -151,7 +151,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         _action.erase_action(action);
     }
 
-    void erase_action(ui::node const &target) {
+    void erase_action(base const &target) {
         for (auto const &action : _action.actions()) {
             if (action.target() == target) {
                 _action.erase_action(action);
@@ -300,7 +300,7 @@ void ui::renderer::erase_action(ui::action const &action) {
     impl_ptr<impl>()->erase_action(action);
 }
 
-void ui::renderer::erase_action(ui::node const &target) {
+void ui::renderer::erase_action(base const &target) {
     impl_ptr<impl>()->erase_action(target);
 }
 

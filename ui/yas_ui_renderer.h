@@ -67,7 +67,7 @@ namespace ui {
         std::vector<ui::action> actions() const;
         void insert_action(ui::action);
         void erase_action(ui::action const &);
-        void erase_action(ui::node const &target);
+        void erase_action(base const &target);
 
         ui::detector const &detector() const;
         ui::detector &detector();
