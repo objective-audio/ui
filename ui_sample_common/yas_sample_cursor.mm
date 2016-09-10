@@ -57,8 +57,8 @@ struct sample::cursor::impl : base::impl {
             {.target = target, .end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
 
         auto scale_action = ui::make_action({.target = target,
-                                             .start_scale = 10.0f,
-                                             .end_scale = 15.0f,
+                                             .start_scale = {.v = 10.0f},
+                                             .end_scale = {.v = 15.0f},
                                              .continuous_action = {.duration = 5.0f, .loop_count = 0}});
         scale_action.set_value_transformer(ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_transformer()}));
 
