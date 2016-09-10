@@ -47,7 +47,7 @@ struct sample::cursor::impl : base::impl {
             mesh_node.data().set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
         }
 
-        mesh_node.node().set_color({.v = 0.0f});
+        mesh_node.node().set_color({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
         mesh_node.node().set_alpha(0.0f);
         node.push_back_sub_node(mesh_node.node());
     }
@@ -77,21 +77,11 @@ struct sample::cursor::impl : base::impl {
 
                     if (auto renderer = node.renderer()) {
                         for (auto child_node : node.children()) {
-                            auto make_fade_action = [](ui::node &node, ui::color const &color, float const alpha) {
-                                double const duration = 0.5;
-
-                                auto color_action = ui::make_action({.target = node,
-                                                                     .start_color = node.color(),
-                                                                     .end_color = color,
-                                                                     .continuous_action = {.duration = duration}});
-
-                                auto alpha_action = ui::make_action({.target = node,
-                                                                     .start_alpha = node.alpha(),
-                                                                     .end_alpha = alpha,
-                                                                     .continuous_action = {.duration = duration}});
-
-                                return ui::parallel_action{
-                                    {.target = node, .actions = {std::move(color_action), std::move(alpha_action)}}};
+                            auto make_fade_action = [](ui::node &node, float const alpha) {
+                                return ui::make_action({.target = node,
+                                                        .start_alpha = node.alpha(),
+                                                        .end_alpha = alpha,
+                                                        .continuous_action = {.duration = 0.5}});
                             };
 
                             switch (event.phase()) {
@@ -100,7 +90,7 @@ struct sample::cursor::impl : base::impl {
                                         renderer.erase_action(prev_action);
                                     }
 
-                                    auto action = make_fade_action(child_node, {0.0f, 0.6f, 1.0f}, 1.0f);
+                                    auto action = make_fade_action(child_node, 1.0f);
                                     renderer.insert_action(action);
                                     weak_action = action;
                                 } break;
@@ -110,7 +100,7 @@ struct sample::cursor::impl : base::impl {
                                         renderer.erase_action(prev_action);
                                     }
 
-                                    auto action = make_fade_action(child_node, {.v = 0.0f}, 0.0f);
+                                    auto action = make_fade_action(child_node, 0.0f);
                                     renderer.insert_action(action);
                                     weak_action = action;
                                 } break;
