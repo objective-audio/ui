@@ -2,6 +2,7 @@
 //  yas_sample_soft_keyboard.mm
 //
 
+#include <limits>
 #include "yas_each_index.h"
 #include "yas_sample_soft_keyboard.h"
 
@@ -58,6 +59,33 @@ namespace sample {
         ui::button &button() {
             return impl_ptr<impl>()->_button;
         }
+
+        ui::strings const &strings() const {
+            return impl_ptr<impl>()->_strings;
+        }
+
+        void set_enabled(bool const enabled, bool const animated = false) {
+            auto &button_node = button().rect_plane().node();
+            auto &strings_node = impl_ptr<impl>()->_strings.rect_plane().node();
+            auto renderer = button_node.renderer();
+
+            button_node.collider().set_enabled(enabled);
+
+            float const alpha = enabled ? 1.0f : 0.0f;
+
+            renderer.erase_action(button_node);
+            renderer.erase_action(strings_node);
+
+            if (animated) {
+                renderer.insert_action(
+                    ui::make_action({.target = button_node, .start_alpha = button_node.alpha(), .end_alpha = alpha}));
+                renderer.insert_action(
+                    ui::make_action({.target = strings_node, .start_alpha = strings_node.alpha(), .end_alpha = alpha}));
+            } else {
+                button_node.set_alpha(alpha);
+                strings_node.set_alpha(alpha);
+            }
+        }
     };
 }
 }
@@ -100,16 +128,19 @@ struct sample::soft_keyboard::impl : base::impl {
     ui::font_atlas _font_atlas = nullptr;
 
     ui::collection_layout _collection_layout = nullptr;
-    std::vector<ui::layout> _layouts;
-    ui::layout_guide _right_min_guide;
+    std::vector<ui::layout> _frame_layouts;
 
     std::vector<ui::button::observer_t> _soft_key_observers;
     ui::node::observer_t _renderer_observer = nullptr;
     ui::collection_layout::observer_t _collection_observer;
+    ui::layout_interporator _cell_interporator = nullptr;
+    std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
+    std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
+    std::vector<std::vector<ui::layout>> _fixed_cell_layouts;
 
     void _setup_soft_keys_if_needed() {
-        if (_soft_keys.size() > 0 && _soft_key_observers.size() > 0 && _collection_layout && _layouts.size() > 0 &&
-            _collection_observer) {
+        if (_soft_keys.size() > 0 && _soft_key_observers.size() > 0 && _collection_layout &&
+            _frame_layouts.size() > 0 && _collection_observer) {
             return;
         }
 
@@ -166,49 +197,64 @@ struct sample::soft_keyboard::impl : base::impl {
             ui::collection_layout::method::actual_cell_count_changed,
             [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
                 if (auto keyboard = weak_keyboard.lock()) {
-                    keyboard.impl_ptr<impl>()->_update_soft_keys_position();
+                    keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
+                    keyboard.impl_ptr<impl>()->_udpate_soft_key_count();
                 }
             });
 
-        auto const renderer = _root_node.renderer();
-        auto const &view_guide_rect = renderer.view_layout_guide_rect();
+        _src_cell_guide_rects.resize(key_count);
+        _dst_cell_guide_rects.resize(key_count);
+        _fixed_cell_layouts.reserve(key_count);
+
+        auto renderer = _root_node.renderer();
+        auto &view_guide_rect = renderer.view_layout_guide_rect();
         auto const &frame_guide_rect = _collection_layout.frame_layout_guide_rect();
 
-        _layouts.emplace_back(
+        _frame_layouts.emplace_back(
             ui::make_layout({.source_guide = view_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
 
-        _layouts.emplace_back(ui::make_layout(
+        _frame_layouts.emplace_back(ui::make_layout(
             {.source_guide = view_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
 
-        _layouts.emplace_back(
+        _frame_layouts.emplace_back(
             ui::make_layout({.source_guide = view_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
 
-        _layouts.emplace_back(ui::make_layout(
-            {.distance = width, .source_guide = view_guide_rect.left(), .destination_guide = _right_min_guide}));
-
-        _layouts.emplace_back(
-            ui::make_layout(ui::min_layout::args{.source_guides = {_right_min_guide, view_guide_rect.right()},
+        ui::layout_guide max_right_guide;
+        _frame_layouts.emplace_back(ui::make_layout(
+            {.distance = width, .source_guide = view_guide_rect.left(), .destination_guide = max_right_guide}));
+        _frame_layouts.emplace_back(
+            ui::make_layout(ui::min_layout::args{.source_guides = {max_right_guide, view_guide_rect.right()},
                                                  .destination_guide = frame_guide_rect.right()}));
 
-        _update_soft_keys_position();
+        _setup_soft_keys_layout();
+        _udpate_soft_key_count();
+        _update_soft_keys_enabled(false);
     }
 
     void _dispose_soft_keys() {
         _soft_keys.clear();
         _soft_key_observers.clear();
-        _layouts.clear();
+        _frame_layouts.clear();
         _collection_layout = nullptr;
         _collection_observer = nullptr;
+        _src_cell_guide_rects.clear();
+        _dst_cell_guide_rects.clear();
+        _cell_interporator = nullptr;
     }
 
-    void _update_soft_keys_position() {
+    void _setup_soft_keys_layout() {
         auto const key_count = _soft_keys.size();
 
         if (key_count == 0 || !_collection_layout) {
             return;
         }
 
-        auto const layout_count = _collection_layout.actual_cell_count();
+        if (_cell_interporator) {
+            return;
+        }
+
+        std::vector<ui::layout_guide_pair> guide_pairs;
+        guide_pairs.reserve(key_count * 4);
 
         auto handler = [](sample::soft_key &soft_key, ui::region const &region) {
             soft_key.button().rect_plane().node().set_position({region.origin.x, region.origin.y});
@@ -217,21 +263,83 @@ struct sample::soft_keyboard::impl : base::impl {
 
         for (auto const &idx : make_each(key_count)) {
             auto &soft_key = _soft_keys.at(idx);
+            auto &src_guide_rect = _src_cell_guide_rects.at(idx);
+            auto &dst_guide_rect = _dst_cell_guide_rects.at(idx);
 
+            guide_pairs.emplace_back(
+                ui::layout_guide_pair{.source = src_guide_rect.left(), .destination = dst_guide_rect.left()});
+            guide_pairs.emplace_back(
+                ui::layout_guide_pair{.source = src_guide_rect.bottom(), .destination = dst_guide_rect.bottom()});
+            guide_pairs.emplace_back(
+                ui::layout_guide_pair{.source = src_guide_rect.right(), .destination = dst_guide_rect.right()});
+            guide_pairs.emplace_back(
+                ui::layout_guide_pair{.source = src_guide_rect.top(), .destination = dst_guide_rect.top()});
+
+            dst_guide_rect.set_value_changed_handler([weak_soft_key = to_weak(soft_key), handler](auto const &context) {
+                if (auto soft_key = weak_soft_key.lock()) {
+                    handler(soft_key, context.new_value);
+                }
+            });
+        }
+
+        _cell_interporator = ui::layout_interporator{
+            {.renderer = _root_node.renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f}};
+    }
+
+    void _udpate_soft_key_count() {
+        auto const key_count = _soft_keys.size();
+
+        if (key_count == 0 || !_collection_layout) {
+            return;
+        }
+
+        if (!_cell_interporator) {
+            return;
+        }
+
+        auto const layout_count = _collection_layout.actual_cell_count();
+
+        for (auto const &idx : make_each(key_count)) {
             if (idx < layout_count) {
-                soft_key.button().rect_plane().node().set_enabled(true);
+                if (idx >= _fixed_cell_layouts.size()) {
+                    auto &src_guide_rect = _collection_layout.cell_layout_guide_rects().at(idx);
+                    auto &dst_guide_rect = _src_cell_guide_rects.at(idx);
 
-                auto &layout = _collection_layout.cell_layout_guide_rects().at(idx);
-                layout.set_value_changed_handler([weak_soft_key = to_weak(soft_key), handler](auto const &context) {
-                    if (auto soft_key = weak_soft_key.lock()) {
-                        handler(soft_key, context.new_value);
-                    }
-                });
+                    std::vector<ui::layout> layouts;
+                    layouts.reserve(4);
 
-                handler(soft_key, layout.region());
+                    layouts.emplace_back(ui::make_layout(
+                        {.source_guide = src_guide_rect.left(), .destination_guide = dst_guide_rect.left()}));
+                    layouts.emplace_back(ui::make_layout(
+                        {.source_guide = src_guide_rect.bottom(), .destination_guide = dst_guide_rect.bottom()}));
+                    layouts.emplace_back(ui::make_layout(
+                        {.source_guide = src_guide_rect.right(), .destination_guide = dst_guide_rect.right()}));
+                    layouts.emplace_back(ui::make_layout(
+                        {.source_guide = src_guide_rect.top(), .destination_guide = dst_guide_rect.top()}));
+
+                    _fixed_cell_layouts.emplace_back(std::move(layouts));
+                }
             } else {
-                soft_key.button().rect_plane().node().set_enabled(false);
+                if (layout_count < _fixed_cell_layouts.size()) {
+                    _fixed_cell_layouts.resize(layout_count);
+                }
+                break;
             }
+        }
+    }
+
+    void _update_soft_keys_enabled(bool animated) {
+        auto const key_count = _soft_keys.size();
+
+        if (key_count == 0 || !_collection_layout) {
+            return;
+        }
+
+        auto const layout_count = _collection_layout.actual_cell_count();
+        auto renderer = _root_node.renderer();
+
+        for (auto const &idx : make_each(key_count)) {
+            _soft_keys.at(idx).set_enabled(idx < layout_count, animated);
         }
     }
 };

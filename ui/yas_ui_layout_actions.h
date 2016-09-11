@@ -9,6 +9,8 @@
 
 namespace yas {
 namespace ui {
+    class renderer;
+
     namespace layout_action {
         struct args {
             weak<ui::layout_guide> target;
@@ -19,39 +21,23 @@ namespace ui {
         };
     }
 
-    namespace layout_point_action {
-        struct args {
-            weak<ui::layout_guide_point> target;
-            ui::point start_point;
-            ui::point end_point;
-
-            continuous_action::args continuous_action;
-        };
-    }
-
-    namespace layout_range_action {
-        struct args {
-            weak<ui::layout_guide_range> target;
-            ui::range start_range;
-            ui::range end_range;
-
-            continuous_action::args continuous_action;
-        };
-    }
-
-    namespace layout_rect_action {
-        struct args {
-            weak<ui::layout_guide_rect> target;
-            ui::region start_region;
-            ui::region end_region;
-
-            continuous_action::args continuous_action;
-        };
-    }
-
     ui::continuous_action make_action(layout_action::args);
-    ui::continuous_action make_action(layout_point_action::args);
-    ui::continuous_action make_action(layout_range_action::args);
-    ui::continuous_action make_action(layout_rect_action::args);
+
+    class layout_interporator : public base {
+       public:
+        class impl;
+
+        struct args {
+            weak<ui::renderer> renderer;
+            std::vector<ui::layout_guide_pair> layout_guide_pairs;
+            double duration = 0.3;
+        };
+
+        explicit layout_interporator(args);
+        layout_interporator(std::nullptr_t);
+
+        void set_value_transformer(ui::transform_f);
+        ui::transform_f const &value_transformer() const;
+    };
 }
 }
