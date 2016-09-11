@@ -86,13 +86,16 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
     property<ui::shape> _shape_property{{.value = nullptr}};
     property<bool> _enabled_property{{.value = true}};
     subject_t _subject;
-    std::vector<base> _property_observers;
 
     impl(ui::shape &&shape) : _shape_property({.value = std::move(shape)}) {
         _property_observers.reserve(2);
     }
 
     void dispatch_method(ui::collider::method const method) {
+        if (_property_observers.count(method)) {
+            return;
+        }
+
         auto weak_collider = to_weak(cast<ui::collider>());
 
         base observer = nullptr;
@@ -116,7 +119,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
                 break;
         }
 
-        _property_observers.emplace_back(std::move(observer));
+        _property_observers.emplace(std::make_pair(method, std::move(observer)));
     }
 
     bool hit_test(ui::point const &loc) {
@@ -138,6 +141,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
+    std::unordered_map<ui::collider::method, base> _property_observers;
 };
 
 ui::collider::collider() : base(std::make_shared<impl>(nullptr)) {
