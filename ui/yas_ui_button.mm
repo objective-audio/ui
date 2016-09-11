@@ -34,27 +34,32 @@ struct ui::button::impl : base::impl {
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
-        _renderer_observer = node.subject().make_observer(
-            ui::node::method::renderer_changed,
-            [event_observer = base{nullptr}, leave_observer = base{nullptr}, weak_button](auto const &context) mutable {
-                ui::node const &node = context.value;
+        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+            event_observer = base{nullptr},
+            leave_observer = base{nullptr},
+            collider_observer = base{nullptr},
+            weak_button
+        ](auto const &context) mutable {
+            ui::node const &node = context.value;
 
-                if (auto renderer = node.renderer()) {
-                    event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::touch_changed, [weak_button](auto const &context) {
-                            if (auto button = weak_button.lock()) {
-                                button.impl_ptr<impl>()->_update_tracking(context.value);
-                            }
-                        });
+            if (auto renderer = node.renderer()) {
+                event_observer = renderer.event_manager().subject().make_observer(
+                    ui::event_manager::method::touch_changed, [weak_button](auto const &context) {
+                        if (auto button = weak_button.lock()) {
+                            button.impl_ptr<impl>()->_update_tracking(context.value);
+                        }
+                    });
 
-                    if (auto button = weak_button.lock()) {
-                        leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
-                    }
-                } else {
-                    event_observer = nullptr;
-                    leave_observer = nullptr;
+                if (auto button = weak_button.lock()) {
+                    leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
+                    collider_observer = button.impl_ptr<impl>()->_make_collider_observer();
                 }
-            });
+            } else {
+                event_observer = nullptr;
+                leave_observer = nullptr;
+                collider_observer = nullptr;
+            }
+        });
 
         _layout_guide_rect.set_value_changed_handler([weak_button](auto const &context) {
             if (auto button = weak_button.lock()) {
@@ -139,6 +144,30 @@ struct ui::button::impl : base::impl {
 
                         default:
                             break;
+                    }
+                }
+            }
+        });
+    }
+
+    base _make_collider_observer() {
+        auto &node = _rect_plane.node();
+
+        return node.collider().subject().make_wild_card_observer([weak_node = to_weak(node)](auto const &context) {
+            if (auto node = weak_node.lock()) {
+                if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                    ui::collider::method const &method = context.key;
+                    switch (method) {
+                        case ui::collider::method::shape_changed: {
+                            if (!node.collider().shape()) {
+                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                            }
+                        } break;
+                        case ui::collider::method::enabled_changed: {
+                            if (!node.collider().is_enabled()) {
+                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                            }
+                        } break;
                     }
                 }
             }
