@@ -2,6 +2,8 @@
 //  yas_ui_collider.cpp
 //
 
+#include "yas_observing.h"
+#include "yas_property.h"
 #include "yas_to_bool.h"
 #include "yas_ui_collider.h"
 
@@ -81,16 +83,47 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    impl() {
+    property<ui::shape> _shape_property{{.value = nullptr}};
+    property<bool> _enabled_property{{.value = true}};
+    subject_t _subject;
+    std::vector<base> _property_observers;
+
+    impl(ui::shape &&shape) : _shape_property({.value = std::move(shape)}) {
+        _property_observers.reserve(2);
     }
 
-    impl(ui::shape &&shape) : _shape(std::move(shape)) {
+    void dispatch_method(ui::collider::method const method) {
+        auto weak_collider = to_weak(cast<ui::collider>());
+
+        base observer = nullptr;
+
+        switch (method) {
+            case ui::collider::method::shape_changed:
+                observer = _shape_property.subject().make_observer(
+                    property_method::did_change, [weak_collider](auto const &context) {
+                        if (auto collider = weak_collider.lock()) {
+                            collider.subject().notify(ui::collider::method::shape_changed, collider);
+                        }
+                    });
+                break;
+            case ui::collider::method::enabled_changed:
+                observer = _enabled_property.subject().make_observer(
+                    property_method::did_change, [weak_collider](auto const &context) {
+                        if (auto collider = weak_collider.lock()) {
+                            collider.subject().notify(ui::collider::method::enabled_changed, collider);
+                        }
+                    });
+                break;
+        }
+
+        _property_observers.emplace_back(std::move(observer));
     }
 
     bool hit_test(ui::point const &loc) {
-        if (_shape) {
+        auto const &shape = _shape_property.value();
+        if (shape && _enabled_property.value()) {
             auto pos = simd::float4x4(matrix_invert(_matrix)) * to_float4(loc.v);
-            return _shape.hit_test({pos.x, pos.y});
+            return shape.hit_test({pos.x, pos.y});
         }
         return false;
     }
@@ -103,13 +136,11 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
         _matrix = std::move(matrix);
     }
 
-    ui::shape _shape = nullptr;
-
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
 };
 
-ui::collider::collider() : base(std::make_shared<impl>()) {
+ui::collider::collider() : base(std::make_shared<impl>(nullptr)) {
 }
 
 ui::collider::collider(ui::shape shape) : base(std::make_shared<impl>(std::move(shape))) {
@@ -121,15 +152,31 @@ ui::collider::collider(std::nullptr_t) : base(nullptr) {
 ui::collider::~collider() = default;
 
 void ui::collider::set_shape(ui::shape shape) {
-    impl_ptr<impl>()->_shape = std::move(shape);
+    impl_ptr<impl>()->_shape_property.set_value(std::move(shape));
 }
 
 ui::shape const &ui::collider::shape() const {
-    return impl_ptr<impl>()->_shape;
+    return impl_ptr<impl>()->_shape_property.value();
+}
+
+void ui::collider::set_enabled(bool const enabled) {
+    impl_ptr<impl>()->_enabled_property.set_value(enabled);
+}
+
+bool ui::collider::is_enabled() const {
+    return impl_ptr<impl>()->_enabled_property.value();
 }
 
 bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
+}
+
+ui::collider::subject_t &ui::collider::subject() {
+    return impl_ptr<impl>()->_subject;
+}
+
+void ui::collider::dispatch_method(ui::collider::method const method) {
+    impl_ptr<impl>()->dispatch_method(method);
 }
 
 ui::renderable_collider &ui::collider::renderable() {
