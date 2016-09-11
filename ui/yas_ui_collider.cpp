@@ -86,37 +86,39 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
     property<ui::shape> _shape_property{{.value = nullptr}};
     property<bool> _enabled_property{{.value = true}};
     subject_t _subject;
-    std::vector<base> _property_observers;
 
     impl(ui::shape &&shape) : _shape_property({.value = std::move(shape)}) {
         _property_observers.reserve(2);
     }
 
     void dispatch_method(ui::collider::method const method) {
+        if (_property_observers.count(method)) {
+            return;
+        }
+
         auto weak_collider = to_weak(cast<ui::collider>());
 
         base observer = nullptr;
 
+        auto make_observer = [](auto const method, auto property, auto weak_collider) {
+            return property.subject().make_observer(property_method::did_change,
+                                                    [weak_collider, method](auto const &context) {
+                                                        if (auto node = weak_collider.lock()) {
+                                                            node.subject().notify(method, node);
+                                                        }
+                                                    });
+        };
+
         switch (method) {
             case ui::collider::method::shape_changed:
-                observer = _shape_property.subject().make_observer(
-                    property_method::did_change, [weak_collider](auto const &context) {
-                        if (auto collider = weak_collider.lock()) {
-                            collider.subject().notify(ui::collider::method::shape_changed, collider);
-                        }
-                    });
+                observer = make_observer(method, _shape_property, weak_collider);
                 break;
             case ui::collider::method::enabled_changed:
-                observer = _enabled_property.subject().make_observer(
-                    property_method::did_change, [weak_collider](auto const &context) {
-                        if (auto collider = weak_collider.lock()) {
-                            collider.subject().notify(ui::collider::method::enabled_changed, collider);
-                        }
-                    });
+                observer = make_observer(method, _enabled_property, weak_collider);
                 break;
         }
 
-        _property_observers.emplace_back(std::move(observer));
+        _property_observers.emplace(std::make_pair(method, std::move(observer)));
     }
 
     bool hit_test(ui::point const &loc) {
@@ -138,6 +140,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
+    std::unordered_map<ui::collider::method, base> _property_observers;
 };
 
 ui::collider::collider() : base(std::make_shared<impl>(nullptr)) {
