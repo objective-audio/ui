@@ -45,11 +45,6 @@ namespace ui {
         void pop_notify_caller();
     };
 
-    struct layout_guide_pair {
-        ui::layout_guide source;
-        ui::layout_guide destination;
-    };
-
     class layout_guide_point : public base {
        public:
         class impl;
@@ -164,5 +159,29 @@ namespace ui {
         void push_notify_caller();
         void pop_notify_caller();
     };
+
+    struct layout_guide_pair {
+        ui::layout_guide source;
+        ui::layout_guide destination;
+    };
+
+    struct layout_guide_point_pair {
+        ui::layout_guide_point source;
+        ui::layout_guide_point destination;
+    };
+
+    struct layout_guide_range_pair {
+        ui::layout_guide_range source;
+        ui::layout_guide_range destination;
+    };
+
+    struct layout_guide_rect_pair {
+        ui::layout_guide_rect source;
+        ui::layout_guide_rect destination;
+    };
+
+    std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_point_pair);
+    std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_range_pair);
+    std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_rect_pair);
 }
 }

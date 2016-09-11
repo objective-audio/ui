@@ -263,23 +263,16 @@ struct sample::soft_keyboard::impl : base::impl {
 
         for (auto const &idx : make_each(key_count)) {
             auto &soft_key = _soft_keys.at(idx);
-            auto &src_guide_rect = _src_cell_guide_rects.at(idx);
             auto &dst_guide_rect = _dst_cell_guide_rects.at(idx);
-
-            guide_pairs.emplace_back(
-                ui::layout_guide_pair{.source = src_guide_rect.left(), .destination = dst_guide_rect.left()});
-            guide_pairs.emplace_back(
-                ui::layout_guide_pair{.source = src_guide_rect.bottom(), .destination = dst_guide_rect.bottom()});
-            guide_pairs.emplace_back(
-                ui::layout_guide_pair{.source = src_guide_rect.right(), .destination = dst_guide_rect.right()});
-            guide_pairs.emplace_back(
-                ui::layout_guide_pair{.source = src_guide_rect.top(), .destination = dst_guide_rect.top()});
 
             dst_guide_rect.set_value_changed_handler([weak_soft_key = to_weak(soft_key), handler](auto const &context) {
                 if (auto soft_key = weak_soft_key.lock()) {
                     handler(soft_key, context.new_value);
                 }
             });
+
+            yas::move_back_insert(guide_pairs, ui::make_layout_guide_pairs({.source = _src_cell_guide_rects.at(idx),
+                                                                            .destination = dst_guide_rect}));
         }
 
         _cell_interporator = ui::layout_interporator{
