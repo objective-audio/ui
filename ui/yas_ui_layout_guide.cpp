@@ -482,3 +482,22 @@ void ui::layout_guide_rect::push_notify_caller() {
 void ui::layout_guide_rect::pop_notify_caller() {
     impl_ptr<impl>()->pop_notify_caller();
 }
+
+#pragma mark - layout_guide_pair
+
+std::vector<ui::layout_guide_pair> ui::make_layout_guide_pairs(ui::layout_guide_point_pair point_pair) {
+    return {ui::layout_guide_pair{.source = point_pair.source.x(), .destination = point_pair.destination.x()},
+            ui::layout_guide_pair{.source = point_pair.source.y(), .destination = point_pair.destination.y()}};
+}
+
+std::vector<ui::layout_guide_pair> ui::make_layout_guide_pairs(ui::layout_guide_range_pair range_pair) {
+    return {ui::layout_guide_pair{.source = range_pair.source.min(), .destination = range_pair.destination.min()},
+            ui::layout_guide_pair{.source = range_pair.source.max(), .destination = range_pair.destination.max()}};
+}
+
+std::vector<ui::layout_guide_pair> ui::make_layout_guide_pairs(ui::layout_guide_rect_pair rect_pair) {
+    return {ui::layout_guide_pair{.source = rect_pair.source.left(), .destination = rect_pair.destination.left()},
+            ui::layout_guide_pair{.source = rect_pair.source.right(), .destination = rect_pair.destination.right()},
+            ui::layout_guide_pair{.source = rect_pair.source.bottom(), .destination = rect_pair.destination.bottom()},
+            ui::layout_guide_pair{.source = rect_pair.source.top(), .destination = rect_pair.destination.top()}};
+}
