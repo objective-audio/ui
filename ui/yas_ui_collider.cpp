@@ -100,22 +100,21 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 
         base observer = nullptr;
 
+        auto make_observer = [](auto const method, auto property, auto weak_collider) {
+            return property.subject().make_observer(property_method::did_change,
+                                                    [weak_collider, method](auto const &context) {
+                                                        if (auto node = weak_collider.lock()) {
+                                                            node.subject().notify(method, node);
+                                                        }
+                                                    });
+        };
+
         switch (method) {
             case ui::collider::method::shape_changed:
-                observer = _shape_property.subject().make_observer(
-                    property_method::did_change, [weak_collider](auto const &context) {
-                        if (auto collider = weak_collider.lock()) {
-                            collider.subject().notify(ui::collider::method::shape_changed, collider);
-                        }
-                    });
+                observer = make_observer(method, _shape_property, weak_collider);
                 break;
             case ui::collider::method::enabled_changed:
-                observer = _enabled_property.subject().make_observer(
-                    property_method::did_change, [weak_collider](auto const &context) {
-                        if (auto collider = weak_collider.lock()) {
-                            collider.subject().notify(ui::collider::method::enabled_changed, collider);
-                        }
-                    });
+                observer = make_observer(method, _enabled_property, weak_collider);
                 break;
         }
 

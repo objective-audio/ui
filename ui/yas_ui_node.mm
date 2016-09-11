@@ -30,70 +30,70 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
    public:
     impl() {
         _updates.flags.set();
+        _update_observers.reserve(9);
+        _dispatch_observers.reserve(9);
     }
 
     void setup_observers() {
         auto weak_node = to_weak(cast<ui::node>());
 
-        _property_observers.reserve(9);
-
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::enabled);
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _color_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::collider);
                 }
             }));
 
-        _property_observers.emplace_back(
+        _update_observers.emplace_back(
             _batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
@@ -279,90 +279,53 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void dispatch_method(ui::node::method const method) {
+        if (_dispatch_observers.count(method) > 0) {
+            return;
+        }
+
         auto weak_node = to_weak(cast<ui::node>());
 
         base observer = nullptr;
 
+        auto make_observer = [](auto const method, auto property, auto weak_node) {
+            return property.subject().make_observer(property_method::did_change,
+                                                    [weak_node, method](auto const &context) {
+                                                        if (auto node = weak_node.lock()) {
+                                                            node.subject().notify(method, node);
+                                                        }
+                                                    });
+        };
+
         switch (method) {
             case ui::node::method::position_changed:
-                observer = _position_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::position_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _position_property, weak_node);
                 break;
             case ui::node::method::angle_changed:
-                observer = _angle_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::angle_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _angle_property, weak_node);
                 break;
             case ui::node::method::scale_changed:
-                observer = _scale_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::scale_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _scale_property, weak_node);
                 break;
             case ui::node::method::color_changed:
-                observer = _color_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::color_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _color_property, weak_node);
                 break;
             case ui::node::method::alpha_changed:
-                observer = _alpha_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::alpha_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _alpha_property, weak_node);
                 break;
             case ui::node::method::enabled_changed:
-                observer = _enabled_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::enabled_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _enabled_property, weak_node);
                 break;
             case ui::node::method::mesh_changed:
-                observer = _mesh_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::mesh_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _mesh_property, weak_node);
                 break;
             case ui::node::method::collider_changed:
-                observer = _collider_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::collider_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _collider_property, weak_node);
                 break;
             case ui::node::method::parent_changed:
-                observer = _parent_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::parent_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _parent_property, weak_node);
                 break;
             case ui::node::method::renderer_changed:
-                observer = _renderer_property.subject().make_observer(
-                    property_method::did_change, [weak_node](auto const &context) {
-                        if (auto node = weak_node.lock()) {
-                            node.subject().notify(node::method::renderer_changed, node);
-                        }
-                    });
+                observer = make_observer(method, _renderer_property, weak_node);
                 break;
 
             default:
@@ -370,7 +333,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (observer) {
-            _property_observers.emplace_back(std::move(observer));
+            _dispatch_observers.emplace(std::make_pair(method, std::move(observer)));
         }
     }
 
@@ -403,13 +366,15 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<bool> _enabled_property{{.value = true}};
 
     node::subject_t _subject;
-    std::vector<base> _property_observers;
 
    private:
     std::vector<ui::node> _children;
 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
+
+    std::vector<base> _update_observers;
+    std::unordered_map<ui::node::method, base> _dispatch_observers;
 
     node_updates_t _updates;
 
