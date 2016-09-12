@@ -5,6 +5,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreText/CoreText.h>
 #include "yas_cf_utils.h"
+#include "yas_each_index.h"
 #include "yas_objc_macros.h"
 #include "yas_observing.h"
 #include "yas_ui_font_atlas.h"
@@ -45,7 +46,7 @@ double ui::strings_layout::width() const {
 namespace yas {
 namespace ui {
     struct mutable_strings_layout : strings_layout {
-        mutable_strings_layout(std::size_t const word_size) : strings_layout(word_size) {
+        mutable_strings_layout(std::size_t const word_count) : strings_layout(word_count) {
         }
 
         ui::vertex2d_rect_t &rect(std::size_t const word_index) {
@@ -64,7 +65,12 @@ namespace ui {
 namespace yas {
 namespace ui {
     static ui::vertex2d_rect_t constexpr _empty_rect{0.0f};
-    static CGSize constexpr _empty_advance{0.0f};
+    static ui::size constexpr _empty_advance{.width = 0.0f, .height = 0.0f};
+
+    struct word_info {
+        ui::vertex2d_rect_t rect;
+        ui::size advance;
+    };
 }
 }
 
@@ -99,16 +105,16 @@ struct ui::font_atlas::impl : base::impl {
             return ui::mutable_strings_layout{0};
         }
 
-        auto const word_size = text.size();
+        auto const word_count = text.size();
 
-        ui::mutable_strings_layout strings_layout{word_size};
+        ui::mutable_strings_layout strings_layout{word_count};
 
         double width = 0;
         auto const scale_factor = _texture.scale_factor();
 
         if (pivot == pivot::right) {
-            for (auto const &idx : each_index<std::size_t>(word_size)) {
-                auto const &word_idx = word_size - idx - 1;
+            for (auto const &idx : each_index<std::size_t>(word_count)) {
+                auto const &word_idx = word_count - idx - 1;
                 auto const word = text.substr(word_idx, 1);
                 auto const &str_rect = _rect(word);
 
@@ -127,7 +133,7 @@ struct ui::font_atlas::impl : base::impl {
                 }
             }
         } else {
-            for (auto const &word_idx : each_index<std::size_t>(word_size)) {
+            for (auto const &word_idx : each_index<std::size_t>(word_count)) {
                 auto const word = text.substr(word_idx, 1);
                 auto const &str_rect = _rect(word);
 
@@ -163,38 +169,36 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    std::vector<ui::vertex2d_rect_t> _rects;
-    std::vector<CGSize> _advances;
+    std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
 
     void _update_texture() {
         if (!_texture) {
-            _rects.clear();
-            _advances.clear();
+            _word_infos.clear();
             return;
         }
 
         CTFontRef ct_font = CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr);
 
-        auto const word_size = _words.size();
+        auto const word_count = _words.size();
 
-        _rects.resize(word_size);
-        _advances.resize(word_size);
+        _word_infos.resize(word_count);
 
-        CGGlyph glyphs[word_size];
-        UniChar characters[word_size];
+        CGGlyph glyphs[word_count];
+        UniChar characters[word_count];
+        CGSize advances[word_count];
 
-        CFStringGetCharacters(to_cf_object(_words), CFRangeMake(0, word_size), characters);
-        CTFontGetGlyphsForCharacters(ct_font, characters, glyphs, word_size);
-        CTFontGetAdvancesForGlyphs(ct_font, kCTFontOrientationDefault, glyphs, _advances.data(), word_size);
+        CFStringGetCharacters(to_cf_object(_words), CFRangeMake(0, word_count), characters);
+        CTFontGetGlyphsForCharacters(ct_font, characters, glyphs, word_count);
+        CTFontGetAdvancesForGlyphs(ct_font, kCTFontOrientationDefault, glyphs, advances, word_count);
 
         auto const ascent = CTFontGetAscent(ct_font);
         auto const descent = CTFontGetDescent(ct_font);
         auto const string_height = descent + ascent;
         auto const scale_factor = _texture.scale_factor();
 
-        for (auto const &idx : each_index<std::size_t>(word_size)) {
-            ui::uint_size const image_size = {uint32_t(std::ceilf(_advances[idx].width)),
+        for (auto const &idx : each_index<std::size_t>(word_count)) {
+            ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
                                               uint32_t(std::ceilf(string_height))};
             ui::region const image_region = {
                 .origin = {0.0f, roundf(-descent, scale_factor)},
@@ -222,6 +226,9 @@ struct ui::font_atlas::impl : base::impl {
             if (auto result = _texture.add_image(image)) {
                 _set_vertex_tex_coords(result.value(), idx);
             }
+
+            auto const &advance = advances[idx];
+            _word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
         }
 
         CFRelease(ct_font);
@@ -232,39 +239,31 @@ struct ui::font_atlas::impl : base::impl {
         if (idx == std::string::npos) {
             return _empty_rect;
         }
-        return _rects.at(idx);
+        return _word_infos.at(idx).rect;
     }
 
     void _set_vertex_position(region const &region, std::size_t const word_idx) {
-        auto &rect = _rects.at(word_idx);
-        float const minX = region.origin.x;
-        float const minY = region.origin.y;
-        float const maxX = minX + region.size.width;
-        float const maxY = minY + region.size.height;
-        rect.v[0].position.x = rect.v[2].position.x = minX;
-        rect.v[0].position.y = rect.v[1].position.y = minY;
-        rect.v[1].position.x = rect.v[3].position.x = maxX;
-        rect.v[2].position.y = rect.v[3].position.y = maxY;
+        auto &rect = _word_infos.at(word_idx).rect;
+        rect.v[0].position.x = rect.v[2].position.x = region.left();
+        rect.v[0].position.y = rect.v[1].position.y = region.bottom();
+        rect.v[1].position.x = rect.v[3].position.x = region.right();
+        rect.v[2].position.y = rect.v[3].position.y = region.top();
     }
 
     void _set_vertex_tex_coords(uint_region const &region, std::size_t const word_idx) {
-        auto &rect = _rects.at(word_idx);
-        float const minX = region.origin.x;
-        float const minY = region.origin.y;
-        float const maxX = minX + region.size.width;
-        float const maxY = minY + region.size.height;
-        rect.v[0].tex_coord.x = rect.v[2].tex_coord.x = minX;
-        rect.v[0].tex_coord.y = rect.v[1].tex_coord.y = maxY;
-        rect.v[1].tex_coord.x = rect.v[3].tex_coord.x = maxX;
-        rect.v[2].tex_coord.y = rect.v[3].tex_coord.y = minY;
+        auto &rect = _word_infos.at(word_idx).rect;
+        rect.v[0].tex_coord.x = rect.v[2].tex_coord.x = region.left();
+        rect.v[0].tex_coord.y = rect.v[1].tex_coord.y = region.top();
+        rect.v[1].tex_coord.x = rect.v[3].tex_coord.x = region.right();
+        rect.v[2].tex_coord.y = rect.v[3].tex_coord.y = region.bottom();
     }
 
-    CGSize const &_advance(std::string const &word) {
+    ui::size const &_advance(std::string const &word) {
         auto idx = _words.find(word);
         if (idx == std::string::npos) {
             return _empty_advance;
         }
-        return _advances.at(idx);
+        return _word_infos.at(idx).advance;
     }
 };
 
