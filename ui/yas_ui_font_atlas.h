@@ -53,8 +53,14 @@ namespace ui {
 
         std::string const &font_name() const;
         double const &font_size() const;
+        double const &ascent() const;
+        double const &descent() const;
+        double const &leading() const;
         std::string const &words() const;
         ui::texture const &texture() const;
+
+        ui::vertex2d_rect_t const &rect(std::string const &word) const;
+        ui::size const &advance(std::string const &word) const;
 
         void set_texture(ui::texture);
 
