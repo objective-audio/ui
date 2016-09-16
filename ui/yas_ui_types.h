@@ -18,16 +18,6 @@ namespace ui {
         //        open_gl,
     };
 
-    struct vertex2d_rect_t {
-        vertex2d_t v[4];
-    };
-
-    using index2d_t = uint32_t;
-
-    struct index2d_rect_t {
-        index2d_t v[6];
-    };
-
     struct uint_origin {
         uint32_t x = 0;
         uint32_t y = 0;
@@ -139,6 +129,19 @@ namespace ui {
         line_strip,
         triangle,
         triangle_strip,
+    };
+
+    struct vertex2d_rect_t {
+        vertex2d_t v[4];
+
+        void set_position(ui::region const &);
+        void set_tex_coord(ui::uint_region const &);
+    };
+
+    using index2d_t = uint32_t;
+
+    struct index2d_rect_t {
+        index2d_t v[6];
     };
 }
 
