@@ -96,6 +96,22 @@ ui::color::operator bool() const {
     return red != 0 || green != 0 || blue != 0;
 }
 
+#pragma mark - vertex2d_rect_t
+
+void ui::vertex2d_rect_t::set_position(ui::region const &region) {
+    v[0].position.x = v[2].position.x = region.left();
+    v[0].position.y = v[1].position.y = region.bottom();
+    v[1].position.x = v[3].position.x = region.right();
+    v[2].position.y = v[3].position.y = region.top();
+}
+
+void ui::vertex2d_rect_t::set_tex_coord(ui::uint_region const &region) {
+    v[0].tex_coord.x = v[2].tex_coord.x = region.left();
+    v[0].tex_coord.y = v[1].tex_coord.y = region.top();
+    v[1].tex_coord.x = v[3].tex_coord.x = region.right();
+    v[2].tex_coord.y = v[3].tex_coord.y = region.bottom();
+}
+
 #pragma mark -
 
 simd::float2 yas::to_float2(CGPoint const &point) {

@@ -2,8 +2,11 @@
 //  yas_ui_font_atlas_tests.mm
 //
 
+#import <CoreText/CoreText.h>
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import "yas_cf_ref.h"
+#import "yas_cf_utils.h"
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
 #import "yas_observing.h"
@@ -43,6 +46,12 @@ using namespace yas;
     XCTAssertEqual(font_atlas.font_size(), 14.0);
     XCTAssertEqual(font_atlas.words(), "abcde12345");
     XCTAssertEqual(font_atlas.texture(), texture);
+
+    auto ct_font_ref = make_cf_ref(CTFontCreateWithName(to_cf_object(std::string("HelveticaNeue")), 14.0, nullptr));
+    auto ct_font_obj = ct_font_ref.object();
+    XCTAssertEqual(font_atlas.ascent(), CTFontGetAscent(ct_font_obj));
+    XCTAssertEqual(font_atlas.descent(), CTFontGetDescent(ct_font_obj));
+    XCTAssertEqual(font_atlas.leading(), CTFontGetLeading(ct_font_obj));
 }
 
 - (void)test_create_null {

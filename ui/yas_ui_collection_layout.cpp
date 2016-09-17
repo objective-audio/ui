@@ -34,17 +34,17 @@ struct ui::collection_layout::impl : base::impl {
           _row_order(args.row_order),
           _col_order(args.col_order),
           _left_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.left(),
-                                                     .destination_guide = _border_guide_rect.left(),
-                                                     .distance = args.borders.left})),
+                                               .destination_guide = _border_guide_rect.left(),
+                                               .distance = args.borders.left})),
           _right_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.right(),
-                                                      .destination_guide = _border_guide_rect.right(),
-                                                      .distance = -args.borders.right})),
+                                                .destination_guide = _border_guide_rect.right(),
+                                                .distance = -args.borders.right})),
           _bottom_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.bottom(),
-                                                       .destination_guide = _border_guide_rect.bottom(),
-                                                       .distance = args.borders.bottom})),
+                                                 .destination_guide = _border_guide_rect.bottom(),
+                                                 .distance = args.borders.bottom})),
           _top_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.top(),
-                                                    .destination_guide = _border_guide_rect.top(),
-                                                    .distance = -args.borders.top})),
+                                              .destination_guide = _border_guide_rect.top(),
+                                              .distance = -args.borders.top})),
           _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";
@@ -210,12 +210,14 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_order _col_order;
 
     void _update_layout() {
-        if (_preferred_cell_count == 0) {
+        auto frame_region = _direction_swapped_region_if_horizontal(_frame_guide_rect.region());
+
+        if (_preferred_cell_count == 0 || frame_region.size.width == 0.0f) {
             _cell_guide_rects.clear();
             return;
         }
 
-        auto const is_row_limiting = _swap_direction_if_horizontal(_frame_guide_rect.region()).size.height != 0;
+        auto const is_row_limiting = frame_region.size.height != 0;
         auto const border_rect = _transformed_border_rect();
         auto const border_abs_size = ui::size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
         std::vector<std::vector<ui::region>> regions;
@@ -287,7 +289,7 @@ struct ui::collection_layout::impl : base::impl {
             for (auto const &region : row_regions) {
                 ui::region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
                                           .size = region.size};
-                _cell_guide_rects.at(idx).set_region(_swap_direction_if_horizontal(aligned_region));
+                _cell_guide_rects.at(idx).set_region(_direction_swapped_region_if_horizontal(aligned_region));
 
                 ++idx;
             }
@@ -343,7 +345,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     ui::region _transformed_border_rect() {
-        auto const original = _swap_direction_if_horizontal(_border_guide_rect.region());
+        auto const original = _direction_swapped_region_if_horizontal(_border_guide_rect.region());
         ui::region result{.size = original.size};
 
         switch (_row_order) {
@@ -369,7 +371,7 @@ struct ui::collection_layout::impl : base::impl {
         return result;
     }
 
-    ui::region _swap_direction_if_horizontal(ui::region const &region) {
+    ui::region _direction_swapped_region_if_horizontal(ui::region const &region) {
         if (_direction == ui::layout_direction::horizontal) {
             return ui::region{.origin = {region.origin.y, region.origin.x},
                               .size = {region.size.height, region.size.width}};

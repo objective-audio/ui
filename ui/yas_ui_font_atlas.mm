@@ -4,6 +4,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreText/CoreText.h>
+#include "yas_cf_ref.h"
 #include "yas_cf_utils.h"
 #include "yas_each_index.h"
 #include "yas_objc_macros.h"
@@ -77,11 +78,19 @@ namespace ui {
 struct ui::font_atlas::impl : base::impl {
     std::string _font_name;
     double _font_size;
+    double _ascent;
+    double _descent;
+    double _leading;
     std::string _words;
     ui::font_atlas::subject_t _subject;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
         : _font_name(std::move(font_name)), _font_size(font_size), _words(std::move(words)) {
+        auto ct_font_ref = make_cf_ref(CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr));
+        auto ct_font_obj = ct_font_ref.object();
+        _ascent = CTFontGetAscent(ct_font_obj);
+        _descent = CTFontGetDescent(ct_font_obj);
+        _leading = CTFontGetLeading(ct_font_obj);
     }
 
     ui::texture &texture() {
@@ -116,9 +125,9 @@ struct ui::font_atlas::impl : base::impl {
             for (auto const &idx : each_index<std::size_t>(word_count)) {
                 auto const &word_idx = word_count - idx - 1;
                 auto const word = text.substr(word_idx, 1);
-                auto const &str_rect = _rect(word);
+                auto const &str_rect = rect(word);
 
-                width += _advance(word).width;
+                width += advance(word).width;
 
                 auto &layout_rect = strings_layout.rect(word_idx);
 
@@ -135,7 +144,7 @@ struct ui::font_atlas::impl : base::impl {
         } else {
             for (auto const &word_idx : each_index<std::size_t>(word_count)) {
                 auto const word = text.substr(word_idx, 1);
-                auto const &str_rect = _rect(word);
+                auto const &str_rect = rect(word);
 
                 auto &layout_rect = strings_layout.rect(word_idx);
 
@@ -149,7 +158,7 @@ struct ui::font_atlas::impl : base::impl {
                     }
                 }
 
-                width += _advance(word).width;
+                width += advance(word).width;
             }
         }
 
@@ -168,6 +177,22 @@ struct ui::font_atlas::impl : base::impl {
         return std::move(strings_layout);
     }
 
+    ui::vertex2d_rect_t const &rect(std::string const &word) {
+        auto idx = _words.find_first_of(word);
+        if (idx == std::string::npos) {
+            return _empty_rect;
+        }
+        return _word_infos.at(idx).rect;
+    }
+
+    ui::size const &advance(std::string const &word) {
+        auto idx = _words.find(word);
+        if (idx == std::string::npos) {
+            return _empty_advance;
+        }
+        return _word_infos.at(idx).advance;
+    }
+
    private:
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
@@ -178,7 +203,8 @@ struct ui::font_atlas::impl : base::impl {
             return;
         }
 
-        CTFontRef ct_font = CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr);
+        auto ct_font_ref = make_cf_ref(CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr));
+        auto ct_font_obj = ct_font_ref.object();
 
         auto const word_count = _words.size();
 
@@ -189,11 +215,11 @@ struct ui::font_atlas::impl : base::impl {
         CGSize advances[word_count];
 
         CFStringGetCharacters(to_cf_object(_words), CFRangeMake(0, word_count), characters);
-        CTFontGetGlyphsForCharacters(ct_font, characters, glyphs, word_count);
-        CTFontGetAdvancesForGlyphs(ct_font, kCTFontOrientationDefault, glyphs, advances, word_count);
+        CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, word_count);
+        CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, word_count);
 
-        auto const ascent = CTFontGetAscent(ct_font);
-        auto const descent = CTFontGetDescent(ct_font);
+        auto const ascent = CTFontGetAscent(ct_font_obj);
+        auto const descent = CTFontGetDescent(ct_font_obj);
         auto const string_height = descent + ascent;
         auto const scale_factor = _texture.scale_factor();
 
@@ -204,17 +230,17 @@ struct ui::font_atlas::impl : base::impl {
                 .origin = {0.0f, roundf(-descent, scale_factor)},
                 .size = {static_cast<float>(image_size.width), static_cast<float>(image_size.height)}};
 
-            _set_vertex_position(image_region, idx);
+            _word_infos.at(idx).rect.set_position(image_region);
 
             ui::image image{{.point_size = image_size, .scale_factor = scale_factor}};
 
-            image.draw([&image_region, &descent, &glyphs, &idx, &ct_font](CGContextRef const ctx) {
+            image.draw([&image_region, &descent, &glyphs, &idx, &ct_font_obj](CGContextRef const ctx) {
                 CGContextSaveGState(ctx);
 
                 CGContextTranslateCTM(ctx, 0.0, image_region.size.height);
                 CGContextScaleCTM(ctx, 1.0, -1.0);
                 CGContextTranslateCTM(ctx, 0.0, descent);
-                CGPathRef path = CTFontCreatePathForGlyph(ct_font, glyphs[idx], nullptr);
+                CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyphs[idx], nullptr);
                 CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
                 CGContextAddPath(ctx, path);
                 CGContextFillPath(ctx);
@@ -224,46 +250,12 @@ struct ui::font_atlas::impl : base::impl {
             });
 
             if (auto result = _texture.add_image(image)) {
-                _set_vertex_tex_coords(result.value(), idx);
+                _word_infos.at(idx).rect.set_tex_coord(result.value());
             }
 
             auto const &advance = advances[idx];
             _word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
         }
-
-        CFRelease(ct_font);
-    }
-
-    ui::vertex2d_rect_t const &_rect(std::string const &word) {
-        auto idx = _words.find_first_of(word);
-        if (idx == std::string::npos) {
-            return _empty_rect;
-        }
-        return _word_infos.at(idx).rect;
-    }
-
-    void _set_vertex_position(region const &region, std::size_t const word_idx) {
-        auto &rect = _word_infos.at(word_idx).rect;
-        rect.v[0].position.x = rect.v[2].position.x = region.left();
-        rect.v[0].position.y = rect.v[1].position.y = region.bottom();
-        rect.v[1].position.x = rect.v[3].position.x = region.right();
-        rect.v[2].position.y = rect.v[3].position.y = region.top();
-    }
-
-    void _set_vertex_tex_coords(uint_region const &region, std::size_t const word_idx) {
-        auto &rect = _word_infos.at(word_idx).rect;
-        rect.v[0].tex_coord.x = rect.v[2].tex_coord.x = region.left();
-        rect.v[0].tex_coord.y = rect.v[1].tex_coord.y = region.top();
-        rect.v[1].tex_coord.x = rect.v[3].tex_coord.x = region.right();
-        rect.v[2].tex_coord.y = rect.v[3].tex_coord.y = region.bottom();
-    }
-
-    ui::size const &_advance(std::string const &word) {
-        auto idx = _words.find(word);
-        if (idx == std::string::npos) {
-            return _empty_advance;
-        }
-        return _word_infos.at(idx).advance;
     }
 };
 
@@ -285,12 +277,32 @@ double const &ui::font_atlas::font_size() const {
     return impl_ptr<impl>()->_font_size;
 }
 
+double const &ui::font_atlas::ascent() const {
+    return impl_ptr<impl>()->_ascent;
+}
+
+double const &ui::font_atlas::descent() const {
+    return impl_ptr<impl>()->_descent;
+}
+
+double const &ui::font_atlas::leading() const {
+    return impl_ptr<impl>()->_leading;
+}
+
 std::string const &ui::font_atlas::words() const {
     return impl_ptr<impl>()->_words;
 }
 
 ui::texture const &ui::font_atlas::texture() const {
     return impl_ptr<impl>()->texture();
+}
+
+ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {
+    return impl_ptr<impl>()->rect(word);
+}
+
+ui::size const &ui::font_atlas::advance(std::string const &word) const {
+    return impl_ptr<impl>()->advance(word);
 }
 
 void ui::font_atlas::set_texture(ui::texture texture) {
