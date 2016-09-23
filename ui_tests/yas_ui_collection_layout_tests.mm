@@ -29,8 +29,8 @@ using namespace yas;
 
     XCTAssertTrue(layout.frame() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
     XCTAssertEqual(layout.preferred_cell_count(), 0);
-    XCTAssertEqual(layout.cell_sizes().size(), 1);
-    XCTAssertTrue(layout.cell_sizes().at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout.default_cell_size() == (ui::size{1.0f, 1.0f}));
+    XCTAssertEqual(layout.lines().size(), 0);
     XCTAssertEqual(layout.row_spacing(), 0.0f);
     XCTAssertEqual(layout.col_spacing(), 0.0f);
     XCTAssertEqual(layout.borders(), (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
@@ -43,7 +43,8 @@ using namespace yas;
 - (void)test_create_with_args {
     ui::collection_layout layout{{.frame = {.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}},
                                   .preferred_cell_count = 10,
-                                  .cell_sizes = {{2.0f, 3.0f}},
+                                  .default_cell_size = {2.5f, 3.5f},
+                                  .lines = {{.cell_sizes = {{2.6f, 3.6f}, {2.7f, 3.7f}}, .new_line_min_offset = 3.9f}},
                                   .row_spacing = 4.0f,
                                   .col_spacing = 4.0f,
                                   .borders = {.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f},
@@ -56,8 +57,12 @@ using namespace yas;
 
     XCTAssertTrue(layout.frame() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
     XCTAssertEqual(layout.preferred_cell_count(), 10);
-    XCTAssertEqual(layout.cell_sizes().size(), 1);
-    XCTAssertTrue(layout.cell_sizes().at(0) == (ui::size{2.0f, 3.0f}));
+    XCTAssertTrue(layout.default_cell_size() == (ui::size{2.5f, 3.5f}));
+    XCTAssertEqual(layout.lines().size(), 1);
+    XCTAssertEqual(layout.lines().at(0).cell_sizes.size(), 2);
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
+    XCTAssertEqual(layout.lines().at(0).new_line_min_offset, 3.9f);
     XCTAssertEqual(layout.row_spacing(), 4.0f);
     XCTAssertEqual(layout.col_spacing(), 4.0f);
     XCTAssertEqual(layout.borders(), (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
@@ -76,7 +81,7 @@ using namespace yas;
 - (void)test_cell_layout_guide_rects {
     ui::collection_layout layout{{.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 9.0f}},
                                   .preferred_cell_count = 4,
-                                  .cell_sizes = {{2.0f, 3.0f}},
+                                  .default_cell_size = {2.0f, 3.0f},
                                   .row_spacing = 1.0f,
                                   .col_spacing = 1.0f,
                                   .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}}};
@@ -141,7 +146,7 @@ using namespace yas;
 - (void)test_set_frame {
     ui::collection_layout layout{{.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}},
                                   .preferred_cell_count = 4,
-                                  .cell_sizes = {{2.0f, 3.0f}},
+                                  .default_cell_size = {2.0f, 3.0f},
                                   .row_spacing = 1.0f,
                                   .col_spacing = 1.0f,
                                   .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}}};
@@ -187,7 +192,7 @@ using namespace yas;
 
 - (void)test_limiting_row {
     ui::collection_layout layout{
-        {.frame = {.size = {1.0f, 0.0f}}, .preferred_cell_count = 8, .cell_sizes = {{1.0f, 1.0f}}}};
+        {.frame = {.size = {1.0f, 0.0f}}, .preferred_cell_count = 8, .default_cell_size = {1.0f, 1.0f}}};
 
     XCTAssertEqual(layout.actual_cell_count(), 8);
 
@@ -216,13 +221,12 @@ using namespace yas;
     XCTAssertEqual(layout.preferred_cell_count(), 0);
 }
 
-- (void)test_set_cell_sizes_single {
+- (void)test_set_default_cell_size {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
 
-    XCTAssertEqual(layout.cell_sizes().size(), 1);
-    XCTAssertTrue(layout.cell_sizes().at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout.default_cell_size() == (ui::size{1.0f, 1.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
@@ -231,10 +235,9 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
 
-    layout.set_cell_sizes({{2.0f, 3.0f}});
+    layout.set_default_cell_size({2.0f, 3.0f});
 
-    XCTAssertEqual(layout.cell_sizes().size(), 1);
-    XCTAssertTrue(layout.cell_sizes().at(0) == (ui::size{2.0f, 3.0f}));
+    XCTAssertTrue(layout.default_cell_size() == (ui::size{2.0f, 3.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
@@ -244,20 +247,24 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 6.0f);
 }
 
-- (void)test_set_cell_sizes_plural {
+- (void)test_new_line_by_frame_only {
     ui::collection_layout layout{{.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 5}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
 
-    XCTAssertEqual(layout.cell_sizes().size(), 1);
-    XCTAssertTrue(layout.cell_sizes().at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertEqual(layout.lines().size(), 0);
 
-    layout.set_cell_sizes({{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}});
+    layout.set_lines({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}},
+                       .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout.cell_sizes().size(), 3);
-    XCTAssertTrue(layout.cell_sizes().at(0) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout.cell_sizes().at(1) == (ui::size{2.0f, 2.0f}));
-    XCTAssertTrue(layout.cell_sizes().at(2) == (ui::size{3.0f, 3.0f}));
+    XCTAssertEqual(layout.lines().size(), 1);
+    XCTAssertEqual(layout.lines().at(0).cell_sizes.size(), 5);
+
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout.lines().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0).right().value(), 1.0f);
@@ -281,10 +288,83 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(4).top().value(), 7.0f);
 }
 
+- (void)test_new_line_by_lines {
+    ui::collection_layout layout{{.frame = {.size = {10.0f, 0.0f}}, .preferred_cell_count = 5}};
+
+    auto const &cell_guide_rects = layout.cell_layout_guide_rects();
+
+    layout.set_lines({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
+                      {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
+
+    XCTAssertEqual(layout.lines().size(), 2);
+    XCTAssertEqual(layout.lines().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout.lines().at(1).cell_sizes.size(), 2);
+
+    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 3.0f);
+
+    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 4.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).right().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).bottom().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).top().value(), 5.0f);
+}
+
+- (void)test_new_line_by_frame_and_lines {
+    ui::collection_layout layout{{.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 5}};
+
+    auto const &cell_guide_rects = layout.cell_layout_guide_rects();
+
+    ui::size const cell_size = {1.0f, 1.0f};
+
+    layout.set_lines({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
+                      {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
+
+    XCTAssertEqual(layout.lines().size(), 2);
+    XCTAssertEqual(layout.lines().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout.lines().at(1).cell_sizes.size(), 2);
+
+    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 1.0f);
+
+    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 2.0f);
+
+    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).left().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).right().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).bottom().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(4).top().value(), 3.0f);
+}
+
 - (void)test_set_cell_sizes_zero_width {
     ui::collection_layout layout{{.frame = {.size = {3.0f, 0.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{0.0f, 1.0f}},
+                                  .default_cell_size = {0.0f, 1.0f},
                                   .borders = {.left = 1.0f, .right = 1.0f}}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
@@ -309,7 +389,7 @@ using namespace yas;
 
 - (void)test_set_row_spacing {
     ui::collection_layout layout{
-        {.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3, .cell_sizes = {{1.0f, 1.0f}}}};
+        {.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3, .default_cell_size = {1.0f, 1.0f}}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
 
@@ -336,7 +416,7 @@ using namespace yas;
 
 - (void)test_set_col_spacing {
     ui::collection_layout layout{
-        {.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 3, .cell_sizes = {{1.0f, 1.0f}}}};
+        {.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 3, .default_cell_size = {1.0f, 1.0f}}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
 
@@ -376,7 +456,7 @@ using namespace yas;
 - (void)test_alignment_mid {
     ui::collection_layout layout{{.frame = {.size = {5.0f, 0.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{2.0f, 1.0f}},
+                                  .default_cell_size = {2.0f, 1.0f},
                                   .alignment = ui::layout_alignment::mid}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
@@ -392,7 +472,7 @@ using namespace yas;
 - (void)test_alignment_max {
     ui::collection_layout layout{{.frame = {.size = {5.0f, 0.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{2.0f, 1.0f}},
+                                  .default_cell_size = {2.0f, 1.0f},
                                   .alignment = ui::layout_alignment::max}};
 
     auto const &cell_guide_rects = layout.cell_layout_guide_rects();
@@ -432,7 +512,7 @@ using namespace yas;
 - (void)test_vertical_each_ascending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::vertical,
                                   .row_order = ui::layout_order::ascending,
                                   .col_order = ui::layout_order::ascending}};
@@ -450,7 +530,7 @@ using namespace yas;
 - (void)test_vertical_row_descending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::vertical,
                                   .row_order = ui::layout_order::descending,
                                   .col_order = ui::layout_order::ascending}};
@@ -468,7 +548,7 @@ using namespace yas;
 - (void)test_vertical_col_descending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::vertical,
                                   .row_order = ui::layout_order::ascending,
                                   .col_order = ui::layout_order::descending}};
@@ -486,7 +566,7 @@ using namespace yas;
 - (void)test_vertical_each_descending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::vertical,
                                   .row_order = ui::layout_order::descending,
                                   .col_order = ui::layout_order::descending}};
@@ -504,7 +584,7 @@ using namespace yas;
 - (void)test_horizontal_each_ascending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::horizontal,
                                   .row_order = ui::layout_order::ascending,
                                   .col_order = ui::layout_order::ascending}};
@@ -522,7 +602,7 @@ using namespace yas;
 - (void)test_horizontal_row_descending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::horizontal,
                                   .row_order = ui::layout_order::descending,
                                   .col_order = ui::layout_order::ascending}};
@@ -540,7 +620,7 @@ using namespace yas;
 - (void)test_horizontal_col_descending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::horizontal,
                                   .row_order = ui::layout_order::ascending,
                                   .col_order = ui::layout_order::descending}};
@@ -558,7 +638,7 @@ using namespace yas;
 - (void)test_horizontal_each_descending_order {
     ui::collection_layout layout{{.frame = {.size = {2.0f, 2.0f}},
                                   .preferred_cell_count = 3,
-                                  .cell_sizes = {{1.0f, 1.0f}},
+                                  .default_cell_size = {1.0f, 1.0f},
                                   .direction = ui::layout_direction::horizontal,
                                   .row_order = ui::layout_order::descending,
                                   .col_order = ui::layout_order::descending}};

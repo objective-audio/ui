@@ -16,7 +16,7 @@ namespace sample {
 
         void append_text(std::string text);
 
-        ui::strings &strings();
+        ui::dynamic_strings &strings();
     };
 }
 }
