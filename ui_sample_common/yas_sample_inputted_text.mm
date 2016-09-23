@@ -7,13 +7,14 @@
 using namespace yas;
 
 struct sample::inputted_text::impl : base::impl {
-    ui::strings _strings;
+    ui::dynamic_strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 512}) {
-        _strings.set_pivot(ui::pivot::left);
-
+    impl(ui::font_atlas &&font_atlas)
+        : _strings({.frame = {.origin = {0.0f, 0.0f}, .size = {200.0f, 0.0f}},
+                    .font_atlas = std::move(font_atlas),
+                    .max_word_count = 512,
+                    .alignment = ui::layout_alignment::min}) {
         auto &node = _strings.rect_plane().node();
-        node.attach_position_layout_guides(_layout_guide_point);
         node.dispatch_method(ui::node::method::renderer_changed);
     }
 
@@ -24,12 +25,15 @@ struct sample::inputted_text::impl : base::impl {
             weak_text = to_weak(text),
             event_observer = base{nullptr},
             left_layout = ui::layout{nullptr},
+            right_layout = ui::layout{nullptr},
+            bottom_layout = ui::layout{nullptr},
             top_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
                 auto &node = context.value;
                 if (auto renderer = node.renderer()) {
-                    auto ext_impl = text.impl_ptr<inputted_text::impl>();
+                    auto text_impl = text.impl_ptr<inputted_text::impl>();
+                    auto &strings_frame_guide_rect = text_impl->_strings.frame_layout_guide_rect();
 
                     event_observer = renderer.event_manager().subject().make_observer(
                         ui::event_manager::method::key_changed, [weak_text](auto const &context) {
@@ -39,11 +43,18 @@ struct sample::inputted_text::impl : base::impl {
                         });
 
                     left_layout = ui::make_layout({.distance = 4.0f,
-                                                         .source_guide = renderer.view_layout_guide_rect().left(),
-                                                         .destination_guide = ext_impl->_layout_guide_point.x()});
-                    top_layout = ui::make_layout({.distance = -22.0f,
-                                                        .source_guide = renderer.view_layout_guide_rect().top(),
-                                                        .destination_guide = ext_impl->_layout_guide_point.y()});
+                                                   .source_guide = renderer.view_layout_guide_rect().left(),
+                                                   .destination_guide = strings_frame_guide_rect.left()});
+                    right_layout = ui::make_layout({.distance = -4.0f,
+                                                    .source_guide = renderer.view_layout_guide_rect().right(),
+                                                    .destination_guide = strings_frame_guide_rect.right()});
+                    bottom_layout = ui::make_layout({.distance = 4.0f,
+                                                     .source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                     .destination_guide = strings_frame_guide_rect.bottom()});
+                    top_layout = ui::make_layout({.distance = -4.0f,
+                                                  .source_guide = renderer.view_layout_guide_rect().top(),
+                                                  .destination_guide = strings_frame_guide_rect.top()});
+
                 } else {
                     event_observer = nullptr;
                     left_layout = nullptr;
@@ -58,7 +69,7 @@ struct sample::inputted_text::impl : base::impl {
             auto const key_code = event.get<ui::key>().key_code();
 
             switch (key_code) {
-                case 51: {
+                case 51: {  // delete key
                     auto &text = _strings.text();
                     if (text.size() > 0) {
                         _strings.set_text(text.substr(0, text.size() - 1));
@@ -90,6 +101,6 @@ void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::strings &sample::inputted_text::strings() {
+ui::dynamic_strings &sample::inputted_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

@@ -170,7 +170,7 @@ struct sample::soft_keyboard::impl : base::impl {
         _collection_layout =
             ui::collection_layout{{.frame = {.size = {width, 0.0f}},
                                    .preferred_cell_count = key_count,
-                                   .cell_sizes = std::move(cell_sizes),
+                                   .lines = {{.cell_sizes = cell_sizes}},
                                    .row_spacing = spacing,
                                    .col_spacing = spacing,
                                    .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}}};

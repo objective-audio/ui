@@ -13,6 +13,11 @@ using namespace yas;
 #pragma mark - ui::colleciton_layout::impl
 
 struct ui::collection_layout::impl : base::impl {
+    struct line_cell_idx {
+        std::size_t line_idx;
+        std::size_t cell_idx;
+    };
+
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
@@ -26,7 +31,8 @@ struct ui::collection_layout::impl : base::impl {
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
           _preferred_cell_count(args.preferred_cell_count),
-          _cell_sizes(std::move(args.cell_sizes)),
+          _default_cell_size(std::move(args.default_cell_size)),
+          _lines(std::move(args.lines)),
           _row_spacing(args.row_spacing),
           _col_spacing(args.col_spacing),
           _alignment(args.alignment),
@@ -50,8 +56,12 @@ struct ui::collection_layout::impl : base::impl {
             throw "borders value is negative.";
         }
 
-        if (!_validate_cell_sizes()) {
-            throw "invalid cell_sizes.";
+        if (!_validate_default_cell_size()) {
+            throw "invalid default_cell_size.";
+        }
+
+        if (!_validate_lines()) {
+            throw "invalid lines.";
         }
 
         if (!_validate_row_spacing()) {
@@ -93,18 +103,32 @@ struct ui::collection_layout::impl : base::impl {
         return _preferred_cell_count;
     }
 
-    void set_cell_sizes(std::vector<ui::size> &&sizes) {
-        _cell_sizes = std::move(sizes);
+    void set_default_cell_size(ui::size &&size) {
+        _default_cell_size = std::move(size);
 
-        if (!_validate_cell_sizes()) {
-            throw "invalid cell_sizes.";
+        if (!_validate_default_cell_size()) {
+            throw "invalid default_cell_size.";
         }
 
         _update_layout();
     }
 
-    std::vector<ui::size> const &cell_sizes() {
-        return _cell_sizes;
+    ui::size &default_cell_size() {
+        return _default_cell_size;
+    }
+
+    void set_lines(std::vector<ui::collection_layout::line> &&lines) {
+        _lines = std::move(lines);
+
+        if (!_validate_lines()) {
+            throw "invalid lines.";
+        }
+
+        _update_layout();
+    }
+
+    std::vector<ui::collection_layout::line> &lines() {
+        return _lines;
     }
 
     void set_row_spacing(float const spacing) {
@@ -201,7 +225,8 @@ struct ui::collection_layout::impl : base::impl {
 
    private:
     std::size_t _preferred_cell_count;
-    std::vector<ui::size> _cell_sizes;
+    ui::size _default_cell_size;
+    std::vector<ui::collection_layout::line> _lines;
     float _row_spacing;
     float _col_spacing;
     ui::layout_alignment _alignment;
@@ -230,12 +255,13 @@ struct ui::collection_layout::impl : base::impl {
         for (auto const &idx : make_each(_preferred_cell_count)) {
             auto cell_size = _transformed_cell_size(idx);
 
-            if (fabsf(origin.x + cell_size.width) > border_abs_size.width) {
-                if (row_regions.size() == 0) {
-                    break;
-                }
-
+            if (fabsf(origin.x + cell_size.width) > border_abs_size.width || _is_top_of_new_line(idx)) {
                 regions.emplace_back(std::move(row_regions));
+
+                auto const row_new_line_diff = _transformed_row_new_line_diff(idx);
+                if (std::fabsf(row_new_line_diff) > std::fabs(row_max_diff)) {
+                    row_max_diff = row_new_line_diff;
+                }
 
                 origin.x = 0.0f;
                 origin.y += row_max_diff;
@@ -254,9 +280,9 @@ struct ui::collection_layout::impl : base::impl {
 
             ++actual_cell_count;
 
-            if (auto const row_diff = _transformed_row_diff(idx)) {
-                if (std::fabsf(row_diff) > row_max_diff) {
-                    row_max_diff = row_diff;
+            if (auto const row_cell_diff = _transformed_row_cell_diff(idx)) {
+                if (std::fabsf(row_cell_diff) > std::fabs(row_max_diff)) {
+                    row_max_diff = row_cell_diff;
                 }
             }
 
@@ -274,24 +300,26 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t idx = 0;
 
         for (auto const &row_regions : regions) {
-            auto align_offset = 0.0f;
+            if (row_regions.size() > 0) {
+                auto align_offset = 0.0f;
 
-            if (_alignment != ui::layout_alignment::min) {
-                auto const content_width =
-                    row_regions.back().origin.x + row_regions.back().size.width - row_regions.front().origin.x;
-                align_offset = border_rect.size.width - content_width;
+                if (_alignment != ui::layout_alignment::min) {
+                    auto const content_width =
+                        row_regions.back().origin.x + row_regions.back().size.width - row_regions.front().origin.x;
+                    align_offset = border_rect.size.width - content_width;
 
-                if (_alignment == ui::layout_alignment::mid) {
-                    align_offset *= 0.5f;
+                    if (_alignment == ui::layout_alignment::mid) {
+                        align_offset *= 0.5f;
+                    }
                 }
-            }
 
-            for (auto const &region : row_regions) {
-                ui::region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
-                                          .size = region.size};
-                _cell_guide_rects.at(idx).set_region(_direction_swapped_region_if_horizontal(aligned_region));
+                for (auto const &region : row_regions) {
+                    ui::region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
+                                              .size = region.size};
+                    _cell_guide_rects.at(idx).set_region(_direction_swapped_region_if_horizontal(aligned_region));
 
-                ++idx;
+                    ++idx;
+                }
             }
         }
 
@@ -302,9 +330,51 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
+    std::experimental::optional<line_cell_idx> _line_cell_idx(std::size_t const cell_idx) {
+        std::size_t top_idx = 0;
+        std::size_t line_idx = 0;
+
+        for (auto const &line : _lines) {
+            if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
+                return line_cell_idx{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
+            }
+            top_idx += line.cell_sizes.size();
+            ++line_idx;
+        }
+
+        return nullopt;
+    }
+
+    ui::size _cell_size(std::size_t const idx) {
+        std::size_t find_idx = 0;
+
+        for (auto const &line : _lines) {
+            std::size_t const line_idx = idx - find_idx;
+            std::size_t const line_cell_count = line.cell_sizes.size();
+
+            if (line_idx < line_cell_count) {
+                return line.cell_sizes.at(line_idx);
+            }
+
+            find_idx += line_cell_count;
+        }
+
+        return _default_cell_size;
+    }
+
+    bool _is_top_of_new_line(std::size_t const idx) {
+        if (auto line_cell_idx = _line_cell_idx(idx)) {
+            if (line_cell_idx->line_idx > 0 && line_cell_idx->cell_idx == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     ui::size _transformed_cell_size(std::size_t const idx) {
         ui::size result;
-        auto const &cell_size = _cell_sizes.at(idx % _cell_sizes.size());
+        auto const &cell_size = _cell_size(idx);
 
         switch (_direction) {
             case ui::layout_direction::horizontal:
@@ -336,11 +406,35 @@ struct ui::collection_layout::impl : base::impl {
         return diff;
     }
 
-    float _transformed_row_diff(std::size_t const idx) {
+    float _transformed_row_cell_diff(std::size_t const idx) {
         auto diff = fabsf(_transformed_cell_size(idx).height) + _row_spacing;
         if (_row_order == ui::layout_order::descending) {
             diff *= -1.0f;
         }
+        return diff;
+    }
+
+    float _transformed_row_new_line_diff(std::size_t const idx) {
+        auto diff = 0.0f;
+
+        if (auto line_cell_idx = _line_cell_idx(idx)) {
+            auto line_idx = line_cell_idx->line_idx;
+
+            while (line_idx > 0) {
+                --line_idx;
+
+                diff += _lines.at(line_idx).new_line_min_offset + _row_spacing;
+
+                if (_lines.at(line_idx).cell_sizes.size() > 0) {
+                    break;
+                }
+            }
+        }
+
+        if (_row_order == ui::layout_order::descending) {
+            diff *= -1.0f;
+        }
+
         return diff;
     }
 
@@ -380,13 +474,23 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    bool _validate_cell_sizes() {
-        for (auto const &cell_size : _cell_sizes) {
-            if (cell_size.width < 0 || cell_size.height <= 0) {
+    bool _validate_lines() {
+        for (auto const &line : _lines) {
+            if (line.new_line_min_offset < 0.0f) {
                 return false;
+            }
+
+            for (auto const &cell_size : line.cell_sizes) {
+                if (cell_size.width < 0.0f || cell_size.height <= 0.0f) {
+                    return false;
+                }
             }
         }
         return true;
+    }
+
+    bool _validate_default_cell_size() {
+        return _default_cell_size.width >= 0.0f && _default_cell_size.height >= 0.0f;
     }
 
     bool _validate_row_spacing() {
@@ -430,12 +534,20 @@ std::size_t ui::collection_layout::actual_cell_count() const {
     return impl_ptr<impl>()->_cell_guide_rects.size();
 }
 
-void ui::collection_layout::set_cell_sizes(std::vector<ui::size> sizes) {
-    impl_ptr<impl>()->set_cell_sizes(std::move(sizes));
+void ui::collection_layout::set_default_cell_size(ui::size size) {
+    impl_ptr<impl>()->set_default_cell_size(std::move(size));
 }
 
-std::vector<ui::size> const &ui::collection_layout::cell_sizes() const {
-    return impl_ptr<impl>()->cell_sizes();
+ui::size const &ui::collection_layout::default_cell_size() const {
+    return impl_ptr<impl>()->default_cell_size();
+}
+
+void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> lines) {
+    impl_ptr<impl>()->set_lines(std::move(lines));
+}
+
+std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
+    return impl_ptr<impl>()->lines();
 }
 
 void ui::collection_layout::set_row_spacing(float const spacing) {
@@ -500,70 +612,4 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
 
 ui::collection_layout::subject_t &ui::collection_layout::subject() {
     return impl_ptr<impl>()->_subject;
-}
-
-#pragma mark - to_string
-
-std::string yas::to_string(ui::layout_direction const &dir) {
-    switch (dir) {
-        case ui::layout_direction::horizontal:
-            return "horizontal";
-        case ui::layout_direction::vertical:
-            return "vertical";
-    }
-}
-
-std::string yas::to_string(ui::layout_order const &order) {
-    switch (order) {
-        case ui::layout_order::ascending:
-            return "ascending";
-        case ui::layout_order::descending:
-            return "descending";
-    }
-}
-
-std::string yas::to_string(ui::layout_alignment const &align) {
-    switch (align) {
-        case ui::layout_alignment::min:
-            return "min";
-        case ui::layout_alignment::mid:
-            return "mid";
-        case ui::layout_alignment::max:
-            return "max";
-    }
-}
-
-std::string yas::to_string(ui::layout_borders const &borders) {
-    return "{left=" + std::to_string(borders.left) + ", right=" + std::to_string(borders.right) + ", bottom=" +
-           std::to_string(borders.bottom) + ", top=" + std::to_string(borders.top) + "}";
-}
-
-#pragma mark - ostream
-
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_direction const &dir) {
-    os << to_string(dir);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_order const &order) {
-    os << to_string(order);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_alignment const &align) {
-    os << to_string(align);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_borders const &borders) {
-    os << to_string(borders);
-    return os;
-}
-
-bool operator==(yas::ui::layout_borders const &lhs, yas::ui::layout_borders const &rhs) {
-    return lhs.left == rhs.left && lhs.right == rhs.right && lhs.bottom == rhs.bottom && lhs.top == rhs.top;
-}
-
-bool operator!=(yas::ui::layout_borders const &lhs, yas::ui::layout_borders const &rhs) {
-    return lhs.left != rhs.left || lhs.right != rhs.right || lhs.bottom != rhs.bottom || lhs.top != rhs.top;
 }

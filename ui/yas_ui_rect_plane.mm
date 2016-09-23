@@ -25,6 +25,14 @@ std::size_t ui::rect_plane_data::max_rect_count() const {
     return 0;
 }
 
+std::size_t ui::rect_plane_data::rect_count() const {
+    auto const index_count = _dynamic_mesh_data.index_count();
+    if (index_count > 0) {
+        return index_count / 6;
+    }
+    return 0;
+}
+
 void ui::rect_plane_data::set_rect_count(std::size_t const count) {
     _dynamic_mesh_data.set_index_count(count * 6);
 }

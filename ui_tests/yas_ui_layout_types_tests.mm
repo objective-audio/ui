@@ -1,18 +1,18 @@
 //
-//  yas_ui_collection_layout_types_tests.mm
+//  yas_ui_layout_types_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import <sstream>
-#import "yas_ui_collection_layout.h"
+#import "yas_ui_layout_types.h"
 
 using namespace yas;
 
-@interface yas_ui_collection_layout_types_tests : XCTestCase
+@interface yas_ui_layout_types_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_collection_layout_types_tests
+@implementation yas_ui_layout_types_tests
 
 - (void)setUp {
     [super setUp];

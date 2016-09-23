@@ -6,6 +6,8 @@
 
 #include <vector>
 #include "yas_base.h"
+#include "yas_result.h"
+#include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
 
 namespace yas {
@@ -16,29 +18,6 @@ class observer;
 
 namespace ui {
     class layout_guide_rect;
-
-    enum class layout_direction {
-        vertical,
-        horizontal,
-    };
-
-    enum class layout_order {
-        ascending,
-        descending,
-    };
-
-    enum class layout_alignment {
-        min,
-        mid,
-        max,
-    };
-
-    struct layout_borders {
-        float left = 0.0f;
-        float right = 0.0f;
-        float bottom = 0.0f;
-        float top = 0.0f;
-    };
 
     class collection_layout : public base {
        public:
@@ -51,10 +30,16 @@ namespace ui {
         using subject_t = subject<collection_layout, method>;
         using observer_t = observer<collection_layout, method>;
 
+        struct line {
+            std::vector<ui::size> cell_sizes;
+            float new_line_min_offset = 0.0f;
+        };
+
         struct args {
             ui::region frame = {.origin = {.v = 0.0f}, .size = {.v = 0.0f}};
             std::size_t preferred_cell_count = 0;
-            std::vector<ui::size> cell_sizes = {{1.0f, 1.0f}};
+            ui::size default_cell_size = {1.0f, 1.0f};
+            std::vector<line> lines;
             float row_spacing = 0.0f;
             float col_spacing = 0.0f;
             ui::layout_borders borders;
@@ -75,8 +60,11 @@ namespace ui {
         std::size_t preferred_cell_count() const;
         std::size_t actual_cell_count() const;
 
-        void set_cell_sizes(std::vector<ui::size>);
-        std::vector<ui::size> const &cell_sizes() const;
+        void set_default_cell_size(ui::size);
+        ui::size const &default_cell_size() const;
+
+        void set_lines(std::vector<ui::collection_layout::line>);
+        std::vector<line> const &lines() const;
 
         void set_row_spacing(float const);
         float row_spacing() const;
@@ -104,17 +92,4 @@ namespace ui {
         subject_t &subject();
     };
 }
-
-std::string to_string(ui::layout_direction const &);
-std::string to_string(ui::layout_order const &);
-std::string to_string(ui::layout_alignment const &);
-std::string to_string(ui::layout_borders const &);
 }
-
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_direction const &);
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_order const &);
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_alignment const &);
-std::ostream &operator<<(std::ostream &os, yas::ui::layout_borders const &);
-
-bool operator==(yas::ui::layout_borders const &lhs, yas::ui::layout_borders const &rhs);
-bool operator!=(yas::ui::layout_borders const &lhs, yas::ui::layout_borders const &rhs);

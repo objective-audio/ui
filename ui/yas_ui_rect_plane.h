@@ -22,6 +22,7 @@ namespace ui {
         void write_index(std::size_t const rect_idx, std::function<void(ui::index2d_rect_t &)> const &);
 
         std::size_t max_rect_count() const;
+        std::size_t rect_count() const;
         void set_rect_count(std::size_t const);
 
         void set_rect_index(std::size_t const index_idx, std::size_t const vertex_idx);

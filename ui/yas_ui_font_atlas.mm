@@ -66,7 +66,6 @@ namespace ui {
 namespace yas {
 namespace ui {
     static ui::vertex2d_rect_t constexpr _empty_rect{0.0f};
-    static ui::size constexpr _empty_advance{.width = 0.0f, .height = 0.0f};
 
     struct word_info {
         ui::vertex2d_rect_t rect;
@@ -76,6 +75,7 @@ namespace ui {
 }
 
 struct ui::font_atlas::impl : base::impl {
+    cf_ref<CTFontRef> _ct_font_ref = nullptr;
     std::string _font_name;
     double _font_size;
     double _ascent;
@@ -85,9 +85,11 @@ struct ui::font_atlas::impl : base::impl {
     ui::font_atlas::subject_t _subject;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
-        : _font_name(std::move(font_name)), _font_size(font_size), _words(std::move(words)) {
-        auto ct_font_ref = make_cf_ref(CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr));
-        auto ct_font_obj = ct_font_ref.object();
+        : _ct_font_ref(make_cf_ref(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
+          _font_name(std::move(font_name)),
+          _font_size(font_size),
+          _words(std::move(words)) {
+        auto ct_font_obj = _ct_font_ref.object();
         _ascent = CTFontGetAscent(ct_font_obj);
         _descent = CTFontGetDescent(ct_font_obj);
         _leading = CTFontGetLeading(ct_font_obj);
@@ -185,12 +187,26 @@ struct ui::font_atlas::impl : base::impl {
         return _word_infos.at(idx).rect;
     }
 
-    ui::size const &advance(std::string const &word) {
-        auto idx = _words.find(word);
-        if (idx == std::string::npos) {
-            return _empty_advance;
+    ui::size advance(std::string const &word) {
+        if (word.size() != 1) {
+            throw "word size is not equal to one.";
         }
-        return _word_infos.at(idx).advance;
+
+        if (word == "\n" || word == "\r") {
+            return {0.0f, 0.0f};
+        }
+
+        CGGlyph glyphs[1];
+        UniChar characters[1];
+        CGSize advances[1];
+
+        auto ct_font_obj = _ct_font_ref.object();
+
+        CFStringGetCharacters(to_cf_object(word), CFRangeMake(0, 1), characters);
+        CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, 1);
+        CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, 1);
+
+        return {.width = static_cast<float>(advances[0].width), .height = static_cast<float>(advances[0].height)};
     }
 
    private:
@@ -203,9 +219,7 @@ struct ui::font_atlas::impl : base::impl {
             return;
         }
 
-        auto ct_font_ref = make_cf_ref(CTFontCreateWithName(to_cf_object(_font_name), _font_size, nullptr));
-        auto ct_font_obj = ct_font_ref.object();
-
+        auto ct_font_obj = _ct_font_ref.object();
         auto const word_count = _words.size();
 
         _word_infos.resize(word_count);
@@ -301,7 +315,7 @@ ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {
     return impl_ptr<impl>()->rect(word);
 }
 
-ui::size const &ui::font_atlas::advance(std::string const &word) const {
+ui::size ui::font_atlas::advance(std::string const &word) const {
     return impl_ptr<impl>()->advance(word);
 }
 
