@@ -9,7 +9,6 @@
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
-#include "yas_ui_dynamic_strings.h"
 #include "yas_ui_event.h"
 #include "yas_ui_font_atlas.h"
 #include "yas_ui_image.h"
@@ -28,6 +27,7 @@
 #include "yas_ui_rect_plane.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_shared_types.h"
+#include "yas_ui_strings.h"
 #include "yas_ui_texture.h"
 
 #include "yas_observing.h"

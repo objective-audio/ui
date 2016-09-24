@@ -113,7 +113,7 @@
 		B6AFE65C1D7AE07C00546165 /* yas_ui_layout_actions_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6AFE65B1D7AE07C00546165 /* yas_ui_layout_actions_tests.mm */; };
 		B6DC63871D8F76300020789C /* yas_ui_layout_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DC63851D8F76300020789C /* yas_ui_layout_types.cpp */; };
 		B6DF848A1D8C1CA600A2EE48 /* yas_cf_ref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DF84881D8C1CA600A2EE48 /* yas_cf_ref.cpp */; };
-		B6DF84951D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DF84931D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.mm */; };
+		B6DF84951D8CDDDC00A2EE48 /* yas_ui_strings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DF84931D8CDDDC00A2EE48 /* yas_ui_strings.mm */; };
 		B6DF84A01D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DF849F1D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm */; };
 		B6E42C0E1D60192600FB483D /* yas_ui_layout_guide_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */; };
 		B6E42C101D60217400FB483D /* yas_ui_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */; };
@@ -322,8 +322,8 @@
 		B6DF84871D8C1CA600A2EE48 /* yas_cf_ref_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_cf_ref_private.h; sourceTree = "<group>"; };
 		B6DF84881D8C1CA600A2EE48 /* yas_cf_ref.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_cf_ref.cpp; sourceTree = "<group>"; };
 		B6DF84891D8C1CA600A2EE48 /* yas_cf_ref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_cf_ref.h; sourceTree = "<group>"; };
-		B6DF84931D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_dynamic_strings.mm; sourceTree = "<group>"; };
-		B6DF84941D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_dynamic_strings.h; sourceTree = "<group>"; };
+		B6DF84931D8CDDDC00A2EE48 /* yas_ui_strings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings.mm; sourceTree = "<group>"; };
+		B6DF84941D8CDDDC00A2EE48 /* yas_ui_strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings.h; sourceTree = "<group>"; };
 		B6DF849F1D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_dynamic_strings_tests.mm; sourceTree = "<group>"; };
 		B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_guide_tests.mm; sourceTree = "<group>"; };
 		B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_tests.mm; sourceTree = "<group>"; };
@@ -445,8 +445,8 @@
 				B66BB72D1D1F6C0D00AB3D48 /* yas_ui_detector_protocol.h */,
 				B66BB72A1D1F6C0D00AB3D48 /* yas_ui_detector.cpp */,
 				B66BB72B1D1F6C0D00AB3D48 /* yas_ui_detector.h */,
-				B6DF84941D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.h */,
-				B6DF84931D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.mm */,
+				B6DF84941D8CDDDC00A2EE48 /* yas_ui_strings.h */,
+				B6DF84931D8CDDDC00A2EE48 /* yas_ui_strings.mm */,
 				B66BB7301D1F6C0D00AB3D48 /* yas_ui_event_protocol.cpp */,
 				B66BB7311D1F6C0D00AB3D48 /* yas_ui_event_protocol.h */,
 				B66BB72E1D1F6C0D00AB3D48 /* yas_ui_event.cpp */,
@@ -744,7 +744,7 @@
 			files = (
 				B66BB77B1D1F6C0D00AB3D48 /* yas_ui_metal_render_encoder.mm in Sources */,
 				B66BB77E1D1F6C0D00AB3D48 /* yas_ui_metal_view.mm in Sources */,
-				B6DF84951D8CDDDC00A2EE48 /* yas_ui_dynamic_strings.mm in Sources */,
+				B6DF84951D8CDDDC00A2EE48 /* yas_ui_strings.mm in Sources */,
 				B651557E1D5EAC9600CC4178 /* yas_ui_layout_guide.cpp in Sources */,
 				B66BB76D1D1F6C0D00AB3D48 /* yas_ui_detector.cpp in Sources */,
 				B6DF848A1D8C1CA600A2EE48 /* yas_cf_ref.cpp in Sources */,

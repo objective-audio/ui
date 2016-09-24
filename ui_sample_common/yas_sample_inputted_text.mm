@@ -7,7 +7,7 @@
 using namespace yas;
 
 struct sample::inputted_text::impl : base::impl {
-    ui::dynamic_strings _strings;
+    ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas)
         : _strings({.frame = {.origin = {0.0f, 0.0f}, .size = {200.0f, 0.0f}},
@@ -101,6 +101,6 @@ void sample::inputted_text::append_text(std::string text) {
     impl_ptr<impl>()->append_text(std::move(text));
 }
 
-ui::dynamic_strings &sample::inputted_text::strings() {
+ui::strings &sample::inputted_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

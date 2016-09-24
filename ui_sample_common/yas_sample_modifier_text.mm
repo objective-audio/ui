@@ -7,7 +7,7 @@
 using namespace yas;
 
 struct sample::modifier_text::impl : base::impl {
-    ui::dynamic_strings _strings;
+    ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas)
         : _strings({.font_atlas = font_atlas, .max_word_count = 64, .alignment = ui::layout_alignment::max}) {
@@ -103,6 +103,6 @@ sample::modifier_text::modifier_text(ui::font_atlas font_atlas) : base(std::make
 sample::modifier_text::modifier_text(std::nullptr_t) : base(nullptr) {
 }
 
-ui::dynamic_strings &sample::modifier_text::strings() {
+ui::strings &sample::modifier_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

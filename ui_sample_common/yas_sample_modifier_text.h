@@ -14,7 +14,7 @@ namespace sample {
         explicit modifier_text(ui::font_atlas atlas);
         modifier_text(std::nullptr_t);
 
-        ui::dynamic_strings &strings();
+        ui::strings &strings();
     };
 }
 }

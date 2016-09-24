@@ -32,7 +32,7 @@ namespace sample {
             }
 
             ui::button _button;
-            ui::dynamic_strings _strings;
+            ui::strings _strings;
             std::vector<ui::layout> _layouts;
         };
 
@@ -47,7 +47,7 @@ namespace sample {
             return impl_ptr<impl>()->_button;
         }
 
-        ui::dynamic_strings const &strings() const {
+        ui::strings const &strings() const {
             return impl_ptr<impl>()->_strings;
         }
 
