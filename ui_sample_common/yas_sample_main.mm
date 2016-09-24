@@ -26,9 +26,11 @@ void sample::main::setup() {
 
     _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text.strings().rect_plane().node());
 
+    auto const big_button_region = _big_button.button().layout_guide_rect().region();
+    _big_button_text.strings().frame_layout_guide_rect().set_region(
+        {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
+
     _inputted_text.strings().set_font_atlas(_font_atlas);
-    _modifier_text.strings().set_font_atlas(_font_atlas);
-    _big_button_text.strings().set_font_atlas(_font_atlas);
     _soft_keyboard.set_font_atlas(_font_atlas);
 
     _button_observer = _big_button.button().subject().make_wild_card_observer([weak_text = to_weak(_big_button_text)](

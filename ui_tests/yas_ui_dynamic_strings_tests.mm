@@ -7,8 +7,8 @@
 #import "yas_ui_collection_layout.h"
 #import "yas_ui_dynamic_strings.h"
 #import "yas_ui_font_atlas.h"
-#import "yas_ui_rect_plane.h"
 #import "yas_ui_layout_guide.h"
+#import "yas_ui_rect_plane.h"
 
 using namespace yas;
 
@@ -112,6 +112,19 @@ using namespace yas;
     strings.frame_layout_guide_rect().set_region({.origin = {0.0f, 0.0f}, .size = {1024.0f, 0.0f}});
 
     XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
+}
+
+- (void)test_no_throw_without_atlas_or_texture {
+    ui::dynamic_strings strings;
+
+    XCTAssertNoThrow(strings.set_text("123"));
+
+    XCTAssertNoThrow(strings.frame_layout_guide_rect().set_region({.origin = {0.0f, 0.0f}, .size = {64.0f, 0.0f}}));
+
+    ui::font_atlas font_atlas{
+        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = nullptr}};
+
+    XCTAssertNoThrow(strings.set_font_atlas(font_atlas));
 }
 
 @end

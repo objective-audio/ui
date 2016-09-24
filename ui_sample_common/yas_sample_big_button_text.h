@@ -11,12 +11,12 @@ namespace sample {
     struct big_button_text : base {
         class impl;
 
-        explicit big_button_text(ui::font_atlas atlas = nullptr);
+        explicit big_button_text(ui::font_atlas atlas);
         big_button_text(std::nullptr_t);
 
         void set_status(ui::button::method const);
 
-        ui::strings &strings();
+        ui::dynamic_strings &strings();
     };
 }
 }
