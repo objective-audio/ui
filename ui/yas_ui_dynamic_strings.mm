@@ -112,6 +112,12 @@ struct ui::dynamic_strings::impl : base::impl {
 
     void _update_layout() {
         auto const &font_atlas = _args.font_atlas;
+        if (!font_atlas || !font_atlas.texture()) {
+            _collection_layout.set_preferred_cell_count(0);
+            _rect_plane.data().set_rect_count(0);
+            return;
+        }
+
         auto const &src_text = _args.text;
         auto const word_count = font_atlas ? std::min(src_text.size(), _args.max_word_count) : 0;
         std::string eliminated_text;

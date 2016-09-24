@@ -26,20 +26,20 @@ namespace sample {
         void setup();
 
        private:
-        sample::touch_holder _touch_holder;
-        sample::cursor _cursor;
-        sample::inputted_text _inputted_text;
-        sample::modifier_text _modifier_text;
-        sample::bg _bg;
-        sample::cursor_over_planes _cursor_over_planes;
-        sample::big_button _big_button;
-        sample::big_button_text _big_button_text;
-        sample::soft_keyboard _soft_keyboard;
-        sample::justified_points _justified_points;
-
         ui::font_atlas _font_atlas{{.font_name = "TrebuchetMS-Bold",
                                     .font_size = 26.0f,
                                     .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"}};
+
+        sample::touch_holder _touch_holder;
+        sample::cursor _cursor;
+        sample::inputted_text _inputted_text;
+        sample::modifier_text _modifier_text{_font_atlas};
+        sample::bg _bg;
+        sample::cursor_over_planes _cursor_over_planes;
+        sample::big_button _big_button;
+        sample::big_button_text _big_button_text{_font_atlas};
+        sample::soft_keyboard _soft_keyboard;
+        sample::justified_points _justified_points;
 
         ui::batch _batch;
 

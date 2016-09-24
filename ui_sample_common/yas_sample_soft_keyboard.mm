@@ -20,33 +20,20 @@ namespace sample {
                                                            to_index({ui::button::state::press}));
 
                 _strings.set_text(key);
-                _strings.set_pivot(ui::pivot::center);
+                _strings.set_alignment(ui::layout_alignment::mid);
 
                 _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
 
-                _strings.rect_plane().node().attach_x_layout_guide(_strings_guide_point.x());
-                _strings.rect_plane().node().attach_y_layout_guide(_y_offset_guide);
+                auto const &font_atlas = _strings.font_atlas();
+                float const strings_offset_y = std::roundf((width + font_atlas.ascent() + font_atlas.descent()) * 0.5f);
 
-                float const &font_size = _strings.font_atlas().font_size();
-                _layouts.emplace_back(ui::make_layout({.distance = std::roundf(-font_size / 3.0f),
-                                                       .source_guide = _strings_guide_point.y(),
-                                                       .destination_guide = _y_offset_guide}));
-
-                auto const &button_guide_rect = _button.layout_guide_rect();
-                _layouts.emplace_back(ui::make_layout({.first_source_guide = button_guide_rect.left(),
-                                                       .second_source_guide = button_guide_rect.right(),
-                                                       .destination_guides = {_strings_guide_point.x()}}));
-
-                _layouts.emplace_back(ui::make_layout({.first_source_guide = button_guide_rect.bottom(),
-                                                       .second_source_guide = button_guide_rect.top(),
-                                                       .destination_guides = {_strings_guide_point.y()}}));
+                _strings.frame_layout_guide_rect().set_region(
+                    {.origin = {.y = strings_offset_y}, .size = {.width = width}});
             }
 
             ui::button _button;
-            ui::strings _strings;
+            ui::dynamic_strings _strings;
             std::vector<ui::layout> _layouts;
-            ui::layout_guide _y_offset_guide;
-            ui::layout_guide_point _strings_guide_point;
         };
 
         soft_key(std::string key, float const width, ui::font_atlas atlas)
@@ -60,7 +47,7 @@ namespace sample {
             return impl_ptr<impl>()->_button;
         }
 
-        ui::strings const &strings() const {
+        ui::dynamic_strings const &strings() const {
             return impl_ptr<impl>()->_strings;
         }
 

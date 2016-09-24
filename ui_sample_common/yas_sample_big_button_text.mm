@@ -7,13 +7,21 @@
 using namespace yas;
 
 struct sample::big_button_text::impl : base::impl {
-    ui::strings _strings;
+    ui::dynamic_strings _strings;
 
-    impl(ui::font_atlas &&font_atlas) : _strings({.font_atlas = font_atlas, .max_word_count = 32}) {
-        _strings.rect_plane().node().set_position(ui::point{0.0f, -7.0f});
+    impl(ui::font_atlas &&font_atlas)
+        : _strings({.text = "-----",
+                    .alignment = ui::layout_alignment::mid,
+                    .font_atlas = std::move(font_atlas),
+                    .max_word_count = 32}) {
+        if (!_strings.font_atlas()) {
+            throw "font_atlas is null.";
+        }
+
+        auto const &atlas = _strings.font_atlas();
+        float const offset_y = (atlas.ascent() + atlas.descent()) * 0.5f;
+        _strings.rect_plane().node().set_position(ui::point{0.0f, offset_y});
         _strings.rect_plane().node().set_alpha(0.5f);
-        _strings.set_pivot(ui::pivot::center);
-        _strings.set_text("-----");
     }
 
     void set_status(ui::button::method const status) {
@@ -35,6 +43,6 @@ void sample::big_button_text::set_status(ui::button::method const status) {
     impl_ptr<impl>()->set_status(status);
 }
 
-ui::strings &sample::big_button_text::strings() {
+ui::dynamic_strings &sample::big_button_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

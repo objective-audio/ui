@@ -11,10 +11,10 @@ namespace sample {
     struct modifier_text : base {
         class impl;
 
-        explicit modifier_text(ui::font_atlas atlas = nullptr);
+        explicit modifier_text(ui::font_atlas atlas);
         modifier_text(std::nullptr_t);
 
-        ui::strings &strings();
+        ui::dynamic_strings &strings();
     };
 }
 }
