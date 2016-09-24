@@ -8,6 +8,7 @@
 #import "yas_ui_dynamic_strings.h"
 #import "yas_ui_font_atlas.h"
 #import "yas_ui_rect_plane.h"
+#import "yas_ui_layout_guide.h"
 
 using namespace yas;
 
@@ -32,6 +33,7 @@ using namespace yas;
     XCTAssertEqual(strings.text(), "");
     XCTAssertFalse(strings.font_atlas());
     XCTAssertTrue(strings.rect_plane());
+    XCTAssertEqual(strings.line_height(), 0.0f);
     XCTAssertEqual(strings.alignment(), ui::layout_alignment::min);
 }
 
@@ -70,6 +72,46 @@ using namespace yas;
     ui::dynamic_strings strings = nullptr;
 
     XCTAssertFalse(strings);
+}
+
+- (void)test_set_values {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::metal_system metal_system{device.object()};
+
+    auto texture =
+        ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}, .scale_factor = 1.0}).value();
+    ui::font_atlas font_atlas{
+        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
+
+    ui::dynamic_strings strings;
+
+    strings.set_text("test_text");
+
+    XCTAssertEqual(strings.text(), "test_text");
+    XCTAssertEqual(strings.rect_plane().data().rect_count(), 0);
+
+    strings.set_font_atlas(font_atlas);
+
+    XCTAssertEqual(strings.font_atlas(), font_atlas);
+    XCTAssertGreaterThan(strings.line_height(), 0.0f);
+    XCTAssertEqual(strings.rect_plane().data().rect_count(), 0);
+
+    strings.set_line_height(20.0f);
+
+    XCTAssertEqual(strings.line_height(), 20.0f);
+
+    strings.set_alignment(ui::layout_alignment::max);
+
+    XCTAssertEqual(strings.alignment(), ui::layout_alignment::max);
+
+    strings.frame_layout_guide_rect().set_region({.origin = {0.0f, 0.0f}, .size = {1024.0f, 0.0f}});
+
+    XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
 }
 
 @end
