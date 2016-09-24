@@ -1,22 +1,22 @@
 //
-//  yas_ui_dynamic_strings_tests.mm
+//  yas_ui_strings_tests.mm
 //
 
 #import <XCTest/XCTest.h>
 #import <iostream>
 #import "yas_ui_collection_layout.h"
-#import "yas_ui_dynamic_strings.h"
 #import "yas_ui_font_atlas.h"
 #import "yas_ui_layout_guide.h"
 #import "yas_ui_rect_plane.h"
+#import "yas_ui_strings.h"
 
 using namespace yas;
 
-@interface yas_ui_dynamic_strings_tests : XCTestCase
+@interface yas_ui_strings_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_dynamic_strings_tests
+@implementation yas_ui_strings_tests
 
 - (void)setUp {
     [super setUp];
@@ -27,7 +27,7 @@ using namespace yas;
 }
 
 - (void)test_create_without_args {
-    ui::dynamic_strings strings;
+    ui::strings strings;
 
     XCTAssertTrue(strings);
     XCTAssertEqual(strings.text(), "");
@@ -53,12 +53,12 @@ using namespace yas;
 
     ui::region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
 
-    ui::dynamic_strings strings{{.max_word_count = 1,
-                                 .text = "test_text",
-                                 .font_atlas = font_atlas,
-                                 .line_height = 10.0f,
-                                 .frame = frame,
-                                 .alignment = ui::layout_alignment::mid}};
+    ui::strings strings{{.max_word_count = 1,
+                         .text = "test_text",
+                         .font_atlas = font_atlas,
+                         .line_height = 10.0f,
+                         .frame = frame,
+                         .alignment = ui::layout_alignment::mid}};
 
     XCTAssertTrue(strings);
     XCTAssertEqual(strings.rect_plane().data().dynamic_mesh_data().max_vertex_count(), 4);
@@ -69,7 +69,7 @@ using namespace yas;
 }
 
 - (void)test_create_null {
-    ui::dynamic_strings strings = nullptr;
+    ui::strings strings = nullptr;
 
     XCTAssertFalse(strings);
 }
@@ -88,7 +88,7 @@ using namespace yas;
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
-    ui::dynamic_strings strings;
+    ui::strings strings;
 
     strings.set_text("test_text");
 
@@ -115,7 +115,7 @@ using namespace yas;
 }
 
 - (void)test_no_throw_without_atlas_or_texture {
-    ui::dynamic_strings strings;
+    ui::strings strings;
 
     XCTAssertNoThrow(strings.set_text("123"));
 

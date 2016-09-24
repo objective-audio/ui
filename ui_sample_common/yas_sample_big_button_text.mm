@@ -7,7 +7,7 @@
 using namespace yas;
 
 struct sample::big_button_text::impl : base::impl {
-    ui::dynamic_strings _strings;
+    ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas)
         : _strings({.text = "-----",
@@ -43,6 +43,6 @@ void sample::big_button_text::set_status(ui::button::method const status) {
     impl_ptr<impl>()->set_status(status);
 }
 
-ui::dynamic_strings &sample::big_button_text::strings() {
+ui::strings &sample::big_button_text::strings() {
     return impl_ptr<impl>()->_strings;
 }

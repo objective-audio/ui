@@ -1,5 +1,5 @@
 //
-//  yas_ui_dynamic_strings.h
+//  yas_ui_strings.h
 //
 
 #pragma once
@@ -14,7 +14,7 @@ namespace ui {
     class layout_guide_rect;
     enum class layout_alignment;
 
-    class dynamic_strings : public base {
+    class strings : public base {
        public:
         class impl;
 
@@ -27,11 +27,11 @@ namespace ui {
             ui::region frame = {.origin = {.v = 0.0f}, .size = {.v = 0.0f}};
         };
 
-        dynamic_strings();
-        explicit dynamic_strings(args);
-        dynamic_strings(std::nullptr_t);
+        strings();
+        explicit strings(args);
+        strings(std::nullptr_t);
 
-        virtual ~dynamic_strings() final;
+        virtual ~strings() final;
 
         void set_text(std::string);
         void set_font_atlas(ui::font_atlas);

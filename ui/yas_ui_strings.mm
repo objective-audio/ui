@@ -1,20 +1,20 @@
 //
-//  yas_ui_dynamic_strings.mm
+//  yas_ui_strings.mm
 //
 
 #include <numeric>
 #include "yas_each_index.h"
 #include "yas_ui_collection_layout.h"
-#include "yas_ui_dynamic_strings.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
+#include "yas_ui_strings.h"
 
 using namespace yas;
 
-struct ui::dynamic_strings::impl : base::impl {
+struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
 
@@ -30,7 +30,7 @@ struct ui::dynamic_strings::impl : base::impl {
         _collection_layout.set_row_order(ui::layout_order::descending);
     }
 
-    void prepare(ui::dynamic_strings &strings) {
+    void prepare(ui::strings &strings) {
         auto weak_strings = to_weak(strings);
 
         _collection_observer = _collection_layout.subject().make_observer(
@@ -95,7 +95,7 @@ struct ui::dynamic_strings::impl : base::impl {
             if (!_font_atlas_observer) {
                 _font_atlas_observer = _args.font_atlas.subject().make_observer(
                     ui::font_atlas::method::texture_changed,
-                    [weak_strings = to_weak(cast<ui::dynamic_strings>())](auto const &context) {
+                    [weak_strings = to_weak(cast<ui::strings>())](auto const &context) {
                         if (auto strings = weak_strings.lock()) {
                             strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
                             strings.impl_ptr<impl>()->_update_layout();
@@ -152,7 +152,7 @@ struct ui::dynamic_strings::impl : base::impl {
 
         _rect_plane.data().set_rect_count(actual_cell_count);
 
-        auto handler = [](ui::dynamic_strings &strings, std::size_t const idx, std::string const &word,
+        auto handler = [](ui::strings &strings, std::size_t const idx, std::string const &word,
                           ui::region const &region) {
             auto &rect_plane_data = strings.impl_ptr<impl>()->_rect_plane.data();
 
@@ -170,7 +170,7 @@ struct ui::dynamic_strings::impl : base::impl {
             }
         };
 
-        auto strings = cast<ui::dynamic_strings>();
+        auto strings = cast<ui::strings>();
 
         for (auto const &idx : make_each(actual_cell_count)) {
             auto const word = eliminated_text.substr(idx, 1);
@@ -190,54 +190,54 @@ struct ui::dynamic_strings::impl : base::impl {
     }
 };
 
-ui::dynamic_strings::dynamic_strings() : dynamic_strings(args{}) {
+ui::strings::strings() : strings(args{}) {
 }
 
-ui::dynamic_strings::dynamic_strings(args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::strings::strings(args args) : base(std::make_shared<impl>(std::move(args))) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-ui::dynamic_strings::dynamic_strings(std::nullptr_t) : base(nullptr) {
+ui::strings::strings(std::nullptr_t) : base(nullptr) {
 }
 
-ui::dynamic_strings::~dynamic_strings() = default;
+ui::strings::~strings() = default;
 
-void ui::dynamic_strings::set_text(std::string text) {
+void ui::strings::set_text(std::string text) {
     impl_ptr<impl>()->set_text(std::move(text));
 }
 
-void ui::dynamic_strings::set_font_atlas(ui::font_atlas atlas) {
+void ui::strings::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->set_font_atlas(std::move(atlas));
 }
 
-void ui::dynamic_strings::set_line_height(float const line_height) {
+void ui::strings::set_line_height(float const line_height) {
     impl_ptr<impl>()->set_line_height(std::move(line_height));
 }
 
-void ui::dynamic_strings::set_alignment(ui::layout_alignment const alignment) {
+void ui::strings::set_alignment(ui::layout_alignment const alignment) {
     impl_ptr<impl>()->_collection_layout.set_alignment(alignment);
 }
 
-std::string const &ui::dynamic_strings::text() const {
+std::string const &ui::strings::text() const {
     return impl_ptr<impl>()->text();
 }
 
-ui::font_atlas const &ui::dynamic_strings::font_atlas() const {
+ui::font_atlas const &ui::strings::font_atlas() const {
     return impl_ptr<impl>()->font_atlas();
 }
 
-float ui::dynamic_strings::line_height() const {
+float ui::strings::line_height() const {
     return impl_ptr<impl>()->line_height();
 }
 
-ui::layout_alignment ui::dynamic_strings::alignment() const {
+ui::layout_alignment ui::strings::alignment() const {
     return impl_ptr<impl>()->_collection_layout.alignment();
 }
 
-ui::layout_guide_rect &ui::dynamic_strings::frame_layout_guide_rect() {
+ui::layout_guide_rect &ui::strings::frame_layout_guide_rect() {
     return impl_ptr<impl>()->_collection_layout.frame_layout_guide_rect();
 }
 
-ui::rect_plane &ui::dynamic_strings::rect_plane() {
+ui::rect_plane &ui::strings::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
