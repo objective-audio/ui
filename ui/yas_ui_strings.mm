@@ -4,6 +4,7 @@
 
 #include <numeric>
 #include "yas_each_index.h"
+#include "yas_observing.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
@@ -17,6 +18,7 @@ using namespace yas;
 struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
+    subject_t _subject;
 
     impl(args &&args)
         : _collection_layout({.frame = args.frame}),
@@ -33,12 +35,19 @@ struct ui::strings::impl : base::impl {
     void prepare(ui::strings &strings) {
         auto weak_strings = to_weak(strings);
 
-        _collection_observer = _collection_layout.subject().make_observer(
+        _collection_observers.emplace_back(_collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
                 }
-            });
+            }));
+
+        _collection_observers.emplace_back(_collection_layout.subject().make_observer(
+            ui::collection_layout::method::alignment_changed, [weak_strings](auto const &context) {
+                if (auto strings = weak_strings.lock()) {
+                    strings.subject().notify(ui::strings::method::alignment_changed, strings);
+                }
+            }));
 
         _update_font_atlas_observer();
         _update_layout();
@@ -49,6 +58,10 @@ struct ui::strings::impl : base::impl {
             _args.text = std::move(text);
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::strings::method::text_changed, cast<ui::strings>());
+            }
         }
     }
 
@@ -58,6 +71,10 @@ struct ui::strings::impl : base::impl {
 
             _update_font_atlas_observer();
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::strings::method::font_atlas_changed, cast<ui::strings>());
+            }
         }
     }
 
@@ -66,6 +83,10 @@ struct ui::strings::impl : base::impl {
             _args.line_height = line_height;
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::strings::method::line_height_changed, cast<ui::strings>());
+            }
         }
     }
 
@@ -88,7 +109,7 @@ struct ui::strings::impl : base::impl {
    private:
     args _args;
     ui::font_atlas::observer_t _font_atlas_observer = nullptr;
-    ui::collection_layout::observer_t _collection_observer = nullptr;
+    std::vector<ui::collection_layout::observer_t> _collection_observers;
 
     void _update_font_atlas_observer() {
         if (_args.font_atlas) {
@@ -240,4 +261,8 @@ ui::layout_guide_rect &ui::strings::frame_layout_guide_rect() {
 
 ui::rect_plane &ui::strings::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
+}
+
+ui::strings::subject_t &ui::strings::subject() {
+    return impl_ptr<impl>()->_subject;
 }

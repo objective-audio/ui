@@ -24,7 +24,18 @@ namespace ui {
         class impl;
 
         enum class method {
+            frame_changed,
+            preferred_cell_count_changed,
             actual_cell_count_changed,
+            default_cell_size_changed,
+            lines_changed,
+            row_spacing_changed,
+            col_spacing_changed,
+            alignment_changed,
+            direction_changed,
+            row_order_changed,
+            col_order_changed,
+
         };
 
         using subject_t = subject<collection_layout, method>;

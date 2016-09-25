@@ -88,6 +88,10 @@ struct ui::collection_layout::impl : base::impl {
             _frame_guide_rect.set_region(frame);
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::frame_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -96,6 +100,11 @@ struct ui::collection_layout::impl : base::impl {
             _preferred_cell_count = count;
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::preferred_cell_count_changed,
+                                cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -111,6 +120,10 @@ struct ui::collection_layout::impl : base::impl {
         }
 
         _update_layout();
+
+        if (_subject.has_observer()) {
+            _subject.notify(ui::collection_layout::method::default_cell_size_changed, cast<ui::collection_layout>());
+        }
     }
 
     ui::size &default_cell_size() {
@@ -125,6 +138,10 @@ struct ui::collection_layout::impl : base::impl {
         }
 
         _update_layout();
+
+        if (_subject.has_observer()) {
+            _subject.notify(ui::collection_layout::method::lines_changed, cast<ui::collection_layout>());
+        }
     }
 
     std::vector<ui::collection_layout::line> &lines() {
@@ -140,6 +157,10 @@ struct ui::collection_layout::impl : base::impl {
             }
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::row_spacing_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -156,6 +177,10 @@ struct ui::collection_layout::impl : base::impl {
             }
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::col_spacing_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -168,6 +193,10 @@ struct ui::collection_layout::impl : base::impl {
             _alignment = std::move(align);
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::alignment_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -180,6 +209,10 @@ struct ui::collection_layout::impl : base::impl {
             _direction = std::move(dir);
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::direction_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -192,6 +225,10 @@ struct ui::collection_layout::impl : base::impl {
             _row_order = std::move(order);
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::row_order_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
@@ -204,6 +241,10 @@ struct ui::collection_layout::impl : base::impl {
             _col_order = std::move(order);
 
             _update_layout();
+
+            if (_subject.has_observer()) {
+                _subject.notify(ui::collection_layout::method::col_order_changed, cast<ui::collection_layout>());
+            }
         }
     }
 
