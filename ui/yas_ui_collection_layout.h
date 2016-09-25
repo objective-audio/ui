@@ -34,8 +34,7 @@ namespace ui {
             alignment_changed,
             direction_changed,
             row_order_changed,
-            col_order_changed,
-
+            col_order_changed
         };
 
         using subject_t = subject<collection_layout, method>;
