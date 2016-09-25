@@ -23,8 +23,8 @@ struct sample::modifier_text::impl : base::impl {
             event_observer = base{nullptr},
             left_layout = ui::layout{nullptr},
             right_layout = ui::layout{nullptr},
-            top_layout = ui::layout{nullptr},
-            bottom_layout = ui::layout{nullptr}
+            bottom_layout = ui::layout{nullptr},
+            strings_observer = ui::strings::observer_t{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
                 auto node = context.value;
@@ -36,15 +36,13 @@ struct sample::modifier_text::impl : base::impl {
                             if (auto text = weak_text.lock()) {
                                 auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
-                                text_impl->update_text(event, flags);
+                                text_impl->_update_text(event, flags);
                             }
                         });
 
                     auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
                     auto &strings = text_impl->_strings;
                     auto &strings_guide_rect = strings.frame_layout_guide_rect();
-                    auto const &font_atlas = strings.font_atlas();
-                    float const string_height = font_atlas.ascent() + font_atlas.descent();
 
                     left_layout = ui::make_layout({.distance = 4.0f,
                                                    .source_guide = renderer.view_layout_guide_rect().left(),
@@ -58,22 +56,45 @@ struct sample::modifier_text::impl : base::impl {
                                                      .source_guide = renderer.view_layout_guide_rect().bottom(),
                                                      .destination_guide = strings_guide_rect.bottom()});
 
-                    top_layout = ui::make_layout({.distance = 4.0f + string_height,
-                                                  .source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                  .destination_guide = strings_guide_rect.top()});
+                    auto strings_handler = [top_layout = ui::layout{nullptr}](ui::strings & strings) mutable {
+                        float distance = 4.0f;
 
+                        if (strings.font_atlas()) {
+                            auto const &font_atlas = strings.font_atlas();
+                            distance += font_atlas.ascent() + font_atlas.descent();
+                        }
+
+                        top_layout = ui::make_layout(
+                            {.distance = distance,
+                             .source_guide = strings.rect_plane().node().renderer().view_layout_guide_rect().bottom(),
+                             .destination_guide = strings.frame_layout_guide_rect().top()});
+                    };
+
+                    strings_handler(strings);
+
+                    strings_observer = strings.subject().make_observer(
+                        ui::strings::method::font_atlas_changed,
+                        [strings_handler = std::move(strings_handler),
+                         weak_strings = to_weak(strings)](auto const &context) mutable {
+                            if (auto strings = weak_strings.lock()) {
+                                strings_handler(strings);
+                            }
+                        });
                 } else {
                     event_observer = nullptr;
                     left_layout = nullptr;
                     right_layout = nullptr;
                     bottom_layout = nullptr;
-                    top_layout = nullptr;
+                    strings_observer = nullptr;
                 }
             }
         });
     }
 
-    void update_text(ui::event const &event, std::unordered_set<ui::modifier_flags> &flags) {
+   private:
+    ui::node::observer_t _renderer_observer = nullptr;
+
+    void _update_text(ui::event const &event, std::unordered_set<ui::modifier_flags> &flags) {
         auto flag = event.get<ui::modifier>().flag();
 
         if (event.phase() == ui::event_phase::began) {
@@ -91,9 +112,6 @@ struct sample::modifier_text::impl : base::impl {
 
         _strings.set_text(joined(flag_texts, " + "));
     }
-
-   private:
-    ui::node::observer_t _renderer_observer = nullptr;
 };
 
 sample::modifier_text::modifier_text(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {

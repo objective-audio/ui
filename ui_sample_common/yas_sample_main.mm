@@ -30,9 +30,6 @@ void sample::main::setup() {
     _big_button_text.strings().frame_layout_guide_rect().set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
-    _inputted_text.strings().set_font_atlas(_font_atlas);
-    _soft_keyboard.set_font_atlas(_font_atlas);
-
     _button_observer = _big_button.button().subject().make_wild_card_observer([weak_text = to_weak(_big_button_text)](
         auto const &context) {
         if (auto text = weak_text.lock()) {
