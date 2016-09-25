@@ -23,7 +23,7 @@ namespace ui {
 
     ui::continuous_action make_action(layout_action::args);
 
-    class layout_interporator : public base {
+    class layout_animator : public base {
        public:
         class impl;
 
@@ -33,8 +33,8 @@ namespace ui {
             double duration = 0.3;
         };
 
-        explicit layout_interporator(args);
-        layout_interporator(std::nullptr_t);
+        explicit layout_animator(args);
+        layout_animator(std::nullptr_t);
 
         void set_value_transformer(ui::transform_f);
         ui::transform_f const &value_transformer() const;
