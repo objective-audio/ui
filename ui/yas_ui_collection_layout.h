@@ -65,34 +65,26 @@ namespace ui {
         collection_layout(std::nullptr_t);
 
         void set_frame(ui::region);
-        ui::region frame() const;
-
         void set_preferred_cell_count(std::size_t const);
+        void set_default_cell_size(ui::size);
+        void set_lines(std::vector<ui::collection_layout::line>);
+        void set_row_spacing(float const);
+        void set_col_spacing(float const);
+        void set_alignment(ui::layout_alignment);
+        void set_direction(ui::layout_direction);
+        void set_row_order(ui::layout_order);
+        void set_col_order(ui::layout_order);
+
+        ui::region frame() const;
         std::size_t preferred_cell_count() const;
         std::size_t actual_cell_count() const;
-
-        void set_default_cell_size(ui::size);
         ui::size const &default_cell_size() const;
-
-        void set_lines(std::vector<ui::collection_layout::line>);
         std::vector<line> const &lines() const;
-
-        void set_row_spacing(float const);
         float row_spacing() const;
-
-        void set_col_spacing(float const);
         float col_spacing() const;
-
-        void set_alignment(ui::layout_alignment);
         ui::layout_alignment alignment() const;
-
-        void set_direction(ui::layout_direction);
         ui::layout_direction direction() const;
-
-        void set_row_order(ui::layout_order);
         ui::layout_order row_order() const;
-
-        void set_col_order(ui::layout_order);
         ui::layout_order col_order() const;
 
         ui::layout_borders const &borders() const;
