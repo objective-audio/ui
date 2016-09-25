@@ -143,6 +143,73 @@ using namespace yas;
     XCTAssertEqual(notified_count, 2);
 }
 
+- (void)test_notify {
+    ui::collection_layout layout;
+
+    std::experimental::optional<ui::collection_layout::method> notified_method;
+
+    auto observer = layout.subject().make_wild_card_observer(
+        [&notified_method](auto const &context) { notified_method = context.key; });
+
+    layout.set_frame({.origin = {.x = 1.0f}});
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::frame_changed);
+
+    notified_method = nullopt;
+
+    layout.set_preferred_cell_count(10);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::preferred_cell_count_changed);
+
+    notified_method = nullopt;
+
+    layout.set_alignment(ui::layout_alignment::max);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::alignment_changed);
+
+    notified_method = nullopt;
+
+    layout.set_lines({});
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::lines_changed);
+
+    notified_method = nullopt;
+
+    layout.set_default_cell_size({2.0f, 3.0f});
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::default_cell_size_changed);
+
+    notified_method = nullopt;
+
+    layout.set_row_order(ui::layout_order::descending);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::row_order_changed);
+
+    notified_method = nullopt;
+
+    layout.set_col_order(ui::layout_order::descending);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::col_order_changed);
+
+    notified_method = nullopt;
+
+    layout.set_direction(ui::layout_direction::horizontal);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::direction_changed);
+
+    notified_method = nullopt;
+
+    layout.set_row_spacing(11.0f);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::row_spacing_changed);
+
+    notified_method = nullopt;
+
+    layout.set_col_spacing(12.0f);
+
+    XCTAssertEqual(notified_method, ui::collection_layout::method::col_spacing_changed);
+}
+
 - (void)test_set_frame {
     ui::collection_layout layout{{.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}},
                                   .preferred_cell_count = 4,

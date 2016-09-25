@@ -8,6 +8,11 @@
 #include "yas_ui_layout_types.h"
 
 namespace yas {
+template <typename T, typename K>
+class subject;
+template <typename T, typename K>
+class observer;
+
 namespace ui {
     class font_atlas;
     class rect_plane;
@@ -17,6 +22,11 @@ namespace ui {
     class strings : public base {
        public:
         class impl;
+
+        enum class method { text_changed, font_atlas_changed, line_height_changed, alignment_changed };
+
+        using subject_t = subject<strings, method>;
+        using observer_t = observer<strings, method>;
 
         struct args {
             std::size_t max_word_count = 16;
@@ -46,6 +56,8 @@ namespace ui {
         ui::layout_guide_rect &frame_layout_guide_rect();
 
         ui::rect_plane &rect_plane();
+
+        subject_t &subject();
     };
 }
 }

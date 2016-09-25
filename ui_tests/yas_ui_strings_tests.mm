@@ -114,6 +114,39 @@ using namespace yas;
     XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
 }
 
+- (void)test_notity {
+    ui::font_atlas font_atlas{{.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}};
+
+    ui::strings strings;
+
+    std::experimental::optional<ui::strings::method> notified_method;
+
+    auto observer = strings.subject().make_wild_card_observer(
+        [&notified_method](auto const &context) { notified_method = context.key; });
+
+    strings.set_text("test_text");
+
+    XCTAssertEqual(*notified_method, ui::strings::method::text_changed);
+
+    notified_method = nullopt;
+
+    strings.set_font_atlas(font_atlas);
+
+    XCTAssertEqual(*notified_method, ui::strings::method::font_atlas_changed);
+
+    notified_method = nullopt;
+
+    strings.set_line_height(1.0f);
+
+    XCTAssertEqual(*notified_method, ui::strings::method::line_height_changed);
+
+    notified_method = nullopt;
+
+    strings.set_alignment(ui::layout_alignment::max);
+
+    XCTAssertEqual(*notified_method, ui::strings::method::alignment_changed);
+}
+
 - (void)test_no_throw_without_atlas_or_texture {
     ui::strings strings;
 

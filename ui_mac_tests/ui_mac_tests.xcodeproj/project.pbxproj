@@ -114,7 +114,7 @@
 		B6DC63871D8F76300020789C /* yas_ui_layout_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DC63851D8F76300020789C /* yas_ui_layout_types.cpp */; };
 		B6DF848A1D8C1CA600A2EE48 /* yas_cf_ref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DF84881D8C1CA600A2EE48 /* yas_cf_ref.cpp */; };
 		B6DF84951D8CDDDC00A2EE48 /* yas_ui_strings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DF84931D8CDDDC00A2EE48 /* yas_ui_strings.mm */; };
-		B6DF84A01D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DF849F1D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm */; };
+		B6DF84A01D8CF42900A2EE48 /* yas_ui_strings_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DF849F1D8CF42900A2EE48 /* yas_ui_strings_tests.mm */; };
 		B6E42C0E1D60192600FB483D /* yas_ui_layout_guide_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */; };
 		B6E42C101D60217400FB483D /* yas_ui_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */; };
 		B6E42C211D60A22200FB483D /* yas_ui_justified_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */; };
@@ -324,7 +324,7 @@
 		B6DF84891D8C1CA600A2EE48 /* yas_cf_ref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_cf_ref.h; sourceTree = "<group>"; };
 		B6DF84931D8CDDDC00A2EE48 /* yas_ui_strings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings.mm; sourceTree = "<group>"; };
 		B6DF84941D8CDDDC00A2EE48 /* yas_ui_strings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings.h; sourceTree = "<group>"; };
-		B6DF849F1D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_dynamic_strings_tests.mm; sourceTree = "<group>"; };
+		B6DF849F1D8CF42900A2EE48 /* yas_ui_strings_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings_tests.mm; sourceTree = "<group>"; };
 		B6E42C0D1D60192600FB483D /* yas_ui_layout_guide_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_guide_tests.mm; sourceTree = "<group>"; };
 		B6E42C0F1D60217400FB483D /* yas_ui_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_tests.mm; sourceTree = "<group>"; };
 		B6E42C201D60A22200FB483D /* yas_ui_justified_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_justified_layout_tests.mm; sourceTree = "<group>"; };
@@ -607,7 +607,7 @@
 				B6F58D161D67DA8700807724 /* yas_ui_collection_layout_tests.mm */,
 				B66BB8A81D1F701B00AB3D48 /* yas_ui_collider_tests.mm */,
 				B66BB8A91D1F701B00AB3D48 /* yas_ui_detector_tests.mm */,
-				B6DF849F1D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm */,
+				B6DF849F1D8CF42900A2EE48 /* yas_ui_strings_tests.mm */,
 				B66BB8AA1D1F701B00AB3D48 /* yas_ui_encode_info_tests.mm */,
 				B66BB8AB1D1F701B00AB3D48 /* yas_ui_event_tests.mm */,
 				B66BB8AC1D1F701B00AB3D48 /* yas_ui_font_atlas_tests.mm */,
@@ -827,7 +827,7 @@
 				B66BB8CC1D1F701B00AB3D48 /* yas_ui_mesh_tests.mm in Sources */,
 				B6E42C0E1D60192600FB483D /* yas_ui_layout_guide_tests.mm in Sources */,
 				B6F58D171D67DA8700807724 /* yas_ui_collection_layout_tests.mm in Sources */,
-				B6DF84A01D8CF42900A2EE48 /* yas_ui_dynamic_strings_tests.mm in Sources */,
+				B6DF84A01D8CF42900A2EE48 /* yas_ui_strings_tests.mm in Sources */,
 				B66BB8CF1D1F701B00AB3D48 /* yas_ui_metal_render_encoder_tests.mm in Sources */,
 				B6AFE65C1D7AE07C00546165 /* yas_ui_layout_actions_tests.mm in Sources */,
 				B66BB8D81D1F701B00AB3D48 /* yas_ui_texture_tests.mm in Sources */,
