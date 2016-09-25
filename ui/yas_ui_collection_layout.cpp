@@ -13,7 +13,7 @@ using namespace yas;
 #pragma mark - ui::colleciton_layout::impl
 
 struct ui::collection_layout::impl : base::impl {
-    struct line_cell_idx {
+    struct cell_location {
         std::size_t line_idx;
         std::size_t cell_idx;
     };
@@ -371,13 +371,13 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    std::experimental::optional<line_cell_idx> _line_cell_idx(std::size_t const cell_idx) {
+    std::experimental::optional<cell_location> _cell_location(std::size_t const cell_idx) {
         std::size_t top_idx = 0;
         std::size_t line_idx = 0;
 
         for (auto const &line : _lines) {
             if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
-                return line_cell_idx{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
+                return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
             }
             top_idx += line.cell_sizes.size();
             ++line_idx;
@@ -404,8 +404,8 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     bool _is_top_of_new_line(std::size_t const idx) {
-        if (auto line_cell_idx = _line_cell_idx(idx)) {
-            if (line_cell_idx->line_idx > 0 && line_cell_idx->cell_idx == 0) {
+        if (auto cell_location = _cell_location(idx)) {
+            if (cell_location->line_idx > 0 && cell_location->cell_idx == 0) {
                 return true;
             }
         }
@@ -458,8 +458,8 @@ struct ui::collection_layout::impl : base::impl {
     float _transformed_row_new_line_diff(std::size_t const idx) {
         auto diff = 0.0f;
 
-        if (auto line_cell_idx = _line_cell_idx(idx)) {
-            auto line_idx = line_cell_idx->line_idx;
+        if (auto cell_location = _cell_location(idx)) {
+            auto line_idx = cell_location->line_idx;
 
             while (line_idx > 0) {
                 --line_idx;
