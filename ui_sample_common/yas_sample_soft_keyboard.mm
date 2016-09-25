@@ -122,7 +122,7 @@ struct sample::soft_keyboard::impl : base::impl {
     std::vector<ui::button::observer_t> _soft_key_observers;
     ui::node::observer_t _renderer_observer = nullptr;
     ui::collection_layout::observer_t _collection_observer;
-    ui::layout_interporator _cell_interporator = nullptr;
+    ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
     std::vector<std::vector<ui::layout>> _fixed_cell_layouts;
@@ -264,7 +264,7 @@ struct sample::soft_keyboard::impl : base::impl {
                                                                             .destination = dst_guide_rect}));
         }
 
-        _cell_interporator = ui::layout_interporator{
+        _cell_interporator = ui::layout_animator{
             {.renderer = _root_node.renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f}};
     }
 

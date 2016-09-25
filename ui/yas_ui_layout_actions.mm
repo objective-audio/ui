@@ -24,7 +24,7 @@ ui::continuous_action ui::make_action(layout_action::args args) {
     return action;
 }
 
-struct ui::layout_interporator::impl : base::impl {
+struct ui::layout_animator::impl : base::impl {
     args _args;
     ui::transform_f _value_transformer;
 
@@ -39,7 +39,7 @@ struct ui::layout_interporator::impl : base::impl {
         }
     }
 
-    void prepare(ui::layout_interporator &interporator) {
+    void prepare(ui::layout_animator &interporator) {
         _observers.reserve(_args.layout_guide_pairs.size());
 
         for (auto &guide_pair : _args.layout_guide_pairs) {
@@ -76,17 +76,17 @@ struct ui::layout_interporator::impl : base::impl {
     std::vector<ui::layout_guide::observer_t> _observers;
 };
 
-ui::layout_interporator::layout_interporator(args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::layout_animator::layout_animator(args args) : base(std::make_shared<impl>(std::move(args))) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-ui::layout_interporator::layout_interporator(std::nullptr_t) : base(nullptr) {
+ui::layout_animator::layout_animator(std::nullptr_t) : base(nullptr) {
 }
 
-void ui::layout_interporator::set_value_transformer(ui::transform_f transform) {
+void ui::layout_animator::set_value_transformer(ui::transform_f transform) {
     impl_ptr<impl>()->_value_transformer = transform;
 }
 
-ui::transform_f const &ui::layout_interporator::value_transformer() const {
+ui::transform_f const &ui::layout_animator::value_transformer() const {
     return impl_ptr<impl>()->_value_transformer;
 }
