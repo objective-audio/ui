@@ -78,7 +78,7 @@ namespace sample {
 }
 
 struct sample::soft_keyboard::impl : base::impl {
-    impl() {
+    impl(ui::font_atlas &&atlas) : _font_atlas(std::move(atlas)) {
         _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
@@ -97,6 +97,8 @@ struct sample::soft_keyboard::impl : base::impl {
                                                                         }
                                                                     }
                                                                 });
+
+        _setup_soft_keys_if_needed();
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
@@ -324,7 +326,7 @@ struct sample::soft_keyboard::impl : base::impl {
     }
 };
 
-sample::soft_keyboard::soft_keyboard() : base(std::make_shared<impl>()) {
+sample::soft_keyboard::soft_keyboard(ui::font_atlas atlas) : base(std::make_shared<impl>(std::move(atlas))) {
     impl_ptr<impl>()->prepare(*this);
 }
 

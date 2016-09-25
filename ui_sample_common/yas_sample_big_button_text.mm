@@ -14,14 +14,18 @@ struct sample::big_button_text::impl : base::impl {
                     .alignment = ui::layout_alignment::mid,
                     .font_atlas = std::move(font_atlas),
                     .max_word_count = 32}) {
-        if (!_strings.font_atlas()) {
-            throw "font_atlas is null.";
-        }
-
-        auto const &atlas = _strings.font_atlas();
-        float const offset_y = (atlas.ascent() + atlas.descent()) * 0.5f;
-        _strings.rect_plane().node().set_position(ui::point{0.0f, offset_y});
         _strings.rect_plane().node().set_alpha(0.5f);
+    }
+
+    void prepare(sample::big_button_text &text) {
+        _strings_observer = text.strings().subject().make_observer(
+            ui::strings::method::font_atlas_changed, [weak_text = to_weak(text)](auto const &context) {
+                if (auto text = weak_text.lock()) {
+                    text.impl_ptr<impl>()->_update_strings_position();
+                }
+            });
+
+        _update_strings_position();
     }
 
     void set_status(ui::button::method const status) {
@@ -30,10 +34,19 @@ struct sample::big_button_text::impl : base::impl {
 
    private:
     ui::button::method _status;
+    ui::strings::observer_t _strings_observer = nullptr;
+
+    void _update_strings_position() {
+        if (auto const &atlas = _strings.font_atlas()) {
+            float const offset_y = (atlas.ascent() + atlas.descent()) * 0.5f;
+            _strings.rect_plane().node().set_position(ui::point{0.0f, offset_y});
+        }
+    }
 };
 
 sample::big_button_text::big_button_text(ui::font_atlas font_atlas)
     : base(std::make_shared<impl>(std::move(font_atlas))) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 sample::big_button_text::big_button_text(std::nullptr_t) : base(nullptr) {
