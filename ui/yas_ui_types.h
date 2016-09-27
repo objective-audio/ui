@@ -21,16 +21,25 @@ namespace ui {
     struct uint_origin {
         uint32_t x = 0;
         uint32_t y = 0;
+
+        bool operator==(uint_origin const &rhs) const;
+        bool operator!=(uint_origin const &rhs) const;
     };
 
     struct uint_size {
         uint32_t width = 1;
         uint32_t height = 1;
+
+        bool operator==(uint_size const &rhs) const;
+        bool operator!=(uint_size const &rhs) const;
     };
 
     struct uint_region {
         uint_origin origin;
         uint_size size;
+
+        bool operator==(uint_region const &rhs) const;
+        bool operator!=(uint_region const &rhs) const;
 
         uint32_t left() const;
         uint32_t right() const;
@@ -41,6 +50,9 @@ namespace ui {
     struct uint_range {
         uint32_t location;
         uint32_t length;
+
+        bool operator==(uint_range const &rhs) const;
+        bool operator!=(uint_range const &rhs) const;
 
         uint32_t min() const;
         uint32_t max() const;
@@ -55,6 +67,9 @@ namespace ui {
             simd::float2 v;
         };
 
+        bool operator==(point const &rhs) const;
+        bool operator!=(point const &rhs) const;
+
         explicit operator bool() const;
     };
 
@@ -67,6 +82,9 @@ namespace ui {
             simd::float2 v;
         };
 
+        bool operator==(size const &rhs) const;
+        bool operator!=(size const &rhs) const;
+
         explicit operator bool() const;
     };
 
@@ -78,6 +96,9 @@ namespace ui {
             };
             simd::float2 v;
         };
+
+        bool operator==(range const &rhs) const;
+        bool operator!=(range const &rhs) const;
 
         explicit operator bool() const;
 
@@ -93,6 +114,9 @@ namespace ui {
             };
             simd::float4 v;
         };
+
+        bool operator==(region const &rhs) const;
+        bool operator!=(region const &rhs) const;
 
         explicit operator bool() const;
 
@@ -113,6 +137,9 @@ namespace ui {
             };
             simd::float3 v;
         };
+
+        bool operator==(color const &rhs) const;
+        bool operator!=(color const &rhs) const;
 
         explicit operator bool() const;
     };
@@ -170,23 +197,6 @@ bool is_equal(simd::float4 const &, simd::float4 const &);
 
 bool is_equal(simd::float4x4 const &, simd::float4x4 const &);
 }
-
-bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
-bool operator!=(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs);
-bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
-bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs);
-bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
-bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs);
-bool operator==(yas::ui::point const &lhs, yas::ui::point const &rhs);
-bool operator!=(yas::ui::point const &lhs, yas::ui::point const &rhs);
-bool operator==(yas::ui::size const &lhs, yas::ui::size const &rhs);
-bool operator!=(yas::ui::size const &lhs, yas::ui::size const &rhs);
-bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs);
-bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs);
-bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs);
-bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs);
-bool operator==(yas::ui::color const &lhs, yas::ui::color const &rhs);
-bool operator!=(yas::ui::color const &lhs, yas::ui::color const &rhs);
 
 std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);

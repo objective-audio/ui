@@ -6,7 +6,35 @@
 
 using namespace yas;
 
+#pragma mark - ui::uint_origin
+
+bool ui::uint_origin::operator==(ui::uint_origin const &rhs) const {
+    return x == rhs.x && y == rhs.y;
+}
+
+bool ui::uint_origin::operator!=(ui::uint_origin const &rhs) const {
+    return x != rhs.x || y != rhs.y;
+}
+
+#pragma mark - ui::uint_size
+
+bool ui::uint_size::operator==(ui::uint_size const &rhs) const {
+    return width == rhs.width && height == rhs.height;
+}
+
+bool ui::uint_size::operator!=(ui::uint_size const &rhs) const {
+    return width != rhs.width || height != rhs.height;
+}
+
 #pragma mark - ui::uint_region
+
+bool ui::uint_region::operator==(ui::uint_region const &rhs) const {
+    return origin == rhs.origin && size == rhs.size;
+}
+
+bool ui::uint_region::operator!=(ui::uint_region const &rhs) const {
+    return origin != rhs.origin || size != rhs.size;
+}
 
 uint32_t ui::uint_region::left() const {
     return std::min(origin.x, origin.x + size.width);
@@ -26,6 +54,14 @@ uint32_t ui::uint_region::top() const {
 
 #pragma mark - ui:uint_range
 
+bool ui::uint_range::operator==(uint_range const &rhs) const {
+    return location == rhs.location && length == rhs.length;
+}
+
+bool ui::uint_range::operator!=(uint_range const &rhs) const {
+    return location != rhs.location || length != rhs.length;
+}
+
 uint32_t ui::uint_range::min() const {
     return std::min(location, location + length);
 }
@@ -36,17 +72,49 @@ uint32_t ui::uint_range::max() const {
 
 #pragma mark - ui::point
 
+bool ui::point::operator==(ui::point const &rhs) const {
+    return x == rhs.x && y == rhs.y;
+}
+
+bool ui::point::operator!=(ui::point const &rhs) const {
+    return x != rhs.x || y != rhs.y;
+}
+
 ui::point::operator bool() const {
     return x != 0.0f || y != 0.0f;
 }
 
 #pragma mark - ui::size
 
+bool ui::size::operator==(ui::size const &rhs) const {
+    return width == rhs.width && height == rhs.height;
+}
+
+bool ui::size::operator!=(ui::size const &rhs) const {
+    return width != rhs.width || height != rhs.height;
+}
+
 ui::size::operator bool() const {
     return width != 0.0f || height != 0.0f;
 }
 
 #pragma mark - ui::range
+
+bool ui::color::operator==(ui::color const &rhs) const {
+    return red == rhs.red && green == rhs.green && blue == rhs.blue;
+}
+
+bool ui::color::operator!=(ui::color const &rhs) const {
+    return red != rhs.red || green != rhs.green || blue != rhs.blue;
+}
+
+bool ui::range::operator==(ui::range const &rhs) const {
+    return location == rhs.location && length == rhs.length;
+}
+
+bool ui::range::operator!=(ui::range const &rhs) const {
+    return location != rhs.location || length != rhs.length;
+}
 
 ui::range::operator bool() const {
     return location != 0.0f || length != 0.0f;
@@ -61,6 +129,14 @@ float ui::range::max() const {
 }
 
 #pragma mark - ui::region
+
+bool ui::region::operator==(ui::region const &rhs) const {
+    return origin == rhs.origin && size == rhs.size;
+}
+
+bool ui::region::operator!=(ui::region const &rhs) const {
+    return origin != rhs.origin || size != rhs.size;
+}
 
 ui::region::operator bool() const {
     return origin || size;
@@ -211,70 +287,6 @@ bool yas::is_equal(simd::float4 const &lhs, simd::float4 const &rhs) {
 
 bool yas::is_equal(simd::float4x4 const &lhs, simd::float4x4 const &rhs) {
     return (&lhs == &rhs) || memcmp(&lhs, &rhs, sizeof(simd::float4x4)) == 0;
-}
-
-bool operator==(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y;
-}
-
-bool operator!=(yas::ui::uint_origin const &lhs, yas::ui::uint_origin const &rhs) {
-    return lhs.x != rhs.x || lhs.y != rhs.y;
-}
-
-bool operator==(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs) {
-    return lhs.width == rhs.width && lhs.height == rhs.height;
-}
-
-bool operator!=(yas::ui::uint_size const &lhs, yas::ui::uint_size const &rhs) {
-    return lhs.width != rhs.width || lhs.height != rhs.height;
-}
-
-bool operator==(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
-    return lhs.origin == rhs.origin && lhs.size == rhs.size;
-}
-
-bool operator!=(yas::ui::uint_region const &lhs, yas::ui::uint_region const &rhs) {
-    return lhs.origin != rhs.origin || lhs.size != rhs.size;
-}
-
-bool operator==(yas::ui::point const &lhs, yas::ui::point const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y;
-}
-
-bool operator!=(yas::ui::point const &lhs, yas::ui::point const &rhs) {
-    return lhs.x != rhs.x || lhs.y != rhs.y;
-}
-
-bool operator==(yas::ui::size const &lhs, yas::ui::size const &rhs) {
-    return lhs.width == rhs.width && lhs.height == rhs.height;
-}
-
-bool operator!=(yas::ui::size const &lhs, yas::ui::size const &rhs) {
-    return lhs.width != rhs.width || lhs.height != rhs.height;
-}
-
-bool operator==(yas::ui::range const &lhs, yas::ui::range const &rhs) {
-    return lhs.location == rhs.location && lhs.length == rhs.length;
-}
-
-bool operator!=(yas::ui::range const &lhs, yas::ui::range const &rhs) {
-    return lhs.location != rhs.location || lhs.length != rhs.length;
-}
-
-bool operator==(yas::ui::region const &lhs, yas::ui::region const &rhs) {
-    return lhs.origin == rhs.origin && lhs.size == rhs.size;
-}
-
-bool operator!=(yas::ui::region const &lhs, yas::ui::region const &rhs) {
-    return lhs.origin != rhs.origin || lhs.size != rhs.size;
-}
-
-bool operator==(yas::ui::color const &lhs, yas::ui::color const &rhs) {
-    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue;
-}
-
-bool operator!=(yas::ui::color const &lhs, yas::ui::color const &rhs) {
-    return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue;
 }
 
 std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {

@@ -151,6 +151,23 @@ using namespace yas;
     XCTAssertTrue(region_a1_a1 != region_b);
 }
 
+- (void)test_is_equal_uint_range {
+    auto range1_2a = ui::uint_range{1, 2};
+    auto range1_2b = ui::uint_range{1, 2};
+    auto range1_3 = ui::uint_range{1, 3};
+    auto range2_2 = ui::uint_range{2, 2};
+
+    XCTAssertTrue(range1_2a == range1_2a);
+    XCTAssertTrue(range1_2a == range1_2b);
+    XCTAssertFalse(range1_2a == range1_3);
+    XCTAssertFalse(range1_2a == range2_2);
+
+    XCTAssertFalse(range1_2a != range1_2a);
+    XCTAssertFalse(range1_2a != range1_2b);
+    XCTAssertTrue(range1_2a != range1_3);
+    XCTAssertTrue(range1_2a != range2_2);
+}
+
 - (void)test_is_equal_point {
     auto origin1_2a = ui::point{1.0f, 2.0f};
     auto origin1_2b = ui::point{1.0f, 2.0f};
