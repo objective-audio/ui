@@ -4,6 +4,7 @@
 
 #include "yas_delaying_caller.h"
 #include "yas_each_index.h"
+#include "yas_property.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout.h"
 #include "yas_ui_layout_guide.h"
@@ -17,6 +18,13 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t line_idx;
         std::size_t cell_idx;
     };
+
+    property<float> _row_spacing_property;
+    property<float> _col_spacing_property;
+    property<ui::layout_alignment> _alignment_property;
+    property<ui::layout_direction> _direction_property;
+    property<ui::layout_order> _row_order_property;
+    property<ui::layout_order> _col_order_property;
 
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
@@ -33,12 +41,12 @@ struct ui::collection_layout::impl : base::impl {
           _preferred_cell_count(args.preferred_cell_count),
           _default_cell_size(std::move(args.default_cell_size)),
           _lines(std::move(args.lines)),
-          _row_spacing(args.row_spacing),
-          _col_spacing(args.col_spacing),
-          _alignment(args.alignment),
-          _direction(args.direction),
-          _row_order(args.row_order),
-          _col_order(args.col_order),
+          _row_spacing_property({.value = args.row_spacing}),
+          _col_spacing_property({.value = args.col_spacing}),
+          _alignment_property({.value = args.alignment}),
+          _direction_property({.value = args.direction}),
+          _row_order_property({.value = args.row_order}),
+          _col_order_property({.value = args.col_order}),
           _left_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.left(),
                                                .destination_guide = _border_guide_rect.left(),
                                                .distance = args.borders.left})),
@@ -80,12 +88,100 @@ struct ui::collection_layout::impl : base::impl {
             }
         });
 
+        auto weak_layout = to_weak(layout);
+
+        _property_observers.emplace_back(_row_spacing_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    if (!layout_impl->_validate_row_spacing()) {
+                        throw "invalid row_spacing.";
+                    }
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::row_spacing_changed, layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_col_spacing_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    if (!layout_impl->_validate_col_spacing()) {
+                        throw "invalid row_spacing.";
+                    }
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::col_spacing_changed, layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_alignment_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::alignment_changed, layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_direction_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::direction_changed, layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_row_order_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::row_order_changed, layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_col_order_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::col_order_changed, layout);
+                    }
+                }
+            }));
+
         _update_layout();
     }
 
     void set_frame(ui::region &&frame) {
         if (_frame_guide_rect.region() != frame) {
-            _frame_guide_rect.set_region(frame);
+            _frame_guide_rect.set_region(std::move(frame));
 
             _update_layout();
 
@@ -148,110 +244,6 @@ struct ui::collection_layout::impl : base::impl {
         return _lines;
     }
 
-    void set_row_spacing(float const spacing) {
-        if (_row_spacing != spacing) {
-            _row_spacing = spacing;
-
-            if (!_validate_row_spacing()) {
-                throw "invalid row_spacing.";
-            }
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::row_spacing_changed, cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    float row_spacing() {
-        return _row_spacing;
-    }
-
-    void set_col_spacing(float const spacing) {
-        if (_col_spacing != spacing) {
-            _col_spacing = spacing;
-
-            if (!_validate_col_spacing()) {
-                throw "invalid col_spacing.";
-            }
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::col_spacing_changed, cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    float col_spacing() {
-        return _col_spacing;
-    }
-
-    void set_alignment(ui::layout_alignment &&align) {
-        if (_alignment != align) {
-            _alignment = std::move(align);
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::alignment_changed, cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    ui::layout_alignment alignment() {
-        return _alignment;
-    }
-
-    void set_direction(ui::layout_direction &&dir) {
-        if (_direction != dir) {
-            _direction = std::move(dir);
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::direction_changed, cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    ui::layout_direction direction() {
-        return _direction;
-    }
-
-    void set_row_order(ui::layout_order &&order) {
-        if (_row_order != order) {
-            _row_order = std::move(order);
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::row_order_changed, cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    ui::layout_order row_order() {
-        return _row_order;
-    }
-
-    void set_col_order(ui::layout_order &&order) {
-        if (_col_order != order) {
-            _col_order = std::move(order);
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::col_order_changed, cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    ui::layout_order col_order() {
-        return _col_order;
-    }
-
     void push_notify_caller() {
         for (auto &rect : _cell_guide_rects) {
             rect.push_notify_caller();
@@ -268,12 +260,7 @@ struct ui::collection_layout::impl : base::impl {
     std::size_t _preferred_cell_count;
     ui::size _default_cell_size;
     std::vector<ui::collection_layout::line> _lines;
-    float _row_spacing;
-    float _col_spacing;
-    ui::layout_alignment _alignment;
-    ui::layout_direction _direction;
-    ui::layout_order _row_order;
-    ui::layout_order _col_order;
+    std::vector<base> _property_observers;
 
     void _update_layout() {
         auto frame_region = _direction_swapped_region_if_horizontal(_frame_guide_rect.region());
@@ -343,13 +330,14 @@ struct ui::collection_layout::impl : base::impl {
         for (auto const &row_regions : regions) {
             if (row_regions.size() > 0) {
                 auto align_offset = 0.0f;
+                auto const alignment = _alignment_property.value();
 
-                if (_alignment != ui::layout_alignment::min) {
+                if (alignment != ui::layout_alignment::min) {
                     auto const content_width =
                         row_regions.back().origin.x + row_regions.back().size.width - row_regions.front().origin.x;
                     align_offset = border_rect.size.width - content_width;
 
-                    if (_alignment == ui::layout_alignment::mid) {
+                    if (alignment == ui::layout_alignment::mid) {
                         align_offset *= 0.5f;
                     }
                 }
@@ -417,18 +405,18 @@ struct ui::collection_layout::impl : base::impl {
         ui::size result;
         auto const &cell_size = _cell_size(idx);
 
-        switch (_direction) {
+        switch (_direction_property.value()) {
             case ui::layout_direction::horizontal:
                 result = ui::size{cell_size.height, cell_size.width};
             case ui::layout_direction::vertical:
                 result = cell_size;
         }
 
-        if (_row_order == ui::layout_order::descending) {
+        if (_row_order_property.value() == ui::layout_order::descending) {
             result.height *= -1.0f;
         }
 
-        if (_col_order == ui::layout_order::descending) {
+        if (_col_order_property.value() == ui::layout_order::descending) {
             result.width *= -1.0;
         }
 
@@ -440,16 +428,16 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     float _transformed_col_diff(std::size_t const idx) {
-        auto diff = fabsf(_transformed_cell_size(idx).width) + _col_spacing;
-        if (_col_order == ui::layout_order::descending) {
+        auto diff = fabsf(_transformed_cell_size(idx).width) + _col_spacing_property.value();
+        if (_col_order_property.value() == ui::layout_order::descending) {
             diff *= -1.0f;
         }
         return diff;
     }
 
     float _transformed_row_cell_diff(std::size_t const idx) {
-        auto diff = fabsf(_transformed_cell_size(idx).height) + _row_spacing;
-        if (_row_order == ui::layout_order::descending) {
+        auto diff = fabsf(_transformed_cell_size(idx).height) + _row_spacing_property.value();
+        if (_row_order_property.value() == ui::layout_order::descending) {
             diff *= -1.0f;
         }
         return diff;
@@ -464,7 +452,7 @@ struct ui::collection_layout::impl : base::impl {
             while (line_idx > 0) {
                 --line_idx;
 
-                diff += _lines.at(line_idx).new_line_min_offset + _row_spacing;
+                diff += _lines.at(line_idx).new_line_min_offset + _row_spacing_property.value();
 
                 if (_lines.at(line_idx).cell_sizes.size() > 0) {
                     break;
@@ -472,7 +460,7 @@ struct ui::collection_layout::impl : base::impl {
             }
         }
 
-        if (_row_order == ui::layout_order::descending) {
+        if (_row_order_property.value() == ui::layout_order::descending) {
             diff *= -1.0f;
         }
 
@@ -483,7 +471,7 @@ struct ui::collection_layout::impl : base::impl {
         auto const original = _direction_swapped_region_if_horizontal(_border_guide_rect.region());
         ui::region result{.size = original.size};
 
-        switch (_row_order) {
+        switch (_row_order_property.value()) {
             case ui::layout_order::ascending: {
                 result.origin.y = original.origin.y;
             } break;
@@ -493,7 +481,7 @@ struct ui::collection_layout::impl : base::impl {
             } break;
         }
 
-        switch (_col_order) {
+        switch (_col_order_property.value()) {
             case ui::layout_order::ascending: {
                 result.origin.x = original.origin.x;
             } break;
@@ -507,7 +495,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     ui::region _direction_swapped_region_if_horizontal(ui::region const &region) {
-        if (_direction == ui::layout_direction::horizontal) {
+        if (_direction_property.value() == ui::layout_direction::horizontal) {
             return ui::region{.origin = {region.origin.y, region.origin.x},
                               .size = {region.size.height, region.size.width}};
         } else {
@@ -535,11 +523,11 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     bool _validate_row_spacing() {
-        return _row_spacing >= 0.0f;
+        return _row_spacing_property.value() >= 0.0f;
     }
 
     bool _validate_col_spacing() {
-        return _col_spacing >= 0.0f;
+        return _col_spacing_property.value() >= 0.0f;
     }
 };
 
@@ -576,27 +564,27 @@ void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> l
 }
 
 void ui::collection_layout::set_row_spacing(float const spacing) {
-    impl_ptr<impl>()->set_row_spacing(spacing);
+    impl_ptr<impl>()->_row_spacing_property.set_value(spacing);
 }
 
 void ui::collection_layout::set_col_spacing(float const spacing) {
-    impl_ptr<impl>()->set_col_spacing(spacing);
+    impl_ptr<impl>()->_col_spacing_property.set_value(spacing);
 }
 
 void ui::collection_layout::set_alignment(ui::layout_alignment align) {
-    impl_ptr<impl>()->set_alignment(std::move(align));
+    impl_ptr<impl>()->_alignment_property.set_value(align);
 }
 
 void ui::collection_layout::set_direction(ui::layout_direction dir) {
-    impl_ptr<impl>()->set_direction(std::move(dir));
+    impl_ptr<impl>()->_direction_property.set_value(dir);
 }
 
 void ui::collection_layout::set_row_order(ui::layout_order order) {
-    impl_ptr<impl>()->set_row_order(std::move(order));
+    impl_ptr<impl>()->_row_order_property.set_value(order);
 }
 
 void ui::collection_layout::set_col_order(ui::layout_order order) {
-    impl_ptr<impl>()->set_col_order(std::move(order));
+    impl_ptr<impl>()->_col_order_property.set_value(order);
 }
 
 std::size_t ui::collection_layout::preferred_cell_count() const {
@@ -616,27 +604,27 @@ std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() c
 }
 
 float ui::collection_layout::row_spacing() const {
-    return impl_ptr<impl>()->row_spacing();
+    return impl_ptr<impl>()->_row_spacing_property.value();
 }
 
 float ui::collection_layout::col_spacing() const {
-    return impl_ptr<impl>()->col_spacing();
+    return impl_ptr<impl>()->_col_spacing_property.value();
 }
 
 ui::layout_alignment ui::collection_layout::alignment() const {
-    return impl_ptr<impl>()->alignment();
+    return impl_ptr<impl>()->_alignment_property.value();
 }
 
 ui::layout_direction ui::collection_layout::direction() const {
-    return impl_ptr<impl>()->direction();
+    return impl_ptr<impl>()->_direction_property.value();
 }
 
 ui::layout_order ui::collection_layout::row_order() const {
-    return impl_ptr<impl>()->row_order();
+    return impl_ptr<impl>()->_row_order_property.value();
 }
 
 ui::layout_order ui::collection_layout::col_order() const {
-    return impl_ptr<impl>()->col_order();
+    return impl_ptr<impl>()->_col_order_property.value();
 }
 
 ui::layout_borders const &ui::collection_layout::borders() const {
