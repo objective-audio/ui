@@ -169,7 +169,7 @@ using namespace yas;
 
     notified_method = nullopt;
 
-    layout.set_lines({});
+    layout.set_lines({{}});
 
     XCTAssertEqual(notified_method, ui::collection_layout::method::lines_changed);
 
@@ -718,6 +718,23 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+}
+
+- (void)test_is_equal_line {
+    ui::collection_layout::line line1a{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 3.0f};
+    ui::collection_layout::line line1b{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 3.0f};
+    ui::collection_layout::line line2{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 4.0f};
+    ui::collection_layout::line line3{.cell_sizes = {{5.0f, 6.0f}}, .new_line_min_offset = 3.0f};
+
+    XCTAssertTrue(line1a == line1a);
+    XCTAssertTrue(line1a == line1b);
+    XCTAssertFalse(line1a == line2);
+    XCTAssertFalse(line1a == line3);
+
+    XCTAssertFalse(line1a != line1a);
+    XCTAssertFalse(line1a != line1b);
+    XCTAssertTrue(line1a != line2);
+    XCTAssertTrue(line1a != line3);
 }
 
 @end

@@ -11,6 +11,32 @@
 
 using namespace yas;
 
+#pragma mark - ui::collection_layout::line
+
+bool ui::collection_layout::line::operator==(line const &rhs) const {
+    if (new_line_min_offset != rhs.new_line_min_offset) {
+        return false;
+    }
+
+    auto const cell_count = cell_sizes.size();
+
+    if (cell_count != rhs.cell_sizes.size()) {
+        return false;
+    }
+
+    for (auto const &idx : make_each(cell_count)) {
+        if (cell_sizes.at(idx) != rhs.cell_sizes.at(idx)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool ui::collection_layout::line::operator!=(line const &rhs) const {
+    return !(*this == rhs);
+}
+
 #pragma mark - ui::colleciton_layout::impl
 
 struct ui::collection_layout::impl : base::impl {
@@ -25,6 +51,9 @@ struct ui::collection_layout::impl : base::impl {
     property<ui::layout_direction> _direction_property;
     property<ui::layout_order> _row_order_property;
     property<ui::layout_order> _col_order_property;
+    property<std::size_t> _preferred_cell_count_property;
+    property<ui::size> _default_cell_size_property;
+    property<std::vector<ui::collection_layout::line>> _lines_property;
 
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
@@ -38,9 +67,9 @@ struct ui::collection_layout::impl : base::impl {
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
-          _preferred_cell_count(args.preferred_cell_count),
-          _default_cell_size(std::move(args.default_cell_size)),
-          _lines(std::move(args.lines)),
+          _preferred_cell_count_property({.value = args.preferred_cell_count}),
+          _default_cell_size_property({.value = std::move(args.default_cell_size)}),
+          _lines_property({.value = std::move(args.lines)}),
           _row_spacing_property({.value = args.row_spacing}),
           _col_spacing_property({.value = args.col_spacing}),
           _alignment_property({.value = args.alignment}),
@@ -176,6 +205,54 @@ struct ui::collection_layout::impl : base::impl {
                 }
             }));
 
+        _property_observers.emplace_back(_preferred_cell_count_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::preferred_cell_count_changed,
+                                                     layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_default_cell_size_property.subject().make_observer(
+            property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    if (!layout_impl->_validate_default_cell_size()) {
+                        throw "invalid default_cell_size.";
+                    }
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::default_cell_size_changed, layout);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _lines_property.subject().make_observer(property_method::did_change, [weak_layout](auto const &context) {
+                if (auto layout = weak_layout.lock()) {
+                    auto layout_impl = layout.impl_ptr<impl>();
+
+                    if (!layout_impl->_validate_lines()) {
+                        throw "invalid lines.";
+                    }
+
+                    layout_impl->_update_layout();
+
+                    if (layout_impl->_subject.has_observer()) {
+                        layout_impl->_subject.notify(ui::collection_layout::method::lines_changed, layout);
+                    }
+                }
+            }));
+
         _update_layout();
     }
 
@@ -191,59 +268,6 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    void set_preferred_cell_count(std::size_t const count) {
-        if (_preferred_cell_count != count) {
-            _preferred_cell_count = count;
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::preferred_cell_count_changed,
-                                cast<ui::collection_layout>());
-            }
-        }
-    }
-
-    std::size_t const &preferred_cell_count() {
-        return _preferred_cell_count;
-    }
-
-    void set_default_cell_size(ui::size &&size) {
-        _default_cell_size = std::move(size);
-
-        if (!_validate_default_cell_size()) {
-            throw "invalid default_cell_size.";
-        }
-
-        _update_layout();
-
-        if (_subject.has_observer()) {
-            _subject.notify(ui::collection_layout::method::default_cell_size_changed, cast<ui::collection_layout>());
-        }
-    }
-
-    ui::size &default_cell_size() {
-        return _default_cell_size;
-    }
-
-    void set_lines(std::vector<ui::collection_layout::line> &&lines) {
-        _lines = std::move(lines);
-
-        if (!_validate_lines()) {
-            throw "invalid lines.";
-        }
-
-        _update_layout();
-
-        if (_subject.has_observer()) {
-            _subject.notify(ui::collection_layout::method::lines_changed, cast<ui::collection_layout>());
-        }
-    }
-
-    std::vector<ui::collection_layout::line> &lines() {
-        return _lines;
-    }
-
     void push_notify_caller() {
         for (auto &rect : _cell_guide_rects) {
             rect.push_notify_caller();
@@ -257,15 +281,13 @@ struct ui::collection_layout::impl : base::impl {
     }
 
    private:
-    std::size_t _preferred_cell_count;
-    ui::size _default_cell_size;
-    std::vector<ui::collection_layout::line> _lines;
     std::vector<base> _property_observers;
 
     void _update_layout() {
         auto frame_region = _direction_swapped_region_if_horizontal(_frame_guide_rect.region());
+        auto const &preferred_cell_count = _preferred_cell_count_property.value();
 
-        if (_preferred_cell_count == 0 || frame_region.size.width == 0.0f) {
+        if (preferred_cell_count == 0 || frame_region.size.width == 0.0f) {
             _cell_guide_rects.clear();
             return;
         }
@@ -280,7 +302,7 @@ struct ui::collection_layout::impl : base::impl {
         auto const prev_actual_cell_count = _cell_guide_rects.size();
         std::size_t actual_cell_count = 0;
 
-        for (auto const &idx : make_each(_preferred_cell_count)) {
+        for (auto const &idx : make_each(preferred_cell_count)) {
             auto cell_size = _transformed_cell_size(idx);
 
             if (fabsf(origin.x + cell_size.width) > border_abs_size.width || _is_top_of_new_line(idx)) {
@@ -363,7 +385,7 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t top_idx = 0;
         std::size_t line_idx = 0;
 
-        for (auto const &line : _lines) {
+        for (auto const &line : _lines_property.value()) {
             if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
                 return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
             }
@@ -377,7 +399,7 @@ struct ui::collection_layout::impl : base::impl {
     ui::size _cell_size(std::size_t const idx) {
         std::size_t find_idx = 0;
 
-        for (auto const &line : _lines) {
+        for (auto const &line : _lines_property.value()) {
             std::size_t const line_idx = idx - find_idx;
             std::size_t const line_cell_count = line.cell_sizes.size();
 
@@ -388,7 +410,7 @@ struct ui::collection_layout::impl : base::impl {
             find_idx += line_cell_count;
         }
 
-        return _default_cell_size;
+        return _default_cell_size_property.value();
     }
 
     bool _is_top_of_new_line(std::size_t const idx) {
@@ -445,6 +467,7 @@ struct ui::collection_layout::impl : base::impl {
 
     float _transformed_row_new_line_diff(std::size_t const idx) {
         auto diff = 0.0f;
+        auto const &lines = _lines_property.value();
 
         if (auto cell_location = _cell_location(idx)) {
             auto line_idx = cell_location->line_idx;
@@ -452,9 +475,9 @@ struct ui::collection_layout::impl : base::impl {
             while (line_idx > 0) {
                 --line_idx;
 
-                diff += _lines.at(line_idx).new_line_min_offset + _row_spacing_property.value();
+                diff += lines.at(line_idx).new_line_min_offset + _row_spacing_property.value();
 
-                if (_lines.at(line_idx).cell_sizes.size() > 0) {
+                if (lines.at(line_idx).cell_sizes.size() > 0) {
                     break;
                 }
             }
@@ -504,7 +527,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     bool _validate_lines() {
-        for (auto const &line : _lines) {
+        for (auto const &line : _lines_property.value()) {
             if (line.new_line_min_offset < 0.0f) {
                 return false;
             }
@@ -519,7 +542,8 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     bool _validate_default_cell_size() {
-        return _default_cell_size.width >= 0.0f && _default_cell_size.height >= 0.0f;
+        auto const &default_cell_size = _default_cell_size_property.value();
+        return default_cell_size.width >= 0.0f && default_cell_size.height >= 0.0f;
     }
 
     bool _validate_row_spacing() {
@@ -548,7 +572,7 @@ void ui::collection_layout::set_frame(ui::region frame) {
 }
 
 void ui::collection_layout::set_preferred_cell_count(std::size_t const count) {
-    impl_ptr<impl>()->set_preferred_cell_count(count);
+    impl_ptr<impl>()->_preferred_cell_count_property.set_value(count);
 }
 
 ui::region ui::collection_layout::frame() const {
@@ -556,11 +580,11 @@ ui::region ui::collection_layout::frame() const {
 }
 
 void ui::collection_layout::set_default_cell_size(ui::size size) {
-    impl_ptr<impl>()->set_default_cell_size(std::move(size));
+    impl_ptr<impl>()->_default_cell_size_property.set_value(std::move(size));
 }
 
 void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> lines) {
-    impl_ptr<impl>()->set_lines(std::move(lines));
+    impl_ptr<impl>()->_lines_property.set_value(std::move(lines));
 }
 
 void ui::collection_layout::set_row_spacing(float const spacing) {
@@ -571,24 +595,24 @@ void ui::collection_layout::set_col_spacing(float const spacing) {
     impl_ptr<impl>()->_col_spacing_property.set_value(spacing);
 }
 
-void ui::collection_layout::set_alignment(ui::layout_alignment align) {
+void ui::collection_layout::set_alignment(ui::layout_alignment const align) {
     impl_ptr<impl>()->_alignment_property.set_value(align);
 }
 
-void ui::collection_layout::set_direction(ui::layout_direction dir) {
+void ui::collection_layout::set_direction(ui::layout_direction const dir) {
     impl_ptr<impl>()->_direction_property.set_value(dir);
 }
 
-void ui::collection_layout::set_row_order(ui::layout_order order) {
+void ui::collection_layout::set_row_order(ui::layout_order const order) {
     impl_ptr<impl>()->_row_order_property.set_value(order);
 }
 
-void ui::collection_layout::set_col_order(ui::layout_order order) {
+void ui::collection_layout::set_col_order(ui::layout_order const order) {
     impl_ptr<impl>()->_col_order_property.set_value(order);
 }
 
 std::size_t ui::collection_layout::preferred_cell_count() const {
-    return impl_ptr<impl>()->preferred_cell_count();
+    return impl_ptr<impl>()->_preferred_cell_count_property.value();
 }
 
 std::size_t ui::collection_layout::actual_cell_count() const {
@@ -596,11 +620,11 @@ std::size_t ui::collection_layout::actual_cell_count() const {
 }
 
 ui::size const &ui::collection_layout::default_cell_size() const {
-    return impl_ptr<impl>()->default_cell_size();
+    return impl_ptr<impl>()->_default_cell_size_property.value();
 }
 
 std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
-    return impl_ptr<impl>()->lines();
+    return impl_ptr<impl>()->_lines_property.value();
 }
 
 float ui::collection_layout::row_spacing() const {
