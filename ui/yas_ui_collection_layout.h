@@ -43,6 +43,9 @@ namespace ui {
         struct line {
             std::vector<ui::size> cell_sizes;
             float new_line_min_offset = 0.0f;
+
+            bool operator==(line const &rhs) const;
+            bool operator!=(line const &rhs) const;
         };
 
         struct args {
@@ -69,10 +72,10 @@ namespace ui {
         void set_lines(std::vector<ui::collection_layout::line>);
         void set_row_spacing(float const);
         void set_col_spacing(float const);
-        void set_alignment(ui::layout_alignment);
-        void set_direction(ui::layout_direction);
-        void set_row_order(ui::layout_order);
-        void set_col_order(ui::layout_order);
+        void set_alignment(ui::layout_alignment const);
+        void set_direction(ui::layout_direction const);
+        void set_row_order(ui::layout_order const);
+        void set_col_order(ui::layout_order const);
 
         ui::region frame() const;
         std::size_t preferred_cell_count() const;
