@@ -5,6 +5,7 @@
 #include <numeric>
 #include "yas_each_index.h"
 #include "yas_observing.h"
+#include "yas_property.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
@@ -20,15 +21,21 @@ struct ui::strings::impl : base::impl {
     ui::rect_plane _rect_plane;
     subject_t _subject;
 
+    property<std::string> _text_property;
+    property<ui::font_atlas> _font_atlas_property;
+
     impl(args &&args)
         : _collection_layout({.frame = args.frame}),
           _rect_plane(make_rect_plane(args.max_word_count)),
-          _args(std::move(args)) {
-        if (_args.line_height < 0.0f) {
+          _text_property({.value = std::move(args.text)}),
+          _font_atlas_property({.value = std::move(args.font_atlas)}),
+          _line_height_property({.value = args.line_height}),
+          _max_word_count(args.max_word_count) {
+        if (_line_height_property.value() < 0.0f) {
             throw "line_height is negative.";
         }
 
-        _collection_layout.set_alignment(_args.alignment);
+        _collection_layout.set_alignment(args.alignment);
         _collection_layout.set_row_order(ui::layout_order::descending);
     }
 
@@ -45,7 +52,43 @@ struct ui::strings::impl : base::impl {
         _collection_observers.emplace_back(_collection_layout.subject().make_observer(
             ui::collection_layout::method::alignment_changed, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
-                    strings.subject().notify(ui::strings::method::alignment_changed, strings);
+                    if (strings.subject().has_observer()) {
+                        strings.subject().notify(ui::strings::method::alignment_changed, strings);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(
+            _text_property.subject().make_observer(property_method::did_change, [weak_strings](auto const &context) {
+                if (auto strings = weak_strings.lock()) {
+                    strings.impl_ptr<impl>()->_update_layout();
+
+                    if (strings.subject().has_observer()) {
+                        strings.subject().notify(ui::strings::method::text_changed, strings);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_font_atlas_property.subject().make_observer(
+            property_method::did_change, [weak_strings](auto const &context) {
+                if (auto strings = weak_strings.lock()) {
+                    strings.impl_ptr<impl>()->_update_font_atlas_observer();
+                    strings.impl_ptr<impl>()->_update_layout();
+
+                    if (strings.subject().has_observer()) {
+                        strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
+                    }
+                }
+            }));
+
+        _property_observers.emplace_back(_line_height_property.subject().make_observer(
+            property_method::did_change, [weak_strings](auto const &context) {
+                if (auto strings = weak_strings.lock()) {
+                    strings.impl_ptr<impl>()->_update_layout();
+
+                    if (strings.subject().has_observer()) {
+                        strings.subject().notify(ui::strings::method::line_height_changed, strings);
+                    }
                 }
             }));
 
@@ -53,68 +96,32 @@ struct ui::strings::impl : base::impl {
         _update_layout();
     }
 
-    void set_text(std::string &&text) {
-        if (_args.text != text) {
-            _args.text = std::move(text);
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::strings::method::text_changed, cast<ui::strings>());
-            }
-        }
-    }
-
-    void set_font_atlas(ui::font_atlas &&atlas) {
-        if (_args.font_atlas != atlas) {
-            _args.font_atlas = std::move(atlas);
-
-            _update_font_atlas_observer();
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::strings::method::font_atlas_changed, cast<ui::strings>());
-            }
-        }
-    }
-
     void set_line_height(float const line_height) {
-        if (_args.line_height != line_height) {
-            _args.line_height = line_height;
-
-            _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::strings::method::line_height_changed, cast<ui::strings>());
-            }
-        }
-    }
-
-    std::string &text() {
-        return _args.text;
-    }
-
-    ui::font_atlas &font_atlas() {
-        return _args.font_atlas;
+        _line_height_property.set_value(line_height);
     }
 
     float line_height() {
-        if (_args.line_height == 0 && _args.font_atlas) {
-            return _args.font_atlas.ascent() + _args.font_atlas.descent() + _args.font_atlas.leading();
+        auto const &line_height = _line_height_property.value();
+        auto const &font_atlas = _font_atlas_property.value();
+
+        if (line_height == 0 && font_atlas) {
+            return font_atlas.ascent() + font_atlas.descent() + font_atlas.leading();
         } else {
-            return _args.line_height;
+            return line_height;
         }
     }
 
    private:
-    args _args;
+    std::size_t const _max_word_count = 0;
+    property<float> _line_height_property;
     ui::font_atlas::observer_t _font_atlas_observer = nullptr;
     std::vector<ui::collection_layout::observer_t> _collection_observers;
+    std::vector<base> _property_observers;
 
     void _update_font_atlas_observer() {
-        if (_args.font_atlas) {
+        if (auto &font_atlas = _font_atlas_property.value()) {
             if (!_font_atlas_observer) {
-                _font_atlas_observer = _args.font_atlas.subject().make_observer(
+                _font_atlas_observer = font_atlas.subject().make_observer(
                     ui::font_atlas::method::texture_changed,
                     [weak_strings = to_weak(cast<ui::strings>())](auto const &context) {
                         if (auto strings = weak_strings.lock()) {
@@ -123,7 +130,7 @@ struct ui::strings::impl : base::impl {
                         }
                     });
 
-                _rect_plane.node().mesh().set_texture(_args.font_atlas.texture());
+                _rect_plane.node().mesh().set_texture(font_atlas.texture());
             }
         } else {
             _rect_plane.node().mesh().set_texture(nullptr);
@@ -132,15 +139,15 @@ struct ui::strings::impl : base::impl {
     }
 
     void _update_layout() {
-        auto const &font_atlas = _args.font_atlas;
+        auto const &font_atlas = _font_atlas_property.value();
         if (!font_atlas || !font_atlas.texture()) {
             _collection_layout.set_preferred_cell_count(0);
             _rect_plane.data().set_rect_count(0);
             return;
         }
 
-        auto const &src_text = _args.text;
-        auto const word_count = font_atlas ? std::min(src_text.size(), _args.max_word_count) : 0;
+        auto const &src_text = _text_property.value();
+        auto const word_count = font_atlas ? std::min(src_text.size(), _max_word_count) : 0;
         std::string eliminated_text;
         eliminated_text.reserve(word_count);
         auto const cell_height = line_height();
@@ -224,11 +231,11 @@ ui::strings::strings(std::nullptr_t) : base(nullptr) {
 ui::strings::~strings() = default;
 
 void ui::strings::set_text(std::string text) {
-    impl_ptr<impl>()->set_text(std::move(text));
+    impl_ptr<impl>()->_text_property.set_value(std::move(text));
 }
 
 void ui::strings::set_font_atlas(ui::font_atlas atlas) {
-    impl_ptr<impl>()->set_font_atlas(std::move(atlas));
+    impl_ptr<impl>()->_font_atlas_property.set_value(std::move(atlas));
 }
 
 void ui::strings::set_line_height(float const line_height) {
@@ -240,11 +247,11 @@ void ui::strings::set_alignment(ui::layout_alignment const alignment) {
 }
 
 std::string const &ui::strings::text() const {
-    return impl_ptr<impl>()->text();
+    return impl_ptr<impl>()->_text_property.value();
 }
 
 ui::font_atlas const &ui::strings::font_atlas() const {
-    return impl_ptr<impl>()->font_atlas();
+    return impl_ptr<impl>()->_font_atlas_property.value();
 }
 
 float ui::strings::line_height() const {
