@@ -78,16 +78,16 @@ namespace ui {
         void set_col_order(ui::layout_order const);
 
         ui::region frame() const;
-        std::size_t preferred_cell_count() const;
+        std::size_t const &preferred_cell_count() const;
         std::size_t actual_cell_count() const;
         ui::size const &default_cell_size() const;
         std::vector<line> const &lines() const;
-        float row_spacing() const;
-        float col_spacing() const;
-        ui::layout_alignment alignment() const;
-        ui::layout_direction direction() const;
-        ui::layout_order row_order() const;
-        ui::layout_order col_order() const;
+        float const &row_spacing() const;
+        float const &col_spacing() const;
+        ui::layout_alignment const &alignment() const;
+        ui::layout_direction const &direction() const;
+        ui::layout_order const &row_order() const;
+        ui::layout_order const &col_order() const;
 
         ui::layout_borders const &borders() const;
 

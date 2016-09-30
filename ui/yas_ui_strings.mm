@@ -258,7 +258,7 @@ float ui::strings::line_height() const {
     return impl_ptr<impl>()->line_height();
 }
 
-ui::layout_alignment ui::strings::alignment() const {
+ui::layout_alignment const &ui::strings::alignment() const {
     return impl_ptr<impl>()->_collection_layout.alignment();
 }
 
