@@ -25,18 +25,14 @@ struct ui::strings::impl : base::impl {
     property<ui::font_atlas> _font_atlas_property;
 
     impl(args &&args)
-        : _collection_layout({.frame = args.frame}),
+        : _collection_layout(
+              {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending}),
           _rect_plane(make_rect_plane(args.max_word_count)),
           _text_property({.value = std::move(args.text)}),
           _font_atlas_property({.value = std::move(args.font_atlas)}),
-          _line_height_property({.value = args.line_height}),
+          _line_height_property(
+              {.value = args.line_height, .validator = [](auto const &value) { return value >= 0.0f; }}),
           _max_word_count(args.max_word_count) {
-        if (_line_height_property.value() < 0.0f) {
-            throw "line_height is negative.";
-        }
-
-        _collection_layout.set_alignment(args.alignment);
-        _collection_layout.set_row_order(ui::layout_order::descending);
     }
 
     void prepare(ui::strings &strings) {
