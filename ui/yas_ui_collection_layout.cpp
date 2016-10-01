@@ -68,10 +68,29 @@ struct ui::collection_layout::impl : base::impl {
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
           _preferred_cell_count_property({.value = args.preferred_cell_count}),
-          _default_cell_size_property({.value = std::move(args.default_cell_size)}),
-          _lines_property({.value = std::move(args.lines)}),
-          _row_spacing_property({.value = args.row_spacing}),
-          _col_spacing_property({.value = args.col_spacing}),
+          _default_cell_size_property(
+              {.value = std::move(args.default_cell_size),
+               .validator = [](auto const &value) { return value.width >= 0.0f && value.height >= 0.0f; }}),
+          _lines_property({.value = std::move(args.lines),
+                           .validator =
+                               [](auto const &value) {
+                                   for (auto const &line : value) {
+                                       if (line.new_line_min_offset < 0.0f) {
+                                           return false;
+                                       }
+
+                                       for (auto const &cell_size : line.cell_sizes) {
+                                           if (cell_size.width < 0.0f || cell_size.height <= 0.0f) {
+                                               return false;
+                                           }
+                                       }
+                                   }
+                                   return true;
+                               }}),
+          _row_spacing_property(
+              {.value = args.row_spacing, .validator = [](auto const &value) { return value >= 0.0f; }}),
+          _col_spacing_property(
+              {.value = args.col_spacing, .validator = [](auto const &value) { return value >= 0.0f; }}),
           _alignment_property({.value = args.alignment}),
           _direction_property({.value = args.direction}),
           _row_order_property({.value = args.row_order}),
@@ -92,22 +111,6 @@ struct ui::collection_layout::impl : base::impl {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";
         }
-
-        if (!_validate_default_cell_size()) {
-            throw "invalid default_cell_size.";
-        }
-
-        if (!_validate_lines()) {
-            throw "invalid lines.";
-        }
-
-        if (!_validate_row_spacing()) {
-            throw "invalid row_spacing.";
-        }
-
-        if (!_validate_col_spacing()) {
-            throw "invalid col_spacing.";
-        }
     }
 
     void prepare(ui::collection_layout &layout) {
@@ -123,16 +126,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
-                    if (!layout_impl->_validate_row_spacing()) {
-                        throw "invalid row_spacing.";
-                    }
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::row_spacing_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::row_spacing_changed, layout);
                 }
             }));
 
@@ -140,16 +135,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
-                    if (!layout_impl->_validate_col_spacing()) {
-                        throw "invalid row_spacing.";
-                    }
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::col_spacing_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::col_spacing_changed, layout);
                 }
             }));
 
@@ -157,12 +144,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::alignment_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::alignment_changed, layout);
                 }
             }));
 
@@ -170,12 +153,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::direction_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::direction_changed, layout);
                 }
             }));
 
@@ -183,12 +162,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::row_order_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::row_order_changed, layout);
                 }
             }));
 
@@ -196,12 +171,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::col_order_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::col_order_changed, layout);
                 }
             }));
 
@@ -209,13 +180,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::preferred_cell_count_changed,
-                                                     layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::preferred_cell_count_changed, layout);
                 }
             }));
 
@@ -223,16 +189,8 @@ struct ui::collection_layout::impl : base::impl {
             property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
-                    if (!layout_impl->_validate_default_cell_size()) {
-                        throw "invalid default_cell_size.";
-                    }
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::default_cell_size_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::default_cell_size_changed, layout);
                 }
             }));
 
@@ -240,16 +198,8 @@ struct ui::collection_layout::impl : base::impl {
             _lines_property.subject().make_observer(property_method::did_change, [weak_layout](auto const &context) {
                 if (auto layout = weak_layout.lock()) {
                     auto layout_impl = layout.impl_ptr<impl>();
-
-                    if (!layout_impl->_validate_lines()) {
-                        throw "invalid lines.";
-                    }
-
                     layout_impl->_update_layout();
-
-                    if (layout_impl->_subject.has_observer()) {
-                        layout_impl->_subject.notify(ui::collection_layout::method::lines_changed, layout);
-                    }
+                    layout_impl->_subject.notify(ui::collection_layout::method::lines_changed, layout);
                 }
             }));
 
@@ -524,34 +474,6 @@ struct ui::collection_layout::impl : base::impl {
         } else {
             return region;
         }
-    }
-
-    bool _validate_lines() {
-        for (auto const &line : _lines_property.value()) {
-            if (line.new_line_min_offset < 0.0f) {
-                return false;
-            }
-
-            for (auto const &cell_size : line.cell_sizes) {
-                if (cell_size.width < 0.0f || cell_size.height <= 0.0f) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    bool _validate_default_cell_size() {
-        auto const &default_cell_size = _default_cell_size_property.value();
-        return default_cell_size.width >= 0.0f && default_cell_size.height >= 0.0f;
-    }
-
-    bool _validate_row_spacing() {
-        return _row_spacing_property.value() >= 0.0f;
-    }
-
-    bool _validate_col_spacing() {
-        return _col_spacing_property.value() >= 0.0f;
     }
 };
 
