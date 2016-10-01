@@ -52,9 +52,7 @@ struct ui::strings::impl : base::impl {
         _collection_observers.emplace_back(_collection_layout.subject().make_observer(
             ui::collection_layout::method::alignment_changed, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
-                    if (strings.subject().has_observer()) {
-                        strings.subject().notify(ui::strings::method::alignment_changed, strings);
-                    }
+                    strings.subject().notify(ui::strings::method::alignment_changed, strings);
                 }
             }));
 
@@ -63,9 +61,7 @@ struct ui::strings::impl : base::impl {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
 
-                    if (strings.subject().has_observer()) {
-                        strings.subject().notify(ui::strings::method::text_changed, strings);
-                    }
+                    strings.subject().notify(ui::strings::method::text_changed, strings);
                 }
             }));
 
@@ -75,9 +71,7 @@ struct ui::strings::impl : base::impl {
                     strings.impl_ptr<impl>()->_update_font_atlas_observer();
                     strings.impl_ptr<impl>()->_update_layout();
 
-                    if (strings.subject().has_observer()) {
-                        strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
-                    }
+                    strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
                 }
             }));
 
@@ -86,9 +80,7 @@ struct ui::strings::impl : base::impl {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
 
-                    if (strings.subject().has_observer()) {
-                        strings.subject().notify(ui::strings::method::line_height_changed, strings);
-                    }
+                    strings.subject().notify(ui::strings::method::line_height_changed, strings);
                 }
             }));
 

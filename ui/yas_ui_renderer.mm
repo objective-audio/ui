@@ -91,14 +91,10 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         if (to_bool(update_view_size_result)) {
             _update_layout_guide_rect();
 
-            if (_subject.has_observer()) {
-                _subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
-            }
+            _subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
 
             if (to_bool(update_scale_result)) {
-                if (_subject.has_observer()) {
-                    _subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
-                }
+                _subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
             }
         }
     }
@@ -125,9 +121,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             throw "metal_system not found.";
         }
 
-        if (_subject.has_observer()) {
-            _subject.notify(renderer::method::will_render, cast<ui::renderer>());
-        }
+        _subject.notify(renderer::method::will_render, cast<ui::renderer>());
 
         if (to_bool(pre_render())) {
             if (auto renderer = cast<ui::renderer>()) {
