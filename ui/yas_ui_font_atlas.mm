@@ -21,46 +21,6 @@
 
 using namespace yas;
 
-#pragma mark - strings_layout
-
-ui::strings_layout::strings_layout(std::size_t const word_count) : _rects(word_count), _width(0.0) {
-}
-
-ui::vertex2d_rect_t const &ui::strings_layout::rect(std::size_t const word_index) const {
-    return _rects.at(word_index);
-}
-
-std::vector<ui::vertex2d_rect_t> const &ui::strings_layout::rects() const {
-    return _rects;
-}
-
-std::size_t ui::strings_layout::word_count() const {
-    return _rects.size();
-}
-
-double ui::strings_layout::width() const {
-    return _width;
-}
-
-#pragma mark - mutable_strings_layout
-
-namespace yas {
-namespace ui {
-    struct mutable_strings_layout : strings_layout {
-        mutable_strings_layout(std::size_t const word_count) : strings_layout(word_count) {
-        }
-
-        ui::vertex2d_rect_t &rect(std::size_t const word_index) {
-            return _rects.at(word_index);
-        }
-
-        void set_width(double const width) {
-            _width = width;
-        }
-    };
-}
-}
-
 #pragma mark - font_atlas::impl
 
 namespace yas {
@@ -107,74 +67,6 @@ struct ui::font_atlas::impl : base::impl {
 
             _subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
         }
-    }
-
-    strings_layout make_strings_layout(std::string const &text, pivot const pivot) {
-        if (!_texture) {
-            return ui::mutable_strings_layout{0};
-        }
-
-        auto const word_count = text.size();
-
-        ui::mutable_strings_layout strings_layout{word_count};
-
-        double width = 0;
-        auto const scale_factor = _texture.scale_factor();
-
-        if (pivot == pivot::right) {
-            for (auto const &idx : each_index<std::size_t>(word_count)) {
-                auto const &word_idx = word_count - idx - 1;
-                auto const word = text.substr(word_idx, 1);
-                auto const &str_rect = rect(word);
-
-                width += advance(word).width;
-
-                auto &layout_rect = strings_layout.rect(word_idx);
-
-                if (&str_rect == &_empty_rect) {
-                    layout_rect = {0.0f};
-                } else {
-                    for (auto const &rect_idx : each_index<std::size_t>(4)) {
-                        layout_rect.v[rect_idx] = str_rect.v[rect_idx];
-                        layout_rect.v[rect_idx].position.x =
-                            roundf(layout_rect.v[rect_idx].position.x - width, scale_factor);
-                    }
-                }
-            }
-        } else {
-            for (auto const &word_idx : each_index<std::size_t>(word_count)) {
-                auto const word = text.substr(word_idx, 1);
-                auto const &str_rect = rect(word);
-
-                auto &layout_rect = strings_layout.rect(word_idx);
-
-                if (&str_rect == &_empty_rect) {
-                    layout_rect = {0.0f};
-                } else {
-                    for (auto const &rect_idx : each_index<std::size_t>(4)) {
-                        layout_rect.v[rect_idx] = str_rect.v[rect_idx];
-                        layout_rect.v[rect_idx].position.x =
-                            roundf(layout_rect.v[rect_idx].position.x + width, scale_factor);
-                    }
-                }
-
-                width += advance(word).width;
-            }
-        }
-
-        strings_layout.set_width(ceil(width, scale_factor));
-
-        if (pivot == pivot::center) {
-            double offset = roundf(-width * 0.5, scale_factor);
-
-            for (auto &rect : strings_layout.rects()) {
-                for (auto &vertex : rect.v) {
-                    vertex.position.x += offset;
-                }
-            }
-        }
-
-        return std::move(strings_layout);
     }
 
     ui::vertex2d_rect_t const &rect(std::string const &word) {
@@ -323,10 +215,6 @@ void ui::font_atlas::set_texture(ui::texture texture) {
 
 ui::font_atlas::subject_t &ui::font_atlas::subject() {
     return impl_ptr<impl>()->_subject;
-}
-
-ui::strings_layout ui::font_atlas::make_strings_layout(std::string const &text, pivot const pivot) const {
-    return std::move(impl_ptr<impl>()->make_strings_layout(text, pivot));
 }
 
 #pragma mark -
