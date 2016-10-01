@@ -384,9 +384,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         sub_node_impl->_parent_property.set_value(cast<ui::node>());
         sub_node_impl->_set_renderer_recursively(_renderer_property.value().lock());
 
-        if (sub_node_impl->_subject.has_observer()) {
-            sub_node_impl->_subject.notify(node::method::added_to_super, sub_node);
-        }
+        sub_node_impl->_subject.notify(node::method::added_to_super, sub_node);
 
         _set_updated(ui::node_update_reason::children);
     }
@@ -399,9 +397,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
-        if (sub_node_impl->_subject.has_observer()) {
-            sub_node_impl->_subject.notify(node::method::removed_from_super, sub_node);
-        }
+        sub_node_impl->_subject.notify(node::method::removed_from_super, sub_node);
 
         _set_updated(ui::node_update_reason::children);
     }

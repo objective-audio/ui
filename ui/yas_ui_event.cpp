@@ -122,9 +122,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set_phase(phase);
             manageable_event.set<cursor>(std::move(value));
 
-            if (subject.has_observer()) {
-                subject.notify(event_manager::method::cursor_changed, cursor_event);
-            }
+            subject.notify(event_manager::method::cursor_changed, cursor_event);
 
             if (phase == event_phase::ended) {
                 cursor_event = nullptr;
@@ -149,9 +147,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set_phase(phase);
             manageable_event.set<touch>(std::move(value));
 
-            if (subject.has_observer()) {
-                subject.notify(event_manager::method::touch_changed, event);
-            }
+            subject.notify(event_manager::method::touch_changed, event);
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
                 touch_events.erase(identifer);
@@ -175,9 +171,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             event.manageable().set_phase(phase);
             event.manageable().set<key>(value);
 
-            if (subject.has_observer()) {
-                subject.notify(event_manager::method::key_changed, event);
-            }
+            subject.notify(event_manager::method::key_changed, event);
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
                 key_events.erase(key_code);
@@ -198,18 +192,14 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                     event.manageable().set_phase(ui::event_phase::began);
                     modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
-                    if (subject.has_observer()) {
-                        subject.notify(event_manager::method::modifier_changed, modifier_events.at(flag));
-                    }
+                    subject.notify(event_manager::method::modifier_changed, modifier_events.at(flag));
                 }
             } else {
                 if (modifier_events.count(flag) > 0) {
                     auto &event = modifier_events.at(flag);
                     event.manageable().set_phase(ui::event_phase::ended);
 
-                    if (subject.has_observer()) {
-                        subject.notify(event_manager::method::modifier_changed, event);
-                    }
+                    subject.notify(event_manager::method::modifier_changed, event);
 
                     modifier_events.erase(flag);
                 }

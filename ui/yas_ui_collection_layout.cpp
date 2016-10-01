@@ -211,10 +211,7 @@ struct ui::collection_layout::impl : base::impl {
             _frame_guide_rect.set_region(std::move(frame));
 
             _update_layout();
-
-            if (_subject.has_observer()) {
-                _subject.notify(ui::collection_layout::method::frame_changed, cast<ui::collection_layout>());
-            }
+            _subject.notify(ui::collection_layout::method::frame_changed, cast<ui::collection_layout>());
         }
     }
 
@@ -326,7 +323,7 @@ struct ui::collection_layout::impl : base::impl {
 
         pop_notify_caller();
 
-        if (prev_actual_cell_count != actual_cell_count && _subject.has_observer()) {
+        if (prev_actual_cell_count != actual_cell_count) {
             _subject.notify(ui::collection_layout::method::actual_cell_count_changed, cast<ui::collection_layout>());
         }
     }

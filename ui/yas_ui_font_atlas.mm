@@ -105,9 +105,7 @@ struct ui::font_atlas::impl : base::impl {
 
             _update_texture();
 
-            if (_subject.has_observer()) {
-                _subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
-            }
+            _subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
         }
     }
 
