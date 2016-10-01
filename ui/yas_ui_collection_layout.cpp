@@ -122,85 +122,57 @@ struct ui::collection_layout::impl : base::impl {
 
         auto weak_layout = to_weak(layout);
 
+        auto property_handler = [weak_layout](ui::collection_layout::method const &method) {
+            if (auto layout = weak_layout.lock()) {
+                auto layout_impl = layout.impl_ptr<impl>();
+                layout_impl->_update_layout();
+                layout_impl->_subject.notify(method, layout);
+            }
+        };
+
         _property_observers.emplace_back(_row_spacing_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::row_spacing_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::row_spacing_changed);
             }));
 
         _property_observers.emplace_back(_col_spacing_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::col_spacing_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::col_spacing_changed);
             }));
 
         _property_observers.emplace_back(_alignment_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::alignment_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::alignment_changed);
             }));
 
         _property_observers.emplace_back(_direction_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::direction_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::direction_changed);
             }));
 
         _property_observers.emplace_back(_row_order_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::row_order_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::row_order_changed);
             }));
 
         _property_observers.emplace_back(_col_order_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::col_order_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::col_order_changed);
             }));
 
         _property_observers.emplace_back(_preferred_cell_count_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::preferred_cell_count_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::preferred_cell_count_changed);
             }));
 
         _property_observers.emplace_back(_default_cell_size_property.subject().make_observer(
-            property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::default_cell_size_changed, layout);
-                }
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::default_cell_size_changed);
             }));
 
-        _property_observers.emplace_back(
-            _lines_property.subject().make_observer(property_method::did_change, [weak_layout](auto const &context) {
-                if (auto layout = weak_layout.lock()) {
-                    auto layout_impl = layout.impl_ptr<impl>();
-                    layout_impl->_update_layout();
-                    layout_impl->_subject.notify(ui::collection_layout::method::lines_changed, layout);
-                }
+        _property_observers.emplace_back(_lines_property.subject().make_observer(
+            property_method::did_change, [property_handler](auto const &context) {
+                property_handler(ui::collection_layout::method::lines_changed);
             }));
 
         _update_layout();
