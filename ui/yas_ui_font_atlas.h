@@ -17,19 +17,6 @@ template <typename T, typename K>
 class observer;
 
 namespace ui {
-    struct strings_layout {
-        vertex2d_rect_t const &rect(std::size_t const word_index) const;
-        std::vector<vertex2d_rect_t> const &rects() const;
-        std::size_t word_count() const;
-        double width() const;
-
-       protected:
-        strings_layout(std::size_t const word_count);
-
-        std::vector<vertex2d_rect_t> _rects;
-        double _width;
-    };
-
     class font_atlas : public base {
        public:
         class impl;
@@ -65,8 +52,6 @@ namespace ui {
         void set_texture(ui::texture);
 
         subject_t &subject();
-
-        strings_layout make_strings_layout(std::string const &text, pivot const pivot) const;
     };
 }
 
