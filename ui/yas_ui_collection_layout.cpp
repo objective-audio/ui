@@ -533,7 +533,7 @@ void ui::collection_layout::set_col_order(ui::layout_order const order) {
     impl_ptr<impl>()->_col_order_property.set_value(order);
 }
 
-std::size_t ui::collection_layout::preferred_cell_count() const {
+std::size_t const &ui::collection_layout::preferred_cell_count() const {
     return impl_ptr<impl>()->_preferred_cell_count_property.value();
 }
 
@@ -549,27 +549,27 @@ std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() c
     return impl_ptr<impl>()->_lines_property.value();
 }
 
-float ui::collection_layout::row_spacing() const {
+float const &ui::collection_layout::row_spacing() const {
     return impl_ptr<impl>()->_row_spacing_property.value();
 }
 
-float ui::collection_layout::col_spacing() const {
+float const &ui::collection_layout::col_spacing() const {
     return impl_ptr<impl>()->_col_spacing_property.value();
 }
 
-ui::layout_alignment ui::collection_layout::alignment() const {
+ui::layout_alignment const &ui::collection_layout::alignment() const {
     return impl_ptr<impl>()->_alignment_property.value();
 }
 
-ui::layout_direction ui::collection_layout::direction() const {
+ui::layout_direction const &ui::collection_layout::direction() const {
     return impl_ptr<impl>()->_direction_property.value();
 }
 
-ui::layout_order ui::collection_layout::row_order() const {
+ui::layout_order const &ui::collection_layout::row_order() const {
     return impl_ptr<impl>()->_row_order_property.value();
 }
 
-ui::layout_order ui::collection_layout::col_order() const {
+ui::layout_order const &ui::collection_layout::col_order() const {
     return impl_ptr<impl>()->_col_order_property.value();
 }
 

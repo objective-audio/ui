@@ -51,7 +51,7 @@ namespace ui {
         std::string const &text() const;
         ui::font_atlas const &font_atlas() const;
         float line_height() const;
-        ui::layout_alignment alignment() const;
+        ui::layout_alignment const &alignment() const;
 
         ui::layout_guide_rect &frame_layout_guide_rect();
 
