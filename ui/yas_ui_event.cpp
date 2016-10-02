@@ -263,6 +263,27 @@ ui::event_inputtable &ui::event_manager::inputtable() {
 
 #pragma mark -
 
+std::string yas::to_string(ui::event const &event) {
+    std::string type = "unknown";
+    std::string values;
+
+    if (event.type_info() == typeid(ui::cursor)) {
+        type = "cursor";
+        values = to_string(event.get<ui::cursor>());
+    } else if (event.type_info() == typeid(ui::touch)) {
+        type = "touch";
+        values = to_string(event.get<ui::touch>());
+    } else if (event.type_info() == typeid(ui::key)) {
+        type = "key";
+        values = to_string(event.get<ui::key>());
+    } else if (event.type_info() == typeid(ui::modifier)) {
+        type = "modifier";
+        values = to_string(event.get<ui::modifier>());
+    }
+
+    return "{phase:" + to_string(event.phase()) + ", type:" + type + ", values:" + values + "}";
+}
+
 std::string yas::to_string(ui::event_manager::method const &method) {
     switch (method) {
         case ui::event_manager::method::cursor_changed:
@@ -274,6 +295,11 @@ std::string yas::to_string(ui::event_manager::method const &method) {
         case ui::event_manager::method::modifier_changed:
             return "modifier_changed";
     }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::event const &event) {
+    os << to_string(event);
+    return os;
 }
 
 std::ostream &operator<<(std::ostream &os, yas::ui::event_manager::method const &method) {

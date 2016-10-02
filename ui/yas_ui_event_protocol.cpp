@@ -130,6 +130,23 @@ void ui::event_inputtable::input_modifier_event(modifier_flags flag) {
 
 #pragma mark -
 
+std::string yas::to_string(ui::cursor_event const &event) {
+    return "{position:" + to_string(event.position()) + "}";
+}
+
+std::string yas::to_string(ui::touch_event const &event) {
+    return "{position:" + to_string(event.position()) + "}";
+}
+
+std::string yas::to_string(ui::key_event const &event) {
+    return "{key_code:" + std::to_string(event.key_code()) + ", characters:" + event.characters() +
+           ", raw_characters:" + event.raw_characters() + "}";
+}
+
+std::string yas::to_string(ui::modifier_event const &event) {
+    return "{flag:" + to_string(event.flag()) + "}";
+}
+
 std::string yas::to_string(ui::event_phase const &phase) {
     switch (phase) {
         case ui::event_phase::began:
