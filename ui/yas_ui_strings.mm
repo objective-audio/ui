@@ -192,14 +192,12 @@ struct ui::strings::impl : base::impl {
             auto const word = eliminated_text.substr(idx, 1);
             auto &cell_rect = _collection_layout.cell_layout_guide_rects().at(idx);
 
-            if (idx >= prev_rect_count) {
-                cell_rect.set_value_changed_handler(
-                    [idx, word, weak_strings = to_weak(strings), handler](auto const &context) {
-                        if (auto strings = weak_strings.lock()) {
-                            handler(strings, idx, word, context.new_value);
-                        }
-                    });
-            }
+            cell_rect.set_value_changed_handler(
+                [idx, word, weak_strings = to_weak(strings), handler](auto const &context) {
+                    if (auto strings = weak_strings.lock()) {
+                        handler(strings, idx, word, context.new_value);
+                    }
+                });
 
             handler(strings, idx, word, cell_rect.region());
         }

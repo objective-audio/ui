@@ -74,9 +74,11 @@ namespace ui {
     };
 }
 
+std::string to_string(ui::event const &);
 std::string to_string(ui::event_manager::method const &);
 }
 
+std::ostream &operator<<(std::ostream &, yas::ui::event const &);
 std::ostream &operator<<(std::ostream &, yas::ui::event_manager::method const &);
 
 template <>
