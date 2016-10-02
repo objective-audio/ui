@@ -157,52 +157,64 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)mouseDown:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::began];
 }
 
 - (void)rightMouseDown:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::began];
 }
 
 - (void)otherMouseDown:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::began];
 }
 
 - (void)mouseUp:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::ended];
 }
 
 - (void)rightMouseUp:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::ended];
 }
 
 - (void)otherMouseUp:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::ended];
 }
 
 - (void)mouseEntered:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendCursorEvent:event];
 }
 
 - (void)mouseMoved:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendCursorEvent:event];
 }
 
 - (void)mouseExited:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendCursorEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendCursorEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)rightMouseDragged:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendCursorEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::changed];
 }
 
 - (void)otherMouseDragged:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendCursorEvent:event];
     [self _sendTouchEvent:event phase:ui::event_phase::changed];
 }
@@ -211,10 +223,12 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)keyDown:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendKeyEvent:event phase:event.isARepeat ? ui::event_phase::changed : ui::event_phase::began];
 }
 
 - (void)keyUp:(NSEvent *)event {
+    [self _sendModifierEvent:event];
     [self _sendKeyEvent:event phase:ui::event_phase::ended];
 }
 
