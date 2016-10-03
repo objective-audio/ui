@@ -164,7 +164,6 @@ struct ui::strings::impl : base::impl {
         _collection_layout.set_preferred_cell_count(eliminated_text.size());
 
         auto const actual_cell_count = _collection_layout.actual_cell_count();
-        auto const prev_rect_count = _rect_plane.data().rect_count();
 
         _rect_plane.data().set_rect_count(actual_cell_count);
 
