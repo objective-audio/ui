@@ -23,6 +23,7 @@ struct ui::strings::impl : base::impl {
 
     property<std::string> _text_property;
     property<ui::font_atlas> _font_atlas_property;
+    property<std::experimental::optional<float>> _line_height_property;
 
     impl(args &&args)
         : _collection_layout(
@@ -30,8 +31,15 @@ struct ui::strings::impl : base::impl {
           _rect_plane(make_rect_plane(args.max_word_count)),
           _text_property({.value = std::move(args.text)}),
           _font_atlas_property({.value = std::move(args.font_atlas)}),
-          _line_height_property(
-              {.value = args.line_height, .validator = [](auto const &value) { return value >= 0.0f; }}),
+          _line_height_property({.value = args.line_height,
+                                 .validator =
+                                     [](auto const &value) {
+                                         if (value) {
+                                             return *value >= 0.0f;
+                                         } else {
+                                             return true;
+                                         }
+                                     }}),
           _max_word_count(args.max_word_count) {
     }
 
@@ -84,24 +92,8 @@ struct ui::strings::impl : base::impl {
         _update_layout();
     }
 
-    void set_line_height(float const line_height) {
-        _line_height_property.set_value(line_height);
-    }
-
-    float line_height() {
-        auto const &line_height = _line_height_property.value();
-        auto const &font_atlas = _font_atlas_property.value();
-
-        if (line_height == 0 && font_atlas) {
-            return font_atlas.ascent() + font_atlas.descent() + font_atlas.leading();
-        } else {
-            return line_height;
-        }
-    }
-
    private:
     std::size_t const _max_word_count = 0;
-    property<float> _line_height_property;
     ui::font_atlas::observer_t _font_atlas_observer = nullptr;
     std::vector<ui::collection_layout::observer_t> _collection_observers;
     std::vector<base> _property_observers;
@@ -138,7 +130,7 @@ struct ui::strings::impl : base::impl {
         auto const word_count = font_atlas ? std::min(src_text.size(), _max_word_count) : 0;
         std::string eliminated_text;
         eliminated_text.reserve(word_count);
-        auto const cell_height = line_height();
+        auto const cell_height = _cell_height();
 
         std::vector<ui::collection_layout::line> lines;
         std::vector<ui::size> cell_sizes;
@@ -201,6 +193,19 @@ struct ui::strings::impl : base::impl {
             handler(strings, idx, word, cell_rect.region());
         }
     }
+
+    float _cell_height() {
+        auto const &line_height = _line_height_property.value();
+        if (line_height) {
+            return *line_height;
+        } else {
+            if (auto const &font_atlas = _font_atlas_property.value()) {
+                return font_atlas.ascent() + font_atlas.descent() + font_atlas.leading();
+            } else {
+                return 0.0f;
+            }
+        }
+    }
 };
 
 ui::strings::strings() : strings(args{}) {
@@ -223,8 +228,8 @@ void ui::strings::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->_font_atlas_property.set_value(std::move(atlas));
 }
 
-void ui::strings::set_line_height(float const line_height) {
-    impl_ptr<impl>()->set_line_height(std::move(line_height));
+void ui::strings::set_line_height(std::experimental::optional<float> line_height) {
+    impl_ptr<impl>()->_line_height_property.set_value(std::move(line_height));
 }
 
 void ui::strings::set_alignment(ui::layout_alignment const alignment) {
@@ -239,8 +244,8 @@ ui::font_atlas const &ui::strings::font_atlas() const {
     return impl_ptr<impl>()->_font_atlas_property.value();
 }
 
-float ui::strings::line_height() const {
-    return impl_ptr<impl>()->line_height();
+std::experimental::optional<float> const &ui::strings::line_height() const {
+    return impl_ptr<impl>()->_line_height_property.value();
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {

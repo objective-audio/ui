@@ -80,7 +80,7 @@ struct ui::collection_layout::impl : base::impl {
                                        }
 
                                        for (auto const &cell_size : line.cell_sizes) {
-                                           if (cell_size.width < 0.0f || cell_size.height <= 0.0f) {
+                                           if (cell_size.width < 0.0f || cell_size.height < 0.0f) {
                                                return false;
                                            }
                                        }

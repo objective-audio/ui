@@ -33,7 +33,7 @@ using namespace yas;
     XCTAssertEqual(strings.text(), "");
     XCTAssertFalse(strings.font_atlas());
     XCTAssertTrue(strings.rect_plane());
-    XCTAssertEqual(strings.line_height(), 0.0f);
+    XCTAssertFalse(strings.line_height());
     XCTAssertEqual(strings.alignment(), ui::layout_alignment::min);
 }
 
@@ -98,12 +98,14 @@ using namespace yas;
     strings.set_font_atlas(font_atlas);
 
     XCTAssertEqual(strings.font_atlas(), font_atlas);
-    XCTAssertGreaterThan(strings.line_height(), 0.0f);
     XCTAssertEqual(strings.rect_plane().data().rect_count(), 0);
+
+    XCTAssertFalse(strings.line_height());
 
     strings.set_line_height(20.0f);
 
-    XCTAssertEqual(strings.line_height(), 20.0f);
+    XCTAssertTrue(strings.line_height());
+    XCTAssertEqual(*strings.line_height(), 20.0f);
 
     strings.set_alignment(ui::layout_alignment::max);
 
