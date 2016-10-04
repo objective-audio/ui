@@ -32,7 +32,7 @@ namespace ui {
             std::size_t max_word_count = 16;
             std::string text;
             ui::font_atlas font_atlas = nullptr;
-            float line_height = 0.0f;
+            std::experimental::optional<float> line_height = nullopt;
             ui::layout_alignment alignment = ui::layout_alignment::min;
             ui::region frame = {.origin = {.v = 0.0f}, .size = {.v = 0.0f}};
         };
@@ -45,12 +45,12 @@ namespace ui {
 
         void set_text(std::string);
         void set_font_atlas(ui::font_atlas);
-        void set_line_height(float const);
+        void set_line_height(std::experimental::optional<float>);
         void set_alignment(ui::layout_alignment const);
 
         std::string const &text() const;
         ui::font_atlas const &font_atlas() const;
-        float line_height() const;
+        std::experimental::optional<float> const &line_height() const;
         ui::layout_alignment const &alignment() const;
 
         ui::layout_guide_rect &frame_layout_guide_rect();
