@@ -160,7 +160,7 @@ using namespace yas;
 
     plane_data.set_rect_color({0.1f, 0.2f, 0.3f, 0.4f}, 0);
 
-    for (auto const &idx : make_each(4)) {
+    for (auto const &idx : make_each_index(4)) {
         auto &color = vertices[idx].color;
         XCTAssertEqual(color[0], 0.1f);
         XCTAssertEqual(color[1], 0.2f);
@@ -170,7 +170,7 @@ using namespace yas;
 
     plane_data.set_rect_color({0.5f, 0.6f, 0.7f, 0.8f}, 0);
 
-    for (auto const &idx : make_each(4)) {
+    for (auto const &idx : make_each_index(4)) {
         auto &color = vertices[idx].color;
         XCTAssertEqual(color[0], 0.5f);
         XCTAssertEqual(color[1], 0.6f);

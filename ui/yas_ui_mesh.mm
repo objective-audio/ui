@@ -2,7 +2,7 @@
 //  yas_ui_mesh.mm
 //
 
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_objc_ptr.h"
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_batch_render_mesh_info.h"
@@ -80,14 +80,18 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
                 auto *dst_indices = &indices[dst_index_offset];
                 auto const *src_indices = src_mesh_data.indices();
 
-                for (auto const &idx : make_each(src_mesh_data.index_count())) {
+                auto each = make_fast_each(src_mesh_data.index_count());
+                while (yas_each_next(each)) {
+                    auto const &idx = yas_each_index(each);
                     dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
                 }
 
                 auto *dst_vertices = &vertices[dst_vertex_offset];
                 auto const *src_vertices = src_mesh_data.vertices();
 
-                for (auto const &idx : make_each(src_mesh_data.vertex_count())) {
+                each = make_fast_each(src_mesh_data.vertex_count());
+                while (yas_each_next(each)) {
+                    auto &idx = yas_each_index(each);
                     auto &dst_vertex = dst_vertices[idx];
                     auto &src_vertex = src_vertices[idx];
                     dst_vertex.position = to_float2(matrix * to_float4(src_vertex.position));

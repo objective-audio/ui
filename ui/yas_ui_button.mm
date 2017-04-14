@@ -2,7 +2,7 @@
 //  yas_ui_button.mm
 //
 
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_observing.h"
 #include "yas_ui_button.h"
 #include "yas_ui_collider.h"
@@ -99,8 +99,9 @@ struct ui::button::impl : base::impl {
 
    private:
     void _update_rect_positions(ui::region const &region) {
-        for (auto const &idx : make_each(ui::button::state_count * 2)) {
-            _rect_plane.data().set_rect_position(region, idx);
+        auto each = make_fast_each(ui::button::state_count * 2);
+        while (yas_each_next(each)) {
+            _rect_plane.data().set_rect_position(region, yas_each_index(each));
         }
 
         _rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});

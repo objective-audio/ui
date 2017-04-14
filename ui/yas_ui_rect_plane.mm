@@ -2,11 +2,11 @@
 //  yas_ui_rect_plane.mm
 //
 
-#include "yas_each_index.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
+#include "yas_fast_each.h"
 
 using namespace yas;
 
@@ -86,7 +86,9 @@ void ui::rect_plane_data::set_rect_position(ui::region const &region, std::size_
         positions[2].y = positions[3].y = region.origin.y + region.size.height;
 
         auto &rect_vertex = rect_vertices[rect_idx];
-        for (auto const &idx : make_each(4)) {
+        auto each = make_fast_each(4);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             rect_vertex.v[idx].position = to_float2(matrix * to_float4(positions[idx]));
         }
     });
@@ -95,8 +97,9 @@ void ui::rect_plane_data::set_rect_position(ui::region const &region, std::size_
 void ui::rect_plane_data::set_rect_color(simd::float4 const &color, std::size_t const rect_idx) {
     write([&color, &rect_idx](auto *rect_vertices, auto *) {
         auto &rect_vertex = rect_vertices[rect_idx];
-        for (auto const &idx : make_each(4)) {
-            rect_vertex.v[idx].color = color;
+        auto each = make_fast_each(4);
+        while (yas_each_next(each)) {
+            rect_vertex.v[yas_each_index(each)].color = color;
         }
     });
 }
@@ -120,7 +123,9 @@ void ui::rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::s
                                           simd::float4x4 const &matrix) {
     write([&in_ptr, &rect_idx, &matrix](auto *rect_vertices, auto *) {
         auto &rect_vertex = rect_vertices[rect_idx];
-        for (auto const &idx : make_each(4)) {
+        auto each = make_fast_each(4);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             rect_vertex.v[idx].position = to_float2(matrix * to_float4(in_ptr[idx].position));
             rect_vertex.v[idx].tex_coord = in_ptr[idx].tex_coord;
             rect_vertex.v[idx].color = in_ptr[idx].color;
@@ -137,7 +142,9 @@ ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count) {
         ui::dynamic_mesh_data{{.vertex_count = rect_count * 4, .index_count = rect_count * 6}}};
 
     plane_data.write([&rect_count](auto *, auto *rect_indices) {
-        for (auto const &idx : make_each(rect_count)) {
+        auto each = make_fast_each(rect_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             auto &rect_idx = rect_indices[idx];
             auto const rect_top_raw_idx = static_cast<index2d_t>(idx * 4);
             rect_idx.v[0] = rect_top_raw_idx;
@@ -155,7 +162,9 @@ ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count, std::
         ui::dynamic_mesh_data{{.vertex_count = rect_count * 4, .index_count = index_count * 6}}};
 
     plane_data.write([&rect_count, &index_count](auto *, auto *rect_indices) {
-        for (auto const &idx : make_each(std::min(rect_count, index_count))) {
+        auto each = make_fast_each(std::min(rect_count, index_count));
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             auto &rect_idx = rect_indices[idx];
             auto const rect_top_raw_idx = static_cast<index2d_t>(idx * 4);
             rect_idx.v[0] = rect_top_raw_idx;

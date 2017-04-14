@@ -2,7 +2,7 @@
 //  yas_sample_cursor_over_planes.mm
 //
 
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_sample_cursor_over_planes.h"
 #include "yas_ui_collider.h"
 
@@ -37,7 +37,9 @@ struct sample::cursor_over_planes::impl : base::impl {
         auto const count = 16;
         _nodes.reserve(count);
 
-        for (auto const &idx : make_each(count)) {
+        auto each = make_fast_each(count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             auto plane = ui::make_rect_plane(1);
             plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 

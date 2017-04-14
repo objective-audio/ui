@@ -3,8 +3,8 @@
 //
 
 #include <numeric>
-#include "yas_each_index.h"
 #include "yas_ui_layout.h"
+#include "yas_fast_each.h"
 
 using namespace yas;
 
@@ -111,8 +111,9 @@ ui::layout ui::make_layout(justified_layout::args args) {
             }
         } else {
             auto const rate = 1.0f / static_cast<float>(count - 1);
-            for (auto const &idx : make_each<std::size_t>(1, count)) {
-                normalized_rates.emplace_back(rate * idx);
+            auto each = fast_each<std::size_t>(1, count);
+            while (yas_each_next(each)) {
+                normalized_rates.emplace_back(rate * yas_each_index(each));
             }
         }
 
@@ -129,7 +130,9 @@ ui::layout ui::make_layout(justified_layout::args args) {
         if (count == 1) {
             dst_guides.at(0).set_value(first_value + distance * 0.5f);
         } else {
-            for (auto const &idx : make_each(count)) {
+            auto each = make_fast_each(count);
+            while (yas_each_next(each)) {
+                auto const &idx = yas_each_index(each);
                 auto &dst_guide = dst_guides.at(idx);
                 auto &rate = normalized_rates.at(idx);
                 dst_guide.set_value(first_value + distance * rate);

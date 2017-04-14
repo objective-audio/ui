@@ -2,7 +2,7 @@
 //  yas_sample_cursor.mm
 //
 
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_sample_cursor.h"
 
 using namespace yas;
@@ -43,7 +43,10 @@ struct sample::cursor::impl : base::impl {
 
         ui::region region{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}};
         auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
-        for (auto const &idx : make_each(count)) {
+        
+        auto each = make_fast_each(count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             mesh_node.data().set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
         }
 

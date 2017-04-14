@@ -3,11 +3,11 @@
 //
 
 #include "yas_delaying_caller.h"
-#include "yas_each_index.h"
 #include "yas_property.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout.h"
 #include "yas_ui_layout_guide.h"
+#include "yas_fast_each.h"
 
 using namespace yas;
 
@@ -24,7 +24,9 @@ bool ui::collection_layout::line::operator==(line const &rhs) const {
         return false;
     }
 
-    for (auto const &idx : make_each(cell_count)) {
+    auto each = make_fast_each(cell_count);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
         if (cell_sizes.at(idx) != rhs.cell_sizes.at(idx)) {
             return false;
         }
@@ -221,7 +223,9 @@ struct ui::collection_layout::impl : base::impl {
         auto const prev_actual_cell_count = _cell_guide_rects.size();
         std::size_t actual_cell_count = 0;
 
-        for (auto const &idx : make_each(preferred_cell_count)) {
+        auto each = make_fast_each(preferred_cell_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             auto cell_size = _transformed_cell_size(idx);
 
             if (fabsf(origin.x + cell_size.width) > border_abs_size.width || _is_top_of_new_line(idx)) {

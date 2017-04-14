@@ -3,7 +3,7 @@
 //
 
 #include <numeric>
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_ui_collection_layout.h"
@@ -135,8 +135,9 @@ struct ui::strings::impl : base::impl {
         std::vector<ui::collection_layout::line> lines;
         std::vector<ui::size> cell_sizes;
 
-        for (auto const &idx : make_each(word_count)) {
-            auto const word = src_text.substr(idx, 1);
+        auto each = make_fast_each(word_count);
+        while (yas_each_next(each)) {
+            auto const word = src_text.substr(yas_each_index(each), 1);
             if (word == "\n" || word == "\r") {
                 lines.emplace_back(ui::collection_layout::line{.cell_sizes = std::move(cell_sizes),
                                                                .new_line_min_offset = cell_height});
@@ -179,7 +180,9 @@ struct ui::strings::impl : base::impl {
 
         auto strings = cast<ui::strings>();
 
-        for (auto const &idx : make_each(actual_cell_count)) {
+        each = make_fast_each(actual_cell_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             auto const word = eliminated_text.substr(idx, 1);
             auto &cell_rect = _collection_layout.cell_layout_guide_rects().at(idx);
 
