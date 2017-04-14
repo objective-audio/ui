@@ -3,7 +3,7 @@
 //
 
 #include <limits>
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_sample_soft_keyboard.h"
 
 using namespace yas;
@@ -145,8 +145,9 @@ struct sample::soft_keyboard::impl : base::impl {
 
         std::vector<ui::size> cell_sizes;
         cell_sizes.reserve(key_count);
-        for (auto const &idx : make_each(key_count)) {
-            if (idx == 0) {
+        auto each = make_fast_each(key_count);
+        while (yas_each_next(each)) {
+            if (yas_each_index(each) == 0) {
                 cell_sizes.emplace_back(ui::size{0.0f, key_width});
             } else {
                 cell_sizes.emplace_back(ui::size{key_width, key_width});
@@ -250,7 +251,9 @@ struct sample::soft_keyboard::impl : base::impl {
             soft_key.button().layout_guide_rect().set_region({.size = region.size});
         };
 
-        for (auto const &idx : make_each(key_count)) {
+        auto each = make_fast_each(key_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             auto &soft_key = _soft_keys.at(idx);
             auto &dst_guide_rect = _dst_cell_guide_rects.at(idx);
 
@@ -281,7 +284,9 @@ struct sample::soft_keyboard::impl : base::impl {
 
         auto const layout_count = _collection_layout.actual_cell_count();
 
-        for (auto const &idx : make_each(key_count)) {
+        auto each = make_fast_each(key_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             if (idx < layout_count) {
                 if (idx >= _fixed_cell_layouts.size()) {
                     auto &src_guide_rect = _collection_layout.cell_layout_guide_rects().at(idx);
@@ -320,7 +325,9 @@ struct sample::soft_keyboard::impl : base::impl {
         auto const layout_count = _collection_layout.actual_cell_count();
         auto renderer = _root_node.renderer();
 
-        for (auto const &idx : make_each(key_count)) {
+        auto each = make_fast_each(key_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             _soft_keys.at(idx).set_enabled(idx < layout_count, animated);
         }
     }

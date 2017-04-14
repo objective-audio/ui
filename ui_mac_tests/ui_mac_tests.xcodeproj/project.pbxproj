@@ -146,6 +146,8 @@
 		B651557D1D5EAC9600CC4178 /* yas_ui_layout_guide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_guide.h; sourceTree = "<group>"; };
 		B655538A1D65DF82000FB98F /* yas_ui_collection_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_collection_layout.cpp; sourceTree = "<group>"; };
 		B655538B1D65DF82000FB98F /* yas_ui_collection_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_collection_layout.h; sourceTree = "<group>"; };
+		B659DB1B1EA0588100F29AD3 /* yas_fast_each_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_fast_each_private.h; sourceTree = "<group>"; };
+		B659DB1C1EA0588100F29AD3 /* yas_fast_each.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_fast_each.h; sourceTree = "<group>"; };
 		B65FC6F51D31238D00AFDD2D /* yas_test_metal_view_controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_test_metal_view_controller.h; sourceTree = "<group>"; };
 		B65FC6F61D31238D00AFDD2D /* yas_test_metal_view_controller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_test_metal_view_controller.mm; sourceTree = "<group>"; };
 		B66BB6E61D1F6AB600AB3D48 /* ui_mac_tests_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ui_mac_tests_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -564,6 +566,8 @@
 				B66BB83B1D1F6C7D00AB3D48 /* yas_each_index_private.h */,
 				B66BB83C1D1F6C7D00AB3D48 /* yas_exception.cpp */,
 				B66BB83D1D1F6C7D00AB3D48 /* yas_exception.h */,
+				B659DB1B1EA0588100F29AD3 /* yas_fast_each_private.h */,
+				B659DB1C1EA0588100F29AD3 /* yas_fast_each.h */,
 				B66BB83E1D1F6C7D00AB3D48 /* yas_flagset.h */,
 				B66BB83F1D1F6C7D00AB3D48 /* yas_flagset_private.h */,
 				B66BB8401D1F6C7D00AB3D48 /* yas_flex_ptr.cpp */,
@@ -687,7 +691,7 @@
 		B66BB6DE1D1F6AB600AB3D48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Yuki Yasoshima";
 				TargetAttributes = {
 					B66BB6E51D1F6AB600AB3D48 = {
@@ -887,8 +891,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -932,8 +938,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";

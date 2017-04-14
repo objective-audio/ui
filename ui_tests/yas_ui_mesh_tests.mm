@@ -215,7 +215,7 @@ using namespace yas;
     ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable.indexBuffer() contents]);
 
     mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
-        for (auto const &idx : make_each(4)) {
+        for (auto const &idx : make_each_index(4)) {
             float const value = idx;
             vertices[idx].position.x = value;
             vertices[idx].position.y = value + 100.0f;
@@ -223,7 +223,7 @@ using namespace yas;
             vertices[idx].tex_coord.y = value + 300.0f;
         }
 
-        for (auto const &idx : make_each(6)) {
+        for (auto const &idx : make_each_index(6)) {
             indices[idx] = idx + 400;
         }
     });
@@ -239,7 +239,7 @@ using namespace yas;
     auto vertex_ptr = &vertex_top_ptr[renderable.vertex_buffer_byte_offset() / sizeof(ui::vertex2d_t)];
     auto index_ptr = &index_top_ptr[renderable.index_buffer_byte_offset() / sizeof(ui::index2d_t)];
 
-    for (auto const &idx : make_each(4)) {
+    for (auto const &idx : make_each_index(4)) {
         float const value = idx;
         XCTAssertEqual(vertex_ptr[idx].position.x, value);
         XCTAssertEqual(vertex_ptr[idx].position.y, value + 100.0f);
@@ -247,12 +247,12 @@ using namespace yas;
         XCTAssertEqual(vertex_ptr[idx].tex_coord.y, value + 300.0f);
     }
 
-    for (auto const &idx : make_each(6)) {
+    for (auto const &idx : make_each_index(6)) {
         XCTAssertEqual(index_ptr[idx], idx + 400);
     }
 
     mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
-        for (auto const &idx : make_each(4)) {
+        for (auto const &idx : make_each_index(4)) {
             float const value = idx;
             vertices[idx].position.x = value + 1000.0f;
             vertices[idx].position.y = value + 1100.0f;
@@ -260,7 +260,7 @@ using namespace yas;
             vertices[idx].tex_coord.y = value + 1300.0f;
         }
 
-        for (auto const &idx : make_each(6)) {
+        for (auto const &idx : make_each_index(6)) {
             indices[idx] = idx + 1400;
         }
     });
@@ -273,7 +273,7 @@ using namespace yas;
     vertex_ptr = vertex_top_ptr;
     index_ptr = index_top_ptr;
 
-    for (auto const &idx : make_each(4)) {
+    for (auto const &idx : make_each_index(4)) {
         float const value = idx;
         XCTAssertEqual(vertex_ptr[idx].position.x, value + 1000.0f);
         XCTAssertEqual(vertex_ptr[idx].position.y, value + 1100.0f);
@@ -281,7 +281,7 @@ using namespace yas;
         XCTAssertEqual(vertex_ptr[idx].tex_coord.y, value + 1300.0f);
     }
 
-    for (auto const &idx : make_each(6)) {
+    for (auto const &idx : make_each_index(6)) {
         XCTAssertEqual(index_ptr[idx], idx + 1400);
     }
 

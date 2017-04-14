@@ -2,7 +2,7 @@
 //  yas_sample_justified_points.mm
 //
 
-#include "yas_each_index.h"
+#include "yas_fast_each.h"
 #include "yas_sample_justified_points.h"
 
 using namespace yas;
@@ -44,7 +44,10 @@ struct sample::justified_points::impl : base::impl {
 
                         std::vector<float> ratios;
                         ratios.reserve(sample::y_point_count - 1);
-                        for (auto const &idx : make_each(sample::y_point_count - 1)) {
+                        
+                        auto each = make_fast_each(sample::y_point_count - 1);
+                        while (yas_each_next(each)) {
+                            auto const &idx = yas_each_index(each);
                             if (idx < y_point_count / 2) {
                                 ratios.emplace_back(std::pow(2.0f, idx));
                             } else {
@@ -73,7 +76,9 @@ struct sample::justified_points::impl : base::impl {
 
         auto &rect_plane_data = _rect_plane.data();
 
-        for (auto const &idx : make_each(sample::all_point_count)) {
+        auto each = make_fast_each(sample::all_point_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
             if (idx < sample::x_point_count) {
                 rect_plane_data.set_rect_color({1.0f, 0.8f, 0.5f, 1.0f}, idx);
             } else {
@@ -83,7 +88,9 @@ struct sample::justified_points::impl : base::impl {
     }
 
     void _setup_layout_guides() {
-        for (auto const &idx : make_each(sample::x_point_count)) {
+        auto x_each = make_fast_each(sample::x_point_count);
+        while (yas_each_next(x_each)) {
+            auto const &idx = yas_each_index(x_each);
             _x_layout_guides.at(idx)
                 .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
                     if (auto plane = weak_plane.lock()) {
@@ -93,7 +100,9 @@ struct sample::justified_points::impl : base::impl {
                 });
         }
 
-        for (auto const &idx : make_each(sample::y_point_count)) {
+        auto y_each = make_fast_each(sample::y_point_count);
+        while (yas_each_next(y_each)) {
+            auto const &idx = yas_each_index(y_each);
             _y_layout_guides.at(idx)
                 .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
                     if (auto plane = weak_plane.lock()) {

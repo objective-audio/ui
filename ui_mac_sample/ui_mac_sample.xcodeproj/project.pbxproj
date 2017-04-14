@@ -125,6 +125,8 @@
 		B64F910F1CF2930800365111 /* yas_ui_batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch.h; sourceTree = "<group>"; };
 		B65553841D6400C5000FB98F /* yas_sample_justified_points.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_justified_points.mm; path = ../../ui_sample_common/yas_sample_justified_points.mm; sourceTree = "<group>"; };
 		B65553851D6400C5000FB98F /* yas_sample_justified_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_justified_points.h; path = ../../ui_sample_common/yas_sample_justified_points.h; sourceTree = "<group>"; };
+		B659DB1D1EA0589300F29AD3 /* yas_fast_each_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_fast_each_private.h; sourceTree = "<group>"; };
+		B659DB1E1EA0589300F29AD3 /* yas_fast_each.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_fast_each.h; sourceTree = "<group>"; };
 		B65A3A1F1CCE442E00929FB4 /* yas_ui_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_math.cpp; sourceTree = "<group>"; };
 		B65A3A201CCE442E00929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
 		B65AFCBB1D2011E300D0AC11 /* yas_objc_unowned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_objc_unowned.h; path = /Users/yuki/Documents/Programming/Project/Git/ui/submodules/cpp_utils/submodules/objc_utils/objc_utils/yas_objc_unowned.h; sourceTree = "<absolute>"; };
@@ -367,6 +369,8 @@
 				B6F501721C9BFFD400A0B4A1 /* yas_each_index.h */,
 				B6F501731C9BFFD400A0B4A1 /* yas_exception.cpp */,
 				B6F501741C9BFFD400A0B4A1 /* yas_exception.h */,
+				B659DB1D1EA0589300F29AD3 /* yas_fast_each_private.h */,
+				B659DB1E1EA0589300F29AD3 /* yas_fast_each.h */,
 				B65CBB571D075CC3006D9448 /* yas_flagset_private.h */,
 				B65CBB581D075CC3006D9448 /* yas_flagset.h */,
 				B6F501751C9BFFD400A0B4A1 /* yas_flex_ptr.cpp */,
