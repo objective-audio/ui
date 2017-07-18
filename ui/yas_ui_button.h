@@ -39,6 +39,7 @@ namespace ui {
 
         virtual ~button() final;
 
+        std::size_t state_count() const;
         void set_state_index(std::size_t const);
         std::size_t state_index() const;
 

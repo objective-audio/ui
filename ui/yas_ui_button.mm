@@ -20,7 +20,7 @@ using namespace yas;
 
 struct ui::button::impl : base::impl {
     impl(ui::region const &region, std::size_t const state_count)
-        : _rect_plane(ui::make_rect_plane(state_count * 2, 1)), _layout_guide_rect(region) {
+        : _rect_plane(ui::make_rect_plane(state_count * 2, 1)), _layout_guide_rect(region), _state_count(state_count) {
         _rect_plane.node().set_collider(ui::collider{});
 
         _update_rect_positions(_layout_guide_rect.region(), state_count);
@@ -67,6 +67,10 @@ struct ui::button::impl : base::impl {
     }
 
     void set_state_idx(std::size_t const idx) {
+        if (idx >= this->_state_count) {
+            throw std::invalid_argument("idx greater than or equal state count.");
+        }
+
         _state_idx = idx;
 
         _update_rect_index();
@@ -90,6 +94,7 @@ struct ui::button::impl : base::impl {
     ui::layout_guide_rect _layout_guide_rect;
     ui::button::subject_t _subject;
     std::size_t _state_idx = 0;
+    std::size_t _state_count;
 
    private:
     void _update_rect_positions(ui::region const &region, std::size_t const state_count) {
@@ -229,7 +234,6 @@ struct ui::button::impl : base::impl {
         }
     }
 
-    std::size_t _state_count;
     ui::node::observer_t _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
 };
@@ -248,6 +252,10 @@ ui::button::button(std::nullptr_t) : base(nullptr) {
 }
 
 ui::button::~button() = default;
+
+std::size_t ui::button::state_count() const {
+    return impl_ptr<impl>()->_state_count;
+}
 
 void ui::button::set_state_index(std::size_t const idx) {
     impl_ptr<impl>()->set_state_idx(idx);
