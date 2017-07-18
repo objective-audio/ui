@@ -19,12 +19,11 @@ using namespace yas;
 #pragma mark - ui::button::impl
 
 struct ui::button::impl : base::impl {
-    impl(ui::region const &region) : _layout_guide_rect(region) {
-        _states.flags.reset();
-
+    impl(ui::region const &region, std::size_t const state_count)
+        : _rect_plane(ui::make_rect_plane(state_count * 2, 1)), _layout_guide_rect(region) {
         _rect_plane.node().set_collider(ui::collider{});
 
-        _update_rect_positions(_layout_guide_rect.region());
+        _update_rect_positions(_layout_guide_rect.region(), state_count);
         _update_rect_index();
     }
 
@@ -35,9 +34,7 @@ struct ui::button::impl : base::impl {
         node.dispatch_method(ui::node::method::renderer_changed);
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            event_observer = base{nullptr},
-            leave_observer = base{nullptr},
-            collider_observer = base{nullptr},
+            event_observer = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
             weak_button
         ](auto const &context) mutable {
             ui::node const &node = context.value;
@@ -61,19 +58,16 @@ struct ui::button::impl : base::impl {
             }
         });
 
-        _layout_guide_rect.set_value_changed_handler([weak_button](auto const &context) {
-            if (auto button = weak_button.lock()) {
-                button.impl_ptr<impl>()->_update_rect_positions(context.new_value);
-            }
-        });
+        _layout_guide_rect.set_value_changed_handler(
+            [weak_button, state_count = this->_state_count](auto const &context) {
+                if (auto button = weak_button.lock()) {
+                    button.impl_ptr<impl>()->_update_rect_positions(context.new_value, state_count);
+                }
+            });
     }
 
-    void set_state(ui::button::state const &state, bool const enabled) {
-        if (enabled) {
-            _states.set(state);
-        } else {
-            _states.reset(state);
-        }
+    void set_state_idx(std::size_t const idx) {
+        _state_idx = idx;
 
         _update_rect_index();
     }
@@ -89,17 +83,17 @@ struct ui::button::impl : base::impl {
     void set_tracking_event(ui::event event) {
         _tracking_event = std::move(event);
 
-        set_state(ui::button::state::press, !!_tracking_event);
+        _update_rect_index();
     }
 
-    states_t _states;
-    ui::rect_plane _rect_plane = ui::make_rect_plane(ui::button::state_count * 2, 1);
+    ui::rect_plane _rect_plane;
     ui::layout_guide_rect _layout_guide_rect;
     ui::button::subject_t _subject;
+    std::size_t _state_idx = 0;
 
    private:
-    void _update_rect_positions(ui::region const &region) {
-        auto each = make_fast_each(ui::button::state_count * 2);
+    void _update_rect_positions(ui::region const &region, std::size_t const state_count) {
+        auto each = make_fast_each(state_count * 2);
         while (yas_each_next(each)) {
             _rect_plane.data().set_rect_position(region, yas_each_index(each));
         }
@@ -108,7 +102,8 @@ struct ui::button::impl : base::impl {
     }
 
     void _update_rect_index() {
-        _rect_plane.data().set_rect_index(0, to_index(_states));
+        std::size_t const idx = to_rect_index(this->_state_idx, this->is_tracking());
+        _rect_plane.data().set_rect_index(0, idx);
     }
 
     base _make_leave_observer() {
@@ -234,13 +229,18 @@ struct ui::button::impl : base::impl {
         }
     }
 
+    std::size_t _state_count;
     ui::node::observer_t _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
 };
 
 #pragma mark - ui::button
 
-ui::button::button(ui::region const &region) : base(std::make_shared<impl>(region)) {
+ui::button::button(ui::region const &region) : button(region, 1) {
+}
+
+ui::button::button(ui::region const &region, std::size_t const state_count)
+    : base(std::make_shared<impl>(region, state_count)) {
     impl_ptr<impl>()->prepare(*this);
 }
 
@@ -248,6 +248,14 @@ ui::button::button(std::nullptr_t) : base(nullptr) {
 }
 
 ui::button::~button() = default;
+
+void ui::button::set_state_index(std::size_t const idx) {
+    impl_ptr<impl>()->set_state_idx(idx);
+}
+
+std::size_t ui::button::state_index() const {
+    return impl_ptr<impl>()->_state_idx;
+}
 
 ui::button::subject_t &ui::button::subject() {
     return impl_ptr<impl>()->_subject;
@@ -263,29 +271,8 @@ ui::layout_guide_rect &ui::button::layout_guide_rect() {
 
 #pragma mark -
 
-std::size_t yas::to_index(ui::button::states_t const &states) {
-    std::size_t rect_idx = 0;
-
-    if (states.test(ui::button::state::press)) {
-        rect_idx += 1;
-    }
-
-    if (states.test(ui::button::state::toggle)) {
-        rect_idx += ui::button::state_count;
-    }
-
-    return rect_idx;
-}
-
-std::string yas::to_string(ui::button::state const &state) {
-    switch (state) {
-        case ui::button::state::toggle:
-            return "toggle";
-        case ui::button::state::press:
-            return "press";
-        case ui::button::state::count:
-            return "count";
-    }
+std::size_t yas::to_rect_index(std::size_t const state_idx, bool is_tracking) {
+    return state_idx * 2 + (is_tracking ? 1 : 0);
 }
 
 std::string yas::to_string(ui::button::method const &method) {
@@ -301,11 +288,6 @@ std::string yas::to_string(ui::button::method const &method) {
         case ui::button::method::canceled:
             return "canceled";
     }
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::button::state const &state) {
-    os << to_string(state);
-    return os;
 }
 
 std::ostream &operator<<(std::ostream &os, yas::ui::button::method const &method) {
