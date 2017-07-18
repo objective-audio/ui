@@ -16,8 +16,7 @@ namespace sample {
                 : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
                 _button.rect_plane().node().mesh().set_use_mesh_color(true);
                 _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-                _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f},
-                                                           to_index({ui::button::state::press}));
+                _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
                 _strings.set_text(key);
                 _strings.set_alignment(ui::layout_alignment::mid);

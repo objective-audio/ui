@@ -22,18 +22,6 @@ namespace ui {
        public:
         class impl;
 
-        enum class state : std::size_t {
-            toggle,
-            press,
-
-            count,
-        };
-
-        using states_t = flagset<state>;
-        using state_size_t = typename std::underlying_type<state>::type;
-
-        static std::size_t const state_count = static_cast<state_size_t>(ui::button::state::count);
-
         enum class method {
             began,
             entered,
@@ -46,9 +34,14 @@ namespace ui {
         using observer_t = observer<button, method>;
 
         button(ui::region const &region);
+        button(ui::region const &region, std::size_t const state_count);
         button(std::nullptr_t);
 
         virtual ~button() final;
+
+        std::size_t state_count() const;
+        void set_state_index(std::size_t const);
+        std::size_t state_index() const;
 
         subject_t &subject();
 
@@ -58,10 +51,8 @@ namespace ui {
     };
 }
 
-std::size_t to_index(ui::button::states_t const &);
-std::string to_string(ui::button::state const &);
+std::size_t to_rect_index(std::size_t const state_idx, bool is_tracking);
 std::string to_string(ui::button::method const &);
 }
 
-std::ostream &operator<<(std::ostream &, yas::ui::button::state const &);
 std::ostream &operator<<(std::ostream &, yas::ui::button::method const &);
