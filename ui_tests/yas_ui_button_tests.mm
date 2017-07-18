@@ -101,11 +101,11 @@ using namespace yas;
     XCTAssertEqual(observed_methods.back(), ui::button::method::ended);
 }
 
-- (void)test_state_to_index {
-    XCTAssertEqual(to_index(ui::button::states_t{}), 0);
-    XCTAssertEqual(to_index({ui::button::state::press}), 1);
-    XCTAssertEqual(to_index({ui::button::state::toggle}), 2);
-    XCTAssertEqual(to_index({ui::button::state::toggle, ui::button::state::press}), 3);
+- (void)test_state_index_to_rect_index {
+    XCTAssertEqual(to_rect_index(0, false), 0);
+    XCTAssertEqual(to_rect_index(0, true), 1);
+    XCTAssertEqual(to_rect_index(1, false), 2);
+    XCTAssertEqual(to_rect_index(1, true), 3);
 }
 
 - (void)test_method_to_string {
@@ -116,12 +116,6 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::button::method::canceled), "canceled");
 }
 
-- (void)test_state_to_string {
-    XCTAssertEqual(to_string(ui::button::state::toggle), "toggle");
-    XCTAssertEqual(to_string(ui::button::state::press), "press");
-    XCTAssertEqual(to_string(ui::button::state::count), "count");
-}
-
 - (void)test_method_ostream {
     auto const methods = {ui::button::method::began, ui::button::method::entered, ui::button::method::leaved,
                           ui::button::method::ended, ui::button::method::canceled};
@@ -130,16 +124,6 @@ using namespace yas;
         std::ostringstream stream;
         stream << method;
         XCTAssertEqual(stream.str(), to_string(method));
-    }
-}
-
-- (void)test_state_ostream {
-    auto const states = {ui::button::state::toggle, ui::button::state::press, ui::button::state::count};
-
-    for (auto const &state : states) {
-        std::ostringstream stream;
-        stream << state;
-        XCTAssertEqual(stream.str(), to_string(state));
     }
 }
 
