@@ -25,17 +25,34 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_create {
+- (void)test_initial {
     ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}};
 
     XCTAssertTrue(button);
     XCTAssertTrue(button.rect_plane());
+    XCTAssertEqual(button.state_index(), 0);
+    XCTAssertEqual(button.state_count(), 1);
 }
 
-- (void)test_create_null {
+- (void)test_initial_with_state_count {
+    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3};
+    
+    XCTAssertEqual(button.state_count(), 3);
+}
+
+- (void)test_create_with_null {
     ui::button button{nullptr};
 
     XCTAssertFalse(button);
+}
+
+- (void)test_state_index {
+    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2};
+    
+    XCTAssertNoThrow(button.set_state_index(1));
+    XCTAssertEqual(button.state_index(), 1);
+    
+    XCTAssertThrows(button.set_state_index(2));
 }
 
 - (void)test_method_changed {
