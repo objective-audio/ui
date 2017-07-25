@@ -35,7 +35,13 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     }
 
     void set_matrix(simd::float4x4 &&matrix) override {
-        _matrix = std::move(matrix);
+        if (_matrix != matrix) {
+            _matrix = std::move(matrix);
+
+            if (this->is_rendering_color_exists()) {
+                _updates.set(ui::mesh_update_reason::matrix);
+            }
+        }
     }
 
     std::size_t render_vertex_count() override {
@@ -68,11 +74,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
         if (_needs_write(building_type)) {
             mesh_info.mesh_data.write([
-                    &src_mesh_data = _mesh_data,
-                    &matrix = _matrix,
-                    &color = _color,
-                    is_use_mesh_color = _use_mesh_color,
-                    &mesh_info
+                    &src_mesh_data = _mesh_data, &matrix = _matrix, &color = _color,
+                    is_use_mesh_color = _use_mesh_color, &mesh_info
             ](auto &vertices, auto &indices) {
                 auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
                 auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
@@ -208,8 +211,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         }
 
         if (building_type == ui::batch_building_type::overwrite) {
-            static mesh_updates_t const _mesh_overwrite_updates = {ui::mesh_update_reason::color,
-                                                                   ui::mesh_update_reason::use_mesh_color};
+            static mesh_updates_t const _mesh_overwrite_updates = {
+                ui::mesh_update_reason::color, ui::mesh_update_reason::use_mesh_color, ui::mesh_update_reason::matrix};
 
             if (_updates.and_test(_mesh_overwrite_updates)) {
                 return true;
