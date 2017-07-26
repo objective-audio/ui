@@ -22,6 +22,7 @@ namespace ui {
         primitive_type,
         color,
         use_mesh_color,
+        matrix,
 
         count,
     };
