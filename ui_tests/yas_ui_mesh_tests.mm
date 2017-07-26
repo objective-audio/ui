@@ -370,6 +370,7 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::mesh_update_reason::primitive_type), "primitive_type");
     XCTAssertEqual(to_string(ui::mesh_update_reason::color), "color");
     XCTAssertEqual(to_string(ui::mesh_update_reason::use_mesh_color), "use_mesh_color");
+    XCTAssertEqual(to_string(ui::mesh_update_reason::matrix), "matrix");
     XCTAssertEqual(to_string(ui::mesh_update_reason::count), "count");
 }
 
