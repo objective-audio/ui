@@ -63,6 +63,8 @@ std::string yas::to_string(ui::mesh_update_reason const &reason) {
             return "color";
         case ui::mesh_update_reason::use_mesh_color:
             return "use_mesh_color";
+        case ui::mesh_update_reason::matrix:
+            return "matrix";
         case ui::mesh_update_reason::count:
             return "count";
     }
