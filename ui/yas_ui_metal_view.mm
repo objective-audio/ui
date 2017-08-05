@@ -76,7 +76,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
     _cpp.event_manager.inputtable().input_touch_event(
-        std::move(phase), ui::touch_event{uintptr_t(touch), [self _position:touch], event.timestamp});
+        std::move(phase), ui::touch_event{uintptr_t(touch), [self _position:touch], touch.timestamp});
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
