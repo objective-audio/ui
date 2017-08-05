@@ -87,32 +87,36 @@ using namespace yas;
 }
 
 - (void)test_create_cursor_event {
-    ui::cursor_event value{{1.0f, 2.0f}};
+    ui::cursor_event value{{1.0f, 2.0f}, 3.0};
 
     XCTAssertEqual(value.position().x, 1.0f);
     XCTAssertEqual(value.position().y, 2.0f);
+    XCTAssertEqual(value.timestamp(), 3.0);
 }
 
 - (void)test_create_touch_event {
-    ui::touch_event value{10, {4.0f, 8.0f}};
+    ui::touch_event value{10, {4.0f, 8.0f}, 16.0};
 
     XCTAssertEqual(value.identifier(), 10);
     XCTAssertEqual(value.position().x, 4.0f);
     XCTAssertEqual(value.position().y, 8.0f);
+    XCTAssertEqual(value.timestamp(), 16.0);
 }
 
 - (void)test_create_key_event {
-    ui::key_event value{5, "a", "B"};
+    ui::key_event value{5, "a", "B", 6.0};
 
     XCTAssertEqual(value.key_code(), 5);
     XCTAssertEqual(value.characters(), "a");
     XCTAssertEqual(value.raw_characters(), "B");
+    XCTAssertEqual(value.timestamp(), 6.0);
 }
 
 - (void)test_create_modifier_event {
-    ui::modifier_event value{ui::modifier_flags::alpha_shift};
+    ui::modifier_event value{ui::modifier_flags::alpha_shift, 7.0};
 
     XCTAssertEqual(value.flag(), ui::modifier_flags::alpha_shift);
+    XCTAssertEqual(value.timestamp(), 7.0);
 }
 
 - (void)test_create_default {
@@ -123,8 +127,8 @@ using namespace yas;
 }
 
 - (void)test_is_equal_cursor_event {
-    ui::cursor_event value1{{1.0f, 2.0f}};
-    ui::cursor_event value2{{3.0f, 4.0f}};
+    ui::cursor_event value1{{1.0f, 2.0f}, 5.0};
+    ui::cursor_event value2{{3.0f, 4.0f}, 6.0};
 
     // always equal
 
@@ -133,9 +137,9 @@ using namespace yas;
 }
 
 - (void)test_is_equal_touch_event {
-    ui::touch_event value1{5, {4.0f, 8.0f}};
-    ui::touch_event value2{5, {16.0f, 32.0f}};
-    ui::touch_event value3{6, {4.0f, 8.0f}};
+    ui::touch_event value1{5, {4.0f, 8.0f}, 16.0};
+    ui::touch_event value2{5, {16.0f, 32.0f}, 32.0};
+    ui::touch_event value3{6, {4.0f, 8.0f}, 16.0};
 
     // compare identifier
 
@@ -147,9 +151,9 @@ using namespace yas;
 }
 
 - (void)test_is_equal_key_event {
-    ui::key_event value1{7, "a", "B"};
-    ui::key_event value2{7, "c", "D"};
-    ui::key_event value3{8, "a", "B"};
+    ui::key_event value1{7, "a", "B", 9.0};
+    ui::key_event value2{7, "c", "D", 10.0};
+    ui::key_event value3{8, "a", "B", 9.0};
 
     // compare key_code
 
@@ -161,9 +165,9 @@ using namespace yas;
 }
 
 - (void)test_is_equal_modifier_event {
-    ui::modifier_event value1{ui::modifier_flags::shift};
-    ui::modifier_event value2{ui::modifier_flags::shift};
-    ui::modifier_event value3{ui::modifier_flags::control};
+    ui::modifier_event value1{ui::modifier_flags::shift, 20.0};
+    ui::modifier_event value2{ui::modifier_flags::shift, 30.0};
+    ui::modifier_event value3{ui::modifier_flags::control, 20.0};
 
     // compare flag
 
@@ -224,10 +228,10 @@ using namespace yas;
     ui::event touch_event2{ui::touch_tag};
     ui::event touch_event3{ui::touch_tag};
 
-    cursor_event.manageable().set<ui::cursor>(ui::cursor_event{{.v = 0.0f}});
-    touch_event1.manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}});
-    touch_event2.manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}});
-    touch_event3.manageable().set<ui::touch>(ui::touch_event{2, {.v = 0.0f}});
+    cursor_event.manageable().set<ui::cursor>(ui::cursor_event{{.v = 0.0f}, 10.0});
+    touch_event1.manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}, 10.0});
+    touch_event2.manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}, 11.0});
+    touch_event3.manageable().set<ui::touch>(ui::touch_event{2, {.v = 0.0f}, 12.0});
 
     XCTAssertTrue(touch_event1 == touch_event1);
     XCTAssertTrue(touch_event1 == touch_event2);
@@ -245,11 +249,13 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event.get<ui::cursor>()) == typeid(ui::cursor_event));
 
-    event.manageable().set<ui::cursor>(ui::cursor_event{{0.5f, 1.5f}});
+    event.manageable().set<ui::cursor>(ui::cursor_event{{0.5f, 1.5f}, 100.0});
 
     auto const &pos = event.get<ui::cursor>().position();
     XCTAssertEqual(pos.x, 0.5f);
     XCTAssertEqual(pos.y, 1.5f);
+    auto const timestamp = event.get<ui::cursor>().timestamp();
+    XCTAssertEqual(timestamp, 100.0);
 }
 
 - (void)test_touch_event_accessor {
@@ -257,13 +263,15 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event.get<ui::touch>()) == typeid(ui::touch_event));
 
-    event.manageable().set<ui::touch>(ui::touch_event{11, {2.5f, 3.5f}});
+    event.manageable().set<ui::touch>(ui::touch_event{11, {2.5f, 3.5f}, 200.0});
 
     auto const &value = event.get<ui::touch>();
     auto const &pos = value.position();
     XCTAssertEqual(value.identifier(), 11);
     XCTAssertEqual(pos.x, 2.5f);
     XCTAssertEqual(pos.y, 3.5f);
+    auto const timestamp = event.get<ui::touch>().timestamp();
+    XCTAssertEqual(timestamp, 200.0);
 }
 
 - (void)test_key_event_accessor {
@@ -271,12 +279,14 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event.get<ui::key>()) == typeid(ui::key_event));
 
-    event.manageable().set<ui::key>(ui::key_event{23, "4", "5"});
+    event.manageable().set<ui::key>(ui::key_event{23, "4", "5", 300.0});
 
     auto const &value = event.get<ui::key>();
     XCTAssertEqual(value.key_code(), 23);
     XCTAssertEqual(value.characters(), "4");
     XCTAssertEqual(value.raw_characters(), "5");
+    auto const timestamp = event.get<ui::key>().timestamp();
+    XCTAssertEqual(timestamp, 300.0);
 }
 
 - (void)test_modifier_event_accessor {
@@ -284,10 +294,12 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event.get<ui::modifier>()) == typeid(ui::modifier_event));
 
-    event.manageable().set<ui::modifier>(ui::modifier_event{ui::modifier_flags::command});
+    event.manageable().set<ui::modifier>(ui::modifier_event{ui::modifier_flags::command, 400.0});
 
     auto const &value = event.get<ui::modifier>();
     XCTAssertEqual(value.flag(), ui::modifier_flags::command);
+    auto const timestamp = event.get<ui::modifier>().timestamp();
+    XCTAssertEqual(timestamp, 400.0);
 }
 
 - (void)test_create_manager {
@@ -317,11 +329,12 @@ using namespace yas;
         auto const &value = event.get<ui::cursor>();
         XCTAssertEqual(value.position().x, 0.25f);
         XCTAssertEqual(value.position().y, 0.125f);
+        XCTAssertEqual(value.timestamp(), 101.0);
 
         called = true;
     });
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{{0.25f, 0.125f}});
+    manager.inputtable().input_cursor_event(ui::cursor_event{{0.25f, 0.125f}, 101.0});
 
     XCTAssertTrue(called);
 }
@@ -341,11 +354,12 @@ using namespace yas;
         XCTAssertEqual(value.identifier(), 100);
         XCTAssertEqual(value.position().x, 256.0f);
         XCTAssertEqual(value.position().y, 512.0f);
+        XCTAssertEqual(value.timestamp(), 201.0);
 
         called = true;
     });
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{100, {256.0f, 512.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{100, {256.0f, 512.0f}, 201.0});
 
     XCTAssertTrue(called);
 }
@@ -365,11 +379,12 @@ using namespace yas;
         XCTAssertEqual(value.key_code(), 200);
         XCTAssertEqual(value.characters(), "xyz");
         XCTAssertEqual(value.raw_characters(), "uvw");
+        XCTAssertEqual(value.timestamp(), 301.0);
 
         called = true;
     });
 
-    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{200, "xyz", "uvw"});
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{200, "xyz", "uvw", 301.0});
 
     XCTAssertTrue(called);
 }
@@ -398,7 +413,7 @@ using namespace yas;
     });
 
     manager.inputtable().input_modifier_event(
-        ui::modifier_flags(ui::modifier_flags::alternate | ui::modifier_flags::function));
+        ui::modifier_flags(ui::modifier_flags::alternate | ui::modifier_flags::function), 0.0);
 
     XCTAssertTrue(alt_called);
     XCTAssertTrue(func_called);
@@ -424,29 +439,29 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}});  // outsize of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}});  // inside of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}});  // inside of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}});  // outsize of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}});  // outsize of view
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -474,39 +489,39 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}});
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -534,39 +549,39 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{2, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{2, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", ""});
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -594,51 +609,51 @@ using namespace yas;
             }
         });
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags(0));
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags::command);
+    manager.inputtable().input_modifier_event(ui::modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags(0));
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift);
+    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift);
+    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags(0));
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags(0));
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
     manager.inputtable().input_modifier_event(
-        ui::modifier_flags(ui::modifier_flags::alpha_shift | ui::modifier_flags::command));
+        ui::modifier_flags(ui::modifier_flags::alpha_shift | ui::modifier_flags::command), 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager.inputtable().input_modifier_event(ui::modifier_flags::command);
+    manager.inputtable().input_modifier_event(ui::modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);

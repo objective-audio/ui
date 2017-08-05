@@ -36,7 +36,7 @@ using namespace yas;
 
 - (void)test_initial_with_state_count {
     ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3};
-    
+
     XCTAssertEqual(button.state_count(), 3);
 }
 
@@ -48,10 +48,10 @@ using namespace yas;
 
 - (void)test_state_index {
     ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2};
-    
+
     XCTAssertNoThrow(button.set_state_index(1));
     XCTAssertEqual(button.state_index(), 1);
-    
+
     XCTAssertThrows(button.set_state_index(2));
 }
 
@@ -87,32 +87,32 @@ using namespace yas;
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
     ui::event_manager &event_manager = renderer.event_manager();
-    event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {0.0f, 0.0f}});
+    event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
     XCTAssertEqual(observed_methods.back(), ui::button::method::began);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{1, {0.1f, 0.0f}});
+    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::canceled, ui::touch_event{1, {0.1f, 0.0f}});
+    event_manager.inputtable().input_touch_event(ui::event_phase::canceled, ui::touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 2);
     XCTAssertEqual(observed_methods.back(), ui::button::method::canceled);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {0.0f, 0.0f}});
-    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {1.0f, 1.0f}});
+    event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {1.0f, 1.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 4);
     XCTAssertEqual(observed_methods.back(), ui::button::method::leaved);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {0.0f, 0.0f}});
+    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 5);
     XCTAssertEqual(observed_methods.back(), ui::button::method::entered);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{2, {0.0f, 0.0f}});
+    event_manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 6);
     XCTAssertEqual(observed_methods.back(), ui::button::method::ended);
