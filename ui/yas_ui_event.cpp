@@ -179,7 +179,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
         }
     }
 
-    void input_modifier_event(modifier_flags &&flags) override {
+    void input_modifier_event(modifier_flags &&flags, double const timestamp) override {
         static auto all_flags = {modifier_flags::alpha_shift, modifier_flags::shift,   modifier_flags::control,
                                  modifier_flags::alternate,   modifier_flags::command, modifier_flags::numeric_pad,
                                  modifier_flags::help,        modifier_flags::function};
@@ -188,7 +188,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             if (flags & flag) {
                 if (modifier_events.count(flag) == 0) {
                     ui::event event{modifier_tag};
-                    event.manageable().set<modifier>(ui::modifier_event{flag});
+                    event.manageable().set<modifier>(ui::modifier_event{flag, timestamp});
                     event.manageable().set_phase(ui::event_phase::began);
                     modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
