@@ -33,36 +33,41 @@ namespace ui {
 
     struct cursor_event {
         cursor_event();
-        explicit cursor_event(ui::point);
+        explicit cursor_event(ui::point, double const timestamp);
 
         bool operator==(cursor_event const &) const;
         bool operator!=(cursor_event const &) const;
 
         ui::point const &position() const;
+        double timestamp() const;
         bool contains_in_window() const;
 
        private:
         ui::point _position;
+        double _timestamp;
     };
 
     struct touch_event {
         touch_event();
-        explicit touch_event(uintptr_t const identifier, ui::point position);
+        explicit touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
 
         bool operator==(touch_event const &) const;
         bool operator!=(touch_event const &) const;
 
         uintptr_t identifier() const;
         ui::point const &position() const;
-
+        double timestamp() const;
+        
        private:
         uintptr_t _identifier;
         ui::point _position;
+        double _timestamp;
     };
 
     struct key_event {
         key_event();
-        explicit key_event(uint16_t const key_code, std::string characters, std::string raw_characters);
+        explicit key_event(uint16_t const key_code, std::string characters, std::string raw_characters,
+                           double const timestamp);
 
         bool operator==(key_event const &) const;
         bool operator!=(key_event const &) const;
@@ -70,24 +75,28 @@ namespace ui {
         uint16_t key_code() const;
         std::string const &characters() const;
         std::string const &raw_characters() const;
+        double timestamp() const;
 
        private:
         uint16_t _key_code;
         std::string _characters;
         std::string _raw_characters;
+        double _timestamp;
     };
 
     struct modifier_event {
         modifier_event();
-        explicit modifier_event(modifier_flags const);
+        explicit modifier_event(modifier_flags const, double const timestamp);
 
         bool operator==(modifier_event const &) const;
         bool operator!=(modifier_event const &) const;
 
         modifier_flags flag() const;
+        double timestamp() const;
 
        private:
         modifier_flags _flag;
+        double _timestamp;
     };
 
     struct cursor {
@@ -116,7 +125,7 @@ namespace ui {
             virtual void input_cursor_event(cursor_event &&value) = 0;
             virtual void input_touch_event(event_phase const, touch_event &&) = 0;
             virtual void input_key_event(event_phase const, key_event &&) = 0;
-            virtual void input_modifier_event(modifier_flags &&) = 0;
+            virtual void input_modifier_event(modifier_flags &&, double const) = 0;
         };
 
         explicit event_inputtable(std::shared_ptr<impl>);
@@ -125,7 +134,7 @@ namespace ui {
         void input_cursor_event(cursor_event);
         void input_touch_event(event_phase const, touch_event);
         void input_key_event(event_phase const, key_event);
-        void input_modifier_event(modifier_flags);
+        void input_modifier_event(modifier_flags, double const timestamp);
     };
 }
 
