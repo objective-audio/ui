@@ -17,6 +17,7 @@ class observer;
 namespace ui {
     class rect_plane;
     class layout_guide_rect;
+    class touch_event;
 
     class button : public base {
        public:
@@ -29,9 +30,14 @@ namespace ui {
             ended,
             canceled,
         };
+        
+        struct context {
+            ui::button const &button;
+            ui::touch_event const &touch;
+        };
 
-        using subject_t = subject<button, method>;
-        using observer_t = observer<button, method>;
+        using subject_t = subject<context, method>;
+        using observer_t = observer<context, method>;
 
         button(ui::region const &region);
         button(ui::region const &region, std::size_t const state_count);

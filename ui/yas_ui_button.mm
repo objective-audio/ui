@@ -187,7 +187,7 @@ struct ui::button::impl : base::impl {
                     if (!is_tracking()) {
                         if (detector.detect(touch_event.position(), node.collider())) {
                             set_tracking_event(event);
-                            _subject.notify(ui::button::method::began, button);
+                            _subject.notify(ui::button::method::began, {.button = button, .touch = touch_event});
                         }
                     }
                     break;
@@ -198,7 +198,7 @@ struct ui::button::impl : base::impl {
                 case ui::event_phase::ended:
                     if (is_tracking(event)) {
                         set_tracking_event(nullptr);
-                        _subject.notify(ui::button::method::ended, button);
+                        _subject.notify(ui::button::method::ended, {.button = button, .touch = touch_event});
                     }
                     break;
                 case ui::event_phase::canceled:
@@ -217,12 +217,13 @@ struct ui::button::impl : base::impl {
             auto const &touch_event = event.get<ui::touch>();
             bool const is_event_tracking = is_tracking(event);
             bool is_detected = detector.detect(touch_event.position(), node.collider());
+            auto button = cast<ui::button>();
             if (!is_event_tracking && is_detected) {
                 set_tracking_event(event);
-                _subject.notify(ui::button::method::entered, cast<ui::button>());
+                _subject.notify(ui::button::method::entered, {.button = button, .touch = touch_event});
             } else if (is_event_tracking && !is_detected) {
                 set_tracking_event(nullptr);
-                _subject.notify(ui::button::method::leaved, cast<ui::button>());
+                _subject.notify(ui::button::method::leaved, {.button = button, .touch = touch_event});
             }
         }
     }
@@ -230,7 +231,8 @@ struct ui::button::impl : base::impl {
     void _cancel_tracking(ui::event const &event) {
         if (is_tracking(event)) {
             set_tracking_event(nullptr);
-            _subject.notify(ui::button::method::canceled, cast<ui::button>());
+            _subject.notify(ui::button::method::canceled,
+                            {.button = cast<ui::button>(), .touch = event.get<ui::touch>()});
         }
     }
 
