@@ -128,7 +128,7 @@ struct ui::button::impl : base::impl {
                         case ui::node::method::position_changed:
                         case ui::node::method::angle_changed:
                         case ui::node::method::scale_changed: {
-                            node.impl_ptr<impl>()->_leave_or_enter_tracking(tracking_event);
+                            node.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
                         } break;
                         case ui::node::method::collider_changed: {
                             ui::node const &node = context.value;
@@ -193,7 +193,7 @@ struct ui::button::impl : base::impl {
                     break;
                 case ui::event_phase::stationary:
                 case ui::event_phase::changed: {
-                    _leave_or_enter_tracking(event);
+                    _leave_or_enter_or_move_tracking(event);
                 } break;
                 case ui::event_phase::ended:
                     if (is_tracking(event)) {
@@ -210,7 +210,7 @@ struct ui::button::impl : base::impl {
         }
     }
 
-    void _leave_or_enter_tracking(ui::event const &event) {
+    void _leave_or_enter_or_move_tracking(ui::event const &event) {
         auto &node = _rect_plane.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
@@ -224,6 +224,8 @@ struct ui::button::impl : base::impl {
             } else if (is_event_tracking && !is_detected) {
                 set_tracking_event(nullptr);
                 _subject.notify(ui::button::method::leaved, {.button = button, .touch = touch_event});
+            } else if (is_event_tracking) {
+                _subject.notify(ui::button::method::moved, {.button = button, .touch = touch_event});
             }
         }
     }
@@ -291,6 +293,8 @@ std::string yas::to_string(ui::button::method const &method) {
             return "began";
         case ui::button::method::entered:
             return "entered";
+        case ui::button::method::moved:
+            return "moved";
         case ui::button::method::leaved:
             return "leaved";
         case ui::button::method::ended:

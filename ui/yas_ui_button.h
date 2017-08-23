@@ -26,6 +26,7 @@ namespace ui {
         enum class method {
             began,
             entered,
+            moved,
             leaved,
             ended,
             canceled,

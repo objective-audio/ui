@@ -94,27 +94,28 @@ using namespace yas;
 
     event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{1, {0.1f, 0.0f}, 0});
 
-    XCTAssertEqual(observed_methods.size(), 1);
+    XCTAssertEqual(observed_methods.size(), 2);
+    XCTAssertEqual(observed_methods.back(), ui::button::method::moved);
 
     event_manager.inputtable().input_touch_event(ui::event_phase::canceled, ui::touch_event{1, {0.1f, 0.0f}, 0});
 
-    XCTAssertEqual(observed_methods.size(), 2);
+    XCTAssertEqual(observed_methods.size(), 3);
     XCTAssertEqual(observed_methods.back(), ui::button::method::canceled);
 
     event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {0.0f, 0.0f}, 0});
     event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {1.0f, 1.0f}, 0});
 
-    XCTAssertEqual(observed_methods.size(), 4);
+    XCTAssertEqual(observed_methods.size(), 5);
     XCTAssertEqual(observed_methods.back(), ui::button::method::leaved);
 
     event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {0.0f, 0.0f}, 0});
 
-    XCTAssertEqual(observed_methods.size(), 5);
+    XCTAssertEqual(observed_methods.size(), 6);
     XCTAssertEqual(observed_methods.back(), ui::button::method::entered);
 
     event_manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{2, {0.0f, 0.0f}, 0});
 
-    XCTAssertEqual(observed_methods.size(), 6);
+    XCTAssertEqual(observed_methods.size(), 7);
     XCTAssertEqual(observed_methods.back(), ui::button::method::ended);
 }
 
@@ -128,6 +129,7 @@ using namespace yas;
 - (void)test_method_to_string {
     XCTAssertEqual(to_string(ui::button::method::began), "began");
     XCTAssertEqual(to_string(ui::button::method::entered), "entered");
+    XCTAssertEqual(to_string(ui::button::method::moved), "moved");
     XCTAssertEqual(to_string(ui::button::method::leaved), "leaved");
     XCTAssertEqual(to_string(ui::button::method::ended), "ended");
     XCTAssertEqual(to_string(ui::button::method::canceled), "canceled");
