@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include "yas_ui_math.h"
+#include <GLKit/GLKit.h>
 
 using namespace yas;
 
@@ -22,5 +23,9 @@ float ceilf(float const value, double const scale) {
 
 double ceil(double const value, double const scale) {
     return std::ceil(scale * value) / scale;
+}
+
+float distance(ui::point const &src, ui::point const &dst) {
+    return GLKVector2Distance(GLKVector2Make(src.x, src.y), GLKVector2Make(dst.x, dst.y));
 }
 }
