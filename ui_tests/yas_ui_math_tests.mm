@@ -49,4 +49,13 @@ using namespace yas;
     XCTAssertEqual(ceil(0.8, 2.0), 1.0);
 }
 
+- (void)test_distance {
+    XCTAssertEqualWithAccuracy(distance({0.0f, 0.0f}, {1.0f, 1.0f}), std::sqrtf(2.0f), 0.001);
+    XCTAssertEqualWithAccuracy(distance({0.0f, 0.0f}, {2.0f, 1.0f}),
+                               std::sqrtf(std::powf(2.0f - 0.0f, 2.0f) + std::powf(1.0f - 0.0f, 2.0f)), 0.001);
+    XCTAssertEqualWithAccuracy(distance({-1.0f, -2.0f}, {2.0f, 1.0f}),
+                               std::sqrtf(std::powf(2.0f + 1.0f, 2.0f) + std::powf(1.0f + 2.0f, 2.0f)), 0.001);
+}
+
 @end
+
