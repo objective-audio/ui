@@ -289,6 +289,8 @@ bool yas::is_equal(simd::float4x4 const &lhs, simd::float4x4 const &rhs) {
     return (&lhs == &rhs) || memcmp(&lhs, &rhs, sizeof(simd::float4x4)) == 0;
 }
 
+#pragma mark -
+
 std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {
     os << to_string(origin);
     return os;
