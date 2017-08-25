@@ -29,11 +29,11 @@ float distance(ui::point const &src, ui::point const &dst) {
     return GLKVector2Distance(GLKVector2Make(src.x, src.y), GLKVector2Make(dst.x, dst.y));
 }
 
-float degrees_from_radians(float const radian) {
+float degrees_from_radians(float const radians) {
     return GLKMathRadiansToDegrees(radians);
 }
 
-float radians_from_degrees(float const degree) {
-    return GLKMathDegreesToRadians(degree);
+float radians_from_degrees(float const degrees) {
+    return GLKMathDegreesToRadians(degrees);
 }
 }

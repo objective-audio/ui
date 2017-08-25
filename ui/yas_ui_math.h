@@ -14,6 +14,6 @@ double ceil(double const value, double const scale);
 
 float distance(ui::point const &src, ui::point const &dst);
 
-float degrees_from_radians(float const radian);
-float radians_from_degrees(float const degree);
+float degrees_from_radians(float const radians);
+float radians_from_degrees(float const degrees);
 }
