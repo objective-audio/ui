@@ -59,6 +59,7 @@ namespace ui {
 
         ui::point position() const;
         float angle() const;
+        float radians() const;
         ui::size scale() const;
         ui::color color() const;
         float alpha() const;
@@ -76,6 +77,7 @@ namespace ui {
 
         void set_position(ui::point);
         void set_angle(float const);
+        void set_radians(float const);
         void set_scale(ui::size);
         void set_color(ui::color);
         void set_alpha(float const);
