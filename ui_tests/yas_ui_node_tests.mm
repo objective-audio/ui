@@ -7,6 +7,7 @@
 #import "yas_objc_ptr.h"
 #import "yas_ui.h"
 #import "yas_ui_render_info.h"
+#import "yas_ui_math.h"
 
 using namespace yas;
 
@@ -55,6 +56,7 @@ namespace test {
     XCTAssertEqual(node.position().x, 0.0f);
     XCTAssertEqual(node.position().y, 0.0f);
     XCTAssertEqual(node.angle(), 0.0f);
+    XCTAssertEqual(node.radians(), 0.0f);
     XCTAssertEqual(node.scale().width, 1.0f);
     XCTAssertEqual(node.scale().height, 1.0f);
 
@@ -99,6 +101,7 @@ namespace test {
     XCTAssertEqual(node.position().x, 1.0f);
     XCTAssertEqual(node.position().y, 2.0f);
     XCTAssertEqual(node.angle(), 3.0f);
+    XCTAssertEqualWithAccuracy(node.radians(), radians_from_degrees(3.0f), 0.001f);
     XCTAssertEqual(node.scale().width, 4.0f);
     XCTAssertEqual(node.scale().height, 5.0f);
     XCTAssertEqual(node.color().red, 0.1f);
