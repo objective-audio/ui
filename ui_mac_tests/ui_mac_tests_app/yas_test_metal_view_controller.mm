@@ -19,7 +19,7 @@ static __weak YASTestMetalViewController *_shared = nil;
 #if TARGET_OS_IPHONE
 - (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
 #elif TARGET_OS_MAC
-- (nullable instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(nullable NSNibName)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
 #endif
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
