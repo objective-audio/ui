@@ -67,7 +67,7 @@ struct sample::cursor_over_planes::impl : base::impl {
             event_observers.emplace_back(renderer.event_manager().subject().make_observer(
                 ui::event_manager::method::cursor_changed,
                 [weak_node = to_weak(node),
-                 prev_detected = std::move(std::make_shared<bool>(false))](auto const &context) {
+                 prev_detected = std::make_shared<bool>(false)](auto const &context) {
                     ui::event const &event = context.value;
                     auto cursor_event = event.get<ui::cursor>();
 
@@ -94,7 +94,7 @@ struct sample::cursor_over_planes::impl : base::impl {
                 }));
         }
 
-        return std::move(event_observers);
+        return event_observers;
     }
 
     std::vector<ui::node> _nodes;
