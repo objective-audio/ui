@@ -20,6 +20,7 @@
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
+#include "yas_ui_math.h"
 #include "yas_unless.h"
 
 using namespace yas;
@@ -476,6 +477,10 @@ float ui::node::angle() const {
     return impl_ptr<impl>()->_angle_property.value();
 }
 
+float ui::node::radians() const {
+    return radians_from_degrees(this->angle());
+}
+
 ui::size ui::node::scale() const {
     return impl_ptr<impl>()->_scale_property.value();
 }
@@ -530,6 +535,10 @@ void ui::node::set_position(ui::point point) {
 
 void ui::node::set_angle(float const angle) {
     impl_ptr<impl>()->_angle_property.set_value(angle);
+}
+
+void ui::node::set_radians(float const radians) {
+    this->set_angle(degrees_from_radians(radians));
 }
 
 void ui::node::set_scale(ui::size scale) {
