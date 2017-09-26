@@ -557,6 +557,7 @@
 				TargetAttributes = {
 					B65F6D991CC87D12007C3523 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = WVVR5YE53F;
 					};
 				};
 			};
@@ -800,6 +801,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				DEVELOPMENT_TEAM = WVVR5YE53F;
 				INFOPLIST_FILE = ui_ios_sample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.ui-ios-sample";
@@ -813,6 +815,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				DEVELOPMENT_TEAM = WVVR5YE53F;
 				INFOPLIST_FILE = ui_ios_sample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.ui-ios-sample";
