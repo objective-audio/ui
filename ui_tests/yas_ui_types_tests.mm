@@ -80,7 +80,8 @@ using namespace yas;
                              simd::float4{9.0f, 10.0f, 11.0f, 12.0f}, simd::float4{13.0f, 14.0f, 15.0f, 16.0f}};
     simd::float4x4 matrix_b{simd::float4{5.0f, 6.0f, 7.0f, 8.0f}, simd::float4{9.0f, 10.0f, 11.0f, 12.0f},
                             simd::float4{13.0f, 14.0f, 15.0f, 16.0f}, simd::float4{1.0f, 2.0f, 3.0f, 4.0f}};
-    simd::float4x4 matrix_c{0};
+    simd::float4x4 matrix_c{simd::float4{0.0f, 0.0f, 0.0f, 0.0f}, simd::float4{0.0f, 0.0f, 0.0f, 0.0f},
+                            simd::float4{0.0f, 0.0f, 0.0f, 0.0f}, simd::float4{0.0f, 0.0f, 0.0f, 0.0f}};
 
     XCTAssertTrue(is_equal(matrix_a1, matrix_a1));
     XCTAssertTrue(is_equal(matrix_a1, matrix_a2));
