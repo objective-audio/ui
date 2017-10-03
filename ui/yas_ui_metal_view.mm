@@ -61,6 +61,14 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #if TARGET_OS_IPHONE
 
+- (void)safeAreaInsetsDidChange {
+    [self.uiDelegate uiMetalView:self safeAreaInsetsDidChange:self.uiSafeAreaInsets];
+}
+
+- (yas_edge_insets)uiSafeAreaInsets {
+    return self.safeAreaInsets;
+}
+
 - (CGSize)drawableSize {
     auto const view_size = self.frame.size;
     auto const scale = self.contentScaleFactor;
@@ -104,6 +112,10 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 #elif TARGET_OS_MAC
+
+- (yas_edge_insets)uiSafeAreaInsets {
+    return NSEdgeInsetsZero;
+}
 
 - (void)_sendCursorEvent:(NSEvent *)event {
     if (_cpp.event_manager) {
