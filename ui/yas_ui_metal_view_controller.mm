@@ -19,7 +19,7 @@ namespace ui {
 }
 }
 
-@interface YASUIMetalViewController () <MTKViewDelegate>
+@interface YASUIMetalViewController () <MTKViewDelegate, YASUIMetalViewDelegate>
 
 @end
 
@@ -63,6 +63,7 @@ namespace ui {
     [super viewDidLoad];
 
     self.metalView.delegate = self;
+    self.metalView.uiDelegate = self;
 }
 
 - (YASUIMetalView *)metalView {
@@ -104,6 +105,14 @@ namespace ui {
 - (void)drawInMTKView:(YASUIMetalView *)view {
     if (_cpp.renderable && self.metalView) {
         _cpp.renderable.render(self.metalView);
+    }
+}
+
+#pragma mark - YASUIMetalViewDelegate
+
+- (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(yas_edge_insets)insets {
+    if (_cpp.renderable && self.metalView) {
+        self->_cpp.renderable.safe_area_insets_did_change(self.metalView, insets);
     }
 }
 
