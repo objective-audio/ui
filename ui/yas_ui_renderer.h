@@ -35,6 +35,7 @@ namespace ui {
             will_render,
             view_size_changed,
             scale_factor_changed,
+            safe_area_insets_changed,
         };
 
         using subject_t = subject<ui::renderer, ui::renderer::method>;
@@ -74,6 +75,8 @@ namespace ui {
 
         ui::layout_guide_rect const &view_layout_guide_rect() const;
         ui::layout_guide_rect &view_layout_guide_rect();
+        ui::layout_guide_rect const &safe_area_layout_guide_rect() const;
+        ui::layout_guide_rect &safe_area_layout_guide_rect();
 
        private:
         ui::view_renderable _view_renderable = nullptr;
