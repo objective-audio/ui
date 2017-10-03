@@ -26,7 +26,6 @@
 		B64F91101CF2930900365111 /* yas_ui_batch.mm in Sources */ = {isa = PBXBuildFile; fileRef = B64F910E1CF2930800365111 /* yas_ui_batch.mm */; };
 		B65553861D6400C5000FB98F /* yas_sample_justified_points.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65553841D6400C5000FB98F /* yas_sample_justified_points.mm */; };
 		B65A3A211CCE442E00929FB4 /* yas_ui_math.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65A3A1F1CCE442E00929FB4 /* yas_ui_math.mm */; };
-		B65AFCBD1D2011E300D0AC11 /* yas_objc_unowned.m in Sources */ = {isa = PBXBuildFile; fileRef = B65AFCBC1D2011E300D0AC11 /* yas_objc_unowned.m */; };
 		B65F6E4E1CC8804D007C3523 /* YASSampleMetalViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */; };
 		B67443711D1E9B02008F6161 /* yas_ui_metal_system.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67443701D1E9B02008F6161 /* yas_ui_metal_system.mm */; };
 		B67B89E71CDA212B0081848D /* yas_sample_big_button.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89E61CDA212B0081848D /* yas_sample_big_button.mm */; };
@@ -129,8 +128,6 @@
 		B659DB1E1EA0589300F29AD3 /* yas_fast_each.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_fast_each.h; sourceTree = "<group>"; };
 		B65A3A1F1CCE442E00929FB4 /* yas_ui_math.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_math.mm; sourceTree = "<group>"; };
 		B65A3A201CCE442E00929FB4 /* yas_ui_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_math.h; sourceTree = "<group>"; };
-		B65AFCBB1D2011E300D0AC11 /* yas_objc_unowned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_objc_unowned.h; path = /Users/yuki/Documents/Programming/Project/Git/ui/submodules/cpp_utils/submodules/objc_utils/objc_utils/yas_objc_unowned.h; sourceTree = "<absolute>"; };
-		B65AFCBC1D2011E300D0AC11 /* yas_objc_unowned.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yas_objc_unowned.m; path = /Users/yuki/Documents/Programming/Project/Git/ui/submodules/cpp_utils/submodules/objc_utils/objc_utils/yas_objc_unowned.m; sourceTree = "<absolute>"; };
 		B65CBB571D075CC3006D9448 /* yas_flagset_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset_private.h; sourceTree = "<group>"; };
 		B65CBB581D075CC3006D9448 /* yas_flagset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset.h; sourceTree = "<group>"; };
 		B65F6E4C1CC8804D007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
@@ -174,7 +171,6 @@
 		B6C62F9B1D02C404001952EC /* yas_ui_detector_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_detector_protocol.h; sourceTree = "<group>"; };
 		B6C760E81CA79A5300BEE95A /* yas_ui_node_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_node_protocol.h; sourceTree = "<group>"; };
 		B6C760E91CA79A5300BEE95A /* yas_ui_node_protocol.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_node_protocol.mm; sourceTree = "<group>"; };
-		B6D1A9A81CAEA49B0003C6CF /* yas_objc_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_objc_macros.h; path = /Users/yuki/Documents/Programming/Project/Git/ui/submodules/cpp_utils/submodules/objc_utils/objc_utils/yas_objc_macros.h; sourceTree = "<absolute>"; };
 		B6D1A9AA1CAEA5330003C6CF /* yas_objc_ptr_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_ptr_private.h; sourceTree = "<group>"; };
 		B6D1A9AB1CAEA5330003C6CF /* yas_objc_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_objc_ptr.h; sourceTree = "<group>"; };
 		B6D1A9AC1CAEA5330003C6CF /* yas_objc_ptr.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_objc_ptr.mm; sourceTree = "<group>"; };
@@ -189,6 +185,9 @@
 		B6DF849A1D8CF29A00A2EE48 /* yas_ui_strings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_strings.mm; sourceTree = "<group>"; };
 		B6E083901CA382BC005A5779 /* yas_ui_action.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_action.mm; sourceTree = "<group>"; };
 		B6E083911CA382BC005A5779 /* yas_ui_action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_action.h; sourceTree = "<group>"; };
+		B6E429A21F7FEEEF00DFF91E /* yas_objc_unowned.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = yas_objc_unowned.m; sourceTree = "<group>"; };
+		B6E429A31F7FEEEF00DFF91E /* yas_objc_macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_objc_macros.h; sourceTree = "<group>"; };
+		B6E429A41F7FEEEF00DFF91E /* yas_objc_unowned.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_objc_unowned.h; sourceTree = "<group>"; };
 		B6E42C131D60434D00FB483D /* yas_ui_layout_guide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_layout_guide.cpp; sourceTree = "<group>"; };
 		B6E42C141D60434D00FB483D /* yas_ui_layout_guide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_guide.h; sourceTree = "<group>"; };
 		B6EA81FF1CAAAC82009C870A /* yas_ui_metal_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_protocol.h; sourceTree = "<group>"; };
@@ -280,13 +279,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B6E429A11F7FEEEF00DFF91E /* objc_utils */ = {
+			isa = PBXGroup;
+			children = (
+				B6E429A31F7FEEEF00DFF91E /* yas_objc_macros.h */,
+				B6E429A41F7FEEEF00DFF91E /* yas_objc_unowned.h */,
+				B6E429A21F7FEEEF00DFF91E /* yas_objc_unowned.m */,
+			);
+			name = objc_utils;
+			path = ../submodules/cpp_utils/submodules/objc_utils/objc_utils;
+			sourceTree = "<group>";
+		};
 		B6F501461C9BFF9800A0B4A1 = {
 			isa = PBXGroup;
 			children = (
 				B6ABA5DA1CB402EF008C7714 /* MetalKit.framework */,
 				B6F501B41C9C009D00A0B4A1 /* GLKit.framework */,
 				B6F5018A1C9BFFD400A0B4A1 /* cpp_utils */,
-				B6F5018E1C9BFFD400A0B4A1 /* objc_utils */,
+				B6E429A11F7FEEEF00DFF91E /* objc_utils */,
 				B6F501A01C9BFFD400A0B4A1 /* ui */,
 				B6F501511C9BFF9800A0B4A1 /* ui_mac_sample */,
 				B6F501501C9BFF9800A0B4A1 /* Products */,
@@ -402,17 +412,6 @@
 			);
 			name = cpp_utils;
 			path = /Users/yuki/Documents/Programming/Project/Git/ui/ui_tests/../submodules/cpp_utils/cpp_utils;
-			sourceTree = "<absolute>";
-		};
-		B6F5018E1C9BFFD400A0B4A1 /* objc_utils */ = {
-			isa = PBXGroup;
-			children = (
-				B6D1A9A81CAEA49B0003C6CF /* yas_objc_macros.h */,
-				B65AFCBB1D2011E300D0AC11 /* yas_objc_unowned.h */,
-				B65AFCBC1D2011E300D0AC11 /* yas_objc_unowned.m */,
-			);
-			name = objc_utils;
-			path = /Users/yuki/Documents/Programming/Project/Git/ui/ui_tests/../submodules/objc_utils/objc_utils;
 			sourceTree = "<absolute>";
 		};
 		B6F501911C9BFFD400A0B4A1 /* shader_mac */ = {
@@ -649,7 +648,6 @@
 				B64F91101CF2930900365111 /* yas_ui_batch.mm in Sources */,
 				B6C413F81CDC61610012095F /* yas_sample_big_button_text.mm in Sources */,
 				B643EEF91D290CF100179248 /* yas_ui_metal_system_protocol.mm in Sources */,
-				B65AFCBD1D2011E300D0AC11 /* yas_objc_unowned.m in Sources */,
 				B6C413EC1CDC5FBE0012095F /* yas_sample_main.mm in Sources */,
 				B6E083921CA382BC005A5779 /* yas_ui_action.mm in Sources */,
 				B6F501D81C9E355B00A0B4A1 /* yas_ui_render_info.mm in Sources */,
@@ -726,7 +724,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -771,7 +768,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};

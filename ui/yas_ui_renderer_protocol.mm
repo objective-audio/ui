@@ -22,6 +22,10 @@ void ui::view_renderable::size_will_change(yas_objc_view *const view, CGSize con
     impl_ptr<impl>()->view_size_will_change(view, size);
 }
 
+void ui::view_renderable::safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) {
+    impl_ptr<impl>()->view_safe_area_insets_did_change(view);
+}
+
 void ui::view_renderable::render(yas_objc_view *const view) {
     impl_ptr<impl>()->view_render(view);
 }

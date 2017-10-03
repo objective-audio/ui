@@ -26,4 +26,10 @@ using namespace yas;
 #endif
 }
 
+#if TARGET_OS_IPHONE
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+#endif
+
 @end

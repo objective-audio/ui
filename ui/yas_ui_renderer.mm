@@ -64,8 +64,9 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             case ui::system_type::metal: {
                 if (auto metalView = objc_cast<YASUIMetalView>(view)) {
                     _metal_system.renderable().view_configure(view);
+                    this->_safe_area_insets = metalView.uiSafeAreaInsets;
                     auto const drawable_size = metalView.drawableSize;
-                    view_size_will_change(view, drawable_size);
+                    this->view_size_will_change(view, drawable_size);
                 } else {
                     throw "view not for metal.";
                 }
@@ -87,15 +88,45 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         auto const view_size = view.bounds.size;
         auto const update_view_size_result = _update_view_size(view_size, drawable_size);
         auto const update_scale_result = _update_scale_factor();
+        update_result update_safe_area_result = update_result::no_change;
+
+        if ([view isKindOfClass:[YASUIMetalView class]]) {
+            auto const metalView = (YASUIMetalView *)view;
+            update_safe_area_result = _update_safe_area_insets(metalView.uiSafeAreaInsets);
+        }
 
         if (to_bool(update_view_size_result)) {
-            _update_layout_guide_rect();
+            this->_update_layout_guide_rect();
+            this->_update_safe_area_layout_guide_rect();
 
             _subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
 
             if (to_bool(update_scale_result)) {
                 _subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
             }
+
+            if (to_bool(update_safe_area_result)) {
+                _subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
+            }
+        }
+    }
+
+    void view_safe_area_insets_did_change(yas_objc_view *const view) override {
+        if (!to_bool(system_type())) {
+            throw "system not found.";
+        }
+
+        if (![view isKindOfClass:[YASUIMetalView class]]) {
+            return;
+        }
+
+        auto const metalView = (YASUIMetalView *)view;
+        auto const update_result = this->_update_safe_area_insets(metalView.uiSafeAreaInsets);
+
+        if (to_bool(update_result)) {
+            this->_update_safe_area_layout_guide_rect();
+
+            this->_subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
         }
     }
 
@@ -158,6 +189,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::uint_size _view_size = {.width = 0, .height = 0};
     ui::uint_size _drawable_size = {.width = 0, .height = 0};
     double _scale_factor = 0.0;
+    yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 
     yas::ui::renderer::subject_t _subject;
@@ -167,6 +199,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::detector _detector;
     ui::event_manager _event_manager;
     ui::layout_guide_rect _view_layout_guide_rect;
+    ui::layout_guide_rect _safe_area_layout_guide_rect;
 
    private:
     update_result _update_view_size(CGSize const v_size, CGSize const d_size) {
@@ -205,12 +238,40 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         }
     }
 
+    update_result _update_safe_area_insets(yas_edge_insets const insets) {
+        auto const prev_insets = this->_safe_area_insets;
+
+        this->_safe_area_insets = insets;
+
+        if (this->_is_equal_edge_insets(this->_safe_area_insets, prev_insets)) {
+            return update_result::no_change;
+        } else {
+            return update_result::changed;
+        }
+    }
+
     void _update_layout_guide_rect() {
         float const view_width = _view_size.width;
         float const view_height = _view_size.height;
 
         _view_layout_guide_rect.set_region(
             {.origin = {-view_width * 0.5f, -view_height * 0.5f}, .size = {view_width, view_height}});
+    }
+
+    void _update_safe_area_layout_guide_rect() {
+        float const view_width = this->_view_size.width;
+        float const view_height = this->_view_size.height;
+        float const origin_x = -view_width * 0.5f + this->_safe_area_insets.left;
+        float const origin_y = -view_height * 0.5f + this->_safe_area_insets.bottom;
+        float const width = view_width - this->_safe_area_insets.left - this->_safe_area_insets.right;
+        float const height = view_height - this->_safe_area_insets.bottom - this->_safe_area_insets.top;
+
+        this->_safe_area_layout_guide_rect.set_region({.origin = {origin_x, origin_y}, .size = {width, height}});
+    }
+
+    bool _is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2) {
+        return insets1.top == insets2.top && insets1.left == insets2.left && insets1.bottom == insets2.bottom &&
+               insets1.right == insets2.right;
     }
 };
 
@@ -312,4 +373,12 @@ ui::layout_guide_rect const &ui::renderer::view_layout_guide_rect() const {
 
 ui::layout_guide_rect &ui::renderer::view_layout_guide_rect() {
     return impl_ptr<impl>()->_view_layout_guide_rect;
+}
+
+ui::layout_guide_rect const &ui::renderer::safe_area_layout_guide_rect() const {
+    return impl_ptr<impl>()->_safe_area_layout_guide_rect;
+}
+
+ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
+    return impl_ptr<impl>()->_safe_area_layout_guide_rect;
 }

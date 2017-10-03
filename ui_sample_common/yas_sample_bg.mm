@@ -10,43 +10,50 @@ struct sample::bg::impl : base::impl {
     ui::rect_plane _rect_plane = ui::make_rect_plane(1);
 
     impl() {
-        _rect_plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
         auto &node = _rect_plane.node();
-        node.set_scale({.v = 0.0f});
         node.set_color({.v = 0.75f});
     }
 
     void prepare(sample::bg &bg) {
         _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
-        _renderer_observer = _rect_plane.node().subject().make_observer(
-            ui::node::method::renderer_changed,
-            [weak_bg = to_weak(bg), view_size_observer = base{nullptr}](auto const &context) mutable {
-                if (auto bg = weak_bg.lock()) {
-                    auto impl = bg.impl_ptr<sample::bg::impl>();
-                    auto node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        view_size_observer = _make_view_size_observer(node, renderer);
-                    } else {
-                        view_size_observer = nullptr;
-                    }
+        _renderer_observer = _rect_plane.node().subject().make_observer(ui::node::method::renderer_changed, [
+            weak_bg = to_weak(bg), observer = base{nullptr}, safe_area_observer = base{nullptr}
+        ](auto const &context) mutable {
+            if (auto bg = weak_bg.lock()) {
+                auto impl = bg.impl_ptr<sample::bg::impl>();
+                auto node = context.value;
+                if (auto renderer = node.renderer()) {
+                    observer = _make_observer(node, renderer, weak_bg);
+                } else {
+                    observer = nullptr;
                 }
-            });
+            }
+        });
     }
 
    private:
-    static base _make_view_size_observer(ui::node &node, ui::renderer &renderer) {
-        auto set_scale = [](ui::node &node, ui::uint_size const &view_size) {
-            node.set_scale({static_cast<float>(view_size.width), static_cast<float>(view_size.height)});
+    static base _make_observer(ui::node &node, ui::renderer &renderer, weak<sample::bg> &weak_bg) {
+        auto set_rect = [weak_bg](ui::node &node, ui::renderer const &renderer) {
+            if (auto bg = weak_bg.lock()) {
+                bg.rect_plane().data().set_rect_position(renderer.safe_area_layout_guide_rect().region(), 0);
+            }
         };
 
-        set_scale(node, renderer.view_size());
+        set_rect(node, renderer);
 
-        return renderer.subject().make_observer(
-            ui::renderer::method::view_size_changed,
-            [weak_node = to_weak(node), set_scale = std::move(set_scale)](auto const &context) {
+        return renderer.subject().make_wild_card_observer(
+            [weak_node = to_weak(node), set_rect = std::move(set_rect)](auto const &context) {
                 if (auto node = weak_node.lock()) {
-                    auto const &renderer = context.value;
-                    set_scale(node, renderer.view_size());
+                    switch (context.key) {
+                        case ui::renderer::method::view_size_changed:
+                        case ui::renderer::method::safe_area_insets_changed: {
+                            auto const &renderer = context.value;
+                            set_rect(node, renderer);
+                        } break;
+
+                        default:
+                            break;
+                    }
                 }
             });
     }
