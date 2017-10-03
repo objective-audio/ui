@@ -43,16 +43,16 @@ struct sample::inputted_text::impl : base::impl {
                         });
 
                     left_layout = ui::make_layout({.distance = 4.0f,
-                                                   .source_guide = renderer.view_layout_guide_rect().left(),
+                                                   .source_guide = renderer.safe_area_layout_guide_rect().left(),
                                                    .destination_guide = strings_frame_guide_rect.left()});
                     right_layout = ui::make_layout({.distance = -4.0f,
-                                                    .source_guide = renderer.view_layout_guide_rect().right(),
+                                                    .source_guide = renderer.safe_area_layout_guide_rect().right(),
                                                     .destination_guide = strings_frame_guide_rect.right()});
                     bottom_layout = ui::make_layout({.distance = 4.0f,
-                                                     .source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                     .source_guide = renderer.safe_area_layout_guide_rect().bottom(),
                                                      .destination_guide = strings_frame_guide_rect.bottom()});
                     top_layout = ui::make_layout({.distance = -4.0f,
-                                                  .source_guide = renderer.view_layout_guide_rect().top(),
+                                                  .source_guide = renderer.safe_area_layout_guide_rect().top(),
                                                   .destination_guide = strings_frame_guide_rect.top()});
 
                 } else {
