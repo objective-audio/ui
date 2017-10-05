@@ -553,4 +553,37 @@ using namespace yas;
     XCTAssertEqual(range.max(), 3.0f);
 }
 
+- (void)test_uint_origin_zero {
+    XCTAssertEqual(ui::uint_origin::zero(), (ui::uint_origin{.x = 0, .y = 0}));
+}
+
+- (void)test_uint_size_zero {
+    XCTAssertEqual(ui::uint_size::zero(), (ui::uint_size{.width = 0, .height = 0}));
+}
+
+- (void)test_uint_region_zero {
+    XCTAssertEqual(ui::uint_region::zero(), (ui::uint_region{.origin = ui::uint_origin{.x = 0, .y = 0},
+                                                             .size = ui::uint_size{.width = 0, .height = 0}}));
+}
+
+- (void)test_uint_range_zero {
+    XCTAssertEqual(ui::uint_range::zero(), (ui::uint_range{.location = 0, .length = 0}));
+}
+
+- (void)test_point_zero {
+    XCTAssertEqual(ui::point::zero(), (ui::point{0.0f, 0.0f}));
+}
+
+- (void)test_size_zero {
+    XCTAssertEqual(ui::size::zero(), (ui::size{0.0f, 0.0f}));
+}
+
+- (void)test_range_zero {
+    XCTAssertEqual(ui::range::zero(), (ui::range{0.0f, 0.0f}));
+}
+
+- (void)test_region_zero {
+    XCTAssertEqual(ui::region::zero(), (ui::region{0.0f, 0.0f, 0.0f, 0.0f}));
+}
+
 @end
