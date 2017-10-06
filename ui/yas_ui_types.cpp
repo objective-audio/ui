@@ -16,7 +16,7 @@ bool ui::uint_origin::operator!=(ui::uint_origin const &rhs) const {
     return x != rhs.x || y != rhs.y;
 }
 
-ui::uint_origin ui::uint_origin::zero() {
+ui::uint_origin const &ui::uint_origin::zero() {
     static ui::uint_origin const _zero{.x = 0, .y = 0};
     return _zero;
 }
@@ -31,7 +31,7 @@ bool ui::uint_size::operator!=(ui::uint_size const &rhs) const {
     return width != rhs.width || height != rhs.height;
 }
 
-ui::uint_size ui::uint_size::zero() {
+ui::uint_size const &ui::uint_size::zero() {
     static ui::uint_size const _zero{.width = 0, .height = 0};
     return _zero;
 }
@@ -62,7 +62,7 @@ uint32_t ui::uint_region::top() const {
     return std::max(origin.y, origin.y + size.height);
 }
 
-ui::uint_region ui::uint_region::zero() {
+ui::uint_region const &ui::uint_region::zero() {
     static ui::uint_region const _zero{.origin = ui::uint_origin::zero(), .size = ui::uint_size::zero()};
     return _zero;
 }
@@ -85,7 +85,7 @@ uint32_t ui::uint_range::max() const {
     return std::max(location, location + length);
 }
 
-ui::uint_range ui::uint_range::zero() {
+ui::uint_range const &ui::uint_range::zero() {
     static ui::uint_range const _zero{.location = 0, .length = 0};
     return _zero;
 }
@@ -104,7 +104,7 @@ ui::point::operator bool() const {
     return x != 0.0f || y != 0.0f;
 }
 
-ui::point ui::point::zero() {
+ui::point const &ui::point::zero() {
     static ui::point const _zero{.x = 0.0f, .y = 0.0f};
     return _zero;
 }
@@ -123,7 +123,7 @@ ui::size::operator bool() const {
     return width != 0.0f || height != 0.0f;
 }
 
-ui::size ui::size::zero() {
+ui::size const &ui::size::zero() {
     static ui::size const _zero{.width = 0.0f, .height = 0.0f};
     return _zero;
 }
@@ -150,7 +150,7 @@ float ui::range::max() const {
     return std::max(location, location + length);
 }
 
-ui::range ui::range::zero() {
+ui::range const &ui::range::zero() {
     static ui::range const _zero{.location = 0.0f, .length = 0.0f};
     return _zero;
 }
@@ -193,7 +193,7 @@ float ui::region::top() const {
     return std::max(origin.y, origin.y + size.height);
 }
 
-ui::region ui::region::zero() {
+ui::region const &ui::region::zero() {
     static ui::region const _zero{.origin = ui::point::zero(), .size = ui::size::zero()};
     return _zero;
 }

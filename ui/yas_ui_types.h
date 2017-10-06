@@ -25,7 +25,7 @@ namespace ui {
         bool operator==(uint_origin const &rhs) const;
         bool operator!=(uint_origin const &rhs) const;
 
-        static uint_origin zero();
+        static uint_origin const &zero();
     };
 
     struct uint_size {
@@ -35,7 +35,7 @@ namespace ui {
         bool operator==(uint_size const &rhs) const;
         bool operator!=(uint_size const &rhs) const;
         
-        static uint_size zero();
+        static uint_size const &zero();
     };
 
     struct uint_region {
@@ -50,7 +50,7 @@ namespace ui {
         uint32_t bottom() const;
         uint32_t top() const;
         
-        static uint_region zero();
+        static uint_region const &zero();
     };
 
     struct uint_range {
@@ -63,7 +63,7 @@ namespace ui {
         uint32_t min() const;
         uint32_t max() const;
         
-        static uint_range zero();
+        static uint_range const &zero();
     };
 
     struct point {
@@ -80,7 +80,7 @@ namespace ui {
 
         explicit operator bool() const;
         
-        static point zero();
+        static point const &zero();
     };
 
     struct size {
@@ -97,7 +97,7 @@ namespace ui {
 
         explicit operator bool() const;
         
-        static size zero();
+        static size const &zero();
     };
 
     struct range {
@@ -117,7 +117,7 @@ namespace ui {
         float min() const;
         float max() const;
         
-        static range zero();
+        static range const &zero();
     };
 
     struct region {
@@ -141,7 +141,7 @@ namespace ui {
         float bottom() const;
         float top() const;
         
-        static region zero();
+        static region const &zero();
     };
 
     struct color {
