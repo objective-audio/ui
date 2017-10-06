@@ -284,10 +284,6 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::size{1.0f, 2.0f}), "{1.000000, 2.000000}");
 }
 
-- (void)test_color_to_string {
-    XCTAssertEqual(to_string(ui::color{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
-}
-
 - (void)test_simd_float2_to_string {
     XCTAssertEqual(to_string(simd::float2{1.0f, 2.0f}), "{1.000000, 2.000000}");
 }
@@ -344,12 +340,6 @@ using namespace yas;
     XCTAssertEqual(stream.str(), "{11.000000, 12.000000}");
 }
 
-- (void)test_color_ostream {
-    std::ostringstream stream;
-    stream << ui::color{13.0f, 14.0f, 15.0f};
-    XCTAssertEqual(stream.str(), "{13.000000, 14.000000, 15.000000}");
-}
-
 - (void)test_create_point {
     ui::point p;
 
@@ -383,22 +373,6 @@ using namespace yas;
 
     XCTAssertEqual(s.width, 1.0f);
     XCTAssertEqual(s.height, 2.0f);
-}
-
-- (void)test_create_color {
-    ui::color c = {.v = 1.0f};
-
-    XCTAssertEqual(c.red, 1.0f);
-    XCTAssertEqual(c.green, 1.0f);
-    XCTAssertEqual(c.blue, 1.0f);
-}
-
-- (void)test_create_color_with_params {
-    ui::color c{1.0f, 2.0f, 3.0f};
-
-    XCTAssertEqual(c.red, 1.0f);
-    XCTAssertEqual(c.green, 2.0f);
-    XCTAssertEqual(c.blue, 3.0f);
 }
 
 - (void)test_create_region_with_float4 {
@@ -474,31 +448,6 @@ using namespace yas;
     XCTAssertTrue(r1 != r4);
     XCTAssertTrue(r1 != r5);
     XCTAssertFalse(rz1 != rz2);
-}
-
-- (void)test_is_equal_colors {
-    ui::color c1{1.0f, 2.0f, 3.0f};
-    ui::color c2{1.0f, 2.0f, 3.0f};
-    ui::color c3{1.1f, 2.0f, 3.0f};
-    ui::color c4{1.0f, 2.1f, 3.0f};
-    ui::color c5{1.0f, 2.0f, 3.1f};
-    ui::color c6{1.1f, 2.1f, 3.1f};
-    ui::color cz1{0.0f, 0.0f, 0.0f};
-    ui::color cz2{0.0f, 0.0f, 0.0f};
-
-    XCTAssertTrue(c1 == c2);
-    XCTAssertFalse(c1 == c3);
-    XCTAssertFalse(c1 == c4);
-    XCTAssertFalse(c1 == c5);
-    XCTAssertFalse(c1 == c6);
-    XCTAssertTrue(cz1 == cz2);
-
-    XCTAssertFalse(c1 != c2);
-    XCTAssertTrue(c1 != c3);
-    XCTAssertTrue(c1 != c4);
-    XCTAssertTrue(c1 != c5);
-    XCTAssertTrue(c1 != c6);
-    XCTAssertFalse(cz1 != cz2);
 }
 
 - (void)test_uint_region_getter {
