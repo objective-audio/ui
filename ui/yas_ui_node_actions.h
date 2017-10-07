@@ -6,6 +6,7 @@
 
 #include "yas_ui_action.h"
 #include "yas_ui_node.h"
+#include "yas_ui_color.h"
 
 namespace yas {
 namespace ui {

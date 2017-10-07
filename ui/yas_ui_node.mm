@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_types.h"
+#include "yas_ui_color.h"
 // workaround for equation
 #include "yas_observing.h"
 #include "yas_property.h"
