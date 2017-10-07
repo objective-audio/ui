@@ -34,7 +34,7 @@ namespace ui {
 
         bool operator==(uint_size const &rhs) const;
         bool operator!=(uint_size const &rhs) const;
-        
+
         static uint_size const &zero();
     };
 
@@ -49,7 +49,7 @@ namespace ui {
         uint32_t right() const;
         uint32_t bottom() const;
         uint32_t top() const;
-        
+
         static uint_region const &zero();
     };
 
@@ -62,7 +62,7 @@ namespace ui {
 
         uint32_t min() const;
         uint32_t max() const;
-        
+
         static uint_range const &zero();
     };
 
@@ -79,7 +79,7 @@ namespace ui {
         bool operator!=(point const &rhs) const;
 
         explicit operator bool() const;
-        
+
         static point const &zero();
     };
 
@@ -96,7 +96,7 @@ namespace ui {
         bool operator!=(size const &rhs) const;
 
         explicit operator bool() const;
-        
+
         static size const &zero();
     };
 
@@ -116,7 +116,7 @@ namespace ui {
 
         float min() const;
         float max() const;
-        
+
         static range const &zero();
     };
 
@@ -140,24 +140,8 @@ namespace ui {
         float right() const;
         float bottom() const;
         float top() const;
-        
+
         static region const &zero();
-    };
-
-    struct color {
-        union {
-            struct {
-                float red = 1.0f;
-                float green = 1.0f;
-                float blue = 1.0f;
-            };
-            simd::float3 v;
-        };
-
-        bool operator==(color const &rhs) const;
-        bool operator!=(color const &rhs) const;
-
-        explicit operator bool() const;
     };
 
     enum class pivot {
@@ -201,7 +185,6 @@ std::string to_string(ui::uint_region const &);
 std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
-std::string to_string(ui::color const &);
 std::string to_string(simd::float2 const &);
 std::string to_string(simd::float3 const &);
 std::string to_string(simd::float4 const &);
@@ -220,7 +203,6 @@ std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);
-std::ostream &operator<<(std::ostream &, yas::ui::color const &);
 
 std::ostream &operator<<(std::ostream &, simd::float2 const &);
 std::ostream &operator<<(std::ostream &, simd::float3 const &);

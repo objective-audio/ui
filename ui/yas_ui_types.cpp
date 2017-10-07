@@ -198,20 +198,6 @@ ui::region const &ui::region::zero() {
     return _zero;
 }
 
-#pragma mark - ui::color
-
-bool ui::color::operator==(ui::color const &rhs) const {
-    return red == rhs.red && green == rhs.green && blue == rhs.blue;
-}
-
-bool ui::color::operator!=(ui::color const &rhs) const {
-    return red != rhs.red || green != rhs.green || blue != rhs.blue;
-}
-
-ui::color::operator bool() const {
-    return red != 0 || green != 0 || blue != 0;
-}
-
 #pragma mark - vertex2d_rect_t
 
 void ui::vertex2d_rect_t::set_position(ui::region const &region) {
@@ -288,11 +274,6 @@ std::string yas::to_string(ui::size const &size) {
     return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
 }
 
-std::string yas::to_string(ui::color const &color) {
-    return "{" + std::to_string(color.red) + ", " + std::to_string(color.green) + ", " + std::to_string(color.blue) +
-           "}";
-}
-
 std::string yas::to_string(simd::float2 const &value) {
     return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
 }
@@ -358,11 +339,6 @@ std::ostream &operator<<(std::ostream &os, yas::ui::point const &point) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::size const &size) {
     os << to_string(size);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::color const &color) {
-    os << to_string(color);
     return os;
 }
 
