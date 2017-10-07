@@ -208,11 +208,12 @@ struct ui::collection_layout::impl : base::impl {
         auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());
         auto const &preferred_cell_count = this->_preferred_cell_count_property.value();
 
-        if (preferred_cell_count == 0 || frame_region.size.width == 0.0f) {
+        if (preferred_cell_count == 0) {
             this->_cell_guide_rects.clear();
             return;
         }
 
+        auto const is_col_limiting = frame_region.size.width != 0;
         auto const is_row_limiting = frame_region.size.height != 0;
         auto const border_rect = this->_transformed_border_rect();
         auto const border_abs_size = ui::size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
@@ -228,7 +229,8 @@ struct ui::collection_layout::impl : base::impl {
             auto const &idx = yas_each_index(each);
             auto cell_size = this->_transformed_cell_size(idx);
 
-            if (fabsf(origin.x + cell_size.width) > border_abs_size.width || this->_is_top_of_new_line(idx)) {
+            if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
+                this->_is_top_of_new_line(idx)) {
                 regions.emplace_back(std::move(row_regions));
 
                 auto const row_new_line_diff = this->_transformed_row_new_line_diff(idx);
