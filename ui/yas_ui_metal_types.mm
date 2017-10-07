@@ -6,8 +6,8 @@
 
 using namespace yas;
 
-ui::uint_origin yas::to_uint_origin(MTLOrigin const origin) {
-    return ui::uint_origin{static_cast<uint32_t>(origin.x), static_cast<uint32_t>(origin.y)};
+ui::uint_point yas::to_uint_point(MTLOrigin const origin) {
+    return ui::uint_point{static_cast<uint32_t>(origin.x), static_cast<uint32_t>(origin.y)};
 }
 
 ui::uint_size yas::to_uint_size(MTLSize const size) {
@@ -19,7 +19,7 @@ ui::uint_region yas::to_uint_region(MTLRegion const region) {
                            static_cast<uint32_t>(region.size.width), static_cast<uint32_t>(region.size.height)};
 }
 
-MTLOrigin yas::to_mtl_origin(ui::uint_origin const origin) {
+MTLOrigin yas::to_mtl_origin(ui::uint_point const origin) {
     return MTLOrigin{origin.x, origin.y, 0};
 }
 

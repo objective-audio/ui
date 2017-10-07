@@ -90,11 +90,11 @@ using namespace yas;
     XCTAssertFalse(is_equal(matrix_a1, matrix_c));
 }
 
-- (void)test_is_equal_uint_origin {
-    auto origin1_2a = ui::uint_origin{1, 2};
-    auto origin1_2b = ui::uint_origin{1, 2};
-    auto origin1_3 = ui::uint_origin{1, 3};
-    auto origin2_2 = ui::uint_origin{2, 2};
+- (void)test_is_equal_uint_point {
+    auto origin1_2a = ui::uint_point{1, 2};
+    auto origin1_2b = ui::uint_point{1, 2};
+    auto origin1_3 = ui::uint_point{1, 3};
+    auto origin2_2 = ui::uint_point{2, 2};
 
     XCTAssertTrue(origin1_2a == origin1_2a);
     XCTAssertTrue(origin1_2a == origin1_2b);
@@ -125,9 +125,9 @@ using namespace yas;
 }
 
 - (void)test_is_equal_uint_region {
-    auto origin_a1 = ui::uint_origin{1, 2};
-    auto origin_a2 = ui::uint_origin{1, 2};
-    auto origin_b = ui::uint_origin{3, 4};
+    auto origin_a1 = ui::uint_point{1, 2};
+    auto origin_a2 = ui::uint_point{1, 2};
+    auto origin_b = ui::uint_point{3, 4};
 
     auto size_a1 = ui::uint_size{5, 6};
     auto size_a2 = ui::uint_size{5, 6};
@@ -259,8 +259,8 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::pivot::right), "right");
 }
 
-- (void)test_uint_origin_to_string {
-    XCTAssertEqual(to_string(ui::uint_origin{1, 2}), "{1, 2}");
+- (void)test_uint_point_to_string {
+    XCTAssertEqual(to_string(ui::uint_point{1, 2}), "{1, 2}");
 }
 
 - (void)test_uint_size_to_string {
@@ -304,9 +304,9 @@ using namespace yas;
                    "10.000000, 11.000000, 12.000000}, {13.000000, 14.000000, 15.000000, 16.000000}}");
 }
 
-- (void)test_uint_origin_ostream {
+- (void)test_uint_point_ostream {
     std::ostringstream stream;
-    stream << ui::uint_origin{1, 2};
+    stream << ui::uint_point{1, 2};
     XCTAssertEqual(stream.str(), "{1, 2}");
 }
 
@@ -502,9 +502,9 @@ using namespace yas;
     XCTAssertEqual(range.max(), 3.0f);
 }
 
-- (void)test_uint_origin_zero {
-    XCTAssertEqual(ui::uint_origin::zero().x, 0);
-    XCTAssertEqual(ui::uint_origin::zero().y, 0);
+- (void)test_uint_point_zero {
+    XCTAssertEqual(ui::uint_point::zero().x, 0);
+    XCTAssertEqual(ui::uint_point::zero().y, 0);
 }
 
 - (void)test_uint_size_zero {

@@ -18,14 +18,14 @@ namespace ui {
         //        open_gl,
     };
 
-    struct uint_origin {
+    struct uint_point {
         uint32_t x = 0;
         uint32_t y = 0;
 
-        bool operator==(uint_origin const &rhs) const;
-        bool operator!=(uint_origin const &rhs) const;
+        bool operator==(uint_point const &rhs) const;
+        bool operator!=(uint_point const &rhs) const;
 
-        static uint_origin const &zero();
+        static uint_point const &zero();
     };
 
     struct uint_size {
@@ -39,7 +39,7 @@ namespace ui {
     };
 
     struct uint_region {
-        uint_origin origin;
+        uint_point origin;
         uint_size size;
 
         bool operator==(uint_region const &rhs) const;
@@ -179,7 +179,7 @@ simd::float4 to_float4(simd::float2 const &);
 bool contains(ui::region const &, ui::point const &);
 
 std::string to_string(ui::pivot const &);
-std::string to_string(ui::uint_origin const &);
+std::string to_string(ui::uint_point const &);
 std::string to_string(ui::uint_size const &);
 std::string to_string(ui::uint_region const &);
 std::string to_string(ui::region const &);
@@ -197,7 +197,7 @@ bool is_equal(simd::float4 const &, simd::float4 const &);
 bool is_equal(simd::float4x4 const &, simd::float4x4 const &);
 }
 
-std::ostream &operator<<(std::ostream &, yas::ui::uint_origin const &);
+std::ostream &operator<<(std::ostream &, yas::ui::uint_point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::region const &);
