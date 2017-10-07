@@ -46,21 +46,21 @@ struct ui::strings::impl : base::impl {
     void prepare(ui::strings &strings) {
         auto weak_strings = to_weak(strings);
 
-        _collection_observers.emplace_back(_collection_layout.subject().make_observer(
+        this->_collection_observers.emplace_back(this->_collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
                 }
             }));
 
-        _collection_observers.emplace_back(_collection_layout.subject().make_observer(
+        this->_collection_observers.emplace_back(this->_collection_layout.subject().make_observer(
             ui::collection_layout::method::alignment_changed, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.subject().notify(ui::strings::method::alignment_changed, strings);
                 }
             }));
 
-        _property_observers.emplace_back(
+        this->_property_observers.emplace_back(
             _text_property.subject().make_observer(property_method::did_change, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
@@ -69,7 +69,7 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        _property_observers.emplace_back(_font_atlas_property.subject().make_observer(
+        this->_property_observers.emplace_back(_font_atlas_property.subject().make_observer(
             property_method::did_change, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_font_atlas_observer();
@@ -79,7 +79,7 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        _property_observers.emplace_back(_line_height_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_line_height_property.subject().make_observer(
             property_method::did_change, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
@@ -88,8 +88,8 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        _update_font_atlas_observer();
-        _update_layout();
+        this->_update_font_atlas_observer();
+        this->_update_layout();
     }
 
    private:
@@ -100,8 +100,8 @@ struct ui::strings::impl : base::impl {
 
     void _update_font_atlas_observer() {
         if (auto &font_atlas = _font_atlas_property.value()) {
-            if (!_font_atlas_observer) {
-                _font_atlas_observer = font_atlas.subject().make_observer(
+            if (!this->_font_atlas_observer) {
+                this->_font_atlas_observer = font_atlas.subject().make_observer(
                     ui::font_atlas::method::texture_changed,
                     [weak_strings = to_weak(cast<ui::strings>())](auto const &context) {
                         if (auto strings = weak_strings.lock()) {
@@ -110,27 +110,27 @@ struct ui::strings::impl : base::impl {
                         }
                     });
 
-                _rect_plane.node().mesh().set_texture(font_atlas.texture());
+                this->_rect_plane.node().mesh().set_texture(font_atlas.texture());
             }
         } else {
-            _rect_plane.node().mesh().set_texture(nullptr);
-            _font_atlas_observer = nullptr;
+            this->_rect_plane.node().mesh().set_texture(nullptr);
+            this->_font_atlas_observer = nullptr;
         }
     }
 
     void _update_layout() {
-        auto const &font_atlas = _font_atlas_property.value();
+        auto const &font_atlas = this->_font_atlas_property.value();
         if (!font_atlas || !font_atlas.texture()) {
-            _collection_layout.set_preferred_cell_count(0);
-            _rect_plane.data().set_rect_count(0);
+            this->_collection_layout.set_preferred_cell_count(0);
+            this->_rect_plane.data().set_rect_count(0);
             return;
         }
 
-        auto const &src_text = _text_property.value();
-        auto const word_count = font_atlas ? std::min(src_text.size(), _max_word_count) : 0;
+        auto const &src_text = this->_text_property.value();
+        auto const word_count = font_atlas ? std::min(src_text.size(), this->_max_word_count) : 0;
         std::string eliminated_text;
         eliminated_text.reserve(word_count);
-        auto const cell_height = _cell_height();
+        auto const cell_height = this->_cell_height();
 
         std::vector<ui::collection_layout::line> lines;
         std::vector<ui::size> cell_sizes;
@@ -153,12 +153,12 @@ struct ui::strings::impl : base::impl {
                 ui::collection_layout::line{.cell_sizes = std::move(cell_sizes), .new_line_min_offset = cell_height});
         }
 
-        _collection_layout.set_lines(std::move(lines));
-        _collection_layout.set_preferred_cell_count(eliminated_text.size());
+        this->_collection_layout.set_lines(std::move(lines));
+        this->_collection_layout.set_preferred_cell_count(eliminated_text.size());
 
-        auto const actual_cell_count = _collection_layout.actual_cell_count();
+        auto const actual_cell_count = this->_collection_layout.actual_cell_count();
 
-        _rect_plane.data().set_rect_count(actual_cell_count);
+        this->_rect_plane.data().set_rect_count(actual_cell_count);
 
         auto handler = [](ui::strings &strings, std::size_t const idx, std::string const &word,
                           ui::region const &region) {
@@ -184,7 +184,7 @@ struct ui::strings::impl : base::impl {
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             auto const word = eliminated_text.substr(idx, 1);
-            auto &cell_rect = _collection_layout.cell_layout_guide_rects().at(idx);
+            auto &cell_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
 
             cell_rect.set_value_changed_handler(
                 [idx, word, weak_strings = to_weak(strings), handler](auto const &context) {
@@ -198,11 +198,11 @@ struct ui::strings::impl : base::impl {
     }
 
     float _cell_height() {
-        auto const &line_height = _line_height_property.value();
+        auto const &line_height = this->_line_height_property.value();
         if (line_height) {
             return *line_height;
         } else {
-            if (auto const &font_atlas = _font_atlas_property.value()) {
+            if (auto const &font_atlas = this->_font_atlas_property.value()) {
                 return font_atlas.ascent() + font_atlas.descent() + font_atlas.leading();
             } else {
                 return 0.0f;
