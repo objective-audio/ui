@@ -10,10 +10,8 @@ struct sample::inputted_text::impl : base::impl {
     ui::strings _strings;
 
     impl(ui::font_atlas &&font_atlas)
-        : _strings({.frame = {.origin = {0.0f, 0.0f}, .size = {200.0f, 0.0f}},
-                    .font_atlas = std::move(font_atlas),
-                    .max_word_count = 512,
-                    .alignment = ui::layout_alignment::min}) {
+        : _strings(
+              {.font_atlas = std::move(font_atlas), .max_word_count = 512, .alignment = ui::layout_alignment::min}) {
         auto &node = _strings.rect_plane().node();
         node.dispatch_method(ui::node::method::renderer_changed);
     }
@@ -22,12 +20,8 @@ struct sample::inputted_text::impl : base::impl {
         auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text),
-            event_observer = base{nullptr},
-            left_layout = ui::layout{nullptr},
-            right_layout = ui::layout{nullptr},
-            bottom_layout = ui::layout{nullptr},
-            top_layout = ui::layout{nullptr}
+            weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = ui::layout{nullptr},
+            right_layout = ui::layout{nullptr}, bottom_layout = ui::layout{nullptr}, top_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
                 auto &node = context.value;
@@ -54,10 +48,11 @@ struct sample::inputted_text::impl : base::impl {
                     top_layout = ui::make_layout({.distance = -4.0f,
                                                   .source_guide = renderer.safe_area_layout_guide_rect().top(),
                                                   .destination_guide = strings_frame_guide_rect.top()});
-
                 } else {
                     event_observer = nullptr;
                     left_layout = nullptr;
+                    right_layout = nullptr;
+                    bottom_layout = nullptr;
                     top_layout = nullptr;
                 }
             }
