@@ -34,7 +34,7 @@ namespace ui {
             ui::font_atlas font_atlas = nullptr;
             std::experimental::optional<float> line_height = nullopt;
             ui::layout_alignment alignment = ui::layout_alignment::min;
-            ui::region frame = {.origin = {.v = 0.0f}, .size = {.v = 0.0f}};
+            ui::region frame = ui::region::zero();
         };
 
         strings();
