@@ -22,9 +22,9 @@ using namespace yas;
 }
 
 - (void)test_to_mtl_origin {
-    ui::uint_origin origin{2, 5};
+    ui::uint_point point{2, 5};
 
-    auto mtl_origin = to_mtl_origin(origin);
+    auto mtl_origin = to_mtl_origin(point);
 
     XCTAssertEqual(mtl_origin.x, 2);
     XCTAssertEqual(mtl_origin.y, 5);
@@ -55,10 +55,10 @@ using namespace yas;
     XCTAssertEqual(mtl_region.size.depth, 1);
 }
 
-- (void)test_to_uint_origin {
+- (void)test_to_uint_point {
     MTLOrigin mtl_origin = MTLOriginMake(2, 5, 0);
 
-    auto origin = to_uint_origin(mtl_origin);
+    auto origin = to_uint_point(mtl_origin);
 
     XCTAssertEqual(origin.x, 2);
     XCTAssertEqual(origin.y, 5);

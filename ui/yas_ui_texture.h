@@ -47,7 +47,7 @@ namespace ui {
         bool has_alpha() const;
 
         draw_image_result add_image(image const &image);
-        draw_image_result replace_image(image const &image, uint_origin const actual_origin);
+        draw_image_result replace_image(image const &image, uint_point const actual_origin);
 
         ui::metal_texture &metal_texture();
 

@@ -6,18 +6,18 @@
 
 using namespace yas;
 
-#pragma mark - ui::uint_origin
+#pragma mark - ui::uint_point
 
-bool ui::uint_origin::operator==(ui::uint_origin const &rhs) const {
+bool ui::uint_point::operator==(ui::uint_point const &rhs) const {
     return x == rhs.x && y == rhs.y;
 }
 
-bool ui::uint_origin::operator!=(ui::uint_origin const &rhs) const {
+bool ui::uint_point::operator!=(ui::uint_point const &rhs) const {
     return x != rhs.x || y != rhs.y;
 }
 
-ui::uint_origin const &ui::uint_origin::zero() {
-    static ui::uint_origin const _zero{.x = 0, .y = 0};
+ui::uint_point const &ui::uint_point::zero() {
+    static ui::uint_point const _zero{.x = 0, .y = 0};
     return _zero;
 }
 
@@ -63,7 +63,7 @@ uint32_t ui::uint_region::top() const {
 }
 
 ui::uint_region const &ui::uint_region::zero() {
-    static ui::uint_region const _zero{.origin = ui::uint_origin::zero(), .size = ui::uint_size::zero()};
+    static ui::uint_region const _zero{.origin = ui::uint_point::zero(), .size = ui::uint_size::zero()};
     return _zero;
 }
 
@@ -250,8 +250,8 @@ std::string yas::to_string(ui::pivot const &pivot) {
     }
 }
 
-std::string yas::to_string(ui::uint_origin const &origin) {
-    return "{" + std::to_string(origin.x) + ", " + std::to_string(origin.y) + "}";
+std::string yas::to_string(ui::uint_point const &point) {
+    return "{" + std::to_string(point.x) + ", " + std::to_string(point.y) + "}";
 }
 
 std::string yas::to_string(ui::uint_size const &size) {
@@ -312,8 +312,8 @@ bool yas::is_equal(simd::float4x4 const &lhs, simd::float4x4 const &rhs) {
 
 #pragma mark -
 
-std::ostream &operator<<(std::ostream &os, yas::ui::uint_origin const &origin) {
-    os << to_string(origin);
+std::ostream &operator<<(std::ostream &os, yas::ui::uint_point const &point) {
+    os << to_string(point);
     return os;
 }
 

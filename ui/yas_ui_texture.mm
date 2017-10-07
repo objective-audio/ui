@@ -44,7 +44,7 @@ struct ui::texture::impl : base::impl {
         return result;
     }
 
-    draw_image_result replace_image(image const &image, uint_origin const origin) {
+    draw_image_result replace_image(image const &image, uint_point const origin) {
         if (!image) {
             return draw_image_result{draw_image_error::image_is_null};
         }
@@ -105,7 +105,7 @@ struct ui::texture::impl : base::impl {
    private:
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
-    uint_origin _draw_actual_pos;
+    uint_point _draw_actual_pos;
 };
 
 ui::texture::texture(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
@@ -146,7 +146,7 @@ ui::texture::draw_image_result ui::texture::add_image(image const &image) {
     return impl_ptr<impl>()->add_image(image);
 }
 
-ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui::uint_origin const actual_origin) {
+ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui::uint_point const actual_origin) {
     return impl_ptr<impl>()->replace_image(image, actual_origin);
 }
 
