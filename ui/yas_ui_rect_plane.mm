@@ -191,6 +191,9 @@ struct yas::ui::rect_plane::impl : base::impl {
 
 ui::rect_plane::rect_plane(ui::rect_plane_data rect_plane_data)
     : base(std::make_shared<impl>(std::move(rect_plane_data))) {
+    ui::mesh mesh;
+    mesh.set_mesh_data(this->data().dynamic_mesh_data());
+    this->node().set_mesh(std::move(mesh));
 }
 
 ui::rect_plane::rect_plane(std::nullptr_t) : base(nullptr) {
@@ -211,10 +214,5 @@ ui::rect_plane ui::make_rect_plane(std::size_t const rect_count) {
 }
 
 ui::rect_plane ui::make_rect_plane(std::size_t const rect_count, std::size_t const index_count) {
-    ui::rect_plane plane{make_rect_plane_data(rect_count, index_count)};
-    ui::mesh mesh;
-    mesh.set_mesh_data(plane.data().dynamic_mesh_data());
-    plane.node().set_mesh(std::move(mesh));
-
-    return plane;
+    return ui::rect_plane{make_rect_plane_data(rect_count, index_count)};
 }
