@@ -28,6 +28,7 @@ using namespace yas;
 
     XCTAssertTrue(plane);
     XCTAssertTrue(plane.data().dynamic_mesh_data());
+    XCTAssertTrue(plane.node().mesh());
 
     XCTAssertEqual(plane.data().dynamic_mesh_data().vertex_count(), 2 * 4);
     XCTAssertEqual(plane.data().dynamic_mesh_data().index_count(), 2 * 6);
