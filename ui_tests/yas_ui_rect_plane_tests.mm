@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_each_index.h"
-#import "yas_ui_mesh_data.h"
 #import "yas_ui_rect_plane.h"
 
 using namespace yas;
