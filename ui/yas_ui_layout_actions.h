@@ -14,7 +14,7 @@ namespace ui {
     namespace layout_action {
         struct args {
             weak<ui::layout_guide> target;
-            float start_value;
+            float begin_value;
             float end_value;
 
             continuous_action::args continuous_action;

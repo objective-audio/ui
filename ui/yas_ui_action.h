@@ -33,7 +33,7 @@ namespace ui {
         class impl;
 
         struct args {
-            time_point_t start_time = std::chrono::system_clock::now();
+            time_point_t begin_time = std::chrono::system_clock::now();
             double delay = 0.0;
         };
 
@@ -46,7 +46,7 @@ namespace ui {
         action(std::nullptr_t);
 
         base target() const;
-        time_point_t const &start_time() const;
+        time_point_t const &end_time() const;
         double delay() const;
         time_update_f const &time_updater() const;
         completion_f const &completion_handler() const;
@@ -124,6 +124,6 @@ namespace ui {
         void erase_action(action const &);
     };
 
-    parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &start_time);
+    parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &begin_time);
 }
 }

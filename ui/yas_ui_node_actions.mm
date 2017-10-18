@@ -19,7 +19,7 @@ ui::continuous_action ui::make_action(translate_action::args args) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 target.set_position(
-                    {.v = (args.end_position.v - args.start_position.v) * (float)value + args.start_position.v});
+                    {.v = (args.end_position.v - args.begin_position.v) * (float)value + args.begin_position.v});
             }
         }
     });
@@ -38,17 +38,17 @@ ui::continuous_action ui::make_action(rotate_action::args args) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 auto const end_angle = args.end_angle;
-                auto start_angle = args.start_angle;
+                auto begin_angle = args.begin_angle;
 
                 if (args.is_shortest) {
-                    if ((end_angle - start_angle) > 180.0f) {
-                        start_angle += 360.0f;
-                    } else if ((end_angle - start_angle) < -180.0f) {
-                        start_angle -= 360.0f;
+                    if ((end_angle - begin_angle) > 180.0f) {
+                        begin_angle += 360.0f;
+                    } else if ((end_angle - begin_angle) < -180.0f) {
+                        begin_angle -= 360.0f;
                     }
                 }
 
-                target.set_angle((end_angle - start_angle) * value + start_angle);
+                target.set_angle((end_angle - begin_angle) * value + begin_angle);
             }
         }
     });
@@ -66,7 +66,7 @@ ui::continuous_action ui::make_action(ui::scale_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_scale({.v = (args.end_scale.v - args.start_scale.v) * (float)value + args.start_scale.v});
+                target.set_scale({.v = (args.end_scale.v - args.begin_scale.v) * (float)value + args.begin_scale.v});
             }
         }
     });
@@ -84,7 +84,7 @@ ui::continuous_action ui::make_action(ui::color_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_color({.v = (args.end_color.v - args.start_color.v) * (float)value + args.start_color.v});
+                target.set_color({.v = (args.end_color.v - args.begin_color.v) * (float)value + args.begin_color.v});
             }
         }
     });
@@ -102,7 +102,7 @@ ui::continuous_action ui::make_action(ui::alpha_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_alpha((args.end_alpha - args.start_alpha) * (float)value + args.start_alpha);
+                target.set_alpha((args.end_alpha - args.begin_alpha) * (float)value + args.begin_alpha);
             }
         }
     });

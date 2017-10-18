@@ -77,7 +77,7 @@ struct sample::cursor_over_planes::impl : base::impl {
 
                             auto make_color_action = [](ui::node &node, ui::color const &color) {
                                 return ui::make_action(
-                                    {.target = node, .start_color = node.color(), .end_color = color});
+                                    {.target = node, .begin_color = node.color(), .end_color = color});
                             };
 
                             if (is_detected && !*prev_detected) {

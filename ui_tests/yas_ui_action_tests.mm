@@ -33,11 +33,11 @@ using namespace yas;
     XCTAssertFalse(action.time_updater());
     XCTAssertFalse(action.completion_handler());
 
-    auto const &start_time = action.start_time();
+    auto const &begin_time = action.begin_time();
     auto const time = std::chrono::system_clock::now();
 
-    XCTAssertTrue(start_time <= time);
-    XCTAssertTrue((time + -100ms) < start_time);
+    XCTAssertTrue(begin_time <= time);
+    XCTAssertTrue((time + -100ms) < begin_time);
 
     XCTAssertTrue(action.updatable());
 }
@@ -60,25 +60,25 @@ using namespace yas;
 }
 
 - (void)test_updatable_finished {
-    auto const start_time = std::chrono::system_clock::now();
-    ui::continuous_action action{{.duration = 1.0, .action = {.start_time = start_time}}};
+    auto const begin_time = std::chrono::system_clock::now();
+    ui::continuous_action action{{.duration = 1.0, .action = {.begin_time = begin_time}}};
     auto &updatable_action = action.updatable();
 
-    XCTAssertFalse(updatable_action.update(start_time + 999ms));
-    XCTAssertTrue(updatable_action.update(start_time + 1000ms));
+    XCTAssertFalse(updatable_action.update(begin_time + 999ms));
+    XCTAssertTrue(updatable_action.update(begin_time + 1000ms));
 }
 
 - (void)test_set_variables_to_action {
     ui::node target;
     auto const time = std::chrono::system_clock::now();
-    ui::action action{{.start_time = time, .delay = 1.0}};
+    ui::action action{{.begin_time = time, .delay = 1.0}};
 
     action.set_target(target);
     action.set_time_updater([](auto const &time) { return false; });
     action.set_completion_handler([]() {});
 
     XCTAssertEqual(action.target(), target);
-    XCTAssertEqual(action.start_time(), time);
+    XCTAssertEqual(action.begin_time(), time);
     XCTAssertEqual(action.delay(), 1.0);
     XCTAssertTrue(action.time_updater());
     XCTAssertTrue(action.completion_handler());
@@ -94,9 +94,9 @@ using namespace yas;
     XCTAssertTrue(action.value_transformer());
 }
 
-- (void)test_start_time {
+- (void)test_begin_time {
     auto time = std::chrono::system_clock::now();
-    ui::action action{{.start_time = time + 1s}};
+    ui::action action{{.begin_time = time + 1s}};
     auto &updatable = action.updatable();
 
     XCTAssertFalse(updatable.update(time));
@@ -106,7 +106,7 @@ using namespace yas;
 
 - (void)test_completion_handler {
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action action{{.duration = 1.0, .action = {.start_time = time}}};
+    ui::continuous_action action{{.duration = 1.0, .action = {.begin_time = time}}};
     auto &updatable = action.updatable();
 
     bool completed = false;
@@ -127,7 +127,7 @@ using namespace yas;
 
 - (void)test_continuous_action_with_delay {
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args = {.duration = 1.0, .action = {.delay = 2.0, .start_time = time}};
+    ui::continuous_action::args args = {.duration = 1.0, .action = {.delay = 2.0, .begin_time = time}};
 
     ui::continuous_action action{std::move(args)};
 
@@ -161,7 +161,7 @@ using namespace yas;
 
 - (void)test_continuous_action_with_loop {
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args = {.duration = 1.0, .loop_count = 2, .action = {.start_time = time}};
+    ui::continuous_action::args args = {.duration = 1.0, .loop_count = 2, .action = {.begin_time = time}};
     auto action = ui::continuous_action(std::move(args));
 
     auto &updatable = action.updatable();
@@ -206,12 +206,12 @@ using namespace yas;
 - (void)test_parallel_action {
     auto time = std::chrono::system_clock::now();
 
-    ui::continuous_action action1{{.duration = 1.0, .action = {.start_time = time}}};
-    ui::continuous_action action2{{.duration = 2.0, .action = {.start_time = time}}};
+    ui::continuous_action action1{{.duration = 1.0, .action = {.begin_time = time}}};
+    ui::continuous_action action2{{.duration = 2.0, .action = {.begin_time = time}}};
 
     ui::parallel_action parallel_action{{.actions = {std::move(action1), std::move(action2)}}};
 
-    ui::continuous_action action3{{.duration = 3.0, .action = {.start_time = time}}};
+    ui::continuous_action action3{{.duration = 3.0, .action = {.begin_time = time}}};
     parallel_action.insert_action(std::move(action3));
 
     XCTAssertEqual(parallel_action.actions().size(), 3);
