@@ -75,7 +75,7 @@ base ui::action::target() const {
     return impl_ptr<impl>()->_target.lock();
 }
 
-time_point<system_clock> const &ui::action::end_time() const {
+time_point<system_clock> const &ui::action::begin_time() const {
     return impl_ptr<impl>()->_begin_time;
 }
 

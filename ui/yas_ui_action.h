@@ -46,7 +46,7 @@ namespace ui {
         action(std::nullptr_t);
 
         base target() const;
-        time_point_t const &end_time() const;
+        time_point_t const &begin_time() const;
         double delay() const;
         time_update_f const &time_updater() const;
         completion_f const &completion_handler() const;
