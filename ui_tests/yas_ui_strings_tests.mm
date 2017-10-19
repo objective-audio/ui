@@ -98,7 +98,7 @@ using namespace yas;
     strings.set_font_atlas(font_atlas);
 
     XCTAssertEqual(strings.font_atlas(), font_atlas);
-    XCTAssertEqual(strings.rect_plane().data().rect_count(), 0);
+    XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
 
     XCTAssertFalse(strings.line_height());
 
