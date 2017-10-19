@@ -28,11 +28,11 @@ struct ui::action::impl : base::impl, updatable_action::impl {
     impl() {
     }
 
-    impl(action::args &&args) : _start_time(std::move(args.start_time)), _delay(args.delay) {
+    impl(action::args &&args) : _begin_time(std::move(args.begin_time)), _delay(args.delay) {
     }
 
     bool update(time_point_t const &time) override {
-        if (time < _start_time + _delay) {
+        if (time < _begin_time + _delay) {
             return false;
         }
 
@@ -47,11 +47,11 @@ struct ui::action::impl : base::impl, updatable_action::impl {
     }
 
     duration_t time_diff(time_point_t const &time) {
-        return time - _start_time - _delay;
+        return time - _begin_time - _delay;
     }
 
     weak<base> _target{nullptr};
-    time_point_t _start_time = system_clock::now();
+    time_point_t _begin_time = system_clock::now();
     duration_t _delay{0.0};
     time_update_f _time_updater;
     completion_f _completion_handler;
@@ -75,8 +75,8 @@ base ui::action::target() const {
     return impl_ptr<impl>()->_target.lock();
 }
 
-time_point<system_clock> const &ui::action::start_time() const {
-    return impl_ptr<impl>()->_start_time;
+time_point<system_clock> const &ui::action::begin_time() const {
+    return impl_ptr<impl>()->_begin_time;
 }
 
 double ui::action::delay() const {
@@ -127,7 +127,7 @@ struct ui::continuous_action::impl : action::impl {
     }
 
     auto end_time() {
-        return _start_time + _delay + duration_t{_duration} * _loop_count;
+        return _begin_time + _delay + duration_t{_duration} * _loop_count;
     }
 
     double _duration = 0.3;
@@ -255,13 +255,13 @@ void ui::parallel_action::erase_action(action const &action) {
 
 #pragma mark -
 
-ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_point_t const &start_time) {
-    parallel_action sequence{{.action = {.start_time = start_time}}};
+ui::parallel_action ui::make_action_sequence(std::vector<action> actions, time_point_t const &begin_time) {
+    parallel_action sequence{{.action = {.begin_time = begin_time}}};
 
     duration_t delay{0.0};
 
     for (auto &action : actions) {
-        action.impl_ptr<action::impl>()->_start_time = start_time;
+        action.impl_ptr<action::impl>()->_begin_time = begin_time;
         action.impl_ptr<action::impl>()->_delay = delay;
 
         sequence.insert_action(action);

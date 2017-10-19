@@ -28,9 +28,9 @@ using namespace yas;
 - (void)test_update_translate_action {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
-                                   .start_position = {0.0f, -1.0f},
+                                   .begin_position = {0.0f, -1.0f},
                                    .end_position = {1.0f, 1.0f},
                                    .continuous_action = std::move(args)});
 
@@ -55,9 +55,9 @@ using namespace yas;
 - (void)test_update_rotate_action {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
-                                   .start_angle = 0.0f,
+                                   .begin_angle = 0.0f,
                                    .end_angle = 360.0f,
                                    .is_shortest = false,
                                    .continuous_action = std::move(args)});
@@ -80,9 +80,9 @@ using namespace yas;
 - (void)test_update_rotate_action_shortest_1 {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
-                                   .start_angle = 0.0f,
+                                   .begin_angle = 0.0f,
                                    .end_angle = 270.0f,
                                    .is_shortest = true,
                                    .continuous_action = std::move(args)});
@@ -105,9 +105,9 @@ using namespace yas;
 - (void)test_update_rotate_action_shortest_2 {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
-                                   .start_angle = -180.0f,
+                                   .begin_angle = -180.0f,
                                    .end_angle = 90.0f,
                                    .is_shortest = true,
                                    .continuous_action = std::move(args)});
@@ -130,9 +130,9 @@ using namespace yas;
 - (void)test_update_scale_action {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
-                                   .start_scale = {0.0f, -1.0f},
+                                   .begin_scale = {0.0f, -1.0f},
                                    .end_scale = {1.0f, 1.0f},
                                    .continuous_action = std::move(args)});
 
@@ -157,9 +157,9 @@ using namespace yas;
 - (void)test_update_color_action {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
-                                   .start_color = {0.0f, 0.25f, 0.5f},
+                                   .begin_color = {0.0f, 0.25f, 0.5f},
                                    .end_color = {1.0f, 0.75f, 0.5f},
                                    .continuous_action = std::move(args)});
 
@@ -189,9 +189,9 @@ using namespace yas;
 - (void)test_update_alpha_action {
     ui::node target;
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.start_time = time}};
+    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action(
-        {.target = target, .start_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
+        {.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
 
     ui::mesh mesh;
     target.set_mesh(mesh);

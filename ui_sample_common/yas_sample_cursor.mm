@@ -60,7 +60,7 @@ struct sample::cursor::impl : base::impl {
             {.target = target, .end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
 
         auto scale_action = ui::make_action({.target = target,
-                                             .start_scale = {.v = 10.0f},
+                                             .begin_scale = {.v = 10.0f},
                                              .end_scale = {.v = 15.0f},
                                              .continuous_action = {.duration = 5.0f, .loop_count = 0}});
         scale_action.set_value_transformer(ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_transformer()}));
@@ -82,7 +82,7 @@ struct sample::cursor::impl : base::impl {
                         for (auto child_node : node.children()) {
                             auto make_fade_action = [](ui::node &node, float const alpha) {
                                 return ui::make_action({.target = node,
-                                                        .start_alpha = node.alpha(),
+                                                        .begin_alpha = node.alpha(),
                                                         .end_alpha = alpha,
                                                         .continuous_action = {.duration = 0.5}});
                             };

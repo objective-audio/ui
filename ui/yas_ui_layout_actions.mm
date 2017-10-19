@@ -16,7 +16,7 @@ ui::continuous_action ui::make_action(layout_action::args args) {
     action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_value((args.end_value - args.start_value) * (float)value + args.start_value);
+                target.set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
             }
         }
     });
@@ -58,7 +58,7 @@ struct ui::layout_animator::impl : base::impl {
                                 renderer.erase_action(dst_guide);
 
                                 auto action = ui::make_action({.target = dst_guide,
-                                                               .start_value = dst_guide.value(),
+                                                               .begin_value = dst_guide.value(),
                                                                .end_value = context.value.new_value,
                                                                .continuous_action = {.duration = args.duration}});
                                 action.set_value_transformer(interporator.value_transformer());

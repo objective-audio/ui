@@ -4,8 +4,10 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_each_index.h"
-#import "yas_ui_mesh_data.h"
 #import "yas_ui_rect_plane.h"
+#import "yas_ui_node.h"
+#import "yas_ui_mesh.h"
+#import "yas_ui_mesh_data.h"
 
 using namespace yas;
 

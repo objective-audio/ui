@@ -64,9 +64,9 @@ namespace sample {
 
             if (animated) {
                 renderer.insert_action(
-                    ui::make_action({.target = button_node, .start_alpha = button_node.alpha(), .end_alpha = alpha}));
+                    ui::make_action({.target = button_node, .begin_alpha = button_node.alpha(), .end_alpha = alpha}));
                 renderer.insert_action(
-                    ui::make_action({.target = strings_node, .start_alpha = strings_node.alpha(), .end_alpha = alpha}));
+                    ui::make_action({.target = strings_node, .begin_alpha = strings_node.alpha(), .end_alpha = alpha}));
             } else {
                 button_node.set_alpha(alpha);
                 strings_node.set_alpha(alpha);

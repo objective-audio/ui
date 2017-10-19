@@ -46,7 +46,7 @@ void sample::main::setup() {
 
     auto button_pos_action =
         ui::make_action(ui::translate_action::args{.target = _big_button.button().rect_plane().node(),
-                                                   .start_position = {0.0f, 0.0f},
+                                                   .begin_position = {0.0f, 0.0f},
                                                    .end_position = {32.0f, 0.0f},
                                                    .continuous_action = {.duration = 5.0, .loop_count = 0}});
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });

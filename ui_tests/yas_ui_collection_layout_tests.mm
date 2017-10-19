@@ -258,20 +258,51 @@ using namespace yas;
 }
 
 - (void)test_limiting_row {
-    ui::collection_layout layout{
-        {.frame = {.size = {1.0f, 0.0f}}, .preferred_cell_count = 8, .default_cell_size = {1.0f, 1.0f}}};
+    ui::collection_layout layout{{.frame = {.size = {1.0f, 0.0f}},
+                                  .preferred_cell_count = 8,
+                                  .default_cell_size = {1.0f, 1.0f},
+                                  .direction = ui::layout_direction::vertical}};
 
+    // フレームの高さが0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout.actual_cell_count(), 8);
 
-    layout.set_frame({.size = {0.0f, 1.0f}});
+    layout.set_frame({.size = {0.0f, 0.5f}});
 
+    // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
     XCTAssertEqual(layout.actual_cell_count(), 0);
 
     layout.set_direction(ui::layout_direction::horizontal);
 
+    // セルの並びを横にすれば高さの制限は受けない
     XCTAssertEqual(layout.actual_cell_count(), 8);
 
-    layout.set_frame({.size = {1.0f, 0.0f}});
+    layout.set_frame({.size = {0.0f, 0.5f}});
+
+    XCTAssertEqual(layout.actual_cell_count(), 8);
+}
+
+- (void)test_limiting_col {
+    ui::collection_layout layout{{.frame = {.size = {0.0f, 1.0f}},
+                                  .preferred_cell_count = 8,
+                                  .default_cell_size = {1.0f, 1.0f},
+                                  .direction = ui::layout_direction::horizontal}};
+
+    // フレームの幅が0ならセルを作る範囲の制限をかけない
+    XCTAssertEqual(layout.actual_cell_count(), 8);
+
+    layout.set_frame({.size = {0.5f, 0.0f}});
+
+    // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
+    XCTAssertEqual(layout.actual_cell_count(), 0);
+
+    layout.set_direction(ui::layout_direction::vertical);
+
+    // セルの並びを縦にすれば高さの制限は受けない
+    XCTAssertEqual(layout.actual_cell_count(), 8);
+
+    layout.set_frame({.size = {0.5f, 0.0f}});
+
+    XCTAssertEqual(layout.actual_cell_count(), 8);
 }
 
 - (void)test_set_preferred_cell_count {
