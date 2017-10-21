@@ -142,6 +142,7 @@ namespace ui {
         float top() const;
 
         static region const &zero();
+        static region zero_centered(ui::size const &);
     };
 
     enum class pivot {
