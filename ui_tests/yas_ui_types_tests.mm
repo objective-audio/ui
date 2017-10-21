@@ -546,4 +546,13 @@ using namespace yas;
     XCTAssertEqual(ui::region::zero().size.height, 0.0f);
 }
 
+- (void)test_region_zero_centered {
+    auto region = ui::region::zero_centered(ui::size{.width = 2.0f, .height = 4.0f});
+
+    XCTAssertEqual(region.origin.x, -1.0f);
+    XCTAssertEqual(region.origin.y, -2.0f);
+    XCTAssertEqual(region.size.width, 2.0f);
+    XCTAssertEqual(region.size.height, 4.0f);
+}
+
 @end
