@@ -43,6 +43,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             _enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::enabled);
+                    if (context.value.new_value) {
+                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
+                    }
                 }
             }));
 
