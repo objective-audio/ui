@@ -31,7 +31,6 @@ using namespace yas;
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
     impl() {
-        _updates.flags.set();
         _update_observers.reserve(9);
         _dispatch_observers.reserve(9);
     }
@@ -43,9 +42,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             _enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::enabled);
-                    if (context.value.new_value) {
-                        node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                    }
                 }
             }));
 
@@ -73,6 +69,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         _update_observers.emplace_back(
             _mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::mesh);
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
@@ -236,9 +233,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void fetch_updates(ui::tree_updates &tree_updates) override {
-        tree_updates.node_updates.flags |= _updates.flags;
-
         if (_enabled_property.value()) {
+            tree_updates.node_updates.flags |= _updates.flags;
+
             if (auto &mesh = _mesh_property.value()) {
                 tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
 
@@ -250,6 +247,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             for (auto &sub_node : _children) {
                 sub_node.renderable().fetch_updates(tree_updates);
             }
+        } else if (_updates.test(ui::node_update_reason::enabled)) {
+            tree_updates.node_updates.set(ui::node_update_reason::enabled);
         }
     }
 
@@ -272,14 +271,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void clear_updates() override {
-        _updates.flags.reset();
+        if (this->_enabled_property.value()) {
+            this->_updates.flags.reset();
 
-        if (auto &mesh = _mesh_property.value()) {
-            mesh.renderable().clear_updates();
-        }
+            if (auto &mesh = _mesh_property.value()) {
+                mesh.renderable().clear_updates();
+            }
 
-        for (auto &sub_node : _children) {
-            sub_node.renderable().clear_updates();
+            for (auto &sub_node : _children) {
+                sub_node.renderable().clear_updates();
+            }
+        } else {
+            this->_updates.reset(ui::node_update_reason::enabled);
         }
     }
 
