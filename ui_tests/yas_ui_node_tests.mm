@@ -473,11 +473,13 @@ namespace test {
 
     updates = ui::tree_updates{};
     node.renderable().clear_updates();
+
     node.renderable().fetch_updates(updates);
     XCTAssertFalse(updates.is_any_updated());
 
     updates = ui::tree_updates{};
     node.renderable().clear_updates();
+
     node.set_angle(1.0f);
     node.renderable().fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
@@ -488,6 +490,7 @@ namespace test {
 
     updates = ui::tree_updates{};
     node.renderable().clear_updates();
+
     mesh.set_use_mesh_color(true);
     node.renderable().fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
@@ -498,6 +501,7 @@ namespace test {
 
     updates = ui::tree_updates{};
     node.renderable().clear_updates();
+
     mesh_data.set_vertex_count(1);
     node.renderable().fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
@@ -508,6 +512,7 @@ namespace test {
 
     updates = ui::tree_updates{};
     node.renderable().clear_updates();
+
     sub_node.set_enabled(false);
     node.renderable().fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
@@ -515,6 +520,60 @@ namespace test {
     XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
     XCTAssertFalse(updates.mesh_updates.flags.any());
     XCTAssertFalse(updates.mesh_data_updates.flags.any());
+}
+
+- (void)test_fetch_updates_when_enabled_changed {
+    ui::node node;
+
+    ui::tree_updates updates;
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+    node.renderable().fetch_updates(updates);
+    XCTAssertFalse(updates.is_any_updated());
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+
+    // nodeのパラメータを変更する
+    node.set_mesh(ui::mesh{});
+    ui::dynamic_mesh_data mesh_data{{.vertex_count = 2, .index_count = 2}};
+    mesh_data.set_vertex_count(1);
+    node.mesh().set_mesh_data(mesh_data);
+
+    node.set_angle(1.0f);
+    node.set_enabled(false);
+    node.set_collider(ui::collider{});
+    node.set_batch(ui::batch{});
+
+    ui::node sub_node;
+    node.push_back_sub_node(sub_node);
+
+    // enabledがfalseの時はenabled以外の変更はフェッチされない
+    node.renderable().fetch_updates(updates);
+    XCTAssertTrue(updates.is_any_updated());
+    XCTAssertEqual(updates.node_updates.flags.count(), 1);
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
+    XCTAssertFalse(updates.mesh_updates.flags.any());
+    XCTAssertFalse(updates.mesh_data_updates.flags.any());
+
+    updates = ui::tree_updates{};
+    node.renderable().clear_updates();
+
+    node.set_enabled(true);
+
+    // enabledをtrueにするとフェッチされる
+    node.renderable().fetch_updates(updates);
+    XCTAssertTrue(updates.is_any_updated());
+    XCTAssertEqual(updates.node_updates.flags.count(), 6);
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::children));
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::geometry));
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::mesh));
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::collider));
+    XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::batch));
+    XCTAssertTrue(updates.mesh_updates.flags.any());
+    XCTAssertTrue(updates.mesh_data_updates.flags.any());
 }
 
 - (void)test_is_rendering_color_exists {
