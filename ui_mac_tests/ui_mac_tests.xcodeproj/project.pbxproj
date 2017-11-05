@@ -699,7 +699,7 @@
 		B66BB6DE1D1F6AB600AB3D48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Yuki Yasoshima";
 				TargetAttributes = {
 					B66BB6E51D1F6AB600AB3D48 = {
