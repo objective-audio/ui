@@ -8,6 +8,7 @@
 #import "yas_ui_node.h"
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
+#import "yas_ui_color.h"
 
 using namespace yas;
 
@@ -157,11 +158,11 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.y, 200.0f);
 }
 
-- (void)test_set_rect_color {
+- (void)test_set_rect_color_with_float4 {
     auto plane_data = ui::make_rect_plane_data(1);
     auto vertices = plane_data.dynamic_mesh_data().vertices();
 
-    plane_data.set_rect_color({0.1f, 0.2f, 0.3f, 0.4f}, 0);
+    plane_data.set_rect_color(simd::float4{0.1f, 0.2f, 0.3f, 0.4f}, 0);
 
     for (auto const &idx : make_each_index(4)) {
         auto &color = vertices[idx].color;
@@ -171,7 +172,32 @@ using namespace yas;
         XCTAssertEqual(color[3], 0.4f);
     }
 
-    plane_data.set_rect_color({0.5f, 0.6f, 0.7f, 0.8f}, 0);
+    plane_data.set_rect_color(simd::float4{0.5f, 0.6f, 0.7f, 0.8f}, 0);
+
+    for (auto const &idx : make_each_index(4)) {
+        auto &color = vertices[idx].color;
+        XCTAssertEqual(color[0], 0.5f);
+        XCTAssertEqual(color[1], 0.6f);
+        XCTAssertEqual(color[2], 0.7f);
+        XCTAssertEqual(color[3], 0.8f);
+    }
+}
+
+- (void)test_set_rect_color_with_ui_color {
+    auto plane_data = ui::make_rect_plane_data(1);
+    auto vertices = plane_data.dynamic_mesh_data().vertices();
+
+    plane_data.set_rect_color(ui::color{0.1f, 0.2f, 0.3f}, 0.4f, 0);
+
+    for (auto const &idx : make_each_index(4)) {
+        auto &color = vertices[idx].color;
+        XCTAssertEqual(color[0], 0.1f);
+        XCTAssertEqual(color[1], 0.2f);
+        XCTAssertEqual(color[2], 0.3f);
+        XCTAssertEqual(color[3], 0.4f);
+    }
+
+    plane_data.set_rect_color(ui::color{0.5f, 0.6f, 0.7f}, 0.8f, 0);
 
     for (auto const &idx : make_each_index(4)) {
         auto &color = vertices[idx].color;

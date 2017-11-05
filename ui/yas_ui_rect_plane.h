@@ -11,6 +11,7 @@
 namespace yas {
 namespace ui {
     class node;
+    class color;
 
     struct rect_plane_data {
         explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
@@ -30,6 +31,7 @@ namespace ui {
         void set_rect_position(ui::region const &region, std::size_t const rect_idx,
                                simd::float4x4 const &matrix = matrix_identity_float4x4);
         void set_rect_color(simd::float4 const &color, std::size_t const rect_idx);
+        void set_rect_color(ui::color const &color, float const alpha, std::size_t const rect_idx);
         void set_rect_tex_coords(ui::uint_region const &pixel_region, std::size_t const rect_idx);
         void set_rect_vertex(const vertex2d_t *const in_ptr, std::size_t const rect_idx,
                              simd::float4x4 const &matrix = matrix_identity_float4x4);

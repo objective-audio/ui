@@ -42,6 +42,8 @@ namespace ui {
     ui::color const &brown_color();
 }
 
+simd::float4 to_float4(ui::color const &, float alpha);
+
 std::string to_string(ui::color const &);
 }
 
