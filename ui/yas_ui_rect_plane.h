@@ -11,6 +11,7 @@
 namespace yas {
 namespace ui {
     class node;
+    class color;
 
     struct rect_plane_data {
         explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
