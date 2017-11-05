@@ -18,6 +18,10 @@ ui::color::operator bool() const {
     return red != 0 || green != 0 || blue != 0;
 }
 
+simd::float4 yas::to_float4(ui::color const &color, float alpha) {
+    return simd::float4{color.red, color.green, color.blue, alpha};
+}
+
 std::string yas::to_string(ui::color const &color) {
     return "{" + std::to_string(color.red) + ", " + std::to_string(color.green) + ", " + std::to_string(color.blue) +
            "}";
