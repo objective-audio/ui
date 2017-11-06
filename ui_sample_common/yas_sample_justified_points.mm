@@ -80,9 +80,9 @@ struct sample::justified_points::impl : base::impl {
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             if (idx < sample::x_point_count) {
-                rect_plane_data.set_rect_color({1.0f, 0.8f, 0.5f, 1.0f}, idx);
+                rect_plane_data.set_rect_color(simd::float4{1.0f, 0.8f, 0.5f, 1.0f}, idx);
             } else {
-                rect_plane_data.set_rect_color({0.8f, 0.5f, 1.0f, 1.0f}, idx);
+                rect_plane_data.set_rect_color(simd::float4{0.8f, 0.5f, 1.0f, 1.0f}, idx);
             }
         }
     }
