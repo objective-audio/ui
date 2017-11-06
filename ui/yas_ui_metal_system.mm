@@ -129,6 +129,13 @@ struct ui::metal_system::impl : base::impl,
 
         auto view = (YASUIMetalView * const)objc_view;
 
+        auto renderPassDesc = view.currentRenderPassDescriptor;
+        auto currentDrawable = view.currentDrawable;
+
+        if (!renderPassDesc || !currentDrawable) {
+            return;
+        }
+
         dispatch_semaphore_wait(_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
         auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = _command_queue.object()]() {
@@ -138,9 +145,6 @@ struct ui::metal_system::impl : base::impl,
 
         _uniforms_buffer_offset = 0;
 
-        auto renderPassDesc = view.currentRenderPassDescriptor;
-        assert(renderPassDesc);
-
         _render_nodes(renderer, commandBuffer, renderPassDesc);
 
         [commandBuffer addCompletedHandler:[semaphore = _inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
@@ -149,7 +153,7 @@ struct ui::metal_system::impl : base::impl,
 
         _uniforms_buffer_index = (_uniforms_buffer_index + 1) % _uniforms_buffer_count;
 
-        [commandBuffer presentDrawable:view.currentDrawable];
+        [commandBuffer presentDrawable:currentDrawable];
         [commandBuffer commit];
     }
 
