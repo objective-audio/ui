@@ -100,6 +100,14 @@ bool ui::point::operator!=(ui::point const &rhs) const {
     return x != rhs.x || y != rhs.y;
 }
 
+ui::point ui::point::operator+(point const &rhs) const {
+    return {.x = this->x + rhs.x, .y = this->y + rhs.y};
+}
+
+ui::point ui::point::operator-(point const &rhs) const {
+    return {.x = this->x - rhs.x, .y = this->y - rhs.y};
+}
+
 ui::point::operator bool() const {
     return x != 0.0f || y != 0.0f;
 }
