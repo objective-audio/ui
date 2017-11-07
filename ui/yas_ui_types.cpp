@@ -193,6 +193,10 @@ float ui::region::top() const {
     return std::max(origin.y, origin.y + size.height);
 }
 
+ui::point ui::region::center() const {
+    return ui::point{.x = this->origin.x + this->size.width * 0.5f, .y = this->origin.y + this->size.height * 0.5f};
+}
+
 ui::region const &ui::region::zero() {
     static ui::region const _zero{.origin = ui::point::zero(), .size = ui::size::zero()};
     return _zero;

@@ -479,6 +479,8 @@ using namespace yas;
     XCTAssertEqual(region.right(), 2.0f);
     XCTAssertEqual(region.bottom(), 1.0f);
     XCTAssertEqual(region.top(), 4.0f);
+    XCTAssertEqualWithAccuracy(region.center().x, 1.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(region.center().y, 2.5f, 0.001f);
 
     region = {.origin = {4.0f, 5.0f}, .size = {-7.0f, -6.0f}};
 
