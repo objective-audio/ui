@@ -140,6 +140,7 @@ namespace ui {
         float right() const;
         float bottom() const;
         float top() const;
+        point center() const;
 
         static region const &zero();
         static region zero_centered(ui::size const &);
