@@ -31,7 +31,7 @@ namespace ui {
             ended,
             canceled,
         };
-        
+
         struct context {
             ui::button const &button;
             ui::touch_event const &touch;
@@ -49,6 +49,8 @@ namespace ui {
         std::size_t state_count() const;
         void set_state_index(std::size_t const);
         std::size_t state_index() const;
+
+        void cancel_tracking();
 
         subject_t &subject();
 
