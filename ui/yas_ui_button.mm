@@ -21,19 +21,19 @@ using namespace yas;
 struct ui::button::impl : base::impl {
     impl(ui::region const &region, std::size_t const state_count)
         : _rect_plane(ui::make_rect_plane(state_count * 2, 1)), _layout_guide_rect(region), _state_count(state_count) {
-        _rect_plane.node().set_collider(ui::collider{});
+        this->_rect_plane.node().set_collider(ui::collider{});
 
-        _update_rect_positions(_layout_guide_rect.region(), state_count);
-        _update_rect_index();
+        this->_update_rect_positions(this->_layout_guide_rect.region(), state_count);
+        this->_update_rect_index();
     }
 
     void prepare(ui::button &button) {
         auto const weak_button = to_weak(button);
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
 
         node.dispatch_method(ui::node::method::renderer_changed);
 
-        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+        this->_renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
             event_observer = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
             weak_button
         ](auto const &context) mutable {
@@ -58,7 +58,7 @@ struct ui::button::impl : base::impl {
             }
         });
 
-        _layout_guide_rect.set_value_changed_handler(
+        this->_layout_guide_rect.set_value_changed_handler(
             [weak_button, state_count = this->_state_count](auto const &context) {
                 if (auto button = weak_button.lock()) {
                     button.impl_ptr<impl>()->_update_rect_positions(context.new_value, state_count);
@@ -71,23 +71,29 @@ struct ui::button::impl : base::impl {
             throw std::invalid_argument("idx greater than or equal state count.");
         }
 
-        _state_idx = idx;
+        this->_state_idx = idx;
 
-        _update_rect_index();
+        this->_update_rect_index();
     }
 
     bool is_tracking() {
-        return !!_tracking_event;
+        return !!this->_tracking_event;
     }
 
     bool is_tracking(ui::event const &event) {
-        return event == _tracking_event;
+        return event == this->_tracking_event;
     }
 
     void set_tracking_event(ui::event event) {
-        _tracking_event = std::move(event);
+        this->_tracking_event = std::move(event);
 
-        _update_rect_index();
+        this->_update_rect_index();
+    }
+
+    void cancel_tracking() {
+        if (this->_tracking_event) {
+            this->_cancel_tracking(this->_tracking_event);
+        }
     }
 
     ui::rect_plane _rect_plane;
@@ -100,19 +106,19 @@ struct ui::button::impl : base::impl {
     void _update_rect_positions(ui::region const &region, std::size_t const state_count) {
         auto each = make_fast_each(state_count * 2);
         while (yas_each_next(each)) {
-            _rect_plane.data().set_rect_position(region, yas_each_index(each));
+            this->_rect_plane.data().set_rect_position(region, yas_each_index(each));
         }
 
-        _rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
+        this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
     }
 
     void _update_rect_index() {
         std::size_t const idx = to_rect_index(this->_state_idx, this->is_tracking());
-        _rect_plane.data().set_rect_index(0, idx);
+        this->_rect_plane.data().set_rect_index(0, idx);
     }
 
     base _make_leave_observer() {
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
 
         node.dispatch_method(ui::node::method::position_changed);
         node.dispatch_method(ui::node::method::angle_changed);
@@ -152,7 +158,7 @@ struct ui::button::impl : base::impl {
     }
 
     base _make_collider_observer() {
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
 
         return node.collider().subject().make_wild_card_observer([weak_node = to_weak(node)](auto const &context) {
             if (auto node = weak_node.lock()) {
@@ -176,7 +182,7 @@ struct ui::button::impl : base::impl {
     }
 
     void _update_tracking(ui::event const &event) {
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
             auto button = cast<ui::button>();
@@ -184,25 +190,25 @@ struct ui::button::impl : base::impl {
             auto const &touch_event = event.get<ui::touch>();
             switch (event.phase()) {
                 case ui::event_phase::began:
-                    if (!is_tracking()) {
+                    if (!this->is_tracking()) {
                         if (detector.detect(touch_event.position(), node.collider())) {
-                            set_tracking_event(event);
-                            _subject.notify(ui::button::method::began, {.button = button, .touch = touch_event});
+                            this->set_tracking_event(event);
+                            this->_subject.notify(ui::button::method::began, {.button = button, .touch = touch_event});
                         }
                     }
                     break;
                 case ui::event_phase::stationary:
                 case ui::event_phase::changed: {
-                    _leave_or_enter_or_move_tracking(event);
+                    this->_leave_or_enter_or_move_tracking(event);
                 } break;
                 case ui::event_phase::ended:
-                    if (is_tracking(event)) {
-                        set_tracking_event(nullptr);
-                        _subject.notify(ui::button::method::ended, {.button = button, .touch = touch_event});
+                    if (this->is_tracking(event)) {
+                        this->set_tracking_event(nullptr);
+                        this->_subject.notify(ui::button::method::ended, {.button = button, .touch = touch_event});
                     }
                     break;
                 case ui::event_phase::canceled:
-                    _cancel_tracking(event);
+                    this->_cancel_tracking(event);
                     break;
                 default:
                     break;
@@ -211,30 +217,30 @@ struct ui::button::impl : base::impl {
     }
 
     void _leave_or_enter_or_move_tracking(ui::event const &event) {
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
         if (auto renderer = node.renderer()) {
             auto const &detector = renderer.detector();
             auto const &touch_event = event.get<ui::touch>();
-            bool const is_event_tracking = is_tracking(event);
+            bool const is_event_tracking = this->is_tracking(event);
             bool is_detected = detector.detect(touch_event.position(), node.collider());
             auto button = cast<ui::button>();
             if (!is_event_tracking && is_detected) {
-                set_tracking_event(event);
-                _subject.notify(ui::button::method::entered, {.button = button, .touch = touch_event});
+                this->set_tracking_event(event);
+                this->_subject.notify(ui::button::method::entered, {.button = button, .touch = touch_event});
             } else if (is_event_tracking && !is_detected) {
-                set_tracking_event(nullptr);
-                _subject.notify(ui::button::method::leaved, {.button = button, .touch = touch_event});
+                this->set_tracking_event(nullptr);
+                this->_subject.notify(ui::button::method::leaved, {.button = button, .touch = touch_event});
             } else if (is_event_tracking) {
-                _subject.notify(ui::button::method::moved, {.button = button, .touch = touch_event});
+                this->_subject.notify(ui::button::method::moved, {.button = button, .touch = touch_event});
             }
         }
     }
 
     void _cancel_tracking(ui::event const &event) {
-        if (is_tracking(event)) {
-            set_tracking_event(nullptr);
-            _subject.notify(ui::button::method::canceled,
-                            {.button = cast<ui::button>(), .touch = event.get<ui::touch>()});
+        if (this->is_tracking(event)) {
+            this->set_tracking_event(nullptr);
+            this->_subject.notify(ui::button::method::canceled,
+                                  {.button = cast<ui::button>(), .touch = event.get<ui::touch>()});
         }
     }
 
@@ -267,6 +273,10 @@ void ui::button::set_state_index(std::size_t const idx) {
 
 std::size_t ui::button::state_index() const {
     return impl_ptr<impl>()->_state_idx;
+}
+
+void ui::button::cancel_tracking() {
+    impl_ptr<impl>()->cancel_tracking();
 }
 
 ui::button::subject_t &ui::button::subject() {
