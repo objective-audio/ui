@@ -37,7 +37,7 @@ namespace ui {
 }
 }
 
-ui::transform_f const &ui::ease_in_transformer() {
+ui::transform_f const &ui::ease_in_sine_transformer() {
     static transform_f const _transformer = [](float const pos) {
         static auto curve = _make_curve_vector([](float const pos) { return sinf((pos - 1.0f) * M_PI_2) + 1.0f; });
         return _convert_value(curve, pos);
@@ -46,7 +46,7 @@ ui::transform_f const &ui::ease_in_transformer() {
     return _transformer;
 }
 
-ui::transform_f const &ui::ease_out_transformer() {
+ui::transform_f const &ui::ease_out_sine_transformer() {
     static transform_f const _transformer = [](float const pos) {
         static auto curve = _make_curve_vector([](float const pos) { return sinf(pos * M_PI_2); });
         return _convert_value(curve, pos);
@@ -55,7 +55,7 @@ ui::transform_f const &ui::ease_out_transformer() {
     return _transformer;
 }
 
-ui::transform_f const &ui::ease_in_out_transformer() {
+ui::transform_f const &ui::ease_in_out_sine_transformer() {
     static transform_f const _transformer = [](float const pos) {
         static auto curve =
             _make_curve_vector([](float const pos) { return (sinf((pos * 2.0f - 1.0f) * M_PI_2) + 1.0f) * 0.5f; });

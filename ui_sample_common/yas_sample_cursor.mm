@@ -63,7 +63,8 @@ struct sample::cursor::impl : base::impl {
                                              .begin_scale = {.v = 10.0f},
                                              .end_scale = {.v = 15.0f},
                                              .continuous_action = {.duration = 5.0f, .loop_count = 0}});
-        scale_action.set_value_transformer(ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_transformer()}));
+        scale_action.set_value_transformer(
+            ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_sine_transformer()}));
 
         return ui::parallel_action{{.actions = {std::move(rotate_action), std::move(scale_action)}}};
     }
