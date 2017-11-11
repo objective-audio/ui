@@ -116,13 +116,13 @@ struct sample::touch_holder::impl : base::impl {
                                               .begin_scale = {.v = 0.1f},
                                               .end_scale = {.v = 200.0f},
                                               .continuous_action = {.duration = 0.1}});
-        scale_action1.set_value_transformer(ui::ease_in_transformer());
+        scale_action1.set_value_transformer(ui::ease_in_sine_transformer());
 
         auto scale_action2 = ui::make_action({.target = node,
                                               .begin_scale = {.v = 200.0f},
                                               .end_scale = {.v = 100.0f},
                                               .continuous_action = {.duration = 0.2}});
-        scale_action2.set_value_transformer(ui::ease_out_transformer());
+        scale_action2.set_value_transformer(ui::ease_out_sine_transformer());
 
         auto scale_action = ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
 
@@ -160,14 +160,15 @@ struct sample::touch_holder::impl : base::impl {
                                                  .begin_scale = touch_object.node.scale(),
                                                  .end_scale = {.v = 300.0f},
                                                  .continuous_action = {.duration = 0.3}});
-            scale_action.set_value_transformer(ui::ease_out_transformer());
+            scale_action.set_value_transformer(ui::ease_out_sine_transformer());
             scale_action.set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
 
             auto alpha_action = ui::make_action({.target = node,
                                                  .begin_alpha = node.alpha(),
                                                  .end_alpha = 0.0f,
                                                  .continuous_action = {.duration = 0.3}});
-            alpha_action.set_value_transformer(ui::connect({ui::ease_out_transformer(), ui::ease_out_transformer()}));
+            alpha_action.set_value_transformer(
+                ui::connect({ui::ease_out_sine_transformer(), ui::ease_out_sine_transformer()}));
 
             ui::parallel_action action{{.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}}};
 
