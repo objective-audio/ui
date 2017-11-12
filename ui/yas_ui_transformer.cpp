@@ -65,6 +65,234 @@ ui::transform_f const &ui::ease_in_out_sine_transformer() {
     return _transformer;
 }
 
+ui::transform_f const &ui::ease_in_quad_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return pos * pos; });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_out_quad_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return -1.0f * pos * (pos - 2.0f); });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_out_quad_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float val = 2.0f * pos;
+            if (val < 1.0f) {
+                return 0.5f * val * val;
+            } else {
+                float val = 2.0f * pos;
+                if (val < 1.0f) {
+                    return 0.5f * val * val;
+                } else {
+                    val -= 1.0f;
+                    return -0.5f * (val * (val - 2.0f) - 1.0f);
+                }
+            }
+
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_cubic_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return pos * pos * pos; });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_out_cubic_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float const val = pos - 1.0f;
+            return val * val * val + 1.0f;
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_out_cubic_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float val = 2.0f * pos;
+            if (val < 1.0f) {
+                return 0.5f * val * val * val;
+            } else {
+                val -= 2.0f;
+                return 0.5f * (val * val * val + 2.0f);
+            }
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_quart_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return pos * pos * pos * pos; });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_out_quart_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float const val = pos - 1.0f;
+            return -1.0f * (val * val * val * val - 1.0f);
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_out_quart_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float val = 2.0f * pos;
+            if (val < 1.0f) {
+                return 0.5f * val * val * val * val;
+            } else {
+                val -= 2.0f;
+                return -0.5f * (val * val * val * val - 2.0f);
+            }
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_quint_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return pos * pos * pos * pos * pos; });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_out_quint_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float const val = pos - 1.0f;
+            return val * val * val * val * val + 1.0f;
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_out_quint_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float val = 2.0f * pos;
+            if (val < 1.0f) {
+                return 0.5f * val * val * val * val * val;
+            } else {
+                val -= 2.0f;
+                return 0.5f * (val * val * val * val * val + 2.0f);
+            }
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_expo_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return pow(2.0f, 10.0f * (pos - 1.0f)); });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_out_expo_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return 1.0f - pow(2.0f, -10.0f * pos); });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_out_expo_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float val = pos * 2.0f;
+            if (val < 1.0f) {
+                return 0.5f * pow(2.0f, 10.0f * (val - 1.0f));
+            } else {
+                val -= 1.0f;
+                return 0.5f * (2.0f - pow(2.0f, -10.0f * val));
+            }
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_circ_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) { return 1.0f - sqrt(1.0f - pos * pos); });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_out_circ_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float const val = pos - 1.0f;
+            return sqrt(1.0f - val * val);
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
+ui::transform_f const &ui::ease_in_out_circ_transformer() {
+    static transform_f const _transformer = [](float const pos) {
+        static auto curve = _make_curve_vector([](float const pos) {
+            float val = 2.0f * pos;
+            if (val < 1.0f) {
+                return -0.5f * (sqrt(1.0f - val * val) - 1.0f);
+            } else {
+                val -= 2.0f;
+                return 0.5f * (sqrt(1.0f - val * val) + 1.0f);
+            }
+        });
+        return _convert_value(curve, pos);
+    };
+
+    return _transformer;
+}
+
 ui::transform_f const &ui::ping_pong_transformer() {
     static transform_f const _transformer = [](float const pos) {
         static auto curve = _make_curve_vector([](float const pos) {
