@@ -21,8 +21,8 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_ease_in_transformer {
-    auto const &transformer = ui::ease_in_transformer();
+- (void)test_ease_in_sine_transformer {
+    auto const &transformer = ui::ease_in_sine_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertLessThan(transformer(0.25f), 0.25f);
@@ -31,8 +31,8 @@ using namespace yas;
     XCTAssertEqual(transformer(1.0f), 1.0f);
 }
 
-- (void)test_ease_out_transformer {
-    auto const &transformer = ui::ease_out_transformer();
+- (void)test_ease_out_sine_transformer {
+    auto const &transformer = ui::ease_out_sine_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertGreaterThan(transformer(0.25f), 0.25f);
@@ -41,8 +41,8 @@ using namespace yas;
     XCTAssertEqual(transformer(1.0f), 1.0f);
 }
 
-- (void)test_ease_in_out_transformer {
-    auto const &transformer = ui::ease_in_out_transformer();
+- (void)test_ease_in_out_sine_transformer {
+    auto const &transformer = ui::ease_in_out_sine_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertLessThan(transformer(0.25f), 0.25f);
