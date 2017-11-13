@@ -88,7 +88,7 @@ using namespace yas;
     ui::continuous_action action{{.duration = 10.0}};
     ui::node target;
 
-    action.set_value_transformer(ui::ease_out_transformer());
+    action.set_value_transformer(ui::ease_out_sine_transformer());
 
     XCTAssertEqual(action.duration(), 10.0);
     XCTAssertTrue(action.value_transformer());
