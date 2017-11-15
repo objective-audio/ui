@@ -222,7 +222,13 @@ ui::transform_f const &ui::ease_in_out_quint_transformer() {
 
 ui::transform_f const &ui::ease_in_expo_transformer() {
     static transform_f const _transformer = [](float const pos) {
-        static auto curve = _make_curve_vector([](float const pos) { return pow(2.0f, 10.0f * (pos - 1.0f)); });
+        static auto curve = _make_curve_vector([](float const pos) {
+            auto const value_handler = [](float const pos) { return pow(2.0f, 10.0f * (pos - 1.0f)); };
+            static float const zero_value = value_handler(0.0f);
+            static float const diff = value_handler(1.0f) - zero_value;
+            return (value_handler(pos) - zero_value) / diff;
+
+        });
         return _convert_value(curve, pos);
     };
 
@@ -231,7 +237,11 @@ ui::transform_f const &ui::ease_in_expo_transformer() {
 
 ui::transform_f const &ui::ease_out_expo_transformer() {
     static transform_f const _transformer = [](float const pos) {
-        static auto curve = _make_curve_vector([](float const pos) { return 1.0f - pow(2.0f, -10.0f * pos); });
+        static auto curve = _make_curve_vector([](float const pos) {
+            auto const value_handler = [](float const pos) { return 1.0f - pow(2.0f, -10.0f * pos); };
+            static float const one_value = value_handler(1.0f);
+            return value_handler(pos) / one_value;
+        });
         return _convert_value(curve, pos);
     };
 
@@ -243,10 +253,9 @@ ui::transform_f const &ui::ease_in_out_expo_transformer() {
         static auto curve = _make_curve_vector([](float const pos) {
             float val = pos * 2.0f;
             if (val < 1.0f) {
-                return 0.5f * pow(2.0f, 10.0f * (val - 1.0f));
+                return 0.5f * ui::ease_in_expo_transformer()(val);
             } else {
-                val -= 1.0f;
-                return 0.5f * (2.0f - pow(2.0f, -10.0f * val));
+                return 0.5f * ui::ease_out_expo_transformer()(val - 1.0f) + 0.5f;
             }
         });
         return _convert_value(curve, pos);
