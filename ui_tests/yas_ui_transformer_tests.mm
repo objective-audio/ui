@@ -230,6 +230,90 @@ using namespace yas;
     XCTAssertEqual(transformer(1.0f), 1.0f);
 }
 
+- (void)test_ease_in_expo_transformer {
+    auto const &transformer = ui::ease_in_expo_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertEqualWithAccuracy(transformer(0.125f), 0.002f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.25f), 0.005f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.375f), 0.013f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.5f), 0.031f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.625f), 0.074f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.75f), 0.176f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.875f), 0.420f, 0.001f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_out_expo_transformer {
+    auto const &transformer = ui::ease_out_expo_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertEqualWithAccuracy(transformer(0.125f), 0.580f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.25f), 0.824f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.375f), 0.926f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.5f), 0.969f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.625f), 0.987f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.75f), 0.995f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.875f), 0.998f, 0.001f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_in_out_expo_transformer {
+    auto const &transformer = ui::ease_in_out_expo_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertEqualWithAccuracy(transformer(0.125f), 0.003f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.25f), 0.016f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.375f), 0.088f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.5f), 0.500f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.625f), 0.912f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.75f), 0.984f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.875f), 0.997f, 0.001f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_in_circ_transformer {
+    auto const &transformer = ui::ease_in_circ_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertEqualWithAccuracy(transformer(0.125f), 0.008f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.250f), 0.032f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.375f), 0.073f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.500f), 0.134f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.625f), 0.219f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.750f), 0.339f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.875f), 0.516f, 0.001f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_out_circ_transformer {
+    auto const &transformer = ui::ease_out_circ_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertEqualWithAccuracy(transformer(0.125f), 0.484f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.250f), 0.661f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.375f), 0.781f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.500f), 0.866f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.625f), 0.927f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.750f), 0.968f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.875f), 0.992f, 0.001f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
+- (void)test_ease_in_out_circ_transformer {
+    auto const &transformer = ui::ease_in_out_circ_transformer();
+
+    XCTAssertEqual(transformer(0.0f), 0.0f);
+    XCTAssertEqualWithAccuracy(transformer(0.125f), 0.016f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.250f), 0.067f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.375f), 0.169f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.500f), 0.500f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.625f), 0.831f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.750f), 0.933f, 0.001f);
+    XCTAssertEqualWithAccuracy(transformer(0.875f), 0.984f, 0.001f);
+    XCTAssertEqual(transformer(1.0f), 1.0f);
+}
+
 - (void)test_ping_pong_transformer {
     auto const &transformer = ui::ping_pong_transformer();
 
