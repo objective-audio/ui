@@ -22,6 +22,7 @@ namespace ui {
 
         bool operator==(color const &rhs) const;
         bool operator!=(color const &rhs) const;
+        color operator*(color const &rhs) const;
 
         explicit operator bool() const;
     };
