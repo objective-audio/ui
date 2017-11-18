@@ -78,6 +78,7 @@ using namespace yas;
     ui::color c2{0.5f, 0.5f, 0.5f};
     
     XCTAssertTrue((c1 * c2) == (ui::color{0.05f, 0.25f, 0.5f}));
+    XCTAssertTrue((c1 * 0.5f) == (ui::color{0.05f, 0.25f, 0.5f}));
 }
 
 - (void)test_static_colors {

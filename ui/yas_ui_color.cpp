@@ -18,6 +18,10 @@ ui::color ui::color::operator*(ui::color const &rhs) const {
     return {.red = this->red * rhs.red, .green = this->green * rhs.green, .blue = this->blue * rhs.blue};
 }
 
+ui::color ui::color::operator*(float const &rhs) const {
+    return {.red = this->red * rhs, .green = this->green * rhs, .blue = this->blue * rhs};
+}
+
 ui::color::operator bool() const {
     return red != 0 || green != 0 || blue != 0;
 }
