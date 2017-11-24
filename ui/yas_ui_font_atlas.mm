@@ -56,25 +56,25 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     ui::texture &texture() {
-        return _texture;
+        return this->_texture;
     }
 
     void set_texture(ui::texture &&texture) {
-        if (!is_same(_texture, texture)) {
-            _texture = std::move(texture);
+        if (!is_same(this->_texture, texture)) {
+            this->_texture = std::move(texture);
 
-            _update_texture();
+            this->_update_texture();
 
-            _subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
+            this->_subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
         }
     }
 
     ui::vertex2d_rect_t const &rect(std::string const &word) {
-        auto idx = _words.find_first_of(word);
+        auto idx = this->_words.find_first_of(word);
         if (idx == std::string::npos) {
             return _empty_rect;
         }
-        return _word_infos.at(idx).rect;
+        return this->_word_infos.at(idx).rect;
     }
 
     ui::size advance(std::string const &word) {
@@ -90,7 +90,7 @@ struct ui::font_atlas::impl : base::impl {
         UniChar characters[1];
         CGSize advances[1];
 
-        auto ct_font_obj = _ct_font_ref.object();
+        auto ct_font_obj = this->_ct_font_ref.object();
 
         CFStringGetCharacters(to_cf_object(word), CFRangeMake(0, 1), characters);
         CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, 1);
@@ -104,28 +104,28 @@ struct ui::font_atlas::impl : base::impl {
     ui::texture _texture = nullptr;
 
     void _update_texture() {
-        if (!_texture) {
-            _word_infos.clear();
+        if (!this->_texture) {
+            this->_word_infos.clear();
             return;
         }
 
-        auto ct_font_obj = _ct_font_ref.object();
-        auto const word_count = _words.size();
+        auto ct_font_obj = this->_ct_font_ref.object();
+        auto const word_count = this->_words.size();
 
-        _word_infos.resize(word_count);
+        this->_word_infos.resize(word_count);
 
         CGGlyph glyphs[word_count];
         UniChar characters[word_count];
         CGSize advances[word_count];
 
-        CFStringGetCharacters(to_cf_object(_words), CFRangeMake(0, word_count), characters);
+        CFStringGetCharacters(to_cf_object(this->_words), CFRangeMake(0, word_count), characters);
         CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, word_count);
         CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, word_count);
 
         auto const ascent = CTFontGetAscent(ct_font_obj);
         auto const descent = CTFontGetDescent(ct_font_obj);
         auto const string_height = descent + ascent;
-        auto const scale_factor = _texture.scale_factor();
+        auto const scale_factor = this->_texture.scale_factor();
 
         for (auto const &idx : each_index<std::size_t>(word_count)) {
             ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
@@ -134,7 +134,7 @@ struct ui::font_atlas::impl : base::impl {
                 .origin = {0.0f, roundf(-descent, scale_factor)},
                 .size = {static_cast<float>(image_size.width), static_cast<float>(image_size.height)}};
 
-            _word_infos.at(idx).rect.set_position(image_region);
+            this->_word_infos.at(idx).rect.set_position(image_region);
 
             ui::image image{{.point_size = image_size, .scale_factor = scale_factor}};
 
@@ -153,12 +153,12 @@ struct ui::font_atlas::impl : base::impl {
                 CGContextRestoreGState(ctx);
             });
 
-            if (auto result = _texture.add_image(image)) {
-                _word_infos.at(idx).rect.set_tex_coord(result.value());
+            if (auto result = this->_texture.add_image(image)) {
+                this->_word_infos.at(idx).rect.set_tex_coord(result.value());
             }
 
             auto const &advance = advances[idx];
-            _word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
+            this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
         }
     }
 };
