@@ -15,6 +15,7 @@
 #include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
 #include "yas_sample_touch_holder.h"
+#include "yas_sample_draw_call_text.hpp"
 #include "yas_ui.h"
 #include "yas_ui_metal_system.h"
 
@@ -40,6 +41,7 @@ namespace sample {
         sample::big_button_text _big_button_text{_font_atlas};
         sample::soft_keyboard _soft_keyboard{_font_atlas};
         sample::justified_points _justified_points;
+        sample::draw_call_text _draw_call_text{_font_atlas};
 
         ui::batch _batch;
 
