@@ -40,8 +40,10 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
         }
     }
 
-    void encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer) {
+    encode_result_t encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer) {
         metal_system.renderable().prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
+
+        std::size_t encoded_count = 0;
 
         for (auto &metal_encode_info : _all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
@@ -54,11 +56,15 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
                 auto &mesh_renderable = mesh.renderable();
                 if (mesh_renderable.pre_render()) {
                     metal_system.renderable().mesh_encode(mesh, renderEncoder, metal_encode_info);
+
+                    ++encoded_count;
                 }
             }
 
             [renderEncoder endEncoding];
         }
+
+        return encode_result_t{.encoded_mesh_count = encoded_count};
     }
 
    private:
@@ -98,8 +104,9 @@ ui::metal_encode_info const &ui::metal_render_encoder::current_encode_info() {
     return impl_ptr<impl>()->current_encode_info();
 }
 
-void ui::metal_render_encoder::encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer) {
-    impl_ptr<impl>()->encode(metal_system, commandBuffer);
+ui::metal_render_encoder::encode_result_t ui::metal_render_encoder::encode(ui::metal_system &metal_system,
+                                                                           id<MTLCommandBuffer> const commandBuffer) {
+    return impl_ptr<impl>()->encode(metal_system, commandBuffer);
 }
 
 ui::render_encodable &ui::metal_render_encoder::encodable() {
