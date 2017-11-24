@@ -187,7 +187,7 @@ struct sample::soft_keyboard::impl : base::impl {
             [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
                 if (auto keyboard = weak_keyboard.lock()) {
                     keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
-                    keyboard.impl_ptr<impl>()->_udpate_soft_key_count();
+                    keyboard.impl_ptr<impl>()->_update_soft_key_count();
                 }
             });
 
@@ -216,7 +216,7 @@ struct sample::soft_keyboard::impl : base::impl {
                                                  .destination_guide = frame_guide_rect.right()}));
 
         _setup_soft_keys_layout();
-        _udpate_soft_key_count();
+        _update_soft_key_count();
         _update_soft_keys_enabled(false);
     }
 
@@ -270,7 +270,7 @@ struct sample::soft_keyboard::impl : base::impl {
             {.renderer = _root_node.renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f}};
     }
 
-    void _udpate_soft_key_count() {
+    void _update_soft_key_count() {
         auto const key_count = _soft_keys.size();
 
         if (key_count == 0 || !_collection_layout) {
