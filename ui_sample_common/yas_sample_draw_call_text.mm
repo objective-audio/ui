@@ -54,7 +54,7 @@ struct sample::draw_call_text::impl : base::impl {
 
                         top_layout = ui::make_layout(
                             {.distance = distance,
-                             .source_guide = strings.rect_plane().node().renderer().view_layout_guide_rect().bottom(),
+                             .source_guide = strings.frame_layout_guide_rect().bottom(),
                              .destination_guide = strings.frame_layout_guide_rect().top()});
                     };
 
