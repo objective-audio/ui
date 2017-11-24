@@ -11,7 +11,7 @@ namespace sample {
     struct modifier_text : base {
         class impl;
 
-        explicit modifier_text(ui::font_atlas atlas = nullptr);
+        explicit modifier_text(ui::font_atlas, ui::layout_guide bottom_guide);
         modifier_text(std::nullptr_t);
 
         ui::strings &strings();

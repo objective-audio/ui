@@ -223,6 +223,10 @@ struct ui::metal_system::impl : base::impl,
         return make_objc_ptr([mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
     }
 
+    std::size_t last_encoded_mesh_count() {
+        return this->_last_encoded_mesh_count;
+    }
+
    private:
     uint32_t _sample_count = 4;
 
@@ -243,6 +247,8 @@ struct ui::metal_system::impl : base::impl,
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_without_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
+
+    std::size_t _last_encoded_mesh_count = 0;
 
     void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
@@ -266,7 +272,8 @@ struct ui::metal_system::impl : base::impl,
             batch.metal().metal_setup(metal_system);
         }
 
-        metal_render_encoder.encode(metal_system, commandBuffer);
+        auto result = metal_render_encoder.encode(metal_system, commandBuffer);
+        this->_last_encoded_mesh_count = result.encoded_mesh_count;
     }
 };
 
@@ -279,6 +286,10 @@ ui::metal_system::metal_system(std::nullptr_t) : base(nullptr) {
 }
 
 ui::metal_system::~metal_system() = default;
+
+std::size_t ui::metal_system::last_encoded_mesh_count() const {
+    return impl_ptr<impl>()->last_encoded_mesh_count();
+}
 
 ui::makable_metal_system &ui::metal_system::makable() {
     if (!this->_makable) {

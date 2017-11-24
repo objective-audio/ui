@@ -17,6 +17,10 @@ namespace ui {
         class impl;
 
        public:
+        struct encode_result_t {
+            std::size_t const encoded_mesh_count;
+        };
+
         metal_render_encoder();
         metal_render_encoder(std::nullptr_t);
 
@@ -29,7 +33,7 @@ namespace ui {
 
         ui::metal_encode_info const &current_encode_info();
 
-        void encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer);
+        encode_result_t encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer);
 
         ui::render_encodable &encodable();
 

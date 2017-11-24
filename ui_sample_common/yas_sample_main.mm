@@ -23,6 +23,7 @@ void sample::main::setup() {
     root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
     root_node.push_back_sub_node(_justified_points.rect_plane().node());
+    root_node.push_back_sub_node(this->_draw_call_text.strings().rect_plane().node());
 
     _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text.strings().rect_plane().node());
 

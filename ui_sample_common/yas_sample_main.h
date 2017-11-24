@@ -15,6 +15,7 @@
 #include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
 #include "yas_sample_touch_holder.h"
+#include "yas_sample_draw_call_text.hpp"
 #include "yas_ui.h"
 #include "yas_ui_metal_system.h"
 
@@ -33,7 +34,8 @@ namespace sample {
         sample::touch_holder _touch_holder;
         sample::cursor _cursor;
         sample::inputted_text _inputted_text{_font_atlas};
-        sample::modifier_text _modifier_text{_font_atlas};
+        sample::draw_call_text _draw_call_text{_font_atlas};
+        sample::modifier_text _modifier_text{_font_atlas, _draw_call_text.strings().frame_layout_guide_rect().top()};
         sample::bg _bg;
         sample::cursor_over_planes _cursor_over_planes;
         sample::big_button _big_button;
