@@ -7,11 +7,11 @@
 using namespace yas;
 
 bool ui::color::operator==(ui::color const &rhs) const {
-    return red == rhs.red && green == rhs.green && blue == rhs.blue;
+    return this->red == rhs.red && this->green == rhs.green && this->blue == rhs.blue;
 }
 
 bool ui::color::operator!=(ui::color const &rhs) const {
-    return red != rhs.red || green != rhs.green || blue != rhs.blue;
+    return this->red != rhs.red || this->green != rhs.green || this->blue != rhs.blue;
 }
 
 ui::color ui::color::operator*(ui::color const &rhs) const {
@@ -23,7 +23,7 @@ ui::color ui::color::operator*(float const &rhs) const {
 }
 
 ui::color::operator bool() const {
-    return red != 0 || green != 0 || blue != 0;
+    return this->red != 0 || this->green != 0 || this->blue != 0;
 }
 
 simd::float4 yas::to_float4(ui::color const &color, float alpha) {
