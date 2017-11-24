@@ -16,8 +16,8 @@ using namespace yas;
 
 struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::impl, metal_object::impl {
     void push_back_mesh(ui::mesh &&mesh) override {
-        if (_building_type == ui::batch_building_type::rebuild) {
-            ui::batch_render_mesh_info &mesh_info = _find_or_make_mesh_info(mesh.texture());
+        if (this->_building_type == ui::batch_building_type::rebuild) {
+            ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh.texture());
 
             auto &renderable_mesh = mesh.renderable();
             mesh_info.vertex_count += renderable_mesh.render_vertex_count();
@@ -28,7 +28,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     }
 
     std::vector<ui::mesh> &meshes() override {
-        return _render_meshes;
+        return this->_render_meshes;
     }
 
     void begin_render_meshes_building(ui::batch_building_type const building_type) override {
@@ -36,21 +36,21 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
             clear_render_meshes();
         }
 
-        _building_type = building_type;
+        this->_building_type = building_type;
     }
 
     void commit_render_meshes_building() override {
-        if (!to_bool(_building_type)) {
+        if (!to_bool(this->_building_type)) {
             throw "don't commit if batch_building_type is none.";
         }
 
-        for (auto &mesh_info : _render_mesh_infos) {
-            if (_building_type == ui::batch_building_type::rebuild) {
+        for (auto &mesh_info : this->_render_mesh_infos) {
+            if (this->_building_type == ui::batch_building_type::rebuild) {
                 ui::dynamic_mesh_data render_mesh_data{
                     {.vertex_count = mesh_info.vertex_count, .index_count = mesh_info.index_count}};
                 mesh_info.render_mesh.set_mesh_data(render_mesh_data);
                 mesh_info.mesh_data = std::move(render_mesh_data);
-            } else if (_building_type == ui::batch_building_type::overwrite) {
+            } else if (this->_building_type == ui::batch_building_type::overwrite) {
                 mesh_info.vertex_idx = 0;
                 mesh_info.index_idx = 0;
             }
@@ -58,26 +58,26 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
             for (auto &src_mesh : mesh_info.src_meshes) {
                 auto &src_mesh_renderable = src_mesh.renderable();
                 if (src_mesh_renderable.pre_render()) {
-                    src_mesh.renderable().batch_render(mesh_info, _building_type);
+                    src_mesh.renderable().batch_render(mesh_info, this->_building_type);
                 }
             }
         }
 
-        if (_building_type == ui::batch_building_type::rebuild) {
-            _render_meshes = yas::to_vector<ui::mesh>(_render_mesh_infos,
-                                                      [](auto const &mesh_info) { return mesh_info.render_mesh; });
+        if (this->_building_type == ui::batch_building_type::rebuild) {
+            this->_render_meshes = yas::to_vector<ui::mesh>(
+                this->_render_mesh_infos, [](auto const &mesh_info) { return mesh_info.render_mesh; });
         }
 
-        _building_type = ui::batch_building_type::none;
+        this->_building_type = ui::batch_building_type::none;
     }
 
     void clear_render_meshes() override {
-        _render_meshes.clear();
-        _render_mesh_infos.clear();
+        this->_render_meshes.clear();
+        this->_render_mesh_infos.clear();
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        for (auto &mesh : _render_meshes) {
+        for (auto &mesh : this->_render_meshes) {
             if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             };
@@ -92,18 +92,18 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     ui::batch_building_type _building_type = ui::batch_building_type::none;
 
     ui::batch_render_mesh_info &_find_or_make_mesh_info(ui::texture const &texture) {
-        for (auto &info : _render_mesh_infos) {
+        for (auto &info : this->_render_mesh_infos) {
             if (is_same(info.render_mesh.texture(), texture)) {
                 return info;
             }
         }
 
-        return _add_mesh_info(texture);
+        return this->_add_mesh_info(texture);
     }
 
     ui::batch_render_mesh_info &_add_mesh_info(ui::texture texture) {
-        _render_mesh_infos.emplace_back(ui::batch_render_mesh_info{});
-        auto &info = _render_mesh_infos.back();
+        this->_render_mesh_infos.emplace_back(ui::batch_render_mesh_info{});
+        auto &info = this->_render_mesh_infos.back();
         info.render_mesh.set_texture(texture);
         info.render_mesh.set_use_mesh_color(true);
         return info;
