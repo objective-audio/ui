@@ -24,15 +24,16 @@ bool ui::cursor_event::operator!=(cursor_event const &rhs) const {
 }
 
 ui::point const &ui::cursor_event::position() const {
-    return _position;
+    return this->_position;
 }
 
 double ui::cursor_event::timestamp() const {
-    return _timestamp;
+    return this->_timestamp;
 }
 
 bool ui::cursor_event::contains_in_window() const {
-    return -1.0f <= _position.x && _position.x <= 1.0f && -1.0f <= _position.y && _position.y <= 1.0f;
+    return -1.0f <= this->_position.x && this->_position.x <= 1.0f && -1.0f <= this->_position.y &&
+           this->_position.y <= 1.0f;
 }
 
 #pragma mark - touch_event
@@ -45,23 +46,23 @@ ui::touch_event::touch_event(uintptr_t const identifier, ui::point pos, double c
 }
 
 bool ui::touch_event::operator==(touch_event const &rhs) const {
-    return _identifier == rhs._identifier;
+    return this->_identifier == rhs._identifier;
 }
 
 bool ui::touch_event::operator!=(touch_event const &rhs) const {
-    return _identifier != rhs._identifier;
+    return this->_identifier != rhs._identifier;
 }
 
 uintptr_t ui::touch_event::identifier() const {
-    return _identifier;
+    return this->_identifier;
 }
 
 ui::point const &ui::touch_event::position() const {
-    return _position;
+    return this->_position;
 }
 
 double ui::touch_event::timestamp() const {
-    return _timestamp;
+    return this->_timestamp;
 }
 
 #pragma mark - key_event
@@ -74,27 +75,27 @@ ui::key_event::key_event(uint16_t const key_code, std::string charas, std::strin
 }
 
 bool ui::key_event::operator==(key_event const &rhs) const {
-    return _key_code == rhs._key_code;
+    return this->_key_code == rhs._key_code;
 }
 
 bool ui::key_event::operator!=(key_event const &rhs) const {
-    return _key_code != rhs._key_code;
+    return this->_key_code != rhs._key_code;
 }
 
 uint16_t ui::key_event::key_code() const {
-    return _key_code;
+    return this->_key_code;
 }
 
 std::string const &ui::key_event::characters() const {
-    return _characters;
+    return this->_characters;
 }
 
 std::string const &ui::key_event::raw_characters() const {
-    return _raw_characters;
+    return this->_raw_characters;
 }
 
 double ui::key_event::timestamp() const {
-    return _timestamp;
+    return this->_timestamp;
 }
 
 #pragma mark - modifier_event
@@ -107,19 +108,19 @@ ui::modifier_event::modifier_event(modifier_flags const flag, double const times
 }
 
 bool ui::modifier_event::operator==(modifier_event const &rhs) const {
-    return _flag == rhs._flag;
+    return this->_flag == rhs._flag;
 }
 
 bool ui::modifier_event::operator!=(modifier_event const &rhs) const {
-    return _flag != rhs._flag;
+    return this->_flag != rhs._flag;
 }
 
 ui::modifier_flags ui::modifier_event::flag() const {
-    return _flag;
+    return this->_flag;
 }
 
 double ui::modifier_event::timestamp() const {
-    return _timestamp;
+    return this->_timestamp;
 }
 
 #pragma mark - event_inputtable
