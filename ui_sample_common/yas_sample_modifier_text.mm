@@ -8,9 +8,11 @@ using namespace yas;
 
 struct sample::modifier_text::impl : base::impl {
     ui::strings _strings;
+    ui::layout_guide _bottom_guide;
 
-    impl(ui::font_atlas &&font_atlas)
-        : _strings({.font_atlas = font_atlas, .max_word_count = 64, .alignment = ui::layout_alignment::max}) {
+    impl(ui::font_atlas &&font_atlas, ui::layout_guide &&bottom_guide)
+        : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 64, .alignment = ui::layout_alignment::max}),
+          _bottom_guide(std::move(bottom_guide)) {
         auto &node = _strings.rect_plane().node();
         node.dispatch_method(ui::node::method::renderer_changed);
     }
@@ -19,11 +21,8 @@ struct sample::modifier_text::impl : base::impl {
         auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text),
-            event_observer = base{nullptr},
-            left_layout = ui::layout{nullptr},
-            right_layout = ui::layout{nullptr},
-            bottom_layout = ui::layout{nullptr},
+            weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = ui::layout{nullptr},
+            right_layout = ui::layout{nullptr}, bottom_layout = ui::layout{nullptr},
             strings_observer = ui::strings::observer_t{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
@@ -53,33 +52,31 @@ struct sample::modifier_text::impl : base::impl {
                                                     .destination_guide = strings_guide_rect.right()});
 
                     bottom_layout = ui::make_layout({.distance = 4.0f,
-                                                     .source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                     .source_guide = text_impl->_bottom_guide,
                                                      .destination_guide = strings_guide_rect.bottom()});
 
                     auto strings_handler = [top_layout = ui::layout{nullptr}](ui::strings & strings) mutable {
-                        float distance = 4.0f;
+                        float distance = 0.0f;
 
                         if (strings.font_atlas()) {
                             auto const &font_atlas = strings.font_atlas();
                             distance += font_atlas.ascent() + font_atlas.descent();
                         }
 
-                        top_layout = ui::make_layout(
-                            {.distance = distance,
-                             .source_guide = strings.rect_plane().node().renderer().view_layout_guide_rect().bottom(),
-                             .destination_guide = strings.frame_layout_guide_rect().top()});
+                        top_layout = ui::make_layout({.distance = distance,
+                                                      .source_guide = strings.frame_layout_guide_rect().bottom(),
+                                                      .destination_guide = strings.frame_layout_guide_rect().top()});
                     };
 
                     strings_handler(strings);
 
-                    strings_observer = strings.subject().make_observer(
-                        ui::strings::method::font_atlas_changed,
-                        [strings_handler = std::move(strings_handler),
-                         weak_strings = to_weak(strings)](auto const &context) mutable {
-                            if (auto strings = weak_strings.lock()) {
-                                strings_handler(strings);
-                            }
-                        });
+                    strings_observer = strings.subject().make_observer(ui::strings::method::font_atlas_changed, [
+                        strings_handler = std::move(strings_handler), weak_strings = to_weak(strings)
+                    ](auto const &context) mutable {
+                        if (auto strings = weak_strings.lock()) {
+                            strings_handler(strings);
+                        }
+                    });
                 } else {
                     event_observer = nullptr;
                     left_layout = nullptr;
@@ -114,7 +111,8 @@ struct sample::modifier_text::impl : base::impl {
     }
 };
 
-sample::modifier_text::modifier_text(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {
+sample::modifier_text::modifier_text(ui::font_atlas font_atlas, ui::layout_guide bottom_guide)
+    : base(std::make_shared<impl>(std::move(font_atlas), std::move(bottom_guide))) {
     impl_ptr<impl>()->prepare(*this);
 }
 

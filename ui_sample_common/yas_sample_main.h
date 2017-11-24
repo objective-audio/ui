@@ -34,14 +34,14 @@ namespace sample {
         sample::touch_holder _touch_holder;
         sample::cursor _cursor;
         sample::inputted_text _inputted_text{_font_atlas};
-        sample::modifier_text _modifier_text{_font_atlas};
+        sample::draw_call_text _draw_call_text{_font_atlas};
+        sample::modifier_text _modifier_text{_font_atlas, _draw_call_text.strings().frame_layout_guide_rect().top()};
         sample::bg _bg;
         sample::cursor_over_planes _cursor_over_planes;
         sample::big_button _big_button;
         sample::big_button_text _big_button_text{_font_atlas};
         sample::soft_keyboard _soft_keyboard{_font_atlas};
         sample::justified_points _justified_points;
-        sample::draw_call_text _draw_call_text{_font_atlas};
 
         ui::batch _batch;
 

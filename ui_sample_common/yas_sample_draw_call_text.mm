@@ -45,7 +45,7 @@ struct sample::draw_call_text::impl : base::impl {
                                                      .destination_guide = strings_guide_rect.bottom()});
 
                     auto strings_handler = [top_layout = ui::layout{nullptr}](ui::strings & strings) mutable {
-                        float distance = 4.0f;
+                        float distance = 0.0f;
 
                         if (strings.font_atlas()) {
                             auto const &font_atlas = strings.font_atlas();
