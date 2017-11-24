@@ -32,17 +32,17 @@ struct ui::layout_animator::impl : base::impl {
     }
 
     ~impl() {
-        if (auto renderer = _args.renderer.lock()) {
-            for (auto const &guide_pair : _args.layout_guide_pairs) {
+        if (auto renderer = this->_args.renderer.lock()) {
+            for (auto const &guide_pair : this->_args.layout_guide_pairs) {
                 renderer.erase_action(guide_pair.destination);
             }
         }
     }
 
     void prepare(ui::layout_animator &interporator) {
-        _observers.reserve(_args.layout_guide_pairs.size());
+        _observers.reserve(this->_args.layout_guide_pairs.size());
 
-        for (auto &guide_pair : _args.layout_guide_pairs) {
+        for (auto &guide_pair : this->_args.layout_guide_pairs) {
             auto &src_guide = guide_pair.source;
             auto &dst_guide = guide_pair.destination;
 
