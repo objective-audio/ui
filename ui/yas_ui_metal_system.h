@@ -18,6 +18,8 @@ namespace ui {
         metal_system(std::nullptr_t);
 
         virtual ~metal_system() final;
+        
+        std::size_t last_encoded_mesh_count() const;
 
         ui::makable_metal_system &makable();
         ui::renderable_metal_system &renderable();
