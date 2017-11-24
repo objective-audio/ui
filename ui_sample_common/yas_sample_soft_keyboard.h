@@ -14,7 +14,7 @@ namespace sample {
         using subject_t = subject<soft_keyboard, std::string>;
         using observer_t = subject_t::observer_t;
 
-        explicit soft_keyboard(ui::font_atlas atlas = nullptr);
+        explicit soft_keyboard(ui::font_atlas atlas);
         soft_keyboard(std::nullptr_t);
 
         void set_font_atlas(ui::font_atlas);
