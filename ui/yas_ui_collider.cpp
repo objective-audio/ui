@@ -16,11 +16,12 @@ bool ui::anywhere_shape::hit_test(ui::point const &) const {
 }
 
 bool ui::circle_shape::hit_test(ui::point const &pos) const {
-    return std::powf(pos.x - center.x, 2.0f) + std::powf(pos.y - center.y, 2.0f) < std::powf(radius, 2.0f);
+    return std::powf(pos.x - this->center.x, 2.0f) + std::powf(pos.y - this->center.y, 2.0f) <
+           std::powf(this->radius, 2.0f);
 }
 
 bool ui::rect_shape::hit_test(ui::point const &pos) const {
-    return contains(rect, pos);
+    return contains(this->rect, pos);
 }
 
 struct ui::shape::impl_base : base::impl {
@@ -40,7 +41,7 @@ struct ui::shape::impl : impl_base {
     }
 
     bool hit_test(ui::point const &pos) override {
-        return _value.hit_test(pos);
+        return this->_value.hit_test(pos);
     }
 };
 
@@ -88,11 +89,11 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
     subject_t _subject;
 
     impl(ui::shape &&shape) : _shape_property({.value = std::move(shape)}) {
-        _property_observers.reserve(2);
+        this->_property_observers.reserve(2);
     }
 
     void dispatch_method(ui::collider::method const method) {
-        if (_property_observers.count(method)) {
+        if (this->_property_observers.count(method)) {
             return;
         }
 
@@ -111,31 +112,31 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 
         switch (method) {
             case ui::collider::method::shape_changed:
-                observer = make_observer(method, _shape_property, weak_collider);
+                observer = make_observer(method, this->_shape_property, weak_collider);
                 break;
             case ui::collider::method::enabled_changed:
-                observer = make_observer(method, _enabled_property, weak_collider);
+                observer = make_observer(method, this->_enabled_property, weak_collider);
                 break;
         }
 
-        _property_observers.emplace(std::make_pair(method, std::move(observer)));
+        this->_property_observers.emplace(std::make_pair(method, std::move(observer)));
     }
 
     bool hit_test(ui::point const &loc) {
         auto const &shape = _shape_property.value();
-        if (shape && _enabled_property.value()) {
-            auto pos = simd::float4x4(matrix_invert(_matrix)) * to_float4(loc.v);
+        if (shape && this->_enabled_property.value()) {
+            auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
             return shape.hit_test({pos.x, pos.y});
         }
         return false;
     }
 
     simd::float4x4 const &matrix() const override {
-        return _matrix;
+        return this->_matrix;
     }
 
     void set_matrix(simd::float4x4 &&matrix) override {
-        _matrix = std::move(matrix);
+        this->_matrix = std::move(matrix);
     }
 
    private:
@@ -183,8 +184,8 @@ void ui::collider::dispatch_method(ui::collider::method const method) {
 }
 
 ui::renderable_collider &ui::collider::renderable() {
-    if (!_renderable) {
-        _renderable = ui::renderable_collider{impl_ptr<ui::renderable_collider::impl>()};
+    if (!this->_renderable) {
+        this->_renderable = ui::renderable_collider{impl_ptr<ui::renderable_collider::impl>()};
     }
-    return _renderable;
+    return this->_renderable;
 }

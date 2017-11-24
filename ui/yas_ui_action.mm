@@ -32,22 +32,22 @@ struct ui::action::impl : base::impl, updatable_action::impl {
     }
 
     bool update(time_point_t const &time) override {
-        if (time < _begin_time + _delay) {
+        if (time < this->_begin_time + this->_delay) {
             return false;
         }
 
-        auto const finished = _time_updater ? _time_updater(time) : true;
+        auto const finished = this->_time_updater ? this->_time_updater(time) : true;
 
-        if (finished && _completion_handler) {
-            _completion_handler();
-            _completion_handler = nullptr;
+        if (finished && this->_completion_handler) {
+            this->_completion_handler();
+            this->_completion_handler = nullptr;
         }
 
         return finished;
     }
 
     duration_t time_diff(time_point_t const &time) {
-        return time - _begin_time - _delay;
+        return time - this->_begin_time - this->_delay;
     }
 
     weak<base> _target{nullptr};
@@ -127,7 +127,7 @@ struct ui::continuous_action::impl : action::impl {
     }
 
     auto end_time() {
-        return _begin_time + _delay + duration_t{_duration} * _loop_count;
+        return this->_begin_time + this->_delay + duration_t{_duration} * _loop_count;
     }
 
     double _duration = 0.3;

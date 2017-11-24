@@ -14,28 +14,29 @@ struct ui::image::impl : base::impl {
                                  static_cast<uint32_t>(point_size.height * scale_factor)}) {
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGBitmapInfo bitmapInfo = static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast);
-        _bitmap_context = CGBitmapContextCreate(NULL, _actual_size.width, _actual_size.height, 8,
-                                                _actual_size.width * 4, colorSpace, bitmapInfo);
+        this->_bitmap_context = CGBitmapContextCreate(NULL, this->_actual_size.width, this->_actual_size.height, 8,
+                                                      this->_actual_size.width * 4, colorSpace, bitmapInfo);
         CGColorSpaceRelease(colorSpace);
     }
 
     ~impl() {
-        CGContextRelease(_bitmap_context);
+        CGContextRelease(this->_bitmap_context);
     }
 
     void clear() {
-        CGContextClearRect(_bitmap_context, CGRectMake(0, 0, _actual_size.width, _actual_size.height));
+        CGContextClearRect(this->_bitmap_context,
+                           CGRectMake(0, 0, this->_actual_size.width, this->_actual_size.height));
     }
 
     void draw(std::function<void(CGContextRef const)> const &function) {
-        CGContextSaveGState(_bitmap_context);
+        CGContextSaveGState(this->_bitmap_context);
 
-        CGContextTranslateCTM(_bitmap_context, 0.0, _actual_size.height);
-        CGContextScaleCTM(_bitmap_context, (CGFloat)_actual_size.width / (CGFloat)_point_size.width,
-                          -(CGFloat)_actual_size.height / (CGFloat)_point_size.height);
-        function(_bitmap_context);
+        CGContextTranslateCTM(this->_bitmap_context, 0.0, this->_actual_size.height);
+        CGContextScaleCTM(this->_bitmap_context, (CGFloat)this->_actual_size.width / (CGFloat)this->_point_size.width,
+                          -(CGFloat)this->_actual_size.height / (CGFloat)this->_point_size.height);
+        function(this->_bitmap_context);
 
-        CGContextRestoreGState(_bitmap_context);
+        CGContextRestoreGState(this->_bitmap_context);
     }
 
     uint_size _point_size;

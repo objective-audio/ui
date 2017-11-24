@@ -132,47 +132,47 @@ struct ui::collection_layout::impl : base::impl {
             }
         };
 
-        this->_property_observers.emplace_back(_row_spacing_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_row_spacing_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::row_spacing_changed);
             }));
 
-        this->_property_observers.emplace_back(_col_spacing_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_col_spacing_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::col_spacing_changed);
             }));
 
-        this->_property_observers.emplace_back(_alignment_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_alignment_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::alignment_changed);
             }));
 
-        this->_property_observers.emplace_back(_direction_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_direction_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::direction_changed);
             }));
 
-        this->_property_observers.emplace_back(_row_order_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_row_order_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::row_order_changed);
             }));
 
-        this->_property_observers.emplace_back(_col_order_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_col_order_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::col_order_changed);
             }));
 
-        this->_property_observers.emplace_back(_preferred_cell_count_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_preferred_cell_count_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::preferred_cell_count_changed);
             }));
 
-        this->_property_observers.emplace_back(_default_cell_size_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_default_cell_size_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::default_cell_size_changed);
             }));
 
-        this->_property_observers.emplace_back(_lines_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_lines_property.subject().make_observer(
             property_method::did_change, [property_handler](auto const &context) {
                 property_handler(ui::collection_layout::method::lines_changed);
             }));
