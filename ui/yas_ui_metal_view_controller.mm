@@ -81,7 +81,7 @@ namespace ui {
 }
 
 - (yas::ui::view_renderable const &)renderable {
-    return _cpp.renderable;
+    return self->_cpp.renderable;
 }
 
 #pragma mark -
@@ -97,21 +97,21 @@ namespace ui {
 #pragma mark - MTKViewDelegate
 
 - (void)mtkView:(YASUIMetalView *)view drawableSizeWillChange:(CGSize)size {
-    if (_cpp.renderable && self.metalView) {
-        _cpp.renderable.size_will_change(self.metalView, size);
+    if (self->_cpp.renderable && self.metalView) {
+        self->_cpp.renderable.size_will_change(self.metalView, size);
     }
 }
 
 - (void)drawInMTKView:(YASUIMetalView *)view {
-    if (_cpp.renderable && self.metalView) {
-        _cpp.renderable.render(self.metalView);
+    if (self->_cpp.renderable && self.metalView) {
+        self->_cpp.renderable.render(self.metalView);
     }
 }
 
 #pragma mark - YASUIMetalViewDelegate
 
 - (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(yas_edge_insets)insets {
-    if (_cpp.renderable && self.metalView) {
+    if (self->_cpp.renderable && self.metalView) {
         self->_cpp.renderable.safe_area_insets_did_change(self.metalView, insets);
     }
 }
