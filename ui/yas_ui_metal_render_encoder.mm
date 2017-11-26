@@ -13,21 +13,21 @@ using namespace yas;
 
 struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
     std::deque<ui::metal_encode_info> &all_encode_infos() {
-        return _all_encode_infos;
+        return this->_all_encode_infos;
     }
 
     void push_encode_info(ui::metal_encode_info info) {
-        _all_encode_infos.push_front(info);
-        _current_encode_infos.push_front(info);
+        this->_all_encode_infos.push_front(info);
+        this->_current_encode_infos.push_front(info);
     }
 
     void pop_encode_info() {
-        _current_encode_infos.pop_front();
+        this->_current_encode_infos.pop_front();
     }
 
     ui::metal_encode_info &current_encode_info() {
-        if (_current_encode_infos.size() > 0) {
-            return _current_encode_infos.front();
+        if (this->_current_encode_infos.size() > 0) {
+            return this->_current_encode_infos.front();
         } else {
             static ui::metal_encode_info _null_info{nullptr};
             return _null_info;
@@ -35,7 +35,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
     }
 
     void push_back_mesh(ui::mesh &&mesh) override {
-        if (auto &info = current_encode_info()) {
+        if (auto &info = this->current_encode_info()) {
             info.push_back_mesh(std::move(mesh));
         }
     }
@@ -45,7 +45,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
 
         std::size_t encoded_count = 0;
 
-        for (auto &metal_encode_info : _all_encode_infos) {
+        for (auto &metal_encode_info : this->_all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
             auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
                 return [commandBuffer renderCommandEncoderWithDescriptor:renderPassDesc];
@@ -73,7 +73,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
 
     uint32_t _mesh_count_in_all_encode_infos() const {
         uint32_t count = 0;
-        for (auto &metal_encode_info : _all_encode_infos) {
+        for (auto &metal_encode_info : this->this->_all_encode_infos) {
             count += metal_encode_info.meshes().size();
         }
         return count;
@@ -110,8 +110,8 @@ ui::metal_render_encoder::encode_result_t ui::metal_render_encoder::encode(ui::m
 }
 
 ui::render_encodable &ui::metal_render_encoder::encodable() {
-    if (!_encodable) {
-        _encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+    if (!this->_encodable) {
+        this->_encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
     }
-    return _encodable;
+    return this->_encodable;
 }
