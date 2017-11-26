@@ -23,22 +23,22 @@ struct ui::layout::impl : base::impl {
             }
         };
 
-        _guide_observers.reserve(_args.source_guides.size());
+        this->_guide_observers.reserve(_args.source_guides.size());
 
         for (auto &guide : _args.source_guides) {
-            _guide_observers.emplace_back(
+            this->_guide_observers.emplace_back(
                 guide.subject().make_observer(ui::layout_guide::method::value_changed, handler));
         }
 
-        _update_destination_values();
+        this->_update_destination_values();
     }
 
    private:
     std::vector<ui::layout_guide::observer_t> _guide_observers;
 
     void _update_destination_values() {
-        if (_args.handler) {
-            _args.handler(_args.source_guides, _args.destination_guides);
+        if (this->_args.handler) {
+            this->_args.handler(this->_args.source_guides, this->_args.destination_guides);
         }
     }
 };
