@@ -48,11 +48,11 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (ui::event_manager const &)event_manager {
-    return _cpp.event_manager;
+    return self->_cpp.event_manager;
 }
 
 - (void)set_event_manager:(ui::event_manager)manager {
-    _cpp.event_manager = std::move(manager);
+    self->_cpp.event_manager = std::move(manager);
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -118,21 +118,22 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)_sendCursorEvent:(NSEvent *)event {
-    if (_cpp.event_manager) {
-        _cpp.event_manager.inputtable().input_cursor_event(ui::cursor_event{[self _position:event], event.timestamp});
+    if (self->_cpp.event_manager) {
+        self->_cpp.event_manager.inputtable().input_cursor_event(
+            ui::cursor_event{[self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    if (_cpp.event_manager) {
-        _cpp.event_manager.inputtable().input_touch_event(
+    if (self->_cpp.event_manager) {
+        self->_cpp.event_manager.inputtable().input_touch_event(
             std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendKeyEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    if (_cpp.event_manager) {
-        _cpp.event_manager.inputtable().input_key_event(
+    if (self->_cpp.event_manager) {
+        self->_cpp.event_manager.inputtable().input_key_event(
             std::move(phase),
             ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
                           to_string((__bridge CFStringRef)event.charactersIgnoringModifiers), event.timestamp});
@@ -140,8 +141,9 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)_sendModifierEvent:(NSEvent *)event {
-    if (_cpp.event_manager) {
-        _cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags), event.timestamp);
+    if (self->_cpp.event_manager) {
+        self->_cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags),
+                                                                   event.timestamp);
     }
 }
 
@@ -155,18 +157,18 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 - (void)updateTrackingAreas {
     [super updateTrackingAreas];
 
-    if (_tracking_area) {
-        [self removeTrackingArea:_tracking_area.object()];
-        _tracking_area.set_object(nil);
+    if (self->_tracking_area) {
+        [self removeTrackingArea:self->_tracking_area.object()];
+        self->_tracking_area.set_object(nil);
     }
 
-    _tracking_area.move_object([[NSTrackingArea alloc]
+    self->_tracking_area.move_object([[NSTrackingArea alloc]
         initWithRect:self.bounds
              options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInKeyWindow)
                owner:self
             userInfo:nil]);
 
-    [self addTrackingArea:_tracking_area.object()];
+    [self addTrackingArea:self->_tracking_area.object()];
 }
 
 - (void)mouseDown:(NSEvent *)event {

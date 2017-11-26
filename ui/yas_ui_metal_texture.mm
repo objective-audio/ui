@@ -16,13 +16,13 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        if (!is_same(_metal_system, metal_system)) {
-            _metal_system = metal_system;
-            _texture_object.set_object(nil);
-            _sampler_object.set_object(nil);
+        if (!is_same(this->_metal_system, metal_system)) {
+            this->_metal_system = metal_system;
+            this->_texture_object.set_object(nil);
+            this->_sampler_object.set_object(nil);
         }
 
-        if (!_texture_object) {
+        if (!this->_texture_object) {
             auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = _pixel_format, &size = _size] {
                 return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
                                                                           width:size.width
@@ -36,16 +36,16 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
 
             auto textureDesc = texture_desc.object();
 
-            _target = textureDesc.textureType;
+            this->_target = textureDesc.textureType;
 
-            _texture_object = _metal_system.makable().make_mtl_texture(textureDesc);
+            this->_texture_object = this->_metal_system.makable().make_mtl_texture(textureDesc);
 
-            if (!_texture_object) {
+            if (!this->_texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
             }
         }
 
-        if (!_sampler_object) {
+        if (!this->_sampler_object) {
             auto sampler_desc = make_objc_ptr([MTLSamplerDescriptor new]);
             if (!sampler_desc) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_descriptor_failed};
@@ -64,9 +64,9 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
             samplerDesc.lodMinClamp = 0;
             samplerDesc.lodMaxClamp = FLT_MAX;
 
-            _sampler_object = _metal_system.makable().make_mtl_sampler_state(samplerDesc);
+            this->_sampler_object = this->_metal_system.makable().make_mtl_sampler_state(samplerDesc);
 
-            if (!_sampler_object.object()) {
+            if (!this->_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
             }
         }
@@ -117,8 +117,8 @@ ui::metal_system const &ui::metal_texture::metal_system() {
 }
 
 ui::metal_object &ui::metal_texture::metal() {
-    if (!_metal_object) {
-        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    if (!this->_metal_object) {
+        this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
-    return _metal_object;
+    return this->_metal_object;
 }

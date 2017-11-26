@@ -11,9 +11,9 @@ using namespace yas;
 
 struct ui::metal_encode_info::impl : base::impl {
     impl(ui::metal_encode_info::args &&args) {
-        _render_pass_descriptor = args.renderPassDescriptor;
-        _pipe_line_state_with_texture = args.pipelineStateWithTexture;
-        _pipe_line_state_without_texture = args.pipelineStateWithoutTexture;
+        this->_render_pass_descriptor = args.renderPassDescriptor;
+        this->_pipe_line_state_with_texture = args.pipelineStateWithTexture;
+        this->_pipe_line_state_without_texture = args.pipelineStateWithoutTexture;
     }
 
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
