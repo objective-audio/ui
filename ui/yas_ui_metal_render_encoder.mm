@@ -73,7 +73,7 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
 
     uint32_t _mesh_count_in_all_encode_infos() const {
         uint32_t count = 0;
-        for (auto &metal_encode_info : this->this->_all_encode_infos) {
+        for (auto &metal_encode_info : this->_all_encode_infos) {
             count += metal_encode_info.meshes().size();
         }
         return count;
