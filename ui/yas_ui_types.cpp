@@ -9,11 +9,11 @@ using namespace yas;
 #pragma mark - ui::uint_point
 
 bool ui::uint_point::operator==(ui::uint_point const &rhs) const {
-    return x == rhs.x && y == rhs.y;
+    return this->x == rhs.x && this->y == rhs.y;
 }
 
 bool ui::uint_point::operator!=(ui::uint_point const &rhs) const {
-    return x != rhs.x || y != rhs.y;
+    return this->x != rhs.x || this->y != rhs.y;
 }
 
 ui::uint_point const &ui::uint_point::zero() {
@@ -24,11 +24,11 @@ ui::uint_point const &ui::uint_point::zero() {
 #pragma mark - ui::uint_size
 
 bool ui::uint_size::operator==(ui::uint_size const &rhs) const {
-    return width == rhs.width && height == rhs.height;
+    return this->width == rhs.width && this->height == rhs.height;
 }
 
 bool ui::uint_size::operator!=(ui::uint_size const &rhs) const {
-    return width != rhs.width || height != rhs.height;
+    return this->width != rhs.width || this->height != rhs.height;
 }
 
 ui::uint_size const &ui::uint_size::zero() {
@@ -39,27 +39,27 @@ ui::uint_size const &ui::uint_size::zero() {
 #pragma mark - ui::uint_region
 
 bool ui::uint_region::operator==(ui::uint_region const &rhs) const {
-    return origin == rhs.origin && size == rhs.size;
+    return this->origin == rhs.origin && this->size == rhs.size;
 }
 
 bool ui::uint_region::operator!=(ui::uint_region const &rhs) const {
-    return origin != rhs.origin || size != rhs.size;
+    return this->origin != rhs.origin || this->size != rhs.size;
 }
 
 uint32_t ui::uint_region::left() const {
-    return std::min(origin.x, origin.x + size.width);
+    return std::min(this->origin.x, origin.x + this->size.width);
 }
 
 uint32_t ui::uint_region::right() const {
-    return std::max(origin.x, origin.x + size.width);
+    return std::max(this->origin.x, origin.x + this->size.width);
 }
 
 uint32_t ui::uint_region::bottom() const {
-    return std::min(origin.y, origin.y + size.height);
+    return std::min(this->origin.y, origin.y + this->size.height);
 }
 
 uint32_t ui::uint_region::top() const {
-    return std::max(origin.y, origin.y + size.height);
+    return std::max(this->origin.y, origin.y + this->size.height);
 }
 
 ui::uint_region const &ui::uint_region::zero() {
@@ -70,19 +70,19 @@ ui::uint_region const &ui::uint_region::zero() {
 #pragma mark - ui:uint_range
 
 bool ui::uint_range::operator==(uint_range const &rhs) const {
-    return location == rhs.location && length == rhs.length;
+    return this->location == rhs.location && this->length == rhs.length;
 }
 
 bool ui::uint_range::operator!=(uint_range const &rhs) const {
-    return location != rhs.location || length != rhs.length;
+    return this->location != rhs.location || this->length != rhs.length;
 }
 
 uint32_t ui::uint_range::min() const {
-    return std::min(location, location + length);
+    return std::min(this->location, this->location + this->length);
 }
 
 uint32_t ui::uint_range::max() const {
-    return std::max(location, location + length);
+    return std::max(this->location, this->location + this->length);
 }
 
 ui::uint_range const &ui::uint_range::zero() {
@@ -93,11 +93,11 @@ ui::uint_range const &ui::uint_range::zero() {
 #pragma mark - ui::point
 
 bool ui::point::operator==(ui::point const &rhs) const {
-    return x == rhs.x && y == rhs.y;
+    return this->x == rhs.x && this->y == rhs.y;
 }
 
 bool ui::point::operator!=(ui::point const &rhs) const {
-    return x != rhs.x || y != rhs.y;
+    return this->x != rhs.x || this->y != rhs.y;
 }
 
 ui::point ui::point::operator+(point const &rhs) const {
@@ -109,7 +109,7 @@ ui::point ui::point::operator-(point const &rhs) const {
 }
 
 ui::point::operator bool() const {
-    return x != 0.0f || y != 0.0f;
+    return this->x != 0.0f || this->y != 0.0f;
 }
 
 ui::point const &ui::point::zero() {
@@ -120,15 +120,15 @@ ui::point const &ui::point::zero() {
 #pragma mark - ui::size
 
 bool ui::size::operator==(ui::size const &rhs) const {
-    return width == rhs.width && height == rhs.height;
+    return this->width == rhs.width && this->height == rhs.height;
 }
 
 bool ui::size::operator!=(ui::size const &rhs) const {
-    return width != rhs.width || height != rhs.height;
+    return this->width != rhs.width || this->height != rhs.height;
 }
 
 ui::size::operator bool() const {
-    return width != 0.0f || height != 0.0f;
+    return this->width != 0.0f || this->height != 0.0f;
 }
 
 ui::size const &ui::size::zero() {
@@ -139,23 +139,23 @@ ui::size const &ui::size::zero() {
 #pragma mark - ui::range
 
 bool ui::range::operator==(ui::range const &rhs) const {
-    return location == rhs.location && length == rhs.length;
+    return this->location == rhs.location && this->length == rhs.length;
 }
 
 bool ui::range::operator!=(ui::range const &rhs) const {
-    return location != rhs.location || length != rhs.length;
+    return this->location != rhs.location || this->length != rhs.length;
 }
 
 ui::range::operator bool() const {
-    return location != 0.0f || length != 0.0f;
+    return this->location != 0.0f || this->length != 0.0f;
 }
 
 float ui::range::min() const {
-    return std::min(location, location + length);
+    return std::min(this->location, this->location + this->length);
 }
 
 float ui::range::max() const {
-    return std::max(location, location + length);
+    return std::max(this->location, this->location + this->length);
 }
 
 ui::range const &ui::range::zero() {
@@ -166,39 +166,39 @@ ui::range const &ui::range::zero() {
 #pragma mark - ui::region
 
 bool ui::region::operator==(ui::region const &rhs) const {
-    return origin == rhs.origin && size == rhs.size;
+    return this->origin == rhs.origin && this->size == rhs.size;
 }
 
 bool ui::region::operator!=(ui::region const &rhs) const {
-    return origin != rhs.origin || size != rhs.size;
+    return this->origin != rhs.origin || this->size != rhs.size;
 }
 
 ui::region::operator bool() const {
-    return origin || size;
+    return this->origin || this->size;
 }
 
 ui::range ui::region::horizontal_range() const {
-    return ui::range{.location = origin.x, .length = size.width};
+    return ui::range{.location = this->origin.x, .length = this->size.width};
 }
 
 ui::range ui::region::vertical_range() const {
-    return ui::range{.location = origin.y, .length = size.height};
+    return ui::range{.location = this->origin.y, .length = this->size.height};
 }
 
 float ui::region::left() const {
-    return std::min(origin.x, origin.x + size.width);
+    return std::min(this->origin.x, this->origin.x + this->size.width);
 }
 
 float ui::region::right() const {
-    return std::max(origin.x, origin.x + size.width);
+    return std::max(this->origin.x, this->origin.x + this->size.width);
 }
 
 float ui::region::bottom() const {
-    return std::min(origin.y, origin.y + size.height);
+    return std::min(this->origin.y, this->origin.y + this->size.height);
 }
 
 float ui::region::top() const {
-    return std::max(origin.y, origin.y + size.height);
+    return std::max(this->origin.y, this->origin.y + this->size.height);
 }
 
 ui::point ui::region::center() const {
@@ -217,17 +217,17 @@ ui::region ui::region::zero_centered(ui::size const &size) {
 #pragma mark - vertex2d_rect_t
 
 void ui::vertex2d_rect_t::set_position(ui::region const &region) {
-    v[0].position.x = v[2].position.x = region.left();
-    v[0].position.y = v[1].position.y = region.bottom();
-    v[1].position.x = v[3].position.x = region.right();
-    v[2].position.y = v[3].position.y = region.top();
+    this->v[0].position.x = this->v[2].position.x = region.left();
+    this->v[0].position.y = this->v[1].position.y = region.bottom();
+    this->v[1].position.x = this->v[3].position.x = region.right();
+    this->v[2].position.y = this->v[3].position.y = region.top();
 }
 
 void ui::vertex2d_rect_t::set_tex_coord(ui::uint_region const &region) {
-    v[0].tex_coord.x = v[2].tex_coord.x = region.left();
-    v[0].tex_coord.y = v[1].tex_coord.y = region.top();
-    v[1].tex_coord.x = v[3].tex_coord.x = region.right();
-    v[2].tex_coord.y = v[3].tex_coord.y = region.bottom();
+    this->v[0].tex_coord.x = this->v[2].tex_coord.x = region.left();
+    this->v[0].tex_coord.y = this->v[1].tex_coord.y = region.top();
+    this->v[1].tex_coord.x = this->v[3].tex_coord.x = region.right();
+    this->v[2].tex_coord.y = this->v[3].tex_coord.y = region.bottom();
 }
 
 #pragma mark -
