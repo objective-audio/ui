@@ -53,17 +53,17 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     ui::system_type system_type() {
-        if (_metal_system) {
+        if (this->_metal_system) {
             return ui::system_type::metal;
         }
         return ui::system_type::none;
     }
 
     void view_configure(yas_objc_view *const view) override {
-        switch (system_type()) {
+        switch (this->system_type()) {
             case ui::system_type::metal: {
                 if (auto metalView = objc_cast<YASUIMetalView>(view)) {
-                    _metal_system.renderable().view_configure(view);
+                    this->_metal_system.renderable().view_configure(view);
                     this->_safe_area_insets = metalView.uiSafeAreaInsets;
                     auto const drawable_size = metalView.drawableSize;
                     this->view_size_will_change(view, drawable_size);
@@ -81,38 +81,38 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     void view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) override {
-        if (!to_bool(system_type())) {
+        if (!to_bool(this->system_type())) {
             throw "system not found.";
         }
 
         auto const view_size = view.bounds.size;
-        auto const update_view_size_result = _update_view_size(view_size, drawable_size);
-        auto const update_scale_result = _update_scale_factor();
+        auto const update_view_size_result = this->_update_view_size(view_size, drawable_size);
+        auto const update_scale_result = this->_update_scale_factor();
         update_result update_safe_area_result = update_result::no_change;
 
         if ([view isKindOfClass:[YASUIMetalView class]]) {
             auto const metalView = (YASUIMetalView *)view;
-            update_safe_area_result = _update_safe_area_insets(metalView.uiSafeAreaInsets);
+            update_safe_area_result = this->_update_safe_area_insets(metalView.uiSafeAreaInsets);
         }
 
         if (to_bool(update_view_size_result)) {
             this->_update_layout_guide_rect();
             this->_update_safe_area_layout_guide_rect();
 
-            _subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
+            this->_subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
 
             if (to_bool(update_scale_result)) {
-                _subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
+                this->_subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
             }
 
             if (to_bool(update_safe_area_result)) {
-                _subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
+                this->_subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
             }
         }
     }
 
     void view_safe_area_insets_did_change(yas_objc_view *const view) override {
-        if (!to_bool(system_type())) {
+        if (!to_bool(this->system_type())) {
             throw "system not found.";
         }
 
@@ -131,13 +131,13 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     pre_render_result pre_render() {
-        _action.updatable().update(std::chrono::system_clock::now());
+        this->_action.updatable().update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
-        _root_node.renderable().fetch_updates(tree_updates);
+        this->_root_node.renderable().fetch_updates(tree_updates);
 
         if (tree_updates.is_collider_updated()) {
-            _detector.updatable().begin_update();
+            this->_detector.updatable().begin_update();
         }
 
         if (tree_updates.is_any_updated()) {
@@ -148,15 +148,15 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     void view_render(yas_objc_view *const view) override {
-        if (!_metal_system) {
+        if (!this->_metal_system) {
             throw "metal_system not found.";
         }
 
-        _subject.notify(renderer::method::will_render, cast<ui::renderer>());
+        this->_subject.notify(renderer::method::will_render, cast<ui::renderer>());
 
         if (to_bool(pre_render())) {
             if (auto renderer = cast<ui::renderer>()) {
-                _metal_system.renderable().view_render(view, renderer);
+                this->_metal_system.renderable().view_render(view, renderer);
             }
         }
 
@@ -164,22 +164,22 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     void post_render() {
-        _root_node.renderable().clear_updates();
-        _detector.updatable().end_update();
+        this->_root_node.renderable().clear_updates();
+        this->_detector.updatable().end_update();
     }
 
     void insert_action(ui::action action) {
-        _action.insert_action(action);
+        this->_action.insert_action(action);
     }
 
     void erase_action(ui::action const &action) {
-        _action.erase_action(action);
+        this->_action.erase_action(action);
     }
 
     void erase_action(base const &target) {
-        for (auto const &action : _action.actions()) {
+        for (auto const &action : this->_action.actions()) {
             if (action.target() == target) {
-                _action.erase_action(action);
+                this->_action.erase_action(action);
             }
         }
     }
@@ -203,35 +203,38 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
 
    private:
     update_result _update_view_size(CGSize const v_size, CGSize const d_size) {
-        auto const prev_view_size = _view_size;
-        auto const prev_drawable_size = _drawable_size;
+        auto const prev_view_size = this->_view_size;
+        auto const prev_drawable_size = this->_drawable_size;
 
         float const half_width = v_size.width * 0.5f;
         float const half_height = v_size.height * 0.5f;
 
-        _view_size = {static_cast<uint32_t>(v_size.width), static_cast<uint32_t>(v_size.height)};
-        _drawable_size = {static_cast<uint32_t>(d_size.width), static_cast<uint32_t>(d_size.height)};
+        this->_view_size = {static_cast<uint32_t>(v_size.width), static_cast<uint32_t>(v_size.height)};
+        this->_drawable_size = {static_cast<uint32_t>(d_size.width), static_cast<uint32_t>(d_size.height)};
 
-        if (_view_size == prev_view_size && _drawable_size == prev_drawable_size) {
+        if (this->_view_size == prev_view_size && this->_drawable_size == prev_drawable_size) {
             return update_result::no_change;
         } else {
-            _projection_matrix = ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
+            this->_projection_matrix =
+                ui::matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
             return update_result::changed;
         }
     }
 
     update_result _update_scale_factor() {
-        auto const prev_scale_factor = _scale_factor;
+        auto const prev_scale_factor = this->_scale_factor;
 
-        if (_view_size.width > 0 && _drawable_size.width > 0) {
-            _scale_factor = static_cast<double>(_drawable_size.width) / static_cast<double>(_view_size.width);
-        } else if (_view_size.height > 0 && _drawable_size.height > 0) {
-            _scale_factor = static_cast<double>(_drawable_size.height) / static_cast<double>(_view_size.height);
+        if (this->_view_size.width > 0 && this->_drawable_size.width > 0) {
+            this->_scale_factor =
+                static_cast<double>(this->_drawable_size.width) / static_cast<double>(this->_view_size.width);
+        } else if (this->_view_size.height > 0 && this->_drawable_size.height > 0) {
+            this->_scale_factor =
+                static_cast<double>(this->_drawable_size.height) / static_cast<double>(this->_view_size.height);
         } else {
-            _scale_factor = 0.0;
+            this->_scale_factor = 0.0;
         }
 
-        if (std::abs(_scale_factor - prev_scale_factor) < std::numeric_limits<double>::epsilon()) {
+        if (std::abs(this->_scale_factor - prev_scale_factor) < std::numeric_limits<double>::epsilon()) {
             return update_result::no_change;
         } else {
             return update_result::changed;
@@ -251,10 +254,10 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     void _update_layout_guide_rect() {
-        float const view_width = _view_size.width;
-        float const view_height = _view_size.height;
+        float const view_width = this->_view_size.width;
+        float const view_height = this->_view_size.height;
 
-        _view_layout_guide_rect.set_region(
+        this->_view_layout_guide_rect.set_region(
             {.origin = {-view_width * 0.5f, -view_height * 0.5f}, .size = {view_width, view_height}});
     }
 
@@ -329,10 +332,10 @@ ui::metal_system &ui::renderer::metal_system() {
 }
 
 ui::view_renderable &ui::renderer::view_renderable() {
-    if (!_view_renderable) {
-        _view_renderable = ui::view_renderable{impl_ptr<view_renderable::impl>()};
+    if (!this->_view_renderable) {
+        this->_view_renderable = ui::view_renderable{impl_ptr<view_renderable::impl>()};
     }
-    return _view_renderable;
+    return this->_view_renderable;
 }
 
 yas::ui::renderer::subject_t &ui::renderer::subject() {
