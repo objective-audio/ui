@@ -31,15 +31,15 @@ struct ui::texture::impl : base::impl {
 
         auto const actual_image_size = image.actual_size();
 
-        _prepare_draw_pos(actual_image_size);
+        this->_prepare_draw_pos(actual_image_size);
 
-        if (!_can_draw(actual_image_size)) {
+        if (!this->_can_draw(actual_image_size)) {
             return draw_image_result{draw_image_error::out_of_range};
         }
 
-        auto result = replace_image(image, _draw_actual_pos);
+        auto result = this->replace_image(image, this->_draw_actual_pos);
 
-        _move_draw_pos(actual_image_size);
+        this->_move_draw_pos(actual_image_size);
 
         return result;
     }
@@ -49,13 +49,13 @@ struct ui::texture::impl : base::impl {
             return draw_image_result{draw_image_error::image_is_null};
         }
 
-        if (!_metal_texture.texture() || !_metal_texture.samplerState()) {
+        if (!this->_metal_texture.texture() || !this->_metal_texture.samplerState()) {
             return draw_image_result{draw_image_error::no_setup};
         }
 
         auto region = uint_region{origin, image.actual_size()};
 
-        if (id<MTLTexture> texture = _metal_texture.texture()) {
+        if (id<MTLTexture> texture = this->_metal_texture.texture()) {
             [texture replaceRegion:to_mtl_region(region)
                        mipmapLevel:0
                          withBytes:image.data()
@@ -66,28 +66,28 @@ struct ui::texture::impl : base::impl {
     }
 
     void _prepare_draw_pos(uint_size const size) {
-        if (_actual_size.width < (_draw_actual_pos.x + size.width + _draw_actual_padding)) {
-            _move_draw_pos(size);
+        if (this->_actual_size.width < (this->_draw_actual_pos.x + size.width + this->_draw_actual_padding)) {
+            this->_move_draw_pos(size);
         }
     }
 
     void _move_draw_pos(uint_size const size) {
-        _draw_actual_pos.x += size.width + _draw_actual_padding;
+        this->_draw_actual_pos.x += size.width + this->_draw_actual_padding;
 
-        if (_actual_size.width < _draw_actual_pos.x) {
-            _draw_actual_pos.y += _max_line_height + _draw_actual_padding;
-            _max_line_height = 0;
-            _draw_actual_pos.x = _draw_actual_padding;
+        if (this->_actual_size.width < this->_draw_actual_pos.x) {
+            this->_draw_actual_pos.y += this->_max_line_height + this->_draw_actual_padding;
+            this->_max_line_height = 0;
+            this->_draw_actual_pos.x = this->_draw_actual_padding;
         }
 
-        if (_max_line_height < size.height) {
-            _max_line_height = size.height;
+        if (this->_max_line_height < size.height) {
+            this->_max_line_height = size.height;
         }
     }
 
     bool _can_draw(uint_size const size) {
-        if ((_actual_size.width < _draw_actual_pos.x + size.width + _draw_actual_padding) ||
-            (_actual_size.height < _draw_actual_pos.y + size.height + _draw_actual_padding)) {
+        if ((this->_actual_size.width < this->_draw_actual_pos.x + size.width + this->_draw_actual_padding) ||
+            (this->_actual_size.height < this->_draw_actual_pos.y + size.height + this->_draw_actual_padding)) {
             return false;
         }
 
