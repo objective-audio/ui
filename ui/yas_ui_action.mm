@@ -104,10 +104,10 @@ void ui::action::set_completion_handler(completion_f handler) {
 }
 
 ui::updatable_action &ui::action::updatable() {
-    if (!_updatable) {
-        _updatable = ui::updatable_action{impl_ptr<ui::updatable_action::impl>()};
+    if (!this->_updatable) {
+        this->_updatable = ui::updatable_action{impl_ptr<ui::updatable_action::impl>()};
     }
-    return _updatable;
+    return this->_updatable;
 }
 
 #pragma mark - action::impl
@@ -115,19 +115,19 @@ ui::updatable_action &ui::action::updatable() {
 struct ui::continuous_action::impl : action::impl {
     impl(continuous_action::args &&args)
         : action::impl(std::move(args.action)), _duration(args.duration), _loop_count(args.loop_count) {
-        if (_duration < 0.0) {
+        if (this->_duration < 0.0) {
             throw "duration underflow";
         }
     }
 
     virtual void value_update(double const value) {
-        if (_value_updater) {
-            _value_updater(value);
+        if (this->_value_updater) {
+            this->_value_updater(value);
         }
     }
 
     auto end_time() {
-        return this->_begin_time + this->_delay + duration_t{_duration} * _loop_count;
+        return this->_begin_time + this->_delay + duration_t{this->_duration} * this->_loop_count;
     }
 
     double _duration = 0.3;
