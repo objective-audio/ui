@@ -312,7 +312,7 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t top_idx = 0;
         std::size_t line_idx = 0;
 
-        for (auto const &line : _lines_property.value()) {
+        for (auto const &line : this->_lines_property.value()) {
             if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
                 return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
             }
