@@ -33,7 +33,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
 
     void begin_render_meshes_building(ui::batch_building_type const building_type) override {
         if (building_type == ui::batch_building_type::rebuild) {
-            clear_render_meshes();
+            this->clear_render_meshes();
         }
 
         this->_building_type = building_type;
@@ -119,22 +119,22 @@ ui::batch::batch(std::nullptr_t) : base(nullptr) {
 ui::batch::~batch() = default;
 
 ui::renderable_batch &ui::batch::renderable() {
-    if (!_renderable) {
-        _renderable = ui::renderable_batch{impl_ptr<ui::renderable_batch::impl>()};
+    if (!this->_renderable) {
+        this->_renderable = ui::renderable_batch{impl_ptr<ui::renderable_batch::impl>()};
     }
-    return _renderable;
+    return this->_renderable;
 }
 
 ui::render_encodable &ui::batch::encodable() {
-    if (!_encodable) {
-        _encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+    if (!this->_encodable) {
+        this->_encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
     }
-    return _encodable;
+    return this->_encodable;
 }
 
 ui::metal_object &ui::batch::metal() {
-    if (!_metal_object) {
-        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    if (!this->_metal_object) {
+        this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
-    return _metal_object;
+    return this->_metal_object;
 }
