@@ -15,7 +15,7 @@ struct ui::event::impl_base : base::impl, manageable_event::impl {
     virtual std::type_info const &type() const = 0;
 
     void set_phase(event_phase &&st) override {
-        phase = std::move(st);
+        this->phase = std::move(st);
     }
 
     event_phase phase = ui::event_phase::none;
@@ -255,10 +255,10 @@ subject<ui::event, ui::event_manager::method> &ui::event_manager::subject() {
 }
 
 ui::event_inputtable &ui::event_manager::inputtable() {
-    if (!_inputtable) {
-        _inputtable = ui::event_inputtable{impl_ptr<ui::event_inputtable::impl>()};
+    if (!this->_inputtable) {
+        this->_inputtable = ui::event_inputtable{impl_ptr<ui::event_inputtable::impl>()};
     }
-    return _inputtable;
+    return this->_inputtable;
 }
 
 #pragma mark -
