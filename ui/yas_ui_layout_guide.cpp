@@ -233,8 +233,8 @@ struct ui::layout_guide_range::impl : base::impl {
     }
 
     ui::range range() {
-        auto const &min = _min_guide.value();
-        auto const &max = _max_guide.value();
+        auto const &min = this->_min_guide.value();
+        auto const &max = this->_max_guide.value();
 
         return ui::range{.location = min, .length = max - min};
     }
