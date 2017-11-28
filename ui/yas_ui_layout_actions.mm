@@ -40,7 +40,7 @@ struct ui::layout_animator::impl : base::impl {
     }
 
     void prepare(ui::layout_animator &interporator) {
-        _observers.reserve(this->_args.layout_guide_pairs.size());
+        this->_observers.reserve(this->_args.layout_guide_pairs.size());
 
         for (auto &guide_pair : this->_args.layout_guide_pairs) {
             auto &src_guide = guide_pair.source;
@@ -68,7 +68,7 @@ struct ui::layout_animator::impl : base::impl {
                     }
                 });
 
-            _observers.emplace_back(std::move(observer));
+            this->_observers.emplace_back(std::move(observer));
         }
     }
 
