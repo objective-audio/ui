@@ -123,7 +123,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
     }
 
     bool hit_test(ui::point const &loc) {
-        auto const &shape = _shape_property.value();
+        auto const &shape = this->_shape_property.value();
         if (shape && this->_enabled_property.value()) {
             auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
             return shape.hit_test({pos.x, pos.y});
