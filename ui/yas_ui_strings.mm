@@ -60,8 +60,8 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        this->_property_observers.emplace_back(
-            _text_property.subject().make_observer(property_method::did_change, [weak_strings](auto const &context) {
+        this->_property_observers.emplace_back(this->_text_property.subject().make_observer(
+            property_method::did_change, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_layout();
 
@@ -69,7 +69,7 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        this->_property_observers.emplace_back(_font_atlas_property.subject().make_observer(
+        this->_property_observers.emplace_back(this->_font_atlas_property.subject().make_observer(
             property_method::did_change, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
                     strings.impl_ptr<impl>()->_update_font_atlas_observer();

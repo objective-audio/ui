@@ -11,14 +11,14 @@ using namespace yas;
 #pragma mark - node_update_info
 
 bool ui::tree_updates::is_any_updated() const {
-    return node_updates.flags.any() || mesh_updates.flags.any() || mesh_data_updates.flags.any();
+    return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any();
 }
 
 bool ui::tree_updates::is_collider_updated() const {
     static node_updates_t const _node_collider_updates = {
         ui::node_update_reason::enabled, ui::node_update_reason::children, ui::node_update_reason::collider};
 
-    return node_updates.and_test(_node_collider_updates);
+    return this->node_updates.and_test(_node_collider_updates);
 }
 
 ui::batch_building_type ui::tree_updates::batch_building_type() const {
@@ -30,12 +30,12 @@ ui::batch_building_type ui::tree_updates::batch_building_type() const {
     static mesh_data_updates_t const _mesh_data_rebuild_updates = {ui::mesh_data_update_reason::index_count,
                                                                    ui::mesh_data_update_reason::vertex_count};
 
-    if (node_updates.and_test(_node_rebuild_updates) || mesh_updates.and_test(_mesh_rebuild_updates) ||
-        mesh_data_updates.and_test(_mesh_data_rebuild_updates)) {
+    if (this->node_updates.and_test(_node_rebuild_updates) || this->mesh_updates.and_test(_mesh_rebuild_updates) ||
+        this->mesh_data_updates.and_test(_mesh_data_rebuild_updates)) {
         return ui::batch_building_type::rebuild;
     }
 
-    if (node_updates.flags.any() || mesh_updates.flags.any() || mesh_data_updates.flags.any()) {
+    if (this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any()) {
         return ui::batch_building_type::overwrite;
     }
 

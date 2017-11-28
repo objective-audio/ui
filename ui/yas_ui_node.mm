@@ -31,72 +31,72 @@ using namespace yas;
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
     impl() {
-        _update_observers.reserve(9);
-        _dispatch_observers.reserve(9);
+        this->_update_observers.reserve(9);
+        this->_dispatch_observers.reserve(9);
     }
 
     void setup_observers() {
         auto weak_node = to_weak(cast<ui::node>());
 
-        _update_observers.emplace_back(
-            _enabled_property.subject().make_observer(property_method::did_change, [weak_node](auto const &context) {
+        this->_update_observers.emplace_back(this->_enabled_property.subject().make_observer(
+            property_method::did_change, [weak_node](auto const &context) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::enabled);
                 }
             }));
 
-        _update_observers.emplace_back(
-            _position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
-        _update_observers.emplace_back(
-            _angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
-        _update_observers.emplace_back(
-            _scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
                 }
             }));
 
-        _update_observers.emplace_back(
-            _mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::mesh);
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
 
-        _update_observers.emplace_back(
-            _color_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_color_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
 
-        _update_observers.emplace_back(
-            _alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_update_mesh_color();
                 }
             }));
 
-        _update_observers.emplace_back(
-            _collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::collider);
                 }
             }));
 
-        _update_observers.emplace_back(
-            _batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
+        this->_update_observers.emplace_back(
+            this->_batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
                 if (auto node = weak_node.lock()) {
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
                 }
@@ -104,26 +104,26 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     std::vector<ui::node> &children() {
-        return _children;
+        return this->_children;
     }
 
     void push_front_sub_node(ui::node &&sub_node) {
-        auto iterator = _children.emplace(_children.begin(), std::move(sub_node));
-        _add_sub_node(*iterator);
+        auto iterator = this->_children.emplace(this->_children.begin(), std::move(sub_node));
+        this->_add_sub_node(*iterator);
     }
 
     void push_back_sub_node(ui::node &&sub_node) {
-        _children.emplace_back(std::move(sub_node));
-        _add_sub_node(_children.back());
+        this->_children.emplace_back(std::move(sub_node));
+        this->_add_sub_node(this->_children.back());
     }
 
     void insert_sub_node(ui::node &&sub_node, std::size_t const idx) {
-        auto iterator = _children.emplace(_children.begin() + idx, std::move(sub_node));
-        _add_sub_node(*iterator);
+        auto iterator = this->_children.emplace(this->_children.begin() + idx, std::move(sub_node));
+        this->_add_sub_node(*iterator);
     }
 
     void remove_from_super_node() {
-        if (auto parent = _parent_property.value().lock()) {
+        if (auto parent = this->_parent_property.value().lock()) {
             parent.impl_ptr<impl>()->_remove_sub_node(cast<ui::node>());
         }
     }
@@ -137,18 +137,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             old_batch.renderable().clear_render_meshes();
         }
 
-        _batch_property.set_value(std::move(batch));
+        this->_batch_property.set_value(std::move(batch));
     }
 
     void build_render_info(ui::render_info &render_info) override {
-        if (_enabled_property.value()) {
-            _update_local_matrix();
+        if (this->_enabled_property.value()) {
+            this->_update_local_matrix();
 
-            _matrix = render_info.matrix * _local_matrix;
-            auto const mesh_matrix = render_info.mesh_matrix * _local_matrix;
+            this->_matrix = render_info.matrix * this->_local_matrix;
+            auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
-            if (auto &collider = _collider_property.value()) {
-                collider.renderable().set_matrix(_matrix);
+            if (auto &collider = this->_collider_property.value()) {
+                collider.renderable().set_matrix(this->_matrix);
 
                 if (auto &detector = render_info.detector) {
                     auto &detector_updatable = detector.updatable();
@@ -159,7 +159,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             }
 
             if (auto &render_encodable = render_info.render_encodable) {
-                if (auto &mesh = _mesh_property.value()) {
+                if (auto &mesh = this->_mesh_property.value()) {
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_encodable.push_back_mesh(mesh);
                 }
@@ -168,7 +168,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto batch = _batch_property.value()) {
                 ui::tree_updates tree_updates;
 
-                for (auto &sub_node : _children) {
+                for (auto &sub_node : this->_children) {
                     sub_node.renderable().fetch_updates(tree_updates);
                 }
 
@@ -182,8 +182,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     batch_renderable.begin_render_meshes_building(building_type);
                 }
 
-                for (auto &sub_node : _children) {
-                    batch_render_info.matrix = _matrix;
+                for (auto &sub_node : this->_children) {
+                    batch_render_info.matrix = this->_matrix;
                     batch_render_info.mesh_matrix = matrix_identity_float4x4;
                     sub_node.impl_ptr<impl>()->build_render_info(batch_render_info);
                 }
@@ -199,8 +199,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
                 render_info.batches.push_back(batch);
             } else {
-                for (auto &sub_node : _children) {
-                    render_info.matrix = _matrix;
+                for (auto &sub_node : this->_children) {
+                    render_info.matrix = this->_matrix;
                     render_info.mesh_matrix = mesh_matrix;
                     sub_node.impl_ptr<impl>()->build_render_info(render_info);
                 }
@@ -209,13 +209,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        if (auto &mesh = _mesh_property.value()) {
+        if (auto &mesh = this->_mesh_property.value()) {
             if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
-        for (auto &sub_node : _children) {
+        for (auto &sub_node : this->_children) {
             if (auto ul = unless(sub_node.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
@@ -225,18 +225,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     ui::renderer renderer() override {
-        return _renderer_property.value().lock();
+        return this->_renderer_property.value().lock();
     }
 
     void set_renderer(ui::renderer &&renderer) override {
-        _renderer_property.set_value(renderer);
+        this->_renderer_property.set_value(renderer);
     }
 
     void fetch_updates(ui::tree_updates &tree_updates) override {
-        if (_enabled_property.value()) {
-            tree_updates.node_updates.flags |= _updates.flags;
+        if (this->_enabled_property.value()) {
+            tree_updates.node_updates.flags |= this->_updates.flags;
 
-            if (auto &mesh = _mesh_property.value()) {
+            if (auto &mesh = this->_mesh_property.value()) {
                 tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
 
                 if (auto &mesh_data = mesh.mesh_data()) {
@@ -244,26 +244,26 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 }
             }
 
-            for (auto &sub_node : _children) {
+            for (auto &sub_node : this->_children) {
                 sub_node.renderable().fetch_updates(tree_updates);
             }
-        } else if (_updates.test(ui::node_update_reason::enabled)) {
+        } else if (this->_updates.test(ui::node_update_reason::enabled)) {
             tree_updates.node_updates.set(ui::node_update_reason::enabled);
         }
     }
 
     bool is_rendering_color_exists() override {
-        if (!_enabled_property.value()) {
+        if (!this->_enabled_property.value()) {
             return false;
         }
 
-        for (auto &sub_node : _children) {
+        for (auto &sub_node : this->_children) {
             if (sub_node.renderable().is_rendering_color_exists()) {
                 return true;
             }
         }
 
-        if (auto &mesh = _mesh_property.value()) {
+        if (auto &mesh = this->_mesh_property.value()) {
             return mesh.renderable().is_rendering_color_exists();
         }
 
@@ -274,11 +274,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         if (this->_enabled_property.value()) {
             this->_updates.flags.reset();
 
-            if (auto &mesh = _mesh_property.value()) {
+            if (auto &mesh = this->_mesh_property.value()) {
                 mesh.renderable().clear_updates();
             }
 
-            for (auto &sub_node : _children) {
+            for (auto &sub_node : this->_children) {
                 sub_node.renderable().clear_updates();
             }
         } else {
@@ -287,7 +287,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void dispatch_method(ui::node::method const method) {
-        if (_dispatch_observers.count(method) > 0) {
+        if (this->_dispatch_observers.count(method) > 0) {
             return;
         }
 
@@ -306,34 +306,34 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         switch (method) {
             case ui::node::method::position_changed:
-                observer = make_observer(method, _position_property, weak_node);
+                observer = make_observer(method, this->_position_property, weak_node);
                 break;
             case ui::node::method::angle_changed:
-                observer = make_observer(method, _angle_property, weak_node);
+                observer = make_observer(method, this->_angle_property, weak_node);
                 break;
             case ui::node::method::scale_changed:
-                observer = make_observer(method, _scale_property, weak_node);
+                observer = make_observer(method, this->_scale_property, weak_node);
                 break;
             case ui::node::method::color_changed:
-                observer = make_observer(method, _color_property, weak_node);
+                observer = make_observer(method, this->_color_property, weak_node);
                 break;
             case ui::node::method::alpha_changed:
-                observer = make_observer(method, _alpha_property, weak_node);
+                observer = make_observer(method, this->_alpha_property, weak_node);
                 break;
             case ui::node::method::enabled_changed:
-                observer = make_observer(method, _enabled_property, weak_node);
+                observer = make_observer(method, this->_enabled_property, weak_node);
                 break;
             case ui::node::method::mesh_changed:
-                observer = make_observer(method, _mesh_property, weak_node);
+                observer = make_observer(method, this->_mesh_property, weak_node);
                 break;
             case ui::node::method::collider_changed:
-                observer = make_observer(method, _collider_property, weak_node);
+                observer = make_observer(method, this->_collider_property, weak_node);
                 break;
             case ui::node::method::parent_changed:
-                observer = make_observer(method, _parent_property, weak_node);
+                observer = make_observer(method, this->_parent_property, weak_node);
                 break;
             case ui::node::method::renderer_changed:
-                observer = make_observer(method, _renderer_property, weak_node);
+                observer = make_observer(method, this->_renderer_property, weak_node);
                 break;
 
             default:
@@ -341,22 +341,22 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
 
         if (observer) {
-            _dispatch_observers.emplace(std::make_pair(method, std::move(observer)));
+            this->_dispatch_observers.emplace(std::make_pair(method, std::move(observer)));
         }
     }
 
     simd::float4x4 &local_matrix() {
-        _update_local_matrix();
-        return _local_matrix;
+        this->_update_local_matrix();
+        return this->_local_matrix;
     }
 
     simd::float4x4 &matrix() {
-        _update_matrix();
-        return _matrix;
+        this->_update_matrix();
+        return this->_matrix;
     }
 
     ui::point convert_position(ui::point const &loc) {
-        auto const loc4 = simd::float4x4(matrix_invert(matrix())) * to_float4(loc.v);
+        auto const loc4 = simd::float4x4(matrix_invert(this->matrix())) * to_float4(loc.v);
         return {loc4.x, loc4.y};
     }
 
@@ -390,11 +390,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         auto sub_node_impl = sub_node.impl_ptr<impl>();
 
         sub_node_impl->_parent_property.set_value(cast<ui::node>());
-        sub_node_impl->_set_renderer_recursively(_renderer_property.value().lock());
+        sub_node_impl->_set_renderer_recursively(this->_renderer_property.value().lock());
 
         sub_node_impl->_subject.notify(node::method::added_to_super, sub_node);
 
-        _set_updated(ui::node_update_reason::children);
+        this->_set_updated(ui::node_update_reason::children);
     }
 
     void _remove_sub_node(ui::node const &sub_node) {
@@ -403,57 +403,57 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         sub_node_impl->_parent_property.set_value(ui::node{nullptr});
         sub_node_impl->_set_renderer_recursively(ui::renderer{nullptr});
 
-        erase_if(_children, [&sub_node](ui::node const &node) { return node == sub_node; });
+        erase_if(this->_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
         sub_node_impl->_subject.notify(node::method::removed_from_super, sub_node);
 
-        _set_updated(ui::node_update_reason::children);
+        this->_set_updated(ui::node_update_reason::children);
     }
 
     void _set_renderer_recursively(ui::renderer const &renderer) {
-        _renderer_property.set_value(renderer);
+        this->_renderer_property.set_value(renderer);
 
-        for (auto &sub_node : _children) {
+        for (auto &sub_node : this->_children) {
             sub_node.impl_ptr<impl>()->_set_renderer_recursively(renderer);
         }
     }
 
     void _update_mesh_color() {
-        if (auto &mesh = _mesh_property.value()) {
-            auto const &color = _color_property.value();
-            auto const &alpha = _alpha_property.value();
+        if (auto &mesh = this->_mesh_property.value()) {
+            auto const &color = this->_color_property.value();
+            auto const &alpha = this->_alpha_property.value();
             mesh.set_color({color.red, color.green, color.blue, alpha});
         }
     }
 
     void _set_updated(ui::node_update_reason const reason) {
-        _updates.set(reason);
+        this->_updates.set(reason);
     }
 
     void _update_local_matrix() {
-        if (_updates.test(ui::node_update_reason::geometry)) {
-            auto const &position = _position_property.value();
-            auto const &angle = _angle_property.value();
-            auto const &scale = _scale_property.value();
-            _local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
-                            matrix::scale(scale.width, scale.height);
+        if (this->_updates.test(ui::node_update_reason::geometry)) {
+            auto const &position = this->_position_property.value();
+            auto const &angle = this->_angle_property.value();
+            auto const &scale = this->_scale_property.value();
+            this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+                                  matrix::scale(scale.width, scale.height);
         }
     }
 
     void _update_matrix() {
-        if (auto locked_parent = _parent_property.value().lock()) {
-            _matrix = locked_parent.matrix();
+        if (auto locked_parent = this->_parent_property.value().lock()) {
+            this->_matrix = locked_parent.matrix();
         } else {
-            if (auto locked_renderer = renderer()) {
-                _matrix = locked_renderer.projection_matrix();
+            if (auto locked_renderer = this->renderer()) {
+                this->_matrix = locked_renderer.projection_matrix();
             } else {
-                _matrix = matrix_identity_float4x4;
+                this->_matrix = matrix_identity_float4x4;
             }
         }
 
-        _update_local_matrix();
+        this->_update_local_matrix();
 
-        _matrix = _matrix * _local_matrix;
+        this->_matrix = this->_matrix * this->_local_matrix;
     }
 };
 
@@ -609,17 +609,17 @@ ui::renderer ui::node::renderer() const {
 }
 
 ui::metal_object &ui::node::metal() {
-    if (!_metal_object) {
-        _metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    if (!this->_metal_object) {
+        this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
-    return _metal_object;
+    return this->_metal_object;
 }
 
 ui::renderable_node &ui::node::renderable() {
-    if (!_renderable) {
-        _renderable = ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
+    if (!this->_renderable) {
+        this->_renderable = ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
     }
-    return _renderable;
+    return this->_renderable;
 }
 
 ui::node::subject_t &ui::node::subject() {
@@ -665,8 +665,8 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
 }
 
 void ui::node::attach_position_layout_guides(ui::layout_guide_point &point) {
-    attach_x_layout_guide(point.x());
-    attach_y_layout_guide(point.y());
+    this->attach_x_layout_guide(point.x());
+    this->attach_y_layout_guide(point.y());
 }
 
 std::string yas::to_string(ui::node::method const &method) {
