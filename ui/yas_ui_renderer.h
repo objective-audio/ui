@@ -11,9 +11,9 @@
 #include "yas_ui_renderer_protocol.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -38,8 +38,8 @@ namespace ui {
             safe_area_insets_changed,
         };
 
-        using subject_t = subject<ui::renderer, ui::renderer::method>;
-        using observer_t = observer<ui::renderer, ui::renderer::method>;
+        using subject_t = subject<ui::renderer::method, ui::renderer>;
+        using observer_t = observer<ui::renderer::method, ui::renderer>;
 
         renderer();
         explicit renderer(ui::metal_system);

@@ -211,7 +211,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     std::unordered_map<uintptr_t, event> _touch_events;
     std::unordered_map<uint16_t, event> _key_events;
     std::unordered_map<uint32_t, event> _modifier_events;
-    yas::subject<ui::event, ui::event_manager::method> _subject;
+    yas::subject<ui::event_manager::method, ui::event> _subject;
 };
 
 #pragma mark - manageable_event
@@ -250,7 +250,7 @@ ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 
 ui::event_manager::~event_manager() = default;
 
-subject<ui::event, ui::event_manager::method> &ui::event_manager::subject() {
+subject<ui::event_manager::method, ui::event> &ui::event_manager::subject() {
     return impl_ptr<impl>()->_subject;
 }
 

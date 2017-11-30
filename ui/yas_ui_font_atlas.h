@@ -11,9 +11,9 @@
 #include "yas_ui_types.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -23,8 +23,8 @@ namespace ui {
 
         enum class method { texture_changed };
 
-        using subject_t = subject<font_atlas, method>;
-        using observer_t = observer<font_atlas, method>;
+        using subject_t = subject<method, font_atlas>;
+        using observer_t = observer<method, font_atlas>;
 
         struct args {
             std::string font_name;

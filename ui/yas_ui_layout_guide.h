@@ -24,8 +24,8 @@ namespace ui {
             value_changed,
         };
 
-        using subject_t = subject<change_context, method>;
-        using observer_t = observer<change_context, method>;
+        using subject_t = subject<method, change_context>;
+        using observer_t = observer<method, change_context>;
         using value_changed_f = std::function<void(change_context const &)>;
 
         layout_guide();

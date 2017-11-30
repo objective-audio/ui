@@ -10,9 +10,9 @@
 #include "yas_ui_node_protocol.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -46,8 +46,8 @@ namespace ui {
             enabled_changed,
         };
 
-        using subject_t = subject<node, method>;
-        using observer_t = observer<node, method>;
+        using subject_t = subject<method, node>;
+        using observer_t = observer<method, node>;
 
         node();
         node(std::nullptr_t);

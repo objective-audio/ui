@@ -9,9 +9,9 @@
 #include "yas_ui_types.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -37,8 +37,8 @@ namespace ui {
             ui::touch_event const &touch;
         };
 
-        using subject_t = subject<context, method>;
-        using observer_t = observer<context, method>;
+        using subject_t = subject<method, context>;
+        using observer_t = observer<method, context>;
 
         button(ui::region const &region);
         button(ui::region const &region, std::size_t const state_count);

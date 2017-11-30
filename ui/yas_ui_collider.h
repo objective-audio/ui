@@ -10,9 +10,9 @@
 #include "yas_ui_types.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -76,8 +76,8 @@ namespace ui {
             enabled_changed,
         };
 
-        using subject_t = subject<collider, method>;
-        using observer_t = observer<collider, method>;
+        using subject_t = subject<method, collider>;
+        using observer_t = observer<method, collider>;
 
         collider();
         explicit collider(ui::shape);

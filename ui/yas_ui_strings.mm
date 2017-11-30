@@ -21,9 +21,9 @@ struct ui::strings::impl : base::impl {
     ui::rect_plane _rect_plane;
     subject_t _subject;
 
-    property<std::string> _text_property;
-    property<ui::font_atlas> _font_atlas_property;
-    property<std::experimental::optional<float>> _line_height_property;
+    property<std::nullptr_t, std::string> _text_property;
+    property<std::nullptr_t, ui::font_atlas> _font_atlas_property;
+    property<std::nullptr_t, std::experimental::optional<float>> _line_height_property;
 
     impl(args &&args)
         : _collection_layout(

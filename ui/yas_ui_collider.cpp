@@ -84,8 +84,8 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    property<ui::shape> _shape_property{{.value = nullptr}};
-    property<bool> _enabled_property{{.value = true}};
+    property<std::nullptr_t, ui::shape> _shape_property{{.value = nullptr}};
+    property<std::nullptr_t, bool> _enabled_property{{.value = true}};
     subject_t _subject;
 
     impl(ui::shape &&shape) : _shape_property({.value = std::move(shape)}) {

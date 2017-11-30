@@ -8,9 +8,9 @@
 #include "yas_ui_layout_types.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -25,8 +25,8 @@ namespace ui {
 
         enum class method { text_changed, font_atlas_changed, line_height_changed, alignment_changed };
 
-        using subject_t = subject<strings, method>;
-        using observer_t = observer<strings, method>;
+        using subject_t = subject<method, strings>;
+        using observer_t = observer<method, strings>;
 
         struct args {
             std::size_t max_word_count = 16;
