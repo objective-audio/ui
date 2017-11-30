@@ -8,7 +8,7 @@
 #include "yas_ui_event_protocol.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
 
 namespace ui {
@@ -65,7 +65,7 @@ namespace ui {
 
         virtual ~event_manager() final;
 
-        subject<event, method> &subject();
+        subject<method, event> &subject();
 
         ui::event_inputtable &inputtable();
 

@@ -11,9 +11,9 @@
 #include "yas_ui_types.h"
 
 namespace yas {
-template <typename T, typename K>
+template <typename K, typename T>
 class subject;
-template <typename T, typename K>
+template <typename K, typename T>
 class observer;
 
 namespace ui {
@@ -37,8 +37,8 @@ namespace ui {
             col_order_changed
         };
 
-        using subject_t = subject<collection_layout, method>;
-        using observer_t = observer<collection_layout, method>;
+        using subject_t = subject<method, collection_layout>;
+        using observer_t = observer<method, collection_layout>;
 
         struct line {
             std::vector<ui::size> cell_sizes;
