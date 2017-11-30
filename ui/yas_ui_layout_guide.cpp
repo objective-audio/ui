@@ -11,7 +11,7 @@ using namespace yas;
 #pragma mark - ui::layout_guide::impl
 
 struct ui::layout_guide::impl : base::impl {
-    property<float> _value;
+    property<std::nullptr_t, float> _value;
     subject_t _subject;
     value_changed_f _value_changed_handler = nullptr;
 
@@ -40,11 +40,11 @@ struct ui::layout_guide::impl : base::impl {
     }
 
    private:
-    property<float>::observer_t _observer;
+    property<std::nullptr_t, float>::observer_t _observer;
     delaying_caller _notify_caller;
     std::experimental::optional<float> _old_value = nullopt;
 
-    void _request_notify_value_changed(property<float>::observer_t::change_context const &context,
+    void _request_notify_value_changed(property<std::nullptr_t, float>::observer_t::change_context const &context,
                                        ui::layout_guide const &guide) {
         if (!this->_old_value) {
             this->_old_value = context.value.old_value;
