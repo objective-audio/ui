@@ -15,10 +15,11 @@ namespace ui {
         class impl;
 
         explicit metal_system(id<MTLDevice> const);
+        metal_system(id<MTLDevice> const, uint32_t const sample_count);
         metal_system(std::nullptr_t);
 
         virtual ~metal_system() final;
-        
+
         std::size_t last_encoded_mesh_count() const;
 
         ui::makable_metal_system &makable();

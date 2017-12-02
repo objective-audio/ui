@@ -31,7 +31,7 @@ struct ui::metal_system::impl : base::impl,
                                 makable_metal_system::impl,
                                 renderable_metal_system::impl,
                                 testable_metal_system::impl {
-    impl(id<MTLDevice> const device) : _device(device) {
+    impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
         this->_default_library.move_object([device newDefaultLibrary]);
         this->_inflight_semaphore.move_object(dispatch_semaphore_create(ui::_uniforms_buffer_count));
@@ -228,7 +228,7 @@ struct ui::metal_system::impl : base::impl,
     }
 
    private:
-    uint32_t _sample_count = 4;
+    uint32_t _sample_count;
 
     objc_ptr<id<MTLBuffer>> _uniforms_buffers[_uniforms_buffer_count];
     uint8_t _uniforms_buffer_index = 0;
@@ -279,7 +279,11 @@ struct ui::metal_system::impl : base::impl,
 
 #pragma mark - ui::metal_system
 
-ui::metal_system::metal_system(id<MTLDevice> const device) : base(std::make_shared<impl>(device)) {
+ui::metal_system::metal_system(id<MTLDevice> const device) : metal_system(device, 4) {
+}
+
+ui::metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample_count)
+    : base(std::make_shared<impl>(device, sample_count)) {
 }
 
 ui::metal_system::metal_system(std::nullptr_t) : base(nullptr) {

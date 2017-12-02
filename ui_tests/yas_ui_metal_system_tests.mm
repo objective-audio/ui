@@ -40,6 +40,23 @@ using namespace yas;
     XCTAssertEqual(testable.sample_count(), 4);
 }
 
+- (void)test_create_with_sample_count {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::metal_system system{device.object(), 1};
+
+    XCTAssertTrue(system);
+
+    ui::testable_metal_system testable = system.testable();
+
+    XCTAssertNotNil(testable.mtlDevice());
+    XCTAssertEqual(testable.sample_count(), 1);
+}
+
 - (void)test_create_null {
     ui::metal_system system{nullptr};
 
