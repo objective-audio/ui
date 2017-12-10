@@ -206,6 +206,26 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(point.y, 1.0f, 0.001f);
 }
 
+- (void)test_add_point_itself {
+    ui::point point_1{1.0f, 2.0f};
+    ui::point point_2{3.0f, 4.0f};
+    
+    point_1 += point_2;
+    
+    XCTAssertEqualWithAccuracy(point_1.x, 4.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(point_1.y, 6.0f, 0.001f);
+}
+
+- (void)test_minus_point_itself {
+    ui::point point_1{4.0f, 3.0f};
+    ui::point point_2{1.0f, 2.0f};
+    
+    point_1 -= point_2;
+    
+    XCTAssertEqualWithAccuracy(point_1.x, 3.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(point_1.y, 1.0f, 0.001f);
+}
+
 - (void)test_is_equal_size {
     auto size1_2a = ui::size{1.0f, 2.0f};
     auto size1_2b = ui::size{1.0f, 2.0f};

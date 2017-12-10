@@ -79,6 +79,8 @@ namespace ui {
         bool operator!=(point const &rhs) const;
         point operator+(point const &rhs) const;
         point operator-(point const &rhs) const;
+        point &operator+=(point const &rhs);
+        point &operator-=(point const &rhs);
 
         explicit operator bool() const;
 

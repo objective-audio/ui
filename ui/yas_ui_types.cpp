@@ -108,6 +108,18 @@ ui::point ui::point::operator-(point const &rhs) const {
     return {.x = this->x - rhs.x, .y = this->y - rhs.y};
 }
 
+ui::point &ui::point::operator+=(point const &rhs) {
+    this->x += rhs.x;
+    this->y += rhs.y;
+    return *this;
+}
+
+ui::point &ui::point::operator-=(point const &rhs) {
+    this->x -= rhs.x;
+    this->y -= rhs.y;
+    return *this;
+}
+
 ui::point::operator bool() const {
     return this->x != 0.0f || this->y != 0.0f;
 }
