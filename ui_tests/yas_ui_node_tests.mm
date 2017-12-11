@@ -256,6 +256,23 @@ namespace test {
     XCTAssertEqual(parent_node.children().at(2), sub_node3);
 }
 
+- (void)test_parent_changed_when_add_sub_node {
+    ui::node parent_node1;
+    ui::node parent_node2;
+
+    ui::node sub_node;
+
+    parent_node1.push_back_sub_node(sub_node);
+
+    XCTAssertEqual(parent_node1.children().size(), 1);
+    XCTAssertEqual(parent_node2.children().size(), 0);
+
+    parent_node2.push_back_sub_node(sub_node);
+
+    XCTAssertEqual(parent_node1.children().size(), 0);
+    XCTAssertEqual(parent_node2.children().size(), 1);
+}
+
 - (void)test_renderable_node {
     ui::node node;
     ui::renderer renderer;
