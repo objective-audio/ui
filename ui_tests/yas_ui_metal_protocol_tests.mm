@@ -31,6 +31,8 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::setup_metal_error::create_sampler_failed), "create_sampler_failed");
     XCTAssertEqual(to_string(ui::setup_metal_error::create_vertex_buffer_failed), "create_vertex_buffer_failed");
     XCTAssertEqual(to_string(ui::setup_metal_error::create_index_buffer_failed), "create_index_buffer_failed");
+    XCTAssertEqual(to_string(ui::setup_metal_error::create_argument_encoder_failed), "create_argument_encoder_failed");
+    XCTAssertEqual(to_string(ui::setup_metal_error::create_argument_buffer_failed), "create_argument_buffer_failed");
     XCTAssertEqual(to_string(ui::setup_metal_error::unknown), "unknown");
 }
 

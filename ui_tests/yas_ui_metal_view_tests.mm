@@ -74,7 +74,7 @@ using namespace yas;
             }
         });
 
-    [view mouseEntered:[self _enterExitEventWithType:NSMouseEntered location:NSMakePoint(1, 1)]];
+    [view mouseEntered:[self _enterExitEventWithType:NSEventTypeMouseEntered location:NSMakePoint(1, 1)]];
 
     XCTAssertTrue(began_called);
     XCTAssertFalse(changed_called);
@@ -82,7 +82,7 @@ using namespace yas;
 
     reset_flags();
 
-    [view mouseMoved:[self _mouseEventWithType:NSMouseMoved location:NSMakePoint(128, 128)]];
+    [view mouseMoved:[self _mouseEventWithType:NSEventTypeMouseMoved location:NSMakePoint(128, 128)]];
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(changed_called);
@@ -90,7 +90,7 @@ using namespace yas;
 
     reset_flags();
 
-    [view mouseExited:[self _enterExitEventWithType:NSMouseExited location:NSMakePoint(1024, 1024)]];
+    [view mouseExited:[self _enterExitEventWithType:NSEventTypeMouseExited location:NSMakePoint(1024, 1024)]];
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(changed_called);
@@ -138,7 +138,7 @@ using namespace yas;
         }
     });
 
-    [view mouseDown:[self _mouseEventWithType:NSLeftMouseDown location:NSMakePoint(100, 100)]];
+    [view mouseDown:[self _mouseEventWithType:NSEventTypeLeftMouseDown location:NSMakePoint(100, 100)]];
 
     XCTAssertTrue(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -146,7 +146,7 @@ using namespace yas;
 
     values.reset();
 
-    [view mouseDragged:[self _mouseEventWithType:NSLeftMouseDragged location:NSMakePoint(101, 101)]];
+    [view mouseDragged:[self _mouseEventWithType:NSEventTypeLeftMouseDragged location:NSMakePoint(101, 101)]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertTrue(values.changed_called);
@@ -154,7 +154,7 @@ using namespace yas;
 
     values.reset();
 
-    [view mouseUp:[self _mouseEventWithType:NSLeftMouseUp location:NSMakePoint(102, 102)]];
+    [view mouseUp:[self _mouseEventWithType:NSEventTypeLeftMouseUp location:NSMakePoint(102, 102)]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -162,7 +162,7 @@ using namespace yas;
 
     values.reset();
 
-    [view rightMouseDown:[self _mouseEventWithType:NSRightMouseDown location:NSMakePoint(100, 100)]];
+    [view rightMouseDown:[self _mouseEventWithType:NSEventTypeRightMouseDown location:NSMakePoint(100, 100)]];
 
     XCTAssertTrue(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -170,7 +170,7 @@ using namespace yas;
 
     values.reset();
 
-    [view rightMouseDragged:[self _mouseEventWithType:NSRightMouseDragged location:NSMakePoint(101, 101)]];
+    [view rightMouseDragged:[self _mouseEventWithType:NSEventTypeRightMouseDragged location:NSMakePoint(101, 101)]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertTrue(values.changed_called);
@@ -178,7 +178,7 @@ using namespace yas;
 
     values.reset();
 
-    [view rightMouseUp:[self _mouseEventWithType:NSRightMouseUp location:NSMakePoint(102, 102)]];
+    [view rightMouseUp:[self _mouseEventWithType:NSEventTypeRightMouseUp location:NSMakePoint(102, 102)]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -186,7 +186,7 @@ using namespace yas;
 
     values.reset();
 
-    [view otherMouseDown:[self _mouseEventWithType:NSOtherMouseDown location:NSMakePoint(100, 100)]];
+    [view otherMouseDown:[self _mouseEventWithType:NSEventTypeOtherMouseDown location:NSMakePoint(100, 100)]];
 
     XCTAssertTrue(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -194,7 +194,7 @@ using namespace yas;
 
     values.reset();
 
-    [view otherMouseDragged:[self _mouseEventWithType:NSOtherMouseDragged location:NSMakePoint(101, 101)]];
+    [view otherMouseDragged:[self _mouseEventWithType:NSEventTypeOtherMouseDragged location:NSMakePoint(101, 101)]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertTrue(values.changed_called);
@@ -202,7 +202,7 @@ using namespace yas;
 
     values.reset();
 
-    [view otherMouseUp:[self _mouseEventWithType:NSOtherMouseUp location:NSMakePoint(102, 102)]];
+    [view otherMouseUp:[self _mouseEventWithType:NSEventTypeOtherMouseUp location:NSMakePoint(102, 102)]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -255,7 +255,7 @@ using namespace yas;
         values.raw_characters = key_event.raw_characters();
     });
 
-    [view keyDown:[self _keyEventWithType:NSKeyDown
+    [view keyDown:[self _keyEventWithType:NSEventTypeKeyDown
                                           keyCode:1
                                        characters:@"a"
                       charactersIgnoringModifiers:@"b"
@@ -270,7 +270,7 @@ using namespace yas;
 
     values.reset();
 
-    [view keyDown:[self _keyEventWithType:NSKeyDown
+    [view keyDown:[self _keyEventWithType:NSEventTypeKeyDown
                                           keyCode:1
                                        characters:@"a"
                       charactersIgnoringModifiers:@"b"
@@ -285,8 +285,11 @@ using namespace yas;
 
     values.reset();
 
-    [view
-        keyUp:[self _keyEventWithType:NSKeyUp keyCode:1 characters:@"a" charactersIgnoringModifiers:@"b" isARepeat:NO]];
+    [view keyUp:[self _keyEventWithType:NSEventTypeKeyUp
+                                        keyCode:1
+                                     characters:@"a"
+                    charactersIgnoringModifiers:@"b"
+                                      isARepeat:NO]];
 
     XCTAssertFalse(values.began_called);
     XCTAssertFalse(values.changed_called);
@@ -323,10 +326,10 @@ using namespace yas;
 }
 
 - (NSEvent *)_keyEventWithType:(NSEventType)type
-                       keyCode:(unsigned short)keyCode
-                    characters:(NSString *)characters
-   charactersIgnoringModifiers:(NSString *)charactersIgnoringModifiers
-                     isARepeat:(BOOL)isARepeat {
+                        keyCode:(unsigned short)keyCode
+                     characters:(NSString *)characters
+    charactersIgnoringModifiers:(NSString *)charactersIgnoringModifiers
+                      isARepeat:(BOOL)isARepeat {
     return [NSEvent keyEventWithType:type
                             location:NSZeroPoint
                        modifierFlags:0

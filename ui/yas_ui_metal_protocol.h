@@ -19,6 +19,8 @@ namespace ui {
         create_texture_failed,
         create_sampler_descriptor_failed,
         create_sampler_failed,
+        create_argument_encoder_failed,
+        create_argument_buffer_failed,
     };
 
     using setup_metal_result = result<std::nullptr_t, setup_metal_error>;

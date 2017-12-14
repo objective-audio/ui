@@ -6,6 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <vector>
+#include <unordered_map>
 #include "yas_base.h"
 
 namespace yas {
@@ -34,6 +35,7 @@ namespace ui {
         id<MTLRenderPipelineState> pipelineStateWithoutTexture() const;
 
         std::vector<ui::mesh> &meshes() const;
+        std::unordered_map<uintptr_t, ui::texture> &textures() const;
     };
 }
 }

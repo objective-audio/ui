@@ -8,6 +8,8 @@
 #include "yas_ui_metal_render_encoder.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_renderer.h"
+#include "yas_ui_texture.h"
+#include "yas_ui_metal_texture.h"
 
 using namespace yas;
 
@@ -59,6 +61,10 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
 
                     ++encoded_count;
                 }
+            }
+
+            for (auto &pair : metal_encode_info.textures()) {
+                [renderEncoder useResource:pair.second.metal_texture().texture() usage:MTLResourceUsageSample];
             }
 
             [renderEncoder endEncoding];

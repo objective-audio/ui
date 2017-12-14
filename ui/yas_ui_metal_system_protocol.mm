@@ -23,6 +23,10 @@ objc_ptr<id<MTLSamplerState>> ui::makable_metal_system::make_mtl_sampler_state(
     return impl_ptr<impl>()->make_mtl_sampler_state(samplerDesc);
 }
 
+objc_ptr<id<MTLArgumentEncoder>> ui::makable_metal_system::make_mtl_argument_encoder() {
+    return impl_ptr<impl>()->make_mtl_argument_encoder();
+}
+
 objc_ptr<id<MTLBuffer>> ui::makable_metal_system::make_mtl_buffer(std::size_t const length) {
     return impl_ptr<impl>()->make_mtl_buffer(length);
 }
