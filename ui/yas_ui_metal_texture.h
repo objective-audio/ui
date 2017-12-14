@@ -25,6 +25,7 @@ namespace ui {
         ui::uint_size size() const;
         id<MTLSamplerState> samplerState() const;
         id<MTLTexture> texture() const;
+        id<MTLBuffer> argumentBuffer() const;
         MTLTextureType texture_type() const;
         MTLPixelFormat pixel_format() const;
 

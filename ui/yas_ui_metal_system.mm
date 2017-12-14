@@ -38,15 +38,15 @@ struct ui::metal_system::impl : base::impl,
 
         auto defaultLibrary = this->_default_library.object();
 
-        auto fragment_program_with_texture =
+        this->_fragment_function_with_texture =
             make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_with_texture"]);
-        auto fragment_program_without_texture =
+        this->_fragment_function_without_texture =
             make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_without_texture"]);
-        auto vertex_program = make_objc_ptr([defaultLibrary newFunctionWithName:@"vertex2d"]);
+        this->_vertex_function = make_objc_ptr([defaultLibrary newFunctionWithName:@"vertex2d"]);
 
-        auto fragmentProgramWithTexture = fragment_program_with_texture.object();
-        auto fragmentProgramWithoutTexture = fragment_program_without_texture.object();
-        auto vertexProgram = vertex_program.object();
+        auto fragmentProgramWithTexture = this->_fragment_function_with_texture.object();
+        auto fragmentProgramWithoutTexture = this->_fragment_function_without_texture.object();
+        auto vertexProgram = this->_vertex_function.object();
 
         assert(fragmentProgramWithTexture);
         assert(fragmentProgramWithoutTexture);
@@ -169,10 +169,8 @@ struct ui::metal_system::impl : base::impl,
         }
 
         if (auto &texture = mesh.texture()) {
-            [encoder setFragmentBuffer:currentUniformsBuffer offset:this->_uniforms_buffer_offset atIndex:0];
             [encoder setRenderPipelineState:encode_info.pipelineStateWithTexture()];
-            [encoder setFragmentTexture:texture.metal_texture().texture() atIndex:0];
-            [encoder setFragmentSamplerState:texture.metal_texture().samplerState() atIndex:0];
+            [encoder setFragmentBuffer:texture.metal_texture().argumentBuffer() offset:0 atIndex:0];
         } else {
             [encoder setRenderPipelineState:encode_info.pipelineStateWithoutTexture()];
         }
@@ -219,6 +217,10 @@ struct ui::metal_system::impl : base::impl,
         return make_objc_ptr([mtlDevice() newSamplerStateWithDescriptor:samplerDesc]);
     }
 
+    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override {
+        return make_objc_ptr([*this->_fragment_function_with_texture newArgumentEncoderWithBufferIndex:0]);
+    }
+
     objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override {
         return make_objc_ptr([mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
     }
@@ -247,6 +249,10 @@ struct ui::metal_system::impl : base::impl,
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_without_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
+
+    objc_ptr<id<MTLFunction>> _fragment_function_with_texture;
+    objc_ptr<id<MTLFunction>> _fragment_function_without_texture;
+    objc_ptr<id<MTLFunction>> _vertex_function;
 
     std::size_t _last_encoded_mesh_count = 0;
 

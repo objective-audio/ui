@@ -30,6 +30,10 @@ std::string yas::to_string(ui::setup_metal_error const error) {
             return "create_vertex_buffer_failed";
         case ui::setup_metal_error::create_index_buffer_failed:
             return "create_index_buffer_failed";
+        case ui::setup_metal_error::create_argument_encoder_failed:
+            return "create_argument_encoder_failed";
+        case ui::setup_metal_error::create_argument_buffer_failed:
+            return "create_argument_buffer_failed";
         case ui::setup_metal_error::unknown:
             return "unknown";
     }

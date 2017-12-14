@@ -63,12 +63,33 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
             samplerDesc.normalizedCoordinates = false;
             samplerDesc.lodMinClamp = 0;
             samplerDesc.lodMaxClamp = FLT_MAX;
+            samplerDesc.supportArgumentBuffers = true;
 
             this->_sampler_object = this->_metal_system.makable().make_mtl_sampler_state(samplerDesc);
 
             if (!this->_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
             }
+        }
+
+        if (!this->_argument_encoder_object) {
+            this->_argument_encoder_object = this->_metal_system.makable().make_mtl_argument_encoder();
+
+            if (!this->_argument_encoder_object) {
+                return ui::setup_metal_result{setup_metal_error::create_argument_encoder_failed};
+            }
+
+            auto encoder = *this->_argument_encoder_object;
+
+            this->_argument_buffer_object = this->_metal_system.makable().make_mtl_buffer(encoder.encodedLength);
+
+            if (!this->_argument_buffer_object) {
+                return ui::setup_metal_result{setup_metal_error::create_argument_buffer_failed};
+            }
+
+            [encoder setArgumentBuffer:*this->_argument_buffer_object offset:0];
+            [encoder setTexture:*this->_texture_object atIndex:0];
+            [encoder setSamplerState:*this->_sampler_object atIndex:1];
         }
 
         return ui::setup_metal_result{nullptr};
@@ -78,6 +99,8 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
     ui::metal_system _metal_system = nullptr;
     objc_ptr<id<MTLSamplerState>> _sampler_object;
     objc_ptr<id<MTLTexture>> _texture_object;
+    objc_ptr<id<MTLArgumentEncoder>> _argument_encoder_object;
+    objc_ptr<id<MTLBuffer>> _argument_buffer_object;
     MTLPixelFormat const _pixel_format = MTLPixelFormatRGBA8Unorm;
     MTLTextureType _target = MTLTextureType2D;
 };
@@ -102,6 +125,10 @@ id<MTLSamplerState> ui::metal_texture::samplerState() const {
 
 id<MTLTexture> ui::metal_texture::texture() const {
     return impl_ptr<impl>()->_texture_object.object();
+}
+
+id<MTLBuffer> ui::metal_texture::argumentBuffer() const {
+    return *impl_ptr<impl>()->_argument_buffer_object;
 }
 
 MTLTextureType ui::metal_texture::texture_type() const {
