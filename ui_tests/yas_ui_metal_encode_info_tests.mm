@@ -86,11 +86,11 @@ using namespace yas;
 - (void)test_set_mesh {
     ui::metal_encode_info info{{nil, nil, nil}};
 
-    info.push_back_mesh(ui::mesh{});
+    info.append_mesh(ui::mesh{});
 
     XCTAssertEqual(info.meshes().size(), 1);
 
-    info.push_back_mesh(ui::mesh{});
+    info.append_mesh(ui::mesh{});
 
     XCTAssertEqual(info.meshes().size(), 2);
 }

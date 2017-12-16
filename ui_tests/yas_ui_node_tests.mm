@@ -15,7 +15,7 @@ namespace yas {
 namespace test {
     struct test_render_encoder : base {
         struct impl : base::impl, ui::render_encodable::impl {
-            void push_back_mesh(ui::mesh &&mesh) {
+            void append_mesh(ui::mesh &&mesh) {
                 _meshes.emplace_back(std::move(mesh));
             }
 

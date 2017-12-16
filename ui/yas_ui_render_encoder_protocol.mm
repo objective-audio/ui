@@ -14,6 +14,6 @@ ui::render_encodable::render_encodable(std::shared_ptr<impl> impl) : protocol(st
 ui::render_encodable::render_encodable(std::nullptr_t) : protocol(nullptr) {
 }
 
-void ui::render_encodable::push_back_mesh(ui::mesh mesh) {
-    impl_ptr<impl>()->push_back_mesh(std::move(mesh));
+void ui::render_encodable::append_mesh(ui::mesh mesh) {
+    impl_ptr<impl>()->append_mesh(std::move(mesh));
 }

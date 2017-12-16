@@ -13,13 +13,13 @@ namespace ui {
 
     struct render_encodable : protocol {
         struct impl : protocol::impl {
-            virtual void push_back_mesh(ui::mesh &&mesh) = 0;
+            virtual void append_mesh(ui::mesh &&mesh) = 0;
         };
 
         explicit render_encodable(std::shared_ptr<impl>);
         render_encodable(std::nullptr_t);
 
-        void push_back_mesh(ui::mesh);
+        void append_mesh(ui::mesh);
     };
 }
 }

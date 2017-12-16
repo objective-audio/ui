@@ -164,7 +164,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto &render_encodable = render_info.render_encodable) {
                 if (auto &mesh = this->_mesh_property.value()) {
                     mesh.renderable().set_matrix(mesh_matrix);
-                    render_encodable.push_back_mesh(mesh);
+                    render_encodable.append_mesh(mesh);
                 }
             }
 
@@ -197,7 +197,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
                 for (auto &mesh : batch_renderable.meshes()) {
                     mesh.renderable().set_matrix(mesh_matrix);
-                    render_info.render_encodable.push_back_mesh(mesh);
+                    render_info.render_encodable.append_mesh(mesh);
                 }
 
                 render_info.batches.push_back(batch);
