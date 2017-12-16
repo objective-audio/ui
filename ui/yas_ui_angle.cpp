@@ -7,26 +7,32 @@
 
 using namespace yas;
 
-ui::angle::angle(radians_t radians)
-    : radians(radians), degrees(degrees_t{.value = radians.value * (180.0f / static_cast<float>(M_PI))}) {
-}
-
-ui::angle::angle(degrees_t degrees)
-    : radians(radians_t{.value = degrees.value * (static_cast<float>(M_PI) / 180.0f)}), degrees(degrees) {
-}
-
 ui::angle ui::angle::operator+(angle const &rhs) const {
-    return ui::angle{radians_t{.value = this->radians.value + rhs.radians.value}};
+    return ui::angle{this->degrees + rhs.degrees};
 }
 
 ui::angle ui::angle::operator-(angle const &rhs) const {
-    return ui::angle{radians_t{.value = this->radians.value - rhs.radians.value}};
+    return ui::angle{this->degrees - rhs.degrees};
+}
+
+ui::angle &ui::angle::operator+=(angle const &rhs) {
+    this->degrees += rhs.degrees;
+    return *this;
+}
+
+ui::angle &ui::angle::operator-=(angle const &rhs) {
+    this->degrees -= rhs.degrees;
+    return *this;
+}
+
+float ui::angle::radians() const {
+    return this->degrees * (static_cast<float>(M_PI) / 180.0f);
 }
 
 ui::angle ui::make_radians_angle(float const value) {
-    return ui::angle{angle::radians_t{.value = value}};
+    return ui::angle{value * (180.0f / static_cast<float>(M_PI))};
 }
 
 ui::angle ui::make_degrees_angle(float const value) {
-    return ui::angle{angle::degrees_t{.value = value}};
+    return ui::angle{value};
 }

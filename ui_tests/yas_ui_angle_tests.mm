@@ -20,15 +20,15 @@ using namespace yas;
 - (void)test_make_radians {
     ui::angle angle = ui::make_radians_angle(M_PI);
 
-    XCTAssertEqualWithAccuracy(angle.radians.value, M_PI, 0.001f);
-    XCTAssertEqualWithAccuracy(angle.degrees.value, 180.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(angle.radians(), M_PI, 0.001f);
+    XCTAssertEqualWithAccuracy(angle.degrees, 180.0f, 0.001f);
 }
 
 - (void)test_make_degrees {
     ui::angle angle = ui::make_degrees_angle(180.0f);
     
-    XCTAssertEqualWithAccuracy(angle.radians.value, M_PI, 0.001f);
-    XCTAssertEqualWithAccuracy(angle.degrees.value, 180.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(angle.radians(), M_PI, 0.001f);
+    XCTAssertEqualWithAccuracy(angle.degrees, 180.0f, 0.001f);
 }
 
 @end
