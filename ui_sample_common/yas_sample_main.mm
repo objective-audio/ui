@@ -9,23 +9,23 @@ using namespace yas;
 void sample::main::setup() {
     auto &root_node = renderer.root_node();
 
-    root_node.push_back_sub_node(_bg.rect_plane().node());
+    root_node.add_sub_node(_bg.rect_plane().node());
 
     ui::node batch_node;
     batch_node.set_batch(ui::batch{});
-    batch_node.push_back_sub_node(_cursor_over_planes.node());
-    root_node.push_back_sub_node(std::move(batch_node));
+    batch_node.add_sub_node(_cursor_over_planes.node());
+    root_node.add_sub_node(std::move(batch_node));
 
-    root_node.push_back_sub_node(_soft_keyboard.node());
-    root_node.push_back_sub_node(_big_button.button().rect_plane().node());
-    root_node.push_back_sub_node(_cursor.node());
-    root_node.push_back_sub_node(_touch_holder.node());
-    root_node.push_back_sub_node(_inputted_text.strings().rect_plane().node());
-    root_node.push_back_sub_node(_modifier_text.strings().rect_plane().node());
-    root_node.push_back_sub_node(_justified_points.rect_plane().node());
-    root_node.push_back_sub_node(this->_draw_call_text.strings().rect_plane().node());
+    root_node.add_sub_node(_soft_keyboard.node());
+    root_node.add_sub_node(_big_button.button().rect_plane().node());
+    root_node.add_sub_node(_cursor.node());
+    root_node.add_sub_node(_touch_holder.node());
+    root_node.add_sub_node(_inputted_text.strings().rect_plane().node());
+    root_node.add_sub_node(_modifier_text.strings().rect_plane().node());
+    root_node.add_sub_node(_justified_points.rect_plane().node());
+    root_node.add_sub_node(this->_draw_call_text.strings().rect_plane().node());
 
-    _big_button.button().rect_plane().node().push_back_sub_node(_big_button_text.strings().rect_plane().node());
+    _big_button.button().rect_plane().node().add_sub_node(_big_button_text.strings().rect_plane().node());
 
     auto const big_button_region = _big_button.button().layout_guide_rect().region();
     _big_button_text.strings().frame_layout_guide_rect().set_region(

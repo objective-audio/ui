@@ -21,7 +21,7 @@ namespace sample {
                 _strings.set_text(key);
                 _strings.set_alignment(ui::layout_alignment::mid);
 
-                _button.rect_plane().node().push_back_sub_node(_strings.rect_plane().node());
+                _button.rect_plane().node().add_sub_node(_strings.rect_plane().node());
 
                 auto const &font_atlas = _strings.font_atlas();
                 float const strings_offset_y = std::roundf((width + font_atlas.ascent() + font_atlas.descent()) * 0.5f);
@@ -178,7 +178,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
             auto &node = soft_key.button().rect_plane().node();
 
-            _root_node.push_back_sub_node(node);
+            _root_node.add_sub_node(node);
             _soft_keys.emplace_back(std::move(soft_key));
         }
 

@@ -50,10 +50,10 @@ struct sample::cursor_over_planes::impl : base::impl {
             node.set_collider(ui::collider{ui::shape{ui::rect_shape{}}});
 
             ui::node handle_node;
-            handle_node.push_back_sub_node(node);
+            handle_node.add_sub_node(node);
             handle_node.set_angle(360.0f / count * idx);
 
-            root_node.push_back_sub_node(handle_node);
+            root_node.add_sub_node(handle_node);
 
             _nodes.emplace_back(node);
         }
