@@ -12,6 +12,7 @@
 namespace yas {
 namespace ui {
     class mesh;
+    class texture;
 
     class metal_encode_info : public base {
         class impl;
