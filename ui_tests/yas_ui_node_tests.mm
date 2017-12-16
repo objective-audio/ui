@@ -197,12 +197,12 @@ namespace test {
     XCTAssertFalse(sub_node1.parent());
     XCTAssertFalse(sub_node2.parent());
 
-    parent_node.push_back_sub_node(sub_node1);
+    parent_node.add_sub_node(sub_node1);
 
     XCTAssertEqual(parent_node.children().size(), 1);
     XCTAssertTrue(sub_node1.parent());
 
-    parent_node.push_back_sub_node(sub_node2);
+    parent_node.add_sub_node(sub_node2);
 
     XCTAssertEqual(parent_node.children().size(), 2);
     XCTAssertTrue(sub_node1.parent());
@@ -227,29 +227,16 @@ namespace test {
     XCTAssertFalse(sub_node2.parent());
 }
 
-- (void)test_push_front_sub_node {
-    ui::node parent_node;
-
-    ui::node sub_node1;
-    ui::node sub_node2;
-
-    parent_node.push_back_sub_node(sub_node2);
-    parent_node.push_front_sub_node(sub_node1);
-
-    XCTAssertEqual(parent_node.children().at(0), sub_node1);
-    XCTAssertEqual(parent_node.children().at(1), sub_node2);
-}
-
-- (void)test_insert_sub_node {
+- (void)test_add_sub_node_with_index {
     ui::node parent_node;
 
     ui::node sub_node1;
     ui::node sub_node2;
     ui::node sub_node3;
 
-    parent_node.push_back_sub_node(sub_node1);
-    parent_node.push_back_sub_node(sub_node3);
-    parent_node.insert_sub_node(sub_node2, 1);
+    parent_node.add_sub_node(sub_node1);
+    parent_node.add_sub_node(sub_node3);
+    parent_node.add_sub_node(sub_node2, 1);
 
     XCTAssertEqual(parent_node.children().at(0), sub_node1);
     XCTAssertEqual(parent_node.children().at(1), sub_node2);
@@ -262,12 +249,12 @@ namespace test {
 
     ui::node sub_node;
 
-    parent_node1.push_back_sub_node(sub_node);
+    parent_node1.add_sub_node(sub_node);
 
     XCTAssertEqual(parent_node1.children().size(), 1);
     XCTAssertEqual(parent_node2.children().size(), 0);
 
-    parent_node2.push_back_sub_node(sub_node);
+    parent_node2.add_sub_node(sub_node);
 
     XCTAssertEqual(parent_node1.children().size(), 0);
     XCTAssertEqual(parent_node2.children().size(), 1);
@@ -310,7 +297,7 @@ namespace test {
             ++observer_called_count;
         });
 
-    parent_node.push_back_sub_node(sub_node);
+    parent_node.add_sub_node(sub_node);
 
     XCTAssertTrue(added_to_super_called);
 
@@ -352,7 +339,7 @@ namespace test {
     XCTAssertFalse(called_method);
 
     ui::node parent;
-    parent.push_back_sub_node(node);
+    parent.add_sub_node(node);
     XCTAssertFalse(called_method);
 
     node.renderable().set_renderer(renderer);
@@ -456,7 +443,7 @@ namespace test {
         ui::node node;
         node.dispatch_method(ui::node::method::parent_changed);
         auto observer = make_observer(node);
-        parent.push_back_sub_node(node);
+        parent.add_sub_node(node);
         XCTAssertEqual(*called_method, ui::node::method::parent_changed);
     }
 
@@ -484,7 +471,7 @@ namespace test {
     mesh.set_mesh_data(mesh_data);
 
     ui::node sub_node;
-    node.push_back_sub_node(sub_node);
+    node.add_sub_node(sub_node);
 
     ui::tree_updates updates;
 
@@ -564,7 +551,7 @@ namespace test {
     node.set_batch(ui::batch{});
 
     ui::node sub_node;
-    node.push_back_sub_node(sub_node);
+    node.add_sub_node(sub_node);
 
     // enabledがfalseの時はenabled以外の変更はフェッチされない
     node.renderable().fetch_updates(updates);
@@ -607,7 +594,7 @@ namespace test {
     node.set_mesh(nullptr);
     ui::node sub_node;
     sub_node.set_mesh(mesh);
-    node.push_back_sub_node(sub_node);
+    node.add_sub_node(sub_node);
 
     XCTAssertTrue(node.renderable().is_rendering_color_exists());
 
@@ -638,7 +625,7 @@ namespace test {
 
     ui::node sub_node;
     sub_node.set_mesh(sub_mesh);
-    root_node.push_back_sub_node(sub_node);
+    root_node.add_sub_node(sub_node);
 
     XCTAssertFalse(root_mesh_data.metal_system());
     XCTAssertFalse(sub_mesh_data.metal_system());
@@ -661,12 +648,12 @@ namespace test {
     sub_node.set_mesh(ui::mesh{});
 
     batch_node.set_batch(ui::batch{});
-    batch_node.push_back_sub_node(batch_sub_node);
+    batch_node.add_sub_node(batch_sub_node);
 
     batch_sub_node.set_mesh(ui::mesh{});
 
-    node.push_back_sub_node(sub_node);
-    node.push_back_sub_node(batch_node);
+    node.add_sub_node(sub_node);
+    node.add_sub_node(batch_node);
 
     ui::detector detector;
     test::test_render_encoder render_encoder;
@@ -698,7 +685,7 @@ namespace test {
 - (void)test_convert_position {
     ui::node node;
     ui::node sub_node;
-    node.push_back_sub_node(sub_node);
+    node.add_sub_node(sub_node);
     node.set_position({-1.0f, -1.0f});
     node.set_scale({1.0f / 200.0f, 1.0f / 100.0f});
 
@@ -718,7 +705,7 @@ namespace test {
     sub_node.set_scale(ui::size{0.25f, 3.0f});
     sub_node.set_angle(-45.0f);
 
-    root_node.push_back_sub_node(sub_node);
+    root_node.add_sub_node(sub_node);
 
     simd::float4x4 root_local_matrix = ui::matrix::translation(root_node.position().x, root_node.position().y) *
                                        ui::matrix::rotation(root_node.angle()) *
@@ -736,9 +723,9 @@ namespace test {
 
     ui::node node;
     ui::node sub_node;
-    node.push_back_sub_node(sub_node);
+    node.add_sub_node(sub_node);
 
-    renderer.root_node().push_back_sub_node(node);
+    renderer.root_node().add_sub_node(node);
 
     XCTAssertTrue(node.renderer());
     XCTAssertTrue(sub_node.renderer());

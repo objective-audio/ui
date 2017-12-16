@@ -77,7 +77,7 @@ using namespace yas;
     renderer.insert_action(pre_render_action);
 
     ui::button button{{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}};
-    renderer.root_node().push_back_sub_node(button.rect_plane().node());
+    renderer.root_node().add_sub_node(button.rect_plane().node());
 
     std::vector<ui::button::method> observed_methods;
 
