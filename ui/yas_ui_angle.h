@@ -22,6 +22,9 @@ namespace ui {
 
         radians_t const radians;
         degrees_t const degrees;
+
+        angle operator+(angle const &rhs) const;
+        angle operator-(angle const &rhs) const;
     };
 
     angle make_radians_angle(float const);
