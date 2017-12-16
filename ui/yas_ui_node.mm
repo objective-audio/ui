@@ -477,12 +477,12 @@ ui::point ui::node::position() const {
     return impl_ptr<impl>()->_position_property.value();
 }
 
-float ui::node::angle() const {
+float ui::node::degrees() const {
     return impl_ptr<impl>()->_angle_property.value();
 }
 
 float ui::node::radians() const {
-    return radians_from_degrees(this->angle());
+    return radians_from_degrees(this->degrees());
 }
 
 ui::size ui::node::scale() const {
@@ -537,12 +537,12 @@ void ui::node::set_position(ui::point point) {
     impl_ptr<impl>()->_position_property.set_value(std::move(point));
 }
 
-void ui::node::set_angle(float const angle) {
-    impl_ptr<impl>()->_angle_property.set_value(angle);
+void ui::node::set_degrees(float const degrees) {
+    impl_ptr<impl>()->_angle_property.set_value(degrees);
 }
 
 void ui::node::set_radians(float const radians) {
-    this->set_angle(degrees_from_radians(radians));
+    this->set_degrees(degrees_from_radians(radians));
 }
 
 void ui::node::set_scale(ui::size scale) {

@@ -55,7 +55,7 @@ namespace test {
 
     XCTAssertEqual(node.position().x, 0.0f);
     XCTAssertEqual(node.position().y, 0.0f);
-    XCTAssertEqual(node.angle(), 0.0f);
+    XCTAssertEqual(node.degrees(), 0.0f);
     XCTAssertEqual(node.radians(), 0.0f);
     XCTAssertEqual(node.scale().width, 1.0f);
     XCTAssertEqual(node.scale().height, 1.0f);
@@ -91,7 +91,7 @@ namespace test {
     ui::batch batch;
 
     node.set_position({1.0f, 2.0f});
-    node.set_angle(3.0f);
+    node.set_degrees(3.0f);
     node.set_scale({4.0f, 5.0f});
     node.set_color({0.1f, 0.2f, 0.3f});
     node.set_alpha(0.4f);
@@ -100,7 +100,7 @@ namespace test {
 
     XCTAssertEqual(node.position().x, 1.0f);
     XCTAssertEqual(node.position().y, 2.0f);
-    XCTAssertEqual(node.angle(), 3.0f);
+    XCTAssertEqual(node.degrees(), 3.0f);
     XCTAssertEqualWithAccuracy(node.radians(), radians_from_degrees(3.0f), 0.001f);
     XCTAssertEqual(node.scale().width, 4.0f);
     XCTAssertEqual(node.scale().height, 5.0f);
@@ -323,7 +323,7 @@ namespace test {
 
     node.set_position({1.0f, 2.0f});
     XCTAssertFalse(called_method);
-    node.set_angle(90.0f);
+    node.set_degrees(90.0f);
     XCTAssertFalse(called_method);
     node.set_scale({3.0f, 4.0f});
     XCTAssertFalse(called_method);
@@ -372,7 +372,7 @@ namespace test {
         ui::node node;
         node.dispatch_method(ui::node::method::angle_changed);
         auto observer = make_observer(node);
-        node.set_angle(90.0f);
+        node.set_degrees(90.0f);
         XCTAssertEqual(*called_method, ui::node::method::angle_changed);
     }
 
@@ -484,7 +484,7 @@ namespace test {
     updates = ui::tree_updates{};
     node.renderable().clear_updates();
 
-    node.set_angle(1.0f);
+    node.set_degrees(1.0f);
     node.renderable().fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 1);
@@ -545,7 +545,7 @@ namespace test {
     mesh_data.set_vertex_count(1);
     node.mesh().set_mesh_data(mesh_data);
 
-    node.set_angle(1.0f);
+    node.set_degrees(1.0f);
     node.set_enabled(false);
     node.set_collider(ui::collider{});
     node.set_batch(ui::batch{});
@@ -673,10 +673,10 @@ namespace test {
     ui::node node;
     node.set_position(ui::point{10.0f, -20.0f});
     node.set_scale(ui::size{2.0f, 0.5f});
-    node.set_angle(90.0f);
+    node.set_degrees(90.0f);
 
     simd::float4x4 expected_matrix = ui::matrix::translation(node.position().x, node.position().y) *
-                                     ui::matrix::rotation(node.angle()) *
+                                     ui::matrix::rotation(node.degrees()) *
                                      ui::matrix::scale(node.scale().width, node.scale().height);
 
     XCTAssertTrue(is_equal(node.local_matrix(), expected_matrix));
@@ -698,20 +698,20 @@ namespace test {
     ui::node root_node;
     root_node.set_position(ui::point{10.0f, -20.0f});
     root_node.set_scale(ui::size{2.0f, 0.5f});
-    root_node.set_angle(90.0f);
+    root_node.set_degrees(90.0f);
 
     ui::node sub_node;
     sub_node.set_position(ui::point{-50.0f, 10.0f});
     sub_node.set_scale(ui::size{0.25f, 3.0f});
-    sub_node.set_angle(-45.0f);
+    sub_node.set_degrees(-45.0f);
 
     root_node.add_sub_node(sub_node);
 
     simd::float4x4 root_local_matrix = ui::matrix::translation(root_node.position().x, root_node.position().y) *
-                                       ui::matrix::rotation(root_node.angle()) *
+                                       ui::matrix::rotation(root_node.degrees()) *
                                        ui::matrix::scale(root_node.scale().width, root_node.scale().height);
     simd::float4x4 sub_local_matrix = ui::matrix::translation(sub_node.position().x, sub_node.position().y) *
-                                      ui::matrix::rotation(sub_node.angle()) *
+                                      ui::matrix::rotation(sub_node.degrees()) *
                                       ui::matrix::scale(sub_node.scale().width, sub_node.scale().height);
     simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
 

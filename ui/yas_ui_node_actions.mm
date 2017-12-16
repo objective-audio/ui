@@ -48,7 +48,7 @@ ui::continuous_action ui::make_action(rotate_action::args args) {
                     }
                 }
 
-                target.set_angle((end_angle - begin_angle) * value + begin_angle);
+                target.set_degrees((end_angle - begin_angle) * value + begin_angle);
             }
         }
     });

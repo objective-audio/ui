@@ -58,7 +58,7 @@ namespace ui {
         bool operator!=(node const &) const;
 
         ui::point position() const;
-        float angle() const;
+        float degrees() const;
         float radians() const;
         ui::size scale() const;
         ui::color color() const;
@@ -76,7 +76,7 @@ namespace ui {
         ui::batch &batch();
 
         void set_position(ui::point);
-        void set_angle(float const);
+        void set_degrees(float const);
         void set_radians(float const);
         void set_scale(ui::size);
         void set_color(ui::color);
