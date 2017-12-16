@@ -107,19 +107,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return this->_children;
     }
 
-    void push_front_sub_node(ui::node &&sub_node) {
-        sub_node.remove_from_super_node();
-        auto iterator = this->_children.emplace(this->_children.begin(), std::move(sub_node));
-        this->_add_sub_node(*iterator);
-    }
-
-    void push_back_sub_node(ui::node &&sub_node) {
+    void add_sub_node(ui::node &&sub_node) {
         sub_node.remove_from_super_node();
         this->_children.emplace_back(std::move(sub_node));
         this->_add_sub_node(this->_children.back());
     }
 
-    void insert_sub_node(ui::node &&sub_node, std::size_t const idx) {
+    void add_sub_node(ui::node &&sub_node, std::size_t const idx) {
         sub_node.remove_from_super_node();
         auto iterator = this->_children.emplace(this->_children.begin() + idx, std::move(sub_node));
         this->_add_sub_node(*iterator);
@@ -164,7 +158,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto &render_encodable = render_info.render_encodable) {
                 if (auto &mesh = this->_mesh_property.value()) {
                     mesh.renderable().set_matrix(mesh_matrix);
-                    render_encodable.push_back_mesh(mesh);
+                    render_encodable.append_mesh(mesh);
                 }
             }
 
@@ -197,7 +191,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
                 for (auto &mesh : batch_renderable.meshes()) {
                     mesh.renderable().set_matrix(mesh_matrix);
-                    render_info.render_encodable.push_back_mesh(mesh);
+                    render_info.render_encodable.append_mesh(mesh);
                 }
 
                 render_info.batches.push_back(batch);
@@ -579,16 +573,12 @@ void ui::node::set_enabled(bool const enabled) {
     impl_ptr<impl>()->_enabled_property.set_value(enabled);
 }
 
-void ui::node::push_front_sub_node(ui::node sub_node) {
-    impl_ptr<impl>()->push_front_sub_node(std::move(sub_node));
+void ui::node::add_sub_node(ui::node sub_node) {
+    impl_ptr<impl>()->add_sub_node(std::move(sub_node));
 }
 
-void ui::node::push_back_sub_node(ui::node sub_node) {
-    impl_ptr<impl>()->push_back_sub_node(std::move(sub_node));
-}
-
-void ui::node::insert_sub_node(ui::node sub_node, std::size_t const idx) {
-    impl_ptr<impl>()->insert_sub_node(std::move(sub_node), idx);
+void ui::node::add_sub_node(ui::node sub_node, std::size_t const idx) {
+    impl_ptr<impl>()->add_sub_node(std::move(sub_node), idx);
 }
 
 void ui::node::remove_from_super_node() {

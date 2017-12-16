@@ -60,15 +60,15 @@ using namespace yas;
 
     ui::mesh mesh1;
     ui::mesh mesh2;
-    batch.encodable().push_back_mesh(mesh1);
-    batch.encodable().push_back_mesh(mesh2);
+    batch.encodable().append_mesh(mesh1);
+    batch.encodable().append_mesh(mesh2);
 
     ui::metal_system metal_system{device.object()};
 
     ui::mesh mesh3;
     auto texture3 = ui::make_texture({.metal_system = metal_system}).value();
     mesh3.set_texture(texture3);
-    batch.encodable().push_back_mesh(mesh3);
+    batch.encodable().append_mesh(mesh3);
 
     batch.renderable().commit_render_meshes_building();
 
@@ -133,8 +133,8 @@ using namespace yas;
 
     batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch.encodable().push_back_mesh(mesh1);
-    batch.encodable().push_back_mesh(mesh2);
+    batch.encodable().append_mesh(mesh1);
+    batch.encodable().append_mesh(mesh2);
 
     batch.renderable().commit_render_meshes_building();
 
@@ -196,7 +196,7 @@ using namespace yas;
     });
 
     batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
-    batch.encodable().push_back_mesh(mesh);
+    batch.encodable().append_mesh(mesh);
     batch.renderable().commit_render_meshes_building();
 
     auto &meshes = batch.renderable().meshes();
@@ -241,7 +241,7 @@ using namespace yas;
 
     batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch.encodable().push_back_mesh(mesh);
+    batch.encodable().append_mesh(mesh);
 
     batch.renderable().commit_render_meshes_building();
 

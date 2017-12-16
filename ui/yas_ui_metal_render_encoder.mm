@@ -36,9 +36,9 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
         }
     }
 
-    void push_back_mesh(ui::mesh &&mesh) override {
+    void append_mesh(ui::mesh &&mesh) override {
         if (auto &info = this->current_encode_info()) {
-            info.push_back_mesh(std::move(mesh));
+            info.append_mesh(std::move(mesh));
         }
     }
 

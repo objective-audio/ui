@@ -15,7 +15,7 @@
 using namespace yas;
 
 struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::impl, metal_object::impl {
-    void push_back_mesh(ui::mesh &&mesh) override {
+    void append_mesh(ui::mesh &&mesh) override {
         if (this->_building_type == ui::batch_building_type::rebuild) {
             ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh.texture());
 

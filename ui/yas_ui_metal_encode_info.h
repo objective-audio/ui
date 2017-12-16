@@ -12,6 +12,7 @@
 namespace yas {
 namespace ui {
     class mesh;
+    class texture;
 
     class metal_encode_info : public base {
         class impl;
@@ -28,7 +29,7 @@ namespace ui {
 
         virtual ~metal_encode_info() final;
 
-        void push_back_mesh(ui::mesh mesh);
+        void append_mesh(ui::mesh mesh);
 
         MTLRenderPassDescriptor *renderPassDescriptor() const;
         id<MTLRenderPipelineState> pipelineStateWithTexture() const;

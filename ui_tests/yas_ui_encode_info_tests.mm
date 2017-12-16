@@ -35,16 +35,16 @@ using namespace yas;
     XCTAssertFalse(info);
 }
 
-- (void)test_push_back_mesh {
+- (void)test_append_mesh {
     ui::metal_encode_info info{{nil, nil, nil}};
     ui::mesh mesh1;
     ui::mesh mesh2;
 
-    info.push_back_mesh(mesh1);
+    info.append_mesh(mesh1);
 
     XCTAssertEqual(info.meshes().size(), 1);
 
-    info.push_back_mesh(mesh2);
+    info.append_mesh(mesh2);
 
     XCTAssertEqual(info.meshes().size(), 2);
 

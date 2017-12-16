@@ -67,7 +67,7 @@ using namespace yas;
     XCTAssertFalse(encoder.current_encode_info());
 }
 
-- (void)test_push_back_mesh {
+- (void)test_append_mesh {
     ui::metal_render_encoder encoder;
 
     encoder.push_encode_info({{nil, nil, nil}});
@@ -77,7 +77,7 @@ using namespace yas;
     XCTAssertEqual(encode_info.meshes().size(), 0);
 
     ui::mesh mesh;
-    encoder.encodable().push_back_mesh(mesh);
+    encoder.encodable().append_mesh(mesh);
 
     XCTAssertEqual(encode_info.meshes().size(), 1);
     XCTAssertEqual(encode_info.meshes().at(0), mesh);
@@ -116,14 +116,14 @@ using namespace yas;
         ui::mesh mesh1;
         mesh1.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
         mesh1.metal().metal_setup(metal_system);
-        encode_info.push_back_mesh(mesh1);
+        encode_info.append_mesh(mesh1);
 
         ui::mesh mesh2;
         mesh2.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
         auto texture_result = ui::make_texture({.metal_system = metal_system, .point_size = {1, 1}});
         mesh2.set_texture(texture_result.value());
         mesh2.metal().metal_setup(metal_system);
-        encode_info.push_back_mesh(mesh2);
+        encode_info.append_mesh(mesh2);
 
         encoder.encode(metal_system, commandBuffer);
 

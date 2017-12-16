@@ -34,7 +34,7 @@ ui::metal_encode_info::metal_encode_info(std::nullptr_t) : base(nullptr) {
 
 ui::metal_encode_info::~metal_encode_info() = default;
 
-void ui::metal_encode_info::push_back_mesh(ui::mesh mesh) {
+void ui::metal_encode_info::append_mesh(ui::mesh mesh) {
     if (auto const &texture = mesh.texture()) {
         uintptr_t const identifier = texture.identifier();
         auto &textures = impl_ptr<impl>()->_textures;

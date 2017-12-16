@@ -52,7 +52,7 @@ struct sample::cursor::impl : base::impl {
 
         mesh_node.node().set_color({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
         mesh_node.node().set_alpha(0.0f);
-        node.push_back_sub_node(mesh_node.node());
+        node.add_sub_node(mesh_node.node());
     }
 
     static ui::action _make_rotate_action(ui::node &target) {
