@@ -26,7 +26,7 @@ using namespace yas;
 
 - (void)test_make_degrees {
     ui::angle angle = ui::make_degrees_angle(180.0f);
-    
+
     XCTAssertEqualWithAccuracy(angle.radians(), M_PI, 0.001f);
     XCTAssertEqualWithAccuracy(angle.degrees, 180.0f, 0.001f);
 }
