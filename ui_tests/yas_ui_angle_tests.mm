@@ -86,4 +86,11 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(angle.degrees, 2.0f, 0.001f);
 }
 
+- (void)test_zero {
+    auto const zero_angle = ui::angle::zero();
+
+    XCTAssertEqual(zero_angle.degrees, 0.0f);
+    XCTAssertEqual(zero_angle.radians(), 0.0f);
+}
+
 @end
