@@ -9,19 +9,18 @@
 namespace yas {
 namespace ui {
     struct angle {
-        struct radians_t {
-            float const value = 0.0f;
-        };
+        float degrees;
 
-        struct degrees_t {
-            float const value = 0.0f;
-        };
+        bool operator==(angle const &rhs) const;
+        bool operator!=(angle const &rhs) const;
+        angle operator+(angle const &rhs) const;
+        angle operator-(angle const &rhs) const;
+        angle &operator+=(angle const &rhs);
+        angle &operator-=(angle const &rhs);
 
-        explicit angle(radians_t);
-        explicit angle(degrees_t);
-
-        radians_t const radians;
-        degrees_t const degrees;
+        float radians() const;
+        
+        static angle const &zero();
     };
 
     angle make_radians_angle(float const);

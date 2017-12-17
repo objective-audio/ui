@@ -51,7 +51,7 @@ struct sample::cursor_over_planes::impl : base::impl {
 
             ui::node handle_node;
             handle_node.add_sub_node(node);
-            handle_node.set_angle(360.0f / count * idx);
+            handle_node.set_angle({360.0f / count * idx});
 
             root_node.add_sub_node(handle_node);
 

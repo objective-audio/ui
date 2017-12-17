@@ -23,6 +23,7 @@
 #include "yas_ui_renderer.h"
 #include "yas_ui_math.h"
 #include "yas_unless.h"
+#include "yas_ui_angle.h"
 
 using namespace yas;
 
@@ -361,7 +362,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<std::nullptr_t, weak<ui::renderer>> _renderer_property{{.value = ui::renderer{nullptr}}};
 
     property<std::nullptr_t, ui::point> _position_property{{.value = 0.0f}};
-    property<std::nullptr_t, float> _angle_property{{.value = 0.0f}};
+    property<std::nullptr_t, ui::angle> _angle_property{{.value = 0.0f}};
     property<std::nullptr_t, ui::size> _scale_property{{.value = {.v = 1.0f}}};
     property<std::nullptr_t, ui::color> _color_property{{.value = {.v = 1.0f}}};
     property<std::nullptr_t, float> _alpha_property{{.value = 1.0f}};
@@ -432,7 +433,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             auto const &position = this->_position_property.value();
             auto const &angle = this->_angle_property.value();
             auto const &scale = this->_scale_property.value();
-            this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+            this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle.degrees) *
                                   matrix::scale(scale.width, scale.height);
         }
     }
@@ -477,12 +478,8 @@ ui::point ui::node::position() const {
     return impl_ptr<impl>()->_position_property.value();
 }
 
-float ui::node::angle() const {
+ui::angle ui::node::angle() const {
     return impl_ptr<impl>()->_angle_property.value();
-}
-
-float ui::node::radians() const {
-    return radians_from_degrees(this->angle());
 }
 
 ui::size ui::node::scale() const {
@@ -537,12 +534,8 @@ void ui::node::set_position(ui::point point) {
     impl_ptr<impl>()->_position_property.set_value(std::move(point));
 }
 
-void ui::node::set_angle(float const angle) {
-    impl_ptr<impl>()->_angle_property.set_value(angle);
-}
-
-void ui::node::set_radians(float const radians) {
-    this->set_angle(degrees_from_radians(radians));
+void ui::node::set_angle(ui::angle angle) {
+    impl_ptr<impl>()->_angle_property.set_value(std::move(angle));
 }
 
 void ui::node::set_scale(ui::size scale) {

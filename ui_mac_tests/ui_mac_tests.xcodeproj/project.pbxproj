@@ -113,8 +113,8 @@
 		B66BB8A31D1F6D7F00AB3D48 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66BB8A21D1F6D7F00AB3D48 /* AppKit.framework */; };
 		B66BB8A41D1F6D8800AB3D48 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66BB8A21D1F6D7F00AB3D48 /* AppKit.framework */; };
 		B66BB8DB1D1F701B00AB3D48 /* yas_ui_types_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66BB8C01D1F701B00AB3D48 /* yas_ui_types_tests.mm */; };
-		B66D61D81FE4EC2B000D08A7 /* yas_ui_angle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66D61D51FE4EC21000D08A7 /* yas_ui_angle.cpp */; };
 		B66D61E01FE54D6A000D08A7 /* yas_ui_angle_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B66D61DF1FE54D6A000D08A7 /* yas_ui_angle_tests.mm */; };
+		B66D61E11FE62694000D08A7 /* yas_ui_angle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66D61D51FE4EC21000D08A7 /* yas_ui_angle.cpp */; };
 		B687A1CB1D2BFDA400E503B9 /* yas_ui_metal_texture.mm in Sources */ = {isa = PBXBuildFile; fileRef = B687A1C91D2BFDA400E503B9 /* yas_ui_metal_texture.mm */; };
 		B6AFE64B1D7916AF00546165 /* yas_ui_node_actions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6AFE64A1D7916AF00546165 /* yas_ui_node_actions.mm */; };
 		B6AFE6541D79B96C00546165 /* yas_ui_layout_actions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6AFE6521D79B96C00546165 /* yas_ui_layout_actions.mm */; };
@@ -811,6 +811,7 @@
 				B66BB7761D1F6C0D00AB3D48 /* yas_ui_mesh_data.mm in Sources */,
 				B66BB7671D1F6C0D00AB3D48 /* yas_ui_shaders.metal in Sources */,
 				B66BB6EE1D1F6AB600AB3D48 /* main.m in Sources */,
+				B66D61E11FE62694000D08A7 /* yas_ui_angle.cpp in Sources */,
 				B66BB85D1D1F6C7D00AB3D48 /* yas_chain.cpp in Sources */,
 				B66BB7741D1F6C0D00AB3D48 /* yas_ui_matrix.cpp in Sources */,
 				B6AFE64B1D7916AF00546165 /* yas_ui_node_actions.mm in Sources */,
@@ -858,7 +859,6 @@
 				B65189DD1F97B4B400DFA94F /* yas_ui_layout_guide_tests.mm in Sources */,
 				B65189DC1F97B4B400DFA94F /* yas_ui_layout_actions_tests.mm in Sources */,
 				B65189DB1F97B4B400DFA94F /* yas_ui_justified_layout_tests.mm in Sources */,
-				B66D61D81FE4EC2B000D08A7 /* yas_ui_angle.cpp in Sources */,
 				B65189D51F97B4B400DFA94F /* yas_ui_detector_tests.mm in Sources */,
 				B65189E91F97B4B400DFA94F /* yas_ui_metal_types_tests.mm in Sources */,
 				B65189EA1F97B4B400DFA94F /* yas_ui_metal_view_controller_mac_tests.mm in Sources */,

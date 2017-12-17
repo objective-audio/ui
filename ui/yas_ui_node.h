@@ -22,6 +22,7 @@ namespace ui {
     class point;
     class size;
     class color;
+    class angle;
     class batch;
     class layout_guide;
     class layout_guide_point;
@@ -58,8 +59,7 @@ namespace ui {
         bool operator!=(node const &) const;
 
         ui::point position() const;
-        float angle() const;
-        float radians() const;
+        ui::angle angle() const;
         ui::size scale() const;
         ui::color color() const;
         float alpha() const;
@@ -76,8 +76,7 @@ namespace ui {
         ui::batch &batch();
 
         void set_position(ui::point);
-        void set_angle(float const);
-        void set_radians(float const);
+        void set_angle(ui::angle);
         void set_scale(ui::size);
         void set_color(ui::color);
         void set_alpha(float const);
