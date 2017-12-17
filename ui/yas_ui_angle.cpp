@@ -16,11 +16,19 @@ bool ui::angle::operator!=(angle const &rhs) const {
 }
 
 ui::angle ui::angle::operator+(angle const &rhs) const {
-    return ui::angle{this->degrees + rhs.degrees};
+    return {this->degrees + rhs.degrees};
 }
 
 ui::angle ui::angle::operator-(angle const &rhs) const {
-    return ui::angle{this->degrees - rhs.degrees};
+    return {this->degrees - rhs.degrees};
+}
+
+ui::angle ui::angle::operator*(float const &rhs) const {
+    return {this->degrees * rhs};
+}
+
+ui::angle ui::angle::operator/(float const &rhs) const {
+    return {this->degrees / rhs};
 }
 
 ui::angle &ui::angle::operator+=(angle const &rhs) {
@@ -30,6 +38,16 @@ ui::angle &ui::angle::operator+=(angle const &rhs) {
 
 ui::angle &ui::angle::operator-=(angle const &rhs) {
     this->degrees -= rhs.degrees;
+    return *this;
+}
+
+ui::angle &ui::angle::operator*=(float const &rhs) {
+    this->degrees *= rhs;
+    return *this;
+}
+
+ui::angle &ui::angle::operator/=(float const &rhs) {
+    this->degrees /= rhs;
     return *this;
 }
 
