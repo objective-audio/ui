@@ -20,7 +20,7 @@ namespace ui {
 
         float radians() const;
         
-        static angle zero();
+        static angle const &zero();
     };
 
     angle make_radians_angle(float const);
