@@ -11,6 +11,8 @@ namespace ui {
     struct angle {
         float degrees;
 
+        bool operator==(angle const &rhs) const;
+        bool operator!=(angle const &rhs) const;
         angle operator+(angle const &rhs) const;
         angle operator-(angle const &rhs) const;
         angle &operator+=(angle const &rhs);

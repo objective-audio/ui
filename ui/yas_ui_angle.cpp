@@ -7,6 +7,14 @@
 
 using namespace yas;
 
+bool ui::angle::operator==(angle const &rhs) const {
+    return this->degrees == rhs.degrees;
+}
+
+bool ui::angle::operator!=(angle const &rhs) const {
+    return this->degrees != rhs.degrees;
+}
+
 ui::angle ui::angle::operator+(angle const &rhs) const {
     return ui::angle{this->degrees + rhs.degrees};
 }
