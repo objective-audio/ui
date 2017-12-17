@@ -486,6 +486,10 @@ float ui::node::radians() const {
     return impl_ptr<impl>()->_angle_property.value().radians();
 }
 
+ui::angle ui::node::angle() const {
+    return impl_ptr<impl>()->_angle_property.value();
+}
+
 ui::size ui::node::scale() const {
     return impl_ptr<impl>()->_scale_property.value();
 }
@@ -544,6 +548,10 @@ void ui::node::set_degrees(float const degrees) {
 
 void ui::node::set_radians(float const radians) {
     impl_ptr<impl>()->_angle_property.set_value(ui::make_radians_angle(radians));
+}
+
+void ui::node::set_angle(ui::angle angle) {
+    impl_ptr<impl>()->_angle_property.set_value(std::move(angle));
 }
 
 void ui::node::set_scale(ui::size scale) {

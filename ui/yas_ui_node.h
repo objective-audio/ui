@@ -22,6 +22,7 @@ namespace ui {
     class point;
     class size;
     class color;
+    class angle;
     class batch;
     class layout_guide;
     class layout_guide_point;
@@ -60,6 +61,7 @@ namespace ui {
         ui::point position() const;
         float degrees() const;
         float radians() const;
+        ui::angle angle() const;
         ui::size scale() const;
         ui::color color() const;
         float alpha() const;
@@ -78,6 +80,7 @@ namespace ui {
         void set_position(ui::point);
         void set_degrees(float const);
         void set_radians(float const);
+        void set_angle(ui::angle);
         void set_scale(ui::size);
         void set_color(ui::color);
         void set_alpha(float const);
