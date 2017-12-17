@@ -8,6 +8,7 @@
 #import "yas_ui.h"
 #import "yas_ui_render_info.h"
 #import "yas_ui_math.h"
+#import "yas_ui_angle.h"
 
 using namespace yas;
 
@@ -57,6 +58,7 @@ namespace test {
     XCTAssertEqual(node.position().y, 0.0f);
     XCTAssertEqual(node.degrees(), 0.0f);
     XCTAssertEqual(node.radians(), 0.0f);
+    XCTAssertEqual(node.angle().degrees, 0.0f);
     XCTAssertEqual(node.scale().width, 1.0f);
     XCTAssertEqual(node.scale().height, 1.0f);
 
@@ -91,7 +93,7 @@ namespace test {
     ui::batch batch;
 
     node.set_position({1.0f, 2.0f});
-    node.set_degrees(3.0f);
+    node.set_angle({3.0f});
     node.set_scale({4.0f, 5.0f});
     node.set_color({0.1f, 0.2f, 0.3f});
     node.set_alpha(0.4f);
@@ -100,7 +102,7 @@ namespace test {
 
     XCTAssertEqual(node.position().x, 1.0f);
     XCTAssertEqual(node.position().y, 2.0f);
-    XCTAssertEqual(node.degrees(), 3.0f);
+    XCTAssertEqual(node.angle().degrees, 3.0f);
     XCTAssertEqualWithAccuracy(node.radians(), radians_from_degrees(3.0f), 0.001f);
     XCTAssertEqual(node.scale().width, 4.0f);
     XCTAssertEqual(node.scale().height, 5.0f);
