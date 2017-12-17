@@ -38,4 +38,52 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(angle.degrees, 180.0f, 0.001f);
 }
 
+- (void)test_equal {
+    ui::angle angle_one_a{1.0f};
+    ui::angle angle_one_b{1.0f};
+    ui::angle angle_two{2.0f};
+
+    XCTAssertTrue(angle_one_a == angle_one_b);
+    XCTAssertFalse(angle_one_a == angle_two);
+}
+
+- (void)test_not_equal {
+    ui::angle angle_one_a{1.0f};
+    ui::angle angle_one_b{1.0f};
+    ui::angle angle_two{2.0f};
+
+    XCTAssertFalse(angle_one_a != angle_one_b);
+    XCTAssertTrue(angle_one_a != angle_two);
+}
+
+- (void)test_plus {
+    ui::angle angle_a{1.0f};
+    ui::angle angle_b{2.0f};
+    ui::angle angle_c = angle_a + angle_b;
+
+    XCTAssertEqualWithAccuracy(angle_c.degrees, 3.0f, 0.001f);
+}
+
+- (void)test_minus {
+    ui::angle angle_a{3.0f};
+    ui::angle angle_b{1.0f};
+    ui::angle angle_c = angle_a - angle_b;
+
+    XCTAssertEqualWithAccuracy(angle_c.degrees, 2.0f, 0.001f);
+}
+
+- (void)test_plus_equal {
+    ui::angle angle{1.0f};
+    angle += ui::angle{2.0f};
+
+    XCTAssertEqualWithAccuracy(angle.degrees, 3.0f, 0.001f);
+}
+
+- (void)test_minus_equal {
+    ui::angle angle{3.0f};
+    angle -= ui::angle{1.0f};
+
+    XCTAssertEqualWithAccuracy(angle.degrees, 2.0f, 0.001f);
+}
+
 @end
