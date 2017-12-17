@@ -23,6 +23,7 @@
 #include "yas_ui_renderer.h"
 #include "yas_ui_math.h"
 #include "yas_unless.h"
+#include "yas_ui_angle.h"
 
 using namespace yas;
 
@@ -361,7 +362,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<std::nullptr_t, weak<ui::renderer>> _renderer_property{{.value = ui::renderer{nullptr}}};
 
     property<std::nullptr_t, ui::point> _position_property{{.value = 0.0f}};
-    property<std::nullptr_t, float> _angle_property{{.value = 0.0f}};
+    property<std::nullptr_t, ui::angle> _angle_property{{.value = 0.0f}};
     property<std::nullptr_t, ui::size> _scale_property{{.value = {.v = 1.0f}}};
     property<std::nullptr_t, ui::color> _color_property{{.value = {.v = 1.0f}}};
     property<std::nullptr_t, float> _alpha_property{{.value = 1.0f}};
@@ -432,7 +433,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             auto const &position = this->_position_property.value();
             auto const &angle = this->_angle_property.value();
             auto const &scale = this->_scale_property.value();
-            this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle) *
+            this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle.degrees) *
                                   matrix::scale(scale.width, scale.height);
         }
     }
@@ -478,11 +479,11 @@ ui::point ui::node::position() const {
 }
 
 float ui::node::degrees() const {
-    return impl_ptr<impl>()->_angle_property.value();
+    return impl_ptr<impl>()->_angle_property.value().degrees;
 }
 
 float ui::node::radians() const {
-    return radians_from_degrees(this->degrees());
+    return impl_ptr<impl>()->_angle_property.value().radians();
 }
 
 ui::size ui::node::scale() const {
@@ -538,11 +539,11 @@ void ui::node::set_position(ui::point point) {
 }
 
 void ui::node::set_degrees(float const degrees) {
-    impl_ptr<impl>()->_angle_property.set_value(degrees);
+    impl_ptr<impl>()->_angle_property.set_value({degrees});
 }
 
 void ui::node::set_radians(float const radians) {
-    this->set_degrees(degrees_from_radians(radians));
+    impl_ptr<impl>()->_angle_property.set_value(ui::make_radians_angle(radians));
 }
 
 void ui::node::set_scale(ui::size scale) {
