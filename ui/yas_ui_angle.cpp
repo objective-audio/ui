@@ -37,6 +37,11 @@ float ui::angle::radians() const {
     return this->degrees * (static_cast<float>(M_PI) / 180.0f);
 }
 
+ui::angle ui::angle::zero() {
+    static angle _zero_angle = ui::angle{0.0f};
+    return _zero_angle;
+}
+
 ui::angle ui::make_radians_angle(float const value) {
     return ui::angle{value * (180.0f / static_cast<float>(M_PI))};
 }

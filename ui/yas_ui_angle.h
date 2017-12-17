@@ -19,6 +19,8 @@ namespace ui {
         angle &operator-=(angle const &rhs);
 
         float radians() const;
+        
+        static angle zero();
     };
 
     angle make_radians_angle(float const);
