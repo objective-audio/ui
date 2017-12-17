@@ -478,14 +478,6 @@ ui::point ui::node::position() const {
     return impl_ptr<impl>()->_position_property.value();
 }
 
-float ui::node::degrees() const {
-    return impl_ptr<impl>()->_angle_property.value().degrees;
-}
-
-float ui::node::radians() const {
-    return impl_ptr<impl>()->_angle_property.value().radians();
-}
-
 ui::angle ui::node::angle() const {
     return impl_ptr<impl>()->_angle_property.value();
 }
@@ -540,14 +532,6 @@ ui::batch &ui::node::batch() {
 
 void ui::node::set_position(ui::point point) {
     impl_ptr<impl>()->_position_property.set_value(std::move(point));
-}
-
-void ui::node::set_degrees(float const degrees) {
-    impl_ptr<impl>()->_angle_property.set_value({degrees});
-}
-
-void ui::node::set_radians(float const radians) {
-    impl_ptr<impl>()->_angle_property.set_value(ui::make_radians_angle(radians));
 }
 
 void ui::node::set_angle(ui::angle angle) {

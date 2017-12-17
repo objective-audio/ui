@@ -7,6 +7,7 @@
 #import "yas_ui_mesh.h"
 #import "yas_ui_node.h"
 #import "yas_ui_node_actions.h"
+#import "yas_ui_angle.h"
 
 using namespace std::chrono_literals;
 using namespace yas;
@@ -66,15 +67,15 @@ using namespace yas;
 
     updatable.update(time);
 
-    XCTAssertEqual(target.degrees(), 0.0f);
+    XCTAssertEqual(target.angle().degrees, 0.0f);
 
     updatable.update(time + 500ms);
 
-    XCTAssertEqual(target.degrees(), 180.0f);
+    XCTAssertEqual(target.angle().degrees, 180.0f);
 
     updatable.update(time + 1s);
 
-    XCTAssertEqual(target.degrees(), 360.0f);
+    XCTAssertEqual(target.angle().degrees, 360.0f);
 }
 
 - (void)test_update_rotate_action_shortest_1 {
@@ -91,15 +92,15 @@ using namespace yas;
 
     updatable.update(time);
 
-    XCTAssertEqual(target.degrees(), 360.0f);
+    XCTAssertEqual(target.angle().degrees, 360.0f);
 
     updatable.update(time + 500ms);
 
-    XCTAssertEqual(target.degrees(), 315.0f);
+    XCTAssertEqual(target.angle().degrees, 315.0f);
 
     updatable.update(time + 1s);
 
-    XCTAssertEqual(target.degrees(), 270.0f);
+    XCTAssertEqual(target.angle().degrees, 270.0f);
 }
 
 - (void)test_update_rotate_action_shortest_2 {
@@ -116,15 +117,15 @@ using namespace yas;
 
     updatable.update(time);
 
-    XCTAssertEqual(target.degrees(), 180.0f);
+    XCTAssertEqual(target.angle().degrees, 180.0f);
 
     updatable.update(time + 500ms);
 
-    XCTAssertEqual(target.degrees(), 135.0f);
+    XCTAssertEqual(target.angle().degrees, 135.0f);
 
     updatable.update(time + 1s);
 
-    XCTAssertEqual(target.degrees(), 90.0f);
+    XCTAssertEqual(target.angle().degrees, 90.0f);
 }
 
 - (void)test_update_scale_action {
