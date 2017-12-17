@@ -72,6 +72,18 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(angle_c.degrees, 2.0f, 0.001f);
 }
 
+- (void)test_multi {
+    ui::angle angle = ui::angle{2.0f} * 3.0f;
+
+    XCTAssertEqualWithAccuracy(angle.degrees, 6.0f, 0.001f);
+}
+
+- (void)test_divide {
+    ui::angle angle = ui::angle{6.0f} / 3.0f;
+
+    XCTAssertEqualWithAccuracy(angle.degrees, 2.0f, 0.001f);
+}
+
 - (void)test_plus_equal {
     ui::angle angle{1.0f};
     angle += ui::angle{2.0f};
@@ -82,6 +94,20 @@ using namespace yas;
 - (void)test_minus_equal {
     ui::angle angle{3.0f};
     angle -= ui::angle{1.0f};
+
+    XCTAssertEqualWithAccuracy(angle.degrees, 2.0f, 0.001f);
+}
+
+- (void)test_multi_equal {
+    ui::angle angle{2.0f};
+    angle *= 3.0f;
+
+    XCTAssertEqualWithAccuracy(angle.degrees, 6.0f, 0.001f);
+}
+
+- (void)test_divide_equal {
+    ui::angle angle{6.0f};
+    angle /= 3.0f;
 
     XCTAssertEqualWithAccuracy(angle.degrees, 2.0f, 0.001f);
 }
