@@ -24,6 +24,9 @@ namespace ui {
 
         float radians() const;
 
+        angle shortest_from(angle const &from) const;
+        angle shortest_to(angle const &to) const;
+
         static angle const &zero();
     };
 
