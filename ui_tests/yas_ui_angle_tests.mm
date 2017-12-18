@@ -122,12 +122,12 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(ui::angle{179.0f}.shortest_from({0.0f}).degrees, 179.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{180.0f}.shortest_from({0.0f}).degrees, 180.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{181.0f}.shortest_from({0.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{269.0f}.shortest_from({90.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{270.0f}.shortest_from({90.0f}).degrees, 180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{271.0f}.shortest_from({90.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{89.0f}.shortest_from({-90.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_from({-90.0f}).degrees, 180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{91.0f}.shortest_from({-90.0f}).degrees, -179.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{269.0f}.shortest_from({90.0f}).degrees, 269.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{270.0f}.shortest_from({90.0f}).degrees, 270.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{271.0f}.shortest_from({90.0f}).degrees, -89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{89.0f}.shortest_from({-90.0f}).degrees, 89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_from({-90.0f}).degrees, 90.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{91.0f}.shortest_from({-90.0f}).degrees, -269.0f, 0.001f);
 
     XCTAssertEqualWithAccuracy(ui::angle{-360.0f}.shortest_from({0.0f}).degrees, 0.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{-450.0f}.shortest_from({0.0f}).degrees, -90.0f, 0.001f);
@@ -138,12 +138,12 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(ui::angle{-179.0f}.shortest_from({0.0f}).degrees, -179.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{-180.0f}.shortest_from({0.0f}).degrees, -180.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{-181.0f}.shortest_from({0.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-269.0f}.shortest_from({-90.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-270.0f}.shortest_from({-90.0f}).degrees, -180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-271.0f}.shortest_from({-90.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-89.0f}.shortest_from({90.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_from({90.0f}).degrees, -180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-91.0f}.shortest_from({90.0f}).degrees, 179.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-269.0f}.shortest_from({-90.0f}).degrees, -269.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-270.0f}.shortest_from({-90.0f}).degrees, -270.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-271.0f}.shortest_from({-90.0f}).degrees, 89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-89.0f}.shortest_from({90.0f}).degrees, -89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_from({90.0f}).degrees, -90.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-91.0f}.shortest_from({90.0f}).degrees, 269.0f, 0.001f);
 }
 
 - (void)test_shortest_to {
@@ -156,12 +156,12 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({179.0f}).degrees, 179.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({180.0f}).degrees, 180.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({181.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({269.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({270.0f}).degrees, 180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({271.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({89.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({90.0f}).degrees, 180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({91.0f}).degrees, -179.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({269.0f}).degrees, 269.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({270.0f}).degrees, 270.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({271.0f}).degrees, -89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({89.0f}).degrees, 89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({90.0f}).degrees, 90.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({91.0f}).degrees, -269.0f, 0.001f);
 
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({-360.0f}).degrees, 0.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({-450.0f}).degrees, -90.0f, 0.001f);
@@ -172,12 +172,12 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({-179.0f}).degrees, -179.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({-180.0f}).degrees, -180.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{0.0f}.shortest_to({-181.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({-269.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({-270.0f}).degrees, -180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({-271.0f}).degrees, 179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({-89.0f}).degrees, -179.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({-90.0f}).degrees, -180.0f, 0.001f);
-    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({-91.0f}).degrees, 179.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({-269.0f}).degrees, -269.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({-270.0f}).degrees, -270.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{-90.0f}.shortest_to({-271.0f}).degrees, 89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({-89.0f}).degrees, -89.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({-90.0f}).degrees, -90.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(ui::angle{90.0f}.shortest_to({-91.0f}).degrees, 269.0f, 0.001f);
 }
 
 - (void)test_zero {
