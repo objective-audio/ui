@@ -71,7 +71,7 @@ ui::angle ui::angle::shortest_from(angle const &from) const {
         value += 1.0f;
     }
 
-    return {value * 360.0f};
+    return {value * 360.0f + from.degrees};
 }
 
 ui::angle ui::angle::shortest_to(angle const &to) const {
