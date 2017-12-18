@@ -7,6 +7,7 @@
 #include "yas_ui_action.h"
 #include "yas_ui_node.h"
 #include "yas_ui_color.h"
+#include "yas_ui_angle.h"
 
 namespace yas {
 namespace ui {
@@ -23,8 +24,8 @@ namespace ui {
     namespace rotate_action {
         struct args {
             weak<ui::node> target;
-            float begin_angle = 0.0f;
-            float end_angle = 0.0f;
+            ui::angle begin_angle = {0.0f};
+            ui::angle end_angle = {0.0f};
             bool is_shortest = false;
 
             continuous_action::args continuous_action;
