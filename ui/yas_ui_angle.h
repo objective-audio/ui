@@ -21,6 +21,7 @@ namespace ui {
         angle &operator-=(angle const &rhs);
         angle &operator*=(float const &rhs);
         angle &operator/=(float const &rhs);
+        angle operator-() const;
 
         float radians() const;
 
