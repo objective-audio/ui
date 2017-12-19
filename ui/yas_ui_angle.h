@@ -15,11 +15,18 @@ namespace ui {
         bool operator!=(angle const &rhs) const;
         angle operator+(angle const &rhs) const;
         angle operator-(angle const &rhs) const;
+        angle operator*(float const &rhs) const;
+        angle operator/(float const &rhs) const;
         angle &operator+=(angle const &rhs);
         angle &operator-=(angle const &rhs);
+        angle &operator*=(float const &rhs);
+        angle &operator/=(float const &rhs);
 
         float radians() const;
-        
+
+        angle shortest_from(angle const &from) const;
+        angle shortest_to(angle const &to) const;
+
         static angle const &zero();
     };
 

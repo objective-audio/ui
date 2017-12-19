@@ -42,11 +42,7 @@ ui::continuous_action ui::make_action(rotate_action::args args) {
                 auto begin_angle = args.begin_angle;
 
                 if (args.is_shortest) {
-                    if ((end_angle - begin_angle) > 180.0f) {
-                        begin_angle += 360.0f;
-                    } else if ((end_angle - begin_angle) < -180.0f) {
-                        begin_angle -= 360.0f;
-                    }
+                    begin_angle = begin_angle.shortest_from(end_angle);
                 }
 
                 target.set_angle({(end_angle - begin_angle) * static_cast<float>(value) + begin_angle});
