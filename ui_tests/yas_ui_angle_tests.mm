@@ -112,6 +112,11 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(angle.degrees, 2.0f, 0.001f);
 }
 
+- (void)test_unary_minus {
+    ui::angle angle{1.0f};
+    XCTAssertEqualWithAccuracy((-angle).degrees, -1.0f, 0.001f);
+}
+
 - (void)test_shortest_from {
     XCTAssertEqualWithAccuracy(ui::angle{360.0f}.shortest_from({0.0f}).degrees, 0.0f, 0.001f);
     XCTAssertEqualWithAccuracy(ui::angle{450.0f}.shortest_from({0.0f}).degrees, 90.0f, 0.001f);

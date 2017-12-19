@@ -57,17 +57,5 @@ using namespace yas;
                                std::sqrtf(std::powf(2.0f + 1.0f, 2.0f) + std::powf(1.0f + 2.0f, 2.0f)), 0.001);
 }
 
-- (void)test_degrees_from_radians {
-    XCTAssertEqualWithAccuracy(degrees_from_radians(0.0f), 0.0f, 0.001);
-    XCTAssertEqualWithAccuracy(degrees_from_radians(M_PI), 180.0f, 0.001);
-    XCTAssertEqualWithAccuracy(degrees_from_radians(-M_PI), -180.0f, 0.001);
-}
-
-- (void)test_radians_from_degrees {
-    XCTAssertEqualWithAccuracy(radians_from_degrees(0.0f), 0.0f, 0.001);
-    XCTAssertEqualWithAccuracy(radians_from_degrees(180.0f), M_PI, 0.001);
-    XCTAssertEqualWithAccuracy(radians_from_degrees(-180.0f), -M_PI, 0.001);
-}
-
 @end
 
