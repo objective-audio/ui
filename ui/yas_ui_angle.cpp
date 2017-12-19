@@ -51,6 +51,10 @@ ui::angle &ui::angle::operator/=(float const &rhs) {
     return *this;
 }
 
+ui::angle ui::angle::operator-() const {
+    return {-this->degrees};
+}
+
 float ui::angle::radians() const {
     return this->degrees * (static_cast<float>(M_PI) / 180.0f);
 }
