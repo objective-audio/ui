@@ -20,7 +20,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        if (!is_same(_metal_system, metal_system)) {
+        if (!is_same(this->_metal_system, metal_system)) {
             this->_metal_system = metal_system;
             this->_vertex_buffer.set_object(nil);
             this->_index_buffer.set_object(nil);
