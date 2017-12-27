@@ -91,8 +91,14 @@ struct ui::font_atlas::impl : base::impl {
         CGSize advances[1];
 
         auto ct_font_obj = this->_ct_font_ref.object();
+        auto cf_word = to_cf_object(word);
 
-        CFStringGetCharacters(to_cf_object(word), CFRangeMake(0, 1), characters);
+        CFIndex const length = CFStringGetLength(cf_word);
+        if (length == 0) {
+            return {0.0f, 0.0f};
+        }
+
+        CFStringGetCharacters(cf_word, CFRangeMake(0, 1), characters);
         CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, 1);
         CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, 1);
 
