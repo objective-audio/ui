@@ -31,6 +31,10 @@ objc_ptr<id<MTLBuffer>> ui::makable_metal_system::make_mtl_buffer(std::size_t co
     return impl_ptr<impl>()->make_mtl_buffer(length);
 }
 
+objc_ptr<MPSImageGaussianBlur *> ui::makable_metal_system::make_mtl_blur(double const sigma) {
+    return impl_ptr<impl>()->make_mtl_blur(sigma);
+}
+
 #pragma mark - renderable_metal_system
 
 ui::renderable_metal_system::renderable_metal_system(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
@@ -54,6 +58,11 @@ void ui::renderable_metal_system::prepare_uniforms_buffer(uint32_t const uniform
 void ui::renderable_metal_system::mesh_encode(ui::mesh &mesh, id<MTLRenderCommandEncoder> const encoder,
                                               ui::metal_encode_info const &encode_info) {
     impl_ptr<impl>()->mesh_encode(mesh, encoder, encode_info);
+}
+
+void ui::renderable_metal_system::push_render_target(ui::render_stackable &stackable,
+                                                     ui::render_target &render_target) {
+    impl_ptr<impl>()->push_render_target(stackable, render_target);
 }
 
 #pragma mark - testable_metal_system

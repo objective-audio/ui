@@ -10,24 +10,28 @@
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
 #include "yas_ui_metal_texture.h"
+#include "yas_ui_effect.h"
 
 using namespace yas;
 
-struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
+struct ui::metal_render_encoder::impl : base::impl,
+                                        render_encodable::impl,
+                                        render_effectable::impl,
+                                        render_stackable::impl {
     std::deque<ui::metal_encode_info> &all_encode_infos() {
         return this->_all_encode_infos;
     }
 
-    void push_encode_info(ui::metal_encode_info info) {
+    void push_encode_info(ui::metal_encode_info &&info) override {
         this->_all_encode_infos.push_front(info);
         this->_current_encode_infos.push_front(info);
     }
 
-    void pop_encode_info() {
+    void pop_encode_info() override {
         this->_current_encode_infos.pop_front();
     }
 
-    ui::metal_encode_info &current_encode_info() {
+    ui::metal_encode_info &current_encode_info() override {
         if (this->_current_encode_infos.size() > 0) {
             return this->_current_encode_infos.front();
         } else {
@@ -39,6 +43,12 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
     void append_mesh(ui::mesh &&mesh) override {
         if (auto &info = this->current_encode_info()) {
             info.append_mesh(std::move(mesh));
+        }
+    }
+
+    void append_effect(ui::effect &&effect) override {
+        if (auto &info = this->current_encode_info()) {
+            info.append_effect(std::move(effect));
         }
     }
 
@@ -68,6 +78,10 @@ struct ui::metal_render_encoder::impl : base::impl, render_encodable::impl {
             }
 
             [renderEncoder endEncoding];
+
+            for (auto &effect : metal_encode_info.effects()) {
+                effect.metal_effect().encode(commandBuffer);
+            }
         }
 
         return encode_result_t{.encoded_mesh_count = encoded_count};
@@ -98,18 +112,6 @@ std::deque<ui::metal_encode_info> const &ui::metal_render_encoder::all_encode_in
     return impl_ptr<impl>()->all_encode_infos();
 }
 
-void ui::metal_render_encoder::push_encode_info(ui::metal_encode_info info) {
-    impl_ptr<impl>()->push_encode_info(std::move(info));
-}
-
-void ui::metal_render_encoder::pop_encode_info() {
-    impl_ptr<impl>()->pop_encode_info();
-}
-
-ui::metal_encode_info const &ui::metal_render_encoder::current_encode_info() {
-    return impl_ptr<impl>()->current_encode_info();
-}
-
 ui::metal_render_encoder::encode_result_t ui::metal_render_encoder::encode(ui::metal_system &metal_system,
                                                                            id<MTLCommandBuffer> const commandBuffer) {
     return impl_ptr<impl>()->encode(metal_system, commandBuffer);
@@ -120,4 +122,18 @@ ui::render_encodable &ui::metal_render_encoder::encodable() {
         this->_encodable = ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
     }
     return this->_encodable;
+}
+
+ui::render_effectable &ui::metal_render_encoder::effectable() {
+    if (!this->_effectable) {
+        this->_effectable = ui::render_effectable{impl_ptr<ui::render_effectable::impl>()};
+    }
+    return this->_effectable;
+}
+
+ui::render_stackable &ui::metal_render_encoder::stackable() {
+    if (!this->_stackable) {
+        this->_stackable = ui::render_stackable{impl_ptr<ui::render_stackable::impl>()};
+    }
+    return this->_stackable;
 }

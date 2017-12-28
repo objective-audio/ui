@@ -11,7 +11,8 @@ using namespace yas;
 #pragma mark - node_update_info
 
 bool ui::tree_updates::is_any_updated() const {
-    return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any();
+    return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any() ||
+           this->render_target_updates.flags.any();
 }
 
 bool ui::tree_updates::is_collider_updated() const {
@@ -86,6 +87,8 @@ std::string yas::to_string(ui::node_update_reason const &reason) {
             return "enabled";
         case ui::node_update_reason::batch:
             return "batch";
+        case ui::node_update_reason::render_target:
+            return "render_target";
         case ui::node_update_reason::children:
             return "children";
         case ui::node_update_reason::count:

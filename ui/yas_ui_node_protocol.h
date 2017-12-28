@@ -8,6 +8,7 @@
 #include "yas_protocol.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"
+#include "yas_ui_render_target_protocol.h"
 
 namespace yas {
 namespace ui {
@@ -22,6 +23,7 @@ namespace ui {
         enabled,
         children,
         batch,
+        render_target,
 
         count,
     };
@@ -32,6 +34,7 @@ namespace ui {
         node_updates_t node_updates;
         mesh_updates_t mesh_updates;
         mesh_data_updates_t mesh_data_updates;
+        render_target_updates_t render_target_updates;
 
         bool is_any_updated() const;
         bool is_collider_updated() const;

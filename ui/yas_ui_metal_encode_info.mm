@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "yas_objc_ptr.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_effect.h"
 #include "yas_ui_texture.h"
 #include "yas_stl_utils.h"
 #include "yas_ui_metal_encode_info.h"
@@ -23,6 +24,7 @@ struct ui::metal_encode_info::impl : base::impl {
     objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_without_texture;
     std::vector<ui::mesh> _meshes;
+    std::vector<ui::effect> _effects;
     std::unordered_map<uintptr_t, ui::texture> _textures;
 };
 
@@ -45,6 +47,10 @@ void ui::metal_encode_info::append_mesh(ui::mesh mesh) {
     impl_ptr<impl>()->_meshes.emplace_back(std::move(mesh));
 }
 
+void ui::metal_encode_info::append_effect(ui::effect effect) {
+    impl_ptr<impl>()->_effects.emplace_back(std::move(effect));
+}
+
 MTLRenderPassDescriptor *ui::metal_encode_info::renderPassDescriptor() const {
     return impl_ptr<impl>()->_render_pass_descriptor.object();
 }
@@ -59,6 +65,10 @@ id<MTLRenderPipelineState> ui::metal_encode_info::pipelineStateWithoutTexture() 
 
 std::vector<ui::mesh> &ui::metal_encode_info::meshes() const {
     return impl_ptr<impl>()->_meshes;
+}
+
+std::vector<ui::effect> &ui::metal_encode_info::effects() const {
+    return impl_ptr<impl>()->_effects;
 }
 
 std::unordered_map<uintptr_t, ui::texture> &ui::metal_encode_info::textures() const {

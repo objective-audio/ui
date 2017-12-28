@@ -12,6 +12,7 @@
 namespace yas {
 namespace ui {
     class mesh;
+    class effect;
     class texture;
 
     class metal_encode_info : public base {
@@ -29,13 +30,15 @@ namespace ui {
 
         virtual ~metal_encode_info() final;
 
-        void append_mesh(ui::mesh mesh);
+        void append_mesh(ui::mesh);
+        void append_effect(ui::effect);
 
         MTLRenderPassDescriptor *renderPassDescriptor() const;
         id<MTLRenderPipelineState> pipelineStateWithTexture() const;
         id<MTLRenderPipelineState> pipelineStateWithoutTexture() const;
 
         std::vector<ui::mesh> &meshes() const;
+        std::vector<ui::effect> &effects() const;
         std::unordered_map<uintptr_t, ui::texture> &textures() const;
     };
 }
