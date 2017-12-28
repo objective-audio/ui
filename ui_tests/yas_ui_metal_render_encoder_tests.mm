@@ -41,38 +41,40 @@ using namespace yas;
 
 - (void)test_push_and_pop_encode_info {
     ui::metal_render_encoder encoder;
+    auto &stackable = encoder.stackable();
 
-    encoder.push_encode_info({{nil, nil, nil}});
+    stackable.push_encode_info({{nil, nil, nil}});
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 1);
 
-    auto encode_info1 = encoder.current_encode_info();
+    auto encode_info1 = stackable.current_encode_info();
     XCTAssertTrue(encode_info1);
 
-    encoder.push_encode_info({{nil, nil, nil}});
+    stackable.push_encode_info({{nil, nil, nil}});
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 2);
 
-    auto encode_info2 = encoder.current_encode_info();
+    auto encode_info2 = stackable.current_encode_info();
     XCTAssertTrue(encode_info2);
 
-    encoder.pop_encode_info();
+    stackable.pop_encode_info();
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 2);
-    XCTAssertEqual(encoder.current_encode_info(), encode_info1);
+    XCTAssertEqual(stackable.current_encode_info(), encode_info1);
 
-    encoder.pop_encode_info();
+    stackable.pop_encode_info();
 
     XCTAssertEqual(encoder.all_encode_infos().size(), 2);
-    XCTAssertFalse(encoder.current_encode_info());
+    XCTAssertFalse(stackable.current_encode_info());
 }
 
 - (void)test_append_mesh {
     ui::metal_render_encoder encoder;
+    auto &stackable = encoder.stackable();
 
-    encoder.push_encode_info({{nil, nil, nil}});
+    stackable.push_encode_info({{nil, nil, nil}});
 
-    auto encode_info = encoder.current_encode_info();
+    auto encode_info = stackable.current_encode_info();
 
     XCTAssertEqual(encode_info.meshes().size(), 0);
 
@@ -106,12 +108,13 @@ using namespace yas;
         auto const commandBuffer = [commandQueue commandBuffer];
 
         ui::metal_render_encoder encoder;
+        auto &stackable = encoder.stackable();
 
         ui::metal_encode_info encode_info{{view.currentRenderPassDescriptor,
                                            metal_system.testable().mtlRenderPipelineStateWithTexture(),
                                            metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
 
-        encoder.push_encode_info(encode_info);
+        stackable.push_encode_info(encode_info);
 
         ui::mesh mesh1;
         mesh1.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
