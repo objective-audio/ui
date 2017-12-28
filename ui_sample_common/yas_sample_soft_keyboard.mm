@@ -196,23 +196,23 @@ struct sample::soft_keyboard::impl : base::impl {
         _fixed_cell_layouts.reserve(key_count);
 
         auto renderer = _root_node.renderer();
-        auto &view_guide_rect = renderer.view_layout_guide_rect();
+        auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
         auto const &frame_guide_rect = _collection_layout.frame_layout_guide_rect();
 
-        _frame_layouts.emplace_back(
-            ui::make_layout({.source_guide = view_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
+        _frame_layouts.emplace_back(ui::make_layout(
+            {.source_guide = safe_area_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
 
         _frame_layouts.emplace_back(ui::make_layout(
-            {.source_guide = view_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
+            {.source_guide = safe_area_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
 
         _frame_layouts.emplace_back(
-            ui::make_layout({.source_guide = view_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
+            ui::make_layout({.source_guide = safe_area_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
 
         ui::layout_guide max_right_guide;
         _frame_layouts.emplace_back(ui::make_layout(
-            {.distance = width, .source_guide = view_guide_rect.left(), .destination_guide = max_right_guide}));
+            {.distance = width, .source_guide = safe_area_guide_rect.left(), .destination_guide = max_right_guide}));
         _frame_layouts.emplace_back(
-            ui::make_layout(ui::min_layout::args{.source_guides = {max_right_guide, view_guide_rect.right()},
+            ui::make_layout(ui::min_layout::args{.source_guides = {max_right_guide, safe_area_guide_rect.right()},
                                                  .destination_guide = frame_guide_rect.right()}));
 
         _setup_soft_keys_layout();

@@ -42,13 +42,14 @@ struct sample::modifier_text::impl : base::impl {
                     auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
                     auto &strings = text_impl->_strings;
                     auto &strings_guide_rect = strings.frame_layout_guide_rect();
+                    auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
 
                     left_layout = ui::make_layout({.distance = 4.0f,
-                                                   .source_guide = renderer.view_layout_guide_rect().left(),
+                                                   .source_guide = safe_area_guide_rect.left(),
                                                    .destination_guide = strings_guide_rect.left()});
 
                     right_layout = ui::make_layout({.distance = -4.0f,
-                                                    .source_guide = renderer.view_layout_guide_rect().right(),
+                                                    .source_guide = safe_area_guide_rect.right(),
                                                     .destination_guide = strings_guide_rect.right()});
 
                     bottom_layout = ui::make_layout({.distance = 4.0f,
