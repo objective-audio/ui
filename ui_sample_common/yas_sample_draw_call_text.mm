@@ -31,17 +31,17 @@ struct sample::draw_call_text::impl : base::impl {
                 if (auto renderer = node.renderer()) {
                     auto &strings = text.strings();
                     auto &strings_guide_rect = strings.frame_layout_guide_rect();
-
+                    auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
                     left_layout = ui::make_layout({.distance = 4.0f,
-                                                   .source_guide = renderer.view_layout_guide_rect().left(),
+                                                   .source_guide = safe_area_guide_rect.left(),
                                                    .destination_guide = strings_guide_rect.right()});
 
                     right_layout = ui::make_layout({.distance = -4.0f,
-                                                    .source_guide = renderer.view_layout_guide_rect().right(),
+                                                    .source_guide = safe_area_guide_rect.right(),
                                                     .destination_guide = strings_guide_rect.right()});
 
                     bottom_layout = ui::make_layout({.distance = 4.0f,
-                                                     .source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                     .source_guide = safe_area_guide_rect.bottom(),
                                                      .destination_guide = strings_guide_rect.bottom()});
 
                     auto strings_handler = [top_layout = ui::layout{nullptr}](ui::strings & strings) mutable {
@@ -52,10 +52,9 @@ struct sample::draw_call_text::impl : base::impl {
                             distance += font_atlas.ascent() + font_atlas.descent();
                         }
 
-                        top_layout = ui::make_layout(
-                            {.distance = distance,
-                             .source_guide = strings.frame_layout_guide_rect().bottom(),
-                             .destination_guide = strings.frame_layout_guide_rect().top()});
+                        top_layout = ui::make_layout({.distance = distance,
+                                                      .source_guide = strings.frame_layout_guide_rect().bottom(),
+                                                      .destination_guide = strings.frame_layout_guide_rect().top()});
                     };
 
                     strings_handler(strings);
