@@ -42,7 +42,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
             this->_target = textureDesc.textureType;
 
             if (this->_is_render_target) {
-                textureDesc.usage = MTLTextureUsageRenderTarget;
+                textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
             } else {
                 textureDesc.usage = MTLTextureUsageShaderRead;
             }
