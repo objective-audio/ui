@@ -14,14 +14,14 @@ using namespace yas;
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl {
-    impl(uint_size &&point_size, double const scale_factor, uint32_t const draw_padding)
+    impl(uint_size &&point_size, double const scale_factor, uint32_t const draw_padding, bool const is_render_target)
         : _draw_actual_padding(draw_padding * scale_factor),
           _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
           _point_size(std::move(point_size)),
           _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
                                  static_cast<uint32_t>(point_size.height * scale_factor)}),
           _scale_factor(std::move(scale_factor)),
-          _metal_texture(_actual_size) {
+          _metal_texture(_actual_size, is_render_target) {
     }
 
     draw_image_result add_image(image const &image) {
@@ -159,8 +159,10 @@ ui::metal_texture &ui::texture::metal_texture() {
 namespace yas {
 namespace ui {
     struct texture_factory : texture {
-        texture_factory(uint_size &&point_size, double const scale_factor, uint32_t draw_padding)
-            : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, draw_padding)) {
+        texture_factory(uint_size &&point_size, double const scale_factor, uint32_t draw_padding,
+                        bool const is_render_target)
+            : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, draw_padding,
+                                                      is_render_target)) {
         }
     };
 }
@@ -169,7 +171,8 @@ namespace ui {
 #pragma mark -
 
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
-    auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding};
+    auto factory =
+        ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding, args.is_render_target};
     if (auto result = factory.metal_texture().metal().metal_setup(args.metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {

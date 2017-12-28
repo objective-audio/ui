@@ -28,17 +28,16 @@ namespace ui {
 
         std::deque<ui::metal_encode_info> const &all_encode_infos();
 
-        void push_encode_info(ui::metal_encode_info);
-        void pop_encode_info();
-
-        ui::metal_encode_info const &current_encode_info();
-
         encode_result_t encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer);
 
         ui::render_encodable &encodable();
+        ui::render_effectable &effectable();
+        ui::render_stackable &stackable();
 
        private:
         ui::render_encodable _encodable = nullptr;
+        ui::render_effectable _effectable = nullptr;
+        ui::render_stackable _stackable = nullptr;
     };
 }
 }

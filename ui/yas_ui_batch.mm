@@ -68,6 +68,14 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
                 this->_render_mesh_infos, [](auto const &mesh_info) { return mesh_info.render_mesh; });
         }
 
+        if (auto &metal_system = this->_metal_system) {
+            for (auto &mesh : this->_render_meshes) {
+                if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
+                    throw std::runtime_error("render_meshes setup failed.");
+                };
+            }
+        }
+
         this->_building_type = ui::batch_building_type::none;
     }
 
@@ -77,10 +85,8 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        for (auto &mesh : this->_render_meshes) {
-            if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
-                return std::move(ul.value);
-            };
+        if (!is_same(this->_metal_system, metal_system)) {
+            this->_metal_system = metal_system;
         }
 
         return ui::setup_metal_result{nullptr};
@@ -90,6 +96,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
     std::vector<ui::batch_render_mesh_info> _render_mesh_infos;
     std::vector<ui::mesh> _render_meshes;
     ui::batch_building_type _building_type = ui::batch_building_type::none;
+    ui::metal_system _metal_system = nullptr;
 
     ui::batch_render_mesh_info &_find_or_make_mesh_info(ui::texture const &texture) {
         for (auto &info : this->_render_mesh_infos) {

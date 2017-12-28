@@ -17,7 +17,7 @@ namespace ui {
        public:
         class impl;
 
-        metal_texture(ui::uint_size size);
+        metal_texture(ui::uint_size size, bool const is_render_target);
         metal_texture(std::nullptr_t);
         
         virtual ~metal_texture() final;

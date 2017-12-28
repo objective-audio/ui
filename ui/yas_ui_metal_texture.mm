@@ -12,7 +12,10 @@ using namespace yas;
 #pragma mark - ui::metal_texture::impl
 
 struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
-    impl(ui::uint_size &&size) : _size(std::move(size)) {
+    impl(ui::uint_size &&size, bool const is_render_target)
+        : _size(std::move(size)),
+          _is_render_target(is_render_target),
+          _pixel_format(is_render_target ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatRGBA8Unorm) {
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
@@ -23,7 +26,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
         }
 
         if (!this->_texture_object) {
-            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = _pixel_format, &size = _size] {
+            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = _size] {
                 return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
                                                                           width:size.width
                                                                          height:size.height
@@ -37,6 +40,12 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
             auto textureDesc = texture_desc.object();
 
             this->_target = textureDesc.textureType;
+
+            if (this->_is_render_target) {
+                textureDesc.usage = MTLTextureUsageRenderTarget;
+            } else {
+                textureDesc.usage = MTLTextureUsageShaderRead;
+            }
 
             this->_texture_object = this->_metal_system.makable().make_mtl_texture(textureDesc);
 
@@ -96,18 +105,20 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
     }
 
     ui::uint_size _size;
+    bool const _is_render_target;
     ui::metal_system _metal_system = nullptr;
     objc_ptr<id<MTLSamplerState>> _sampler_object;
     objc_ptr<id<MTLTexture>> _texture_object;
     objc_ptr<id<MTLArgumentEncoder>> _argument_encoder_object;
     objc_ptr<id<MTLBuffer>> _argument_buffer_object;
-    MTLPixelFormat const _pixel_format = MTLPixelFormatRGBA8Unorm;
+    MTLPixelFormat const _pixel_format = MTLPixelFormatBGRA8Unorm;
     MTLTextureType _target = MTLTextureType2D;
 };
 
 #pragma mark - ui::metal_texture
 
-ui::metal_texture::metal_texture(ui::uint_size actual_size) : base(std::make_shared<impl>(std::move(actual_size))) {
+ui::metal_texture::metal_texture(ui::uint_size actual_size, bool const is_render_target)
+    : base(std::make_shared<impl>(std::move(actual_size), is_render_target)) {
 }
 
 ui::metal_texture::metal_texture(std::nullptr_t) : base(nullptr) {

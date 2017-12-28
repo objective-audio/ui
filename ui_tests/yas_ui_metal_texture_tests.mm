@@ -24,13 +24,24 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::metal_texture metal_texture{ui::uint_size{1, 2}};
+    ui::metal_texture metal_texture{ui::uint_size{1, 2}, false};
 
     XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
     XCTAssertNil(metal_texture.samplerState());
     XCTAssertNil(metal_texture.texture());
     XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
     XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
+    XCTAssertFalse(metal_texture.metal_system());
+}
+
+- (void)test_create_for_render_target {
+    ui::metal_texture metal_texture{ui::uint_size{1, 2}, true};
+
+    XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
+    XCTAssertNil(metal_texture.samplerState());
+    XCTAssertNil(metal_texture.texture());
+    XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
+    XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatBGRA8Unorm);
     XCTAssertFalse(metal_texture.metal_system());
 }
 
@@ -41,7 +52,7 @@ using namespace yas;
         return;
     }
 
-    ui::metal_texture metal_texture{ui::uint_size{1, 2}};
+    ui::metal_texture metal_texture{ui::uint_size{1, 2}, false};
 
     ui::metal_system metal_system{device.object()};
     XCTAssertTrue(metal_texture.metal().metal_setup(metal_system));

@@ -15,6 +15,7 @@
 #include "yas_ui_render_info.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
+#include "yas_ui_render_target.h"
 
 using namespace yas;
 
@@ -193,6 +194,14 @@ struct ui::metal_system::impl : base::impl,
         assert(this->_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
     }
 
+    void push_render_target(ui::render_stackable &stackable, ui::render_target &render_target) override {
+        auto &renderable = render_target.renderable();
+        stackable.push_encode_info(
+            ui::metal_encode_info{{.renderPassDescriptor = renderable.renderPassDescriptor(),
+                                   .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
+                                   .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}});
+    }
+
     id<MTLDevice> mtlDevice() override {
         return this->_device.object();
     }
@@ -223,6 +232,10 @@ struct ui::metal_system::impl : base::impl,
 
     objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override {
         return make_objc_ptr([mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
+    }
+
+    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const sigma) override {
+        return make_objc_ptr([[MPSImageGaussianBlur alloc] initWithDevice:this->mtlDevice() sigma:sigma]);
     }
 
     std::size_t last_encoded_mesh_count() {
@@ -259,24 +272,22 @@ struct ui::metal_system::impl : base::impl,
     void _render_nodes(ui::renderer &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         ui::metal_render_encoder metal_render_encoder;
-        metal_render_encoder.push_encode_info(
+        metal_render_encoder.stackable().push_encode_info(
             {{.renderPassDescriptor = renderPassDesc,
               .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
               .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}});
 
+        auto metal_system = cast<ui::metal_system>();
+
         ui::render_info render_info{.detector = renderer.detector(),
                                     .render_encodable = metal_render_encoder.encodable(),
+                                    .render_effectable = metal_render_encoder.effectable(),
+                                    .render_stackable = metal_render_encoder.stackable(),
                                     .matrix = renderer.projection_matrix(),
                                     .mesh_matrix = renderer.projection_matrix()};
 
-        auto metal_system = cast<ui::metal_system>();
-
         renderer.root_node().metal().metal_setup(metal_system);
         renderer.root_node().renderable().build_render_info(render_info);
-
-        for (auto &batch : render_info.batches) {
-            batch.metal().metal_setup(metal_system);
-        }
 
         auto result = metal_render_encoder.encode(metal_system, commandBuffer);
         this->_last_encoded_mesh_count = result.encoded_mesh_count;

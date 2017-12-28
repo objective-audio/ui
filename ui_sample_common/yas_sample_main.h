@@ -48,6 +48,10 @@ namespace sample {
         ui::button::observer_t _button_observer = nullptr;
         ui::renderer::observer_t _scale_observer = nullptr;
         sample::soft_keyboard::observer_t _keyboard_observer = nullptr;
+        
+        ui::node _render_target_node;
+        ui::rect_plane _plane_on_target = ui::make_rect_plane(1);
+        std::vector<ui::layout> _render_target_layouts;
     };
 }
 }

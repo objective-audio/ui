@@ -24,6 +24,7 @@ namespace ui {
     class color;
     class angle;
     class batch;
+    class render_target;
     class layout_guide;
     class layout_guide_point;
 
@@ -74,6 +75,8 @@ namespace ui {
         ui::collider &collider();
         ui::batch const &batch() const;
         ui::batch &batch();
+        ui::render_target const &render_target() const;
+        ui::render_target &render_target();
 
         void set_position(ui::point);
         void set_angle(ui::angle);
@@ -84,6 +87,7 @@ namespace ui {
         void set_collider(ui::collider);
         void set_enabled(bool const);
         void set_batch(ui::batch);
+        void set_render_target(ui::render_target);
 
         void add_sub_node(ui::node);
         void add_sub_node(ui::node, std::size_t const);

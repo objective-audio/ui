@@ -24,6 +24,8 @@
 #include "yas_ui_math.h"
 #include "yas_unless.h"
 #include "yas_ui_angle.h"
+#include "yas_ui_render_target.h"
+#include "yas_ui_effect.h"
 
 using namespace yas;
 
@@ -102,6 +104,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
                 }
             }));
+
+        this->_update_observers.emplace_back(this->_render_target_property.subject().make_observer(
+            property_method::did_change, [weak_node](auto const &) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::render_target);
+                }
+            }));
     }
 
     std::vector<ui::node> &children() {
@@ -161,9 +170,55 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_encodable.append_mesh(mesh);
                 }
+
+                if (auto &render_target = this->_render_target_property.value()) {
+                    auto &mesh = render_target.renderable().mesh();
+                    mesh.renderable().set_matrix(mesh_matrix);
+                    render_encodable.append_mesh(mesh);
+                }
             }
 
-            if (auto batch = _batch_property.value()) {
+            if (auto &render_target = this->_render_target_property.value()) {
+                bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
+
+                if (!needs_render) {
+                    ui::tree_updates tree_updates;
+
+                    for (auto &sub_node : this->_children) {
+                        sub_node.renderable().fetch_updates(tree_updates);
+                    }
+
+                    needs_render = tree_updates.is_any_updated();
+                }
+
+                if (needs_render) {
+                    auto &stackable = render_info.render_stackable;
+                    render_target.renderable().push_encode_info(stackable);
+
+                    ui::render_info target_render_info{
+                        .render_encodable = render_info.render_encodable,
+                        .render_effectable = render_info.render_effectable,
+                        .render_stackable = render_info.render_stackable,
+                        .detector = render_info.detector
+                    };
+
+                    auto &renderable = render_target.renderable();
+                    auto &projection_matrix = renderable.projection_matrix();
+                    simd::float4x4 const matrix = projection_matrix * this->_matrix;
+                    simd::float4x4 const mesh_matrix = projection_matrix;
+                    for (auto &sub_node : this->_children) {
+                        target_render_info.matrix = matrix;
+                        target_render_info.mesh_matrix = mesh_matrix;
+                        sub_node.impl_ptr<impl>()->build_render_info(target_render_info);
+                    }
+
+                    if (auto &effect = renderable.effect()) {
+                        render_info.render_effectable.append_effect(effect);
+                    }
+
+                    stackable.pop_encode_info();
+                }
+            } else if (auto &batch = _batch_property.value()) {
                 ui::tree_updates tree_updates;
 
                 for (auto &sub_node : this->_children) {
@@ -194,8 +249,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_info.render_encodable.append_mesh(mesh);
                 }
-
-                render_info.batches.push_back(batch);
             } else {
                 for (auto &sub_node : this->_children) {
                     render_info.matrix = this->_matrix;
@@ -209,6 +262,22 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (auto &mesh = this->_mesh_property.value()) {
             if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
+                return std::move(ul.value);
+            }
+        }
+
+        if (auto &render_target = this->_render_target_property.value()) {
+            if (auto ul = unless(render_target.metal().metal_setup(metal_system))) {
+                return std::move(ul.value);
+            }
+
+            if (auto ul = unless(render_target.renderable().mesh().metal().metal_setup(metal_system))) {
+                return std::move(ul.value);
+            }
+        }
+
+        if (auto &batch = this->_batch_property.value()) {
+            if (auto ul = unless(batch.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
@@ -235,6 +304,18 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             tree_updates.node_updates.flags |= this->_updates.flags;
 
             if (auto &mesh = this->_mesh_property.value()) {
+                tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
+
+                if (auto &mesh_data = mesh.mesh_data()) {
+                    tree_updates.mesh_data_updates.flags |= mesh_data.renderable().updates().flags;
+                }
+            }
+
+            if (auto &render_target = this->_render_target_property.value()) {
+                tree_updates.render_target_updates.flags |= render_target.renderable().updates().flags;
+
+                auto &mesh = render_target.renderable().mesh();
+
                 tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
 
                 if (auto &mesh_data = mesh.mesh_data()) {
@@ -274,6 +355,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             if (auto &mesh = this->_mesh_property.value()) {
                 mesh.renderable().clear_updates();
+            }
+
+            if (auto &render_target = this->_render_target_property.value()) {
+                render_target.renderable().clear_updates();
             }
 
             for (auto &sub_node : this->_children) {
@@ -369,6 +454,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<std::nullptr_t, ui::mesh> _mesh_property{{.value = nullptr}};
     property<std::nullptr_t, ui::collider> _collider_property{{.value = nullptr}};
     property<std::nullptr_t, ui::batch> _batch_property{{.value = nullptr}};
+    property<std::nullptr_t, ui::render_target> _render_target_property{{.value = nullptr}};
     property<std::nullptr_t, bool> _enabled_property{{.value = true}};
 
     node::subject_t _subject;
@@ -530,6 +616,14 @@ ui::batch &ui::node::batch() {
     return impl_ptr<impl>()->_batch_property.value();
 }
 
+ui::render_target const &ui::node::render_target() const {
+    return impl_ptr<impl>()->_render_target_property.value();
+}
+
+ui::render_target &ui::node::render_target() {
+    return impl_ptr<impl>()->_render_target_property.value();
+}
+
 void ui::node::set_position(ui::point point) {
     impl_ptr<impl>()->_position_property.set_value(std::move(point));
 }
@@ -560,6 +654,10 @@ void ui::node::set_collider(ui::collider collider) {
 
 void ui::node::set_batch(ui::batch batch) {
     impl_ptr<impl>()->set_batch(std::move(batch));
+}
+
+void ui::node::set_render_target(ui::render_target render_target) {
+    impl_ptr<impl>()->_render_target_property.set_value(std::move(render_target));
 }
 
 void ui::node::set_enabled(bool const enabled) {

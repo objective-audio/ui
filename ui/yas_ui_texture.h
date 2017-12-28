@@ -24,6 +24,7 @@ namespace ui {
             ui::uint_size point_size;
             double scale_factor = 1.0;
             uint32_t draw_padding = 2;
+            bool is_render_target = false;
         };
 
         enum class draw_image_error {
