@@ -32,5 +32,6 @@
 #include "yas_ui_angle.h"
 #include "yas_ui_render_target.h"
 #include "yas_ui_effect.h"
+#include "yas_ui_blur.h"
 
 #include "yas_observing.h"
