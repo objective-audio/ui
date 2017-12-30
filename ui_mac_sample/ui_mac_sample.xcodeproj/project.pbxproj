@@ -31,6 +31,7 @@
 		B65553861D6400C5000FB98F /* yas_sample_justified_points.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65553841D6400C5000FB98F /* yas_sample_justified_points.mm */; };
 		B65A3A211CCE442E00929FB4 /* yas_ui_math.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65A3A1F1CCE442E00929FB4 /* yas_ui_math.mm */; };
 		B65F6E4E1CC8804D007C3523 /* YASSampleMetalViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */; };
+		B66073401FF7A1F600A2577C /* yas_ui_blur.mm in Sources */ = {isa = PBXBuildFile; fileRef = B660733E1FF7A1F600A2577C /* yas_ui_blur.mm */; };
 		B66D61DB1FE4EC69000D08A7 /* yas_ui_angle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66D61D91FE4EC68000D08A7 /* yas_ui_angle.cpp */; };
 		B67443711D1E9B02008F6161 /* yas_ui_metal_system.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67443701D1E9B02008F6161 /* yas_ui_metal_system.mm */; };
 		B6779E901FF1469300862CF6 /* yas_ui_effect_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6779E8E1FF1469300862CF6 /* yas_ui_effect_protocol.mm */; };
@@ -149,6 +150,8 @@
 		B65CBB581D075CC3006D9448 /* yas_flagset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_flagset.h; sourceTree = "<group>"; };
 		B65F6E4C1CC8804D007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
+		B660733E1FF7A1F600A2577C /* yas_ui_blur.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_blur.mm; sourceTree = "<group>"; };
+		B660733F1FF7A1F600A2577C /* yas_ui_blur.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_blur.h; sourceTree = "<group>"; };
 		B66848551D14DFE600547947 /* yas_to_bool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_to_bool.h; sourceTree = "<group>"; };
 		B66D61D91FE4EC68000D08A7 /* yas_ui_angle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_angle.cpp; sourceTree = "<group>"; };
 		B66D61DA1FE4EC68000D08A7 /* yas_ui_angle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_angle.h; sourceTree = "<group>"; };
@@ -476,6 +479,8 @@
 				B63085861CFC91D2009FCAEC /* yas_ui_batch_render_mesh_info.h */,
 				B64F910F1CF2930800365111 /* yas_ui_batch.h */,
 				B64F910E1CF2930800365111 /* yas_ui_batch.mm */,
+				B660733F1FF7A1F600A2577C /* yas_ui_blur.h */,
+				B660733E1FF7A1F600A2577C /* yas_ui_blur.mm */,
 				B604282D1D3929830076769D /* yas_ui_button.h */,
 				B604282C1D3929830076769D /* yas_ui_button.mm */,
 				B6301DDB1D6BEB5A0068DB1B /* yas_ui_collection_layout.cpp */,
@@ -691,6 +696,7 @@
 				B6F501A41C9BFFD500A0B4A1 /* yas_each_dictionary.cpp in Sources */,
 				B6F501A51C9BFFD500A0B4A1 /* yas_exception.cpp in Sources */,
 				B66D61DB1FE4EC69000D08A7 /* yas_ui_angle.cpp in Sources */,
+				B66073401FF7A1F600A2577C /* yas_ui_blur.mm in Sources */,
 				B6F501A81C9BFFD500A0B4A1 /* yas_protocol.cpp in Sources */,
 				B62613201FEA931900458FF5 /* yas_ui_render_target.mm in Sources */,
 				B63C41411CF5C9D2005A8E60 /* yas_ui_batch_protocol.mm in Sources */,
