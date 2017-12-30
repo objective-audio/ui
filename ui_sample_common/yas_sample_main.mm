@@ -90,7 +90,19 @@ void sample::main::setup() {
     update_texture_handler(this->renderer);
 
     ui::render_target render_target;
-    render_target.set_blur_sigma(20.0);
+    ui::effect effect;
+
+    effect.set_metal_handler([blur = objc_ptr<MPSImageGaussianBlur *>(nil)](
+        ui::texture & texture, ui::metal_system & metal_system, id<MTLCommandBuffer> const commandBuffer) mutable {
+        double const sigma = 10.0;
+        double const scale_factor = texture.scale_factor();
+        blur = metal_system.makable().make_mtl_blur(sigma * scale_factor);
+        auto mtl_texture = texture.metal_texture().texture();
+        [*blur encodeToCommandBuffer:commandBuffer inPlaceTexture:&mtl_texture fallbackCopyAllocator:nil];
+    });
+    
+    render_target.set_effect(std::move(effect));
+
     render_target.set_scale_factor(this->renderer.scale_factor());
 
     auto &safe_area_guide = this->renderer.safe_area_layout_guide_rect();

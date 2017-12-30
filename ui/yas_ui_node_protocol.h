@@ -9,6 +9,7 @@
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"
 #include "yas_ui_render_target_protocol.h"
+#include "yas_ui_effect_protocol.h"
 
 namespace yas {
 namespace ui {
@@ -35,9 +36,11 @@ namespace ui {
         mesh_updates_t mesh_updates;
         mesh_data_updates_t mesh_data_updates;
         render_target_updates_t render_target_updates;
+        effect_updates_t effect_updates;
 
         bool is_any_updated() const;
         bool is_collider_updated() const;
+        bool is_render_target_updated() const;
         ui::batch_building_type batch_building_type() const;
     };
 

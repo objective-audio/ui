@@ -12,8 +12,6 @@
 #include "yas_ui_matrix.h"
 #include "yas_ui_effect.h"
 #include "yas_ui_layout_guide.h"
-#include "yas_unless.h"
-#include <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 using namespace yas;
 
@@ -29,11 +27,11 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void prepare(ui::render_target &target) {
         auto weak_target = to_weak(target);
 
-        this->_update_observers.emplace_back(this->_blur_sigma_property.subject().make_observer(
+        this->_update_observers.emplace_back(this->_effect_property.subject().make_observer(
             property_method::did_change, [weak_target](auto const &context) {
                 if (auto target = weak_target.lock()) {
-                    target.impl_ptr<impl>()->_set_updated(render_target_update_reason::blur_sigma);
-                    target.impl_ptr<impl>()->_clear_effect_handler();
+                    target.impl_ptr<impl>()->_set_updated(render_target_update_reason::effect);
+                    target.impl_ptr<impl>()->_set_texture_to_effect();
                 }
             }));
 
@@ -41,7 +39,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             property_method::did_change, [weak_target](auto const &context) {
                 if (auto target = weak_target.lock()) {
                     target.impl_ptr<impl>()->_set_updated(render_target_update_reason::scale_factor);
-                    target.impl_ptr<impl>()->_clear_effect_handler();
                 }
             }));
 
@@ -55,15 +52,15 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (!is_same(this->_metal_system, metal_system)) {
             this->_metal_system = metal_system;
-            this->_effect.set_metal_handler(nullptr);
             this->_mesh.set_texture(nullptr);
+            if (auto &effect = this->_effect_property.value()) {
+                effect.renderable().set_texture(nullptr);
+            }
         }
 
         if (auto ul = unless(this->_update_texture())) {
             return ul.value;
         }
-
-        this->_update_effect_handler();
 
         return ui::setup_metal_result{nullptr};
     }
@@ -73,7 +70,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::effect &effect() override {
-        return _effect;
+        return this->_effect_property.value();
     }
 
     render_target_updates_t &updates() override {
@@ -83,6 +80,9 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void clear_updates() override {
         this->_updates.flags.reset();
         this->_mesh.renderable().clear_updates();
+        if (auto &effect = this->_effect_property.value()) {
+            effect.renderable().clear_updates();
+        }
     }
 
     MTLRenderPassDescriptor *renderPassDescriptor() override {
@@ -105,7 +105,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::mesh _mesh;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    property<std::nullptr_t, double> _blur_sigma_property{{.value = 0.0}};
+    property<std::nullptr_t, ui::effect> _effect_property{{.value = nullptr}};
     property<std::nullptr_t, double> _scale_factor_property{{.value = 1.0}};
 
    private:
@@ -119,27 +119,10 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         return this->_updates.and_test(_size_updates);
     }
 
-    bool _is_sigma_updated() {
+    bool _is_effect_updated() {
         static render_target_updates_t const _sigma_updates = {ui::render_target_update_reason::scale_factor,
-                                                               ui::render_target_update_reason::blur_sigma};
+                                                               ui::render_target_update_reason::effect};
         return this->_updates.and_test(_sigma_updates);
-    }
-
-    void _clear_effect_handler() {
-        this->_effect.set_metal_handler(nullptr);
-    }
-
-    void _update_effect_handler() {
-        if (!this->_metal_system || !this->_is_sigma_updated()) {
-            return;
-        }
-
-        auto blur = this->_metal_system.makable().make_mtl_blur(this->_blur_sigma_property.value() *
-                                                                this->_scale_factor_property.value());
-        this->_effect.set_metal_handler([blur = std::move(blur)](id<MTLTexture> texture,
-                                                                 id<MTLCommandBuffer> const commandBuffer) {
-            [*blur encodeToCommandBuffer:commandBuffer inPlaceTexture:&texture fallbackCopyAllocator:nil];
-        });
     }
 
     ui::setup_metal_result _update_texture() {
@@ -170,13 +153,15 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             this->_projection_matrix =
                 ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-            this->_mesh.set_texture(texture);
-            this->_effect.set_texture(texture);
-
             auto &data = this->_data;
             data.set_rect_position(this->_layout_guide_rect.region(), 0);
             data.set_rect_tex_coords(ui::uint_region{.origin = ui::uint_point::zero(), .size = texture.actual_size()},
                                      0);
+
+            if (auto &effect = this->_effect_property.value()) {
+                effect.renderable().set_texture(texture);
+            }
+            this->_mesh.set_texture(std::move(texture));
 
             return ui::setup_metal_result{nullptr};
         } else {
@@ -184,12 +169,16 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         }
     }
 
+    void _set_texture_to_effect() {
+        if (auto &effect = this->_effect_property.value()) {
+            effect.renderable().set_texture(this->_mesh.texture());
+        }
+    }
+
     ui::metal_system _metal_system = nullptr;
 
     render_target_updates_t _updates;
     std::vector<base> _update_observers;
-
-    ui::effect _effect;
 };
 
 ui::render_target::render_target() : base(std::make_shared<impl>()) {
@@ -211,12 +200,12 @@ double ui::render_target::scale_factor() const {
     return impl_ptr<impl>()->_scale_factor_property.value();
 }
 
-void ui::render_target::set_blur_sigma(double const sigma) {
-    impl_ptr<impl>()->_blur_sigma_property.set_value(sigma);
+void ui::render_target::set_effect(ui::effect effect) {
+    impl_ptr<impl>()->_effect_property.set_value(std::move(effect));
 }
 
-double ui::render_target::blur_sigma() const {
-    return impl_ptr<impl>()->_blur_sigma_property.value();
+ui::effect const &ui::render_target::effect() const {
+    return impl_ptr<impl>()->_effect_property.value();
 }
 
 ui::renderable_render_target &ui::render_target::renderable() {
