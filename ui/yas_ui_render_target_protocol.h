@@ -18,7 +18,7 @@ namespace ui {
     enum class render_target_update_reason : std::size_t {
         region,
         scale_factor,
-        blur_sigma,
+        effect,
 
         count,
     };

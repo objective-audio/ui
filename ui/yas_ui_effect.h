@@ -5,7 +5,8 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_ui_metal_effect.h"
+#include "yas_ui_effect_protocol.h"
+#include "yas_ui_metal_protocol.h"
 #include <functional>
 #include <Metal/Metal.h>
 
@@ -17,19 +18,22 @@ namespace ui {
         class impl;
 
        public:
-        using metal_handler_f = std::function<void(id<MTLTexture>, id<MTLCommandBuffer> const)>;
+        using metal_handler_f = std::function<void(ui::texture &, ui::metal_system &, id<MTLCommandBuffer> const)>;
 
         effect();
         effect(std::nullptr_t);
 
-        void set_texture(ui::texture);
         void set_metal_handler(metal_handler_f);
         metal_handler_f const &metal_handler() const;
 
-        metal_effect &metal_effect();
+        ui::renderable_effect &renderable();
+        ui::encodable_effect &encodable();
+        ui::metal_object &metal();
 
        private:
-        ui::metal_effect _metal_effect = nullptr;
+        ui::renderable_effect _renderable = nullptr;
+        ui::encodable_effect _encodable = nullptr;
+        ui::metal_object _metal = nullptr;
     };
 }
 }

@@ -38,8 +38,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         this->_dispatch_observers.reserve(9);
     }
 
-    void setup_observers() {
-        auto weak_node = to_weak(cast<ui::node>());
+    void setup_observers(ui::node &node) {
+        auto weak_node = to_weak(node);
 
         this->_update_observers.emplace_back(this->_enabled_property.subject().make_observer(
             property_method::did_change, [weak_node](auto const &context) {
@@ -182,6 +182,16 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
 
                 if (!needs_render) {
+                    needs_render = render_target.renderable().updates().flags.any();
+                }
+
+                auto &renderable = render_target.renderable();
+                auto &effect = renderable.effect();
+                if (!needs_render && effect) {
+                    needs_render = effect.renderable().updates().flags.any();
+                }
+
+                if (!needs_render) {
                     ui::tree_updates tree_updates;
 
                     for (auto &sub_node : this->_children) {
@@ -195,14 +205,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     auto &stackable = render_info.render_stackable;
                     render_target.renderable().push_encode_info(stackable);
 
-                    ui::render_info target_render_info{
-                        .render_encodable = render_info.render_encodable,
-                        .render_effectable = render_info.render_effectable,
-                        .render_stackable = render_info.render_stackable,
-                        .detector = render_info.detector
-                    };
+                    ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
+                                                       .render_effectable = render_info.render_effectable,
+                                                       .render_stackable = render_info.render_stackable,
+                                                       .detector = render_info.detector};
 
-                    auto &renderable = render_target.renderable();
                     auto &projection_matrix = renderable.projection_matrix();
                     simd::float4x4 const matrix = projection_matrix * this->_matrix;
                     simd::float4x4 const mesh_matrix = projection_matrix;
@@ -212,7 +219,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                         sub_node.impl_ptr<impl>()->build_render_info(target_render_info);
                     }
 
-                    if (auto &effect = renderable.effect()) {
+                    if (effect) {
                         render_info.render_effectable.append_effect(effect);
                     }
 
@@ -274,6 +281,12 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto ul = unless(render_target.renderable().mesh().metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
+
+            if (auto &effect = render_target.renderable().effect()) {
+                if (auto ul = unless(effect.metal().metal_setup(metal_system))) {
+                    return std::move(ul.value);
+                }
+            }
         }
 
         if (auto &batch = this->_batch_property.value()) {
@@ -314,12 +327,17 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (auto &render_target = this->_render_target_property.value()) {
                 tree_updates.render_target_updates.flags |= render_target.renderable().updates().flags;
 
-                auto &mesh = render_target.renderable().mesh();
+                auto &renderable = render_target.renderable();
+                auto &mesh = renderable.mesh();
 
                 tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
 
                 if (auto &mesh_data = mesh.mesh_data()) {
                     tree_updates.mesh_data_updates.flags |= mesh_data.renderable().updates().flags;
+                }
+
+                if (auto &effect = renderable.effect()) {
+                    tree_updates.effect_updates.flags |= effect.renderable().updates().flags;
                 }
             }
 
@@ -544,7 +562,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 #pragma mark - node
 
 ui::node::node() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_observers();
+    impl_ptr<impl>()->setup_observers(*this);
 }
 
 ui::node::node(std::nullptr_t) : base(nullptr) {

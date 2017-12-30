@@ -80,7 +80,7 @@ struct ui::metal_render_encoder::impl : base::impl,
             [renderEncoder endEncoding];
 
             for (auto &effect : metal_encode_info.effects()) {
-                effect.metal_effect().encode(commandBuffer);
+                effect.encodable().encode(commandBuffer);
             }
         }
 
