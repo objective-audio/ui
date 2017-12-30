@@ -90,20 +90,17 @@ void sample::main::setup() {
     update_texture_handler(this->renderer);
 
     ui::render_target render_target;
-    ui::effect effect;
-
-    effect.set_metal_handler([blur = objc_ptr<MPSImageGaussianBlur *>(nil)](
-        ui::texture & texture, ui::metal_system & metal_system, id<MTLCommandBuffer> const commandBuffer) mutable {
-        double const sigma = 10.0;
-        double const scale_factor = texture.scale_factor();
-        blur = metal_system.makable().make_mtl_blur(sigma * scale_factor);
-        auto mtl_texture = texture.metal_texture().texture();
-        [*blur encodeToCommandBuffer:commandBuffer inPlaceTexture:&mtl_texture fallbackCopyAllocator:nil];
-    });
-    
-    render_target.set_effect(std::move(effect));
-
     render_target.set_scale_factor(this->renderer.scale_factor());
+    render_target.set_effect(this->_blur.effect());
+
+    ui::continuous_action blur_action{{.duration = 5.0, .loop_count = 0}};
+    blur_action.set_value_updater([weak_blur = to_weak(this->_blur)](double const value){
+        if (auto blur = weak_blur.lock()) {
+            blur.set_sigma(value * 20.0);
+        }
+    });
+    blur_action.set_value_transformer(ui::ping_pong_transformer());
+    this->renderer.insert_action(std::move(blur_action));
 
     auto &safe_area_guide = this->renderer.safe_area_layout_guide_rect();
     auto &target_guide = render_target.layout_guide_rect();
