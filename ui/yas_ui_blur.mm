@@ -9,6 +9,8 @@
 #include "yas_ui_metal_texture.h"
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+#include <iostream>
+
 using namespace yas;
 
 struct ui::blur::impl : base::impl {
@@ -33,11 +35,19 @@ struct ui::blur::impl : base::impl {
         double const sigma = this->_sigma_property.value();
 
         if (sigma > 0.0) {
-            this->_effect.set_metal_handler([sigma](
-                ui::texture & src_texture, ui::texture dst_texture, ui::metal_system & metal_system,
-                id<MTLCommandBuffer> const commandBuffer) mutable {
+            this->_effect.set_metal_handler([
+                sigma, prev_scale_factor = std::experimental::optional<double>{nullopt},
+                blur = objc_ptr<MPSImageGaussianBlur *>{nullptr}
+            ](ui::texture & src_texture, ui::texture & dst_texture, ui::metal_system & metal_system,
+              id<MTLCommandBuffer> const commandBuffer) mutable {
                 double const scale_factor = src_texture.scale_factor();
-                auto const blur = metal_system.makable().make_mtl_blur(sigma * scale_factor);
+
+                if (!prev_scale_factor || scale_factor != *prev_scale_factor) {
+                    prev_scale_factor = scale_factor;
+                    double const blur_sigma = sigma * scale_factor;
+                    blur = metal_system.makable().make_mtl_blur(blur_sigma);
+                }
+
                 auto const srcTexture = src_texture.metal_texture().texture();
                 auto const dstTexture = dst_texture.metal_texture().texture();
                 [*blur encodeToCommandBuffer:commandBuffer sourceTexture:srcTexture destinationTexture:dstTexture];
