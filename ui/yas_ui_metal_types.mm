@@ -45,3 +45,30 @@ MTLPrimitiveType yas::to_mtl_primitive_type(ui::primitive_type const type) {
             return MTLPrimitiveTypeTriangleStrip;
     }
 }
+
+MTLTextureUsage yas::to_mtl_texture_usage(ui::texture_usages_t const usages) {
+    MTLTextureUsage result = MTLTextureUsageUnknown;
+
+    if (usages.test(ui::texture_usage::shader_read)) {
+        result |= MTLTextureUsageShaderRead;
+    }
+
+    if (usages.test(ui::texture_usage::shader_write)) {
+        result |= MTLTextureUsageShaderWrite;
+    }
+
+    if (usages.test(ui::texture_usage::render_target)) {
+        result |= MTLTextureUsageRenderTarget;
+    }
+
+    return result;
+}
+
+MTLPixelFormat yas::to_mtl_pixel_format(ui::pixel_format const format) {
+    switch (format) {
+        case ui::pixel_format::rgba8_unorm:
+            return MTLPixelFormatRGBA8Unorm;
+        case ui::pixel_format::bgra8_unorm:
+            return MTLPixelFormatBGRA8Unorm;
+    }
+}

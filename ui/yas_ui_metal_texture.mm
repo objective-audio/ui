@@ -5,17 +5,17 @@
 #include "yas_objc_ptr.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_metal_texture.h"
-#include "yas_ui_types.h"
+#include "yas_ui_metal_types.h"
 
 using namespace yas;
 
 #pragma mark - ui::metal_texture::impl
 
 struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
-    impl(ui::uint_size &&size, bool const is_render_target)
+    impl(ui::uint_size &&size, ui::texture_usages_t const usages, ui::pixel_format const format)
         : _size(std::move(size)),
-          _is_render_target(is_render_target),
-          _pixel_format(is_render_target ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatRGBA8Unorm) {
+          _texture_usage(to_mtl_texture_usage(usages)),
+          _pixel_format(to_mtl_pixel_format(format)) {
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
@@ -41,11 +41,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
 
             this->_target = textureDesc.textureType;
 
-            if (this->_is_render_target) {
-                textureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
-            } else {
-                textureDesc.usage = MTLTextureUsageShaderRead;
-            }
+            textureDesc.usage = this->_texture_usage;
 
             this->_texture_object = this->_metal_system.makable().make_mtl_texture(textureDesc);
 
@@ -105,7 +101,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
     }
 
     ui::uint_size _size;
-    bool const _is_render_target;
+    MTLTextureUsage const _texture_usage;
     ui::metal_system _metal_system = nullptr;
     objc_ptr<id<MTLSamplerState>> _sampler_object;
     objc_ptr<id<MTLTexture>> _texture_object;
@@ -117,8 +113,9 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
 
 #pragma mark - ui::metal_texture
 
-ui::metal_texture::metal_texture(ui::uint_size actual_size, bool const is_render_target)
-    : base(std::make_shared<impl>(std::move(actual_size), is_render_target)) {
+ui::metal_texture::metal_texture(ui::uint_size actual_size, ui::texture_usages_t const usages,
+                                 ui::pixel_format const format)
+    : base(std::make_shared<impl>(std::move(actual_size), usages, format)) {
 }
 
 ui::metal_texture::metal_texture(std::nullptr_t) : base(nullptr) {
@@ -148,6 +145,10 @@ MTLTextureType ui::metal_texture::texture_type() const {
 
 MTLPixelFormat ui::metal_texture::pixel_format() const {
     return impl_ptr<impl>()->_pixel_format;
+}
+
+MTLTextureUsage ui::metal_texture::texture_usage() const {
+    return impl_ptr<impl>()->_texture_usage;
 }
 
 ui::metal_system const &ui::metal_texture::metal_system() {

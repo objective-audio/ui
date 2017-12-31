@@ -13,7 +13,7 @@ namespace ui {
     class texture;
 
     enum class effect_update_reason : std::size_t {
-        texture,
+        textures,
         handler,
 
         count,
@@ -23,7 +23,7 @@ namespace ui {
 
     struct renderable_effect : protocol {
         struct impl : protocol::impl {
-            virtual void set_texture(ui::texture &&) = 0;
+            virtual void set_textures(ui::texture &&src, ui::texture &&dst) = 0;
             virtual ui::effect_updates_t &updates() = 0;
             virtual void clear_updates() = 0;
         };
@@ -31,7 +31,7 @@ namespace ui {
         explicit renderable_effect(std::shared_ptr<impl>);
         renderable_effect(std::nullptr_t);
 
-        void set_texture(ui::texture);
+        void set_textures(ui::texture src, ui::texture dst);
         ui::effect_updates_t const &updates();
         void clear_updates();
     };
