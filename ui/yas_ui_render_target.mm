@@ -166,7 +166,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                                                     .point_size = size,
                                                     .scale_factor = this->_scale_factor_property.value(),
                                                     .draw_padding = 0,
-                                                    .usages = {ui::texture_usage::shader_write}})) {
+                                                    .usages = {ui::texture_usage::shader_write},
+                                                    .pixel_format = ui::pixel_format::bgra8_unorm})) {
             this->_dst_texture = std::move(texture_result.value());
             auto &texture = this->_dst_texture;
 
