@@ -24,7 +24,8 @@ namespace ui {
             ui::uint_size point_size;
             double scale_factor = 1.0;
             uint32_t draw_padding = 2;
-            bool is_render_target = false;
+            ui::texture_usages_t usages = {texture_usage::shader_read};
+            ui::pixel_format pixel_format = ui::pixel_format::rgba8_unorm;
         };
 
         enum class draw_image_error {

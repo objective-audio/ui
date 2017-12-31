@@ -6,6 +6,7 @@
 
 #include <Metal/Metal.h>
 #include "yas_base.h"
+#include "yas_ui_types.h"
 #include "yas_ui_metal_protocol.h"
 
 namespace yas {
@@ -17,7 +18,7 @@ namespace ui {
        public:
         class impl;
 
-        metal_texture(ui::uint_size size, bool const is_render_target);
+        metal_texture(ui::uint_size size, ui::texture_usages_t const, ui::pixel_format const);
         metal_texture(std::nullptr_t);
         
         virtual ~metal_texture() final;
@@ -28,6 +29,7 @@ namespace ui {
         id<MTLBuffer> argumentBuffer() const;
         MTLTextureType texture_type() const;
         MTLPixelFormat pixel_format() const;
+        MTLTextureUsage texture_usage() const;
 
         ui::metal_system const &metal_system();
 

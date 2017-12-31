@@ -14,24 +14,13 @@ struct ui::effect::impl : base::impl, renderable_effect::impl, encodable_effect:
         this->_updates.flags.set();
     }
 
-    void setup_observers(ui::effect &effect) {
-        auto weak_effect = to_weak(effect);
-
-        this->_observers.emplace_back(this->_texture_property.subject().make_observer(
-            property_method::did_change, [weak_effect](auto const &context) {
-                if (auto effect = weak_effect.lock()) {
-                    effect.impl_ptr<impl>()->_set_updated(effect_update_reason::texture);
-                }
-            }));
-    }
-
     void encode(id<MTLCommandBuffer> const commandBuffer) override {
         if (!this->_metal_system || !this->_metal_handler) {
             return;
         }
 
-        if (auto &texture = this->_texture_property.value()) {
-            this->_metal_handler(texture, this->_metal_system, commandBuffer);
+        if (this->_src_texture && this->_dst_texture) {
+            this->_metal_handler(this->_src_texture, this->_dst_texture, this->_metal_system, commandBuffer);
         }
     }
 
@@ -39,13 +28,15 @@ struct ui::effect::impl : base::impl, renderable_effect::impl, encodable_effect:
         this->_metal_handler = std::move(handler);
         this->_set_updated(effect_update_reason::handler);
     }
-    
+
     metal_handler_f const &metal_handler() {
         return this->_metal_handler;
     }
 
-    void set_texture(ui::texture &&texture) override {
-        this->_texture_property.set_value(std::move(texture));
+    void set_textures(ui::texture &&src, ui::texture &&dst) override {
+        this->_src_texture = std::move(src);
+        this->_dst_texture = std::move(dst);
+        this->_set_updated(effect_update_reason::textures);
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
@@ -64,9 +55,9 @@ struct ui::effect::impl : base::impl, renderable_effect::impl, encodable_effect:
         this->_updates.flags.reset();
     }
 
-    property<std::nullptr_t, ui::texture> _texture_property{{.value = nullptr}};
-
    private:
+    ui::texture _src_texture = nullptr;
+    ui::texture _dst_texture = nullptr;
     ui::metal_system _metal_system = nullptr;
     ui::effect_updates_t _updates;
     metal_handler_f _metal_handler = nullptr;
@@ -78,7 +69,6 @@ struct ui::effect::impl : base::impl, renderable_effect::impl, encodable_effect:
 };
 
 ui::effect::effect() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_observers(*this);
 }
 
 ui::effect::effect(std::nullptr_t) : base(nullptr) {
@@ -111,4 +101,40 @@ ui::metal_object &ui::effect::metal() {
         this->_metal = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
     return this->_metal;
+}
+
+ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {
+    static metal_handler_f _handler = nullptr;
+    if (!_handler) {
+        _handler = [](ui::texture &src_texture, ui::texture dst_texture, ui::metal_system &metal_system,
+                      id<MTLCommandBuffer> const commandBuffer) mutable {
+            auto const srcTexture = src_texture.metal_texture().texture();
+            auto const dstTexture = dst_texture.metal_texture().texture();
+            auto const width = std::min(srcTexture.width, dstTexture.width);
+            auto const height = std::min(srcTexture.height, dstTexture.height);
+            auto const zero_origin = MTLOriginMake(0, 0, 0);
+
+            auto encoder = make_objc_ptr<id<MTLBlitCommandEncoder>>(
+                [commandBuffer]() { return [commandBuffer blitCommandEncoder]; });
+
+            [*encoder copyFromTexture:srcTexture
+                          sourceSlice:0
+                          sourceLevel:0
+                         sourceOrigin:zero_origin
+                           sourceSize:MTLSizeMake(width, height, srcTexture.depth)
+                            toTexture:dstTexture
+                     destinationSlice:0
+                     destinationLevel:0
+                    destinationOrigin:zero_origin];
+
+            [*encoder endEncoding];
+        };
+    }
+    return _handler;
+}
+
+ui::effect ui::effect::make_through_effect() {
+    ui::effect effect;
+    effect.set_metal_handler(ui::effect::through_metal_handler());
+    return effect;
 }

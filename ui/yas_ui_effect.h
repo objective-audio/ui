@@ -18,7 +18,8 @@ namespace ui {
         class impl;
 
        public:
-        using metal_handler_f = std::function<void(ui::texture &, ui::metal_system &, id<MTLCommandBuffer> const)>;
+        using metal_handler_f =
+            std::function<void(ui::texture &src, ui::texture &dst, ui::metal_system &, id<MTLCommandBuffer> const)>;
 
         effect();
         effect(std::nullptr_t);
@@ -29,6 +30,9 @@ namespace ui {
         ui::renderable_effect &renderable();
         ui::encodable_effect &encodable();
         ui::metal_object &metal();
+
+        static effect::metal_handler_f const &through_metal_handler();
+        static ui::effect make_through_effect();
 
        private:
         ui::renderable_effect _renderable = nullptr;

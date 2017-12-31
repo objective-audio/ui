@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 #include "yas_ui_shared_types.h"
+#include "yas_flagset.h"
 
 namespace yas {
 namespace ui {
@@ -17,6 +18,21 @@ namespace ui {
         metal,
         //        open_gl,
     };
+
+    enum class pixel_format {
+        rgba8_unorm,
+        bgra8_unorm
+    };
+
+    enum class texture_usage {
+        shader_read,
+        shader_write,
+        render_target,
+
+        count,
+    };
+
+    using texture_usages_t = flagset<texture_usage>;
 
     struct uint_point {
         uint32_t x = 0;

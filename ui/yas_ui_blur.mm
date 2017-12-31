@@ -33,16 +33,17 @@ struct ui::blur::impl : base::impl {
         double const sigma = this->_sigma_property.value();
 
         if (sigma > 0.0) {
-            this->_effect.set_metal_handler([blur = objc_ptr<MPSImageGaussianBlur *>(nil), sigma](
-                ui::texture & texture, ui::metal_system & metal_system,
+            this->_effect.set_metal_handler([sigma](
+                ui::texture & src_texture, ui::texture dst_texture, ui::metal_system & metal_system,
                 id<MTLCommandBuffer> const commandBuffer) mutable {
-                double const scale_factor = texture.scale_factor();
-                blur = metal_system.makable().make_mtl_blur(sigma * scale_factor);
-                auto mtl_texture = texture.metal_texture().texture();
-                [*blur encodeToCommandBuffer:commandBuffer inPlaceTexture:&mtl_texture fallbackCopyAllocator:nil];
+                double const scale_factor = src_texture.scale_factor();
+                auto const blur = metal_system.makable().make_mtl_blur(sigma * scale_factor);
+                auto const srcTexture = src_texture.metal_texture().texture();
+                auto const dstTexture = dst_texture.metal_texture().texture();
+                [*blur encodeToCommandBuffer:commandBuffer sourceTexture:srcTexture destinationTexture:dstTexture];
             });
         } else {
-            this->_effect.set_metal_handler(nullptr);
+            this->_effect.set_metal_handler(ui::effect::through_metal_handler());
         }
     }
 
