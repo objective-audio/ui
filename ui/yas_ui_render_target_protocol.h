@@ -33,7 +33,7 @@ namespace ui {
             virtual void clear_updates() = 0;
             virtual MTLRenderPassDescriptor *renderPassDescriptor() = 0;
             virtual simd::float4x4 &projection_matrix() = 0;
-            virtual void push_encode_info(ui::render_stackable &) = 0;
+            virtual bool push_encode_info(ui::render_stackable &) = 0;
         };
 
         explicit renderable_render_target(std::shared_ptr<impl>);
@@ -45,7 +45,7 @@ namespace ui {
         void clear_updates();
         MTLRenderPassDescriptor *renderPassDescriptor();
         simd::float4x4 const &projection_matrix();
-        void push_encode_info(ui::render_stackable &);
+        bool push_encode_info(ui::render_stackable &);
     };
 }
 }

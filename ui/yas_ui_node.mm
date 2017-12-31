@@ -203,27 +203,28 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
                 if (needs_render) {
                     auto &stackable = render_info.render_stackable;
-                    render_target.renderable().push_encode_info(stackable);
 
-                    ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
-                                                       .render_effectable = render_info.render_effectable,
-                                                       .render_stackable = render_info.render_stackable,
-                                                       .detector = render_info.detector};
+                    if (render_target.renderable().push_encode_info(stackable)) {
+                        ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
+                                                           .render_effectable = render_info.render_effectable,
+                                                           .render_stackable = render_info.render_stackable,
+                                                           .detector = render_info.detector};
 
-                    auto &projection_matrix = renderable.projection_matrix();
-                    simd::float4x4 const matrix = projection_matrix * this->_matrix;
-                    simd::float4x4 const mesh_matrix = projection_matrix;
-                    for (auto &sub_node : this->_children) {
-                        target_render_info.matrix = matrix;
-                        target_render_info.mesh_matrix = mesh_matrix;
-                        sub_node.impl_ptr<impl>()->build_render_info(target_render_info);
+                        auto &projection_matrix = renderable.projection_matrix();
+                        simd::float4x4 const matrix = projection_matrix * this->_matrix;
+                        simd::float4x4 const mesh_matrix = projection_matrix;
+                        for (auto &sub_node : this->_children) {
+                            target_render_info.matrix = matrix;
+                            target_render_info.mesh_matrix = mesh_matrix;
+                            sub_node.impl_ptr<impl>()->build_render_info(target_render_info);
+                        }
+
+                        if (effect) {
+                            render_info.render_effectable.append_effect(effect);
+                        }
+
+                        stackable.pop_encode_info();
                     }
-
-                    if (effect) {
-                        render_info.render_effectable.append_effect(effect);
-                    }
-
-                    stackable.pop_encode_info();
                 }
             } else if (auto &batch = _batch_property.value()) {
                 ui::tree_updates tree_updates;

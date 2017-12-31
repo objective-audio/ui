@@ -99,11 +99,17 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         return _projection_matrix;
     }
 
-    void push_encode_info(ui::render_stackable &stackable) override {
+    bool push_encode_info(ui::render_stackable &stackable) override {
+        if (!this->_is_size_enough()) {
+            return false;
+        }
+
         auto target = cast<ui::render_target>();
         if (auto &metal_system = this->_metal_system) {
             metal_system.renderable().push_render_target(stackable, target);
+            return true;
         }
+        return false;
     }
 
     ui::layout_guide_rect _layout_guide_rect;
@@ -128,7 +134,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::setup_metal_result _update_textures() {
-        if (!this->_metal_system || !this->_is_size_updated()) {
+        if (!this->_metal_system || !this->_is_size_updated() || !this->_is_size_enough()) {
             return ui::setup_metal_result{nullptr};
         }
 
@@ -192,6 +198,11 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         if (auto &effect = this->_effect_property.value()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
         }
+    }
+
+    bool _is_size_enough() {
+        return this->_layout_guide_rect.horizontal_range().range().length >= 1.0f &&
+               this->_layout_guide_rect.vertical_range().range().length >= 1.0f;
     }
 
     ui::metal_system _metal_system = nullptr;
