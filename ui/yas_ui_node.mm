@@ -38,7 +38,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         this->_dispatch_observers.reserve(9);
     }
 
-    void setup_observers(ui::node &node) {
+    void prepare(ui::node &node) {
         auto weak_node = to_weak(node);
 
         this->_update_observers.emplace_back(this->_enabled_property.subject().make_observer(
@@ -563,7 +563,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 #pragma mark - node
 
 ui::node::node() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->setup_observers(*this);
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::node::node(std::nullptr_t) : base(nullptr) {
