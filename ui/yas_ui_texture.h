@@ -48,6 +48,7 @@ namespace ui {
         uint32_t depth() const;
         bool has_alpha() const;
 
+        draw_image_result reserve_image_size(image const &image);
         draw_image_result add_image(image const &image);
         draw_image_result replace_image(image const &image, uint_point const actual_origin);
 

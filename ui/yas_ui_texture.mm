@@ -25,7 +25,7 @@ struct ui::texture::impl : base::impl {
           _metal_texture(_actual_size, usages, format) {
     }
 
-    draw_image_result add_image(image const &image) {
+    draw_image_result reserve_image_size(image const &image) {
         if (!image) {
             return draw_image_result{draw_image_error::image_is_null};
         }
@@ -38,11 +38,19 @@ struct ui::texture::impl : base::impl {
             return draw_image_result{draw_image_error::out_of_range};
         }
 
-        auto result = this->replace_image(image, this->_draw_actual_pos);
+        ui::uint_point const origin = this->_draw_actual_pos;
 
         this->_move_draw_pos(actual_image_size);
 
-        return result;
+        return draw_image_result{ui::uint_region{.origin = origin, .size = actual_image_size}};
+    }
+
+    draw_image_result add_image(image const &image) {
+        if (auto result = this->reserve_image_size(image)) {
+            return this->replace_image(image, result.value().origin);
+        } else {
+            return result;
+        }
     }
 
     draw_image_result replace_image(image const &image, uint_point const origin) {
@@ -145,6 +153,10 @@ bool ui::texture::has_alpha() const {
 
 ui::texture::draw_image_result ui::texture::add_image(image const &image) {
     return impl_ptr<impl>()->add_image(image);
+}
+
+ui::texture::draw_image_result ui::texture::reserve_image_size(image const &image) {
+    return impl_ptr<impl>()->reserve_image_size(image);
 }
 
 ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui::uint_point const actual_origin) {
