@@ -50,9 +50,9 @@ struct ui::font_atlas::impl : base::impl {
           _font_size(font_size),
           _words(std::move(words)) {
         auto ct_font_obj = _ct_font_ref.object();
-        _ascent = CTFontGetAscent(ct_font_obj);
-        _descent = CTFontGetDescent(ct_font_obj);
-        _leading = CTFontGetLeading(ct_font_obj);
+        this->_ascent = CTFontGetAscent(ct_font_obj);
+        this->_descent = CTFontGetDescent(ct_font_obj);
+        this->_leading = CTFontGetLeading(ct_font_obj);
     }
 
     ui::texture &texture() {

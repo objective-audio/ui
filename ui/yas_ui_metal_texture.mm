@@ -26,7 +26,11 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
         }
 
         if (!this->_texture_object) {
-            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = _size] {
+            if (this->_size.width == 0 || this->_size.height == 0) {
+                return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
+            }
+
+            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = this->_size] {
                 return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
                                                                           width:size.width
                                                                          height:size.height
