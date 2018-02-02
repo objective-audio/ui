@@ -4,32 +4,32 @@
 
 #pragma once
 
-namespace yas {
-namespace ui {
-    enum class layout_direction {
-        vertical,
-        horizontal,
-    };
+namespace yas::ui {
+enum class layout_direction {
+    vertical,
+    horizontal,
+};
 
-    enum class layout_order {
-        ascending,
-        descending,
-    };
+enum class layout_order {
+    ascending,
+    descending,
+};
 
-    enum class layout_alignment {
-        min,
-        mid,
-        max,
-    };
+enum class layout_alignment {
+    min,
+    mid,
+    max,
+};
 
-    struct layout_borders {
-        float left = 0.0f;
-        float right = 0.0f;
-        float bottom = 0.0f;
-        float top = 0.0f;
-    };
+struct layout_borders {
+    float left = 0.0f;
+    float right = 0.0f;
+    float bottom = 0.0f;
+    float top = 0.0f;
+};
 }
 
+namespace yas {
 std::string to_string(ui::layout_direction const &);
 std::string to_string(ui::layout_order const &);
 std::string to_string(ui::layout_alignment const &);

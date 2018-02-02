@@ -9,13 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 using namespace yas;
 
-namespace yas {
-namespace ui {
-    namespace metal_view {
-        struct cpp_variables {
-            ui::view_renderable renderable{nullptr};
-        };
-    }
+namespace yas::ui {
+namespace metal_view {
+    struct cpp_variables {
+        ui::view_renderable renderable{nullptr};
+    };
 }
 }
 

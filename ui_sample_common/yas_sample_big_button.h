@@ -6,21 +6,19 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace ui {
-    class texture;
+namespace yas::ui {
+class texture;
 }
 
 namespace sample {
-    struct big_button : public base {
-        class impl;
+struct big_button : public base {
+    class impl;
 
-        big_button();
-        big_button(std::nullptr_t);
+    big_button();
+    big_button(std::nullptr_t);
 
-        void set_texture(ui::texture);
+    void set_texture(ui::texture);
 
-        ui::button &button();
-    };
-}
+    ui::button &button();
+};
 }

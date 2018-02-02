@@ -12,29 +12,27 @@
 
 using namespace yas;
 
-namespace yas {
-namespace test {
-    struct test_render_encoder : base {
-        struct impl : base::impl, ui::render_encodable::impl {
-            void append_mesh(ui::mesh &&mesh) {
-                _meshes.emplace_back(std::move(mesh));
-            }
-
-            std::vector<ui::mesh> _meshes;
-        };
-
-        test_render_encoder() : base(std::make_shared<impl>()) {
+namespace yas::test {
+struct test_render_encoder : base {
+    struct impl : base::impl, ui::render_encodable::impl {
+        void append_mesh(ui::mesh &&mesh) {
+            _meshes.emplace_back(std::move(mesh));
         }
 
-        ui::render_encodable encodable() {
-            return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
-        }
-
-        std::vector<ui::mesh> &meshes() {
-            return impl_ptr<impl>()->_meshes;
-        }
+        std::vector<ui::mesh> _meshes;
     };
-}
+
+    test_render_encoder() : base(std::make_shared<impl>()) {
+    }
+
+    ui::render_encodable encodable() {
+        return ui::render_encodable{impl_ptr<ui::render_encodable::impl>()};
+    }
+
+    std::vector<ui::mesh> &meshes() {
+        return impl_ptr<impl>()->_meshes;
+    }
+};
 }
 
 @interface yas_ui_node_tests : XCTestCase

@@ -10,34 +10,32 @@
 #include <functional>
 #include <Metal/Metal.h>
 
-namespace yas {
-namespace ui {
-    class texture;
+namespace yas::ui {
+class texture;
 
-    class effect : public base {
-        class impl;
+class effect : public base {
+    class impl;
 
-       public:
-        using metal_handler_f =
-            std::function<void(ui::texture &src, ui::texture &dst, ui::metal_system &, id<MTLCommandBuffer> const)>;
+   public:
+    using metal_handler_f =
+        std::function<void(ui::texture &src, ui::texture &dst, ui::metal_system &, id<MTLCommandBuffer> const)>;
 
-        effect();
-        effect(std::nullptr_t);
+    effect();
+    effect(std::nullptr_t);
 
-        void set_metal_handler(metal_handler_f);
-        metal_handler_f const &metal_handler() const;
+    void set_metal_handler(metal_handler_f);
+    metal_handler_f const &metal_handler() const;
 
-        ui::renderable_effect &renderable();
-        ui::encodable_effect &encodable();
-        ui::metal_object &metal();
+    ui::renderable_effect &renderable();
+    ui::encodable_effect &encodable();
+    ui::metal_object &metal();
 
-        static effect::metal_handler_f const &through_metal_handler();
-        static ui::effect make_through_effect();
+    static effect::metal_handler_f const &through_metal_handler();
+    static ui::effect make_through_effect();
 
-       private:
-        ui::renderable_effect _renderable = nullptr;
-        ui::encodable_effect _encodable = nullptr;
-        ui::metal_object _metal = nullptr;
-    };
-}
+   private:
+    ui::renderable_effect _renderable = nullptr;
+    ui::encodable_effect _encodable = nullptr;
+    ui::metal_object _metal = nullptr;
+};
 }

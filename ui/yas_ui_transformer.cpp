@@ -10,30 +10,28 @@ using namespace yas;
 
 #pragma mark - action_utils
 
-namespace yas {
-namespace ui {
-    static std::size_t constexpr _curve_frames = 256;
+namespace yas::ui {
+static std::size_t constexpr _curve_frames = 256;
 
-    static std::vector<float> _make_curve_vector(std::function<float(float const)> const &func) {
-        static std::size_t constexpr _vector_size = _curve_frames + 2;
-        std::vector<float> curve_vector;
-        curve_vector.reserve(_vector_size);
-        for (auto const &i : each_index<std::size_t>(_vector_size)) {
-            float const pos = float(i) / _curve_frames;
-            float val = (pos < 1.0f) ? func(pos) : func(1.0f);
-            curve_vector.push_back(val);
-        }
-        return curve_vector;
+static std::vector<float> _make_curve_vector(std::function<float(float const)> const &func) {
+    static std::size_t constexpr _vector_size = _curve_frames + 2;
+    std::vector<float> curve_vector;
+    curve_vector.reserve(_vector_size);
+    for (auto const &i : each_index<std::size_t>(_vector_size)) {
+        float const pos = float(i) / _curve_frames;
+        float val = (pos < 1.0f) ? func(pos) : func(1.0f);
+        curve_vector.push_back(val);
     }
+    return curve_vector;
+}
 
-    static float _convert_value(std::vector<float> const &vector, float pos) {
-        float const frame = pos * _curve_frames;
-        std::size_t const cur_index = frame;
-        float const cur_val = vector.at(cur_index);
-        float const next_val = vector.at(cur_index + 1);
-        float const frac = frame - cur_index;
-        return cur_val + (next_val - cur_val) * frac;
-    }
+static float _convert_value(std::vector<float> const &vector, float pos) {
+    float const frame = pos * _curve_frames;
+    std::size_t const cur_index = frame;
+    float const cur_val = vector.at(cur_index);
+    float const next_val = vector.at(cur_index + 1);
+    float const frac = frame - cur_index;
+    return cur_val + (next_val - cur_val) * frac;
 }
 }
 
