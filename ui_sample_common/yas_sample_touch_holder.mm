@@ -6,13 +6,11 @@
 
 using namespace yas;
 
-namespace yas {
-namespace sample {
-    struct touch_object {
-        ui::node node = nullptr;
-        weak<ui::action> scale_action;
-    };
-}
+namespace yas::sample {
+struct touch_object {
+    ui::node node = nullptr;
+    weak<ui::action> scale_action;
+};
 }
 
 struct sample::touch_holder::impl : base::impl {

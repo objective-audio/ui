@@ -7,12 +7,10 @@
 
 using namespace yas;
 
-namespace yas {
-namespace sample {
-    static std::size_t constexpr x_point_count = 16;
-    static std::size_t constexpr y_point_count = 8;
-    static std::size_t constexpr all_point_count = x_point_count + y_point_count;
-}
+namespace yas::sample {
+static std::size_t constexpr x_point_count = 16;
+static std::size_t constexpr y_point_count = 8;
+static std::size_t constexpr all_point_count = x_point_count + y_point_count;
 }
 
 struct sample::justified_points::impl : base::impl {
@@ -30,42 +28,39 @@ struct sample::justified_points::impl : base::impl {
     void prepare(sample::justified_points &points) {
         auto &node = _rect_plane.node();
 
-        _renderer_observer = node.subject().make_observer(
-            ui::node::method::renderer_changed,
-            [weak_points = to_weak(points), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}](
-                auto const &context) mutable {
-                if (auto points = weak_points.lock()) {
-                    auto &node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        x_layout = ui::make_layout(
-                            {.first_source_guide = renderer.view_layout_guide_rect().left(),
-                             .second_source_guide = renderer.view_layout_guide_rect().right(),
-                             .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
+        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+            weak_points = to_weak(points), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}
+        ](auto const &context) mutable {
+            if (auto points = weak_points.lock()) {
+                auto &node = context.value;
+                if (auto renderer = node.renderer()) {
+                    x_layout = ui::make_layout({.first_source_guide = renderer.view_layout_guide_rect().left(),
+                                                .second_source_guide = renderer.view_layout_guide_rect().right(),
+                                                .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
 
-                        std::vector<float> ratios;
-                        ratios.reserve(sample::y_point_count - 1);
-                        
-                        auto each = make_fast_each(sample::y_point_count - 1);
-                        while (yas_each_next(each)) {
-                            auto const &idx = yas_each_index(each);
-                            if (idx < y_point_count / 2) {
-                                ratios.emplace_back(std::pow(2.0f, idx));
-                            } else {
-                                ratios.emplace_back(std::pow(2.0f, y_point_count - 2 - idx));
-                            }
+                    std::vector<float> ratios;
+                    ratios.reserve(sample::y_point_count - 1);
+
+                    auto each = make_fast_each(sample::y_point_count - 1);
+                    while (yas_each_next(each)) {
+                        auto const &idx = yas_each_index(each);
+                        if (idx < y_point_count / 2) {
+                            ratios.emplace_back(std::pow(2.0f, idx));
+                        } else {
+                            ratios.emplace_back(std::pow(2.0f, y_point_count - 2 - idx));
                         }
-
-                        y_layout =
-                            ui::make_layout({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                       .second_source_guide = renderer.view_layout_guide_rect().top(),
-                                                       .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
-                                                       .ratios = std::move(ratios)});
-                    } else {
-                        x_layout = nullptr;
-                        y_layout = nullptr;
                     }
+
+                    y_layout = ui::make_layout({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                .second_source_guide = renderer.view_layout_guide_rect().top(),
+                                                .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
+                                                .ratios = std::move(ratios)});
+                } else {
+                    x_layout = nullptr;
+                    y_layout = nullptr;
                 }
-            });
+            }
+        });
     }
 
    private:
@@ -91,8 +86,8 @@ struct sample::justified_points::impl : base::impl {
         auto x_each = make_fast_each(sample::x_point_count);
         while (yas_each_next(x_each)) {
             auto const &idx = yas_each_index(x_each);
-            _x_layout_guides.at(idx)
-                .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+            _x_layout_guides.at(idx).set_value_changed_handler(
+                [weak_plane = to_weak(_rect_plane), idx](auto const &context) {
                     if (auto plane = weak_plane.lock()) {
                         plane.data().set_rect_position(
                             {.origin = {context.new_value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
@@ -103,8 +98,8 @@ struct sample::justified_points::impl : base::impl {
         auto y_each = make_fast_each(sample::y_point_count);
         while (yas_each_next(y_each)) {
             auto const &idx = yas_each_index(y_each);
-            _y_layout_guides.at(idx)
-                .set_value_changed_handler([weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+            _y_layout_guides.at(idx).set_value_changed_handler(
+                [weak_plane = to_weak(_rect_plane), idx](auto const &context) {
                     if (auto plane = weak_plane.lock()) {
                         plane.data().set_rect_position(
                             {.origin = {-2.0f, context.new_value - 2.0f}, .size = {4.0f, 4.0f}}, idx + x_point_count);

@@ -6,17 +6,15 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct inputted_text : base {
-        class impl;
+namespace yas::sample {
+struct inputted_text : base {
+    class impl;
 
-        explicit inputted_text(ui::font_atlas atlas);
-        inputted_text(std::nullptr_t);
+    explicit inputted_text(ui::font_atlas atlas);
+    inputted_text(std::nullptr_t);
 
-        void append_text(std::string text);
+    void append_text(std::string text);
 
-        ui::strings &strings();
-    };
-}
+    ui::strings &strings();
+};
 }

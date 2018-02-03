@@ -6,15 +6,13 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct bg : base {
-        class impl;
+namespace yas::sample {
+struct bg : base {
+    class impl;
 
-        bg();
-        bg(std::nullptr_t);
+    bg();
+    bg(std::nullptr_t);
 
-        ui::rect_plane &rect_plane();
-    };
-}
+    ui::rect_plane &rect_plane();
+};
 }

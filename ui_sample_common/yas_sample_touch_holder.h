@@ -6,17 +6,15 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct touch_holder : base {
-        class impl;
+namespace yas::sample {
+struct touch_holder : base {
+    class impl;
 
-        touch_holder();
-        touch_holder(std::nullptr_t);
+    touch_holder();
+    touch_holder(std::nullptr_t);
 
-        void set_texture(ui::texture);
+    void set_texture(ui::texture);
 
-        ui::node &node();
-    };
-}
+    ui::node &node();
+};
 }
