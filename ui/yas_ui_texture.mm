@@ -13,7 +13,7 @@ using namespace yas;
 
 #pragma mark - ui::texture::impl
 
-struct ui::texture::impl : base::impl, renderable_texture::impl {
+struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::impl {
     impl(ui::uint_size &&point_size, double const scale_factor, uint32_t const draw_padding,
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
@@ -23,6 +23,11 @@ struct ui::texture::impl : base::impl, renderable_texture::impl {
                                  static_cast<uint32_t>(point_size.height * scale_factor)}),
           _scale_factor(std::move(scale_factor)),
           _metal_texture(_actual_size, usages, format) {
+    }
+
+    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
+#warning todo
+        return ui::setup_metal_result{nullptr};
     }
 
     draw_image_result reserve_image_size(image const &image) {
@@ -167,11 +172,20 @@ ui::metal_texture &ui::texture::metal_texture() {
     return impl_ptr<impl>()->_metal_texture;
 }
 
+#pragma mark - protocol
+
 ui::renderable_texture &ui::texture::renderable() {
     if (!this->_renderable) {
         this->_renderable = ui::renderable_texture{impl_ptr<ui::renderable_texture::impl>()};
     }
     return this->_renderable;
+}
+
+ui::metal_object &ui::texture::metal() {
+    if (!this->_metal_object) {
+        this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+    }
+    return this->_metal_object;
 }
 
 #pragma mark -
