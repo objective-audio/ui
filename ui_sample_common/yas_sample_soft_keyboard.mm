@@ -8,72 +8,70 @@
 
 using namespace yas;
 
-namespace yas {
-namespace sample {
-    struct soft_key : base {
-        struct impl : base::impl {
-            impl(std::string &&key, float const width, ui::font_atlas &&atlas)
-                : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
-                _button.rect_plane().node().mesh().set_use_mesh_color(true);
-                _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-                _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
+namespace yas::sample {
+struct soft_key : base {
+    struct impl : base::impl {
+        impl(std::string &&key, float const width, ui::font_atlas &&atlas)
+            : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
+            _button.rect_plane().node().mesh().set_use_mesh_color(true);
+            _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+            _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
-                _strings.set_text(key);
-                _strings.set_alignment(ui::layout_alignment::mid);
+            _strings.set_text(key);
+            _strings.set_alignment(ui::layout_alignment::mid);
 
-                _button.rect_plane().node().add_sub_node(_strings.rect_plane().node());
+            _button.rect_plane().node().add_sub_node(_strings.rect_plane().node());
 
-                auto const &font_atlas = _strings.font_atlas();
-                float const strings_offset_y = std::roundf((width + font_atlas.ascent() + font_atlas.descent()) * 0.5f);
+            auto const &font_atlas = _strings.font_atlas();
+            float const strings_offset_y = std::roundf((width + font_atlas.ascent() + font_atlas.descent()) * 0.5f);
 
-                _strings.frame_layout_guide_rect().set_region(
-                    {.origin = {.y = strings_offset_y}, .size = {.width = width}});
-            }
-
-            ui::button _button;
-            ui::strings _strings;
-            std::vector<ui::layout> _layouts;
-        };
-
-        soft_key(std::string key, float const width, ui::font_atlas atlas)
-            : base(std::make_shared<impl>(std::move(key), width, std::move(atlas))) {
+            _strings.frame_layout_guide_rect().set_region(
+                {.origin = {.y = strings_offset_y}, .size = {.width = width}});
         }
 
-        soft_key(std::nullptr_t) : base(nullptr) {
-        }
-
-        ui::button &button() {
-            return impl_ptr<impl>()->_button;
-        }
-
-        ui::strings const &strings() const {
-            return impl_ptr<impl>()->_strings;
-        }
-
-        void set_enabled(bool const enabled, bool const animated = false) {
-            auto &button_node = button().rect_plane().node();
-            auto &strings_node = impl_ptr<impl>()->_strings.rect_plane().node();
-            auto renderer = button_node.renderer();
-
-            button_node.collider().set_enabled(enabled);
-
-            float const alpha = enabled ? 1.0f : 0.0f;
-
-            renderer.erase_action(button_node);
-            renderer.erase_action(strings_node);
-
-            if (animated) {
-                renderer.insert_action(
-                    ui::make_action({.target = button_node, .begin_alpha = button_node.alpha(), .end_alpha = alpha}));
-                renderer.insert_action(
-                    ui::make_action({.target = strings_node, .begin_alpha = strings_node.alpha(), .end_alpha = alpha}));
-            } else {
-                button_node.set_alpha(alpha);
-                strings_node.set_alpha(alpha);
-            }
-        }
+        ui::button _button;
+        ui::strings _strings;
+        std::vector<ui::layout> _layouts;
     };
-}
+
+    soft_key(std::string key, float const width, ui::font_atlas atlas)
+        : base(std::make_shared<impl>(std::move(key), width, std::move(atlas))) {
+    }
+
+    soft_key(std::nullptr_t) : base(nullptr) {
+    }
+
+    ui::button &button() {
+        return impl_ptr<impl>()->_button;
+    }
+
+    ui::strings const &strings() const {
+        return impl_ptr<impl>()->_strings;
+    }
+
+    void set_enabled(bool const enabled, bool const animated = false) {
+        auto &button_node = button().rect_plane().node();
+        auto &strings_node = impl_ptr<impl>()->_strings.rect_plane().node();
+        auto renderer = button_node.renderer();
+
+        button_node.collider().set_enabled(enabled);
+
+        float const alpha = enabled ? 1.0f : 0.0f;
+
+        renderer.erase_action(button_node);
+        renderer.erase_action(strings_node);
+
+        if (animated) {
+            renderer.insert_action(
+                ui::make_action({.target = button_node, .begin_alpha = button_node.alpha(), .end_alpha = alpha}));
+            renderer.insert_action(
+                ui::make_action({.target = strings_node, .begin_alpha = strings_node.alpha(), .end_alpha = alpha}));
+        } else {
+            button_node.set_alpha(alpha);
+            strings_node.set_alpha(alpha);
+        }
+    }
+};
 }
 
 struct sample::soft_keyboard::impl : base::impl {

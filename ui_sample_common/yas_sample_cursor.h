@@ -6,15 +6,13 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct cursor : base {
-        class impl;
+namespace yas::sample {
+struct cursor : base {
+    class impl;
 
-        cursor();
-        cursor(std::nullptr_t);
+    cursor();
+    cursor(std::nullptr_t);
 
-        ui::node &node();
-    };
-}
+    ui::node &node();
+};
 }

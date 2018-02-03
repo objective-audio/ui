@@ -8,24 +8,22 @@
 
 using namespace yas;
 
-namespace yas {
-float roundf(float const value, double const scale) {
+float yas::roundf(float const value, double const scale) {
     return static_cast<float>(std::round(scale * value) / scale);
 }
 
-double round(double const value, double const scale) {
+double yas::round(double const value, double const scale) {
     return std::round(scale * value) / scale;
 }
 
-float ceilf(float const value, double const scale) {
+float yas::ceilf(float const value, double const scale) {
     return static_cast<float>(std::ceil(scale * value) / scale);
 }
 
-double ceil(double const value, double const scale) {
+double yas::ceil(double const value, double const scale) {
     return std::ceil(scale * value) / scale;
 }
 
-float distance(ui::point const &src, ui::point const &dst) {
+float yas::distance(ui::point const &src, ui::point const &dst) {
     return GLKVector2Distance(GLKVector2Make(src.x, src.y), GLKVector2Make(dst.x, dst.y));
-}
 }

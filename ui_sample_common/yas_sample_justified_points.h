@@ -6,17 +6,15 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct justified_points : base {
-        class impl;
+namespace yas::sample {
+struct justified_points : base {
+    class impl;
 
-        justified_points();
-        justified_points(std::nullptr_t);
+    justified_points();
+    justified_points(std::nullptr_t);
 
-        virtual ~justified_points() final;
+    virtual ~justified_points() final;
 
-        ui::rect_plane &rect_plane();
-    };
-}
+    ui::rect_plane &rect_plane();
+};
 }

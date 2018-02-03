@@ -6,15 +6,13 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct modifier_text : base {
-        class impl;
+namespace yas::sample {
+struct modifier_text : base {
+    class impl;
 
-        explicit modifier_text(ui::font_atlas, ui::layout_guide bottom_guide);
-        modifier_text(std::nullptr_t);
+    explicit modifier_text(ui::font_atlas, ui::layout_guide bottom_guide);
+    modifier_text(std::nullptr_t);
 
-        ui::strings &strings();
-    };
-}
+    ui::strings &strings();
+};
 }

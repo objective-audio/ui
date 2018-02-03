@@ -10,7 +10,7 @@ namespace yas::ui {
 class texture;
 }
 
-namespace sample {
+namespace yas::sample {
 struct big_button : public base {
     class impl;
 

@@ -6,22 +6,20 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct soft_keyboard : base {
-        class impl;
+namespace yas::sample {
+struct soft_keyboard : base {
+    class impl;
 
-        using subject_t = subject<std::string, soft_keyboard>;
-        using observer_t = subject_t::observer_t;
+    using subject_t = subject<std::string, soft_keyboard>;
+    using observer_t = subject_t::observer_t;
 
-        explicit soft_keyboard(ui::font_atlas atlas);
-        soft_keyboard(std::nullptr_t);
+    explicit soft_keyboard(ui::font_atlas atlas);
+    soft_keyboard(std::nullptr_t);
 
-        void set_font_atlas(ui::font_atlas);
+    void set_font_atlas(ui::font_atlas);
 
-        ui::node &node();
+    ui::node &node();
 
-        subject_t &subject();
-    };
-}
+    subject_t &subject();
+};
 }

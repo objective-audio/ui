@@ -6,17 +6,15 @@
 
 #include "yas_ui.h"
 
-namespace yas {
-namespace sample {
-    struct big_button_text : base {
-        class impl;
+namespace yas::sample {
+struct big_button_text : base {
+    class impl;
 
-        explicit big_button_text(ui::font_atlas atlas);
-        big_button_text(std::nullptr_t);
+    explicit big_button_text(ui::font_atlas atlas);
+    big_button_text(std::nullptr_t);
 
-        void set_status(ui::button::method const);
+    void set_status(ui::button::method const);
 
-        ui::strings &strings();
-    };
-}
+    ui::strings &strings();
+};
 }

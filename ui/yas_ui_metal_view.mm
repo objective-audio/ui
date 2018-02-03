@@ -10,16 +10,14 @@
 
 using namespace yas;
 
-namespace yas {
-namespace ui {
-    namespace metal_view {
-        struct cpp {
-            ui::event_manager event_manager = nullptr;
-        };
-    };
+namespace yas::ui::metal_view {
+struct cpp {
+    ui::event_manager event_manager = nullptr;
+};
 }
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
+namespace yas {
 ui::event_phase to_phase(NSEventPhase const phase) {
     switch (phase) {
         case NSEventPhaseBegan:
@@ -37,8 +35,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     }
     return ui::event_phase::none;
 }
-#endif
 }
+#endif
 
 @implementation YASUIMetalView {
     ui::metal_view::cpp _cpp;
