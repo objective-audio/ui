@@ -10,33 +10,31 @@
 #include "yas_ui_types.h"
 #include "yas_ui_render_target_protocol.h"
 
-namespace yas {
-namespace ui {
-    class mesh;
-    class layout_guide_rect;
-    class effect;
+namespace yas::ui {
+class mesh;
+class layout_guide_rect;
+class effect;
 
-    class render_target : public base {
-       public:
-        class impl;
+class render_target : public base {
+   public:
+    class impl;
 
-        render_target();
-        render_target(std::nullptr_t);
+    render_target();
+    render_target(std::nullptr_t);
 
-        ui::layout_guide_rect &layout_guide_rect();
+    ui::layout_guide_rect &layout_guide_rect();
 
-        void set_scale_factor(double const);
-        double scale_factor() const;
+    void set_scale_factor(double const);
+    double scale_factor() const;
 
-        void set_effect(ui::effect);
-        ui::effect const &effect() const;
+    void set_effect(ui::effect);
+    ui::effect const &effect() const;
 
-        ui::renderable_render_target &renderable();
-        ui::metal_object &metal();
+    ui::renderable_render_target &renderable();
+    ui::metal_object &metal();
 
-       private:
-        ui::metal_object _metal_object = nullptr;
-        ui::renderable_render_target _renderable = nullptr;
-    };
-}
+   private:
+    ui::metal_object _metal_object = nullptr;
+    ui::renderable_render_target _renderable = nullptr;
+};
 }

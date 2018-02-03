@@ -23,15 +23,13 @@ using namespace yas;
 
 #pragma mark - font_atlas::impl
 
-namespace yas {
-namespace ui {
-    static ui::vertex2d_rect_t constexpr _empty_rect{0.0f};
+namespace yas::ui {
+static ui::vertex2d_rect_t constexpr _empty_rect{0.0f};
 
-    struct word_info {
-        ui::vertex2d_rect_t rect;
-        ui::size advance;
-    };
-}
+struct word_info {
+    ui::vertex2d_rect_t rect;
+    ui::size advance;
+};
 }
 
 struct ui::font_atlas::impl : base::impl {

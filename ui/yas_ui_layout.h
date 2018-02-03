@@ -7,67 +7,65 @@
 #include "yas_base.h"
 #include "yas_ui_layout_guide.h"
 
-namespace yas {
-namespace ui {
-    class layout_guide;
+namespace yas::ui {
+class layout_guide;
 
-    class layout : public base {
-        class impl;
+class layout : public base {
+    class impl;
 
-       public:
-        using handler_f = std::function<void(std::vector<ui::layout_guide> const &source_guides,
-                                             std::vector<ui::layout_guide> &destination_guides)>;
+   public:
+    using handler_f = std::function<void(std::vector<ui::layout_guide> const &source_guides,
+                                         std::vector<ui::layout_guide> &destination_guides)>;
 
-        struct args {
-            std::vector<ui::layout_guide> source_guides;
-            std::vector<ui::layout_guide> destination_guides;
-            handler_f handler;
-        };
-
-        explicit layout(args);
-        layout(std::nullptr_t);
-
-        virtual ~layout() final;
-
-        std::vector<ui::layout_guide> const &source_guides() const;
-        std::vector<ui::layout_guide> const &destination_guides() const;
+    struct args {
+        std::vector<ui::layout_guide> source_guides;
+        std::vector<ui::layout_guide> destination_guides;
+        handler_f handler;
     };
 
-    namespace fixed_layout {
-        struct args {
-            float distance;
-            ui::layout_guide source_guide;
-            ui::layout_guide destination_guide;
-        };
-    }
+    explicit layout(args);
+    layout(std::nullptr_t);
 
-    namespace justified_layout {
-        struct args {
-            ui::layout_guide first_source_guide = nullptr;
-            ui::layout_guide second_source_guide = nullptr;
-            std::vector<ui::layout_guide> destination_guides;
-            std::vector<float> ratios;
-        };
-    }
+    virtual ~layout() final;
 
-    namespace min_layout {
-        struct args {
-            std::vector<ui::layout_guide> source_guides;
-            ui::layout_guide destination_guide;
-        };
-    }
+    std::vector<ui::layout_guide> const &source_guides() const;
+    std::vector<ui::layout_guide> const &destination_guides() const;
+};
 
-    namespace max_layout {
-        struct args {
-            std::vector<ui::layout_guide> source_guides;
-            ui::layout_guide destination_guide;
-        };
-    }
-
-    ui::layout make_layout(fixed_layout::args);
-    ui::layout make_layout(justified_layout::args);
-
-    ui::layout make_layout(min_layout::args);
-    ui::layout make_layout(max_layout::args);
+namespace fixed_layout {
+    struct args {
+        float distance;
+        ui::layout_guide source_guide;
+        ui::layout_guide destination_guide;
+    };
 }
+
+namespace justified_layout {
+    struct args {
+        ui::layout_guide first_source_guide = nullptr;
+        ui::layout_guide second_source_guide = nullptr;
+        std::vector<ui::layout_guide> destination_guides;
+        std::vector<float> ratios;
+    };
+}
+
+namespace min_layout {
+    struct args {
+        std::vector<ui::layout_guide> source_guides;
+        ui::layout_guide destination_guide;
+    };
+}
+
+namespace max_layout {
+    struct args {
+        std::vector<ui::layout_guide> source_guides;
+        ui::layout_guide destination_guide;
+    };
+}
+
+ui::layout make_layout(fixed_layout::args);
+ui::layout make_layout(justified_layout::args);
+
+ui::layout make_layout(min_layout::args);
+ui::layout make_layout(max_layout::args);
 }

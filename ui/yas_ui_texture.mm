@@ -169,16 +169,13 @@ ui::metal_texture &ui::texture::metal_texture() {
 
 #pragma mark -
 
-namespace yas {
-namespace ui {
-    struct texture_factory : texture {
-        texture_factory(ui::uint_size &&point_size, double const scale_factor, uint32_t draw_padding,
-                        ui::texture_usages_t const usages, ui::pixel_format const format)
-            : texture(
-                  std::make_shared<texture::impl>(std::move(point_size), scale_factor, draw_padding, usages, format)) {
-        }
-    };
-}
+namespace yas::ui {
+struct texture_factory : texture {
+    texture_factory(ui::uint_size &&point_size, double const scale_factor, uint32_t draw_padding,
+                    ui::texture_usages_t const usages, ui::pixel_format const format)
+        : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, draw_padding, usages, format)) {
+    }
+};
 }
 
 #pragma mark -

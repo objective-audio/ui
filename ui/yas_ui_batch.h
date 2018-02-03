@@ -9,27 +9,25 @@
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_render_encoder_protocol.h"
 
-namespace yas {
-namespace ui {
-    class node;
+namespace yas::ui {
+class node;
 
-    class batch : public base {
-        class impl;
+class batch : public base {
+    class impl;
 
-       public:
-        batch();
-        batch(std::nullptr_t);
+   public:
+    batch();
+    batch(std::nullptr_t);
 
-        virtual ~batch() final;
+    virtual ~batch() final;
 
-        ui::renderable_batch &renderable();
-        ui::render_encodable &encodable();
-        ui::metal_object &metal();
+    ui::renderable_batch &renderable();
+    ui::render_encodable &encodable();
+    ui::metal_object &metal();
 
-       private:
-        ui::renderable_batch _renderable = nullptr;
-        ui::render_encodable _encodable = nullptr;
-        ui::metal_object _metal_object = nullptr;
-    };
-}
+   private:
+    ui::renderable_batch _renderable = nullptr;
+    ui::render_encodable _encodable = nullptr;
+    ui::metal_object _metal_object = nullptr;
+};
 }

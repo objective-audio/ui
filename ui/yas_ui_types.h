@@ -11,189 +11,186 @@
 #include "yas_ui_shared_types.h"
 #include "yas_flagset.h"
 
-namespace yas {
-namespace ui {
-    enum class system_type {
-        none,
-        metal,
-        //        open_gl,
-    };
+namespace yas::ui {
+enum class system_type {
+    none,
+    metal,
+    //        open_gl,
+};
 
-    enum class pixel_format {
-        rgba8_unorm,
-        bgra8_unorm
-    };
+enum class pixel_format { rgba8_unorm, bgra8_unorm };
 
-    enum class texture_usage {
-        shader_read,
-        shader_write,
-        render_target,
+enum class texture_usage {
+    shader_read,
+    shader_write,
+    render_target,
 
-        count,
-    };
+    count,
+};
 
-    using texture_usages_t = flagset<texture_usage>;
+using texture_usages_t = flagset<texture_usage>;
 
-    struct uint_point {
-        uint32_t x = 0;
-        uint32_t y = 0;
+struct uint_point {
+    uint32_t x = 0;
+    uint32_t y = 0;
 
-        bool operator==(uint_point const &rhs) const;
-        bool operator!=(uint_point const &rhs) const;
+    bool operator==(uint_point const &rhs) const;
+    bool operator!=(uint_point const &rhs) const;
 
-        static uint_point const &zero();
-    };
+    static uint_point const &zero();
+};
 
-    struct uint_size {
-        uint32_t width = 1;
-        uint32_t height = 1;
+struct uint_size {
+    uint32_t width = 1;
+    uint32_t height = 1;
 
-        bool operator==(uint_size const &rhs) const;
-        bool operator!=(uint_size const &rhs) const;
+    bool operator==(uint_size const &rhs) const;
+    bool operator!=(uint_size const &rhs) const;
 
-        static uint_size const &zero();
-    };
+    static uint_size const &zero();
+};
 
-    struct uint_region {
-        uint_point origin;
-        uint_size size;
+struct uint_region {
+    uint_point origin;
+    uint_size size;
 
-        bool operator==(uint_region const &rhs) const;
-        bool operator!=(uint_region const &rhs) const;
+    bool operator==(uint_region const &rhs) const;
+    bool operator!=(uint_region const &rhs) const;
 
-        uint32_t left() const;
-        uint32_t right() const;
-        uint32_t bottom() const;
-        uint32_t top() const;
+    uint32_t left() const;
+    uint32_t right() const;
+    uint32_t bottom() const;
+    uint32_t top() const;
 
-        static uint_region const &zero();
-    };
+    static uint_region const &zero();
+};
 
-    struct uint_range {
-        uint32_t location;
-        uint32_t length;
+struct uint_range {
+    uint32_t location;
+    uint32_t length;
 
-        bool operator==(uint_range const &rhs) const;
-        bool operator!=(uint_range const &rhs) const;
+    bool operator==(uint_range const &rhs) const;
+    bool operator!=(uint_range const &rhs) const;
 
-        uint32_t min() const;
-        uint32_t max() const;
+    uint32_t min() const;
+    uint32_t max() const;
 
-        static uint_range const &zero();
-    };
+    static uint_range const &zero();
+};
 
-    struct point {
-        union {
-            struct {
-                float x;
-                float y;
-            };
-            simd::float2 v;
+struct point {
+    union {
+        struct {
+            float x;
+            float y;
         };
-
-        bool operator==(point const &rhs) const;
-        bool operator!=(point const &rhs) const;
-        point operator+(point const &rhs) const;
-        point operator-(point const &rhs) const;
-        point &operator+=(point const &rhs);
-        point &operator-=(point const &rhs);
-
-        explicit operator bool() const;
-
-        static point const &zero();
+        simd::float2 v;
     };
 
-    struct size {
-        union {
-            struct {
-                float width;
-                float height;
-            };
-            simd::float2 v;
+    bool operator==(point const &rhs) const;
+    bool operator!=(point const &rhs) const;
+    point operator+(point const &rhs) const;
+    point operator-(point const &rhs) const;
+    point &operator+=(point const &rhs);
+    point &operator-=(point const &rhs);
+
+    explicit operator bool() const;
+
+    static point const &zero();
+};
+
+struct size {
+    union {
+        struct {
+            float width;
+            float height;
         };
-
-        bool operator==(size const &rhs) const;
-        bool operator!=(size const &rhs) const;
-
-        explicit operator bool() const;
-
-        static size const &zero();
+        simd::float2 v;
     };
 
-    struct range {
-        union {
-            struct {
-                float location;
-                float length;
-            };
-            simd::float2 v;
+    bool operator==(size const &rhs) const;
+    bool operator!=(size const &rhs) const;
+
+    explicit operator bool() const;
+
+    static size const &zero();
+};
+
+struct range {
+    union {
+        struct {
+            float location;
+            float length;
         };
-
-        bool operator==(range const &rhs) const;
-        bool operator!=(range const &rhs) const;
-
-        explicit operator bool() const;
-
-        float min() const;
-        float max() const;
-
-        static range const &zero();
+        simd::float2 v;
     };
 
-    struct region {
-        union {
-            struct {
-                ui::point origin;
-                ui::size size;
-            };
-            simd::float4 v;
+    bool operator==(range const &rhs) const;
+    bool operator!=(range const &rhs) const;
+
+    explicit operator bool() const;
+
+    float min() const;
+    float max() const;
+
+    static range const &zero();
+};
+
+struct region {
+    union {
+        struct {
+            ui::point origin;
+            ui::size size;
         };
-
-        bool operator==(region const &rhs) const;
-        bool operator!=(region const &rhs) const;
-
-        explicit operator bool() const;
-
-        range horizontal_range() const;
-        range vertical_range() const;
-        float left() const;
-        float right() const;
-        float bottom() const;
-        float top() const;
-        point center() const;
-
-        static region const &zero();
-        static region zero_centered(ui::size const &);
+        simd::float4 v;
     };
 
-    enum class pivot {
-        left,
-        center,
-        right,
-    };
+    bool operator==(region const &rhs) const;
+    bool operator!=(region const &rhs) const;
 
-    enum class primitive_type {
-        point,
-        line,
-        line_strip,
-        triangle,
-        triangle_strip,
-    };
+    explicit operator bool() const;
 
-    struct vertex2d_rect_t {
-        vertex2d_t v[4];
+    range horizontal_range() const;
+    range vertical_range() const;
+    float left() const;
+    float right() const;
+    float bottom() const;
+    float top() const;
+    point center() const;
 
-        void set_position(ui::region const &);
-        void set_tex_coord(ui::uint_region const &);
-    };
+    static region const &zero();
+    static region zero_centered(ui::size const &);
+};
 
-    using index2d_t = uint32_t;
+enum class pivot {
+    left,
+    center,
+    right,
+};
 
-    struct index2d_rect_t {
-        index2d_t v[6];
-    };
+enum class primitive_type {
+    point,
+    line,
+    line_strip,
+    triangle,
+    triangle_strip,
+};
+
+struct vertex2d_rect_t {
+    vertex2d_t v[4];
+
+    void set_position(ui::region const &);
+    void set_tex_coord(ui::uint_region const &);
+};
+
+using index2d_t = uint32_t;
+
+struct index2d_rect_t {
+    index2d_t v[6];
+};
 }
 
+namespace yas {
 simd::float2 to_float2(CGPoint const &);
 simd::float2 to_float2(simd::float4 const &);
 simd::float4 to_float4(simd::float2 const &);

@@ -8,43 +8,41 @@
 #include "yas_flagset.h"
 #include <Metal/Metal.h>
 
-namespace yas {
-namespace ui {
-    class texture;
+namespace yas::ui {
+class texture;
 
-    enum class effect_update_reason : std::size_t {
-        textures,
-        handler,
+enum class effect_update_reason : std::size_t {
+    textures,
+    handler,
 
-        count,
+    count,
+};
+
+using effect_updates_t = flagset<effect_update_reason>;
+
+struct renderable_effect : protocol {
+    struct impl : protocol::impl {
+        virtual void set_textures(ui::texture &&src, ui::texture &&dst) = 0;
+        virtual ui::effect_updates_t &updates() = 0;
+        virtual void clear_updates() = 0;
     };
 
-    using effect_updates_t = flagset<effect_update_reason>;
+    explicit renderable_effect(std::shared_ptr<impl>);
+    renderable_effect(std::nullptr_t);
 
-    struct renderable_effect : protocol {
-        struct impl : protocol::impl {
-            virtual void set_textures(ui::texture &&src, ui::texture &&dst) = 0;
-            virtual ui::effect_updates_t &updates() = 0;
-            virtual void clear_updates() = 0;
-        };
+    void set_textures(ui::texture src, ui::texture dst);
+    ui::effect_updates_t const &updates();
+    void clear_updates();
+};
 
-        explicit renderable_effect(std::shared_ptr<impl>);
-        renderable_effect(std::nullptr_t);
-
-        void set_textures(ui::texture src, ui::texture dst);
-        ui::effect_updates_t const &updates();
-        void clear_updates();
+struct encodable_effect : protocol {
+    struct impl : protocol::impl {
+        virtual void encode(id<MTLCommandBuffer> const) = 0;
     };
 
-    struct encodable_effect : protocol {
-        struct impl : protocol::impl {
-            virtual void encode(id<MTLCommandBuffer> const) = 0;
-        };
+    explicit encodable_effect(std::shared_ptr<impl>);
+    encodable_effect(std::nullptr_t);
 
-        explicit encodable_effect(std::shared_ptr<impl>);
-        encodable_effect(std::nullptr_t);
-
-        void encode(id<MTLCommandBuffer> const);
-    };
-}
+    void encode(id<MTLCommandBuffer> const);
+};
 }

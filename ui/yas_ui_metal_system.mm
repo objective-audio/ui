@@ -19,11 +19,9 @@
 
 using namespace yas;
 
-namespace yas {
-namespace ui {
-    static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
-    static auto constexpr _uniforms_buffer_count = 3;
-}
+namespace yas::ui {
+static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
+static auto constexpr _uniforms_buffer_count = 3;
 }
 
 #pragma mark - ui::metal_system::impl

@@ -8,30 +8,28 @@
 #include "yas_base.h"
 #include "yas_ui_metal_system_protocol.h"
 
-namespace yas {
-namespace ui {
-    class metal_system : public base {
-       public:
-        class impl;
+namespace yas::ui {
+class metal_system : public base {
+   public:
+    class impl;
 
-        explicit metal_system(id<MTLDevice> const);
-        metal_system(id<MTLDevice> const, uint32_t const sample_count);
-        metal_system(std::nullptr_t);
+    explicit metal_system(id<MTLDevice> const);
+    metal_system(id<MTLDevice> const, uint32_t const sample_count);
+    metal_system(std::nullptr_t);
 
-        virtual ~metal_system() final;
+    virtual ~metal_system() final;
 
-        std::size_t last_encoded_mesh_count() const;
+    std::size_t last_encoded_mesh_count() const;
 
-        ui::makable_metal_system &makable();
-        ui::renderable_metal_system &renderable();
+    ui::makable_metal_system &makable();
+    ui::renderable_metal_system &renderable();
 
 #if YAS_TEST
-        ui::testable_metal_system testable();
+    ui::testable_metal_system testable();
 #endif
 
-       private:
-        ui::makable_metal_system _makable = nullptr;
-        ui::renderable_metal_system _renderable = nullptr;
-    };
-}
+   private:
+    ui::makable_metal_system _makable = nullptr;
+    ui::renderable_metal_system _renderable = nullptr;
+};
 }
