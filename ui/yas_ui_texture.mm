@@ -172,6 +172,10 @@ ui::metal_texture &ui::texture::metal_texture() {
     return impl_ptr<impl>()->_metal_texture;
 }
 
+ui::metal_texture const &ui::texture::metal_texture() const {
+    return impl_ptr<impl>()->_metal_texture;
+}
+
 #pragma mark - protocol
 
 ui::renderable_texture &ui::texture::renderable() {
