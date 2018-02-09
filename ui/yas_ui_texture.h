@@ -6,6 +6,7 @@
 
 #include "yas_base.h"
 #include "yas_result.h"
+#include "yas_ui_texture_protocol.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_types.h"
@@ -52,9 +53,13 @@ class texture : public base {
     draw_image_result replace_image(image const &image, uint_point const actual_origin);
 
     ui::metal_texture &metal_texture();
+    ui::renderable_texture &renderable();
 
    protected:
     texture(std::shared_ptr<impl> &&);
+
+   private:
+    ui::renderable_texture _renderable = nullptr;
 };
 
 using make_texture_result = result<ui::texture, setup_metal_error>;

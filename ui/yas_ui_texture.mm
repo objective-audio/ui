@@ -13,7 +13,7 @@ using namespace yas;
 
 #pragma mark - ui::texture::impl
 
-struct ui::texture::impl : base::impl {
+struct ui::texture::impl : base::impl, renderable_texture::impl {
     impl(ui::uint_size &&point_size, double const scale_factor, uint32_t const draw_padding,
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
@@ -165,6 +165,13 @@ ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui
 
 ui::metal_texture &ui::texture::metal_texture() {
     return impl_ptr<impl>()->_metal_texture;
+}
+
+ui::renderable_texture &ui::texture::renderable() {
+    if (!this->_renderable) {
+        this->_renderable = ui::renderable_texture{impl_ptr<ui::renderable_texture::impl>()};
+    }
+    return this->_renderable;
 }
 
 #pragma mark -
