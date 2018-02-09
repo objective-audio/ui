@@ -8,6 +8,7 @@
 #include "yas_ui_metal_types.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
+#include "yas_unless.h"
 
 using namespace yas;
 
@@ -26,6 +27,9 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
+        if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
+            return ul.value;
+        }
 #warning todo
         return ui::setup_metal_result{nullptr};
     }
@@ -208,7 +212,7 @@ struct texture_factory : texture {
 ui::make_texture_result ui::make_texture(ui::texture::args args) {
     auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
                                        args.pixel_format};
-    if (auto result = factory.metal_texture().metal().metal_setup(args.metal_system)) {
+    if (auto result = factory.metal().metal_setup(args.metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};
