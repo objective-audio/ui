@@ -23,6 +23,8 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
           _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
                                  static_cast<uint32_t>(point_size.height * scale_factor)}),
           _scale_factor(std::move(scale_factor)),
+          _usages(usages),
+          _pixel_format(format),
           _metal_texture(_actual_size, usages, format) {
     }
 
@@ -117,6 +119,8 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     double const _scale_factor;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
+    ui::texture_usages_t const _usages;
+    ui::pixel_format const _pixel_format;
 
     ui::metal_texture _metal_texture;
 
