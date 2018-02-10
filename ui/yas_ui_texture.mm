@@ -29,6 +29,10 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
+        if (!is_same(this->_metal_system, metal_system)) {
+            this->_metal_system = metal_system;
+        }
+
         if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
             return ul.value;
         }
@@ -125,6 +129,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     ui::metal_texture _metal_texture;
 
    private:
+    ui::metal_system _metal_system = nullptr;
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
