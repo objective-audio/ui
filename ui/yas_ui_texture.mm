@@ -24,13 +24,17 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
                                  static_cast<uint32_t>(point_size.height * scale_factor)}),
           _scale_factor(std::move(scale_factor)),
           _usages(usages),
-          _pixel_format(format),
-          _metal_texture(_actual_size, usages, format) {
+          _pixel_format(format) {
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
         if (!is_same(this->_metal_system, metal_system)) {
             this->_metal_system = metal_system;
+            this->_metal_texture = nullptr;
+        }
+
+        if (!this->_metal_texture) {
+            this->_metal_texture = ui::metal_texture{this->_actual_size, this->_usages, this->_pixel_format};
         }
 
         if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
@@ -126,7 +130,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     ui::texture_usages_t const _usages;
     ui::pixel_format const _pixel_format;
 
-    ui::metal_texture _metal_texture;
+    ui::metal_texture _metal_texture = nullptr;
 
    private:
     ui::metal_system _metal_system = nullptr;
