@@ -63,6 +63,16 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_update_texture();
 
+            if (this->_texture) {
+                auto weak_atlas = to_weak(cast<ui::font_atlas>());
+                this->_texture_observer = this->_texture.subject().make_observer(
+                    ui::texture::method::metal_texture_changed, [weak_atlas](auto const &context) {
+                        if (auto atlas = weak_atlas.lock()) {
+                            atlas.subject().notify(ui::font_atlas::method::texture_updated, atlas);
+                        }
+                    });
+            }
+
             this->_subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
         }
     }
@@ -106,6 +116,7 @@ struct ui::font_atlas::impl : base::impl {
    private:
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
+    ui::texture::observer_t _texture_observer = nullptr;
 
     void _update_texture() {
         if (!this->_texture) {
@@ -229,5 +240,8 @@ std::string yas::to_string(ui::font_atlas::method const &method) {
     switch (method) {
         case ui::font_atlas::method::texture_changed:
             return "texture_changed";
+        case ui::font_atlas::method::texture_updated:
+            return "texture_updated";
     }
 }
+
