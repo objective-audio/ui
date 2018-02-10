@@ -20,7 +20,6 @@ class texture : public base {
     class impl;
 
     struct args {
-        ui::metal_system metal_system;
         ui::uint_size point_size;
         double scale_factor = 1.0;
         uint32_t draw_padding = 2;
@@ -68,7 +67,7 @@ class texture : public base {
 
 using make_texture_result = result<ui::texture, setup_metal_error>;
 
-make_texture_result make_texture(texture::args);
+make_texture_result make_texture(texture::args, ui::metal_system const &);
 }
 
 namespace yas {

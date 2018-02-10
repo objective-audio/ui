@@ -63,9 +63,8 @@ void sample::main::setup() {
 
         ui::texture texture = nullptr;
         if (scale_factor > 0) {
-            if (auto texture_result = ui::make_texture({.metal_system = renderer.metal_system(),
-                                                        .point_size = {1024, 1024},
-                                                        .scale_factor = scale_factor})) {
+            if (auto texture_result = ui::make_texture({.point_size = {1024, 1024}, .scale_factor = scale_factor},
+                                                       renderer.metal_system())) {
                 texture = std::move(texture_result.value());
             }
         }

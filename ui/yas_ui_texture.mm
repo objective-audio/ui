@@ -248,10 +248,10 @@ struct texture_factory : texture {
 
 #pragma mark -
 
-ui::make_texture_result ui::make_texture(ui::texture::args args) {
+ui::make_texture_result ui::make_texture(ui::texture::args args, ui::metal_system const &metal_system) {
     auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
                                        args.pixel_format};
-    if (auto result = factory.metal().metal_setup(args.metal_system)) {
+    if (auto result = factory.metal().metal_setup(metal_system)) {
         return ui::make_texture_result{std::move(factory)};
     } else {
         return ui::make_texture_result{std::move(result.error())};
