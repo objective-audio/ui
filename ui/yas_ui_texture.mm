@@ -12,6 +12,10 @@
 
 using namespace yas;
 
+namespace yas::ui {
+using image_pair_t = std::pair<uint_size, texture::image_handler>;
+}
+
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::impl {
@@ -35,11 +39,15 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
 
         if (!this->_metal_texture) {
             this->_metal_texture = ui::metal_texture{this->_actual_size, this->_usages, this->_pixel_format};
+
+#warning metal_textureのmetal_setupは毎回呼ぶようにした方が良い？
+            if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
+                return ul.value;
+            }
+
+            this->_add_images_to_metal_texture();
         }
 
-        if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
-            return ul.value;
-        }
 #warning todo
         return ui::setup_metal_result{nullptr};
     }
@@ -93,6 +101,14 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         return draw_image_result{std::move(region)};
     }
 
+    void add_image_handler(image_pair_t pair) {
+        if (this->_metal_texture) {
+            this->_add_image_to_metal_texture(pair);
+        }
+
+        this->_image_handlers.emplace_back(std::move(pair));
+    }
+
     void _prepare_draw_pos(uint_size const size) {
         if (this->_actual_size.width < (this->_draw_actual_pos.x + size.width + this->_draw_actual_padding)) {
             this->_move_draw_pos(size);
@@ -137,6 +153,32 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
+    std::vector<image_pair_t> _image_handlers;
+
+    void _add_images_to_metal_texture() {
+        for (auto const &pair : this->_image_handlers) {
+            this->_add_image_to_metal_texture(pair);
+        }
+    }
+
+    void _add_image_to_metal_texture(image_pair_t const &pair) {
+        if (!this->_metal_texture) {
+            throw std::runtime_error("metal_texture not found.");
+        }
+
+        auto const &point_size = pair.first;
+        auto const &image_handler = pair.second;
+
+        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor}};
+
+        if (auto reserve_result = this->reserve_image_size(image)) {
+            if (image_handler) {
+                auto const &tex_coords = reserve_result.value();
+                image_handler(image, tex_coords);
+                this->replace_image(image, tex_coords.origin);
+            }
+        }
+    }
 };
 
 ui::texture::texture(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
@@ -183,6 +225,10 @@ ui::texture::draw_image_result ui::texture::reserve_image_size(image const &imag
 
 ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui::uint_point const actual_origin) {
     return impl_ptr<impl>()->replace_image(image, actual_origin);
+}
+
+void ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
+    impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
 }
 
 ui::metal_texture &ui::texture::metal_texture() {

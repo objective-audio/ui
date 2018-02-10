@@ -36,6 +36,7 @@ class texture : public base {
     };
 
     using draw_image_result = result<uint_region, draw_image_error>;
+    using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
 
     texture(std::nullptr_t);
 
@@ -51,6 +52,7 @@ class texture : public base {
     draw_image_result reserve_image_size(image const &image);
     draw_image_result add_image(image const &image);
     draw_image_result replace_image(image const &image, uint_point const actual_origin);
+    void add_image_handler(ui::uint_size, image_handler);
 
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;
