@@ -159,46 +159,36 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
         // for render_target
-        if (auto texture_result =
-                ui::make_texture({.point_size = size,
-                                  .scale_factor = this->_scale_factor_property.value(),
-                                  .draw_padding = 0,
-                                  .usages = {ui::texture_usage::render_target, ui::texture_usage::shader_read},
-                                  .pixel_format = ui::pixel_format::bgra8_unorm},
-                                 this->_metal_system)) {
-            this->_src_texture = std::move(texture_result.value());
+        this->_src_texture = ui::texture{{.point_size = size,
+                                          .scale_factor = this->_scale_factor_property.value(),
+                                          .draw_padding = 0,
+                                          .usages = {ui::texture_usage::render_target, ui::texture_usage::shader_read},
+                                          .pixel_format = ui::pixel_format::bgra8_unorm}};
+        this->_src_texture.metal().metal_setup(this->_metal_system);
 
-            auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
-            auto colorDesc = *color_desc;
-            colorDesc.texture = this->_src_texture.metal_texture().texture();
-            colorDesc.loadAction = MTLLoadActionClear;
-            colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+        auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
+        auto colorDesc = *color_desc;
+        colorDesc.texture = this->_src_texture.metal_texture().texture();
+        colorDesc.loadAction = MTLLoadActionClear;
+        colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 
-            auto renderPassDescriptor = *this->_render_pass_descriptor;
-            [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-        } else {
-            return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
-        }
+        auto renderPassDescriptor = *this->_render_pass_descriptor;
+        [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
 
         // for mesh
-        if (auto texture_result = ui::make_texture({.point_size = size,
-                                                    .scale_factor = this->_scale_factor_property.value(),
-                                                    .draw_padding = 0,
-                                                    .usages = {ui::texture_usage::shader_write},
-                                                    .pixel_format = ui::pixel_format::bgra8_unorm},
-                                                   this->_metal_system)) {
-            this->_dst_texture = std::move(texture_result.value());
-            auto &texture = this->_dst_texture;
+        this->_dst_texture = ui::texture{{.point_size = size,
+                                          .scale_factor = this->_scale_factor_property.value(),
+                                          .draw_padding = 0,
+                                          .usages = {ui::texture_usage::shader_write},
+                                          .pixel_format = ui::pixel_format::bgra8_unorm}};
+        this->_dst_texture.metal().metal_setup(this->_metal_system);
 
-            auto &data = this->_data;
-            data.set_rect_position(this->_layout_guide_rect.region(), 0);
-            data.set_rect_tex_coords(ui::uint_region{.origin = ui::uint_point::zero(), .size = texture.actual_size()},
-                                     0);
+        auto &data = this->_data;
+        data.set_rect_position(this->_layout_guide_rect.region(), 0);
+        data.set_rect_tex_coords(
+            ui::uint_region{.origin = ui::uint_point::zero(), .size = this->_dst_texture.actual_size()}, 0);
 
-            this->_mesh.set_texture(texture);
-        } else {
-            return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
-        }
+        this->_mesh.set_texture(this->_dst_texture);
 
         if (auto &effect = this->_effect_property.value()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);

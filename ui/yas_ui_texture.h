@@ -37,6 +37,7 @@ class texture : public base {
     using draw_image_result = result<uint_region, draw_image_error>;
     using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
 
+    explicit texture(args);
     texture(std::nullptr_t);
 
     bool operator==(texture const &) const;
@@ -57,17 +58,10 @@ class texture : public base {
 
     ui::metal_object &metal();
 
-   protected:
-    texture(std::shared_ptr<impl> &&);
-
    private:
     ui::renderable_texture _renderable = nullptr;
     ui::metal_object _metal_object = nullptr;
 };
-
-using make_texture_result = result<ui::texture, setup_metal_error>;
-
-make_texture_result make_texture(texture::args, ui::metal_system const &);
 }
 
 namespace yas {

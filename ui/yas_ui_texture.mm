@@ -173,7 +173,9 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     }
 };
 
-ui::texture::texture(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
+ui::texture::texture(args args)
+    : base(std::make_shared<impl>(std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
+                                  args.pixel_format)) {
 }
 
 ui::texture::texture(std::nullptr_t) : base(nullptr) {
@@ -233,29 +235,6 @@ ui::metal_object &ui::texture::metal() {
         this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
     return this->_metal_object;
-}
-
-#pragma mark -
-
-namespace yas::ui {
-struct texture_factory : texture {
-    texture_factory(ui::uint_size &&point_size, double const scale_factor, uint32_t draw_padding,
-                    ui::texture_usages_t const usages, ui::pixel_format const format)
-        : texture(std::make_shared<texture::impl>(std::move(point_size), scale_factor, draw_padding, usages, format)) {
-    }
-};
-}
-
-#pragma mark -
-
-ui::make_texture_result ui::make_texture(ui::texture::args args, ui::metal_system const &metal_system) {
-    auto factory = ui::texture_factory{std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
-                                       args.pixel_format};
-    if (auto result = factory.metal().metal_setup(metal_system)) {
-        return ui::make_texture_result{std::move(factory)};
-    } else {
-        return ui::make_texture_result{std::move(result.error())};
-    }
 }
 
 #pragma mark -
