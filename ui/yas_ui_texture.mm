@@ -52,55 +52,6 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         return ui::setup_metal_result{nullptr};
     }
 
-    draw_image_result reserve_image_size(image const &image) {
-        if (!image) {
-            return draw_image_result{draw_image_error::image_is_null};
-        }
-
-        auto const actual_image_size = image.actual_size();
-
-        this->_prepare_draw_pos(actual_image_size);
-
-        if (!this->_can_draw(actual_image_size)) {
-            return draw_image_result{draw_image_error::out_of_range};
-        }
-
-        ui::uint_point const origin = this->_draw_actual_pos;
-
-        this->_move_draw_pos(actual_image_size);
-
-        return draw_image_result{ui::uint_region{.origin = origin, .size = actual_image_size}};
-    }
-
-    draw_image_result add_image(image const &image) {
-        if (auto result = this->reserve_image_size(image)) {
-            return this->replace_image(image, result.value().origin);
-        } else {
-            return result;
-        }
-    }
-
-    draw_image_result replace_image(image const &image, uint_point const origin) {
-        if (!image) {
-            return draw_image_result{draw_image_error::image_is_null};
-        }
-
-        if (!this->_metal_texture.texture() || !this->_metal_texture.samplerState()) {
-            return draw_image_result{draw_image_error::no_setup};
-        }
-
-        auto region = uint_region{origin, image.actual_size()};
-
-        if (id<MTLTexture> texture = this->_metal_texture.texture()) {
-            [texture replaceRegion:to_mtl_region(region)
-                       mipmapLevel:0
-                         withBytes:image.data()
-                       bytesPerRow:region.size.width * 4];
-        }
-
-        return draw_image_result{std::move(region)};
-    }
-
     void add_image_handler(image_pair_t pair) {
         if (this->_metal_texture) {
             this->_add_image_to_metal_texture(pair);
@@ -155,6 +106,47 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     uint_point _draw_actual_pos;
     std::vector<image_pair_t> _image_handlers;
 
+    draw_image_result _reserve_image_size(image const &image) {
+        if (!image) {
+            return draw_image_result{draw_image_error::image_is_null};
+        }
+
+        auto const actual_image_size = image.actual_size();
+
+        this->_prepare_draw_pos(actual_image_size);
+
+        if (!this->_can_draw(actual_image_size)) {
+            return draw_image_result{draw_image_error::out_of_range};
+        }
+
+        ui::uint_point const origin = this->_draw_actual_pos;
+
+        this->_move_draw_pos(actual_image_size);
+
+        return draw_image_result{ui::uint_region{.origin = origin, .size = actual_image_size}};
+    }
+
+    draw_image_result _replace_image(image const &image, uint_point const origin) {
+        if (!image) {
+            return draw_image_result{draw_image_error::image_is_null};
+        }
+
+        if (!this->_metal_texture.texture() || !this->_metal_texture.samplerState()) {
+            return draw_image_result{draw_image_error::no_setup};
+        }
+
+        auto region = uint_region{origin, image.actual_size()};
+
+        if (id<MTLTexture> texture = this->_metal_texture.texture()) {
+            [texture replaceRegion:to_mtl_region(region)
+                       mipmapLevel:0
+                         withBytes:image.data()
+                       bytesPerRow:region.size.width * 4];
+        }
+
+        return draw_image_result{std::move(region)};
+    }
+
     void _add_images_to_metal_texture() {
         for (auto const &pair : this->_image_handlers) {
             this->_add_image_to_metal_texture(pair);
@@ -171,11 +163,11 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
 
         ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor}};
 
-        if (auto reserve_result = this->reserve_image_size(image)) {
+        if (auto reserve_result = this->_reserve_image_size(image)) {
             if (image_handler) {
                 auto const &tex_coords = reserve_result.value();
                 image_handler(image, tex_coords);
-                this->replace_image(image, tex_coords.origin);
+                this->_replace_image(image, tex_coords.origin);
             }
         }
     }
@@ -213,18 +205,6 @@ uint32_t ui::texture::depth() const {
 
 bool ui::texture::has_alpha() const {
     return impl_ptr<impl>()->_has_alpha;
-}
-
-ui::texture::draw_image_result ui::texture::add_image(image const &image) {
-    return impl_ptr<impl>()->add_image(image);
-}
-
-ui::texture::draw_image_result ui::texture::reserve_image_size(image const &image) {
-    return impl_ptr<impl>()->reserve_image_size(image);
-}
-
-ui::texture::draw_image_result ui::texture::replace_image(image const &image, ui::uint_point const actual_origin) {
-    return impl_ptr<impl>()->replace_image(image, actual_origin);
 }
 
 void ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {

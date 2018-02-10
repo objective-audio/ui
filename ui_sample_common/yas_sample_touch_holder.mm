@@ -47,17 +47,18 @@ struct sample::touch_holder::impl : base::impl {
             return;
         }
 
-        ui::image image{{.point_size = {100, 100}, .scale_factor = _texture.scale_factor()}};
-        image.draw([](CGContextRef const ctx) {
-            CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
-            CGContextSetLineWidth(ctx, 1.0f);
-            CGContextStrokeEllipseInRect(ctx, CGRectMake(2, 2, 96, 96));
+        this->_texture.add_image_handler({100, 100}, [weak_holder = to_weak(cast<sample::touch_holder>())](
+                                                         ui::image & image, ui::uint_region const &tex_coords) {
+            if (auto holder = weak_holder.lock()) {
+                image.draw([](CGContextRef const ctx) {
+                    CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+                    CGContextSetLineWidth(ctx, 1.0f);
+                    CGContextStrokeEllipseInRect(ctx, CGRectMake(2, 2, 96, 96));
+                });
+
+                holder.impl_ptr<impl>()->_rect_plane_data.set_rect_tex_coords(tex_coords, 0);
+            }
         });
-
-        auto image_result = _texture.add_image(image);
-        assert(image_result);
-
-        _rect_plane_data.set_rect_tex_coords(image_result.value(), 0);
     }
 
     void update_touch_node(ui::event const &event) {

@@ -25,34 +25,32 @@ struct sample::big_button::impl : base::impl {
 
         uint32_t const width = _radius * 2;
 
-        auto &rect_plane_data = _button.rect_plane().data();
+        auto weak_button = to_weak(this->_button);
 
         ui::uint_size image_size{width, width};
-        ui::image image{{.point_size = image_size, .scale_factor = texture.scale_factor()}};
 
-        auto set_image_region = [&rect_plane_data](ui::uint_region const &pixel_region, bool const tracking) {
-            std::size_t const rect_idx = tracking ? 1 : 0;
-            rect_plane_data.set_rect_tex_coords(pixel_region, rect_idx);
-        };
+        texture.add_image_handler(image_size, [weak_button](ui::image &image, ui::uint_region const &tex_coords) {
+            if (auto button = weak_button.lock()) {
+                image.draw([image_size = image.point_size()](const CGContextRef ctx) {
+                    CGContextSetFillColorWithColor(
+                        ctx, [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
+                    CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+                });
 
-        image.draw([&image_size](const CGContextRef ctx) {
-            CGContextSetFillColorWithColor(ctx, [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
-            CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+                button.rect_plane().data().set_rect_tex_coords(tex_coords, 0);
+            }
         });
 
-        if (auto texture_result = texture.add_image(image)) {
-            set_image_region(texture_result.value(), false);
-        }
+        texture.add_image_handler(image_size, [weak_button](ui::image &image, ui::uint_region const &tex_coords) {
+            if (auto button = weak_button.lock()) {
+                image.draw([image_size = image.point_size()](const CGContextRef ctx) {
+                    CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
+                    CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+                });
 
-        image.clear();
-        image.draw([&image_size](const CGContextRef ctx) {
-            CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
-            CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+                button.rect_plane().data().set_rect_tex_coords(tex_coords, 1);
+            }
         });
-
-        if (auto texture_result = texture.add_image(image)) {
-            set_image_region(texture_result.value(), true);
-        }
     }
 
     float const _radius = 60;
