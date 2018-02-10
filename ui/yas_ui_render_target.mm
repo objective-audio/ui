@@ -126,16 +126,19 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::layout_guide_rect _layout_guide_rect;
-    ui::rect_plane_data _data = ui::make_rect_plane_data(1);
-    ui::mesh _mesh;
-    ui::texture _src_texture = nullptr;
-    ui::texture _dst_texture = nullptr;
-    objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
-    simd::float4x4 _projection_matrix;
     property<std::nullptr_t, ui::effect> _effect_property{{.value = nullptr}};
     property<std::nullptr_t, double> _scale_factor_property{{.value = 1.0}};
 
    private:
+    ui::rect_plane_data _data = ui::make_rect_plane_data(1);
+    ui::mesh _mesh;
+    ui::texture _src_texture = nullptr;
+    ui::texture _dst_texture = nullptr;
+    ui::texture::observer_t _src_texture_observer = nullptr;
+    ui::texture::observer_t _dst_texture_observer = nullptr;
+    objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
+    simd::float4x4 _projection_matrix;
+
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);
     }
