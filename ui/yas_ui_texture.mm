@@ -46,6 +46,8 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
             }
 
             this->_add_images_to_metal_texture();
+
+            this->_subject.notify(method::metal_texture_changed, cast<ui::texture>());
         }
 
 #warning todo
@@ -98,6 +100,8 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     ui::pixel_format const _pixel_format;
 
     ui::metal_texture _metal_texture = nullptr;
+
+    subject_t _subject;
 
    private:
     ui::metal_system _metal_system = nullptr;
@@ -219,6 +223,10 @@ ui::metal_texture &ui::texture::metal_texture() {
 
 ui::metal_texture const &ui::texture::metal_texture() const {
     return impl_ptr<impl>()->_metal_texture;
+}
+
+ui::texture::subject_t &ui::texture::subject() {
+    return impl_ptr<impl>()->_subject;
 }
 
 #pragma mark - protocol

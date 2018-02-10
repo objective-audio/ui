@@ -10,6 +10,7 @@
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_types.h"
+#include "yas_observing.h"
 
 namespace yas::ui {
 class image;
@@ -34,8 +35,14 @@ class texture : public base {
         out_of_range,
     };
 
+    enum class method {
+        metal_texture_changed,
+    };
+
     using draw_image_result = result<uint_region, draw_image_error>;
     using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
+    using subject_t = subject<method, ui::texture>;
+    using observer_t = subject_t::observer_t;
 
     explicit texture(args);
     texture(std::nullptr_t);
@@ -53,6 +60,8 @@ class texture : public base {
 
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;
+
+    subject_t &subject();
 
     ui::renderable_texture &renderable();
 
