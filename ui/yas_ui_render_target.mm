@@ -154,6 +154,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             return ui::setup_metal_result{nullptr};
         }
 
+        auto weak_target = to_weak(cast<ui::render_target>());
+
         auto const region = this->_layout_guide_rect.region();
         ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
                            .height = static_cast<uint32_t>(region.size.height)};
@@ -167,16 +169,31 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                                           .draw_padding = 0,
                                           .usages = {ui::texture_usage::render_target, ui::texture_usage::shader_read},
                                           .pixel_format = ui::pixel_format::bgra8_unorm}};
+
+        this->_src_texture_observer = this->_src_texture.subject().make_observer(
+            ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
+                ui::render_target target = weak_target.lock();
+                if (!target) {
+                    return;
+                }
+
+                auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
+                ui::texture const &texture = context.value;
+
+                if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
+                    auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
+                    auto colorDesc = *color_desc;
+                    colorDesc.texture = metal_texture.texture();
+                    colorDesc.loadAction = MTLLoadActionClear;
+                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+
+                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+                } else {
+                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                }
+            });
+
         this->_src_texture.metal().metal_setup(this->_metal_system);
-
-        auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
-        auto colorDesc = *color_desc;
-        colorDesc.texture = this->_src_texture.metal_texture().texture();
-        colorDesc.loadAction = MTLLoadActionClear;
-        colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
-
-        auto renderPassDescriptor = *this->_render_pass_descriptor;
-        [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
 
         // for mesh
         this->_dst_texture = ui::texture{{.point_size = size,
