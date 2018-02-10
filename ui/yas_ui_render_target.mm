@@ -68,6 +68,19 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             return ul.value;
         }
 
+        if (this->_src_texture) {
+            if (auto ul = unless(this->_src_texture.metal().metal_setup(metal_system))) {
+                return ul.value;
+            }
+        }
+
+#warning meshによってsetupされるからいらない気がする
+        if (this->_dst_texture) {
+            if (auto ul = unless(this->_dst_texture.metal().metal_setup(metal_system))) {
+                return ul.value;
+            }
+        }
+
         return ui::setup_metal_result{nullptr};
     }
 
