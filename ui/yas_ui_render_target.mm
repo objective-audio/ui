@@ -140,8 +140,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
    private:
     ui::rect_plane_data _data = ui::make_rect_plane_data(1);
     ui::mesh _mesh;
-    ui::texture _src_texture = nullptr;
-    ui::texture _dst_texture = nullptr;
+    ui::texture _src_texture;
+    ui::texture _dst_texture;
     ui::texture::observer_t _src_texture_observer = nullptr;
     ui::texture::observer_t _dst_texture_observer = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
