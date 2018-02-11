@@ -18,7 +18,17 @@ using namespace yas;
 #pragma mark - render_target::impl
 
 struct ui::render_target::impl : base::impl, renderable_render_target::impl, metal_object::impl {
-    impl() {
+    impl()
+        : _src_texture(ui::texture{{.point_size = ui::uint_size::zero(),
+                                    .scale_factor = 0.0,
+                                    .draw_padding = 0,
+                                    .usages = {ui::texture_usage::render_target, ui::texture_usage::shader_read},
+                                    .pixel_format = ui::pixel_format::bgra8_unorm}}),
+          _dst_texture(ui::texture{{.point_size = ui::uint_size::zero(),
+                                    .scale_factor = 0.0,
+                                    .draw_padding = 0,
+                                    .usages = {ui::texture_usage::shader_write},
+                                    .pixel_format = ui::pixel_format::bgra8_unorm}}) {
         this->_updates.flags.set();
         this->_render_pass_descriptor = make_objc_ptr([MTLRenderPassDescriptor new]);
         this->_mesh.set_mesh_data(this->_data.dynamic_mesh_data());
@@ -192,8 +202,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                     [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
                 }
             });
-
-        this->_src_texture.metal().metal_setup(this->_metal_system);
 
         // for mesh
         this->_dst_texture = ui::texture{{.point_size = size,
