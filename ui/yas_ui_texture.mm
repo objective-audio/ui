@@ -219,6 +219,14 @@ bool ui::texture::has_alpha() const {
     return impl_ptr<impl>()->_has_alpha;
 }
 
+void ui::texture::set_point_size(ui::uint_size size) {
+    impl_ptr<impl>()->_point_size_property.set_value(std::move(size));
+}
+
+void ui::texture::set_scale_factor(double const scale_factor) {
+    impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
+}
+
 void ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
     impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
 }

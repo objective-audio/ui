@@ -55,6 +55,9 @@ class texture : public base {
     double scale_factor() const;
     uint32_t depth() const;
     bool has_alpha() const;
+    
+    void set_point_size(ui::uint_size);
+    void set_scale_factor(double const);
 
     void add_image_handler(ui::uint_size, image_handler);
 
