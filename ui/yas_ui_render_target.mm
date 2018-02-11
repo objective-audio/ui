@@ -201,7 +201,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                                           .draw_padding = 0,
                                           .usages = {ui::texture_usage::shader_write},
                                           .pixel_format = ui::pixel_format::bgra8_unorm}};
-        this->_dst_texture.metal().metal_setup(this->_metal_system);
 
         auto &data = this->_data;
         data.set_rect_position(this->_layout_guide_rect.region(), 0);
