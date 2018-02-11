@@ -30,6 +30,24 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
           _pixel_format(format) {
     }
 
+    void prepare(ui::texture &texture) {
+        auto weak_texture = to_weak(texture);
+
+        this->_property_observers.emplace_back(this->_point_size_property.subject().make_observer(
+            property_method::did_change, [weak_texture](auto const &context) {
+                if (auto texture = weak_texture.lock()) {
+                    texture.impl_ptr<impl>()->_property_changed();
+                }
+            }));
+
+        this->_property_observers.emplace_back(this->_scale_factor_property.subject().make_observer(
+            property_method::did_change, [weak_texture](auto const &context) {
+                if (auto texture = weak_texture.lock()) {
+                    texture.impl_ptr<impl>()->_property_changed();
+                }
+            }));
+    }
+
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
         if (!is_same(this->_metal_system, metal_system)) {
             this->_metal_system = metal_system;
@@ -85,6 +103,12 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<image_pair_t> _image_handlers;
+    std::vector<base> _property_observers;
+
+    void _property_changed() {
+        this->_metal_texture = nullptr;
+        this->_draw_actual_pos = {_draw_actual_padding, _draw_actual_padding};
+    }
 
     draw_image_result _reserve_image_size(image const &image) {
         if (!image) {
@@ -186,6 +210,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
 ui::texture::texture(args args)
     : base(std::make_shared<impl>(std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
                                   args.pixel_format)) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::texture::texture(std::nullptr_t) : base(nullptr) {
