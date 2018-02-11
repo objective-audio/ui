@@ -67,9 +67,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (!is_same(this->_metal_system, metal_system)) {
             this->_metal_system = metal_system;
-            this->_mesh.set_texture(nullptr);
-            this->_dst_texture = nullptr;
-            this->_src_texture = nullptr;
             if (auto &effect = this->_effect_property.value()) {
                 effect.renderable().set_textures(nullptr, nullptr);
             }
