@@ -32,6 +32,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_updates.flags.set();
         this->_render_pass_descriptor = make_objc_ptr([MTLRenderPassDescriptor new]);
         this->_mesh.set_mesh_data(this->_data.dynamic_mesh_data());
+        this->_mesh.set_texture(this->_dst_texture);
 
         this->_effect_property.set_value(ui::effect::make_through_effect());
         this->_effect_property.set_limiter(
@@ -214,8 +215,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         data.set_rect_position(this->_layout_guide_rect.region(), 0);
         data.set_rect_tex_coords(
             ui::uint_region{.origin = ui::uint_point::zero(), .size = this->_dst_texture.actual_size()}, 0);
-
-        this->_mesh.set_texture(this->_dst_texture);
 
         if (auto &effect = this->_effect_property.value()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
