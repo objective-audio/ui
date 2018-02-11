@@ -9,6 +9,7 @@
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
 #include "yas_unless.h"
+#include "yas_property.h"
 
 using namespace yas;
 
@@ -23,10 +24,8 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
           _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
-          _point_size(std::move(point_size)),
-          _actual_size(uint_size{static_cast<uint32_t>(point_size.width * scale_factor),
-                                 static_cast<uint32_t>(point_size.height * scale_factor)}),
-          _scale_factor(std::move(scale_factor)),
+          _point_size_property({.value = std::move(point_size)}),
+          _scale_factor_property({.value = std::move(scale_factor)}),
           _usages(usages),
           _pixel_format(format) {
     }
@@ -38,7 +37,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         }
 
         if (!this->_metal_texture) {
-            this->_metal_texture = ui::metal_texture{this->_actual_size, this->_usages, this->_pixel_format};
+            this->_metal_texture = ui::metal_texture{this->actual_size(), this->_usages, this->_pixel_format};
 
 #warning metal_textureのmetal_setupは毎回呼ぶようにした方が良い？
             if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
@@ -54,6 +53,13 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         return ui::setup_metal_result{nullptr};
     }
 
+    ui::uint_size actual_size() {
+        ui::uint_size const &point_size = this->_point_size_property.value();
+        double const &scale_factor = this->_scale_factor_property.value();
+        return {static_cast<uint32_t>(point_size.width * scale_factor),
+                static_cast<uint32_t>(point_size.height * scale_factor)};
+    }
+
     void add_image_handler(image_pair_t pair) {
         if (this->_metal_texture) {
             this->_add_image_to_metal_texture(pair);
@@ -63,7 +69,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     }
 
     void _prepare_draw_pos(uint_size const size) {
-        if (this->_actual_size.width < (this->_draw_actual_pos.x + size.width + this->_draw_actual_padding)) {
+        if (this->actual_size().width < (this->_draw_actual_pos.x + size.width + this->_draw_actual_padding)) {
             this->_move_draw_pos(size);
         }
     }
@@ -71,7 +77,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     void _move_draw_pos(uint_size const size) {
         this->_draw_actual_pos.x += size.width + this->_draw_actual_padding;
 
-        if (this->_actual_size.width < this->_draw_actual_pos.x) {
+        if (this->actual_size().width < this->_draw_actual_pos.x) {
             this->_draw_actual_pos.y += this->_max_line_height + this->_draw_actual_padding;
             this->_max_line_height = 0;
             this->_draw_actual_pos.x = this->_draw_actual_padding;
@@ -83,17 +89,17 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     }
 
     bool _can_draw(uint_size const size) {
-        if ((this->_actual_size.width < this->_draw_actual_pos.x + size.width + this->_draw_actual_padding) ||
-            (this->_actual_size.height < this->_draw_actual_pos.y + size.height + this->_draw_actual_padding)) {
+        ui::uint_size const actual_size = this->actual_size();
+        if ((actual_size.width < this->_draw_actual_pos.x + size.width + this->_draw_actual_padding) ||
+            (actual_size.height < this->_draw_actual_pos.y + size.height + this->_draw_actual_padding)) {
             return false;
         }
 
         return true;
     }
 
-    uint_size const _point_size;
-    uint_size const _actual_size;
-    double const _scale_factor;
+    property<std::nullptr_t, ui::uint_size> _point_size_property;
+    property<std::nullptr_t, double> _scale_factor_property;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -165,7 +171,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         auto const &point_size = pair.first;
         auto const &image_handler = pair.second;
 
-        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor}};
+        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor_property.value()}};
 
         if (auto reserve_result = this->_reserve_image_size(image)) {
             if (image_handler) {
@@ -194,15 +200,15 @@ bool ui::texture::operator!=(texture const &rhs) const {
 }
 
 ui::uint_size ui::texture::point_size() const {
-    return impl_ptr<impl>()->_point_size;
+    return impl_ptr<impl>()->_point_size_property.value();
 }
 
 ui::uint_size ui::texture::actual_size() const {
-    return impl_ptr<impl>()->_actual_size;
+    return impl_ptr<impl>()->actual_size();
 }
 
 double ui::texture::scale_factor() const {
-    return impl_ptr<impl>()->_scale_factor;
+    return impl_ptr<impl>()->_scale_factor_property.value();
 }
 
 uint32_t ui::texture::depth() const {
