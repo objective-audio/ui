@@ -68,36 +68,6 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         this->_image_handlers.emplace_back(std::move(pair));
     }
 
-    void _prepare_draw_pos(uint_size const size) {
-        if (this->actual_size().width < (this->_draw_actual_pos.x + size.width + this->_draw_actual_padding)) {
-            this->_move_draw_pos(size);
-        }
-    }
-
-    void _move_draw_pos(uint_size const size) {
-        this->_draw_actual_pos.x += size.width + this->_draw_actual_padding;
-
-        if (this->actual_size().width < this->_draw_actual_pos.x) {
-            this->_draw_actual_pos.y += this->_max_line_height + this->_draw_actual_padding;
-            this->_max_line_height = 0;
-            this->_draw_actual_pos.x = this->_draw_actual_padding;
-        }
-
-        if (this->_max_line_height < size.height) {
-            this->_max_line_height = size.height;
-        }
-    }
-
-    bool _can_draw(uint_size const size) {
-        ui::uint_size const actual_size = this->actual_size();
-        if ((actual_size.width < this->_draw_actual_pos.x + size.width + this->_draw_actual_padding) ||
-            (actual_size.height < this->_draw_actual_pos.y + size.height + this->_draw_actual_padding)) {
-            return false;
-        }
-
-        return true;
-    }
-
     property<std::nullptr_t, ui::uint_size> _point_size_property;
     property<std::nullptr_t, double> _scale_factor_property;
     uint32_t const _depth = 1;
@@ -155,6 +125,36 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         }
 
         return draw_image_result{std::move(region)};
+    }
+
+    void _prepare_draw_pos(uint_size const size) {
+        if (this->actual_size().width < (this->_draw_actual_pos.x + size.width + this->_draw_actual_padding)) {
+            this->_move_draw_pos(size);
+        }
+    }
+
+    void _move_draw_pos(uint_size const size) {
+        this->_draw_actual_pos.x += size.width + this->_draw_actual_padding;
+
+        if (this->actual_size().width < this->_draw_actual_pos.x) {
+            this->_draw_actual_pos.y += this->_max_line_height + this->_draw_actual_padding;
+            this->_max_line_height = 0;
+            this->_draw_actual_pos.x = this->_draw_actual_padding;
+        }
+
+        if (this->_max_line_height < size.height) {
+            this->_max_line_height = size.height;
+        }
+    }
+
+    bool _can_draw(uint_size const size) {
+        ui::uint_size const actual_size = this->actual_size();
+        if ((actual_size.width < this->_draw_actual_pos.x + size.width + this->_draw_actual_padding) ||
+            (actual_size.height < this->_draw_actual_pos.y + size.height + this->_draw_actual_padding)) {
+            return false;
+        }
+
+        return true;
     }
 
     void _add_images_to_metal_texture() {
