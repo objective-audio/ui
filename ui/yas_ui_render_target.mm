@@ -172,11 +172,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
         // for render_target
-        this->_src_texture = ui::texture{{.point_size = size,
-                                          .scale_factor = this->_scale_factor_property.value(),
-                                          .draw_padding = 0,
-                                          .usages = {ui::texture_usage::render_target, ui::texture_usage::shader_read},
-                                          .pixel_format = ui::pixel_format::bgra8_unorm}};
+        this->_src_texture.set_point_size(size);
+        this->_src_texture.set_scale_factor(this->_scale_factor_property.value());
 
         this->_src_texture_observer = this->_src_texture.subject().make_observer(
             ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
@@ -202,11 +199,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             });
 
         // for mesh
-        this->_dst_texture = ui::texture{{.point_size = size,
-                                          .scale_factor = this->_scale_factor_property.value(),
-                                          .draw_padding = 0,
-                                          .usages = {ui::texture_usage::shader_write},
-                                          .pixel_format = ui::pixel_format::bgra8_unorm}};
+        this->_dst_texture.set_point_size(size);
+        this->_dst_texture.set_scale_factor(this->_scale_factor_property.value());
 
         auto &data = this->_data;
         data.set_rect_position(this->_layout_guide_rect.region(), 0);
