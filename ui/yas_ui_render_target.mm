@@ -204,9 +204,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             return ui::setup_metal_result{nullptr};
         }
 
-        if (auto &effect = this->_effect_property.value()) {
-            effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
-        }
+        this->_set_textures_to_effect();
 
         return ui::setup_metal_result{nullptr};
     }
