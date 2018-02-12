@@ -116,10 +116,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             this->_metal_system = metal_system;
         }
 
-        if (auto ul = unless(this->_update_textures())) {
-            return ul.value;
-        }
-
         if (auto ul = unless(this->_src_texture.metal().metal_setup(metal_system))) {
             return ul.value;
         }
@@ -195,14 +191,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         static render_target_updates_t const _size_updates = {ui::render_target_update_reason::scale_factor,
                                                               ui::render_target_update_reason::region};
         return this->_updates.and_test(_size_updates);
-    }
-
-    ui::setup_metal_result _update_textures() {
-        if (!this->_metal_system || !this->_is_size_updated() || !this->_is_size_enough()) {
-            return ui::setup_metal_result{nullptr};
-        }
-
-        return ui::setup_metal_result{nullptr};
     }
 
     void _set_textures_to_effect() {
