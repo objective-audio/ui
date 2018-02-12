@@ -97,6 +97,11 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 imp->_projection_matrix =
                     ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
+                auto &data = imp->_data;
+                data.set_rect_position(region, 0);
+                data.set_rect_tex_coords(
+                    ui::uint_region{.origin = ui::uint_point::zero(), .size = imp->_dst_texture.actual_size()}, 0);
+
                 imp->_set_updated(render_target_update_reason::region);
             }
         });
@@ -195,13 +200,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         if (!this->_metal_system || !this->_is_size_updated() || !this->_is_size_enough()) {
             return ui::setup_metal_result{nullptr};
         }
-
-        auto const region = this->_layout_guide_rect.region();
-
-        auto &data = this->_data;
-        data.set_rect_position(this->_layout_guide_rect.region(), 0);
-        data.set_rect_tex_coords(
-            ui::uint_region{.origin = ui::uint_point::zero(), .size = this->_dst_texture.actual_size()}, 0);
 
         if (auto &effect = this->_effect_property.value()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
