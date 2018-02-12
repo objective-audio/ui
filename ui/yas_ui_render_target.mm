@@ -69,7 +69,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             property_method::did_change, [weak_target](auto const &context) {
                 if (auto target = weak_target.lock()) {
                     target.impl_ptr<impl>()->_set_updated(render_target_update_reason::effect);
-                    target.impl_ptr<impl>()->_set_texture_to_effect();
+                    target.impl_ptr<impl>()->_set_textures_to_effect();
                 }
             }));
 
@@ -208,7 +208,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         return ui::setup_metal_result{nullptr};
     }
 
-    void _set_texture_to_effect() {
+    void _set_textures_to_effect() {
         if (auto &effect = this->_effect_property.value()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
         }
