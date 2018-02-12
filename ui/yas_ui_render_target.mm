@@ -120,7 +120,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             return ul.value;
         }
 
-#warning meshによってsetupされるからいらない気がする
         if (auto ul = unless(this->_dst_texture.metal().metal_setup(metal_system))) {
             return ul.value;
         }
