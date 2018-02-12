@@ -57,7 +57,6 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         if (!this->_metal_texture) {
             this->_metal_texture = ui::metal_texture{this->actual_size(), this->_usages, this->_pixel_format};
 
-#warning metal_textureのmetal_setupは毎回呼ぶようにした方が良い？
             if (auto ul = unless(this->_metal_texture.metal().metal_setup(metal_system))) {
                 return ul.value;
             }
@@ -67,7 +66,6 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
             this->_subject.notify(method::metal_texture_changed, cast<ui::texture>());
         }
 
-#warning todo
         return ui::setup_metal_result{nullptr};
     }
 
