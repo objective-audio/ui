@@ -199,8 +199,13 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     bool _is_size_enough() {
-        return this->_layout_guide_rect.horizontal_range().range().length >= 1.0f &&
-               this->_layout_guide_rect.vertical_range().range().length >= 1.0f;
+        if (auto const &texture = this->_dst_texture) {
+            ui::uint_size const actual_size = texture.actual_size();
+            if (actual_size.width > 0 && actual_size.height > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     ui::metal_system _metal_system = nullptr;
