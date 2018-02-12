@@ -62,6 +62,15 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 }
             });
 
+        this->_dst_texture_observer =
+            this->_dst_texture.subject().make_observer(ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
+                if (ui::render_target target = weak_target.lock()) {
+                    ui::texture const &dst_texture = context.value;
+                    target.impl_ptr<impl>()->_data.set_rect_tex_coords(
+                        ui::uint_region{.origin = ui::uint_point::zero(), .size = dst_texture.actual_size()}, 0);
+                }
+            });
+
         this->_update_observers.emplace_back(this->_effect_property.subject().make_observer(
             property_method::did_change, [weak_target](auto const &context) {
                 if (auto target = weak_target.lock()) {
@@ -94,10 +103,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 imp->_projection_matrix =
                     ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-                auto &data = imp->_data;
-                data.set_rect_position(region, 0);
-                data.set_rect_tex_coords(
-                    ui::uint_region{.origin = ui::uint_point::zero(), .size = imp->_dst_texture.actual_size()}, 0);
+                imp->_data.set_rect_position(region, 0);
 
                 imp->_set_updated(render_target_update_reason::region);
             }
