@@ -76,13 +76,28 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_update_observers.emplace_back(this->_scale_factor_property.subject().make_observer(
             property_method::did_change, [weak_target](auto const &context) {
                 if (auto target = weak_target.lock()) {
+                    auto imp = target.impl_ptr<impl>();
+                    double const scale_factor = context.value.new_value;
+                    imp->_src_texture.set_scale_factor(scale_factor);
+                    imp->_dst_texture.set_scale_factor(scale_factor);
                     target.impl_ptr<impl>()->_set_updated(render_target_update_reason::scale_factor);
                 }
             }));
 
         this->_layout_guide_rect.set_value_changed_handler([weak_target](auto const &context) {
             if (auto target = weak_target.lock()) {
-                target.impl_ptr<impl>()->_set_updated(render_target_update_reason::region);
+                auto imp = target.impl_ptr<impl>();
+                auto const region = imp->_layout_guide_rect.region();
+                ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                                   .height = static_cast<uint32_t>(region.size.height)};
+
+                imp->_src_texture.set_point_size(size);
+                imp->_dst_texture.set_point_size(size);
+
+                imp->_projection_matrix =
+                    ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+
+                imp->_set_updated(render_target_update_reason::region);
             }
         });
     }
@@ -181,22 +196,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             return ui::setup_metal_result{nullptr};
         }
 
-        auto weak_target = to_weak(cast<ui::render_target>());
-
         auto const region = this->_layout_guide_rect.region();
-        ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                           .height = static_cast<uint32_t>(region.size.height)};
-
-        this->_projection_matrix =
-            ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
-
-        // for render_target
-        this->_src_texture.set_point_size(size);
-        this->_src_texture.set_scale_factor(this->_scale_factor_property.value());
-
-        // for mesh
-        this->_dst_texture.set_point_size(size);
-        this->_dst_texture.set_scale_factor(this->_scale_factor_property.value());
 
         auto &data = this->_data;
         data.set_rect_position(this->_layout_guide_rect.region(), 0);
