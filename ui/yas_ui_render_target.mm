@@ -37,6 +37,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_effect_property.set_value(ui::effect::make_through_effect());
         this->_effect_property.set_limiter(
             [](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); });
+        this->_set_textures_to_effect();
     }
 
     void prepare(ui::render_target &target) {
@@ -113,9 +114,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (!is_same(this->_metal_system, metal_system)) {
             this->_metal_system = metal_system;
-            if (auto &effect = this->_effect_property.value()) {
-                effect.renderable().set_textures(nullptr, nullptr);
-            }
         }
 
         if (auto ul = unless(this->_update_textures())) {
@@ -203,8 +201,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         if (!this->_metal_system || !this->_is_size_updated() || !this->_is_size_enough()) {
             return ui::setup_metal_result{nullptr};
         }
-
-        this->_set_textures_to_effect();
 
         return ui::setup_metal_result{nullptr};
     }
