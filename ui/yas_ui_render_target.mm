@@ -42,6 +42,29 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void prepare(ui::render_target &target) {
         auto weak_target = to_weak(target);
 
+        this->_src_texture_observer = this->_src_texture.subject().make_observer(
+            ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
+                ui::render_target target = weak_target.lock();
+                if (!target) {
+                    return;
+                }
+
+                auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
+                ui::texture const &texture = context.value;
+
+                if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
+                    auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
+                    auto colorDesc = *color_desc;
+                    colorDesc.texture = metal_texture.texture();
+                    colorDesc.loadAction = MTLLoadActionClear;
+                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+
+                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+                } else {
+                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                }
+            });
+
         this->_update_observers.emplace_back(this->_effect_property.subject().make_observer(
             property_method::did_change, [weak_target](auto const &context) {
                 if (auto target = weak_target.lock()) {
@@ -170,29 +193,6 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         // for render_target
         this->_src_texture.set_point_size(size);
         this->_src_texture.set_scale_factor(this->_scale_factor_property.value());
-
-        this->_src_texture_observer = this->_src_texture.subject().make_observer(
-            ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
-                ui::render_target target = weak_target.lock();
-                if (!target) {
-                    return;
-                }
-
-                auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
-                ui::texture const &texture = context.value;
-
-                if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
-                    auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
-                    auto colorDesc = *color_desc;
-                    colorDesc.texture = metal_texture.texture();
-                    colorDesc.loadAction = MTLLoadActionClear;
-                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
-
-                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-                } else {
-                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
-                }
-            });
 
         // for mesh
         this->_dst_texture.set_point_size(size);
