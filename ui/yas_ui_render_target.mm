@@ -44,24 +44,21 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
 
         this->_src_texture_observer = this->_src_texture.subject().make_observer(
             ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
-                ui::render_target target = weak_target.lock();
-                if (!target) {
-                    return;
-                }
+                if (ui::render_target target = weak_target.lock()) {
+                    auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
+                    ui::texture const &texture = context.value;
 
-                auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
-                ui::texture const &texture = context.value;
+                    if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
+                        auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
+                        auto colorDesc = *color_desc;
+                        colorDesc.texture = metal_texture.texture();
+                        colorDesc.loadAction = MTLLoadActionClear;
+                        colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 
-                if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
-                    auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
-                    auto colorDesc = *color_desc;
-                    colorDesc.texture = metal_texture.texture();
-                    colorDesc.loadAction = MTLLoadActionClear;
-                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
-
-                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-                } else {
-                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                        [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+                    } else {
+                        [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                    }
                 }
             });
 
