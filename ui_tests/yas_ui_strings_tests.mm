@@ -96,7 +96,7 @@ using namespace yas;
     strings.set_font_atlas(font_atlas);
 
     XCTAssertEqual(strings.font_atlas(), font_atlas);
-    XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
+    XCTAssertEqual(strings.rect_plane().data().rect_count(), 0);
 
     XCTAssertFalse(strings.line_height());
 
@@ -110,6 +110,10 @@ using namespace yas;
     XCTAssertEqual(strings.alignment(), ui::layout_alignment::max);
 
     strings.frame_layout_guide_rect().set_region({.origin = {0.0f, 0.0f}, .size = {1024.0f, 0.0f}});
+
+    XCTAssertEqual(strings.rect_plane().data().rect_count(), 0);
+
+    texture.metal().metal_setup(metal_system);
 
     XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
 }
