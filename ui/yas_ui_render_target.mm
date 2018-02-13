@@ -64,7 +64,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             });
 
         this->_dst_texture_observer = this->_dst_texture.subject().make_observer(
-            ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
+            ui::texture::method::size_updated, [weak_target](auto const &context) {
                 if (ui::render_target target = weak_target.lock()) {
                     ui::texture const &dst_texture = context.value;
                     target.impl_ptr<impl>()->_data.set_rect_tex_coords(
