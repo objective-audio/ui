@@ -47,7 +47,7 @@ using namespace yas;
     XCTAssertFalse(texture.metal_texture());
 }
 
-- (void)test_add_image {
+- (void)test_add_image_handler {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -57,97 +57,41 @@ using namespace yas;
     ui::metal_system metal_system{device.object()};
 
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
+    texture.metal().metal_setup(metal_system);
 
-    ui::image image{{.point_size = {1, 1}, .scale_factor = 1.0}};
+    ui::uint_region provided_tex_coords;
 
-    image.draw([](auto const context) {
-        auto const width = CGBitmapContextGetWidth(context);
-        auto const height = CGBitmapContextGetHeight(context);
-        CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
-        CGContextFillRect(context, CGRectMake(0, 0, width, height));
-    });
+    auto image_handler = [&provided_tex_coords](ui::image &image, ui::uint_region const &tex_coords) {
+        image.draw([](auto const context) {
+            auto const width = CGBitmapContextGetWidth(context);
+            auto const height = CGBitmapContextGetHeight(context);
+            CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
+            CGContextFillRect(context, CGRectMake(0, 0, width, height));
+        });
 
-    auto result = texture.add_image(image);
-    XCTAssertTrue(result);
+        provided_tex_coords = tex_coords;
+    };
 
-    if (result) {
-        XCTAssertEqual(result.value().origin.x, 2);
-        XCTAssertEqual(result.value().origin.y, 2);
-        XCTAssertEqual(result.value().size.width, 1);
-        XCTAssertEqual(result.value().size.height, 1);
-    } else {
-        std::cout << "draw_image_error::" << to_string(result.error()) << std::endl;
-    }
+    texture.add_image_handler({1, 1}, image_handler);
 
-    result = texture.add_image(image);
-    XCTAssertTrue(result);
+    XCTAssertEqual(provided_tex_coords.origin.x, 2);
+    XCTAssertEqual(provided_tex_coords.origin.y, 2);
+    XCTAssertEqual(provided_tex_coords.size.width, 1);
+    XCTAssertEqual(provided_tex_coords.size.height, 1);
 
-    if (result) {
-        XCTAssertEqual(result.value().origin.x, 5);
-        XCTAssertEqual(result.value().origin.y, 2);
-        XCTAssertEqual(result.value().size.width, 1);
-        XCTAssertEqual(result.value().size.height, 1);
-    } else {
-        std::cout << "draw_image_error::" << to_string(result.error()) << std::endl;
-    }
+    texture.add_image_handler({1, 1}, image_handler);
 
-    result = texture.add_image(image);
-    XCTAssertTrue(result);
+    XCTAssertEqual(provided_tex_coords.origin.x, 5);
+    XCTAssertEqual(provided_tex_coords.origin.y, 2);
+    XCTAssertEqual(provided_tex_coords.size.width, 1);
+    XCTAssertEqual(provided_tex_coords.size.height, 1);
 
-    if (result) {
-        XCTAssertEqual(result.value().origin.x, 2);
-        XCTAssertEqual(result.value().origin.y, 5);
-        XCTAssertEqual(result.value().size.width, 1);
-        XCTAssertEqual(result.value().size.height, 1);
-    } else {
-        std::cout << "draw_image_error::" << to_string(result.error()) << std::endl;
-    }
-}
+    texture.add_image_handler({1, 1}, image_handler);
 
-- (void)test_replace_image {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    ui::metal_system metal_system{device.object()};
-
-    ui::make_texture texture{{.point_size = {3, 3}, .scale_factor = 1.0, .draw_padding = 1}};
-
-    ui::image white_image{{.point_size = {1, 1}, .scale_factor = 1.0}};
-
-    white_image.draw([](auto const context) {
-        auto const width = CGBitmapContextGetWidth(context);
-        auto const height = CGBitmapContextGetHeight(context);
-        CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
-        CGContextFillRect(context, CGRectMake(0, 0, width, height));
-    });
-
-    auto white_draw_result = texture.add_image(white_image);
-    XCTAssertTrue(white_draw_result);
-
-    XCTAssertEqual(white_draw_result.value().origin.x, 1);
-    XCTAssertEqual(white_draw_result.value().origin.y, 1);
-    XCTAssertEqual(white_draw_result.value().size.width, 1);
-    XCTAssertEqual(white_draw_result.value().size.height, 1);
-
-    ui::image black_image{{.point_size = {1, 1}, .scale_factor = 1.0}};
-
-    black_image.draw([](auto const context) {
-        auto const width = CGBitmapContextGetWidth(context);
-        auto const height = CGBitmapContextGetHeight(context);
-        CGContextSetFillColorWithColor(context, [NSColor blackColor].CGColor);
-        CGContextFillRect(context, CGRectMake(0, 0, width, height));
-    });
-
-    auto black_draw_result = texture.replace_image(black_image, white_draw_result.value().origin);
-    XCTAssertTrue(black_draw_result);
-
-    XCTAssertEqual(black_draw_result.value().origin.x, 1);
-    XCTAssertEqual(black_draw_result.value().origin.y, 1);
-    XCTAssertEqual(black_draw_result.value().size.width, 1);
-    XCTAssertEqual(black_draw_result.value().size.height, 1);
+    XCTAssertEqual(provided_tex_coords.origin.x, 2);
+    XCTAssertEqual(provided_tex_coords.origin.y, 5);
+    XCTAssertEqual(provided_tex_coords.size.width, 1);
+    XCTAssertEqual(provided_tex_coords.size.height, 1);
 }
 
 - (void)test_is_equal {
