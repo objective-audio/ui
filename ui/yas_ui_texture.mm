@@ -119,6 +119,8 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     void _property_changed() {
         this->_metal_texture = nullptr;
         this->_draw_actual_pos = {_draw_actual_padding, _draw_actual_padding};
+
+        this->_subject.notify(ui::texture::method::size_updated, cast<ui::texture>());
     }
 
     draw_image_result _reserve_image_size(image const &image) {
