@@ -27,7 +27,7 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_make_texture {
+- (void)test_create_texture {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -36,7 +36,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {2, 1}, .scale_factor = 2.0}).value();
+    ui::texture texture{{.point_size = {2, 1}, .scale_factor = 2.0}};
 
     XCTAssertTrue(texture.point_size() == (ui::uint_size{2, 1}));
     XCTAssertTrue(texture.actual_size() == (ui::uint_size{4, 2}));
@@ -44,11 +44,7 @@ using namespace yas;
     XCTAssertEqual(texture.depth(), 1);
     XCTAssertEqual(texture.has_alpha(), false);
 
-    XCTAssertTrue(texture.metal_texture());
-    XCTAssertEqual(texture.metal_texture().size(), (ui::uint_size{4, 2}));
-    XCTAssertTrue(texture.metal_texture().metal_system());
-    XCTAssertNotNil(texture.metal_texture().samplerState());
-    XCTAssertNotNil(texture.metal_texture().texture());
+    XCTAssertFalse(texture.metal_texture());
 }
 
 - (void)test_add_image {
@@ -60,7 +56,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {8, 8}, .scale_factor = 1.0}).value();
+    ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
 
     ui::image image{{.point_size = {1, 1}, .scale_factor = 1.0}};
 
@@ -117,9 +113,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture =
-        ui::make_texture({.metal_system = metal_system, .point_size = {3, 3}, .scale_factor = 1.0, .draw_padding = 1})
-            .value();
+    ui::make_texture texture{{.point_size = {3, 3}, .scale_factor = 1.0, .draw_padding = 1}};
 
     ui::image white_image{{.point_size = {1, 1}, .scale_factor = 1.0}};
 
@@ -165,9 +159,9 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture1a = ui::make_texture({.metal_system = metal_system}).value();
-    auto texture1b = texture1a;
-    auto texture2 = ui::make_texture({.metal_system = metal_system}).value();
+    ui::texture texture1a{ui::texture::args{}};
+    ui::texture texture1b = texture1a;
+    ui::texture texture2{ui::texture::args{}};
 
     XCTAssertTrue(texture1a == texture1a);
     XCTAssertTrue(texture1a == texture1b);
@@ -183,9 +177,9 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture1a = ui::make_texture({.metal_system = metal_system}).value();
+    ui::texture texture1a{ui::texture::args{}};
     auto texture1b = texture1a;
-    auto texture2 = ui::make_texture({.metal_system = metal_system}).value();
+    ui::texture texture2{ui::texture::args{}};
 
     XCTAssertFalse(texture1a != texture1a);
     XCTAssertFalse(texture1a != texture1b);

@@ -67,7 +67,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {16, 8}, .scale_factor = 1.0}).value();
+    ui::texture texture{{.point_size = {16, 8}, .scale_factor = 1.0}};
 
     mesh.set_mesh_data(mesh_data);
     mesh.set_texture(texture);
@@ -97,7 +97,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture = ui::make_texture({.metal_system = metal_system, .point_size = {16, 8}, .scale_factor = 1.0}).value();
+    ui::texture texture{{.point_size = {16, 8}, .scale_factor = 1.0}};
 
     mesh.set_mesh_data(mesh_data);
     mesh.set_texture(texture);

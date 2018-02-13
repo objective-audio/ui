@@ -123,8 +123,8 @@ using namespace yas;
 
         ui::mesh mesh2;
         mesh2.set_mesh_data(ui::mesh_data{{.vertex_count = 1, .index_count = 1}});
-        auto texture_result = ui::make_texture({.metal_system = metal_system, .point_size = {1, 1}});
-        mesh2.set_texture(texture_result.value());
+        ui::texture texture{{.point_size = {1, 1}}};
+        mesh2.set_texture(texture);
         mesh2.metal().metal_setup(metal_system);
         encode_info.append_mesh(mesh2);
 

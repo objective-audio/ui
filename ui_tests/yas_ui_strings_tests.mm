@@ -46,8 +46,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture =
-        ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}, .scale_factor = 1.0}).value();
+    ui::texture texture{{.point_size = {256, 256}, .scale_factor = 1.0}};
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
@@ -83,8 +82,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto texture =
-        ui::make_texture({.metal_system = metal_system, .point_size = {256, 256}, .scale_factor = 1.0}).value();
+    ui::texture texture{{.point_size = {256, 256}, .scale_factor = 1.0}};
     ui::font_atlas font_atlas{
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
 
