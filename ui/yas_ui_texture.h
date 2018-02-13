@@ -37,6 +37,7 @@ class texture : public base {
 
     enum class method {
         metal_texture_changed,
+        size_updated,
     };
 
     using draw_image_result = result<uint_region, draw_image_error>;
@@ -79,7 +80,9 @@ class texture : public base {
 }
 
 namespace yas {
-std::string to_string(ui::texture::draw_image_error const);
+std::string to_string(ui::texture::draw_image_error const &);
+    std::string to_string(ui::texture::method const &);
 }
 
 std::ostream &operator<<(std::ostream &, yas::ui::texture::draw_image_error const &);
+std::ostream &operator<<(std::ostream &, yas::ui::texture::method const &);

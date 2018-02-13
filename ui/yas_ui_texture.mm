@@ -300,7 +300,7 @@ ui::metal_object &ui::texture::metal() {
 
 #pragma mark -
 
-std::string yas::to_string(ui::texture::draw_image_error const error) {
+std::string yas::to_string(ui::texture::draw_image_error const &error) {
     switch (error) {
         case ui::texture::draw_image_error::image_is_null:
             return "image_is_null";
@@ -313,7 +313,21 @@ std::string yas::to_string(ui::texture::draw_image_error const error) {
     }
 }
 
+std::string yas::to_string(ui::texture::method const &method) {
+    switch (method) {
+        case ui::texture::method::metal_texture_changed:
+            return "metal_texture_changed";
+        case ui::texture::method::size_updated:
+            return "size_updated";
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, yas::ui::texture::draw_image_error const &error) {
     os << to_string(error);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::texture::method const &method) {
+    os << to_string(method);
     return os;
 }
