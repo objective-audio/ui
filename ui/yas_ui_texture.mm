@@ -10,6 +10,7 @@
 #include "yas_ui_texture.h"
 #include "yas_unless.h"
 #include "yas_property.h"
+#include <map>
 
 using namespace yas;
 
@@ -76,12 +77,20 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
                 static_cast<uint32_t>(point_size.height * scale_factor)};
     }
 
-    void add_image_handler(image_pair_t pair) {
+    image_key add_image_handler(image_pair_t pair) {
         if (this->_metal_texture) {
             this->_add_image_to_metal_texture(pair);
         }
 
-        this->_image_handlers.emplace_back(std::move(pair));
+        uint32_t key = 0;
+        auto it = this->_image_handlers.crbegin();
+        if (it != this->_image_handlers.crend()) {
+            key = it->first + 1;
+        }
+
+        this->_image_handlers.emplace(key, std::move(pair));
+
+        return key;
     }
 
     property<std::nullptr_t, ui::uint_size> _point_size_property;
@@ -100,7 +109,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
-    std::vector<image_pair_t> _image_handlers;
+    std::map<uint32_t, image_pair_t> _image_handlers;
     std::vector<base> _property_observers;
 
     void _property_changed() {
@@ -181,7 +190,7 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
 
     void _add_images_to_metal_texture() {
         for (auto const &pair : this->_image_handlers) {
-            this->_add_image_to_metal_texture(pair);
+            this->_add_image_to_metal_texture(pair.second);
         }
     }
 
@@ -250,8 +259,8 @@ void ui::texture::set_scale_factor(double const scale_factor) {
     impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
 }
 
-void ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
-    impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
+ui::texture::image_key ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
+    return impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
 }
 
 ui::metal_texture &ui::texture::metal_texture() {

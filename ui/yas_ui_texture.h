@@ -40,6 +40,7 @@ class texture : public base {
     };
 
     using draw_image_result = result<uint_region, draw_image_error>;
+    using image_key = uint32_t;
     using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
     using subject_t = subject<method, ui::texture>;
     using observer_t = subject_t::observer_t;
@@ -59,7 +60,7 @@ class texture : public base {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    void add_image_handler(ui::uint_size, image_handler);
+    image_key add_image_handler(ui::uint_size, image_handler);
 
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;
