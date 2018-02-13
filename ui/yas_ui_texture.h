@@ -56,11 +56,12 @@ class texture : public base {
     double scale_factor() const;
     uint32_t depth() const;
     bool has_alpha() const;
-    
+
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
     image_key add_image_handler(ui::uint_size, image_handler);
+    void remove_image_handler(image_key const &);
 
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;

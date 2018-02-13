@@ -93,6 +93,10 @@ struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::i
         return key;
     }
 
+    void remove_image_handler(image_key const &key) {
+        this->_image_handlers.erase(key);
+    }
+
     property<std::nullptr_t, ui::uint_size> _point_size_property;
     property<std::nullptr_t, double> _scale_factor_property;
     uint32_t const _depth = 1;
@@ -261,6 +265,9 @@ void ui::texture::set_scale_factor(double const scale_factor) {
 
 ui::texture::image_key ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
     return impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
+}
+
+void ui::texture::remove_image_handler(image_key const &key) {
 }
 
 ui::metal_texture &ui::texture::metal_texture() {
