@@ -13,6 +13,7 @@
 #include "yas_ui_metal_types.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
+#include "yas_unless.h"
 
 using namespace yas;
 
@@ -25,7 +26,14 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
         if (this->_mesh_data) {
-            return this->_mesh_data.metal().metal_setup(metal_system);
+            if (auto ul = unless(this->_mesh_data.metal().metal_setup(metal_system))) {
+                return ul.value;
+            }
+        }
+        if (this->_texture) {
+            if (auto ul = unless(this->_texture.metal().metal_setup(metal_system))) {
+                return ul.value;
+            }
         }
         return ui::setup_metal_result{nullptr};
     }

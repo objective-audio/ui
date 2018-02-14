@@ -13,6 +13,7 @@
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
 #include "yas_ui_strings.h"
+#include "yas_ui_metal_texture.h"
 
 using namespace yas;
 
@@ -101,11 +102,13 @@ struct ui::strings::impl : base::impl {
     void _update_font_atlas_observer() {
         if (auto &font_atlas = _font_atlas_property.value()) {
             if (!this->_font_atlas_observer) {
-                this->_font_atlas_observer = font_atlas.subject().make_observer(
-                    ui::font_atlas::method::texture_changed,
-                    [weak_strings = to_weak(cast<ui::strings>())](auto const &context) {
+                this->_font_atlas_observer =
+                    font_atlas.subject().make_wild_card_observer([weak_strings = to_weak(cast<ui::strings>())](
+                        auto const &context) {
                         if (auto strings = weak_strings.lock()) {
-                            strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
+                            if (context.key == ui::font_atlas::method::texture_changed) {
+                                strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
+                            }
                             strings.impl_ptr<impl>()->_update_layout();
                         }
                     });
@@ -120,7 +123,7 @@ struct ui::strings::impl : base::impl {
 
     void _update_layout() {
         auto const &font_atlas = this->_font_atlas_property.value();
-        if (!font_atlas || !font_atlas.texture()) {
+        if (!font_atlas || !font_atlas.texture() || !font_atlas.texture().metal_texture()) {
             this->_collection_layout.set_preferred_cell_count(0);
             this->_rect_plane.data().set_rect_count(0);
             return;

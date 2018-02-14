@@ -46,3 +46,8 @@ struct encodable_effect : protocol {
     void encode(id<MTLCommandBuffer> const);
 };
 }
+
+namespace yas {
+    std::string to_string(ui::effect_update_reason const &);
+    std::string to_string(ui::effect_updates_t const &);
+}

@@ -63,6 +63,16 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_update_texture();
 
+            if (this->_texture) {
+                auto weak_atlas = to_weak(cast<ui::font_atlas>());
+                this->_texture_observer = this->_texture.subject().make_observer(
+                    ui::texture::method::metal_texture_changed, [weak_atlas](auto const &context) {
+                        if (auto atlas = weak_atlas.lock()) {
+                            atlas.subject().notify(ui::font_atlas::method::texture_updated, atlas);
+                        }
+                    });
+            }
+
             this->_subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
         }
     }
@@ -106,6 +116,7 @@ struct ui::font_atlas::impl : base::impl {
    private:
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
+    ui::texture::observer_t _texture_observer = nullptr;
 
     void _update_texture() {
         if (!this->_texture) {
@@ -113,6 +124,7 @@ struct ui::font_atlas::impl : base::impl {
             return;
         }
 
+        auto weak_atlas = to_weak(cast<ui::font_atlas>());
         auto ct_font_obj = this->_ct_font_ref.object();
         auto const word_count = this->_words.size();
 
@@ -126,10 +138,10 @@ struct ui::font_atlas::impl : base::impl {
         CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, word_count);
         CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, word_count);
 
-        auto const ascent = CTFontGetAscent(ct_font_obj);
-        auto const descent = CTFontGetDescent(ct_font_obj);
-        auto const string_height = descent + ascent;
-        auto const scale_factor = this->_texture.scale_factor();
+        CGFloat const ascent = CTFontGetAscent(ct_font_obj);
+        CGFloat const descent = CTFontGetDescent(ct_font_obj);
+        CGFloat const string_height = descent + ascent;
+        double const scale_factor = this->_texture.scale_factor();
 
         for (auto const &idx : each_index<std::size_t>(word_count)) {
             ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
@@ -140,26 +152,27 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            ui::image image{{.point_size = image_size, .scale_factor = scale_factor}};
+            this->_texture.add_image_handler(image_size, [weak_atlas, glyph = glyphs[idx], idx, ct_font_obj](
+                                                             ui::image & image, ui::uint_region const &tex_coords) {
+                if (auto atlas = weak_atlas.lock()) {
+                    image.draw([height = image.point_size().height, &glyph, &ct_font_obj](CGContextRef const ctx) {
+                        CGContextSaveGState(ctx);
 
-            image.draw([&image_region, &descent, &glyphs, &idx, &ct_font_obj](CGContextRef const ctx) {
-                CGContextSaveGState(ctx);
+                        CGContextTranslateCTM(ctx, 0.0, height);
+                        CGContextScaleCTM(ctx, 1.0, -1.0);
+                        CGContextTranslateCTM(ctx, 0.0, CTFontGetDescent(ct_font_obj));
+                        CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyph, nullptr);
+                        CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+                        CGContextAddPath(ctx, path);
+                        CGContextFillPath(ctx);
+                        CGPathRelease(path);
 
-                CGContextTranslateCTM(ctx, 0.0, image_region.size.height);
-                CGContextScaleCTM(ctx, 1.0, -1.0);
-                CGContextTranslateCTM(ctx, 0.0, descent);
-                CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyphs[idx], nullptr);
-                CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
-                CGContextAddPath(ctx, path);
-                CGContextFillPath(ctx);
-                CGPathRelease(path);
+                        CGContextRestoreGState(ctx);
+                    });
 
-                CGContextRestoreGState(ctx);
+                    atlas.impl_ptr<impl>()->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
+                }
             });
-
-            if (auto result = this->_texture.add_image(image)) {
-                this->_word_infos.at(idx).rect.set_tex_coord(result.value());
-            }
 
             auto const &advance = advances[idx];
             this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
@@ -227,5 +240,8 @@ std::string yas::to_string(ui::font_atlas::method const &method) {
     switch (method) {
         case ui::font_atlas::method::texture_changed:
             return "texture_changed";
+        case ui::font_atlas::method::texture_updated:
+            return "texture_updated";
     }
 }
+

@@ -22,7 +22,7 @@ class font_atlas : public base {
    public:
     class impl;
 
-    enum class method { texture_changed };
+    enum class method { texture_changed, texture_updated };
 
     using subject_t = subject<method, font_atlas>;
     using observer_t = observer<method, font_atlas>;

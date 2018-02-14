@@ -63,11 +63,7 @@ void sample::main::setup() {
 
         ui::texture texture = nullptr;
         if (scale_factor > 0) {
-            if (auto texture_result = ui::make_texture({.metal_system = renderer.metal_system(),
-                                                        .point_size = {1024, 1024},
-                                                        .scale_factor = scale_factor})) {
-                texture = std::move(texture_result.value());
-            }
+            texture = ui::texture{{.point_size = {1024, 1024}, .scale_factor = scale_factor}};
         }
 
         if (auto font_atlas = weak_font_atlas.lock()) {
