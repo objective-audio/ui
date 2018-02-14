@@ -270,6 +270,7 @@ ui::texture::image_key ui::texture::add_image_handler(ui::uint_size size, image_
 }
 
 void ui::texture::remove_image_handler(image_key const &key) {
+    impl_ptr<impl>()->remove_image_handler(key);
 }
 
 ui::metal_texture &ui::texture::metal_texture() {
