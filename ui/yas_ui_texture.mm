@@ -20,7 +20,7 @@ using image_pair_t = std::pair<uint_size, texture::image_handler>;
 
 #pragma mark - ui::texture::impl
 
-struct ui::texture::impl : base::impl, renderable_texture::impl, metal_object::impl {
+struct ui::texture::impl : base::impl, metal_object::impl {
     impl(ui::uint_size &&point_size, double const scale_factor, uint32_t const draw_padding,
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
@@ -286,13 +286,6 @@ ui::texture::subject_t &ui::texture::subject() {
 }
 
 #pragma mark - protocol
-
-ui::renderable_texture &ui::texture::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_texture{impl_ptr<ui::renderable_texture::impl>()};
-    }
-    return this->_renderable;
-}
 
 ui::metal_object &ui::texture::metal() {
     if (!this->_metal_object) {

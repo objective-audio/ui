@@ -6,7 +6,6 @@
 
 #include "yas_base.h"
 #include "yas_result.h"
-#include "yas_ui_texture_protocol.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_types.h"
@@ -69,12 +68,9 @@ class texture : public base {
 
     subject_t &subject();
 
-    ui::renderable_texture &renderable();
-
     ui::metal_object &metal();
 
    private:
-    ui::renderable_texture _renderable = nullptr;
     ui::metal_object _metal_object = nullptr;
 };
 }
