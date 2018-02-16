@@ -31,38 +31,40 @@ class layout : public base {
     std::vector<ui::layout_guide> const &source_guides() const;
     std::vector<ui::layout_guide> const &destination_guides() const;
 };
-
-namespace fixed_layout {
-    struct args {
-        float distance;
-        ui::layout_guide source_guide;
-        ui::layout_guide destination_guide;
-    };
 }
 
-namespace justified_layout {
-    struct args {
-        ui::layout_guide first_source_guide = nullptr;
-        ui::layout_guide second_source_guide = nullptr;
-        std::vector<ui::layout_guide> destination_guides;
-        std::vector<float> ratios;
-    };
+namespace yas::ui::fixed_layout {
+struct args {
+    float distance;
+    ui::layout_guide source_guide;
+    ui::layout_guide destination_guide;
+};
 }
 
-namespace min_layout {
-    struct args {
-        std::vector<ui::layout_guide> source_guides;
-        ui::layout_guide destination_guide;
-    };
+namespace yas::ui::justified_layout {
+struct args {
+    ui::layout_guide first_source_guide = nullptr;
+    ui::layout_guide second_source_guide = nullptr;
+    std::vector<ui::layout_guide> destination_guides;
+    std::vector<float> ratios;
+};
 }
 
-namespace max_layout {
-    struct args {
-        std::vector<ui::layout_guide> source_guides;
-        ui::layout_guide destination_guide;
-    };
+namespace yas::ui::min_layout {
+struct args {
+    std::vector<ui::layout_guide> source_guides;
+    ui::layout_guide destination_guide;
+};
 }
 
+namespace yas::ui::max_layout {
+struct args {
+    std::vector<ui::layout_guide> source_guides;
+    ui::layout_guide destination_guide;
+};
+}
+
+namespace yas::ui {
 ui::layout make_layout(fixed_layout::args);
 ui::layout make_layout(justified_layout::args);
 
