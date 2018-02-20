@@ -12,6 +12,7 @@
 #include "yas_ui_matrix.h"
 #include "yas_ui_effect.h"
 #include "yas_ui_layout_guide.h"
+#include "yas_ui_renderer.h"
 
 using namespace yas;
 
@@ -168,6 +169,18 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         return false;
     }
 
+    void observe_scale_from_renderer(ui::renderer &renderer, ui::render_target &target) {
+        this->_renderer_observer = renderer.subject().make_observer(
+            ui::renderer::method::scale_factor_changed, [weak_target = to_weak(target)](auto const &context) {
+                if (auto target = weak_target.lock()) {
+                    ui::renderer const &renderer = context.value;
+                    target.set_scale_factor(renderer.scale_factor());
+                }
+            });
+
+        this->_scale_factor_property.set_value(renderer.scale_factor());
+    }
+
     ui::layout_guide_rect _layout_guide_rect;
     property<std::nullptr_t, ui::effect> _effect_property{{.value = nullptr}};
     property<std::nullptr_t, double> _scale_factor_property{{.value = 1.0}};
@@ -181,6 +194,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::texture::observer_t _dst_texture_observer = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
+    ui::renderer::observer_t _renderer_observer = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);
@@ -253,4 +267,8 @@ ui::metal_object &ui::render_target::metal() {
         this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
     return this->_metal_object;
+}
+
+void ui::render_target::observe_scale_from_renderer(ui::renderer &renderer) {
+    impl_ptr<impl>()->observe_scale_from_renderer(renderer, *this);
 }
