@@ -98,16 +98,10 @@ void sample::main::setup() {
     blur_action.set_value_transformer(ui::ping_pong_transformer());
     this->renderer.insert_action(std::move(blur_action));
 
-    auto &safe_area_guide = this->renderer.safe_area_layout_guide_rect();
+    auto &view_guide = this->renderer.view_layout_guide_rect();
     auto &target_guide = render_target.layout_guide_rect();
-    this->_render_target_layouts.emplace_back(ui::make_layout(
-        ui::fixed_layout::args{.source_guide = safe_area_guide.left(), .destination_guide = target_guide.left()}));
-    this->_render_target_layouts.emplace_back(ui::make_layout(
-        ui::fixed_layout::args{.source_guide = safe_area_guide.right(), .destination_guide = target_guide.right()}));
-    this->_render_target_layouts.emplace_back(ui::make_layout(
-        ui::fixed_layout::args{.source_guide = safe_area_guide.top(), .destination_guide = target_guide.top()}));
-    this->_render_target_layouts.emplace_back(ui::make_layout(
-        ui::fixed_layout::args{.source_guide = safe_area_guide.bottom(), .destination_guide = target_guide.bottom()}));
+    this->_render_target_layout = ui::make_layout(
+        ui::fixed_layout_rect::args{.source_guide_rect = view_guide, .destination_guide_rect = target_guide});
 
     this->_render_target_node.set_render_target(render_target);
     root_node.add_sub_node(this->_render_target_node, 1);
