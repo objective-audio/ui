@@ -136,6 +136,25 @@ struct range {
     static range const &zero();
 };
 
+struct insets {
+    union {
+        struct {
+            float left;
+            float right;
+            float bottom;
+            float top;
+        };
+        simd::float4 v;
+    };
+
+    bool operator==(insets const &rhs) const;
+    bool operator!=(insets const &rhs) const;
+
+    explicit operator bool() const;
+
+    static insets const &zero();
+};
+
 struct region {
     union {
         struct {
@@ -156,6 +175,7 @@ struct region {
     float right() const;
     float bottom() const;
     float top() const;
+    insets insets() const;
     point center() const;
 
     static region const &zero();
@@ -201,6 +221,7 @@ std::string to_string(ui::pivot const &);
 std::string to_string(ui::uint_point const &);
 std::string to_string(ui::uint_size const &);
 std::string to_string(ui::uint_region const &);
+std::string to_string(ui::insets const &);
 std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
@@ -219,6 +240,7 @@ bool is_equal(simd::float4x4 const &, simd::float4x4 const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
+std::ostream &operator<<(std::ostream &, yas::ui::insets const &);
 std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);

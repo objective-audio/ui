@@ -175,6 +175,25 @@ ui::range const &ui::range::zero() {
     return _zero;
 }
 
+#pragma mark - insets
+
+bool ui::insets::operator==(insets const &rhs) const {
+    return this->left == rhs.left && this->right == rhs.right && this->bottom == rhs.bottom && this->top == rhs.top;
+}
+
+bool ui::insets::operator!=(insets const &rhs) const {
+    return this->left != rhs.left || this->right != rhs.right || this->bottom != rhs.bottom || this->top != rhs.top;
+}
+
+ui::insets::operator bool() const {
+    return this->left != 0.0f || this->right != 0.0f || this->bottom != 0.0f || this->top != 0.0f;
+}
+
+ui::insets const &ui::insets::zero() {
+    static ui::insets const _zero{.left = 0.0f, .right = 0.0f, .bottom = 0.0f, .top = 0.0f};
+    return _zero;
+}
+
 #pragma mark - ui::region
 
 bool ui::region::operator==(ui::region const &rhs) const {
@@ -211,6 +230,10 @@ float ui::region::bottom() const {
 
 float ui::region::top() const {
     return std::max(this->origin.y, this->origin.y + this->size.height);
+}
+
+ui::insets ui::region::insets() const {
+    return ui::insets{.left = this->left(), .right = this->right(), .bottom = this->bottom(), .top = this->top()};
 }
 
 ui::point ui::region::center() const {
@@ -290,6 +313,11 @@ std::string yas::to_string(ui::uint_region const &region) {
     return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
 }
 
+std::string yas::to_string(ui::insets const &insets) {
+    return "{" + std::to_string(insets.left) + ", " + std::to_string(insets.right) + ", " +
+           std::to_string(insets.bottom) + ", " + std::to_string(insets.top) + "}";
+}
+
 std::string yas::to_string(ui::region const &region) {
     return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
 }
@@ -352,6 +380,11 @@ std::ostream &operator<<(std::ostream &os, yas::ui::uint_size const &size) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::uint_region const &region) {
     os << to_string(region);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::insets const &insets) {
+    os << to_string(insets);
     return os;
 }
 
