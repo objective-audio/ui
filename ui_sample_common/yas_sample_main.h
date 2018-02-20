@@ -51,6 +51,6 @@ struct main {
     ui::node _render_target_node;
     ui::blur _blur;
     ui::rect_plane _plane_on_target = ui::make_rect_plane(1);
-    std::vector<ui::layout> _render_target_layouts;
+    ui::layout _render_target_layout = nullptr;
 };
 }

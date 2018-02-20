@@ -76,6 +76,62 @@ ui::layout ui::make_layout(fixed_layout::args args) {
                        .handler = std::move(handler)}};
 }
 
+ui::layout ui::make_layout(fixed_layout_point::args args) {
+    if (!args.source_guide_point || !args.destination_guide_point) {
+        throw "argument is null.";
+    }
+
+    auto handler = [distances = std::move(args.distances)](auto const &src_guides, auto &dst_guides) {
+        dst_guides.at(0).set_value(src_guides.at(0).value() + distances.x);
+        dst_guides.at(1).set_value(src_guides.at(1).value() + distances.y);
+    };
+
+    std::vector<ui::layout_guide> src_guides;
+    src_guides.reserve(2);
+    src_guides.emplace_back(std::move(args.source_guide_point.x()));
+    src_guides.emplace_back(std::move(args.source_guide_point.y()));
+
+    std::vector<ui::layout_guide> dst_guides;
+    dst_guides.reserve(2);
+    dst_guides.emplace_back(std::move(args.destination_guide_point.x()));
+    dst_guides.emplace_back(std::move(args.destination_guide_point.y()));
+
+    return ui::layout{{.source_guides = {std::move(src_guides)},
+                       .destination_guides = {std::move(dst_guides)},
+                       .handler = std::move(handler)}};
+}
+
+ui::layout ui::make_layout(fixed_layout_rect::args args) {
+    if (!args.source_guide_rect || !args.destination_guide_rect) {
+        throw "argument is null.";
+    }
+
+    auto handler = [distances = std::move(args.distances)](auto const &src_guides, auto &dst_guides) {
+        dst_guides.at(0).set_value(src_guides.at(0).value() + distances.left);
+        dst_guides.at(1).set_value(src_guides.at(1).value() + distances.right);
+        dst_guides.at(2).set_value(src_guides.at(2).value() + distances.bottom);
+        dst_guides.at(3).set_value(src_guides.at(3).value() + distances.top);
+    };
+
+    std::vector<ui::layout_guide> src_guides;
+    src_guides.reserve(4);
+    src_guides.emplace_back(std::move(args.source_guide_rect.left()));
+    src_guides.emplace_back(std::move(args.source_guide_rect.right()));
+    src_guides.emplace_back(std::move(args.source_guide_rect.bottom()));
+    src_guides.emplace_back(std::move(args.source_guide_rect.top()));
+
+    std::vector<ui::layout_guide> dst_guides;
+    dst_guides.reserve(4);
+    dst_guides.emplace_back(std::move(args.destination_guide_rect.left()));
+    dst_guides.emplace_back(std::move(args.destination_guide_rect.right()));
+    dst_guides.emplace_back(std::move(args.destination_guide_rect.bottom()));
+    dst_guides.emplace_back(std::move(args.destination_guide_rect.top()));
+
+    return ui::layout{{.source_guides = {std::move(src_guides)},
+                       .destination_guides = {std::move(dst_guides)},
+                       .handler = std::move(handler)}};
+}
+
 #pragma mark - jusitified_layout
 
 ui::layout ui::make_layout(justified_layout::args args) {

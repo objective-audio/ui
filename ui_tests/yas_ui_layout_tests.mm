@@ -21,7 +21,7 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_make_layout {
+- (void)test_make_fixed_layout {
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
@@ -32,6 +32,46 @@ using namespace yas;
     XCTAssertEqual(layout.destination_guides().size(), 1);
     XCTAssertEqual(layout.source_guides().at(0).value(), 0.5f);
     XCTAssertEqual(layout.destination_guides().at(0).value(), 8.5f);
+}
+
+- (void)test_make_fixed_layout_with_point {
+    ui::point distances{.x = 0.5f, .y = 0.25f};
+    ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
+    ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
+
+    auto layout = ui::make_layout(
+        {.distances = distances, .source_guide_point = src_guide_point, .destination_guide_point = dst_guide_point});
+
+    XCTAssertTrue(layout);
+    XCTAssertEqual(layout.source_guides().size(), 2);
+    XCTAssertEqual(layout.destination_guides().size(), 2);
+
+    XCTAssertEqual(layout.source_guides().at(0).value(), 1.0f);
+    XCTAssertEqual(layout.source_guides().at(1).value(), 2.0f);
+    XCTAssertEqual(layout.destination_guides().at(0).value(), 1.5f);
+    XCTAssertEqual(layout.destination_guides().at(1).value(), 2.25f);
+}
+
+- (void)test_make_fixed_layout_with_rect {
+    ui::insets distances{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
+    ui::layout_guide_rect src_guide_rect{{.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}}};
+    ui::layout_guide_rect dst_guide_rect{{.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}}};
+
+    auto layout = ui::make_layout(
+        {.distances = distances, .source_guide_rect = src_guide_rect, .destination_guide_rect = dst_guide_rect});
+
+    XCTAssertTrue(layout);
+    XCTAssertEqual(layout.source_guides().size(), 4);
+    XCTAssertEqual(layout.destination_guides().size(), 4);
+
+    XCTAssertEqual(layout.source_guides().at(0).value(), 10.0f);
+    XCTAssertEqual(layout.source_guides().at(1).value(), 11.0f);
+    XCTAssertEqual(layout.source_guides().at(2).value(), 12.0f);
+    XCTAssertEqual(layout.source_guides().at(3).value(), 13.0f);
+    XCTAssertEqual(layout.destination_guides().at(0).value(), 15.0f);
+    XCTAssertEqual(layout.destination_guides().at(1).value(), 17.0f);
+    XCTAssertEqual(layout.destination_guides().at(2).value(), 19.0f);
+    XCTAssertEqual(layout.destination_guides().at(3).value(), 21.0f);
 }
 
 - (void)test_fixed_layout_value_changed {

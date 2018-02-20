@@ -20,8 +20,7 @@ struct sample::inputted_text::impl : base::impl {
         auto &node = _strings.rect_plane().node();
 
         _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = ui::layout{nullptr},
-            right_layout = ui::layout{nullptr}, bottom_layout = ui::layout{nullptr}, top_layout = ui::layout{nullptr}
+            weak_text = to_weak(text), event_observer = base{nullptr}, layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
                 auto &node = context.value;
@@ -36,24 +35,12 @@ struct sample::inputted_text::impl : base::impl {
                             }
                         });
 
-                    left_layout = ui::make_layout({.distance = 4.0f,
-                                                   .source_guide = renderer.safe_area_layout_guide_rect().left(),
-                                                   .destination_guide = strings_frame_guide_rect.left()});
-                    right_layout = ui::make_layout({.distance = -4.0f,
-                                                    .source_guide = renderer.safe_area_layout_guide_rect().right(),
-                                                    .destination_guide = strings_frame_guide_rect.right()});
-                    bottom_layout = ui::make_layout({.distance = 4.0f,
-                                                     .source_guide = renderer.safe_area_layout_guide_rect().bottom(),
-                                                     .destination_guide = strings_frame_guide_rect.bottom()});
-                    top_layout = ui::make_layout({.distance = -4.0f,
-                                                  .source_guide = renderer.safe_area_layout_guide_rect().top(),
-                                                  .destination_guide = strings_frame_guide_rect.top()});
+                    layout = ui::make_layout({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
+                                              .source_guide_rect = renderer.safe_area_layout_guide_rect(),
+                                              .destination_guide_rect = strings_frame_guide_rect});
                 } else {
                     event_observer = nullptr;
-                    left_layout = nullptr;
-                    right_layout = nullptr;
-                    bottom_layout = nullptr;
-                    top_layout = nullptr;
+                    layout = nullptr;
                 }
             }
         });

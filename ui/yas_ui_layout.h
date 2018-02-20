@@ -41,6 +41,22 @@ struct args {
 };
 }
 
+namespace yas::ui::fixed_layout_point {
+struct args {
+    ui::point distances;
+    ui::layout_guide_point source_guide_point;
+    ui::layout_guide_point destination_guide_point;
+};
+}
+
+namespace yas::ui::fixed_layout_rect {
+struct args {
+    ui::insets distances;
+    ui::layout_guide_rect source_guide_rect;
+    ui::layout_guide_rect destination_guide_rect;
+};
+}
+
 namespace yas::ui::justified_layout {
 struct args {
     ui::layout_guide first_source_guide = nullptr;
@@ -66,6 +82,9 @@ struct args {
 
 namespace yas::ui {
 ui::layout make_layout(fixed_layout::args);
+ui::layout make_layout(fixed_layout_point::args);
+ui::layout make_layout(fixed_layout_rect::args);
+
 ui::layout make_layout(justified_layout::args);
 
 ui::layout make_layout(min_layout::args);
