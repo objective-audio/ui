@@ -86,7 +86,7 @@ void sample::main::setup() {
     update_texture_handler(this->renderer);
 
     ui::render_target render_target;
-    render_target.set_scale_factor(this->renderer.scale_factor());
+    render_target.observe_scale_from_renderer(this->renderer);
     render_target.set_effect(this->_blur.effect());
 
     ui::continuous_action blur_action{{.duration = 5.0, .loop_count = 0}};

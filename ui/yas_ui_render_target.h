@@ -33,6 +33,8 @@ class render_target : public base {
     ui::renderable_render_target &renderable();
     ui::metal_object &metal();
 
+    void observe_scale_from_renderer(ui::renderer &);
+
    private:
     ui::metal_object _metal_object = nullptr;
     ui::renderable_render_target _renderable = nullptr;
