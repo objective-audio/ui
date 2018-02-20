@@ -329,7 +329,7 @@ using namespace yas;
 }
 
 - (void)test_insets_to_string {
-    XCTAssertEqual(to_string(ui::insets{5.0f, 6.0f, 7.0f, 8.}), "{5.000000, 6.000000, 7.000000, 8.000000}");
+    XCTAssertEqual(to_string(ui::insets{5.0f, 6.0f, 7.0f, 8.0f}), "{5.000000, 6.000000, 7.000000, 8.000000}");
 }
 
 - (void)test_region_to_string {
@@ -384,6 +384,9 @@ using namespace yas;
 }
 
 - (void)test_insets_ostream {
+    std::ostringstream stream;
+    stream << ui::insets{5.0f, 6.0f, 7.0f, 8.0f};
+    XCTAssertEqual(stream.str(), "{5.000000, 6.000000, 7.000000, 8.000000}");
 }
 
 - (void)test_region_ostream {
