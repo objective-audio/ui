@@ -209,9 +209,9 @@ using namespace yas;
 - (void)test_add_point_itself {
     ui::point point_1{1.0f, 2.0f};
     ui::point point_2{3.0f, 4.0f};
-    
+
     point_1 += point_2;
-    
+
     XCTAssertEqualWithAccuracy(point_1.x, 4.0f, 0.001f);
     XCTAssertEqualWithAccuracy(point_1.y, 6.0f, 0.001f);
 }
@@ -219,9 +219,9 @@ using namespace yas;
 - (void)test_minus_point_itself {
     ui::point point_1{4.0f, 3.0f};
     ui::point point_2{1.0f, 2.0f};
-    
+
     point_1 -= point_2;
-    
+
     XCTAssertEqualWithAccuracy(point_1.x, 3.0f, 0.001f);
     XCTAssertEqualWithAccuracy(point_1.y, 1.0f, 0.001f);
 }
@@ -241,6 +241,23 @@ using namespace yas;
     XCTAssertFalse(size1_2a != size1_2b);
     XCTAssertTrue(size1_2a != size1_3);
     XCTAssertTrue(size1_2a != size2_2);
+}
+
+- (void)test_is_equal_insets {
+    auto insets_a1 = ui::insets{1.0f, 2.0f, 3.0f, 4.0f};
+    auto insets_a2 = ui::insets{1.0f, 2.0f, 3.0f, 4.0f};
+    auto insets_diff_left = ui::insets{1.5f, 2.0f, 3.0f, 4.0f};
+    auto insets_diff_right = ui::insets{1.0f, 2.5f, 3.0f, 4.0f};
+    auto insets_diff_bottom = ui::insets{1.0f, 2.0f, 3.5f, 4.0f};
+    auto insets_diff_top = ui::insets{1.0f, 2.0f, 3.0f, 4.5f};
+
+    XCTAssertTrue(insets_a1 == insets_a1);
+    XCTAssertTrue(insets_a1 == insets_a2);
+
+    XCTAssertFalse(insets_a1 == insets_diff_left);
+    XCTAssertFalse(insets_a1 == insets_diff_right);
+    XCTAssertFalse(insets_a1 == insets_diff_bottom);
+    XCTAssertFalse(insets_a1 == insets_diff_top);
 }
 
 - (void)test_is_equal_region {
@@ -311,6 +328,10 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::uint_region{5, 6, 7, 8}), "{{5, 6}, {7, 8}}");
 }
 
+- (void)test_insets_to_string {
+    XCTAssertEqual(to_string(ui::insets{5.0f, 6.0f, 7.0f, 8.}), "{5.000000, 6.000000, 7.000000, 8.000000}");
+}
+
 - (void)test_region_to_string {
     XCTAssertEqual(to_string(ui::region{.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}}),
                    "{{5.000000, 6.000000}, {7.000000, 8.000000}}");
@@ -360,6 +381,9 @@ using namespace yas;
     std::ostringstream stream;
     stream << ui::uint_size{3, 4};
     XCTAssertEqual(stream.str(), "{3, 4}");
+}
+
+- (void)test_insets_ostream {
 }
 
 - (void)test_region_ostream {
@@ -519,6 +543,10 @@ using namespace yas;
     XCTAssertEqual(region.right(), 2.0f);
     XCTAssertEqual(region.bottom(), 1.0f);
     XCTAssertEqual(region.top(), 4.0f);
+    XCTAssertEqualWithAccuracy(region.insets().left, 0.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(region.insets().right, 2.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(region.insets().bottom, 1.0f, 0.001f);
+    XCTAssertEqualWithAccuracy(region.insets().top, 4.0f, 0.001f);
     XCTAssertEqualWithAccuracy(region.center().x, 1.0f, 0.001f);
     XCTAssertEqualWithAccuracy(region.center().y, 2.5f, 0.001f);
 
@@ -579,6 +607,13 @@ using namespace yas;
 - (void)test_range_zero {
     XCTAssertEqual(ui::range::zero().location, 0.0f);
     XCTAssertEqual(ui::range::zero().length, 0.0f);
+}
+
+- (void)test_insets_zero {
+    XCTAssertEqual(ui::insets::zero().left, 0.0f);
+    XCTAssertEqual(ui::insets::zero().right, 0.0f);
+    XCTAssertEqual(ui::insets::zero().bottom, 0.0f);
+    XCTAssertEqual(ui::insets::zero().top, 0.0f);
 }
 
 - (void)test_region_zero {
