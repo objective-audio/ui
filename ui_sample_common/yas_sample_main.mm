@@ -90,7 +90,7 @@ void sample::main::setup() {
     render_target.set_effect(this->_blur.effect());
 
     ui::continuous_action blur_action{{.duration = 5.0, .loop_count = 0}};
-    blur_action.set_value_updater([weak_blur = to_weak(this->_blur)](double const value){
+    blur_action.set_value_updater([weak_blur = to_weak(this->_blur)](double const value) {
         if (auto blur = weak_blur.lock()) {
             blur.set_sigma(value * 20.0);
         }
