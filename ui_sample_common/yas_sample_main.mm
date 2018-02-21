@@ -47,11 +47,10 @@ void sample::main::setup() {
             }
         });
 
-    auto button_pos_action =
-        ui::make_action(ui::translate_action::args{.target = this->_big_button.button().rect_plane().node(),
-                                                   .begin_position = {0.0f, 0.0f},
-                                                   .end_position = {32.0f, 0.0f},
-                                                   .continuous_action = {.duration = 5.0, .loop_count = 0}});
+    auto button_pos_action = ui::make_action({.target = this->_big_button.button().rect_plane().node(),
+                                              .begin_position = {0.0f, 0.0f},
+                                              .end_position = {32.0f, 0.0f},
+                                              .continuous_action = {.duration = 5.0, .loop_count = 0}});
     button_pos_action.set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     this->renderer.insert_action(std::move(button_pos_action));
 
@@ -100,8 +99,8 @@ void sample::main::setup() {
 
     auto &view_guide = this->renderer.view_layout_guide_rect();
     auto &target_guide = render_target.layout_guide_rect();
-    this->_render_target_layout = ui::make_layout(
-        ui::fixed_layout_rect::args{.source_guide_rect = view_guide, .destination_guide_rect = target_guide});
+    this->_render_target_layout =
+        ui::make_layout({.source_guide_rect = view_guide, .destination_guide_rect = target_guide});
 
     this->_render_target_node.set_render_target(render_target);
     root_node.add_sub_node(this->_render_target_node, 1);
