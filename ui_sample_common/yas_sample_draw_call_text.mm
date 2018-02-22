@@ -15,14 +15,12 @@ struct sample::draw_call_text::impl : base::impl {
                     .alignment = ui::layout_alignment::max,
                     .font_atlas = std::move(font_atlas),
                     .max_word_count = 32}) {
-        auto &node = _strings.rect_plane().node();
-        node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::draw_call_text &text) {
         auto &node = _strings.rect_plane().node();
 
-        this->_renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_text = to_weak(text), left_layout = ui::layout{nullptr}, right_layout = ui::layout{nullptr},
             bottom_layout = ui::layout{nullptr}, strings_observer = ui::strings::observer_t{nullptr}
         ](auto const &context) mutable {

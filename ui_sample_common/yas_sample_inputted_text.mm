@@ -12,14 +12,12 @@ struct sample::inputted_text::impl : base::impl {
     impl(ui::font_atlas &&font_atlas)
         : _strings(
               {.font_atlas = std::move(font_atlas), .max_word_count = 512, .alignment = ui::layout_alignment::min}) {
-        auto &node = _strings.rect_plane().node();
-        node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::inputted_text &text) {
         auto &node = _strings.rect_plane().node();
 
-        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+        _renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_text = to_weak(text), event_observer = base{nullptr}, layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {

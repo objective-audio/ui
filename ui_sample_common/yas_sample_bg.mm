@@ -15,8 +15,7 @@ struct sample::bg::impl : base::impl {
     }
 
     void prepare(sample::bg &bg) {
-        _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
-        _renderer_observer = _rect_plane.node().subject().make_observer(ui::node::method::renderer_changed, [
+        _renderer_observer = _rect_plane.node().dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_bg = to_weak(bg), observer = base{nullptr}, safe_area_observer = base{nullptr}
         ](auto const &context) mutable {
             if (auto bg = weak_bg.lock()) {

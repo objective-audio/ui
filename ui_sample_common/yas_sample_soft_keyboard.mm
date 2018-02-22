@@ -76,24 +76,23 @@ struct soft_key : base {
 
 struct sample::soft_keyboard::impl : base::impl {
     impl(ui::font_atlas &&atlas) : _font_atlas(std::move(atlas)) {
-        _root_node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::soft_keyboard &keyboard) {
         auto weak_keyboard = to_weak(keyboard);
 
-        _renderer_observer = _root_node.subject().make_observer(ui::node::method::renderer_changed,
-                                                                [weak_keyboard](auto const &context) mutable {
-                                                                    auto &node = context.value;
-                                                                    if (auto keyboard = weak_keyboard.lock()) {
-                                                                        auto keyboard_impl = keyboard.impl_ptr<impl>();
-                                                                        if (auto renderer = node.renderer()) {
-                                                                            keyboard_impl->_setup_soft_keys_if_needed();
-                                                                        } else {
-                                                                            keyboard_impl->_dispose_soft_keys();
-                                                                        }
-                                                                    }
-                                                                });
+        _renderer_observer = _root_node.dispatch_and_make_observer(
+            ui::node::method::renderer_changed, [weak_keyboard](auto const &context) mutable {
+                auto &node = context.value;
+                if (auto keyboard = weak_keyboard.lock()) {
+                    auto keyboard_impl = keyboard.impl_ptr<impl>();
+                    if (auto renderer = node.renderer()) {
+                        keyboard_impl->_setup_soft_keys_if_needed();
+                    } else {
+                        keyboard_impl->_dispose_soft_keys();
+                    }
+                }
+            });
 
         _setup_soft_keys_if_needed();
     }

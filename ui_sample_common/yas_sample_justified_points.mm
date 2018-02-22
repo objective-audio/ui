@@ -21,14 +21,12 @@ struct sample::justified_points::impl : base::impl {
     impl() {
         _setup_colors();
         _setup_layout_guides();
-
-        _rect_plane.node().dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::justified_points &points) {
         auto &node = _rect_plane.node();
 
-        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+        _renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_points = to_weak(points), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto points = weak_points.lock()) {

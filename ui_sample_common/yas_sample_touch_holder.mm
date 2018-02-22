@@ -21,8 +21,7 @@ struct sample::touch_holder::impl : base::impl {
     }
 
     void prepare(sample::touch_holder &holder) {
-        root_node.dispatch_method(ui::node::method::renderer_changed);
-        _renderer_observer = root_node.subject().make_observer(
+        _renderer_observer = root_node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
             [weak_touch_holder = to_weak(holder), event_observer = base{nullptr}](auto const &context) mutable {
                 auto &node = context.value;

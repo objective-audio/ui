@@ -13,14 +13,12 @@ struct sample::modifier_text::impl : base::impl {
     impl(ui::font_atlas &&font_atlas, ui::layout_guide &&bottom_guide)
         : _strings({.font_atlas = std::move(font_atlas), .max_word_count = 64, .alignment = ui::layout_alignment::max}),
           _bottom_guide(std::move(bottom_guide)) {
-        auto &node = _strings.rect_plane().node();
-        node.dispatch_method(ui::node::method::renderer_changed);
     }
 
     void prepare(sample::modifier_text &text) {
         auto &node = _strings.rect_plane().node();
 
-        _renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+        _renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = ui::layout{nullptr},
             right_layout = ui::layout{nullptr}, bottom_layout = ui::layout{nullptr},
             strings_observer = ui::strings::observer_t{nullptr}
