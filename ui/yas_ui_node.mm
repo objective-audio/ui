@@ -733,6 +733,12 @@ void ui::node::dispatch_method(ui::node::method const method) {
     impl_ptr<impl>()->dispatch_method(method);
 }
 
+ui::node::observer_t ui::node::dispatch_and_make_observer(ui::node::method const &method,
+                                                          ui::node::observer_t::handler_f const &handler) {
+    this->dispatch_method(method);
+    return this->subject().make_observer(method, handler);
+}
+
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }

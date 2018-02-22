@@ -8,13 +8,7 @@
 #include "yas_base.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
-
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}
+#include "yas_observing.h"
 
 namespace yas::ui {
 class mesh;
@@ -105,6 +99,7 @@ class node : public base {
 
     subject_t &subject();
     void dispatch_method(ui::node::method const);
+    [[nodiscard]] observer_t dispatch_and_make_observer(method const &, observer_t::handler_f const &);
 
     ui::point convert_position(ui::point const &) const;
 
