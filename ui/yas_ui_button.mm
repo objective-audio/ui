@@ -31,9 +31,7 @@ struct ui::button::impl : base::impl {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
-        node.dispatch_method(ui::node::method::renderer_changed);
-
-        this->_renderer_observer = node.subject().make_observer(ui::node::method::renderer_changed, [
+        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             event_observer = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
             weak_button
         ](auto const &context) mutable {
@@ -118,43 +116,40 @@ struct ui::button::impl : base::impl {
     }
 
     base _make_leave_observer() {
-        auto &node = this->_rect_plane.node();
+        std::vector<ui::node::method> methods{ui::node::method::position_changed, ui::node::method::angle_changed,
+                                              ui::node::method::scale_changed, ui::node::method::collider_changed,
+                                              ui::node::method::enabled_changed};
 
-        node.dispatch_method(ui::node::method::position_changed);
-        node.dispatch_method(ui::node::method::angle_changed);
-        node.dispatch_method(ui::node::method::scale_changed);
-        node.dispatch_method(ui::node::method::collider_changed);
-        node.dispatch_method(ui::node::method::enabled_changed);
+        return this->_rect_plane.node().dispatch_and_make_wild_card_observer(
+            methods, [weak_button = to_weak(cast<ui::button>())](auto const &context) {
+                if (auto node = weak_button.lock()) {
+                    if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                        ui::node::method const &method = context.key;
+                        switch (method) {
+                            case ui::node::method::position_changed:
+                            case ui::node::method::angle_changed:
+                            case ui::node::method::scale_changed: {
+                                node.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
+                            } break;
+                            case ui::node::method::collider_changed: {
+                                ui::node const &node = context.value;
+                                if (!node.collider()) {
+                                    node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                }
+                            } break;
+                            case ui::node::method::enabled_changed: {
+                                ui::node const &node = context.value;
+                                if (!node.is_enabled()) {
+                                    node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                }
+                            } break;
 
-        return node.subject().make_wild_card_observer([weak_button = to_weak(cast<ui::button>())](auto const &context) {
-            if (auto node = weak_button.lock()) {
-                if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                    ui::node::method const &method = context.key;
-                    switch (method) {
-                        case ui::node::method::position_changed:
-                        case ui::node::method::angle_changed:
-                        case ui::node::method::scale_changed: {
-                            node.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
-                        } break;
-                        case ui::node::method::collider_changed: {
-                            ui::node const &node = context.value;
-                            if (!node.collider()) {
-                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                            }
-                        } break;
-                        case ui::node::method::enabled_changed: {
-                            ui::node const &node = context.value;
-                            if (!node.is_enabled()) {
-                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                            }
-                        } break;
-
-                        default:
-                            break;
+                            default:
+                                break;
+                        }
                     }
                 }
-            }
-        });
+            });
     }
 
     base _make_collider_observer() {
