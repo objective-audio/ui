@@ -27,19 +27,11 @@ class texture : public base {
         ui::pixel_format pixel_format = ui::pixel_format::rgba8_unorm;
     };
 
-    enum class draw_image_error {
-        unknown,
-        image_is_null,
-        no_setup,
-        out_of_range,
-    };
-
     enum class method {
         metal_texture_changed,
         size_updated,
     };
 
-    using draw_image_result = result<uint_region, draw_image_error>;
     using image_key = uint32_t;
     using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
     using subject_t = subject<method, ui::texture>;
@@ -78,9 +70,7 @@ class texture : public base {
 }
 
 namespace yas {
-std::string to_string(ui::texture::draw_image_error const &);
 std::string to_string(ui::texture::method const &);
 }
 
-std::ostream &operator<<(std::ostream &, yas::ui::texture::draw_image_error const &);
 std::ostream &operator<<(std::ostream &, yas::ui::texture::method const &);
