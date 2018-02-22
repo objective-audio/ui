@@ -70,6 +70,8 @@ class texture : public base {
 
     ui::metal_object &metal();
 
+    void observe_scale_from_renderer(ui::renderer &);
+
    private:
     ui::metal_object _metal_object = nullptr;
 };
@@ -77,7 +79,7 @@ class texture : public base {
 
 namespace yas {
 std::string to_string(ui::texture::draw_image_error const &);
-    std::string to_string(ui::texture::method const &);
+std::string to_string(ui::texture::method const &);
 }
 
 std::ostream &operator<<(std::ostream &, yas::ui::texture::draw_image_error const &);

@@ -97,6 +97,18 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         this->_image_handlers.erase(key);
     }
 
+    void observe_scale_from_renderer(ui::renderer &renderer, ui::texture &texture) {
+        this->_renderer_observer = renderer.subject().make_observer(
+            ui::renderer::method::scale_factor_changed, [weak_texture = to_weak(texture)](auto const &context) {
+                if (auto texture = weak_texture.lock()) {
+                    ui::renderer const &renderer = context.value;
+                    texture.set_scale_factor(renderer.scale_factor());
+                }
+            });
+
+        this->_scale_factor_property.set_value(renderer.scale_factor());
+    }
+
     property<std::nullptr_t, ui::uint_size> _point_size_property;
     property<std::nullptr_t, double> _scale_factor_property;
     uint32_t const _depth = 1;
@@ -115,6 +127,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint_point _draw_actual_pos;
     std::map<uint32_t, image_pair_t> _image_handlers;
     std::vector<base> _property_observers;
+    ui::renderer::observer_t _renderer_observer = nullptr;
 
     void _property_changed() {
         this->_metal_texture = nullptr;
@@ -285,13 +298,15 @@ ui::texture::subject_t &ui::texture::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-#pragma mark - protocol
-
 ui::metal_object &ui::texture::metal() {
     if (!this->_metal_object) {
         this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
     return this->_metal_object;
+}
+
+void ui::texture::observe_scale_from_renderer(ui::renderer &renderer) {
+    impl_ptr<impl>()->observe_scale_from_renderer(renderer, *this);
 }
 
 #pragma mark -
