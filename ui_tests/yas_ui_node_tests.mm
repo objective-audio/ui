@@ -343,6 +343,22 @@ struct test_render_encoder : base {
     XCTAssertFalse(called_method);
 }
 
+- (void)test_dispatch_and_make_observer {
+    bool called = false;
+
+    ui::node node;
+
+    auto observer = node.dispatch_and_make_observer(ui::node::method::position_changed, [&called](auto const &context) {
+        if (context.key == ui::node::method::position_changed) {
+            called = true;
+        }
+    });
+
+    node.set_position({1.0f, 2.0f});
+
+    XCTAssertTrue(called);
+}
+
 - (void)test_method_dispatched {
     std::shared_ptr<ui::node::method> called_method = nullptr;
 
