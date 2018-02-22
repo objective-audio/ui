@@ -100,6 +100,8 @@ class node : public base {
     subject_t &subject();
     void dispatch_method(ui::node::method const);
     [[nodiscard]] observer_t dispatch_and_make_observer(method const &, observer_t::handler_f const &);
+    [[nodiscard]] observer_t dispatch_and_make_wild_card_observer(std::vector<method> const &,
+                                                                  observer_t::handler_f const &);
 
     ui::point convert_position(ui::point const &) const;
 
