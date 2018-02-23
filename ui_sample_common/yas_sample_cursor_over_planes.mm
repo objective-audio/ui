@@ -12,11 +12,11 @@ struct sample::cursor_over_planes::impl : base::impl {
     ui::node root_node;
 
     impl() {
-        _setup_nodes();
+        this->_setup_nodes();
     }
 
     void prepare(sample::cursor_over_planes &planes) {
-        _renderer_observer = root_node.dispatch_and_make_observer(
+        this->_renderer_observer = root_node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
             [weak_touch_holder = to_weak(planes), event_observers = std::vector<base>{}](auto const &context) mutable {
                 if (auto touch_holder = weak_touch_holder.lock()) {
@@ -34,7 +34,7 @@ struct sample::cursor_over_planes::impl : base::impl {
    private:
     void _setup_nodes() {
         auto const count = 16;
-        _nodes.reserve(count);
+        this->_nodes.reserve(count);
 
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
@@ -54,7 +54,7 @@ struct sample::cursor_over_planes::impl : base::impl {
 
             root_node.add_sub_node(handle_node);
 
-            _nodes.emplace_back(node);
+            this->_nodes.emplace_back(node);
         }
     }
 

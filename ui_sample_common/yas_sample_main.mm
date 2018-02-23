@@ -25,14 +25,14 @@ void sample::main::setup() {
     root_node.add_sub_node(this->_justified_points.rect_plane().node());
     root_node.add_sub_node(this->_draw_call_text.strings().rect_plane().node());
 
-    this->_big_button.button().rect_plane().node().add_sub_node(_big_button_text.strings().rect_plane().node());
+    this->_big_button.button().rect_plane().node().add_sub_node(this->_big_button_text.strings().rect_plane().node());
 
     auto const big_button_region = this->_big_button.button().layout_guide_rect().region();
     this->_big_button_text.strings().frame_layout_guide_rect().set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
     this->_button_observer =
-        this->_big_button.button().subject().make_wild_card_observer([weak_text = to_weak(_big_button_text)](
+        this->_big_button.button().subject().make_wild_card_observer([weak_text = to_weak(this->_big_button_text)](
             auto const &context) {
             if (auto text = weak_text.lock()) {
                 text.set_status(context.key);
@@ -40,8 +40,8 @@ void sample::main::setup() {
         });
 
     this->_keyboard_observer =
-        this->_soft_keyboard.subject().make_wild_card_observer([weak_text =
-                                                                    to_weak(_inputted_text)](auto const &context) {
+        this->_soft_keyboard.subject().make_wild_card_observer([weak_text = to_weak(this->_inputted_text)](
+            auto const &context) {
             if (auto text = weak_text.lock()) {
                 text.append_text(context.key);
             }

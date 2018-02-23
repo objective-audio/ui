@@ -12,7 +12,7 @@ struct sample::bg::impl : base::impl {
     ui::layout_guide_rect _layout_guide_rect;
 
     impl() {
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
         node.set_color({.v = 0.75f});
     }
 
@@ -25,7 +25,7 @@ struct sample::bg::impl : base::impl {
             }
         });
 
-        _renderer_observer = _rect_plane.node().dispatch_and_make_observer(
+        this->_renderer_observer = this->_rect_plane.node().dispatch_and_make_observer(
             ui::node::method::renderer_changed, [weak_bg, layout = ui::layout{nullptr}](auto const &context) mutable {
                 if (sample::bg bg = weak_bg.lock()) {
                     auto impl = bg.impl_ptr<sample::bg::impl>();

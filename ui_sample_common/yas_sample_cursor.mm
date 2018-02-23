@@ -13,11 +13,11 @@ struct sample::cursor::impl : base::impl {
     ui::node node;
 
     impl() {
-        _setup_node();
+        this->_setup_node();
     }
 
     void prepare(sample::cursor &cursor) {
-        _renderer_observer = node.dispatch_and_make_observer(
+        this->_renderer_observer = node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
             [weak_cursor = to_weak(cursor), event_observer = base{nullptr}](auto const &context) mutable {
                 if (auto cursor = weak_cursor.lock()) {

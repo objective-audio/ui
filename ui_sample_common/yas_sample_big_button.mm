@@ -12,18 +12,18 @@ using namespace yas;
 
 struct sample::big_button::impl : base::impl {
     impl() {
-        _button.rect_plane().node().set_collider(ui::collider{ui::shape{ui::circle_shape{.radius = _radius}}});
+        this->_button.rect_plane().node().set_collider(ui::collider{ui::shape{ui::circle_shape{.radius = this->_radius}}});
     }
 
     void set_texture(ui::texture &&texture) {
-        auto &mesh = _button.rect_plane().node().mesh();
+        auto &mesh = this->_button.rect_plane().node().mesh();
         mesh.set_texture(texture);
 
         if (!texture) {
             return;
         }
 
-        uint32_t const width = _radius * 2;
+        uint32_t const width = this->_radius * 2;
 
         auto weak_button = to_weak(this->_button);
 
@@ -54,7 +54,8 @@ struct sample::big_button::impl : base::impl {
     }
 
     float const _radius = 60;
-    ui::button _button{{.origin = {-_radius, -_radius}, .size = {_radius * 2.0f, _radius * 2.0f}}};
+    ui::button _button{
+        {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}}};
 };
 
 #pragma mark - big_button

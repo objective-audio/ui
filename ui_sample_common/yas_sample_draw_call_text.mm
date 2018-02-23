@@ -18,7 +18,7 @@ struct sample::draw_call_text::impl : base::impl {
     }
 
     void prepare(sample::draw_call_text &text) {
-        auto &node = _strings.rect_plane().node();
+        auto &node = this->_strings.rect_plane().node();
 
         this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_text = to_weak(text), left_layout = ui::layout{nullptr}, right_layout = ui::layout{nullptr},

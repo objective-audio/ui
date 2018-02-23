@@ -17,11 +17,11 @@ struct sample::touch_holder::impl : base::impl {
     ui::node root_node;
 
     impl() {
-        _rect_plane_data.set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
+        this->_rect_plane_data.set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
     }
 
     void prepare(sample::touch_holder &holder) {
-        _renderer_observer = root_node.dispatch_and_make_observer(
+        this->_renderer_observer = root_node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
             [weak_touch_holder = to_weak(holder), event_observer = base{nullptr}](auto const &context) mutable {
                 auto &node = context.value;
@@ -40,9 +40,9 @@ struct sample::touch_holder::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
-        _set_texture(std::move(texture));
+        this->_set_texture(std::move(texture));
 
-        if (!_texture) {
+        if (!this->_texture) {
             return;
         }
 
@@ -66,18 +66,18 @@ struct sample::touch_holder::impl : base::impl {
 
         switch (event.phase()) {
             case ui::event_phase::began: {
-                _insert_touch_node(identifier);
-                _move_touch_node(identifier, value.position());
+                this->_insert_touch_node(identifier);
+                this->_move_touch_node(identifier, value.position());
             } break;
 
             case ui::event_phase::changed: {
-                _move_touch_node(identifier, value.position());
+                this->_move_touch_node(identifier, value.position());
             } break;
 
             case ui::event_phase::ended:
             case ui::event_phase::canceled: {
-                _move_touch_node(identifier, value.position());
-                _erase_touch_node(identifier);
+                this->_move_touch_node(identifier, value.position());
+                this->_erase_touch_node(identifier);
             } break;
 
             default:
@@ -87,23 +87,23 @@ struct sample::touch_holder::impl : base::impl {
 
    private:
     void _set_texture(ui::texture texture) {
-        _texture = std::move(texture);
+        this->_texture = std::move(texture);
 
-        for (auto &touch_object : _objects) {
+        for (auto &touch_object : this->_objects) {
             if (auto &node = touch_object.second.node) {
-                node.mesh().set_texture(_texture);
+                node.mesh().set_texture(this->_texture);
             }
         }
     }
     void _insert_touch_node(uintptr_t const identifier) {
-        if (_objects.count(identifier) > 0) {
+        if (this->_objects.count(identifier) > 0) {
             return;
         }
 
         ui::node node;
         ui::mesh mesh;
-        mesh.set_mesh_data(_rect_plane_data.dynamic_mesh_data());
-        mesh.set_texture(_texture);
+        mesh.set_mesh_data(this->_rect_plane_data.dynamic_mesh_data());
+        mesh.set_texture(this->_texture);
         node.set_mesh(mesh);
         node.set_scale({.v = 0.0f});
         node.set_alpha(0.0f);
@@ -131,12 +131,13 @@ struct sample::touch_holder::impl : base::impl {
 
         root_node.renderer().insert_action(action);
 
-        _objects.emplace(std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
+        this->_objects.emplace(
+            std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
     }
 
     void _move_touch_node(uintptr_t const identifier, ui::point const &position) {
-        if (_objects.count(identifier)) {
-            auto &touch_object = _objects.at(identifier);
+        if (this->_objects.count(identifier)) {
+            auto &touch_object = this->_objects.at(identifier);
             auto &node = touch_object.node;
             node.set_position(node.parent().convert_position(position));
         }
@@ -144,8 +145,8 @@ struct sample::touch_holder::impl : base::impl {
 
     void _erase_touch_node(uintptr_t const identifier) {
         auto renderer = root_node.renderer();
-        if (_objects.count(identifier)) {
-            auto &touch_object = _objects.at(identifier);
+        if (this->_objects.count(identifier)) {
+            auto &touch_object = this->_objects.at(identifier);
 
             if (auto prev_action = touch_object.scale_action.lock()) {
                 renderer.erase_action(prev_action);
@@ -172,7 +173,7 @@ struct sample::touch_holder::impl : base::impl {
 
             renderer.insert_action(action);
 
-            _objects.erase(identifier);
+            this->_objects.erase(identifier);
         }
     }
 

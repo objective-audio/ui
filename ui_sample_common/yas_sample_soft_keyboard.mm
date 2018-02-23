@@ -13,19 +13,19 @@ struct soft_key : base {
     struct impl : base::impl {
         impl(std::string &&key, float const width, ui::font_atlas &&atlas)
             : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
-            _button.rect_plane().node().mesh().set_use_mesh_color(true);
-            _button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-            _button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
+            this->_button.rect_plane().node().mesh().set_use_mesh_color(true);
+            this->_button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+            this->_button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
-            _strings.set_text(key);
-            _strings.set_alignment(ui::layout_alignment::mid);
+            this->_strings.set_text(key);
+            this->_strings.set_alignment(ui::layout_alignment::mid);
 
-            _button.rect_plane().node().add_sub_node(_strings.rect_plane().node());
+            this->_button.rect_plane().node().add_sub_node(this->_strings.rect_plane().node());
 
-            auto const &font_atlas = _strings.font_atlas();
+            auto const &font_atlas = this->_strings.font_atlas();
             float const strings_offset_y = std::roundf((width + font_atlas.ascent() + font_atlas.descent()) * 0.5f);
 
-            _strings.frame_layout_guide_rect().set_region(
+            this->_strings.frame_layout_guide_rect().set_region(
                 {.origin = {.y = strings_offset_y}, .size = {.width = width}});
         }
 
@@ -81,7 +81,7 @@ struct sample::soft_keyboard::impl : base::impl {
     void prepare(sample::soft_keyboard &keyboard) {
         auto weak_keyboard = to_weak(keyboard);
 
-        _renderer_observer = _root_node.dispatch_and_make_observer(
+        this->_renderer_observer = this->_root_node.dispatch_and_make_observer(
             ui::node::method::renderer_changed, [weak_keyboard](auto const &context) mutable {
                 auto &node = context.value;
                 if (auto keyboard = weak_keyboard.lock()) {
@@ -94,14 +94,14 @@ struct sample::soft_keyboard::impl : base::impl {
                 }
             });
 
-        _setup_soft_keys_if_needed();
+        this->_setup_soft_keys_if_needed();
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
-        if (_font_atlas != atlas) {
-            _font_atlas = std::move(atlas);
+        if (this->_font_atlas != atlas) {
+            this->_font_atlas = std::move(atlas);
 
-            _setup_soft_keys_if_needed();
+            this->_setup_soft_keys_if_needed();
         }
     }
 
@@ -124,12 +124,12 @@ struct sample::soft_keyboard::impl : base::impl {
     std::vector<std::vector<ui::layout>> _fixed_cell_layouts;
 
     void _setup_soft_keys_if_needed() {
-        if (_soft_keys.size() > 0 && _soft_key_observers.size() > 0 && _collection_layout &&
-            _frame_layouts.size() > 0 && _collection_observer) {
+        if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
+            this->_frame_layouts.size() > 0 && this->_collection_observer) {
             return;
         }
 
-        if (!_font_atlas || !_root_node.renderer()) {
+        if (!this->_font_atlas || !this->_root_node.renderer()) {
             return;
         }
 
@@ -150,10 +150,10 @@ struct sample::soft_keyboard::impl : base::impl {
             }
         }
 
-        _soft_keys.reserve(key_count);
-        _soft_key_observers.reserve(key_count);
+        this->_soft_keys.reserve(key_count);
+        this->_soft_key_observers.reserve(key_count);
 
-        _collection_layout =
+        this->_collection_layout =
             ui::collection_layout{{.frame = {.size = {width, 0.0f}},
                                    .preferred_cell_count = key_count,
                                    .lines = {{.cell_sizes = cell_sizes}},
@@ -162,7 +162,7 @@ struct sample::soft_keyboard::impl : base::impl {
                                    .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}}};
 
         for (auto const &key : keys) {
-            sample::soft_key soft_key{key, key_width, _font_atlas};
+            sample::soft_key soft_key{key, key_width, this->_font_atlas};
 
             auto observer = soft_key.button().subject().make_observer(
                 ui::button::method::ended,
@@ -171,15 +171,15 @@ struct sample::soft_keyboard::impl : base::impl {
                         keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
                     }
                 });
-            _soft_key_observers.emplace_back(std::move(observer));
+            this->_soft_key_observers.emplace_back(std::move(observer));
 
             auto &node = soft_key.button().rect_plane().node();
 
-            _root_node.add_sub_node(node);
-            _soft_keys.emplace_back(std::move(soft_key));
+            this->_root_node.add_sub_node(node);
+            this->_soft_keys.emplace_back(std::move(soft_key));
         }
 
-        _collection_observer = _collection_layout.subject().make_observer(
+        this->_collection_observer = this->_collection_layout.subject().make_observer(
             ui::collection_layout::method::actual_cell_count_changed,
             [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
                 if (auto keyboard = weak_keyboard.lock()) {
@@ -188,54 +188,54 @@ struct sample::soft_keyboard::impl : base::impl {
                 }
             });
 
-        _src_cell_guide_rects.resize(key_count);
-        _dst_cell_guide_rects.resize(key_count);
-        _fixed_cell_layouts.reserve(key_count);
+        this->_src_cell_guide_rects.resize(key_count);
+        this->_dst_cell_guide_rects.resize(key_count);
+        this->_fixed_cell_layouts.reserve(key_count);
 
-        auto renderer = _root_node.renderer();
+        auto renderer = this->_root_node.renderer();
         auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
-        auto const &frame_guide_rect = _collection_layout.frame_layout_guide_rect();
+        auto const &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
 
-        _frame_layouts.emplace_back(ui::make_layout(
+        this->_frame_layouts.emplace_back(ui::make_layout(
             {.source_guide = safe_area_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
 
-        _frame_layouts.emplace_back(ui::make_layout(
+        this->_frame_layouts.emplace_back(ui::make_layout(
             {.source_guide = safe_area_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
 
-        _frame_layouts.emplace_back(
+        this->_frame_layouts.emplace_back(
             ui::make_layout({.source_guide = safe_area_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
 
         ui::layout_guide max_right_guide;
-        _frame_layouts.emplace_back(ui::make_layout(
+        this->_frame_layouts.emplace_back(ui::make_layout(
             {.distance = width, .source_guide = safe_area_guide_rect.left(), .destination_guide = max_right_guide}));
-        _frame_layouts.emplace_back(
+        this->_frame_layouts.emplace_back(
             ui::make_layout(ui::min_layout::args{.source_guides = {max_right_guide, safe_area_guide_rect.right()},
                                                  .destination_guide = frame_guide_rect.right()}));
 
-        _setup_soft_keys_layout();
-        _update_soft_key_count();
-        _update_soft_keys_enabled(false);
+        this->_setup_soft_keys_layout();
+        this->_update_soft_key_count();
+        this->_update_soft_keys_enabled(false);
     }
 
     void _dispose_soft_keys() {
-        _soft_keys.clear();
-        _soft_key_observers.clear();
-        _frame_layouts.clear();
-        _collection_layout = nullptr;
-        _collection_observer = nullptr;
-        _src_cell_guide_rects.clear();
-        _dst_cell_guide_rects.clear();
-        _cell_interporator = nullptr;
+        this->_soft_keys.clear();
+        this->_soft_key_observers.clear();
+        this->_frame_layouts.clear();
+        this->_collection_layout = nullptr;
+        this->_collection_observer = nullptr;
+        this->_src_cell_guide_rects.clear();
+        this->_dst_cell_guide_rects.clear();
+        this->_cell_interporator = nullptr;
     }
 
     void _setup_soft_keys_layout() {
-        auto const key_count = _soft_keys.size();
+        auto const key_count = this->_soft_keys.size();
 
-        if (key_count == 0 || !_collection_layout) {
+        if (key_count == 0 || !this->_collection_layout) {
             return;
         }
 
-        if (_cell_interporator) {
+        if (this->_cell_interporator) {
             return;
         }
 
@@ -250,8 +250,8 @@ struct sample::soft_keyboard::impl : base::impl {
         auto each = make_fast_each(key_count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            auto &soft_key = _soft_keys.at(idx);
-            auto &dst_guide_rect = _dst_cell_guide_rects.at(idx);
+            auto &soft_key = this->_soft_keys.at(idx);
+            auto &dst_guide_rect = this->_dst_cell_guide_rects.at(idx);
 
             dst_guide_rect.set_value_changed_handler([weak_soft_key = to_weak(soft_key), handler](auto const &context) {
                 if (auto soft_key = weak_soft_key.lock()) {
@@ -259,34 +259,35 @@ struct sample::soft_keyboard::impl : base::impl {
                 }
             });
 
-            yas::move_back_insert(guide_pairs, ui::make_layout_guide_pairs({.source = _src_cell_guide_rects.at(idx),
-                                                                            .destination = dst_guide_rect}));
+            yas::move_back_insert(guide_pairs,
+                                  ui::make_layout_guide_pairs(
+                                      {.source = this->_src_cell_guide_rects.at(idx), .destination = dst_guide_rect}));
         }
 
-        _cell_interporator = ui::layout_animator{
-            {.renderer = _root_node.renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f}};
+        this->_cell_interporator = ui::layout_animator{
+            {.renderer = this->_root_node.renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f}};
     }
 
     void _update_soft_key_count() {
-        auto const key_count = _soft_keys.size();
+        auto const key_count = this->_soft_keys.size();
 
-        if (key_count == 0 || !_collection_layout) {
+        if (key_count == 0 || !this->_collection_layout) {
             return;
         }
 
-        if (!_cell_interporator) {
+        if (!this->_cell_interporator) {
             return;
         }
 
-        auto const layout_count = _collection_layout.actual_cell_count();
+        auto const layout_count = this->_collection_layout.actual_cell_count();
 
         auto each = make_fast_each(key_count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             if (idx < layout_count) {
-                if (idx >= _fixed_cell_layouts.size()) {
-                    auto &src_guide_rect = _collection_layout.cell_layout_guide_rects().at(idx);
-                    auto &dst_guide_rect = _src_cell_guide_rects.at(idx);
+                if (idx >= this->_fixed_cell_layouts.size()) {
+                    auto &src_guide_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
+                    auto &dst_guide_rect = this->_src_cell_guide_rects.at(idx);
 
                     std::vector<ui::layout> layouts;
                     layouts.reserve(4);
@@ -300,11 +301,11 @@ struct sample::soft_keyboard::impl : base::impl {
                     layouts.emplace_back(ui::make_layout(
                         {.source_guide = src_guide_rect.top(), .destination_guide = dst_guide_rect.top()}));
 
-                    _fixed_cell_layouts.emplace_back(std::move(layouts));
+                    this->_fixed_cell_layouts.emplace_back(std::move(layouts));
                 }
             } else {
-                if (layout_count < _fixed_cell_layouts.size()) {
-                    _fixed_cell_layouts.resize(layout_count);
+                if (layout_count < this->_fixed_cell_layouts.size()) {
+                    this->_fixed_cell_layouts.resize(layout_count);
                 }
                 break;
             }
@@ -312,19 +313,19 @@ struct sample::soft_keyboard::impl : base::impl {
     }
 
     void _update_soft_keys_enabled(bool animated) {
-        auto const key_count = _soft_keys.size();
+        auto const key_count = this->_soft_keys.size();
 
-        if (key_count == 0 || !_collection_layout) {
+        if (key_count == 0 || !this->_collection_layout) {
             return;
         }
 
-        auto const layout_count = _collection_layout.actual_cell_count();
-        auto renderer = _root_node.renderer();
+        auto const layout_count = this->_collection_layout.actual_cell_count();
+        auto renderer = this->_root_node.renderer();
 
         auto each = make_fast_each(key_count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            _soft_keys.at(idx).set_enabled(idx < layout_count, animated);
+            this->_soft_keys.at(idx).set_enabled(idx < layout_count, animated);
         }
     }
 };

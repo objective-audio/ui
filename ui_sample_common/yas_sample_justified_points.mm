@@ -19,14 +19,14 @@ struct sample::justified_points::impl : base::impl {
     std::vector<ui::layout_guide> _y_layout_guides{sample::y_point_count};
 
     impl() {
-        _setup_colors();
-        _setup_layout_guides();
+        this->_setup_colors();
+        this->_setup_layout_guides();
     }
 
     void prepare(sample::justified_points &points) {
-        auto &node = _rect_plane.node();
+        auto &node = this->_rect_plane.node();
 
-        _renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
+        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_points = to_weak(points), x_layout = ui::layout{nullptr}, y_layout = ui::layout{nullptr}
         ](auto const &context) mutable {
             if (auto points = weak_points.lock()) {
@@ -65,9 +65,9 @@ struct sample::justified_points::impl : base::impl {
     ui::node::observer_t _renderer_observer = nullptr;
 
     void _setup_colors() {
-        _rect_plane.node().mesh().set_use_mesh_color(true);
+        this->_rect_plane.node().mesh().set_use_mesh_color(true);
 
-        auto &rect_plane_data = _rect_plane.data();
+        auto &rect_plane_data = this->_rect_plane.data();
 
         auto each = make_fast_each(sample::all_point_count);
         while (yas_each_next(each)) {
@@ -84,8 +84,8 @@ struct sample::justified_points::impl : base::impl {
         auto x_each = make_fast_each(sample::x_point_count);
         while (yas_each_next(x_each)) {
             auto const &idx = yas_each_index(x_each);
-            _x_layout_guides.at(idx).set_value_changed_handler(
-                [weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+            this->_x_layout_guides.at(idx).set_value_changed_handler(
+                [weak_plane = to_weak(this->_rect_plane), idx](auto const &context) {
                     if (auto plane = weak_plane.lock()) {
                         plane.data().set_rect_position(
                             {.origin = {context.new_value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
@@ -96,8 +96,8 @@ struct sample::justified_points::impl : base::impl {
         auto y_each = make_fast_each(sample::y_point_count);
         while (yas_each_next(y_each)) {
             auto const &idx = yas_each_index(y_each);
-            _y_layout_guides.at(idx).set_value_changed_handler(
-                [weak_plane = to_weak(_rect_plane), idx](auto const &context) {
+            this->_y_layout_guides.at(idx).set_value_changed_handler(
+                [weak_plane = to_weak(this->_rect_plane), idx](auto const &context) {
                     if (auto plane = weak_plane.lock()) {
                         plane.data().set_rect_position(
                             {.origin = {-2.0f, context.new_value - 2.0f}, .size = {4.0f, 4.0f}}, idx + x_point_count);

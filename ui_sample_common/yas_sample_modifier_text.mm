@@ -16,9 +16,9 @@ struct sample::modifier_text::impl : base::impl {
     }
 
     void prepare(sample::modifier_text &text) {
-        auto &node = _strings.rect_plane().node();
+        auto &node = this->_strings.rect_plane().node();
 
-        _renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
+        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
             weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = ui::layout{nullptr},
             right_layout = ui::layout{nullptr}, bottom_layout = ui::layout{nullptr},
             strings_observer = ui::strings::observer_t{nullptr}
@@ -106,7 +106,7 @@ struct sample::modifier_text::impl : base::impl {
             flag_texts.emplace_back(to_string(flg));
         }
 
-        _strings.set_text(joined(flag_texts, " + "));
+        this->_strings.set_text(joined(flag_texts, " + "));
     }
 };
 
