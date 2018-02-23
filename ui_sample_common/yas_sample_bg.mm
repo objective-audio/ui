@@ -3,11 +3,13 @@
 //
 
 #include "yas_sample_bg.h"
+#include "yas_ui_layout.h"
 
 using namespace yas;
 
 struct sample::bg::impl : base::impl {
     ui::rect_plane _rect_plane = ui::make_rect_plane(1);
+    ui::layout_guide_rect _layout_guide_rect;
 
     impl() {
         auto &node = _rect_plane.node();
@@ -15,48 +17,31 @@ struct sample::bg::impl : base::impl {
     }
 
     void prepare(sample::bg &bg) {
-        _renderer_observer = _rect_plane.node().dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            weak_bg = to_weak(bg), observer = base{nullptr}, safe_area_observer = base{nullptr}
-        ](auto const &context) mutable {
+        auto weak_bg = to_weak(bg);
+
+        this->_layout_guide_rect.set_value_changed_handler([weak_bg](auto const &context) {
             if (auto bg = weak_bg.lock()) {
-                auto impl = bg.impl_ptr<sample::bg::impl>();
-                auto node = context.value;
-                if (auto renderer = node.renderer()) {
-                    observer = _make_observer(node, renderer, weak_bg);
-                } else {
-                    observer = nullptr;
-                }
+                bg.rect_plane().data().set_rect_position(context.layout_guide_rect.region(), 0);
             }
         });
-    }
 
-   private:
-    static base _make_observer(ui::node &node, ui::renderer &renderer, weak<sample::bg> &weak_bg) {
-        auto set_rect = [weak_bg](ui::node &node, ui::renderer const &renderer) {
-            if (auto bg = weak_bg.lock()) {
-                bg.rect_plane().data().set_rect_position(renderer.safe_area_layout_guide_rect().region(), 0);
-            }
-        };
-
-        set_rect(node, renderer);
-
-        return renderer.subject().make_wild_card_observer(
-            [weak_node = to_weak(node), set_rect = std::move(set_rect)](auto const &context) {
-                if (auto node = weak_node.lock()) {
-                    switch (context.key) {
-                        case ui::renderer::method::view_size_changed:
-                        case ui::renderer::method::safe_area_insets_changed: {
-                            auto const &renderer = context.value;
-                            set_rect(node, renderer);
-                        } break;
-
-                        default:
-                            break;
+        _renderer_observer = _rect_plane.node().dispatch_and_make_observer(
+            ui::node::method::renderer_changed, [weak_bg, layout = ui::layout{nullptr}](auto const &context) mutable {
+                if (sample::bg bg = weak_bg.lock()) {
+                    auto impl = bg.impl_ptr<sample::bg::impl>();
+                    ui::node node = context.value;
+                    if (ui::renderer renderer = node.renderer()) {
+                        layout = ui::make_layout(
+                            ui::fixed_layout_rect::args{.source_guide_rect = renderer.safe_area_layout_guide_rect(),
+                                                        .destination_guide_rect = impl->_layout_guide_rect});
+                    } else {
+                        layout = nullptr;
                     }
                 }
             });
     }
 
+   private:
     ui::node::observer_t _renderer_observer = nullptr;
 };
 
