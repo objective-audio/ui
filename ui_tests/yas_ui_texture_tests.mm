@@ -154,24 +154,6 @@ using namespace yas;
     XCTAssertTrue(texture1a != texture2);
 }
 
-- (void)test_draw_image_error_to_string {
-    XCTAssertEqual(to_string(ui::texture::draw_image_error::unknown), "unknown");
-    XCTAssertEqual(to_string(ui::texture::draw_image_error::image_is_null), "image_is_null");
-    XCTAssertEqual(to_string(ui::texture::draw_image_error::no_setup), "no_setup");
-    XCTAssertEqual(to_string(ui::texture::draw_image_error::out_of_range), "out_of_range");
-}
-
-- (void)test_draw_image_error_ostream {
-    auto const errors = {ui::texture::draw_image_error::unknown, ui::texture::draw_image_error::image_is_null,
-                         ui::texture::draw_image_error::no_setup, ui::texture::draw_image_error::out_of_range};
-
-    for (auto const &error : errors) {
-        std::ostringstream stream;
-        stream << error;
-        XCTAssertEqual(stream.str(), to_string(error));
-    }
-}
-
 - (void)test_method_to_string {
     XCTAssertEqual(to_string(ui::texture::method::metal_texture_changed), "metal_texture_changed");
     XCTAssertEqual(to_string(ui::texture::method::size_updated), "size_updated");

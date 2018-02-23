@@ -15,8 +15,22 @@
 using namespace yas;
 
 namespace yas::ui {
+enum class draw_image_error {
+    unknown,
+    image_is_null,
+    no_setup,
+    out_of_range,
+};
+
+using draw_image_result = result<uint_region, draw_image_error>;
 using image_pair_t = std::pair<uint_size, texture::image_handler>;
 }
+
+namespace yas {
+std::string to_string(ui::draw_image_error const &);
+}
+
+std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
 #pragma mark - ui::texture::impl
 
@@ -311,13 +325,13 @@ void ui::texture::observe_scale_from_renderer(ui::renderer &renderer) {
 
 #pragma mark -
 
-std::string yas::to_string(ui::texture::draw_image_error const &error) {
+std::string yas::to_string(ui::draw_image_error const &error) {
     switch (error) {
-        case ui::texture::draw_image_error::image_is_null:
+        case ui::draw_image_error::image_is_null:
             return "image_is_null";
-        case ui::texture::draw_image_error::no_setup:
+        case ui::draw_image_error::no_setup:
             return "no_setup";
-        case ui::texture::draw_image_error::out_of_range:
+        case ui::draw_image_error::out_of_range:
             return "out_of_range";
         default:
             return "unknown";
@@ -333,7 +347,7 @@ std::string yas::to_string(ui::texture::method const &method) {
     }
 }
 
-std::ostream &operator<<(std::ostream &os, yas::ui::texture::draw_image_error const &error) {
+std::ostream &operator<<(std::ostream &os, yas::ui::draw_image_error const &error) {
     os << to_string(error);
     return os;
 }

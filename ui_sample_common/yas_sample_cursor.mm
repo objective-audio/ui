@@ -13,12 +13,11 @@ struct sample::cursor::impl : base::impl {
     ui::node node;
 
     impl() {
-        _setup_node();
+        this->_setup_node();
     }
 
     void prepare(sample::cursor &cursor) {
-        node.dispatch_method(ui::node::method::renderer_changed);
-        _renderer_observer = node.subject().make_observer(
+        this->_renderer_observer = node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
             [weak_cursor = to_weak(cursor), event_observer = base{nullptr}](auto const &context) mutable {
                 if (auto cursor = weak_cursor.lock()) {
@@ -43,7 +42,7 @@ struct sample::cursor::impl : base::impl {
 
         ui::region region{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}};
         auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
-        
+
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);

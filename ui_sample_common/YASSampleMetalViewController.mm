@@ -19,7 +19,7 @@ using namespace yas;
 
     [self setRenderable:_main.renderer.view_renderable()];
 
-    _main.setup();
+    self->_main.setup();
 
 #if TARGET_OS_IPHONE
     self.view.multipleTouchEnabled = YES;
