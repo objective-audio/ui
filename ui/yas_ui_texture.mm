@@ -23,7 +23,6 @@ enum class draw_image_error {
 };
 
 using draw_image_result = result<uint_region, draw_image_error>;
-using image_pair_t = std::pair<uint_size, texture::image_handler>;
 }
 
 namespace yas {
@@ -31,6 +30,54 @@ std::string to_string(ui::draw_image_error const &);
 }
 
 std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
+
+#pragma mark - ui::teture::image_element::impl
+
+struct ui::texture::image_element::impl : base::impl {
+    image_pair_t const _image_pair;
+    property<std::nullptr_t, ui::uint_region> _tex_coords{{.value = ui::uint_region::zero()}};
+    subject_t _subject;
+
+    impl(image_pair_t &&pair) : _image_pair(std::move(pair)) {
+    }
+
+    void prepare(image_element &element) {
+        this->_tex_coords_observer = this->_tex_coords.subject().make_observer(
+            property_method::did_change, [weak_element = to_weak(element)](auto const &context) {
+                if (image_element element = weak_element.lock()) {
+                    element.impl_ptr<impl>()->_subject.notify(method::tex_coords_changed, element);
+                }
+            });
+    }
+
+   private:
+    base _tex_coords_observer = nullptr;
+};
+
+#pragma mark - ui::texture::image_element
+
+ui::texture::image_element::image_element(image_pair_t &&pair) : base(std::make_shared<impl>(std::move(pair))) {
+    impl_ptr<impl>()->prepare(*this);
+}
+
+ui::texture::image_element::image_element(std::nullptr_t) : base(nullptr) {
+}
+
+ui::texture::image_pair_t const &ui::texture::image_element::image_pair() const {
+    return impl_ptr<impl>()->_image_pair;
+}
+
+void ui::texture::image_element::set_tex_coords(ui::uint_region const &tex_coords) {
+    impl_ptr<impl>()->_tex_coords.set_value(tex_coords);
+}
+
+ui::uint_region const &ui::texture::image_element::tex_coords() const {
+    return impl_ptr<impl>()->_tex_coords.value();
+}
+
+ui::texture::image_element::subject_t &ui::texture::image_element::subject() {
+    return impl_ptr<impl>()->_subject;
+}
 
 #pragma mark - ui::texture::impl
 
@@ -91,24 +138,20 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                 static_cast<uint32_t>(point_size.height * scale_factor)};
     }
 
-    image_key add_image_handler(image_pair_t pair) {
+    image_element const &add_image_handler(image_pair_t pair) {
+        image_element element{std::move(pair)};
+
         if (this->_metal_texture) {
-            this->_add_image_to_metal_texture(pair);
+            this->_add_image_to_metal_texture(element);
         }
 
-        uint32_t key = 0;
-        auto it = this->_image_handlers.crbegin();
-        if (it != this->_image_handlers.crend()) {
-            key = it->first + 1;
-        }
-
-        this->_image_handlers.emplace(key, std::move(pair));
-
-        return key;
+        this->_image_elements.emplace_back(std::move(element));
+        return this->_image_elements.back();
     }
 
-    void remove_image_handler(image_key const &key) {
-        this->_image_handlers.erase(key);
+    void remove_image_handler(image_element const &erase_element) {
+        erase_if(this->_image_elements,
+                 [&erase_element](image_element const &element) { return element == erase_element; });
     }
 
     void observe_scale_from_renderer(ui::renderer &renderer, ui::texture &texture) {
@@ -139,7 +182,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
-    std::map<uint32_t, image_pair_t> _image_handlers;
+    std::vector<image_element> _image_elements;
     std::vector<base> _property_observers;
     ui::renderer::observer_t _renderer_observer = nullptr;
 
@@ -222,16 +265,17 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     void _add_images_to_metal_texture() {
-        for (auto const &pair : this->_image_handlers) {
-            this->_add_image_to_metal_texture(pair.second);
+        for (auto &element : this->_image_elements) {
+            this->_add_image_to_metal_texture(element);
         }
     }
 
-    void _add_image_to_metal_texture(image_pair_t const &pair) {
+    void _add_image_to_metal_texture(image_element &element) {
         if (!this->_metal_texture) {
             throw std::runtime_error("metal_texture not found.");
         }
 
+        auto const &pair = element.image_pair();
         auto const &point_size = pair.first;
         auto const &image_handler = pair.second;
 
@@ -240,6 +284,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         if (auto reserve_result = this->_reserve_image_size(image)) {
             if (image_handler) {
                 auto const &tex_coords = reserve_result.value();
+                element.set_tex_coords(tex_coords);
                 image_handler(image, tex_coords);
                 this->_replace_image(image, tex_coords.origin);
             }
@@ -292,12 +337,12 @@ void ui::texture::set_scale_factor(double const scale_factor) {
     impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
 }
 
-ui::texture::image_key ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
+ui::texture::image_element const &ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
     return impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
 }
 
-void ui::texture::remove_image_handler(image_key const &key) {
-    impl_ptr<impl>()->remove_image_handler(key);
+void ui::texture::remove_image_handler(image_element const &element) {
+    impl_ptr<impl>()->remove_image_handler(element);
 }
 
 ui::metal_texture &ui::texture::metal_texture() {

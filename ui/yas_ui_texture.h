@@ -32,8 +32,29 @@ class texture : public base {
         size_updated,
     };
 
-    using image_key = uint32_t;
     using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
+    using image_pair_t = std::pair<uint_size, image_handler>;
+
+    class image_element : public base {
+       public:
+        class impl;
+
+        enum class method { tex_coords_changed };
+
+        using subject_t = subject<method, image_element>;
+        using observer_t = subject_t::observer_t;
+
+        image_element(image_pair_t &&);
+        image_element(std::nullptr_t);
+        
+        image_pair_t const &image_pair() const;
+
+        void set_tex_coords(ui::uint_region const &);
+        ui::uint_region const &tex_coords() const;
+
+        subject_t &subject();
+    };
+
     using subject_t = subject<method, ui::texture>;
     using observer_t = subject_t::observer_t;
 
@@ -52,8 +73,8 @@ class texture : public base {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    image_key add_image_handler(ui::uint_size, image_handler);
-    void remove_image_handler(image_key const &);
+    image_element const &add_image_handler(ui::uint_size, image_handler);
+    void remove_image_handler(image_element const &);
 
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;

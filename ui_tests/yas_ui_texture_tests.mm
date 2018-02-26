@@ -109,13 +109,51 @@ using namespace yas;
 
     auto image_handler = [&called](ui::image &image, ui::uint_region const &tex_coords) { called = true; };
 
-    auto key = texture.add_image_handler({1, 1}, image_handler);
+    auto const &element = texture.add_image_handler({1, 1}, image_handler);
 
-    texture.remove_image_handler(key);
+    texture.remove_image_handler(element);
 
     texture.metal().metal_setup(metal_system);
 
     XCTAssertFalse(called);
+}
+
+- (void)test_observe_tex_coords {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::metal_system metal_system{device.object()};
+
+    ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
+
+    auto image_handler = [](ui::image &image, ui::uint_region const &tex_coords) {};
+
+    ui::texture::image_element element = texture.add_image_handler({1, 1}, image_handler);
+
+    XCTAssertTrue(element.tex_coords() == ui::uint_region::zero());
+
+    bool called = false;
+
+    auto observer = element.subject().make_observer(ui::texture::image_element::method::tex_coords_changed,
+                                                    [&called](auto const &context) { called = true; });
+
+    XCTAssertFalse(called);
+
+    texture.metal().metal_setup(metal_system);
+
+    XCTAssertTrue(called);
+    XCTAssertFalse(element.tex_coords() == ui::uint_region::zero());
+
+    called = false;
+
+    texture.set_scale_factor(2.0);
+    texture.metal().metal_setup(metal_system);
+
+    XCTAssertTrue(called);
+    XCTAssertFalse(element.tex_coords() == ui::uint_region::zero());
 }
 
 - (void)test_is_equal {
