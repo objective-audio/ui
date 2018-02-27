@@ -12,10 +12,13 @@ using namespace yas;
 
 struct sample::big_button::impl : base::impl {
     impl() {
-        this->_button.rect_plane().node().set_collider(ui::collider{ui::shape{ui::circle_shape{.radius = this->_radius}}});
+        this->_button.rect_plane().node().set_collider(
+            ui::collider{ui::shape{ui::circle_shape{.radius = this->_radius}}});
     }
 
     void set_texture(ui::texture &&texture) {
+        this->_image_observers.clear();
+
         auto &mesh = this->_button.rect_plane().node().mesh();
         mesh.set_texture(texture);
 
@@ -29,33 +32,46 @@ struct sample::big_button::impl : base::impl {
 
         ui::uint_size image_size{width, width};
 
-        texture.add_image_handler(image_size, [weak_button](ui::image &image, ui::uint_region const &tex_coords) {
-            if (auto button = weak_button.lock()) {
-                image.draw([image_size = image.point_size()](const CGContextRef ctx) {
-                    CGContextSetFillColorWithColor(
-                        ctx, [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
-                    CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
-                });
-
-                button.rect_plane().data().set_rect_tex_coords(tex_coords, 0);
-            }
+        auto image_element = texture.add_image_handler(image_size, [](ui::image &image, ui::uint_region const &) {
+            image.draw([image_size = image.point_size()](const CGContextRef ctx) {
+                CGContextSetFillColorWithColor(ctx,
+                                               [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
+                CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+            });
         });
 
-        texture.add_image_handler(image_size, [weak_button](ui::image &image, ui::uint_region const &tex_coords) {
-            if (auto button = weak_button.lock()) {
-                image.draw([image_size = image.point_size()](const CGContextRef ctx) {
-                    CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
-                    CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
-                });
+        this->_button.rect_plane().data().set_rect_tex_coords(image_element.tex_coords(), 0);
 
-                button.rect_plane().data().set_rect_tex_coords(tex_coords, 1);
-            }
+        this->_image_observers.emplace_back(image_element.subject().make_observer(
+            ui::texture::image_element::method::tex_coords_changed, [weak_button](auto const &context) {
+                if (auto button = weak_button.lock()) {
+                    ui::texture::image_element const &element = context.value;
+                    button.rect_plane().data().set_rect_tex_coords(element.tex_coords(), 0);
+                }
+            }));
+
+        image_element = texture.add_image_handler(image_size, [](ui::image &image, ui::uint_region const &tex_coords) {
+            image.draw([image_size = image.point_size()](const CGContextRef ctx) {
+                CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
+                CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+            });
         });
+
+        this->_button.rect_plane().data().set_rect_tex_coords(image_element.tex_coords(), 1);
+
+        this->_image_observers.emplace_back(image_element.subject().make_observer(
+            ui::texture::image_element::method::tex_coords_changed, [weak_button](auto const &context) {
+                if (auto button = weak_button.lock()) {
+                    ui::texture::image_element const &element = context.value;
+                    button.rect_plane().data().set_rect_tex_coords(element.tex_coords(), 1);
+                }
+            }));
     }
 
     float const _radius = 60;
     ui::button _button{
         {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}}};
+    std::vector<ui::texture::image_element::observer_t> _image_observers;
 };
 
 #pragma mark - big_button
