@@ -32,7 +32,7 @@ class texture : public base {
         size_updated,
     };
 
-    using image_handler = std::function<void(ui::image &image, ui::uint_region const &tex_coords)>;
+    using image_handler = std::function<void(ui::image &image)>;
     using image_pair_t = std::pair<uint_size, image_handler>;
 
     class image_element : public base {

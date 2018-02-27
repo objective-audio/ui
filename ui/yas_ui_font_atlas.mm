@@ -156,7 +156,7 @@ struct ui::font_atlas::impl : base::impl {
             this->_word_infos.at(idx).rect.set_position(image_region);
 
             auto image_element = this->_texture.add_image_handler(
-                image_size, [glyph = glyphs[idx], idx, ct_font_obj](ui::image & image, ui::uint_region const &) {
+                image_size, [glyph = glyphs[idx], idx, ct_font_obj](ui::image & image) {
                     image.draw([height = image.point_size().height, &glyph, &ct_font_obj](CGContextRef const ctx) {
                         CGContextSaveGState(ctx);
 

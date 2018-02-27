@@ -32,7 +32,7 @@ struct sample::big_button::impl : base::impl {
 
         ui::uint_size image_size{width, width};
 
-        auto image_element = texture.add_image_handler(image_size, [](ui::image &image, ui::uint_region const &) {
+        auto image_element = texture.add_image_handler(image_size, [](ui::image &image) {
             image.draw([image_size = image.point_size()](const CGContextRef ctx) {
                 CGContextSetFillColorWithColor(ctx,
                                                [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
@@ -50,7 +50,7 @@ struct sample::big_button::impl : base::impl {
                 }
             }));
 
-        image_element = texture.add_image_handler(image_size, [](ui::image &image, ui::uint_region const &tex_coords) {
+        image_element = texture.add_image_handler(image_size, [](ui::image &image) {
             image.draw([image_size = image.point_size()](const CGContextRef ctx) {
                 CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
                 CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
