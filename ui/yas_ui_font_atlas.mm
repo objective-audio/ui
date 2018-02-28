@@ -117,10 +117,10 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
     ui::texture::observer_t _texture_observer = nullptr;
-    std::vector<ui::texture::image_element::observer_t> _image_observers;
+    std::vector<ui::texture_element::observer_t> _element_observers;
 
     void _update_texture() {
-        this->_image_observers.clear();
+        this->_element_observers.clear();
 
         if (!this->_texture) {
             this->_word_infos.clear();
@@ -155,7 +155,7 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            auto image_element = this->_texture.add_image_handler(
+            auto texture_element = this->_texture.add_image_handler(
                 image_size, [glyph = glyphs[idx], idx, ct_font_obj](ui::image & image) {
                     image.draw([height = image.point_size().height, &glyph, &ct_font_obj](CGContextRef const ctx) {
                         CGContextSaveGState(ctx);
@@ -173,12 +173,12 @@ struct ui::font_atlas::impl : base::impl {
                     });
                 });
 
-            this->_word_infos.at(idx).rect.set_tex_coord(image_element.tex_coords());
+            this->_word_infos.at(idx).rect.set_tex_coord(texture_element.tex_coords());
 
-            this->_image_observers.emplace_back(image_element.subject().make_observer(
-                ui::texture::image_element::method::tex_coords_changed, [weak_atlas, idx](auto const &context) {
+            this->_element_observers.emplace_back(texture_element.subject().make_observer(
+                ui::texture_element::method::tex_coords_changed, [weak_atlas, idx](auto const &context) {
                     if (auto atlas = weak_atlas.lock()) {
-                        ui::texture::image_element const &element = context.value;
+                        ui::texture_element const &element = context.value;
                         atlas.impl_ptr<impl>()->_word_infos.at(idx).rect.set_tex_coord(element.tex_coords());
                     }
                 }));

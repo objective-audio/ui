@@ -127,13 +127,13 @@ using namespace yas;
 
     auto image_handler = [](ui::image &) {};
 
-    ui::texture::image_element element = texture.add_image_handler({1, 1}, image_handler);
+    ui::texture_element element = texture.add_image_handler({1, 1}, image_handler);
 
     XCTAssertTrue(element.tex_coords() == ui::uint_region::zero());
 
     bool called = false;
 
-    auto observer = element.subject().make_observer(ui::texture::image_element::method::tex_coords_changed,
+    auto observer = element.subject().make_observer(ui::texture_element::method::tex_coords_changed,
                                                     [&called](auto const &context) { called = true; });
 
     XCTAssertFalse(called);

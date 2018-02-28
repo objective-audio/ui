@@ -31,9 +31,9 @@ std::string to_string(ui::draw_image_error const &);
 
 std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
-#pragma mark - ui::teture::image_element::impl
+#pragma mark - ui::teture::texture_element::impl
 
-struct ui::texture::image_element::impl : base::impl {
+struct ui::texture_element::impl : base::impl {
     image_pair_t const _image_pair;
     property<std::nullptr_t, ui::uint_region> _tex_coords{{.value = ui::uint_region::zero()}};
     subject_t _subject;
@@ -41,10 +41,10 @@ struct ui::texture::image_element::impl : base::impl {
     impl(image_pair_t &&pair) : _image_pair(std::move(pair)) {
     }
 
-    void prepare(image_element &element) {
+    void prepare(texture_element &element) {
         this->_tex_coords_observer = this->_tex_coords.subject().make_observer(
             property_method::did_change, [weak_element = to_weak(element)](auto const &context) {
-                if (image_element element = weak_element.lock()) {
+                if (texture_element element = weak_element.lock()) {
                     element.impl_ptr<impl>()->_subject.notify(method::tex_coords_changed, element);
                 }
             });
@@ -54,28 +54,28 @@ struct ui::texture::image_element::impl : base::impl {
     base _tex_coords_observer = nullptr;
 };
 
-#pragma mark - ui::texture::image_element
+#pragma mark - ui::texture_element
 
-ui::texture::image_element::image_element(image_pair_t &&pair) : base(std::make_shared<impl>(std::move(pair))) {
+ui::texture_element::texture_element(image_pair_t &&pair) : base(std::make_shared<impl>(std::move(pair))) {
     impl_ptr<impl>()->prepare(*this);
 }
 
-ui::texture::image_element::image_element(std::nullptr_t) : base(nullptr) {
+ui::texture_element::texture_element(std::nullptr_t) : base(nullptr) {
 }
 
-ui::texture::image_pair_t const &ui::texture::image_element::image_pair() const {
+ui::image_pair_t const &ui::texture_element::image_pair() const {
     return impl_ptr<impl>()->_image_pair;
 }
 
-void ui::texture::image_element::set_tex_coords(ui::uint_region const &tex_coords) {
+void ui::texture_element::set_tex_coords(ui::uint_region const &tex_coords) {
     impl_ptr<impl>()->_tex_coords.set_value(tex_coords);
 }
 
-ui::uint_region const &ui::texture::image_element::tex_coords() const {
+ui::uint_region const &ui::texture_element::tex_coords() const {
     return impl_ptr<impl>()->_tex_coords.value();
 }
 
-ui::texture::image_element::subject_t &ui::texture::image_element::subject() {
+ui::texture_element::subject_t &ui::texture_element::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
@@ -138,20 +138,20 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                 static_cast<uint32_t>(point_size.height * scale_factor)};
     }
 
-    image_element const &add_image_handler(image_pair_t pair) {
-        image_element element{std::move(pair)};
+    texture_element const &add_image_handler(image_pair_t pair) {
+        texture_element element{std::move(pair)};
 
         if (this->_metal_texture) {
             this->_add_image_to_metal_texture(element);
         }
 
-        this->_image_elements.emplace_back(std::move(element));
-        return this->_image_elements.back();
+        this->_texture_elements.emplace_back(std::move(element));
+        return this->_texture_elements.back();
     }
 
-    void remove_image_handler(image_element const &erase_element) {
-        erase_if(this->_image_elements,
-                 [&erase_element](image_element const &element) { return element == erase_element; });
+    void remove_image_handler(texture_element const &erase_element) {
+        erase_if(this->_texture_elements,
+                 [&erase_element](texture_element const &element) { return element == erase_element; });
     }
 
     void observe_scale_from_renderer(ui::renderer &renderer, ui::texture &texture) {
@@ -182,7 +182,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
-    std::vector<image_element> _image_elements;
+    std::vector<texture_element> _texture_elements;
     std::vector<base> _property_observers;
     ui::renderer::observer_t _renderer_observer = nullptr;
 
@@ -265,12 +265,12 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     void _add_images_to_metal_texture() {
-        for (auto &element : this->_image_elements) {
+        for (auto &element : this->_texture_elements) {
             this->_add_image_to_metal_texture(element);
         }
     }
 
-    void _add_image_to_metal_texture(image_element &element) {
+    void _add_image_to_metal_texture(texture_element &element) {
         if (!this->_metal_texture) {
             throw std::runtime_error("metal_texture not found.");
         }
@@ -337,11 +337,11 @@ void ui::texture::set_scale_factor(double const scale_factor) {
     impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
 }
 
-ui::texture::image_element const &ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
+ui::texture_element const &ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
     return impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
 }
 
-void ui::texture::remove_image_handler(image_element const &element) {
+void ui::texture::remove_image_handler(texture_element const &element) {
     impl_ptr<impl>()->remove_image_handler(element);
 }
 
