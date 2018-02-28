@@ -138,6 +138,16 @@ void ui::rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::s
     });
 }
 
+void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, std::size_t const rect_idx) {
+    this->_element_observers.emplace_back(element.subject().make_observer(
+        ui::texture_element::method::tex_coords_changed, [this_ptr = this, rect_idx](auto const &context) {
+            ui::texture_element const &element = context.value;
+            this_ptr->set_rect_tex_coords(element.tex_coords(), rect_idx);
+        }));
+
+    this->set_rect_tex_coords(element.tex_coords(), rect_idx);
+}
+
 ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return this->_dynamic_mesh_data;
 }
