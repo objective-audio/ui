@@ -285,7 +285,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             if (image_handler) {
                 auto const &tex_coords = reserve_result.value();
                 element.set_tex_coords(tex_coords);
-                image_handler(image, tex_coords);
+                image_handler(image);
                 this->_replace_image(image, tex_coords.origin);
             }
         }

@@ -117,8 +117,11 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
     ui::texture::observer_t _texture_observer = nullptr;
+    std::vector<ui::texture::image_element::observer_t> _image_observers;
 
     void _update_texture() {
+        this->_image_observers.clear();
+
         if (!this->_texture) {
             this->_word_infos.clear();
             return;
@@ -152,9 +155,8 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            this->_texture.add_image_handler(image_size, [weak_atlas, glyph = glyphs[idx], idx, ct_font_obj](
-                                                             ui::image & image, ui::uint_region const &tex_coords) {
-                if (auto atlas = weak_atlas.lock()) {
+            auto image_element = this->_texture.add_image_handler(
+                image_size, [glyph = glyphs[idx], idx, ct_font_obj](ui::image & image) {
                     image.draw([height = image.point_size().height, &glyph, &ct_font_obj](CGContextRef const ctx) {
                         CGContextSaveGState(ctx);
 
@@ -169,10 +171,17 @@ struct ui::font_atlas::impl : base::impl {
 
                         CGContextRestoreGState(ctx);
                     });
+                });
 
-                    atlas.impl_ptr<impl>()->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
-                }
-            });
+            this->_word_infos.at(idx).rect.set_tex_coord(image_element.tex_coords());
+
+            this->_image_observers.emplace_back(image_element.subject().make_observer(
+                ui::texture::image_element::method::tex_coords_changed, [weak_atlas, idx](auto const &context) {
+                    if (auto atlas = weak_atlas.lock()) {
+                        ui::texture::image_element const &element = context.value;
+                        atlas.impl_ptr<impl>()->_word_infos.at(idx).rect.set_tex_coord(element.tex_coords());
+                    }
+                }));
 
             auto const &advance = advances[idx];
             this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
@@ -244,4 +253,3 @@ std::string yas::to_string(ui::font_atlas::method const &method) {
             return "texture_updated";
     }
 }
-

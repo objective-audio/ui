@@ -59,39 +59,35 @@ using namespace yas;
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
     texture.metal().metal_setup(metal_system);
 
-    ui::uint_region provided_tex_coords;
-
-    auto image_handler = [&provided_tex_coords](ui::image &image, ui::uint_region const &tex_coords) {
+    auto image_handler = [](ui::image &image) {
         image.draw([](auto const context) {
             auto const width = CGBitmapContextGetWidth(context);
             auto const height = CGBitmapContextGetHeight(context);
             CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
             CGContextFillRect(context, CGRectMake(0, 0, width, height));
         });
-
-        provided_tex_coords = tex_coords;
     };
 
-    texture.add_image_handler({1, 1}, image_handler);
+    auto element = texture.add_image_handler({1, 1}, image_handler);
 
-    XCTAssertEqual(provided_tex_coords.origin.x, 2);
-    XCTAssertEqual(provided_tex_coords.origin.y, 2);
-    XCTAssertEqual(provided_tex_coords.size.width, 1);
-    XCTAssertEqual(provided_tex_coords.size.height, 1);
+    XCTAssertEqual(element.tex_coords().origin.x, 2);
+    XCTAssertEqual(element.tex_coords().origin.y, 2);
+    XCTAssertEqual(element.tex_coords().size.width, 1);
+    XCTAssertEqual(element.tex_coords().size.height, 1);
 
-    texture.add_image_handler({1, 1}, image_handler);
+    element = texture.add_image_handler({1, 1}, image_handler);
 
-    XCTAssertEqual(provided_tex_coords.origin.x, 5);
-    XCTAssertEqual(provided_tex_coords.origin.y, 2);
-    XCTAssertEqual(provided_tex_coords.size.width, 1);
-    XCTAssertEqual(provided_tex_coords.size.height, 1);
+    XCTAssertEqual(element.tex_coords().origin.x, 5);
+    XCTAssertEqual(element.tex_coords().origin.y, 2);
+    XCTAssertEqual(element.tex_coords().size.width, 1);
+    XCTAssertEqual(element.tex_coords().size.height, 1);
 
-    texture.add_image_handler({1, 1}, image_handler);
+    element = texture.add_image_handler({1, 1}, image_handler);
 
-    XCTAssertEqual(provided_tex_coords.origin.x, 2);
-    XCTAssertEqual(provided_tex_coords.origin.y, 5);
-    XCTAssertEqual(provided_tex_coords.size.width, 1);
-    XCTAssertEqual(provided_tex_coords.size.height, 1);
+    XCTAssertEqual(element.tex_coords().origin.x, 2);
+    XCTAssertEqual(element.tex_coords().origin.y, 5);
+    XCTAssertEqual(element.tex_coords().size.width, 1);
+    XCTAssertEqual(element.tex_coords().size.height, 1);
 }
 
 - (void)test_remove_image_handler {
@@ -107,7 +103,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto image_handler = [&called](ui::image &image, ui::uint_region const &tex_coords) { called = true; };
+    auto image_handler = [&called](ui::image &image) { called = true; };
 
     auto const &element = texture.add_image_handler({1, 1}, image_handler);
 
@@ -129,7 +125,7 @@ using namespace yas;
 
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
 
-    auto image_handler = [](ui::image &image, ui::uint_region const &tex_coords) {};
+    auto image_handler = [](ui::image &) {};
 
     ui::texture::image_element element = texture.add_image_handler({1, 1}, image_handler);
 
