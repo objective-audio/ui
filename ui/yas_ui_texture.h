@@ -73,7 +73,7 @@ class texture : public base {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    texture_element const &add_image_handler(ui::uint_size, image_handler);
+    [[nodiscard]] texture_element const &add_image_handler(ui::uint_size, image_handler);
     void remove_image_handler(texture_element const &);
 
     ui::metal_texture &metal_texture();
