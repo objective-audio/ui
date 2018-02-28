@@ -15,6 +15,29 @@ namespace yas::ui {
 class image;
 class metal_texture;
 
+using image_handler = std::function<void(ui::image &image)>;
+using image_pair_t = std::pair<uint_size, image_handler>;
+
+class texture_element : public base {
+   public:
+    class impl;
+
+    enum class method { tex_coords_changed };
+
+    using subject_t = subject<method, texture_element>;
+    using observer_t = subject_t::observer_t;
+
+    texture_element(image_pair_t &&);
+    texture_element(std::nullptr_t);
+
+    image_pair_t const &image_pair() const;
+
+    void set_tex_coords(ui::uint_region const &);
+    ui::uint_region const &tex_coords() const;
+
+    subject_t &subject();
+};
+
 class texture : public base {
    public:
     class impl;
@@ -30,29 +53,6 @@ class texture : public base {
     enum class method {
         metal_texture_changed,
         size_updated,
-    };
-
-    using image_handler = std::function<void(ui::image &image)>;
-    using image_pair_t = std::pair<uint_size, image_handler>;
-
-    class image_element : public base {
-       public:
-        class impl;
-
-        enum class method { tex_coords_changed };
-
-        using subject_t = subject<method, image_element>;
-        using observer_t = subject_t::observer_t;
-
-        image_element(image_pair_t &&);
-        image_element(std::nullptr_t);
-        
-        image_pair_t const &image_pair() const;
-
-        void set_tex_coords(ui::uint_region const &);
-        ui::uint_region const &tex_coords() const;
-
-        subject_t &subject();
     };
 
     using subject_t = subject<method, ui::texture>;
@@ -73,8 +73,8 @@ class texture : public base {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    image_element const &add_image_handler(ui::uint_size, image_handler);
-    void remove_image_handler(image_element const &);
+    [[nodiscard]] texture_element const &add_image_handler(ui::uint_size, image_handler);
+    void remove_image_handler(texture_element const &);
 
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;
