@@ -105,6 +105,7 @@
 		B60428381D3B2F820076769D /* yas_sample_soft_keyboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_soft_keyboard.mm; path = ../../ui_sample_common/yas_sample_soft_keyboard.mm; sourceTree = "<group>"; };
 		B607FB4420479D3C00FA2BB9 /* yas_ui_texture_element.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_texture_element.mm; sourceTree = "<group>"; };
 		B607FB4520479D3D00FA2BB9 /* yas_ui_texture_element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture_element.h; sourceTree = "<group>"; };
+		B607FB4B2047A11A00FA2BB9 /* yas_ui_texture_protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture_protocol.h; sourceTree = "<group>"; };
 		B61AE4CA1CF9868C001479E3 /* yas_ui_metal_render_encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_render_encoder.h; sourceTree = "<group>"; };
 		B61AE4CB1CF9868C001479E3 /* yas_ui_metal_render_encoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_render_encoder.mm; sourceTree = "<group>"; };
 		B6301DE11D6BEB640068DB1B /* yas_ui_collection_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_collection_layout.cpp; sourceTree = "<group>"; };
@@ -499,6 +500,7 @@
 				B6DF849D1D8CF2A200A2EE48 /* yas_ui_strings.mm */,
 				B607FB4520479D3D00FA2BB9 /* yas_ui_texture_element.h */,
 				B607FB4420479D3C00FA2BB9 /* yas_ui_texture_element.mm */,
+				B607FB4B2047A11A00FA2BB9 /* yas_ui_texture_protocol.h */,
 				B65F6DE81CC87DB6007C3523 /* yas_ui_texture.h */,
 				B65F6DE91CC87DB6007C3523 /* yas_ui_texture.mm */,
 				B65F6DEA1CC87DB6007C3523 /* yas_ui_transformer.cpp */,

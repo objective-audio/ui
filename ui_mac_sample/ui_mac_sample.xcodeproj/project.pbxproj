@@ -103,6 +103,7 @@
 		B604282D1D3929830076769D /* yas_ui_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_button.h; sourceTree = "<group>"; };
 		B607FB4720479D4900FA2BB9 /* yas_ui_texture_element.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_texture_element.mm; sourceTree = "<group>"; };
 		B607FB4820479D4900FA2BB9 /* yas_ui_texture_element.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture_element.h; sourceTree = "<group>"; };
+		B607FB4A20479F4300FA2BB9 /* yas_ui_texture_protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture_protocol.h; sourceTree = "<group>"; };
 		B60F3FE91FC7B8A6008493DC /* yas_sample_draw_call_text.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_draw_call_text.mm; path = ../../ui_sample_common/yas_sample_draw_call_text.mm; sourceTree = "<group>"; };
 		B60F3FEA1FC7B8A6008493DC /* yas_sample_draw_call_text.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = yas_sample_draw_call_text.hpp; path = ../../ui_sample_common/yas_sample_draw_call_text.hpp; sourceTree = "<group>"; };
 		B60F3FEC1FC7E63D008493DC /* yas_timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_timer.h; sourceTree = "<group>"; };
@@ -572,6 +573,7 @@
 				B6DF849A1D8CF29A00A2EE48 /* yas_ui_strings.mm */,
 				B607FB4820479D4900FA2BB9 /* yas_ui_texture_element.h */,
 				B607FB4720479D4900FA2BB9 /* yas_ui_texture_element.mm */,
+				B607FB4A20479F4300FA2BB9 /* yas_ui_texture_protocol.h */,
 				B6F5019C1C9BFFD400A0B4A1 /* yas_ui_texture.h */,
 				B6F5019D1C9BFFD400A0B4A1 /* yas_ui_texture.mm */,
 				B626619E1CB8FEA700F7B221 /* yas_ui_transformer.cpp */,
