@@ -37,6 +37,7 @@ struct rect_plane_data {
                          simd::float4x4 const &matrix = matrix_identity_float4x4);
 
     void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
+    void clear_observers();
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
 
