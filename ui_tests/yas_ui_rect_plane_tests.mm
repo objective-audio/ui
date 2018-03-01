@@ -485,6 +485,19 @@ using namespace yas;
     XCTAssertEqual(vertices[2].tex_coord.y, 20.0f);
     XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
     XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
+
+    plane_data.clear_observers();
+
+    element.set_tex_coords(ui::uint_region{.origin = {100, 200}, .size = {300, 400}});
+
+    XCTAssertEqual(vertices[0].tex_coord.x, 10.0f);
+    XCTAssertEqual(vertices[0].tex_coord.y, 60.0f);
+    XCTAssertEqual(vertices[1].tex_coord.x, 40.0f);
+    XCTAssertEqual(vertices[1].tex_coord.y, 60.0f);
+    XCTAssertEqual(vertices[2].tex_coord.x, 10.0f);
+    XCTAssertEqual(vertices[2].tex_coord.y, 20.0f);
+    XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
+    XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 }
 
 @end
