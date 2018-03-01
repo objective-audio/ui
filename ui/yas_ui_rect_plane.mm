@@ -148,6 +148,22 @@ void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, 
     this->set_rect_tex_coords(element.tex_coords(), rect_idx);
 }
 
+void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, std::size_t const rect_idx,
+                                                  tex_coords_transform_f transformer) {
+    if (!transformer) {
+        throw std::invalid_argument("tex_coords transformer is null.");
+    }
+
+    this->_element_observers.emplace_back(element.subject().make_observer(
+        ui::texture_element::method::tex_coords_changed,
+        [this_ptr = this, transformer = std::move(transformer), rect_idx](auto const &context) {
+            ui::texture_element const &element = context.value;
+            this_ptr->set_rect_tex_coords(transformer(element.tex_coords()), rect_idx);
+        }));
+
+    this->set_rect_tex_coords(transformer(element.tex_coords()), rect_idx);
+}
+
 void ui::rect_plane_data::clear_observers() {
     this->_element_observers.clear();
 }

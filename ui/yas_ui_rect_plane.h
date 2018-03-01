@@ -14,6 +14,8 @@ class node;
 class color;
 
 struct rect_plane_data {
+    using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
+
     explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
 
     virtual ~rect_plane_data() final;
@@ -37,6 +39,7 @@ struct rect_plane_data {
                          simd::float4x4 const &matrix = matrix_identity_float4x4);
 
     void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
+    void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx, tex_coords_transform_f);
     void clear_observers();
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
