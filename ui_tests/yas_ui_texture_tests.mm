@@ -10,6 +10,7 @@
 #import "yas_ui_image.h"
 #import "yas_ui_metal_texture.h"
 #import "yas_ui_texture.h"
+#import "yas_ui_texture_element.h"
 
 using namespace yas;
 

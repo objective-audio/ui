@@ -7,6 +7,7 @@
 #include <vector>
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_types.h"
+#include "yas_ui_texture_element.h"
 
 namespace yas::ui {
 class node;
@@ -35,10 +36,13 @@ struct rect_plane_data {
     void set_rect_vertex(const vertex2d_t *const in_ptr, std::size_t const rect_idx,
                          simd::float4x4 const &matrix = matrix_identity_float4x4);
 
+    void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
+
     ui::dynamic_mesh_data &dynamic_mesh_data();
 
    private:
     ui::dynamic_mesh_data _dynamic_mesh_data;
+    std::vector<ui::texture_element::observer_t> _element_observers;
 };
 
 rect_plane_data make_rect_plane_data(std::size_t const max_rect_count);

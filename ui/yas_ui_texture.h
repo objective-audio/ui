@@ -10,33 +10,12 @@
 #include "yas_ui_metal_system.h"
 #include "yas_ui_types.h"
 #include "yas_observing.h"
+#include "yas_ui_texture_protocol.h"
 
 namespace yas::ui {
 class image;
 class metal_texture;
-
-using image_handler = std::function<void(ui::image &image)>;
-using image_pair_t = std::pair<uint_size, image_handler>;
-
-class texture_element : public base {
-   public:
-    class impl;
-
-    enum class method { tex_coords_changed };
-
-    using subject_t = subject<method, texture_element>;
-    using observer_t = subject_t::observer_t;
-
-    texture_element(image_pair_t &&);
-    texture_element(std::nullptr_t);
-
-    image_pair_t const &image_pair() const;
-
-    void set_tex_coords(ui::uint_region const &);
-    ui::uint_region const &tex_coords() const;
-
-    subject_t &subject();
-};
+class texture_element;
 
 class texture : public base {
    public:
@@ -73,7 +52,7 @@ class texture : public base {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    [[nodiscard]] texture_element const &add_image_handler(ui::uint_size, image_handler);
+    [[nodiscard]] texture_element const &add_image_handler(ui::uint_size, ui::image_handler);
     void remove_image_handler(texture_element const &);
 
     ui::metal_texture &metal_texture();
