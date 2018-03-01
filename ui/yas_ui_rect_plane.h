@@ -7,7 +7,7 @@
 #include <vector>
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_types.h"
-#include "yas_ui_texture.h"
+#include "yas_ui_texture_element.h"
 
 namespace yas::ui {
 class node;

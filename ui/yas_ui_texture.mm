@@ -10,6 +10,7 @@
 #include "yas_ui_texture.h"
 #include "yas_unless.h"
 #include "yas_property.h"
+#include "yas_ui_texture_element.h"
 #include <map>
 
 using namespace yas;

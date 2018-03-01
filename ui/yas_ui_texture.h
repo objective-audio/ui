@@ -10,11 +10,12 @@
 #include "yas_ui_metal_system.h"
 #include "yas_ui_types.h"
 #include "yas_observing.h"
-#include "yas_ui_texture_element.h"
+#include "yas_ui_texture_protocol.h"
 
 namespace yas::ui {
 class image;
 class metal_texture;
+class texture_element;
 
 class texture : public base {
    public:

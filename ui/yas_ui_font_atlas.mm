@@ -12,6 +12,7 @@
 #include "yas_ui_font_atlas.h"
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
+#include "yas_ui_texture_element.h"
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIKit.h>
