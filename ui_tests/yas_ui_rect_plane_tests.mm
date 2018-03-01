@@ -500,4 +500,37 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 }
 
+- (void)test_observe_tex_coords_with_transformer {
+    auto plane_data = ui::make_rect_plane_data(1);
+    auto vertices = plane_data.dynamic_mesh_data().vertices();
+    ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](ui::image &image) {})};
+
+    element.set_tex_coords(ui::uint_region{.origin = {1, 2}, .size = {3, 4}});
+
+    plane_data.observe_rect_tex_coords(element, 0, [](ui::uint_region const &tex_coords) {
+        return ui::uint_region{.origin = {tex_coords.origin.x + 1, tex_coords.origin.y + 2},
+                               .size = {tex_coords.size.width + 3, tex_coords.size.height + 4}};
+    });
+
+    XCTAssertEqual(vertices[0].tex_coord.x, 2.0f);
+    XCTAssertEqual(vertices[0].tex_coord.y, 12.0f);
+    XCTAssertEqual(vertices[1].tex_coord.x, 8.0f);
+    XCTAssertEqual(vertices[1].tex_coord.y, 12.0f);
+    XCTAssertEqual(vertices[2].tex_coord.x, 2.0f);
+    XCTAssertEqual(vertices[2].tex_coord.y, 4.0f);
+    XCTAssertEqual(vertices[3].tex_coord.x, 8.0f);
+    XCTAssertEqual(vertices[3].tex_coord.y, 4.0f);
+
+    element.set_tex_coords(ui::uint_region{.origin = {10, 20}, .size = {30, 40}});
+
+    XCTAssertEqual(vertices[0].tex_coord.x, 11.0f);
+    XCTAssertEqual(vertices[0].tex_coord.y, 66.0f);
+    XCTAssertEqual(vertices[1].tex_coord.x, 44.0f);
+    XCTAssertEqual(vertices[1].tex_coord.y, 66.0f);
+    XCTAssertEqual(vertices[2].tex_coord.x, 11.0f);
+    XCTAssertEqual(vertices[2].tex_coord.y, 22.0f);
+    XCTAssertEqual(vertices[3].tex_coord.x, 44.0f);
+    XCTAssertEqual(vertices[3].tex_coord.y, 22.0f);
+}
+
 @end
