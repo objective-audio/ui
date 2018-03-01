@@ -148,6 +148,10 @@ void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, 
     this->set_rect_tex_coords(element.tex_coords(), rect_idx);
 }
 
+void ui::rect_plane_data::clear_observers() {
+    this->_element_observers.clear();
+}
+
 ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return this->_dynamic_mesh_data;
 }
