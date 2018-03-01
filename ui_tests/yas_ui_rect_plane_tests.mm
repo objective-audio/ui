@@ -9,6 +9,7 @@
 #import "yas_ui_mesh.h"
 #import "yas_ui_mesh_data.h"
 #import "yas_ui_color.h"
+#import "yas_ui_texture.h"
 
 using namespace yas;
 
@@ -454,6 +455,36 @@ using namespace yas;
     XCTAssertEqual(vertices[3].color[1], 3.4f);
     XCTAssertEqual(vertices[3].color[2], 3.5f);
     XCTAssertEqual(vertices[3].color[3], 3.6f);
+}
+
+- (void)test_observe_tex_coords {
+    auto plane_data = ui::make_rect_plane_data(1);
+    auto vertices = plane_data.dynamic_mesh_data().vertices();
+    ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](ui::image &image) {})};
+
+    element.set_tex_coords(ui::uint_region{.origin = {1, 2}, .size = {3, 4}});
+
+    plane_data.observe_rect_tex_coords(element, 0);
+
+    XCTAssertEqual(vertices[0].tex_coord.x, 1.0f);
+    XCTAssertEqual(vertices[0].tex_coord.y, 6.0f);
+    XCTAssertEqual(vertices[1].tex_coord.x, 4.0f);
+    XCTAssertEqual(vertices[1].tex_coord.y, 6.0f);
+    XCTAssertEqual(vertices[2].tex_coord.x, 1.0f);
+    XCTAssertEqual(vertices[2].tex_coord.y, 2.0f);
+    XCTAssertEqual(vertices[3].tex_coord.x, 4.0f);
+    XCTAssertEqual(vertices[3].tex_coord.y, 2.0f);
+
+    element.set_tex_coords(ui::uint_region{.origin = {10, 20}, .size = {30, 40}});
+
+    XCTAssertEqual(vertices[0].tex_coord.x, 10.0f);
+    XCTAssertEqual(vertices[0].tex_coord.y, 60.0f);
+    XCTAssertEqual(vertices[1].tex_coord.x, 40.0f);
+    XCTAssertEqual(vertices[1].tex_coord.y, 60.0f);
+    XCTAssertEqual(vertices[2].tex_coord.x, 10.0f);
+    XCTAssertEqual(vertices[2].tex_coord.y, 20.0f);
+    XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
+    XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 }
 
 @end
