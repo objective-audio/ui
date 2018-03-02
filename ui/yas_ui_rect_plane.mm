@@ -11,15 +11,28 @@
 
 using namespace yas;
 
+#pragma mark - rect_plane_data::impl
+
+struct ui::rect_plane_data::impl : base::impl {
+    ui::dynamic_mesh_data _dynamic_mesh_data;
+
+    impl(ui::dynamic_mesh_data &&data) : _dynamic_mesh_data(std::move(data)) {
+    }
+};
+
 #pragma mark - rect_plane_data
 
-ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data mesh_data) : _dynamic_mesh_data(std::move(mesh_data)) {
+ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data mesh_data)
+    : base(std::make_shared<impl>(std::move(mesh_data))) {
+}
+
+ui::rect_plane_data::rect_plane_data(std::nullptr_t) : base(nullptr) {
 }
 
 ui::rect_plane_data::~rect_plane_data() = default;
 
 std::size_t ui::rect_plane_data::max_rect_count() const {
-    auto const max_index_count = this->_dynamic_mesh_data.max_index_count();
+    auto const max_index_count = impl_ptr<impl>()->_dynamic_mesh_data.max_index_count();
     if (max_index_count > 0) {
         return max_index_count / 6;
     }
@@ -27,7 +40,7 @@ std::size_t ui::rect_plane_data::max_rect_count() const {
 }
 
 std::size_t ui::rect_plane_data::rect_count() const {
-    auto const index_count = this->_dynamic_mesh_data.index_count();
+    auto const index_count = impl_ptr<impl>()->_dynamic_mesh_data.index_count();
     if (index_count > 0) {
         return index_count / 6;
     }
@@ -35,18 +48,18 @@ std::size_t ui::rect_plane_data::rect_count() const {
 }
 
 void ui::rect_plane_data::set_rect_count(std::size_t const count) {
-    this->_dynamic_mesh_data.set_index_count(count * 6);
+    this->dynamic_mesh_data().set_index_count(count * 6);
 }
 
 void ui::rect_plane_data::write(std::function<void(ui::vertex2d_rect_t *, ui::index2d_rect_t *)> const &func) {
-    this->_dynamic_mesh_data.write([&func](auto &vertices, auto &indices) {
+    this->dynamic_mesh_data().write([&func](auto &vertices, auto &indices) {
         func((vertex2d_rect_t *)vertices.data(), (index2d_rect_t *)indices.data());
     });
 }
 
 void ui::rect_plane_data::write_vertex(std::size_t const rect_idx,
                                        std::function<void(ui::vertex2d_rect_t &)> const &func) {
-    this->_dynamic_mesh_data.write([&rect_idx, &func](auto &vertices, auto &indices) {
+    this->dynamic_mesh_data().write([&rect_idx, &func](auto &vertices, auto &indices) {
         auto rect_vertex_ptr = (vertex2d_rect_t *)vertices.data();
         func(rect_vertex_ptr[rect_idx]);
     });
@@ -54,7 +67,7 @@ void ui::rect_plane_data::write_vertex(std::size_t const rect_idx,
 
 void ui::rect_plane_data::write_index(std::size_t const rect_idx,
                                       std::function<void(ui::index2d_rect_t &)> const &func) {
-    this->_dynamic_mesh_data.write([&rect_idx, &func](auto &vertices, auto &indices) {
+    this->dynamic_mesh_data().write([&rect_idx, &func](auto &vertices, auto &indices) {
         auto rect_index_ptr = (index2d_rect_t *)indices.data();
         func(rect_index_ptr[rect_idx]);
     });
@@ -139,7 +152,7 @@ void ui::rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::s
 }
 
 ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
-    return this->_dynamic_mesh_data;
+    return impl_ptr<impl>()->_dynamic_mesh_data;
 }
 
 ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count) {

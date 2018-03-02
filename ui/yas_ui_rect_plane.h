@@ -13,8 +13,12 @@ namespace yas::ui {
 class node;
 class color;
 
-struct rect_plane_data {
+class rect_plane_data : public base {
+    class impl;
+
+   public:
     explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
+    rect_plane_data(std::nullptr_t);
 
     virtual ~rect_plane_data() final;
 
@@ -37,9 +41,6 @@ struct rect_plane_data {
                          simd::float4x4 const &matrix = matrix_identity_float4x4);
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
-
-   private:
-    ui::dynamic_mesh_data _dynamic_mesh_data;
 };
 
 rect_plane_data make_rect_plane_data(std::size_t const max_rect_count);
@@ -50,7 +51,7 @@ class rect_plane : public base {
 
    public:
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
-    
+
     explicit rect_plane(rect_plane_data);
     rect_plane(std::nullptr_t);
 
