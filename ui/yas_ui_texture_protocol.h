@@ -5,10 +5,11 @@
 #pragma once
 
 #include "yas_ui_types.h"
+#include <CoreGraphics/CoreGraphics.h>
 
 namespace yas::ui {
 class image;
 
-using image_handler = std::function<void(ui::image &image)>;
-using image_pair_t = std::pair<uint_size, image_handler>;
+using draw_handler_f = std::function<void(CGContextRef const)>;
+using draw_pair_t = std::pair<uint_size, draw_handler_f>;
 }

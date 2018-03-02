@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <CoreGraphics/CoreGraphics.h>
 #include <functional>
 #include "yas_base.h"
 #include "yas_ui_types.h"
+#include "yas_ui_texture_protocol.h"
 
 namespace yas::ui {
 class uint_size;
@@ -20,8 +20,6 @@ class image : public base {
         ui::uint_size point_size;
         double scale_factor = 1.0;
     };
-    
-    using draw_handler_f = std::function<void(CGContextRef const)>;
 
     image(args);
     image(std::nullptr_t);
@@ -36,6 +34,6 @@ class image : public base {
     void *data();
 
     void clear();
-    void draw(draw_handler_f const &);
+    void draw(ui::draw_handler_f const &);
 };
 }
