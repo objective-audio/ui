@@ -48,7 +48,7 @@ using namespace yas;
     XCTAssertFalse(texture.metal_texture());
 }
 
-- (void)test_add_image_handler {
+- (void)test_add_draw_handler {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -60,30 +60,28 @@ using namespace yas;
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
     texture.metal().metal_setup(metal_system);
 
-    auto image_handler = [](ui::image &image) {
-        image.draw([](auto const context) {
-            auto const width = CGBitmapContextGetWidth(context);
-            auto const height = CGBitmapContextGetHeight(context);
-            CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
-            CGContextFillRect(context, CGRectMake(0, 0, width, height));
-        });
+    auto draw_handler = [](CGContextRef const context) {
+        auto const width = CGBitmapContextGetWidth(context);
+        auto const height = CGBitmapContextGetHeight(context);
+        CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
+        CGContextFillRect(context, CGRectMake(0, 0, width, height));
     };
 
-    auto element = texture.add_image_handler({1, 1}, image_handler);
+    auto element = texture.add_draw_handler({1, 1}, draw_handler);
 
     XCTAssertEqual(element.tex_coords().origin.x, 2);
     XCTAssertEqual(element.tex_coords().origin.y, 2);
     XCTAssertEqual(element.tex_coords().size.width, 1);
     XCTAssertEqual(element.tex_coords().size.height, 1);
 
-    element = texture.add_image_handler({1, 1}, image_handler);
+    element = texture.add_draw_handler({1, 1}, draw_handler);
 
     XCTAssertEqual(element.tex_coords().origin.x, 5);
     XCTAssertEqual(element.tex_coords().origin.y, 2);
     XCTAssertEqual(element.tex_coords().size.width, 1);
     XCTAssertEqual(element.tex_coords().size.height, 1);
 
-    element = texture.add_image_handler({1, 1}, image_handler);
+    element = texture.add_draw_handler({1, 1}, draw_handler);
 
     XCTAssertEqual(element.tex_coords().origin.x, 2);
     XCTAssertEqual(element.tex_coords().origin.y, 5);
@@ -91,7 +89,7 @@ using namespace yas;
     XCTAssertEqual(element.tex_coords().size.height, 1);
 }
 
-- (void)test_remove_image_handler {
+- (void)test_remove_draw_handler {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -104,11 +102,11 @@ using namespace yas;
 
     bool called = false;
 
-    auto image_handler = [&called](ui::image &image) { called = true; };
+    auto draw_handler = [&called](CGContextRef const) { called = true; };
 
-    auto const &element = texture.add_image_handler({1, 1}, image_handler);
+    auto const &element = texture.add_draw_handler({1, 1}, draw_handler);
 
-    texture.remove_image_handler(element);
+    texture.remove_draw_handler(element);
 
     texture.metal().metal_setup(metal_system);
 
@@ -126,9 +124,9 @@ using namespace yas;
 
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
 
-    auto image_handler = [](ui::image &) {};
+    auto draw_handler = [](CGContextRef const) {};
 
-    ui::texture_element element = texture.add_image_handler({1, 1}, image_handler);
+    ui::texture_element element = texture.add_draw_handler({1, 1}, draw_handler);
 
     XCTAssertTrue(element.tex_coords() == ui::uint_region::zero());
 
