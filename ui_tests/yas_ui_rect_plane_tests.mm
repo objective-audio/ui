@@ -461,7 +461,7 @@ using namespace yas;
     auto plane_data = ui::make_rect_plane_data(1);
     ui::rect_plane plane{plane_data};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
-    ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](ui::image &image) {})};
+    ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](CGContextRef const) {})};
 
     element.set_tex_coords(ui::uint_region{.origin = {1, 2}, .size = {3, 4}});
 
@@ -505,7 +505,7 @@ using namespace yas;
     auto plane_data = ui::make_rect_plane_data(1);
     ui::rect_plane plane{plane_data};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
-    ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](ui::image &image) {})};
+    ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](CGContextRef const) {})};
 
     element.set_tex_coords(ui::uint_region{.origin = {1, 2}, .size = {3, 4}});
 

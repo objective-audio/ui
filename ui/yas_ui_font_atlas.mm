@@ -156,22 +156,20 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            auto texture_element = this->_texture.add_image_handler(
-                image_size, [glyph = glyphs[idx], idx, ct_font_obj](ui::image & image) {
-                    image.draw([height = image.point_size().height, &glyph, &ct_font_obj](CGContextRef const ctx) {
-                        CGContextSaveGState(ctx);
+            auto texture_element = this->_texture.add_draw_handler(
+                image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
+                    CGContextSaveGState(ctx);
 
-                        CGContextTranslateCTM(ctx, 0.0, height);
-                        CGContextScaleCTM(ctx, 1.0, -1.0);
-                        CGContextTranslateCTM(ctx, 0.0, CTFontGetDescent(ct_font_obj));
-                        CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyph, nullptr);
-                        CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
-                        CGContextAddPath(ctx, path);
-                        CGContextFillPath(ctx);
-                        CGPathRelease(path);
+                    CGContextTranslateCTM(ctx, 0.0, height);
+                    CGContextScaleCTM(ctx, 1.0, -1.0);
+                    CGContextTranslateCTM(ctx, 0.0, CTFontGetDescent(ct_font_obj));
+                    CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyph, nullptr);
+                    CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+                    CGContextAddPath(ctx, path);
+                    CGContextFillPath(ctx);
+                    CGPathRelease(path);
 
-                        CGContextRestoreGState(ctx);
-                    });
+                    CGContextRestoreGState(ctx);
                 });
 
             this->_word_infos.at(idx).rect.set_tex_coord(texture_element.tex_coords());

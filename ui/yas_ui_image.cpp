@@ -28,7 +28,7 @@ struct ui::image::impl : base::impl {
                            CGRectMake(0, 0, this->_actual_size.width, this->_actual_size.height));
     }
 
-    void draw(std::function<void(CGContextRef const)> const &function) {
+    void draw(ui::draw_handler_f const &function) {
         CGContextSaveGState(this->_bitmap_context);
 
         CGContextTranslateCTM(this->_bitmap_context, 0.0, this->_actual_size.height);
@@ -77,6 +77,6 @@ void ui::image::clear() {
     impl_ptr<impl>()->clear();
 }
 
-void ui::image::draw(std::function<void(CGContextRef const)> const &function) {
+void ui::image::draw(ui::draw_handler_f const &function) {
     impl_ptr<impl>()->draw(function);
 }

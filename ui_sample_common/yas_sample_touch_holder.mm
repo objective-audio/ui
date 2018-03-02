@@ -46,12 +46,10 @@ struct sample::touch_holder::impl : base::impl {
             return;
         }
 
-        auto texture_element = this->_texture.add_image_handler({100, 100}, [](ui::image &image) {
-            image.draw([](CGContextRef const ctx) {
-                CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
-                CGContextSetLineWidth(ctx, 1.0f);
-                CGContextStrokeEllipseInRect(ctx, CGRectMake(2, 2, 96, 96));
-            });
+        auto texture_element = this->_texture.add_draw_handler({100, 100}, [](CGContextRef const ctx) {
+            CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+            CGContextSetLineWidth(ctx, 1.0f);
+            CGContextStrokeEllipseInRect(ctx, CGRectMake(2, 2, 96, 96));
         });
 
         this->_rect_plane_data.set_rect_tex_coords(texture_element.tex_coords(), 0);

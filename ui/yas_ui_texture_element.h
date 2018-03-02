@@ -21,10 +21,10 @@ class texture_element : public base {
     using subject_t = subject<method, texture_element>;
     using observer_t = subject_t::observer_t;
 
-    texture_element(image_pair_t &&);
+    texture_element(draw_pair_t &&);
     texture_element(std::nullptr_t);
 
-    image_pair_t const &image_pair() const;
+    ui::draw_pair_t const &draw_pair() const;
 
     void set_tex_coords(ui::uint_region const &);
     ui::uint_region const &tex_coords() const;

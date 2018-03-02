@@ -91,7 +91,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                 static_cast<uint32_t>(point_size.height * scale_factor)};
     }
 
-    texture_element const &add_image_handler(image_pair_t pair) {
+    texture_element const &add_draw_handler(draw_pair_t pair) {
         texture_element element{std::move(pair)};
 
         if (this->_metal_texture) {
@@ -102,7 +102,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         return this->_texture_elements.back();
     }
 
-    void remove_image_handler(texture_element const &erase_element) {
+    void remove_draw_handler(texture_element const &erase_element) {
         erase_if(this->_texture_elements,
                  [&erase_element](texture_element const &element) { return element == erase_element; });
     }
@@ -228,17 +228,17 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             throw std::runtime_error("metal_texture not found.");
         }
 
-        auto const &pair = element.image_pair();
+        auto const &pair = element.draw_pair();
         auto const &point_size = pair.first;
-        auto const &image_handler = pair.second;
+        auto const &draw_handler = pair.second;
 
         ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor_property.value()}};
 
         if (auto reserve_result = this->_reserve_image_size(image)) {
-            if (image_handler) {
+            if (draw_handler) {
                 auto const &tex_coords = reserve_result.value();
                 element.set_tex_coords(tex_coords);
-                image_handler(image);
+                image.draw(draw_handler);
                 this->_replace_image(image, tex_coords.origin);
             }
         }
@@ -290,12 +290,12 @@ void ui::texture::set_scale_factor(double const scale_factor) {
     impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
 }
 
-ui::texture_element const &ui::texture::add_image_handler(ui::uint_size size, image_handler handler) {
-    return impl_ptr<impl>()->add_image_handler(std::make_pair(std::move(size), std::move(handler)));
+ui::texture_element const &ui::texture::add_draw_handler(ui::uint_size size, ui::draw_handler_f handler) {
+    return impl_ptr<impl>()->add_draw_handler(std::make_pair(std::move(size), std::move(handler)));
 }
 
-void ui::texture::remove_image_handler(texture_element const &element) {
-    impl_ptr<impl>()->remove_image_handler(element);
+void ui::texture::remove_draw_handler(texture_element const &element) {
+    impl_ptr<impl>()->remove_draw_handler(element);
 }
 
 ui::metal_texture &ui::texture::metal_texture() {
