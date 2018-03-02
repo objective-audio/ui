@@ -14,8 +14,6 @@ class node;
 class color;
 
 struct rect_plane_data {
-    using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
-
     explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
 
     virtual ~rect_plane_data() final;
@@ -38,15 +36,10 @@ struct rect_plane_data {
     void set_rect_vertex(const vertex2d_t *const in_ptr, std::size_t const rect_idx,
                          simd::float4x4 const &matrix = matrix_identity_float4x4);
 
-    void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
-    void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx, tex_coords_transform_f);
-    void clear_observers();
-
     ui::dynamic_mesh_data &dynamic_mesh_data();
 
    private:
     ui::dynamic_mesh_data _dynamic_mesh_data;
-    std::vector<ui::texture_element::observer_t> _element_observers;
 };
 
 rect_plane_data make_rect_plane_data(std::size_t const max_rect_count);
@@ -56,6 +49,8 @@ class rect_plane : public base {
     class impl;
 
    public:
+    using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
+    
     explicit rect_plane(rect_plane_data);
     rect_plane(std::nullptr_t);
 
@@ -63,6 +58,10 @@ class rect_plane : public base {
 
     ui::node &node();
     ui::rect_plane_data &data();
+
+    void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
+    void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx, tex_coords_transform_f);
+    void clear_observers();
 };
 
 rect_plane make_rect_plane(std::size_t const max_rect_count);
