@@ -459,12 +459,13 @@ using namespace yas;
 
 - (void)test_observe_tex_coords {
     auto plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane plane{plane_data};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
     ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](ui::image &image) {})};
 
     element.set_tex_coords(ui::uint_region{.origin = {1, 2}, .size = {3, 4}});
 
-    plane_data.observe_rect_tex_coords(element, 0);
+    plane.observe_rect_tex_coords(element, 0);
 
     XCTAssertEqual(vertices[0].tex_coord.x, 1.0f);
     XCTAssertEqual(vertices[0].tex_coord.y, 6.0f);
@@ -486,7 +487,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
     XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 
-    plane_data.clear_observers();
+    plane.clear_observers();
 
     element.set_tex_coords(ui::uint_region{.origin = {100, 200}, .size = {300, 400}});
 
@@ -502,12 +503,13 @@ using namespace yas;
 
 - (void)test_observe_tex_coords_with_transformer {
     auto plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane plane{plane_data};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
     ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](ui::image &image) {})};
 
     element.set_tex_coords(ui::uint_region{.origin = {1, 2}, .size = {3, 4}});
 
-    plane_data.observe_rect_tex_coords(element, 0, [](ui::uint_region const &tex_coords) {
+    plane.observe_rect_tex_coords(element, 0, [](ui::uint_region const &tex_coords) {
         return ui::uint_region{.origin = {tex_coords.origin.x + 1, tex_coords.origin.y + 2},
                                .size = {tex_coords.size.width + 3, tex_coords.size.height + 4}};
     });
