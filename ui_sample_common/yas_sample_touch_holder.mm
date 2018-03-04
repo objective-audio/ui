@@ -40,28 +40,21 @@ struct sample::touch_holder::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
+        this->_rect_plane_data.clear_observers();
+
         this->_set_texture(std::move(texture));
 
         if (!this->_texture) {
             return;
         }
 
-        auto texture_element = this->_texture.add_draw_handler({100, 100}, [](CGContextRef const ctx) {
+        auto element = this->_texture.add_draw_handler({100, 100}, [](CGContextRef const ctx) {
             CGContextSetStrokeColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
             CGContextSetLineWidth(ctx, 1.0f);
             CGContextStrokeEllipseInRect(ctx, CGRectMake(2, 2, 96, 96));
         });
 
-        this->_rect_plane_data.set_rect_tex_coords(texture_element.tex_coords(), 0);
-
-        this->_element_observer = texture_element.subject().make_observer(
-            ui::texture_element::method::tex_coords_changed,
-            [weak_holder = to_weak(cast<sample::touch_holder>())](auto const &context) {
-                if (auto holder = weak_holder.lock()) {
-                    auto const &element = context.value;
-                    holder.impl_ptr<impl>()->_rect_plane_data.set_rect_tex_coords(element.tex_coords(), 0);
-                }
-            });
+        this->_rect_plane_data.observe_rect_tex_coords(element, 0);
     }
 
     void update_touch_node(ui::event const &event) {
@@ -185,7 +178,6 @@ struct sample::touch_holder::impl : base::impl {
     ui::texture _texture = nullptr;
     ui::rect_plane_data _rect_plane_data = ui::make_rect_plane_data(1);
     ui::node::observer_t _renderer_observer = nullptr;
-    ui::texture_element::observer_t _element_observer = nullptr;
 };
 
 sample::touch_holder::touch_holder() : base(std::make_shared<impl>()) {
