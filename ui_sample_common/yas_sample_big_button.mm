@@ -17,7 +17,8 @@ struct sample::big_button::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
-        this->_element_observers.clear();
+        auto &data = this->_button.rect_plane().data();
+        data.clear_observers();
 
         auto &mesh = this->_button.rect_plane().node().mesh();
         mesh.set_texture(texture);
@@ -28,46 +29,26 @@ struct sample::big_button::impl : base::impl {
 
         uint32_t const width = this->_radius * 2;
 
-        auto weak_button = to_weak(this->_button);
-
         ui::uint_size image_size{width, width};
 
-        auto texture_element = texture.add_draw_handler(image_size, [image_size](CGContextRef const ctx) {
+        auto element0 = texture.add_draw_handler(image_size, [image_size](CGContextRef const ctx) {
             CGContextSetFillColorWithColor(ctx, [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
             CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
         });
 
-        this->_button.rect_plane().data().set_rect_tex_coords(texture_element.tex_coords(), 0);
+        data.observe_rect_tex_coords(element0, 0);
 
-        this->_element_observers.emplace_back(texture_element.subject().make_observer(
-            ui::texture_element::method::tex_coords_changed, [weak_button](auto const &context) {
-                if (auto button = weak_button.lock()) {
-                    ui::texture_element const &element = context.value;
-                    button.rect_plane().data().set_rect_tex_coords(element.tex_coords(), 0);
-                }
-            }));
+        auto element1 = texture.add_draw_handler(image_size, [image_size](const CGContextRef ctx) {
+            CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
+            CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
+        });
 
-        texture_element =
-            texture.add_draw_handler(image_size, [image_size](const CGContextRef ctx) {
-                CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
-                CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
-            });
-
-        this->_button.rect_plane().data().set_rect_tex_coords(texture_element.tex_coords(), 1);
-
-        this->_element_observers.emplace_back(texture_element.subject().make_observer(
-            ui::texture_element::method::tex_coords_changed, [weak_button](auto const &context) {
-                if (auto button = weak_button.lock()) {
-                    ui::texture_element const &element = context.value;
-                    button.rect_plane().data().set_rect_tex_coords(element.tex_coords(), 1);
-                }
-            }));
+        data.observe_rect_tex_coords(element1, 1);
     }
 
     float const _radius = 60;
     ui::button _button{
         {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}}};
-    std::vector<ui::texture_element::observer_t> _element_observers;
 };
 
 #pragma mark - big_button
