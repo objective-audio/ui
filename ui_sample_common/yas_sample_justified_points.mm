@@ -14,7 +14,7 @@ static std::size_t constexpr all_point_count = x_point_count + y_point_count;
 }
 
 struct sample::justified_points::impl : base::impl {
-    ui::rect_plane _rect_plane = ui::make_rect_plane(sample::all_point_count);
+    ui::rect_plane _rect_plane{sample::all_point_count};
     std::vector<ui::layout_guide> _x_layout_guides{sample::x_point_count};
     std::vector<ui::layout_guide> _y_layout_guides{sample::y_point_count};
 

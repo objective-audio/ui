@@ -8,7 +8,7 @@
 using namespace yas;
 
 struct sample::bg::impl : base::impl {
-    ui::rect_plane _rect_plane = ui::make_rect_plane(1);
+    ui::rect_plane _rect_plane{1};
     ui::layout_guide_rect _layout_guide_rect;
 
     impl() {

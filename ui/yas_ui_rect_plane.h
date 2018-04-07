@@ -65,7 +65,4 @@ class rect_plane : public base {
     ui::node &node();
     ui::rect_plane_data &data();
 };
-
-rect_plane make_rect_plane(std::size_t const max_rect_count);
-rect_plane make_rect_plane(std::size_t const max_rect_count, std::size_t const max_index_count);
 }

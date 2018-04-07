@@ -20,7 +20,7 @@ using namespace yas;
 
 struct ui::button::impl : base::impl {
     impl(ui::region const &region, std::size_t const state_count)
-        : _rect_plane(ui::make_rect_plane(state_count * 2, 1)), _layout_guide_rect(region), _state_count(state_count) {
+        : _rect_plane(state_count * 2, 1), _layout_guide_rect(region), _state_count(state_count) {
         this->_rect_plane.node().set_collider(ui::collider{});
 
         this->_update_rect_positions(this->_layout_guide_rect.region(), state_count);

@@ -257,11 +257,3 @@ ui::node &ui::rect_plane::node() {
 ui::rect_plane_data &ui::rect_plane::data() {
     return impl_ptr<impl>()->_rect_plane_data;
 }
-
-ui::rect_plane ui::make_rect_plane(std::size_t const rect_count) {
-    return ui::rect_plane(rect_count);
-}
-
-ui::rect_plane ui::make_rect_plane(std::size_t const rect_count, std::size_t const index_count) {
-    return ui::rect_plane(rect_count, index_count);
-}
