@@ -160,7 +160,7 @@ using namespace yas;
 }
 
 - (void)test_set_rect_color_with_float4 {
-    auto plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane_data plane_data{1};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
 
     plane_data.set_rect_color(simd::float4{0.1f, 0.2f, 0.3f, 0.4f}, 0);
@@ -185,7 +185,7 @@ using namespace yas;
 }
 
 - (void)test_set_rect_color_with_ui_color {
-    auto plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane_data plane_data{1};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
 
     plane_data.set_rect_color(ui::color{0.1f, 0.2f, 0.3f}, 0.4f, 0);
@@ -361,7 +361,7 @@ using namespace yas;
 }
 
 - (void)test_set_rect_count {
-    auto plane_data = ui::make_rect_plane_data(4);
+    ui::rect_plane_data plane_data{4};
 
     XCTAssertEqual(plane_data.dynamic_mesh_data().index_count(), 4 * 6);
 
@@ -371,7 +371,7 @@ using namespace yas;
 }
 
 - (void)test_max_rect_count {
-    auto plane_data = ui::make_rect_plane_data(4);
+    ui::rect_plane_data plane_data{4};
 
     XCTAssertEqual(plane_data.max_rect_count(), 4);
 
@@ -381,7 +381,7 @@ using namespace yas;
 }
 
 - (void)test_write_vertex {
-    auto plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane_data plane_data{1};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
 
     plane_data.write_vertex(0, [](ui::vertex2d_rect_t &rects) {
@@ -458,7 +458,7 @@ using namespace yas;
 }
 
 - (void)test_observe_tex_coords {
-    auto plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane_data plane_data{1};
     auto vertices = plane_data.dynamic_mesh_data().vertices();
     ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](CGContextRef const) {})};
 
@@ -501,7 +501,7 @@ using namespace yas;
 }
 
 - (void)test_observe_tex_coords_with_transformer {
-    auto plane_data = ui::make_rect_plane_data(1);
+    auto plane_data = ui::rect_plane_data(1);
     auto vertices = plane_data.dynamic_mesh_data().vertices();
     ui::texture_element element{std::make_pair(ui::uint_size::zero(), [](CGContextRef const) {})};
 

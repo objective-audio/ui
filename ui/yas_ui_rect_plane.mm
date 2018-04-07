@@ -219,14 +219,6 @@ ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return impl_ptr<impl>()->_dynamic_mesh_data;
 }
 
-ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count) {
-    return ui::rect_plane_data{rect_count, rect_count};
-}
-
-ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count, std::size_t const index_count) {
-    return ui::rect_plane_data{rect_count, index_count};
-}
-
 #pragma mark - ui::rect_plane::impl
 
 struct yas::ui::rect_plane::impl : base::impl {

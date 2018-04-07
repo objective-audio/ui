@@ -186,7 +186,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     property<std::nullptr_t, double> _scale_factor_property{{.value = 1.0}};
 
    private:
-    ui::rect_plane_data _data = ui::make_rect_plane_data(1);
+    ui::rect_plane_data _data{1};
     ui::mesh _mesh;
     ui::texture _src_texture;
     ui::texture _dst_texture;
