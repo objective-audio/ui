@@ -57,6 +57,8 @@ class rect_plane : public base {
 
    public:
     explicit rect_plane(rect_plane_data);
+    explicit rect_plane(std::size_t const max_rect_count);
+    rect_plane(std::size_t const max_rect_count, std::size_t const max_index_count);
     rect_plane(std::nullptr_t);
 
     virtual ~rect_plane() final;

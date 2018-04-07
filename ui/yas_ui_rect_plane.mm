@@ -259,6 +259,13 @@ ui::rect_plane::rect_plane(ui::rect_plane_data rect_plane_data)
     this->node().set_mesh(std::move(mesh));
 }
 
+ui::rect_plane::rect_plane(std::size_t const rect_count) : rect_plane(rect_count, rect_count) {
+}
+
+ui::rect_plane::rect_plane(std::size_t const rect_count, std::size_t const index_count)
+    : rect_plane(make_rect_plane_data(rect_count, index_count)) {
+}
+
 ui::rect_plane::rect_plane(std::nullptr_t) : base(nullptr) {
 }
 
@@ -273,9 +280,9 @@ ui::rect_plane_data &ui::rect_plane::data() {
 }
 
 ui::rect_plane ui::make_rect_plane(std::size_t const rect_count) {
-    return ui::make_rect_plane(rect_count, rect_count);
+    return ui::rect_plane(rect_count);
 }
 
 ui::rect_plane ui::make_rect_plane(std::size_t const rect_count, std::size_t const index_count) {
-    return ui::rect_plane{make_rect_plane_data(rect_count, index_count)};
+    return ui::rect_plane(rect_count, index_count);
 }
