@@ -85,3 +85,9 @@ class renderer : public base {
     explicit renderer(std::shared_ptr<impl> &&);
 };
 }
+
+namespace yas {
+std::string to_string(ui::renderer::method const &);
+}
+
+std::ostream &operator<<(std::ostream &, yas::ui::renderer::method const &);
