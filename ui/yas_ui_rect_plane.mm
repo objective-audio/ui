@@ -250,7 +250,7 @@ ui::rect_plane::rect_plane(std::size_t const rect_count) : rect_plane(rect_count
 }
 
 ui::rect_plane::rect_plane(std::size_t const rect_count, std::size_t const index_count)
-    : rect_plane(make_rect_plane_data(rect_count, index_count)) {
+    : rect_plane(ui::rect_plane_data{rect_count, index_count}) {
 }
 
 ui::rect_plane::rect_plane(std::nullptr_t) : base(nullptr) {
