@@ -20,6 +20,8 @@ class rect_plane_data : public base {
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 
     explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
+    explicit rect_plane_data(std::size_t const max_rect_count);
+    rect_plane_data(std::size_t const max_rect_count, std::size_t max_index_count);
     rect_plane_data(std::nullptr_t);
 
     virtual ~rect_plane_data() final;
