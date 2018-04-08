@@ -81,12 +81,12 @@ struct args {
 }
 
 namespace yas::ui {
-ui::layout make_layout(fixed_layout::args);
-ui::layout make_layout(fixed_layout_point::args);
-ui::layout make_layout(fixed_layout_rect::args);
+[[nodiscard]] ui::layout make_layout(fixed_layout::args);
+[[nodiscard]] ui::layout make_layout(fixed_layout_point::args);
+[[nodiscard]] ui::layout make_layout(fixed_layout_rect::args);
 
-ui::layout make_layout(justified_layout::args);
+[[nodiscard]] ui::layout make_layout(justified_layout::args);
 
-ui::layout make_layout(min_layout::args);
-ui::layout make_layout(max_layout::args);
+[[nodiscard]] ui::layout make_layout(min_layout::args);
+[[nodiscard]] ui::layout make_layout(max_layout::args);
 }

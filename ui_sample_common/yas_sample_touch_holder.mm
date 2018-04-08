@@ -176,7 +176,7 @@ struct sample::touch_holder::impl : base::impl {
 
     std::unordered_map<uintptr_t, touch_object> _objects;
     ui::texture _texture = nullptr;
-    ui::rect_plane_data _rect_plane_data = ui::make_rect_plane_data(1);
+    ui::rect_plane_data _rect_plane_data{1};
     ui::node::observer_t _renderer_observer = nullptr;
 };
 

@@ -385,3 +385,24 @@ ui::layout_guide_rect const &ui::renderer::safe_area_layout_guide_rect() const {
 ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
     return impl_ptr<impl>()->_safe_area_layout_guide_rect;
 }
+
+#pragma mark -
+
+std::string yas::to_string(ui::renderer::method const &method) {
+    switch (method) {
+        case ui::renderer::method::will_render:
+            return "will_render";
+        case ui::renderer::method::view_size_changed:
+            return "view_size_changed";
+        case ui::renderer::method::scale_factor_changed:
+            return "scale_factor_changed";
+        case ui::renderer::method::safe_area_insets_changed:
+            return "safe_area_insets_changed";
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::renderer::method const &method) {
+    os << to_string(method);
+    return os;
+}
+

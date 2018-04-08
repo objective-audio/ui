@@ -58,6 +58,25 @@ ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data mesh_data)
     : base(std::make_shared<impl>(std::move(mesh_data))) {
 }
 
+ui::rect_plane_data::rect_plane_data(std::size_t const rect_count) : rect_plane_data(rect_count, rect_count) {
+}
+
+ui::rect_plane_data::rect_plane_data(std::size_t const rect_count, std::size_t index_count)
+    : rect_plane_data(ui::dynamic_mesh_data{{.vertex_count = rect_count * 4, .index_count = index_count * 6}}) {
+    this->write([&rect_count, &index_count](auto *, auto *rect_indices) {
+        auto each = make_fast_each(std::min(rect_count, index_count));
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
+            auto &rect_idx = rect_indices[idx];
+            auto const rect_top_raw_idx = static_cast<index2d_t>(idx * 4);
+            rect_idx.v[0] = rect_top_raw_idx;
+            rect_idx.v[1] = rect_idx.v[4] = rect_top_raw_idx + 2;
+            rect_idx.v[2] = rect_idx.v[3] = rect_top_raw_idx + 1;
+            rect_idx.v[5] = rect_top_raw_idx + 3;
+        }
+    });
+}
+
 ui::rect_plane_data::rect_plane_data(std::nullptr_t) : base(nullptr) {
 }
 
@@ -200,46 +219,6 @@ ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return impl_ptr<impl>()->_dynamic_mesh_data;
 }
 
-ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count) {
-    ui::rect_plane_data plane_data{
-        ui::dynamic_mesh_data{{.vertex_count = rect_count * 4, .index_count = rect_count * 6}}};
-
-    plane_data.write([&rect_count](auto *, auto *rect_indices) {
-        auto each = make_fast_each(rect_count);
-        while (yas_each_next(each)) {
-            auto const &idx = yas_each_index(each);
-            auto &rect_idx = rect_indices[idx];
-            auto const rect_top_raw_idx = static_cast<index2d_t>(idx * 4);
-            rect_idx.v[0] = rect_top_raw_idx;
-            rect_idx.v[1] = rect_idx.v[4] = rect_top_raw_idx + 2;
-            rect_idx.v[2] = rect_idx.v[3] = rect_top_raw_idx + 1;
-            rect_idx.v[5] = rect_top_raw_idx + 3;
-        }
-    });
-
-    return plane_data;
-}
-
-ui::rect_plane_data ui::make_rect_plane_data(std::size_t const rect_count, std::size_t const index_count) {
-    ui::rect_plane_data plane_data{
-        ui::dynamic_mesh_data{{.vertex_count = rect_count * 4, .index_count = index_count * 6}}};
-
-    plane_data.write([&rect_count, &index_count](auto *, auto *rect_indices) {
-        auto each = make_fast_each(std::min(rect_count, index_count));
-        while (yas_each_next(each)) {
-            auto const &idx = yas_each_index(each);
-            auto &rect_idx = rect_indices[idx];
-            auto const rect_top_raw_idx = static_cast<index2d_t>(idx * 4);
-            rect_idx.v[0] = rect_top_raw_idx;
-            rect_idx.v[1] = rect_idx.v[4] = rect_top_raw_idx + 2;
-            rect_idx.v[2] = rect_idx.v[3] = rect_top_raw_idx + 1;
-            rect_idx.v[5] = rect_top_raw_idx + 3;
-        }
-    });
-
-    return plane_data;
-}
-
 #pragma mark - ui::rect_plane::impl
 
 struct yas::ui::rect_plane::impl : base::impl {
@@ -259,6 +238,13 @@ ui::rect_plane::rect_plane(ui::rect_plane_data rect_plane_data)
     this->node().set_mesh(std::move(mesh));
 }
 
+ui::rect_plane::rect_plane(std::size_t const rect_count) : rect_plane(rect_count, rect_count) {
+}
+
+ui::rect_plane::rect_plane(std::size_t const rect_count, std::size_t const index_count)
+    : rect_plane(ui::rect_plane_data{rect_count, index_count}) {
+}
+
 ui::rect_plane::rect_plane(std::nullptr_t) : base(nullptr) {
 }
 
@@ -270,12 +256,4 @@ ui::node &ui::rect_plane::node() {
 
 ui::rect_plane_data &ui::rect_plane::data() {
     return impl_ptr<impl>()->_rect_plane_data;
-}
-
-ui::rect_plane ui::make_rect_plane(std::size_t const rect_count) {
-    return ui::make_rect_plane(rect_count, rect_count);
-}
-
-ui::rect_plane ui::make_rect_plane(std::size_t const rect_count, std::size_t const index_count) {
-    return ui::rect_plane{make_rect_plane_data(rect_count, index_count)};
 }

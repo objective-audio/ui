@@ -39,7 +39,7 @@ struct sample::cursor_over_planes::impl : base::impl {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            auto plane = ui::make_rect_plane(1);
+            ui::rect_plane plane{1};
             plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
             auto &node = plane.node();

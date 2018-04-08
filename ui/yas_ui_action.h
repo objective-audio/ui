@@ -121,5 +121,5 @@ class parallel_action : public action {
     void erase_action(action const &);
 };
 
-parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &begin_time);
+[[nodiscard]] parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &begin_time);
 }

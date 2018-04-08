@@ -19,6 +19,7 @@ namespace yas::ui {
 class rect_plane;
 class layout_guide_rect;
 class touch_event;
+class texture;
 
 class button : public base {
    public:
@@ -46,6 +47,9 @@ class button : public base {
     button(std::nullptr_t);
 
     virtual ~button() final;
+
+    void set_texture(ui::texture);
+    ui::texture const &texture() const;
 
     std::size_t state_count() const;
     void set_state_index(std::size_t const);

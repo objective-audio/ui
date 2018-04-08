@@ -29,7 +29,7 @@ struct ui::strings::impl : base::impl {
     impl(args &&args)
         : _collection_layout(
               {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending}),
-          _rect_plane(make_rect_plane(args.max_word_count)),
+          _rect_plane(args.max_word_count),
           _text_property({.value = std::move(args.text)}),
           _font_atlas_property({.value = std::move(args.font_atlas)}),
           _line_height_property({.value = args.line_height,

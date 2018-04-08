@@ -126,4 +126,22 @@ using namespace yas;
                                                             static_cast<uint32_t>(128 * scale_factor)}));
 }
 
+- (void)test_method_to_string {
+    XCTAssertEqual(to_string(ui::renderer::method::will_render), "will_render");
+    XCTAssertEqual(to_string(ui::renderer::method::view_size_changed), "view_size_changed");
+    XCTAssertEqual(to_string(ui::renderer::method::safe_area_insets_changed), "safe_area_insets_changed");
+    XCTAssertEqual(to_string(ui::renderer::method::scale_factor_changed), "scale_factor_changed");
+}
+
+- (void)test_method_ostream {
+    auto const methods = {ui::renderer::method::will_render, ui::renderer::method::view_size_changed,
+                          ui::renderer::method::safe_area_insets_changed, ui::renderer::method::scale_factor_changed};
+
+    for (auto const &method : methods) {
+        std::ostringstream stream;
+        stream << method;
+        XCTAssertEqual(stream.str(), to_string(method));
+    }
+}
+
 @end

@@ -13,6 +13,7 @@
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
 #include "yas_ui_renderer.h"
+#include "yas_ui_texture.h"
 
 using namespace yas;
 
@@ -20,7 +21,7 @@ using namespace yas;
 
 struct ui::button::impl : base::impl {
     impl(ui::region const &region, std::size_t const state_count)
-        : _rect_plane(ui::make_rect_plane(state_count * 2, 1)), _layout_guide_rect(region), _state_count(state_count) {
+        : _rect_plane(state_count * 2, 1), _layout_guide_rect(region), _state_count(state_count) {
         this->_rect_plane.node().set_collider(ui::collider{});
 
         this->_update_rect_positions(this->_layout_guide_rect.region(), state_count);
@@ -64,6 +65,10 @@ struct ui::button::impl : base::impl {
             });
     }
 
+    ui::texture &texture() {
+        return this->_rect_plane.node().mesh().texture();
+    }
+    
     void set_state_idx(std::size_t const idx) {
         if (idx >= this->_state_count) {
             throw std::invalid_argument("idx greater than or equal state count.");
@@ -107,7 +112,10 @@ struct ui::button::impl : base::impl {
             this->_rect_plane.data().set_rect_position(region, yas_each_index(each));
         }
 
-        this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
+        ui::collider &collider = this->_rect_plane.node().collider();
+        if (!collider.shape() || (collider.shape().type_info() == typeid(ui::shape::rect::type))) {
+            this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
+        }
     }
 
     void _update_rect_index() {
@@ -257,6 +265,14 @@ ui::button::button(std::nullptr_t) : base(nullptr) {
 }
 
 ui::button::~button() = default;
+
+void ui::button::set_texture(ui::texture texture) {
+    this->rect_plane().node().mesh().set_texture(std::move(texture));
+}
+
+ui::texture const &ui::button::texture() const {
+    return impl_ptr<impl>()->texture();
+}
 
 std::size_t ui::button::state_count() const {
     return impl_ptr<impl>()->_state_count;

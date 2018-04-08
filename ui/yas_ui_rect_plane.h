@@ -20,6 +20,8 @@ class rect_plane_data : public base {
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 
     explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
+    explicit rect_plane_data(std::size_t const max_rect_count);
+    rect_plane_data(std::size_t const max_rect_count, std::size_t max_index_count);
     rect_plane_data(std::nullptr_t);
 
     virtual ~rect_plane_data() final;
@@ -49,14 +51,13 @@ class rect_plane_data : public base {
     ui::dynamic_mesh_data &dynamic_mesh_data();
 };
 
-rect_plane_data make_rect_plane_data(std::size_t const max_rect_count);
-rect_plane_data make_rect_plane_data(std::size_t const max_rect_count, std::size_t const max_index_count);
-
 class rect_plane : public base {
     class impl;
 
    public:
     explicit rect_plane(rect_plane_data);
+    explicit rect_plane(std::size_t const max_rect_count);
+    rect_plane(std::size_t const max_rect_count, std::size_t const max_index_count);
     rect_plane(std::nullptr_t);
 
     virtual ~rect_plane() final;
@@ -64,7 +65,4 @@ class rect_plane : public base {
     ui::node &node();
     ui::rect_plane_data &data();
 };
-
-rect_plane make_rect_plane(std::size_t const max_rect_count);
-rect_plane make_rect_plane(std::size_t const max_rect_count, std::size_t const max_index_count);
 }
