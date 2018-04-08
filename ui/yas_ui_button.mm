@@ -107,7 +107,10 @@ struct ui::button::impl : base::impl {
             this->_rect_plane.data().set_rect_position(region, yas_each_index(each));
         }
 
-        this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
+        ui::collider &collider = this->_rect_plane.node().collider();
+        if (!collider.shape() || (collider.shape().type_info() == typeid(ui::shape::rect::type))) {
+            this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
+        }
     }
 
     void _update_rect_index() {
