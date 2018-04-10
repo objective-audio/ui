@@ -390,13 +390,14 @@ using namespace yas;
     struct edge {
         float min = 0.0f;
         float max = 0.0f;
+        float length = 0.0f;
 
         void clear() {
-            min = max = 0.0f;
+            min = max = length = 0.0f;
         }
 
         bool is_all_zero() {
-            return min == 0.0f && max == 0.0f;
+            return min == 0.0f && max == 0.0f && length == 0.0f;
         }
     };
 
@@ -416,12 +417,15 @@ using namespace yas;
     range.max().set_value_changed_handler([&handled_max = handled_edge.max](auto const &context) {
         handled_max = context.new_value;
     });
+    range.length().set_value_changed_handler([&handled_max = handled_edge.length](auto const &context) {
+        handled_max = context.new_value;
+    });
 
     auto min_observer = range.min().subject().make_observer(
         ui::layout_guide::method::value_changed,
         [&notified_old_min = notified_old_edge.min, &notified_new_min = notified_new_edge.min](auto const &context) {
-            notified_old_min = context.value.old_value;
-            notified_new_min = context.value.new_value;
+        notified_old_min = context.value.old_value;
+        notified_new_min = context.value.new_value;
         });
 
     auto max_observer = range.max().subject().make_observer(
@@ -431,13 +435,23 @@ using namespace yas;
             notified_new_max = context.value.new_value;
         });
 
+    auto length_observer = range.length().subject().make_observer(
+        ui::layout_guide::method::value_changed,
+        [&notified_old_max = notified_old_edge.length,
+         &notified_new_max = notified_new_edge.length](auto const &context) {
+            notified_old_max = context.value.old_value;
+            notified_new_max = context.value.new_value;
+        });
+
     range.set_range({1.0f, 2.0f});
 
     XCTAssertEqual(handled_edge.min, 1.0f);
     XCTAssertEqual(handled_edge.max, 3.0f);
+    XCTAssertEqual(handled_edge.length, 2.0f);
     XCTAssertTrue(notified_old_edge.is_all_zero());
     XCTAssertEqual(notified_new_edge.min, 1.0f);
     XCTAssertEqual(notified_new_edge.max, 3.0f);
+    XCTAssertEqual(notified_new_edge.length, 2.0f);
 
     clear_edges();
 
@@ -469,10 +483,13 @@ using namespace yas;
 
     XCTAssertEqual(handled_edge.min, 7.0f);
     XCTAssertEqual(handled_edge.max, 15.0f);
+    XCTAssertEqual(handled_edge.length, 8.0f);
     XCTAssertEqual(notified_old_edge.min, 1.0f);
     XCTAssertEqual(notified_old_edge.max, 3.0f);
+    XCTAssertEqual(notified_old_edge.length, 2.0f);
     XCTAssertEqual(notified_new_edge.min, 7.0f);
     XCTAssertEqual(notified_new_edge.max, 15.0f);
+    XCTAssertEqual(notified_new_edge.length, 8.0f);
 
     clear_edges();
 
@@ -480,10 +497,13 @@ using namespace yas;
 
     XCTAssertEqual(handled_edge.min, 9.0f);
     XCTAssertEqual(handled_edge.max, 19.0f);
+    XCTAssertEqual(handled_edge.length, 10.0f);
     XCTAssertEqual(notified_old_edge.min, 7.0f);
     XCTAssertEqual(notified_old_edge.max, 15.0f);
+    XCTAssertEqual(notified_old_edge.length, 8.0f);
     XCTAssertEqual(notified_new_edge.min, 9.0f);
     XCTAssertEqual(notified_new_edge.max, 19.0f);
+    XCTAssertEqual(notified_new_edge.length, 10.0f);
 }
 
 #pragma mark - ui::layout_guide_rect
