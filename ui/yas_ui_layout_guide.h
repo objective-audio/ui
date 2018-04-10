@@ -98,6 +98,7 @@ class layout_guide_range : public base {
     layout_guide &max();
     layout_guide const &min() const;
     layout_guide const &max() const;
+    layout_guide const &length() const;
 
     void set_range(ui::range);
     ui::range range() const;
@@ -145,6 +146,8 @@ class layout_guide_rect : public base {
     layout_guide const &right() const;
     layout_guide const &bottom() const;
     layout_guide const &top() const;
+    layout_guide const &width() const;
+    layout_guide const &height() const;
 
     void set_horizontal_range(ui::range);
     void set_vertical_range(ui::range);

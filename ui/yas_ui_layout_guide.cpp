@@ -219,8 +219,9 @@ void ui::layout_guide_point::pop_notify_caller() {
 struct ui::layout_guide_range::impl : base::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
+    layout_guide _length_guide;
 
-    impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()) {
+    impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
 
     void set_range(ui::range &&range) {
@@ -228,6 +229,7 @@ struct ui::layout_guide_range::impl : base::impl {
 
         this->_min_guide.set_value(range.min());
         this->_max_guide.set_value(range.max());
+        this->_length_guide.set_value(range.length);
 
         this->pop_notify_caller();
     }
@@ -256,11 +258,13 @@ struct ui::layout_guide_range::impl : base::impl {
     void push_notify_caller() {
         this->_min_guide.push_notify_caller();
         this->_max_guide.push_notify_caller();
+        this->_length_guide.push_notify_caller();
     }
 
     void pop_notify_caller() {
         this->_min_guide.pop_notify_caller();
         this->_max_guide.pop_notify_caller();
+        this->_length_guide.pop_notify_caller();
     }
 
     ui::range old_range_in_notify() {
@@ -297,6 +301,10 @@ ui::layout_guide const &ui::layout_guide_range::min() const {
 
 ui::layout_guide const &ui::layout_guide_range::max() const {
     return impl_ptr<impl>()->_max_guide;
+}
+
+ui::layout_guide const &ui::layout_guide_range::length() const {
+    return impl_ptr<impl>()->_length_guide;
 }
 
 void ui::layout_guide_range::set_range(ui::range range) {
@@ -449,6 +457,14 @@ ui::layout_guide const &ui::layout_guide_rect::bottom() const {
 
 ui::layout_guide const &ui::layout_guide_rect::top() const {
     return this->vertical_range().max();
+}
+
+ui::layout_guide const &ui::layout_guide_rect::width() const {
+    return this->horizontal_range().length();
+}
+
+ui::layout_guide const &ui::layout_guide_rect::height() const {
+    return this->vertical_range().length();
 }
 
 void ui::layout_guide_rect::set_horizontal_range(ui::range range) {
