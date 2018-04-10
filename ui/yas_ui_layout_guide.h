@@ -96,6 +96,7 @@ class layout_guide_range : public base {
 
     layout_guide &min();
     layout_guide &max();
+    layout_guide &length();
     layout_guide const &min() const;
     layout_guide const &max() const;
     layout_guide const &length() const;

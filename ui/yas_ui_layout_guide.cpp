@@ -253,6 +253,7 @@ struct ui::layout_guide_range::impl : base::impl {
 
         this->_min_guide.set_value_changed_handler(guide_handler);
         this->_max_guide.set_value_changed_handler(guide_handler);
+        this->_length_guide.set_value_changed_handler(guide_handler);
     }
 
     void push_notify_caller() {
@@ -293,6 +294,10 @@ ui::layout_guide &ui::layout_guide_range::min() {
 
 ui::layout_guide &ui::layout_guide_range::max() {
     return impl_ptr<impl>()->_max_guide;
+}
+
+ui::layout_guide &ui::layout_guide_range::length() {
+    return impl_ptr<impl>()->_length_guide;
 }
 
 ui::layout_guide const &ui::layout_guide_range::min() const {
