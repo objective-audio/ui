@@ -146,6 +146,8 @@ class layout_guide_rect : public base {
     layout_guide const &right() const;
     layout_guide const &bottom() const;
     layout_guide const &top() const;
+    layout_guide const &width() const;
+    layout_guide const &height() const;
 
     void set_horizontal_range(ui::range);
     void set_vertical_range(ui::range);

@@ -459,6 +459,14 @@ ui::layout_guide const &ui::layout_guide_rect::top() const {
     return this->vertical_range().max();
 }
 
+ui::layout_guide const &ui::layout_guide_rect::width() const {
+    return this->horizontal_range().length();
+}
+
+ui::layout_guide const &ui::layout_guide_rect::height() const {
+    return this->vertical_range().length();
+}
+
 void ui::layout_guide_rect::set_horizontal_range(ui::range range) {
     impl_ptr<impl>()->set_horizontal_range(std::move(range));
 }

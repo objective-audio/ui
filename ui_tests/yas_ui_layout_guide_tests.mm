@@ -507,11 +507,13 @@ using namespace yas;
     XCTAssertEqual(rect.right().value(), 0.0f);
     XCTAssertEqual(rect.bottom().value(), 0.0f);
     XCTAssertEqual(rect.top().value(), 0.0f);
+    XCTAssertEqual(rect.width().value(), 0.0f);
+    XCTAssertEqual(rect.height().value(), 0.0f);
 }
 
 - (void)test_create_rect_with_args {
     ui::layout_guide_rect rect{{.vertical_range = {.location = 11.0f, .length = 1.0f},
-                                .horizontal_range = {.location = 13.0f, .length = 1.0f}}};
+                                .horizontal_range = {.location = 13.0f, .length = 2.0f}}};
 
     XCTAssertTrue(rect);
     XCTAssertTrue(rect.vertical_range());
@@ -524,11 +526,13 @@ using namespace yas;
     XCTAssertEqual(rect.vertical_range().min().value(), 11.0f);
     XCTAssertEqual(rect.vertical_range().max().value(), 12.0f);
     XCTAssertEqual(rect.horizontal_range().min().value(), 13.0f);
-    XCTAssertEqual(rect.horizontal_range().max().value(), 14.0f);
+    XCTAssertEqual(rect.horizontal_range().max().value(), 15.0f);
     XCTAssertEqual(rect.bottom().value(), 11.0f);
     XCTAssertEqual(rect.top().value(), 12.0f);
     XCTAssertEqual(rect.left().value(), 13.0f);
-    XCTAssertEqual(rect.right().value(), 14.0f);
+    XCTAssertEqual(rect.right().value(), 15.0f);
+    XCTAssertEqual(rect.width().value(), 2.0f);
+    XCTAssertEqual(rect.height().value(), 1.0f);
 }
 
 - (void)test_create_rect_null {
@@ -546,6 +550,8 @@ using namespace yas;
     XCTAssertEqual(rect.top().value(), 201.0f);
     XCTAssertEqual(rect.left().value(), 0.0f);
     XCTAssertEqual(rect.right().value(), 0.0f);
+    XCTAssertEqual(rect.width().value(), 0.0f);
+    XCTAssertEqual(rect.height().value(), 101.0f);
 }
 
 - (void)test_rect_set_horizontal_ranges {
@@ -557,18 +563,22 @@ using namespace yas;
     XCTAssertEqual(rect.top().value(), 0.0f);
     XCTAssertEqual(rect.left().value(), 300.0f);
     XCTAssertEqual(rect.right().value(), 402.0f);
+    XCTAssertEqual(rect.width().value(), 102.0f);
+    XCTAssertEqual(rect.height().value(), 0.0f);
 }
 
 - (void)test_rect_set_ranges {
     ui::layout_guide_rect rect;
 
     rect.set_ranges({.vertical_range = {.location = 11.0f, .length = 1.0f},
-                     .horizontal_range = {.location = 13.0f, .length = 1.0f}});
+                     .horizontal_range = {.location = 13.0f, .length = 2.0f}});
 
     XCTAssertEqual(rect.bottom().value(), 11.0f);
     XCTAssertEqual(rect.top().value(), 12.0f);
     XCTAssertEqual(rect.left().value(), 13.0f);
-    XCTAssertEqual(rect.right().value(), 14.0f);
+    XCTAssertEqual(rect.right().value(), 15.0f);
+    XCTAssertEqual(rect.width().value(), 2.0f);
+    XCTAssertEqual(rect.height().value(), 1.0f);
 }
 
 - (void)test_rect_set_region {
@@ -580,6 +590,8 @@ using namespace yas;
     XCTAssertEqual(rect.top().value(), 6.0f);
     XCTAssertEqual(rect.left().value(), 1.0f);
     XCTAssertEqual(rect.right().value(), 4.0f);
+    XCTAssertEqual(rect.width().value(), 3.0f);
+    XCTAssertEqual(rect.height().value(), 4.0f);
 }
 
 - (void)test_rect_value_changed_handler {
