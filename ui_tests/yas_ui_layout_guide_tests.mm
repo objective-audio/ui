@@ -327,6 +327,7 @@ using namespace yas;
     XCTAssertTrue(range.max());
     XCTAssertEqual(range.min().value(), 0.0f);
     XCTAssertEqual(range.max().value(), 0.0f);
+    XCTAssertEqual(range.length().value(), 0.0f);
 }
 
 - (void)test_create_range_with_args {
@@ -337,11 +338,13 @@ using namespace yas;
     XCTAssertTrue(range.max());
     XCTAssertEqual(range.min().value(), 1.0f);
     XCTAssertEqual(range.max().value(), 3.0f);
+    XCTAssertEqual(range.length().value(), 2.0f);
 
     range = ui::layout_guide_range{{.location = 4.0f, .length = -6.0f}};
 
     XCTAssertEqual(range.min().value(), -2.0f);
     XCTAssertEqual(range.max().value(), 4.0f);
+    XCTAssertEqual(range.length().value(), -6.0f);
 }
 
 - (void)test_create_range_null {
