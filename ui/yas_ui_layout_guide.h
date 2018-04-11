@@ -96,6 +96,7 @@ class layout_guide_range : public base {
 
     layout_guide &min();
     layout_guide &max();
+    layout_guide &length();
     layout_guide const &min() const;
     layout_guide const &max() const;
     layout_guide const &length() const;
@@ -142,6 +143,8 @@ class layout_guide_rect : public base {
     layout_guide &right();
     layout_guide &bottom();
     layout_guide &top();
+    layout_guide &width();
+    layout_guide &height();
     layout_guide const &left() const;
     layout_guide const &right() const;
     layout_guide const &bottom() const;
