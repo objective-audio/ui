@@ -220,8 +220,39 @@ struct ui::layout_guide_range::impl : base::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
     layout_guide _length_guide;
+    layout_guide::observer_t _min_observer = nullptr;
+    layout_guide::observer_t _max_observer = nullptr;
+    layout_guide::observer_t _length_observer = nullptr;
 
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
+    }
+
+    void prepare(ui::layout_guide_range &range) {
+        auto weak_range = to_weak(range);
+
+        this->_min_observer = this->_min_guide.subject().make_observer(
+            ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
+                if (auto range = weak_range.lock()) {
+                    float const length = range.impl_ptr<impl>()->_max_guide.value() - context.value.new_value;
+                    range.impl_ptr<impl>()->_length_guide.set_value(length);
+                }
+            });
+
+        this->_max_observer = this->_max_guide.subject().make_observer(
+            ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
+                if (auto range = weak_range.lock()) {
+                    float const length = context.value.new_value - range.impl_ptr<impl>()->_min_guide.value();
+                    range.impl_ptr<impl>()->_length_guide.set_value(length);
+                }
+            });
+
+        this->_length_observer = this->_length_guide.subject().make_observer(
+            ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
+                if (auto range = weak_range.lock()) {
+                    float const max = range.impl_ptr<impl>()->_min_guide.value() + context.value.new_value;
+                    range.impl_ptr<impl>()->_max_guide.set_value(max);
+                }
+            });
     }
 
     void set_range(ui::range &&range) {
@@ -281,6 +312,7 @@ ui::layout_guide_range::layout_guide_range() : layout_guide_range(ui::range{}) {
 }
 
 ui::layout_guide_range::layout_guide_range(ui::range range) : base(std::make_shared<impl>(std::move(range))) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide_range::layout_guide_range(std::nullptr_t) : base(nullptr) {
