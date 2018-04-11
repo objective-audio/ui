@@ -849,4 +849,48 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.height, 20.0f);
 }
 
+- (void)test_rect_set_by_guide {
+    ui::layout_guide_rect rect;
+
+    // horizontal
+
+    rect.right().set_value(1.0f);
+
+    XCTAssertEqual(rect.left().value(), 0.0f);
+    XCTAssertEqual(rect.right().value(), 1.0f);
+    XCTAssertEqual(rect.width().value(), 1.0f);
+
+    rect.left().set_value(-1.0f);
+
+    XCTAssertEqual(rect.left().value(), -1.0f);
+    XCTAssertEqual(rect.right().value(), 1.0f);
+    XCTAssertEqual(rect.width().value(), 2.0f);
+
+    rect.width().set_value(3.0f);
+
+    XCTAssertEqual(rect.left().value(), -1.0f);
+    XCTAssertEqual(rect.right().value(), 2.0f);
+    XCTAssertEqual(rect.width().value(), 3.0f);
+
+    // vertical
+
+    rect.top().set_value(1.0f);
+
+    XCTAssertEqual(rect.bottom().value(), 0.0f);
+    XCTAssertEqual(rect.top().value(), 1.0f);
+    XCTAssertEqual(rect.height().value(), 1.0f);
+
+    rect.bottom().set_value(-1.0f);
+
+    XCTAssertEqual(rect.bottom().value(), -1.0f);
+    XCTAssertEqual(rect.top().value(), 1.0f);
+    XCTAssertEqual(rect.height().value(), 2.0f);
+
+    rect.height().set_value(3.0f);
+
+    XCTAssertEqual(rect.bottom().value(), -1.0f);
+    XCTAssertEqual(rect.top().value(), 2.0f);
+    XCTAssertEqual(rect.height().value(), 3.0f);
+}
+
 @end
