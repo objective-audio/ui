@@ -506,6 +506,28 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.length, 10.0f);
 }
 
+- (void)test_range_set_by_guide {
+    ui::layout_guide_range range;
+
+    range.max().set_value(1.0f);
+
+    XCTAssertEqual(range.min().value(), 0.0f);
+    XCTAssertEqual(range.max().value(), 1.0f);
+    XCTAssertEqual(range.length().value(), 1.0f);
+
+    range.min().set_value(-1.0f);
+
+    XCTAssertEqual(range.min().value(), -1.0f);
+    XCTAssertEqual(range.max().value(), 1.0f);
+    XCTAssertEqual(range.length().value(), 2.0f);
+
+    range.length().set_value(3.0f);
+
+    XCTAssertEqual(range.min().value(), -1.0f);
+    XCTAssertEqual(range.max().value(), 2.0f);
+    XCTAssertEqual(range.length().value(), 3.0f);
+}
+
 #pragma mark - ui::layout_guide_rect
 
 - (void)test_create_rect {
@@ -825,6 +847,50 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.top, 38.0f);
     XCTAssertEqual(notified_new_edge.width, 19.0f);
     XCTAssertEqual(notified_new_edge.height, 20.0f);
+}
+
+- (void)test_rect_set_by_guide {
+    ui::layout_guide_rect rect;
+
+    // horizontal
+
+    rect.right().set_value(1.0f);
+
+    XCTAssertEqual(rect.left().value(), 0.0f);
+    XCTAssertEqual(rect.right().value(), 1.0f);
+    XCTAssertEqual(rect.width().value(), 1.0f);
+
+    rect.left().set_value(-1.0f);
+
+    XCTAssertEqual(rect.left().value(), -1.0f);
+    XCTAssertEqual(rect.right().value(), 1.0f);
+    XCTAssertEqual(rect.width().value(), 2.0f);
+
+    rect.width().set_value(3.0f);
+
+    XCTAssertEqual(rect.left().value(), -1.0f);
+    XCTAssertEqual(rect.right().value(), 2.0f);
+    XCTAssertEqual(rect.width().value(), 3.0f);
+
+    // vertical
+
+    rect.top().set_value(1.0f);
+
+    XCTAssertEqual(rect.bottom().value(), 0.0f);
+    XCTAssertEqual(rect.top().value(), 1.0f);
+    XCTAssertEqual(rect.height().value(), 1.0f);
+
+    rect.bottom().set_value(-1.0f);
+
+    XCTAssertEqual(rect.bottom().value(), -1.0f);
+    XCTAssertEqual(rect.top().value(), 1.0f);
+    XCTAssertEqual(rect.height().value(), 2.0f);
+
+    rect.height().set_value(3.0f);
+
+    XCTAssertEqual(rect.bottom().value(), -1.0f);
+    XCTAssertEqual(rect.top().value(), 2.0f);
+    XCTAssertEqual(rect.height().value(), 3.0f);
 }
 
 @end
