@@ -143,6 +143,8 @@ class layout_guide_rect : public base {
     layout_guide &right();
     layout_guide &bottom();
     layout_guide &top();
+    layout_guide &width();
+    layout_guide &height();
     layout_guide const &left() const;
     layout_guide const &right() const;
     layout_guide const &bottom() const;

@@ -448,6 +448,14 @@ ui::layout_guide &ui::layout_guide_rect::top() {
     return this->vertical_range().max();
 }
 
+ui::layout_guide &ui::layout_guide_rect::width() {
+    return this->horizontal_range().length();
+}
+
+ui::layout_guide &ui::layout_guide_rect::height() {
+    return this->vertical_range().length();
+}
+
 ui::layout_guide const &ui::layout_guide_rect::left() const {
     return this->horizontal_range().min();
 }
