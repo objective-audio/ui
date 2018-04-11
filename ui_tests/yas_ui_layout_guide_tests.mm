@@ -506,6 +506,28 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.length, 10.0f);
 }
 
+- (void)test_range_set_by_guide {
+    ui::layout_guide_range range;
+
+    range.max().set_value(1.0f);
+
+    XCTAssertEqual(range.min().value(), 0.0f);
+    XCTAssertEqual(range.max().value(), 1.0f);
+    XCTAssertEqual(range.length().value(), 1.0f);
+
+    range.min().set_value(-1.0f);
+
+    XCTAssertEqual(range.min().value(), -1.0f);
+    XCTAssertEqual(range.max().value(), 1.0f);
+    XCTAssertEqual(range.length().value(), 2.0f);
+
+    range.length().set_value(3.0f);
+
+    XCTAssertEqual(range.min().value(), -1.0f);
+    XCTAssertEqual(range.max().value(), 2.0f);
+    XCTAssertEqual(range.length().value(), 3.0f);
+}
+
 #pragma mark - ui::layout_guide_rect
 
 - (void)test_create_rect {
