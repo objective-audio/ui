@@ -300,6 +300,12 @@
 		B6F73B9E1CDB7D7E009FD0DD /* yas_sample_inputted_text.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_inputted_text.mm; path = ../../ui_sample_common/yas_sample_inputted_text.mm; sourceTree = "<group>"; };
 		B6F73B9F1CDB7D7E009FD0DD /* yas_sample_touch_holder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_touch_holder.h; path = ../../ui_sample_common/yas_sample_touch_holder.h; sourceTree = "<group>"; };
 		B6F73BA01CDB7D7E009FD0DD /* yas_sample_touch_holder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_touch_holder.mm; path = ../../ui_sample_common/yas_sample_touch_holder.mm; sourceTree = "<group>"; };
+		B6F9E470208A3967000B390E /* yas_flow_observing_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_observing_private.h; sourceTree = "<group>"; };
+		B6F9E471208A3967000B390E /* yas_flow_observing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_observing.h; sourceTree = "<group>"; };
+		B6F9E472208A3967000B390E /* yas_flow_graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph.h; sourceTree = "<group>"; };
+		B6F9E473208A3967000B390E /* yas_flow_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_private.h; sourceTree = "<group>"; };
+		B6F9E474208A3968000B390E /* yas_flow_graph_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph_private.h; sourceTree = "<group>"; };
+		B6F9E475208A3968000B390E /* yas_flow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -577,6 +583,12 @@
 				B65F6E2E1CC87DDF007C3523 /* yas_unless.h */,
 				B65F6E2F1CC87DDF007C3523 /* yas_version.cpp */,
 				B65F6E301CC87DDF007C3523 /* yas_version.h */,
+				B6F9E474208A3968000B390E /* yas_flow_graph_private.h */,
+				B6F9E472208A3967000B390E /* yas_flow_graph.h */,
+				B6F9E470208A3967000B390E /* yas_flow_observing_private.h */,
+				B6F9E471208A3967000B390E /* yas_flow_observing.h */,
+				B6F9E473208A3967000B390E /* yas_flow_private.h */,
+				B6F9E475208A3968000B390E /* yas_flow.h */,
 			);
 			name = cpp_utils;
 			path = ../submodules/cpp_utils/cpp_utils;
