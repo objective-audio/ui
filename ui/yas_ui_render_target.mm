@@ -182,8 +182,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::layout_guide_rect _layout_guide_rect;
-    property<std::nullptr_t, ui::effect> _effect_property{{.value = nullptr}};
-    property<std::nullptr_t, double> _scale_factor_property{{.value = 1.0}};
+    property<ui::effect> _effect_property{{.value = nullptr}};
+    property<double> _scale_factor_property{{.value = 1.0}};
 
    private:
     ui::rect_plane_data _data{1};

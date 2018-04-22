@@ -11,7 +11,7 @@ using namespace yas;
 
 struct ui::texture_element::impl : base::impl {
     draw_pair_t const _draw_pair;
-    property<std::nullptr_t, ui::uint_region> _tex_coords{{.value = ui::uint_region::zero()}};
+    property<ui::uint_region> _tex_coords{{.value = ui::uint_region::zero()}};
     subject_t _subject;
 
     impl(draw_pair_t &&pair) : _draw_pair(std::move(pair)) {

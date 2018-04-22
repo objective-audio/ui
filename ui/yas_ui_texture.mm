@@ -119,8 +119,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         this->_scale_factor_property.set_value(renderer.scale_factor());
     }
 
-    property<std::nullptr_t, ui::uint_size> _point_size_property;
-    property<std::nullptr_t, double> _scale_factor_property;
+    property<ui::uint_size> _point_size_property;
+    property<double> _scale_factor_property;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;

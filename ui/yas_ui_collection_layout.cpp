@@ -47,15 +47,15 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t cell_idx;
     };
 
-    property<std::nullptr_t, float> _row_spacing_property;
-    property<std::nullptr_t, float> _col_spacing_property;
-    property<std::nullptr_t, ui::layout_alignment> _alignment_property;
-    property<std::nullptr_t, ui::layout_direction> _direction_property;
-    property<std::nullptr_t, ui::layout_order> _row_order_property;
-    property<std::nullptr_t, ui::layout_order> _col_order_property;
-    property<std::nullptr_t, std::size_t> _preferred_cell_count_property;
-    property<std::nullptr_t, ui::size> _default_cell_size_property;
-    property<std::nullptr_t, std::vector<ui::collection_layout::line>> _lines_property;
+    property<float> _row_spacing_property;
+    property<float> _col_spacing_property;
+    property<ui::layout_alignment> _alignment_property;
+    property<ui::layout_direction> _direction_property;
+    property<ui::layout_order> _row_order_property;
+    property<ui::layout_order> _col_order_property;
+    property<std::size_t> _preferred_cell_count_property;
+    property<ui::size> _default_cell_size_property;
+    property<std::vector<ui::collection_layout::line>> _lines_property;
 
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
