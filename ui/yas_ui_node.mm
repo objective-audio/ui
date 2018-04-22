@@ -462,19 +462,19 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return {loc4.x, loc4.y};
     }
 
-    property<std::nullptr_t, weak<ui::node>> _parent_property{{.value = ui::node{nullptr}}};
-    property<std::nullptr_t, weak<ui::renderer>> _renderer_property{{.value = ui::renderer{nullptr}}};
+    property<weak<ui::node>> _parent_property{{.value = ui::node{nullptr}}};
+    property<weak<ui::renderer>> _renderer_property{{.value = ui::renderer{nullptr}}};
 
-    property<std::nullptr_t, ui::point> _position_property{{.value = 0.0f}};
-    property<std::nullptr_t, ui::angle> _angle_property{{.value = 0.0f}};
-    property<std::nullptr_t, ui::size> _scale_property{{.value = {.v = 1.0f}}};
-    property<std::nullptr_t, ui::color> _color_property{{.value = {.v = 1.0f}}};
-    property<std::nullptr_t, float> _alpha_property{{.value = 1.0f}};
-    property<std::nullptr_t, ui::mesh> _mesh_property{{.value = nullptr}};
-    property<std::nullptr_t, ui::collider> _collider_property{{.value = nullptr}};
-    property<std::nullptr_t, ui::batch> _batch_property{{.value = nullptr}};
-    property<std::nullptr_t, ui::render_target> _render_target_property{{.value = nullptr}};
-    property<std::nullptr_t, bool> _enabled_property{{.value = true}};
+    property<ui::point> _position_property{{.value = 0.0f}};
+    property<ui::angle> _angle_property{{.value = 0.0f}};
+    property<ui::size> _scale_property{{.value = {.v = 1.0f}}};
+    property<ui::color> _color_property{{.value = {.v = 1.0f}}};
+    property<float> _alpha_property{{.value = 1.0f}};
+    property<ui::mesh> _mesh_property{{.value = nullptr}};
+    property<ui::collider> _collider_property{{.value = nullptr}};
+    property<ui::batch> _batch_property{{.value = nullptr}};
+    property<ui::render_target> _render_target_property{{.value = nullptr}};
+    property<bool> _enabled_property{{.value = true}};
 
     node::subject_t _subject;
 

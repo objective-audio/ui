@@ -27,7 +27,7 @@ struct ui::blur::impl : base::impl {
         this->_update_effect_handler();
     }
 
-    property<std::nullptr_t, double> _sigma_property{{.value = 0.0}};
+    property<double> _sigma_property{{.value = 0.0}};
     ui::effect _effect;
 
    private:
