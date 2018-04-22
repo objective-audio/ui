@@ -225,6 +225,7 @@ std::string to_string(ui::insets const &);
 std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
+std::string to_string(ui::range const &);
 std::string to_string(simd::float2 const &);
 std::string to_string(simd::float3 const &);
 std::string to_string(simd::float4 const &);
@@ -244,6 +245,7 @@ std::ostream &operator<<(std::ostream &, yas::ui::insets const &);
 std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);
+std::ostream &operator<<(std::ostream &, yas::ui::range const &);
 
 std::ostream &operator<<(std::ostream &, simd::float2 const &);
 std::ostream &operator<<(std::ostream &, simd::float3 const &);

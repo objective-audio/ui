@@ -330,6 +330,10 @@ std::string yas::to_string(ui::size const &size) {
     return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
 }
 
+std::string yas::to_string(ui::range const &range) {
+    return "{" + std::to_string(range.location) + ", " + std::to_string(range.length) + "}";
+}
+
 std::string yas::to_string(simd::float2 const &value) {
     return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
 }
@@ -400,6 +404,11 @@ std::ostream &operator<<(std::ostream &os, yas::ui::point const &point) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::size const &size) {
     os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::range const &range) {
+    os << to_string(range);
     return os;
 }
 
