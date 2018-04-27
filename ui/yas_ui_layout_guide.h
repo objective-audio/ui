@@ -43,6 +43,11 @@ class layout_guide : public base {
 
     void push_notify_caller();
     void pop_notify_caller();
+    
+    using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float>;
+    
+    flow_t begin_flow();
+    flow::receivable<float> receivable();
 };
 
 class layout_guide_point : public base {

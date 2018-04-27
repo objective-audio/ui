@@ -94,6 +94,21 @@ struct ui::layout_guide::impl : base::impl {
         return *this->_old_value;
     }
 
+    flow_t begin_flow() {
+        auto weak_guide = to_weak(cast<layout_guide>());
+
+        return this->_value.begin_flow()
+            .guard([weak_guide](float const &) { return !!weak_guide; })
+            .pair(this->_wait_sender.begin().guard(layout_guide_utils::wait_guard_handler()))
+            .convert<std::pair<opt_t<float>, bool>>(layout_guide_utils::wait_cache_handler<float>())
+            .guard([](auto const &pair) { return pair.second; })
+            .convert<float>([](auto const &pair) { return *pair.first; });
+    }
+
+    flow::receivable<float> receivable() {
+        return this->_receiver.receivable();
+    }
+
    private:
     property<float>::observer_t _observer;
     delaying_caller _notify_caller;
@@ -166,6 +181,14 @@ void ui::layout_guide::push_notify_caller() {
 
 void ui::layout_guide::pop_notify_caller() {
     impl_ptr<impl>()->pop_notify_caller();
+}
+
+ui::layout_guide::flow_t ui::layout_guide::begin_flow() {
+    return impl_ptr<impl>()->begin_flow();
+}
+
+flow::receivable<float> ui::layout_guide::receivable() {
+    return impl_ptr<impl>()->receivable();
 }
 
 #pragma mark - ui::layout_guide_point::impl
