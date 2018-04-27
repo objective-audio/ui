@@ -7,6 +7,7 @@
 #include "yas_base.h"
 #include "yas_observing.h"
 #include "yas_ui_types.h"
+#include "yas_flow.h"
 
 namespace yas::ui {
 class layout_guide : public base {

@@ -8,6 +8,50 @@
 
 using namespace yas;
 
+namespace yas::ui::layout_guide_utils {
+std::function<bool(bool)> wait_guard_handler() {
+    return [count = int32_t(0)](bool const &is_wait) mutable {
+        if (is_wait) {
+            ++count;
+            return (count == 1);
+        } else {
+            --count;
+            if (count < 0) {
+                std::underflow_error("");
+            }
+            return (count == 0);
+        }
+    };
+}
+
+template <typename T>
+std::function<std::pair<opt_t<T>, bool>(std::pair<opt_t<T>, opt_t<bool>>)> wait_cache_handler() {
+    return [cache = opt_t<T>(), is_wait = false](auto const &pair) mutable {
+        bool is_continue = false;
+
+        if (pair.first) {
+            // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
+            cache = *pair.first;
+            is_continue = !is_wait;
+        } else if (pair.second) {
+            // waitフラグが来た場合
+            is_wait = *pair.second;
+
+            if (is_wait) {
+                // wait開始ならキャッシュをクリアしてフロー中断
+                cache = nullopt;
+                is_continue = false;
+            } else {
+                // wait終了ならキャッシュに値があればフロー継続
+                is_continue = !!cache;
+            }
+        }
+
+        return std::make_pair(cache, is_continue);
+    };
+}
+}
+
 #pragma mark - ui::layout_guide::impl
 
 struct ui::layout_guide::impl : base::impl {
