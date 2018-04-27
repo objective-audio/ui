@@ -59,16 +59,27 @@ struct ui::layout_guide::impl : base::impl {
     subject_t _subject;
     value_changed_f _value_changed_handler = nullptr;
 
+    flow::receiver<float> _receiver = nullptr;
+    flow::sender<bool> _wait_sender;
+
     impl(float const value) : _value({.value = value}) {
     }
 
     void prepare(layout_guide &guide) {
-        this->_observer = this->_value.subject().make_observer(
-            property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
+        auto weak_guide = to_weak(cast<layout_guide>());
+
+        this->_observer =
+            this->_value.subject().make_observer(property_method::did_change, [weak_guide](auto const &context) {
                 if (auto guide = weak_guide.lock()) {
                     guide.impl_ptr<ui::layout_guide::impl>()->_request_notify_value_changed(context, guide);
                 }
             });
+
+        this->_receiver = flow::receiver<float>([weak_guide](float const &value) {
+            if (auto guide = weak_guide.lock()) {
+                guide.set_value(value);
+            }
+        });
     }
 
     void push_notify_caller() {
