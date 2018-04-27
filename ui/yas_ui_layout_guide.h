@@ -15,7 +15,6 @@ class layout_guide : public base {
     class impl;
 
     struct change_context {
-        float const &old_value;
         float const &new_value;
         layout_guide const &layout_guide;
     };

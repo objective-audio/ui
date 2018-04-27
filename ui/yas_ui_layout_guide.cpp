@@ -129,8 +129,7 @@ struct ui::layout_guide::impl : base::impl {
                 if (auto guide = weak_guide.lock()) {
                     auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
 
-                    auto const context = change_context{
-                        .old_value = *guide_impl->_old_value, .new_value = new_value, .layout_guide = guide};
+                    auto const context = change_context{.new_value = new_value, .layout_guide = guide};
 
                     if (auto handler = guide_impl->_value_changed_handler) {
                         handler(context);
