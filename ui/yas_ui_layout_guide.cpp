@@ -314,7 +314,7 @@ struct ui::layout_guide_range::impl : base::impl {
     layout_guide _max_guide;
     layout_guide _length_guide;
     flow::observer<float> _min_observer = nullptr;
-    layout_guide::observer_t _max_observer = nullptr;
+    flow::observer<float> _max_observer = nullptr;
     layout_guide::observer_t _length_observer = nullptr;
 
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
@@ -323,20 +323,17 @@ struct ui::layout_guide_range::impl : base::impl {
     void prepare(ui::layout_guide_range &range) {
         auto weak_range = to_weak(range);
 
-        this->_min_observer = this->_min_guide.begin_flow()
-                                  .guard([weak_range](float const &) { return !!weak_range; })
-                                  .convert([weak_range](float const &min) {
-                                      return weak_range.lock().max().value() - min;
-                                  })
-                                  .end(this->_length_guide.receivable());
+        this->_min_observer =
+            this->_min_guide.begin_flow()
+                .guard([weak_range](float const &) { return !!weak_range; })
+                .convert([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
+                .end(this->_length_guide.receivable());
 
-        this->_max_observer = this->_max_guide.subject().make_observer(
-            ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
-                if (auto range = weak_range.lock()) {
-                    float const length = context.value.new_value - range.impl_ptr<impl>()->_min_guide.value();
-                    range.impl_ptr<impl>()->_length_guide.set_value(length);
-                }
-            });
+        this->_max_observer =
+            this->_max_guide.begin_flow()
+                .guard([weak_range](float const &) { return !!weak_range; })
+                .convert([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
+                .end(this->_length_guide.receivable());
 
         this->_length_observer = this->_length_guide.subject().make_observer(
             ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
