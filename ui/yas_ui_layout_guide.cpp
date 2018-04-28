@@ -65,12 +65,21 @@ struct ui::layout_guide::impl : base::impl {
     void prepare(layout_guide &guide) {
         auto weak_guide = to_weak(cast<layout_guide>());
 
-        this->_observer =
-            this->_value.subject().make_observer(property_method::did_change, [weak_guide](auto const &context) {
-                if (auto guide = weak_guide.lock()) {
-                    guide.impl_ptr<ui::layout_guide::impl>()->_request_notify_value_changed(context, guide);
-                }
-            });
+        this->_observer = this->begin_flow()
+                              .guard([weak_guide](float const &) { return !!weak_guide; })
+                              .perform([weak_guide](float const &value) {
+                                  auto guide = weak_guide.lock();
+                                  auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
+
+                                  auto const context = change_context{.new_value = value, .layout_guide = guide};
+
+                                  if (auto handler = guide_impl->_value_changed_handler) {
+                                      handler(context);
+                                  }
+
+                                  guide.subject().notify(method::value_changed, context);
+                              })
+                              .end();
 
         this->_receiver = flow::receiver<float>([weak_guide](float const &value) {
             if (auto guide = weak_guide.lock()) {
@@ -109,40 +118,11 @@ struct ui::layout_guide::impl : base::impl {
     }
 
    private:
-    property<float>::observer_t _observer;
     delaying_caller _notify_caller;
     std::experimental::optional<float> _old_value = nullopt;
     flow::receiver<float> _receiver = nullptr;
     flow::sender<bool> _wait_sender;
-
-    void _request_notify_value_changed(property<float>::observer_t::change_context const &context,
-                                       ui::layout_guide const &guide) {
-        if (!this->_old_value) {
-            this->_old_value = context.value.old_value;
-        }
-
-        auto const &new_value = context.value.new_value;
-
-        if (this->_old_value == new_value) {
-            this->_notify_caller.cancel();
-        } else {
-            this->_notify_caller.request([new_value = context.value.new_value, weak_guide = to_weak(guide)]() {
-                if (auto guide = weak_guide.lock()) {
-                    auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
-
-                    auto const context = change_context{.new_value = new_value, .layout_guide = guide};
-
-                    if (auto handler = guide_impl->_value_changed_handler) {
-                        handler(context);
-                    }
-
-                    guide.subject().notify(method::value_changed, context);
-
-                    guide_impl->_old_value = nullopt;
-                }
-            });
-        }
-    }
+    flow::observer<float> _observer = nullptr;
 };
 
 #pragma mark - ui::layout_guide
