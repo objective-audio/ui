@@ -96,10 +96,6 @@ struct ui::layout_guide::impl : base::impl {
         this->_wait_sender.send_value(false);
     }
 
-    float old_value_in_notify() {
-        return *this->_old_value;
-    }
-
     flow_t begin_flow() {
         auto weak_guide = to_weak(cast<layout_guide>());
 
@@ -232,8 +228,7 @@ struct ui::layout_guide_point::impl : base::impl {
         auto guide_handler =
             [handler = std::move(handler), weak_point = to_weak(cast<ui::layout_guide_point>())](auto const &context) {
             if (auto point = weak_point.lock()) {
-                handler(change_context{.new_value = point.impl_ptr<impl>()->point(),
-                                       .layout_guide_point = point});
+                handler(change_context{.new_value = point.impl_ptr<impl>()->point(), .layout_guide_point = point});
             }
         };
 
@@ -249,11 +244,6 @@ struct ui::layout_guide_point::impl : base::impl {
     void pop_notify_caller() {
         this->_x_guide.pop_notify_caller();
         this->_y_guide.pop_notify_caller();
-    }
-
-    ui::point old_point_in_notify() {
-        return ui::point{this->_x_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify(),
-                         this->_y_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify()};
     }
 };
 
@@ -383,12 +373,6 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_max_guide.pop_notify_caller();
         this->_length_guide.pop_notify_caller();
     }
-
-    ui::range old_range_in_notify() {
-        auto const loc = this->_min_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify();
-        auto const len = this->_max_guide.impl_ptr<ui::layout_guide::impl>()->old_value_in_notify() - loc;
-        return ui::range{.location = loc, .length = len};
-    }
 };
 
 #pragma mark - ui::layout_guide_range
@@ -505,12 +489,6 @@ struct ui::layout_guide_rect::impl : base::impl {
     void pop_notify_caller() {
         this->_vertical_range.pop_notify_caller();
         this->_horizontal_range.pop_notify_caller();
-    }
-
-    ui::region old_region_in_notify() {
-        auto const h_range = this->_horizontal_range.impl_ptr<ui::layout_guide_range::impl>()->old_range_in_notify();
-        auto const v_range = this->_vertical_range.impl_ptr<ui::layout_guide_range::impl>()->old_range_in_notify();
-        return ui::region{.origin = {h_range.location, v_range.location}, .size = {h_range.length, v_range.length}};
     }
 };
 
