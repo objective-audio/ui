@@ -48,32 +48,38 @@ struct ui::layout_animator::impl : base::impl {
 
             dst_guide.set_value(src_guide.value());
 
-            auto observer = src_guide.subject().make_observer(
-                ui::layout_guide::method::value_changed,
-                [weak_interporator = to_weak(interporator), weak_dst_guide = to_weak(dst_guide)](auto const &context) {
-                    if (auto interporator = weak_interporator.lock()) {
-                        auto const &args = interporator.impl_ptr<impl>()->_args;
-                        if (auto renderer = args.renderer.lock()) {
-                            if (auto dst_guide = weak_dst_guide.lock()) {
-                                renderer.erase_action(dst_guide);
+            auto weak_interporator = to_weak(interporator);
+            auto weak_dst_guide = to_weak(dst_guide);
 
-                                auto action = ui::make_action({.target = dst_guide,
-                                                               .begin_value = dst_guide.value(),
-                                                               .end_value = context.value.new_value,
-                                                               .continuous_action = {.duration = args.duration}});
-                                action.set_value_transformer(interporator.value_transformer());
-                                renderer.insert_action(std::move(action));
-                            }
-                        }
-                    }
-                });
+            auto observer = src_guide.begin_flow()
+                                .guard([weak_interporator, weak_dst_guide](float const &) {
+                                    return weak_interporator && weak_dst_guide;
+                                })
+                                .perform([weak_interporator, weak_dst_guide](float const &value) {
+                                    auto interporator = weak_interporator.lock();
+                                    auto const &args = interporator.impl_ptr<impl>()->_args;
+                                    if (auto renderer = args.renderer.lock()) {
+                                        auto dst_guide = weak_dst_guide.lock();
+
+                                        renderer.erase_action(dst_guide);
+
+                                        auto action =
+                                            ui::make_action({.target = dst_guide,
+                                                             .begin_value = dst_guide.value(),
+                                                             .end_value = value,
+                                                             .continuous_action = {.duration = args.duration}});
+                                        action.set_value_transformer(interporator.value_transformer());
+                                        renderer.insert_action(std::move(action));
+                                    }
+                                })
+                                .end();
 
             this->_observers.emplace_back(std::move(observer));
         }
     }
 
    private:
-    std::vector<ui::layout_guide::observer_t> _observers;
+    std::vector<flow::observer<float>> _observers;
 };
 
 ui::layout_animator::layout_animator(args args) : base(std::make_shared<impl>(std::move(args))) {
