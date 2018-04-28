@@ -59,9 +59,6 @@ struct ui::layout_guide::impl : base::impl {
     subject_t _subject;
     value_changed_f _value_changed_handler = nullptr;
 
-    flow::receiver<float> _receiver = nullptr;
-    flow::sender<bool> _wait_sender;
-
     impl(float const value) : _value({.value = value}) {
     }
 
@@ -83,11 +80,13 @@ struct ui::layout_guide::impl : base::impl {
     }
 
     void push_notify_caller() {
+        this->_wait_sender.send_value(true);
         this->_notify_caller.push();
     }
 
     void pop_notify_caller() {
         this->_notify_caller.pop();
+        this->_wait_sender.send_value(false);
     }
 
     float old_value_in_notify() {
@@ -113,6 +112,8 @@ struct ui::layout_guide::impl : base::impl {
     property<float>::observer_t _observer;
     delaying_caller _notify_caller;
     std::experimental::optional<float> _old_value = nullopt;
+    flow::receiver<float> _receiver = nullptr;
+    flow::sender<bool> _wait_sender;
 
     void _request_notify_value_changed(property<float>::observer_t::change_context const &context,
                                        ui::layout_guide const &guide) {
