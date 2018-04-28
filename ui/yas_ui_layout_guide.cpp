@@ -98,12 +98,14 @@ struct ui::layout_guide::impl : base::impl {
 
     flow_t begin_flow() {
         auto weak_guide = to_weak(cast<layout_guide>());
+        
+        auto old_cache = std::make_shared<opt_t<float>>();
 
         return this->_value.begin_flow()
             .guard([weak_guide](float const &) { return !!weak_guide; })
             .pair(this->_wait_sender.begin().guard(layout_guide_utils::wait_guard_handler()))
             .convert<std::pair<opt_t<float>, bool>>(
-                [cache = opt_t<float>(), is_wait = false, weak_guide](auto const &pair) mutable {
+                [cache = opt_t<float>(), old_cache, is_wait = false, weak_guide](auto const &pair) mutable {
                     bool is_continue = false;
 
                     if (pair.first) {
@@ -120,12 +122,12 @@ struct ui::layout_guide::impl : base::impl {
                             // wait開始ならキャッシュをクリアしてフロー中断
                             cache = nullopt;
                             is_continue = false;
-                            guide_impl->_old_value = guide_impl->_value.value();
+                            *old_cache = guide_impl->_value.value();
                         } else {
                             // wait終了ならキャッシュに値があればフロー継続
                             is_continue = !!cache;
                             if (!is_continue) {
-                                guide_impl->_old_value = nullopt;
+                                *old_cache = nullopt;
                             }
                         }
                     }
@@ -133,13 +135,13 @@ struct ui::layout_guide::impl : base::impl {
                     return std::make_pair(cache, is_continue);
                 })
             .guard([](auto const &pair) { return pair.second; })
-            .guard([weak_guide](auto const &pair) {
+            .guard([weak_guide, old_cache](auto const &pair) {
                 auto guide_impl = weak_guide.lock().impl_ptr<ui::layout_guide::impl>();
-                if (!guide_impl->_old_value) {
+                if (!*old_cache) {
                     return true;
                 }
-                float const old_value = *guide_impl->_old_value;
-                guide_impl->_old_value = nullopt;
+                float const old_value = **old_cache;
+                *old_cache = nullopt;
                 return old_value != *pair.first;
             })
             .convert<float>([](auto const &pair) { return *pair.first; });
@@ -150,7 +152,6 @@ struct ui::layout_guide::impl : base::impl {
     }
 
    private:
-    std::experimental::optional<float> _old_value = nullopt;
     flow::receiver<float> _receiver = nullptr;
     flow::sender<bool> _wait_sender;
     flow::observer<float> _observer = nullptr;
