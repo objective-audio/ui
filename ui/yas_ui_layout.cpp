@@ -27,14 +27,19 @@ struct ui::layout::impl : base::impl {
 
         for (auto &guide : _args.source_guides) {
             this->_guide_observers.emplace_back(
-                guide.subject().make_observer(ui::layout_guide::method::value_changed, handler));
+                guide.begin_flow()
+                    .guard([weak_layout](float const &) { return !!weak_layout; })
+                    .perform([weak_layout](float const &) {
+                        weak_layout.lock().impl_ptr<impl>()->_update_destination_values();
+                    })
+                    .end());
         }
 
         this->_update_destination_values();
     }
 
    private:
-    std::vector<ui::layout_guide::observer_t> _guide_observers;
+    std::vector<flow::observer<float>> _guide_observers;
 
     void _update_destination_values() {
         if (this->_args.handler) {
