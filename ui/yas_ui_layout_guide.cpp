@@ -313,7 +313,7 @@ struct ui::layout_guide_range::impl : base::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
     layout_guide _length_guide;
-    layout_guide::observer_t _min_observer = nullptr;
+    flow::observer<float> _min_observer = nullptr;
     layout_guide::observer_t _max_observer = nullptr;
     layout_guide::observer_t _length_observer = nullptr;
 
@@ -323,13 +323,12 @@ struct ui::layout_guide_range::impl : base::impl {
     void prepare(ui::layout_guide_range &range) {
         auto weak_range = to_weak(range);
 
-        this->_min_observer = this->_min_guide.subject().make_observer(
-            ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
-                if (auto range = weak_range.lock()) {
-                    float const length = range.impl_ptr<impl>()->_max_guide.value() - context.value.new_value;
-                    range.impl_ptr<impl>()->_length_guide.set_value(length);
-                }
-            });
+        this->_min_observer = this->_min_guide.begin_flow()
+                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .convert([weak_range](float const &min) {
+                                      return weak_range.lock().max().value() - min;
+                                  })
+                                  .end(this->_length_guide.receivable());
 
         this->_max_observer = this->_max_guide.subject().make_observer(
             ui::layout_guide::method::value_changed, [weak_range](auto const &context) {
