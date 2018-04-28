@@ -54,7 +54,6 @@ class layout_guide_point : public base {
     class impl;
 
     struct change_context {
-        ui::point const &old_value;
         ui::point const &new_value;
         layout_guide_point const &layout_guide_point;
     };
@@ -86,7 +85,6 @@ class layout_guide_range : public base {
     class impl;
 
     struct change_context {
-        ui::range const &old_value;
         ui::range const &new_value;
         layout_guide_range const &layout_guide_range;
     };
@@ -120,7 +118,6 @@ class layout_guide_rect : public base {
     class impl;
 
     struct change_context {
-        ui::region const &old_value;
         ui::region const &new_value;
         layout_guide_rect const &layout_guide_rect;
     };

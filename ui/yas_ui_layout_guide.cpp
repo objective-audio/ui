@@ -232,8 +232,7 @@ struct ui::layout_guide_point::impl : base::impl {
         auto guide_handler =
             [handler = std::move(handler), weak_point = to_weak(cast<ui::layout_guide_point>())](auto const &context) {
             if (auto point = weak_point.lock()) {
-                handler(change_context{.old_value = point.impl_ptr<impl>()->old_point_in_notify(),
-                                       .new_value = point.impl_ptr<impl>()->point(),
+                handler(change_context{.new_value = point.impl_ptr<impl>()->point(),
                                        .layout_guide_point = point});
             }
         };
@@ -363,8 +362,7 @@ struct ui::layout_guide_range::impl : base::impl {
         auto guide_handler =
             [handler = std::move(handler), weak_guide_range = to_weak(cast<ui::layout_guide_range>())](auto const &) {
             if (auto guide_range = weak_guide_range.lock()) {
-                handler(change_context{.old_value = guide_range.impl_ptr<impl>()->old_range_in_notify(),
-                                       .new_value = guide_range.impl_ptr<impl>()->range(),
+                handler(change_context{.new_value = guide_range.impl_ptr<impl>()->range(),
                                        .layout_guide_range = guide_range});
             }
         };
@@ -488,8 +486,7 @@ struct ui::layout_guide_rect::impl : base::impl {
     void set_value_changed_handler(value_changed_f &&handler) {
         auto guide_handler = [handler, weak_guide_rect = to_weak(cast<ui::layout_guide_rect>())](auto const &) {
             if (auto const guide_rect = weak_guide_rect.lock()) {
-                handler(change_context{.old_value = guide_rect.impl_ptr<impl>()->old_region_in_notify(),
-                                       .new_value = guide_rect.impl_ptr<impl>()->region(),
+                handler(change_context{.new_value = guide_rect.impl_ptr<impl>()->region(),
                                        .layout_guide_rect = guide_rect});
             }
         };

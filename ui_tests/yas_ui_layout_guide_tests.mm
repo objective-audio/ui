@@ -329,20 +329,17 @@ using namespace yas;
     ui::layout_guide_range guide_range;
 
     ui::range handled_new_value{-1.0f, -1.0f};
-    ui::range handled_old_value{-1.0f, -1.0f};
     ui::layout_guide_range handled_guide_range{nullptr};
 
     guide_range.set_value_changed_handler(
-        [&handled_new_value, &handled_old_value, &handled_guide_range](auto const &context) {
+        [&handled_new_value, &handled_guide_range](auto const &context) {
             handled_new_value = context.new_value;
-            handled_old_value = context.old_value;
             handled_guide_range = context.layout_guide_range;
         });
 
     guide_range.set_range({1.0f, 2.0f});
 
     XCTAssertTrue(handled_new_value == (ui::range{1.0f, 2.0f}));
-    XCTAssertTrue(handled_old_value == (ui::range{0.0f, 0.0f}));
     XCTAssertEqual(handled_guide_range, guide_range);
 }
 
@@ -584,20 +581,17 @@ using namespace yas;
     ui::layout_guide_rect guide_rect;
 
     ui::region handled_new_value{.origin = {-1.0f, -1.0f}, .size = {-1.0f, -1.0f}};
-    ui::region handled_old_value{.origin = {-1.0f, -1.0f}, .size = {-1.0f, -1.0f}};
     ui::layout_guide_rect handled_guide_rect{nullptr};
 
     guide_rect.set_value_changed_handler(
-        [&handled_new_value, &handled_old_value, &handled_guide_rect](auto const &context) {
+        [&handled_new_value, &handled_guide_rect](auto const &context) {
             handled_new_value = context.new_value;
-            handled_old_value = context.old_value;
             handled_guide_rect = context.layout_guide_rect;
         });
 
     guide_rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
     XCTAssertTrue(handled_new_value == (ui::region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
-    XCTAssertTrue(handled_old_value == (ui::region{}));
     XCTAssertEqual(handled_guide_rect, guide_rect);
 }
 
