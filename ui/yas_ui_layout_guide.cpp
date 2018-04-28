@@ -108,8 +108,46 @@ struct ui::layout_guide::impl : base::impl {
         return this->_value.begin_flow()
             .guard([weak_guide](float const &) { return !!weak_guide; })
             .pair(this->_wait_sender.begin().guard(layout_guide_utils::wait_guard_handler()))
-            .convert<std::pair<opt_t<float>, bool>>(layout_guide_utils::wait_cache_handler<float>())
+            .convert<std::pair<opt_t<float>, bool>>(
+                [cache = opt_t<float>(), is_wait = false, weak_guide](auto const &pair) mutable {
+                    bool is_continue = false;
+
+                    if (pair.first) {
+                        // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
+                        cache = *pair.first;
+                        is_continue = !is_wait;
+                    } else if (pair.second) {
+                        // waitフラグが来た場合
+                        is_wait = *pair.second;
+
+                        auto guide_impl = weak_guide.lock().impl_ptr<layout_guide::impl>();
+
+                        if (is_wait) {
+                            // wait開始ならキャッシュをクリアしてフロー中断
+                            cache = nullopt;
+                            is_continue = false;
+                            guide_impl->_old_value = guide_impl->_value.value();
+                        } else {
+                            // wait終了ならキャッシュに値があればフロー継続
+                            is_continue = !!cache;
+                            if (!is_continue) {
+                                guide_impl->_old_value = nullopt;
+                            }
+                        }
+                    }
+
+                    return std::make_pair(cache, is_continue);
+                })
             .guard([](auto const &pair) { return pair.second; })
+            .guard([weak_guide](auto const &pair) {
+                auto guide_impl = weak_guide.lock().impl_ptr<ui::layout_guide::impl>();
+                if (!guide_impl->_old_value) {
+                    return true;
+                }
+                float const old_value = *guide_impl->_old_value;
+                guide_impl->_old_value = nullopt;
+                return old_value != *pair.first;
+            })
             .convert<float>([](auto const &pair) { return *pair.first; });
     }
 
