@@ -8,50 +8,6 @@
 
 using namespace yas;
 
-namespace yas::ui::layout_guide_utils {
-std::function<bool(bool)> wait_guard_handler() {
-    return [count = int32_t(0)](bool const &is_wait) mutable {
-        if (is_wait) {
-            ++count;
-            return (count == 1);
-        } else {
-            --count;
-            if (count < 0) {
-                std::underflow_error("");
-            }
-            return (count == 0);
-        }
-    };
-}
-
-template <typename T>
-std::function<std::pair<opt_t<T>, bool>(std::pair<opt_t<T>, opt_t<bool>>)> wait_cache_handler() {
-    return [cache = opt_t<T>(), is_wait = false](auto const &pair) mutable {
-        bool is_continue = false;
-
-        if (pair.first) {
-            // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
-            cache = *pair.first;
-            is_continue = !is_wait;
-        } else if (pair.second) {
-            // waitフラグが来た場合
-            is_wait = *pair.second;
-
-            if (is_wait) {
-                // wait開始ならキャッシュをクリアしてフロー中断
-                cache = nullopt;
-                is_continue = false;
-            } else {
-                // wait終了ならキャッシュに値があればフロー継続
-                is_continue = !!cache;
-            }
-        }
-
-        return std::make_pair(cache, is_continue);
-    };
-}
-}
-
 #pragma mark - ui::layout_guide::impl
 
 struct ui::layout_guide::impl : base::impl {
@@ -98,12 +54,23 @@ struct ui::layout_guide::impl : base::impl {
 
     flow_t begin_flow() {
         auto weak_guide = to_weak(cast<layout_guide>());
-        
+
         auto old_cache = std::make_shared<opt_t<float>>();
 
         return this->_value.begin_flow()
             .guard([weak_guide](float const &) { return !!weak_guide; })
-            .pair(this->_wait_sender.begin().guard(layout_guide_utils::wait_guard_handler()))
+            .pair(this->_wait_sender.begin().guard([count = int32_t(0)](bool const &is_wait) mutable {
+                if (is_wait) {
+                    ++count;
+                    return (count == 1);
+                } else {
+                    --count;
+                    if (count < 0) {
+                        std::underflow_error("");
+                    }
+                    return (count == 0);
+                }
+            }))
             .convert<std::pair<opt_t<float>, bool>>(
                 [cache = opt_t<float>(), old_cache, is_wait = false, weak_guide](auto const &pair) mutable {
                     bool is_continue = false;
