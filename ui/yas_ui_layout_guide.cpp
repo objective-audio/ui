@@ -90,11 +90,9 @@ struct ui::layout_guide::impl : base::impl {
 
     void push_notify_caller() {
         this->_wait_sender.send_value(true);
-        this->_notify_caller.push();
     }
 
     void pop_notify_caller() {
-        this->_notify_caller.pop();
         this->_wait_sender.send_value(false);
     }
 
@@ -156,7 +154,6 @@ struct ui::layout_guide::impl : base::impl {
     }
 
    private:
-    delaying_caller _notify_caller;
     std::experimental::optional<float> _old_value = nullopt;
     flow::receiver<float> _receiver = nullptr;
     flow::sender<bool> _wait_sender;
