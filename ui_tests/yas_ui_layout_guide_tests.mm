@@ -204,6 +204,24 @@ using namespace yas;
     XCTAssertTrue(handled_guide_point == guide_point);
 }
 
+- (void)test_point_flow {
+    ui::layout_guide_point guide_point;
+
+    ui::point notified;
+
+    auto flow = guide_point.begin_flow().perform([&notified](ui::point const &point) { notified = point; }).end();
+
+    guide_point.set_point({1.0f, 2.0f});
+
+    XCTAssertEqual(notified.x, 1.0f);
+    XCTAssertEqual(notified.y, 2.0f);
+
+    guide_point.receivable().receive_value({3.0f, 4.0f});
+
+    XCTAssertEqual(notified.x, 3.0f);
+    XCTAssertEqual(notified.y, 4.0f);
+}
+
 - (void)test_point_notify_caller {
     ui::layout_guide_point point;
 
@@ -227,19 +245,12 @@ using namespace yas;
         handled_y = context.new_value;
     });
 
-    auto x_observer =
-        point.x()
-            .begin_flow()
-            .perform([&notified_x](float const &value) { notified_x = value; })
-            .end();
+    auto x_observer = point.x().begin_flow().perform([&notified_x](float const &value) { notified_x = value; }).end();
 
-    auto y_observer =
-        point.y()
-            .begin_flow()
-            .perform([&notified_y](float const &value) { notified_y = value; })
-            .end();
-    
-    auto point_observer = point.begin_flow().perform([&notified_point](ui::point const &point){ notified_point = point;}).end();
+    auto y_observer = point.y().begin_flow().perform([&notified_y](float const &value) { notified_y = value; }).end();
+
+    auto point_observer =
+        point.begin_flow().perform([&notified_point](ui::point const &point) { notified_point = point; }).end();
 
     point.set_point({1.0f, 2.0f});
 
