@@ -208,13 +208,16 @@ using namespace yas;
     ui::layout_guide_point point;
 
     ui::point handled_point;
-    ui::point notified_new_point;
+    float notified_x;
+    float notified_y;
+    ui::point notified_point;
 
     auto is_all_zero = [](ui::point const &origin) { return origin.x == 0 && origin.y == 0; };
 
-    auto clear_points = [&handled_point, &notified_new_point]() {
+    auto clear_points = [&handled_point, &notified_x, &notified_y, &notified_point]() {
         handled_point.x = handled_point.y = 0.0f;
-        notified_new_point.x = notified_new_point.y = 0.0f;
+        notified_x = notified_y = 0.0f;
+        notified_point.x = notified_point.y = 0.0f;
     };
 
     point.x().set_value_changed_handler([&handled_x = handled_point.x](auto const &context) {
@@ -227,21 +230,25 @@ using namespace yas;
     auto x_observer =
         point.x()
             .begin_flow()
-            .perform([&notified_new_x = notified_new_point.x](float const &value) { notified_new_x = value; })
+            .perform([&notified_x](float const &value) { notified_x = value; })
             .end();
 
     auto y_observer =
         point.y()
             .begin_flow()
-            .perform([&notified_new_y = notified_new_point.y](float const &value) { notified_new_y = value; })
+            .perform([&notified_y](float const &value) { notified_y = value; })
             .end();
+    
+    auto point_observer = point.begin_flow().perform([&notified_point](ui::point const &point){ notified_point = point;}).end();
 
     point.set_point({1.0f, 2.0f});
 
     XCTAssertEqual(handled_point.x, 1.0f);
     XCTAssertEqual(handled_point.y, 2.0f);
-    XCTAssertEqual(notified_new_point.x, 1.0f);
-    XCTAssertEqual(notified_new_point.y, 2.0f);
+    XCTAssertEqual(notified_x, 1.0f);
+    XCTAssertEqual(notified_y, 2.0f);
+    XCTAssertEqual(notified_point.x, 1.0f);
+    XCTAssertEqual(notified_point.y, 2.0f);
 
     clear_points();
 
@@ -250,28 +257,36 @@ using namespace yas;
     point.set_point({3.0f, 4.0f});
 
     XCTAssertTrue(is_all_zero(handled_point));
-    XCTAssertTrue(is_all_zero(notified_new_point));
+    XCTAssertEqual(notified_x, 0.0f);
+    XCTAssertEqual(notified_y, 0.0f);
+    XCTAssertTrue(is_all_zero(notified_point));
 
     point.push_notify_caller();
 
     point.set_point({5.0f, 6.0f});
 
     XCTAssertTrue(is_all_zero(handled_point));
-    XCTAssertTrue(is_all_zero(notified_new_point));
+    XCTAssertEqual(notified_x, 0.0f);
+    XCTAssertEqual(notified_y, 0.0f);
+    XCTAssertTrue(is_all_zero(notified_point));
 
     point.pop_notify_caller();
 
     point.set_point({7.0f, 8.0f});
 
     XCTAssertTrue(is_all_zero(handled_point));
-    XCTAssertTrue(is_all_zero(notified_new_point));
+    XCTAssertEqual(notified_x, 0.0f);
+    XCTAssertEqual(notified_y, 0.0f);
+    XCTAssertTrue(is_all_zero(notified_point));
 
     point.pop_notify_caller();
 
     XCTAssertEqual(handled_point.x, 7.0f);
     XCTAssertEqual(handled_point.y, 8.0f);
-    XCTAssertEqual(notified_new_point.x, 7.0f);
-    XCTAssertEqual(notified_new_point.y, 8.0f);
+    XCTAssertEqual(notified_x, 7.0f);
+    XCTAssertEqual(notified_y, 8.0f);
+    XCTAssertEqual(notified_point.x, 7.0f);
+    XCTAssertEqual(notified_point.y, 8.0f);
 
     clear_points();
 
@@ -279,8 +294,10 @@ using namespace yas;
 
     XCTAssertEqual(handled_point.x, 9.0f);
     XCTAssertEqual(handled_point.y, 10.0f);
-    XCTAssertEqual(notified_new_point.x, 9.0f);
-    XCTAssertEqual(notified_new_point.y, 10.0f);
+    XCTAssertEqual(notified_x, 9.0f);
+    XCTAssertEqual(notified_y, 10.0f);
+    XCTAssertEqual(notified_point.x, 9.0f);
+    XCTAssertEqual(notified_point.y, 10.0f);
 }
 
 #pragma mark - ui::layout_guide_range
