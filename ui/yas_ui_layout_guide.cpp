@@ -57,7 +57,7 @@ struct ui::layout_guide::impl : base::impl {
 
         auto old_cache = std::make_shared<opt_t<float>>();
 
-        return this->_value.begin_flow()
+        return this->_value.begin_value_flow()
             .guard([weak_guide](float const &) { return !!weak_guide; })
             .pair(this->_wait_sender.begin().guard([count = int32_t(0)](bool const &is_wait) mutable {
                 if (is_wait) {

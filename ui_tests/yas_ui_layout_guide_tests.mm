@@ -224,13 +224,17 @@ using namespace yas;
         handled_y = context.new_value;
     });
 
-    auto x_observer = point.x().subject().make_observer(
-        ui::layout_guide::method::value_changed,
-        [&notified_new_x = notified_new_point.x](auto const &context) { notified_new_x = context.value.new_value; });
+    auto x_observer =
+        point.x()
+            .begin_flow()
+            .perform([&notified_new_x = notified_new_point.x](float const &value) { notified_new_x = value; })
+            .end();
 
-    auto y_observer = point.y().subject().make_observer(
-        ui::layout_guide::method::value_changed,
-        [&notified_new_y = notified_new_point.y](auto const &context) { notified_new_y = context.value.new_value; });
+    auto y_observer =
+        point.y()
+            .begin_flow()
+            .perform([&notified_new_y = notified_new_point.y](float const &value) { notified_new_y = value; })
+            .end();
 
     point.set_point({1.0f, 2.0f});
 
@@ -377,21 +381,22 @@ using namespace yas;
         handled_length = context.new_value;
     });
 
-    auto min_observer = range.min().subject().make_observer(
-        ui::layout_guide::method::value_changed, [&notified_new_min = notified_new_edge.min](auto const &context) {
-            notified_new_min = context.value.new_value;
-        });
-
-    auto max_observer = range.max().subject().make_observer(
-        ui::layout_guide::method::value_changed, [&notified_new_max = notified_new_edge.max](auto const &context) {
-            notified_new_max = context.value.new_value;
-        });
-
-    auto length_observer =
-        range.length().subject().make_observer(ui::layout_guide::method::value_changed,
-                                               [&notified_new_length = notified_new_edge.length](auto const &context) {
-                                                   notified_new_length = context.value.new_value;
-                                               });
+    auto min_observer =
+        range.min()
+            .begin_flow()
+            .perform([&notified_new_min = notified_new_edge.min](float const &value) { notified_new_min = value; })
+            .end();
+    auto max_observer =
+        range.max()
+            .begin_flow()
+            .perform([&notified_new_max = notified_new_edge.max](float const &value) { notified_new_max = value; })
+            .end();
+    auto length_observer = range.length()
+                               .begin_flow()
+                               .perform([&notified_new_length = notified_new_edge.length](float const &value) {
+                                   notified_new_length = value;
+                               })
+                               .end();
 
     range.set_range({1.0f, 2.0f});
 
