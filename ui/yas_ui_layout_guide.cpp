@@ -179,6 +179,16 @@ struct ui::layout_guide_point::impl : base::impl {
     impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
     }
 
+    void prepare(ui::layout_guide_point &guide_point) {
+        auto weak_guide_point = to_weak(guide_point);
+
+        this->_receiver = flow::receiver<ui::point>([weak_guide_point](ui::point const &point) {
+            if (auto guide_point = weak_guide_point.lock()) {
+                guide_point.set_point(point);
+            }
+        });
+    }
+
     void set_point(ui::point &&point) {
         this->push_notify_caller();
 
@@ -213,6 +223,29 @@ struct ui::layout_guide_point::impl : base::impl {
         this->_x_guide.pop_notify_caller();
         this->_y_guide.pop_notify_caller();
     }
+
+    flow_t begin_flow() {
+        auto cache = this->point();
+        
+        return this->_x_guide.begin_flow()
+            .combine(this->_y_guide.begin_flow())
+            .guard([](auto const &pair) { return pair.first && pair.second; })
+            .convert<ui::point>([cache](auto const &pair) mutable {
+                if (pair.first) {
+                    cache.x = *pair.first;
+                } else if (pair.second) {
+                    cache.y = *pair.second;
+                }
+                return cache;
+            });
+    }
+
+    flow::receivable<ui::point> receivable() {
+        return this->_receiver.receivable();
+    }
+
+   private:
+    flow::receiver<ui::point> _receiver = nullptr;
 };
 
 #pragma mark - ui::layout_guide_point
@@ -262,6 +295,14 @@ void ui::layout_guide_point::push_notify_caller() {
 
 void ui::layout_guide_point::pop_notify_caller() {
     impl_ptr<impl>()->pop_notify_caller();
+}
+
+ui::layout_guide_point::flow_t ui::layout_guide_point::begin_flow() {
+    return impl_ptr<impl>()->begin_flow();
+}
+
+flow::receivable<ui::point> ui::layout_guide_point::receivable() {
+    return impl_ptr<impl>()->receivable();
 }
 
 #pragma mark - ui::layout_guide_range::impl
