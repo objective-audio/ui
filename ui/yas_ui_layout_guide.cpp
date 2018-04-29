@@ -226,14 +226,14 @@ struct ui::layout_guide_point::impl : base::impl {
 
     flow_t begin_flow() {
         auto cache = this->point();
-        
+
         return this->_x_guide.begin_flow()
-            .combine(this->_y_guide.begin_flow())
-            .guard([](auto const &pair) { return pair.first && pair.second; })
+            .pair(this->_y_guide.begin_flow())
             .convert<ui::point>([cache](auto const &pair) mutable {
                 if (pair.first) {
                     cache.x = *pair.first;
-                } else if (pair.second) {
+                }
+                if (pair.second) {
                     cache.y = *pair.second;
                 }
                 return cache;
