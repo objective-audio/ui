@@ -254,6 +254,7 @@ ui::layout_guide_point::layout_guide_point() : layout_guide_point(ui::point{}) {
 }
 
 ui::layout_guide_point::layout_guide_point(ui::point origin) : base(std::make_shared<impl>(std::move(origin))) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide_point::layout_guide_point(std::nullptr_t) : base(nullptr) {
