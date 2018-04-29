@@ -652,37 +652,40 @@ using namespace yas;
         handled_height = context.new_value;
     });
 
-    auto left_observer = rect.left().subject().make_observer(
-        ui::layout_guide::method::value_changed, [&notified_new_left = notified_new_edge.left](auto const &context) {
-            notified_new_left = context.value.new_value;
-        });
-
-    auto right_observer = rect.right().subject().make_observer(
-        ui::layout_guide::method::value_changed, [&notified_new_right = notified_new_edge.right](auto const &context) {
-            notified_new_right = context.value.new_value;
-        });
-
-    auto bottom_observer =
-        rect.bottom().subject().make_observer(ui::layout_guide::method::value_changed,
-                                              [&notified_new_bottom = notified_new_edge.bottom](auto const &context) {
-                                                  notified_new_bottom = context.value.new_value;
-                                              });
-
-    auto top_observer = rect.top().subject().make_observer(
-        ui::layout_guide::method::value_changed, [&notified_new_top = notified_new_edge.top](auto const &context) {
-            notified_new_top = context.value.new_value;
-        });
-
-    auto width_observer = rect.width().subject().make_observer(
-        ui::layout_guide::method::value_changed, [&notified_new_width = notified_new_edge.width](auto const &context) {
-            notified_new_width = context.value.new_value;
-        });
-
-    auto height_observer =
-        rect.height().subject().make_observer(ui::layout_guide::method::value_changed,
-                                              [&notified_new_height = notified_new_edge.height](auto const &context) {
-                                                  notified_new_height = context.value.new_value;
-                                              });
+    auto left_observer =
+        rect.left()
+            .begin_flow()
+            .perform([&notified_new_left = notified_new_edge.left](float const &value) { notified_new_left = value; })
+            .end();
+    auto right_observer = rect.right()
+                              .begin_flow()
+                              .perform([&notified_new_right = notified_new_edge.right](float const &value) {
+                                  notified_new_right = value;
+                              })
+                              .end();
+    auto bottom_observer = rect.bottom()
+                               .begin_flow()
+                               .perform([&notified_new_bottom = notified_new_edge.bottom](float const &value) {
+                                   notified_new_bottom = value;
+                               })
+                               .end();
+    auto top_observer =
+        rect.top()
+            .begin_flow()
+            .perform([&notified_new_top = notified_new_edge.top](float const &value) { notified_new_top = value; })
+            .end();
+    auto width_observer = rect.width()
+                              .begin_flow()
+                              .perform([&notified_new_width = notified_new_edge.width](float const &value) {
+                                  notified_new_width = value;
+                              })
+                              .end();
+    auto height_observer = rect.height()
+                               .begin_flow()
+                               .perform([&notified_new_height = notified_new_edge.height](float const &value) {
+                                   notified_new_height = value;
+                               })
+                               .end();
 
     rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
