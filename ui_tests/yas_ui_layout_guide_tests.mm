@@ -90,9 +90,9 @@ using namespace yas;
     auto clear_values = [&handled_value, &notified_new_value]() { handled_value = notified_new_value = 0.0f; };
 
     guide.set_value_changed_handler([&handled_value](auto const &context) { handled_value = context.new_value; });
-    auto observer = guide.subject().make_observer(
-        ui::layout_guide::method::value_changed,
-        [&notified_new_value](auto const &context) { notified_new_value = context.value.new_value; });
+
+    auto observer =
+        guide.begin_flow().perform([&notified_new_value](float const &value) { notified_new_value = value; }).end();
 
     guide.set_value(1.0f);
 
@@ -331,11 +331,10 @@ using namespace yas;
     ui::range handled_new_value{-1.0f, -1.0f};
     ui::layout_guide_range handled_guide_range{nullptr};
 
-    guide_range.set_value_changed_handler(
-        [&handled_new_value, &handled_guide_range](auto const &context) {
-            handled_new_value = context.new_value;
-            handled_guide_range = context.layout_guide_range;
-        });
+    guide_range.set_value_changed_handler([&handled_new_value, &handled_guide_range](auto const &context) {
+        handled_new_value = context.new_value;
+        handled_guide_range = context.layout_guide_range;
+    });
 
     guide_range.set_range({1.0f, 2.0f});
 
@@ -583,11 +582,10 @@ using namespace yas;
     ui::region handled_new_value{.origin = {-1.0f, -1.0f}, .size = {-1.0f, -1.0f}};
     ui::layout_guide_rect handled_guide_rect{nullptr};
 
-    guide_rect.set_value_changed_handler(
-        [&handled_new_value, &handled_guide_rect](auto const &context) {
-            handled_new_value = context.new_value;
-            handled_guide_rect = context.layout_guide_rect;
-        });
+    guide_rect.set_value_changed_handler([&handled_new_value, &handled_guide_rect](auto const &context) {
+        handled_new_value = context.new_value;
+        handled_guide_rect = context.layout_guide_rect;
+    });
 
     guide_rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
