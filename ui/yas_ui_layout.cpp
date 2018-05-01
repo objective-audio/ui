@@ -72,34 +72,29 @@ flow::observer<float> ui::make_flow_layout(fixed_layout::args args) {
         throw "argument is null.";
     }
 
-    return args.source_guide.begin_flow()
-        .convert([distance = args.distance](float const &value) { return value + distance; })
-        .end(args.destination_guide.receivable());
+    auto flow = args.source_guide.begin_flow()
+                    .convert([distance = args.distance](float const &value) { return value + distance; })
+                    .end(args.destination_guide.receivable());
+
+    flow.sync();
+
+    return flow;
 }
 
-ui::layout ui::make_layout(fixed_layout_point::args args) {
+flow::observer<float> ui::make_flow_layout(fixed_layout_point::args args) {
     if (!args.source_guide_point || !args.destination_guide_point) {
         throw "argument is null.";
     }
 
-    auto handler = [distances = std::move(args.distances)](auto const &src_guides, auto &dst_guides) {
-        dst_guides.at(0).set_value(src_guides.at(0).value() + distances.x);
-        dst_guides.at(1).set_value(src_guides.at(1).value() + distances.y);
-    };
+    auto flow = args.source_guide_point.begin_flow()
+                    .convert([distance = args.distances](ui::point const &value) {
+                        return ui::point{value.x + distance.x, value.y + distance.y};
+                    })
+                    .end(args.destination_guide_point.receivable());
 
-    std::vector<ui::layout_guide> src_guides;
-    src_guides.reserve(2);
-    src_guides.emplace_back(std::move(args.source_guide_point.x()));
-    src_guides.emplace_back(std::move(args.source_guide_point.y()));
+    flow.sync();
 
-    std::vector<ui::layout_guide> dst_guides;
-    dst_guides.reserve(2);
-    dst_guides.emplace_back(std::move(args.destination_guide_point.x()));
-    dst_guides.emplace_back(std::move(args.destination_guide_point.y()));
-
-    return ui::layout{{.source_guides = {std::move(src_guides)},
-                       .destination_guides = {std::move(dst_guides)},
-                       .handler = std::move(handler)}};
+    return flow;
 }
 
 ui::layout ui::make_layout(fixed_layout_rect::args args) {
