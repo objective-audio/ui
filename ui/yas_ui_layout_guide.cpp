@@ -583,6 +583,7 @@ ui::layout_guide_rect::layout_guide_rect()
 }
 
 ui::layout_guide_rect::layout_guide_rect(ranges_args args) : base(std::make_shared<impl>(std::move(args))) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide_rect::layout_guide_rect(ui::region region)
