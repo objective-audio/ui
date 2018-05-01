@@ -63,6 +63,7 @@ struct sample::justified_points::impl : base::impl {
 
    private:
     ui::node::observer_t _renderer_observer = nullptr;
+    std::vector<flow::observer<float>> _guide_observers;
 
     void _setup_colors() {
         this->_rect_plane.node().mesh().set_use_mesh_color(true);
@@ -81,28 +82,34 @@ struct sample::justified_points::impl : base::impl {
     }
 
     void _setup_layout_guides() {
+        auto weak_plane = to_weak(this->_rect_plane);
+
         auto x_each = make_fast_each(sample::x_point_count);
         while (yas_each_next(x_each)) {
             auto const &idx = yas_each_index(x_each);
-            this->_x_layout_guides.at(idx).set_value_changed_handler(
-                [weak_plane = to_weak(this->_rect_plane), idx](auto const &context) {
-                    if (auto plane = weak_plane.lock()) {
-                        plane.data().set_rect_position(
-                            {.origin = {context.new_value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
-                    }
-                });
+            this->_guide_observers.emplace_back(this->_x_layout_guides.at(idx)
+                                                    .begin_flow()
+                                                    .guard([weak_plane](float const &) { return !!weak_plane; })
+                                                    .perform([weak_plane, idx](float const &value) {
+                                                        weak_plane.lock().data().set_rect_position(
+                                                            {.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}},
+                                                            idx);
+                                                    })
+                                                    .end());
         }
 
         auto y_each = make_fast_each(sample::y_point_count);
         while (yas_each_next(y_each)) {
             auto const &idx = yas_each_index(y_each);
-            this->_y_layout_guides.at(idx).set_value_changed_handler(
-                [weak_plane = to_weak(this->_rect_plane), idx](auto const &context) {
-                    if (auto plane = weak_plane.lock()) {
-                        plane.data().set_rect_position(
-                            {.origin = {-2.0f, context.new_value - 2.0f}, .size = {4.0f, 4.0f}}, idx + x_point_count);
-                    }
-                });
+            this->_guide_observers.emplace_back(this->_y_layout_guides.at(idx)
+                                                    .begin_flow()
+                                                    .guard([weak_plane](float const &) { return !!weak_plane; })
+                                                    .perform([weak_plane, idx](float const &value) {
+                                                        weak_plane.lock().data().set_rect_position(
+                                                            {.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
+                                                            idx + x_point_count);
+                                                    })
+                                                    .end());
         }
     }
 };
