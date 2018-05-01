@@ -267,6 +267,10 @@ void ui::vertex2d_rect_t::set_tex_coord(ui::uint_region const &region) {
 
 #pragma mark -
 
+ui::region yas::make_region(ui::range const &horizontal, ui::range const &vertical) {
+    return ui::region{.origin = {horizontal.location, vertical.location}, .size = {horizontal.length, vertical.length}};
+}
+
 simd::float2 yas::to_float2(CGPoint const &point) {
     return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
 }
