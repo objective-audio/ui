@@ -227,6 +227,7 @@ struct sample::soft_keyboard::impl : base::impl {
         this->_src_cell_guide_rects.clear();
         this->_dst_cell_guide_rects.clear();
         this->_cell_interporator = nullptr;
+        this->_dst_rect_observers.clear();
     }
 
     void _setup_soft_keys_layout() {
