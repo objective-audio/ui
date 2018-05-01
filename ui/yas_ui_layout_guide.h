@@ -94,8 +94,6 @@ class layout_guide_range : public base {
         layout_guide_range const &layout_guide_range;
     };
 
-    using value_changed_f = std::function<void(change_context const &)>;
-
     layout_guide_range();
     explicit layout_guide_range(ui::range);
     layout_guide_range(std::nullptr_t);
@@ -129,8 +127,6 @@ class layout_guide_rect : public base {
         ui::region const &new_value;
         layout_guide_rect const &layout_guide_rect;
     };
-
-    using value_changed_f = std::function<void(change_context const &)>;
 
     struct ranges_args {
         ui::range horizontal_range;
