@@ -21,22 +21,32 @@ using namespace yas;
     [super tearDown];
 }
 
+- (void)test_make_fixed_layout {
+    ui::layout_guide src_guide{0.5f};
+    ui::layout_guide dst_guide{0.25f};
+
+    auto layout = ui::make_flow_layout({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+
+    XCTAssertTrue(layout);
+
+    XCTAssertEqual(src_guide.value(), 0.5f);
+    XCTAssertEqual(dst_guide.value(), 8.5f);
+}
+
 - (void)test_make_fixed_layout_with_point {
     ui::point distances{.x = 0.5f, .y = 0.25f};
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
     ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
 
-    auto layout = ui::make_layout(
+    auto layout = ui::make_flow_layout(
         {.distances = distances, .source_guide_point = src_guide_point, .destination_guide_point = dst_guide_point});
 
     XCTAssertTrue(layout);
-    XCTAssertEqual(layout.source_guides().size(), 2);
-    XCTAssertEqual(layout.destination_guides().size(), 2);
 
-    XCTAssertEqual(layout.source_guides().at(0).value(), 1.0f);
-    XCTAssertEqual(layout.source_guides().at(1).value(), 2.0f);
-    XCTAssertEqual(layout.destination_guides().at(0).value(), 1.5f);
-    XCTAssertEqual(layout.destination_guides().at(1).value(), 2.25f);
+    XCTAssertEqual(src_guide_point.point().x, 1.0f);
+    XCTAssertEqual(src_guide_point.point().y, 2.0f);
+    XCTAssertEqual(dst_guide_point.point().x, 1.5f);
+    XCTAssertEqual(dst_guide_point.point().y, 2.25f);
 }
 
 - (void)test_make_fixed_layout_with_rect {
