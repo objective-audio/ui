@@ -23,8 +23,8 @@ class layout_guide : public base {
     void set_value(float const);
     float const &value() const;
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
     using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float>;
 
@@ -50,8 +50,8 @@ class layout_guide_point : public base {
     void set_point(ui::point);
     ui::point point() const;
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
     using flow_t = flow::node<ui::point, std::pair<opt_t<float>, opt_t<float>>, float>;
 
@@ -79,8 +79,8 @@ class layout_guide_range : public base {
     void set_range(ui::range);
     ui::range range() const;
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
     using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float>;
 
@@ -129,8 +129,8 @@ class layout_guide_rect : public base {
 
     ui::region region() const;
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
     using flow_t = flow::node<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float>;
 

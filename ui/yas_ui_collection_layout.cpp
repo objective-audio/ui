@@ -190,15 +190,15 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    void push_notify_caller() {
+    void push_notify_waiting() {
         for (auto &rect : this->_cell_guide_rects) {
-            rect.push_notify_caller();
+            rect.push_notify_waiting();
         }
     }
 
-    void pop_notify_caller() {
+    void pop_notify_waiting() {
         for (auto &rect : this->_cell_guide_rects) {
-            rect.pop_notify_caller();
+            rect.pop_notify_waiting();
         }
     }
 
@@ -271,7 +271,7 @@ struct ui::collection_layout::impl : base::impl {
 
         this->_cell_guide_rects.resize(actual_cell_count);
 
-        this->push_notify_caller();
+        this->push_notify_waiting();
 
         std::size_t idx = 0;
 
@@ -301,7 +301,7 @@ struct ui::collection_layout::impl : base::impl {
             }
         }
 
-        this->pop_notify_caller();
+        this->pop_notify_waiting();
 
         if (prev_actual_cell_count != actual_cell_count) {
             this->_subject.notify(ui::collection_layout::method::actual_cell_count_changed,

@@ -26,11 +26,11 @@ struct ui::layout_guide::impl : base::impl {
         });
     }
 
-    void push_notify_caller() {
+    void push_notify_waiting() {
         this->_wait_sender.send_value(true);
     }
 
-    void pop_notify_caller() {
+    void pop_notify_waiting() {
         this->_wait_sender.send_value(false);
     }
 
@@ -127,12 +127,12 @@ float const &ui::layout_guide::value() const {
     return impl_ptr<impl>()->_value.value();
 }
 
-void ui::layout_guide::push_notify_caller() {
-    impl_ptr<impl>()->push_notify_caller();
+void ui::layout_guide::push_notify_waiting() {
+    impl_ptr<impl>()->push_notify_waiting();
 }
 
-void ui::layout_guide::pop_notify_caller() {
-    impl_ptr<impl>()->pop_notify_caller();
+void ui::layout_guide::pop_notify_waiting() {
+    impl_ptr<impl>()->pop_notify_waiting();
 }
 
 ui::layout_guide::flow_t ui::layout_guide::begin_flow() {
@@ -163,26 +163,26 @@ struct ui::layout_guide_point::impl : base::impl {
     }
 
     void set_point(ui::point &&point) {
-        this->push_notify_caller();
+        this->push_notify_waiting();
 
         this->_x_guide.set_value(std::move(point.x));
         this->_y_guide.set_value(std::move(point.y));
 
-        this->pop_notify_caller();
+        this->pop_notify_waiting();
     }
 
     ui::point point() {
         return ui::point{_x_guide.value(), _y_guide.value()};
     }
 
-    void push_notify_caller() {
-        this->_x_guide.push_notify_caller();
-        this->_y_guide.push_notify_caller();
+    void push_notify_waiting() {
+        this->_x_guide.push_notify_waiting();
+        this->_y_guide.push_notify_waiting();
     }
 
-    void pop_notify_caller() {
-        this->_x_guide.pop_notify_caller();
-        this->_y_guide.pop_notify_caller();
+    void pop_notify_waiting() {
+        this->_x_guide.pop_notify_waiting();
+        this->_y_guide.pop_notify_waiting();
     }
 
     flow_t begin_flow() {
@@ -247,12 +247,12 @@ ui::point ui::layout_guide_point::point() const {
     return impl_ptr<impl>()->point();
 }
 
-void ui::layout_guide_point::push_notify_caller() {
-    impl_ptr<impl>()->push_notify_caller();
+void ui::layout_guide_point::push_notify_waiting() {
+    impl_ptr<impl>()->push_notify_waiting();
 }
 
-void ui::layout_guide_point::pop_notify_caller() {
-    impl_ptr<impl>()->pop_notify_caller();
+void ui::layout_guide_point::pop_notify_waiting() {
+    impl_ptr<impl>()->pop_notify_waiting();
 }
 
 ui::layout_guide_point::flow_t ui::layout_guide_point::begin_flow() {
@@ -305,13 +305,13 @@ struct ui::layout_guide_range::impl : base::impl {
     }
 
     void set_range(ui::range &&range) {
-        this->push_notify_caller();
+        this->push_notify_waiting();
 
         this->_min_guide.set_value(range.min());
         this->_max_guide.set_value(range.max());
         this->_length_guide.set_value(range.length);
 
-        this->pop_notify_caller();
+        this->pop_notify_waiting();
     }
 
     ui::range range() {
@@ -321,16 +321,16 @@ struct ui::layout_guide_range::impl : base::impl {
         return ui::range{.location = min, .length = max - min};
     }
 
-    void push_notify_caller() {
-        this->_min_guide.push_notify_caller();
-        this->_max_guide.push_notify_caller();
-        this->_length_guide.push_notify_caller();
+    void push_notify_waiting() {
+        this->_min_guide.push_notify_waiting();
+        this->_max_guide.push_notify_waiting();
+        this->_length_guide.push_notify_waiting();
     }
 
-    void pop_notify_caller() {
-        this->_min_guide.pop_notify_caller();
-        this->_max_guide.pop_notify_caller();
-        this->_length_guide.pop_notify_caller();
+    void pop_notify_waiting() {
+        this->_min_guide.pop_notify_waiting();
+        this->_max_guide.pop_notify_waiting();
+        this->_length_guide.pop_notify_waiting();
     }
 
     flow_t begin_flow() {
@@ -403,12 +403,12 @@ ui::range ui::layout_guide_range::range() const {
     return impl_ptr<impl>()->range();
 }
 
-void ui::layout_guide_range::push_notify_caller() {
-    impl_ptr<impl>()->push_notify_caller();
+void ui::layout_guide_range::push_notify_waiting() {
+    impl_ptr<impl>()->push_notify_waiting();
 }
 
-void ui::layout_guide_range::pop_notify_caller() {
-    impl_ptr<impl>()->pop_notify_caller();
+void ui::layout_guide_range::pop_notify_waiting() {
+    impl_ptr<impl>()->pop_notify_waiting();
 }
 
 ui::layout_guide_range::flow_t ui::layout_guide_range::begin_flow() {
@@ -449,14 +449,14 @@ struct ui::layout_guide_rect::impl : base::impl {
     }
 
     void set_ranges(ranges_args &&args) {
-        this->_vertical_range.push_notify_caller();
-        this->_horizontal_range.push_notify_caller();
+        this->_vertical_range.push_notify_waiting();
+        this->_horizontal_range.push_notify_waiting();
 
         this->set_vertical_range(std::move(args.vertical_range));
         this->set_horizontal_range(std::move(args.horizontal_range));
 
-        this->_vertical_range.pop_notify_caller();
-        this->_horizontal_range.pop_notify_caller();
+        this->_vertical_range.pop_notify_waiting();
+        this->_horizontal_range.pop_notify_waiting();
     }
 
     void set_region(ui::region &&region) {
@@ -470,14 +470,14 @@ struct ui::layout_guide_rect::impl : base::impl {
         return ui::make_region(h_range, v_range);
     }
 
-    void push_notify_caller() {
-        this->_vertical_range.push_notify_caller();
-        this->_horizontal_range.push_notify_caller();
+    void push_notify_waiting() {
+        this->_vertical_range.push_notify_waiting();
+        this->_horizontal_range.push_notify_waiting();
     }
 
-    void pop_notify_caller() {
-        this->_vertical_range.pop_notify_caller();
-        this->_horizontal_range.pop_notify_caller();
+    void pop_notify_waiting() {
+        this->_vertical_range.pop_notify_waiting();
+        this->_horizontal_range.pop_notify_waiting();
     }
 
     flow_t begin_flow() {
@@ -604,12 +604,12 @@ ui::region ui::layout_guide_rect::region() const {
     return impl_ptr<impl>()->region();
 }
 
-void ui::layout_guide_rect::push_notify_caller() {
-    impl_ptr<impl>()->push_notify_caller();
+void ui::layout_guide_rect::push_notify_waiting() {
+    impl_ptr<impl>()->push_notify_waiting();
 }
 
-void ui::layout_guide_rect::pop_notify_caller() {
-    impl_ptr<impl>()->pop_notify_caller();
+void ui::layout_guide_rect::pop_notify_waiting() {
+    impl_ptr<impl>()->pop_notify_waiting();
 }
 
 ui::layout_guide_rect::flow_t ui::layout_guide_rect::begin_flow() {
