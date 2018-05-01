@@ -97,35 +97,24 @@ flow::observer<float> ui::make_flow_layout(fixed_layout_point::args args) {
     return flow;
 }
 
-ui::layout ui::make_layout(fixed_layout_rect::args args) {
+flow::observer<float> ui::make_flow_layout(fixed_layout_rect::args args) {
     if (!args.source_guide_rect || !args.destination_guide_rect) {
         throw "argument is null.";
     }
 
-    auto handler = [distances = std::move(args.distances)](auto const &src_guides, auto &dst_guides) {
-        dst_guides.at(0).set_value(src_guides.at(0).value() + distances.left);
-        dst_guides.at(1).set_value(src_guides.at(1).value() + distances.right);
-        dst_guides.at(2).set_value(src_guides.at(2).value() + distances.bottom);
-        dst_guides.at(3).set_value(src_guides.at(3).value() + distances.top);
-    };
+    auto flow = args.source_guide_rect.begin_flow()
+                    .convert([distances = std::move(args.distances)](ui::region const &value) {
+                        float const left = value.left() + distances.left;
+                        float const right = value.right() + distances.right;
+                        float const bottom = value.bottom() + distances.bottom;
+                        float const top = value.top() + distances.top;
+                        return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+                    })
+                    .end(args.destination_guide_rect.receivable());
 
-    std::vector<ui::layout_guide> src_guides;
-    src_guides.reserve(4);
-    src_guides.emplace_back(std::move(args.source_guide_rect.left()));
-    src_guides.emplace_back(std::move(args.source_guide_rect.right()));
-    src_guides.emplace_back(std::move(args.source_guide_rect.bottom()));
-    src_guides.emplace_back(std::move(args.source_guide_rect.top()));
+    flow.sync();
 
-    std::vector<ui::layout_guide> dst_guides;
-    dst_guides.reserve(4);
-    dst_guides.emplace_back(std::move(args.destination_guide_rect.left()));
-    dst_guides.emplace_back(std::move(args.destination_guide_rect.right()));
-    dst_guides.emplace_back(std::move(args.destination_guide_rect.bottom()));
-    dst_guides.emplace_back(std::move(args.destination_guide_rect.top()));
-
-    return ui::layout{{.source_guides = {std::move(src_guides)},
-                       .destination_guides = {std::move(dst_guides)},
-                       .handler = std::move(handler)}};
+    return flow;
 }
 
 #pragma mark - jusitified_layout

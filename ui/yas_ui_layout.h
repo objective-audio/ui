@@ -83,7 +83,7 @@ struct args {
 namespace yas::ui {
 [[nodiscard]] flow::observer<float> make_flow_layout(fixed_layout::args);
 [[nodiscard]] flow::observer<float> make_flow_layout(fixed_layout_point::args);
-[[nodiscard]] ui::layout make_layout(fixed_layout_rect::args);
+[[nodiscard]] flow::observer<float> make_flow_layout(fixed_layout_rect::args);
 
 [[nodiscard]] ui::layout make_layout(justified_layout::args);
 

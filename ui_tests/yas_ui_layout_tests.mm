@@ -54,21 +54,19 @@ using namespace yas;
     ui::layout_guide_rect src_guide_rect{{.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}}};
     ui::layout_guide_rect dst_guide_rect{{.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}}};
 
-    auto layout = ui::make_layout(
+    auto layout = ui::make_flow_layout(
         {.distances = distances, .source_guide_rect = src_guide_rect, .destination_guide_rect = dst_guide_rect});
 
     XCTAssertTrue(layout);
-    XCTAssertEqual(layout.source_guides().size(), 4);
-    XCTAssertEqual(layout.destination_guides().size(), 4);
 
-    XCTAssertEqual(layout.source_guides().at(0).value(), 10.0f);
-    XCTAssertEqual(layout.source_guides().at(1).value(), 11.0f);
-    XCTAssertEqual(layout.source_guides().at(2).value(), 12.0f);
-    XCTAssertEqual(layout.source_guides().at(3).value(), 13.0f);
-    XCTAssertEqual(layout.destination_guides().at(0).value(), 15.0f);
-    XCTAssertEqual(layout.destination_guides().at(1).value(), 17.0f);
-    XCTAssertEqual(layout.destination_guides().at(2).value(), 19.0f);
-    XCTAssertEqual(layout.destination_guides().at(3).value(), 21.0f);
+    XCTAssertEqual(src_guide_rect.left().value(), 10.0f);
+    XCTAssertEqual(src_guide_rect.right().value(), 11.0f);
+    XCTAssertEqual(src_guide_rect.bottom().value(), 12.0f);
+    XCTAssertEqual(src_guide_rect.top().value(), 13.0f);
+    XCTAssertEqual(dst_guide_rect.left().value(), 15.0f);
+    XCTAssertEqual(dst_guide_rect.right().value(), 17.0f);
+    XCTAssertEqual(dst_guide_rect.bottom().value(), 19.0f);
+    XCTAssertEqual(dst_guide_rect.top().value(), 21.0f);
 }
 
 - (void)test_fixed_layout_value_changed {
