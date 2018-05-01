@@ -364,20 +364,6 @@ struct ui::layout_guide_range::impl : base::impl {
         return ui::range{.location = min, .length = max - min};
     }
 
-    void set_value_changed_handler(value_changed_f &&handler) {
-        auto guide_handler =
-            [handler = std::move(handler), weak_guide_range = to_weak(cast<ui::layout_guide_range>())](auto const &) {
-            if (auto guide_range = weak_guide_range.lock()) {
-                handler(change_context{.new_value = guide_range.impl_ptr<impl>()->range(),
-                                       .layout_guide_range = guide_range});
-            }
-        };
-
-        this->_min_guide.set_value_changed_handler(guide_handler);
-        this->_max_guide.set_value_changed_handler(guide_handler);
-        this->_length_guide.set_value_changed_handler(guide_handler);
-    }
-
     void push_notify_caller() {
         this->_min_guide.push_notify_caller();
         this->_max_guide.push_notify_caller();
@@ -458,10 +444,6 @@ void ui::layout_guide_range::set_range(ui::range range) {
 
 ui::range ui::layout_guide_range::range() const {
     return impl_ptr<impl>()->range();
-}
-
-void ui::layout_guide_range::set_value_changed_handler(value_changed_f handler) {
-    impl_ptr<impl>()->set_value_changed_handler(std::move(handler));
 }
 
 void ui::layout_guide_range::push_notify_caller() {

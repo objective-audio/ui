@@ -112,8 +112,6 @@ class layout_guide_range : public base {
     void set_range(ui::range);
     ui::range range() const;
 
-    void set_value_changed_handler(value_changed_f);
-
     void push_notify_caller();
     void pop_notify_caller();
 
