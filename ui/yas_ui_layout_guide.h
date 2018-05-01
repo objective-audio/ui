@@ -116,6 +116,11 @@ class layout_guide_range : public base {
 
     void push_notify_caller();
     void pop_notify_caller();
+
+    using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float>;
+
+    flow_t begin_flow();
+    flow::receivable<ui::range> receivable();
 };
 
 class layout_guide_rect : public base {

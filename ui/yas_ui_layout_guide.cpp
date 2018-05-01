@@ -383,6 +383,29 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_max_guide.pop_notify_caller();
         this->_length_guide.pop_notify_caller();
     }
+
+    flow_t begin_flow() {
+        ui::range const range = this->range();
+
+        return this->_min_guide.begin_flow().pair(this->_max_guide.begin_flow()).convert<ui::range>([
+            min_cache = range.min(), max_cache = range.max()
+        ](auto const &pair) mutable {
+            if (pair.first) {
+                min_cache = *pair.first;
+            }
+            if (pair.second) {
+                max_cache = *pair.second;
+            }
+            return ui::range{min_cache, max_cache - min_cache};
+        });
+    }
+
+    flow::receivable<ui::range> receivable() {
+        return this->_receiver.receivable();
+    }
+
+   private:
+    flow::receiver<ui::range> _receiver = nullptr;
 };
 
 #pragma mark - ui::layout_guide_range
@@ -441,6 +464,14 @@ void ui::layout_guide_range::push_notify_caller() {
 
 void ui::layout_guide_range::pop_notify_caller() {
     impl_ptr<impl>()->pop_notify_caller();
+}
+
+ui::layout_guide_range::flow_t ui::layout_guide_range::begin_flow() {
+    return impl_ptr<impl>()->begin_flow();
+}
+
+flow::receivable<ui::range> ui::layout_guide_range::receivable() {
+    return impl_ptr<impl>()->receivable();
 }
 
 #pragma mark - ui::layout_guide_rect::impl
