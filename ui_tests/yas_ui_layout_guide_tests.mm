@@ -449,7 +449,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertEqual(notified_range, ui::range::zero());
+    XCTAssertTrue(notified_range == ui::range::zero());
 
     range.push_notify_caller();
 
@@ -457,7 +457,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertEqual(notified_range, ui::range::zero());
+    XCTAssertTrue(notified_range == ui::range::zero());
 
     range.pop_notify_caller();
 
@@ -465,7 +465,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertEqual(notified_range, ui::range::zero());
+    XCTAssertTrue(notified_range == ui::range::zero());
 
     range.pop_notify_caller();
 
