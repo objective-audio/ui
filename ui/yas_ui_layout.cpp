@@ -73,7 +73,7 @@ flow::observer<float> ui::make_flow_layout(fixed_layout::args args) {
     }
 
     return args.source_guide.begin_flow()
-        .convert([distance = args.distance](float const &value) { return distance; })
+        .convert([distance = args.distance](float const &value) { return value + distance; })
         .end(args.destination_guide.receivable());
 }
 
