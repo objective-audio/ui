@@ -60,10 +60,10 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    ui::layout _left_border_layout;
-    ui::layout _right_border_layout;
-    ui::layout _bottom_border_layout;
-    ui::layout _top_border_layout;
+    flow::observer<float> _left_border_layout;
+    flow::observer<float> _right_border_layout;
+    flow::observer<float> _bottom_border_layout;
+    flow::observer<float> _top_border_layout;
     ui::layout_borders const _borders;
     subject_t _subject;
     flow::observer<float> _border_observer = nullptr;
@@ -98,18 +98,18 @@ struct ui::collection_layout::impl : base::impl {
           _direction_property({.value = args.direction}),
           _row_order_property({.value = args.row_order}),
           _col_order_property({.value = args.col_order}),
-          _left_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.left(),
-                                               .destination_guide = _border_guide_rect.left(),
-                                               .distance = args.borders.left})),
-          _right_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.right(),
-                                                .destination_guide = _border_guide_rect.right(),
-                                                .distance = -args.borders.right})),
-          _bottom_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.bottom(),
-                                                 .destination_guide = _border_guide_rect.bottom(),
-                                                 .distance = args.borders.bottom})),
-          _top_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.top(),
-                                              .destination_guide = _border_guide_rect.top(),
-                                              .distance = -args.borders.top})),
+          _left_border_layout(ui::make_flow_layout({.source_guide = _frame_guide_rect.left(),
+                                                    .destination_guide = _border_guide_rect.left(),
+                                                    .distance = args.borders.left})),
+          _right_border_layout(ui::make_flow_layout({.source_guide = _frame_guide_rect.right(),
+                                                     .destination_guide = _border_guide_rect.right(),
+                                                     .distance = -args.borders.right})),
+          _bottom_border_layout(ui::make_flow_layout({.source_guide = _frame_guide_rect.bottom(),
+                                                      .destination_guide = _border_guide_rect.bottom(),
+                                                      .distance = args.borders.bottom})),
+          _top_border_layout(ui::make_flow_layout({.source_guide = _frame_guide_rect.top(),
+                                                   .destination_guide = _border_guide_rect.top(),
+                                                   .distance = -args.borders.top})),
           _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";

@@ -21,19 +21,6 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_make_fixed_layout {
-    ui::layout_guide src_guide{0.5f};
-    ui::layout_guide dst_guide{0.25f};
-
-    auto layout = ui::make_layout({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
-
-    XCTAssertTrue(layout);
-    XCTAssertEqual(layout.source_guides().size(), 1);
-    XCTAssertEqual(layout.destination_guides().size(), 1);
-    XCTAssertEqual(layout.source_guides().at(0).value(), 0.5f);
-    XCTAssertEqual(layout.destination_guides().at(0).value(), 8.5f);
-}
-
 - (void)test_make_fixed_layout_with_point {
     ui::point distances{.x = 0.5f, .y = 0.25f};
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
@@ -78,7 +65,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = ui::make_layout({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = ui::make_flow_layout({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 

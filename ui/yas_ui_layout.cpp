@@ -67,18 +67,14 @@ std::vector<ui::layout_guide> const &ui::layout::destination_guides() const {
 
 #pragma mark - fixed_layout
 
-ui::layout ui::make_layout(fixed_layout::args args) {
+flow::observer<float> ui::make_flow_layout(fixed_layout::args args) {
     if (!args.source_guide || !args.destination_guide) {
         throw "argument is null.";
     }
 
-    auto handler = [distance = std::move(args.distance)](auto const &src_guides, auto &dst_guides) {
-        dst_guides.at(0).set_value(src_guides.at(0).value() + distance);
-    };
-
-    return ui::layout{{.source_guides = {std::move(args.source_guide)},
-                       .destination_guides = {std::move(args.destination_guide)},
-                       .handler = std::move(handler)}};
+    return args.source_guide.begin_flow()
+        .convert([distance = args.distance](float const &value) { return distance; })
+        .end(args.destination_guide.receivable());
 }
 
 ui::layout ui::make_layout(fixed_layout_point::args args) {
