@@ -202,18 +202,6 @@ struct ui::layout_guide_point::impl : base::impl {
         return ui::point{_x_guide.value(), _y_guide.value()};
     }
 
-    void set_value_changed_handler(value_changed_f &&handler) {
-        auto guide_handler =
-            [handler = std::move(handler), weak_point = to_weak(cast<ui::layout_guide_point>())](auto const &context) {
-            if (auto point = weak_point.lock()) {
-                handler(change_context{.new_value = point.impl_ptr<impl>()->point(), .layout_guide_point = point});
-            }
-        };
-
-        this->_x_guide.set_value_changed_handler(guide_handler);
-        this->_y_guide.set_value_changed_handler(guide_handler);
-    }
-
     void push_notify_caller() {
         this->_x_guide.push_notify_caller();
         this->_y_guide.push_notify_caller();
@@ -284,10 +272,6 @@ void ui::layout_guide_point::set_point(ui::point point) {
 
 ui::point ui::layout_guide_point::point() const {
     return impl_ptr<impl>()->point();
-}
-
-void ui::layout_guide_point::set_value_changed_handler(value_changed_f handler) {
-    impl_ptr<impl>()->set_value_changed_handler(std::move(handler));
 }
 
 void ui::layout_guide_point::push_notify_caller() {

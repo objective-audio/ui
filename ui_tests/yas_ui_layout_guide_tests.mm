@@ -187,23 +187,6 @@ using namespace yas;
     XCTAssertTrue(point.point() == (ui::point{1.0f, -1.0f}));
 }
 
-- (void)test_point_value_changed_handler {
-    ui::layout_guide_point guide_point;
-
-    ui::point handled_new_value{-1.0f, -1.0f};
-    ui::layout_guide_point handled_guide_point{nullptr};
-
-    guide_point.set_value_changed_handler([&handled_new_value, &handled_guide_point](auto const &context) {
-        handled_new_value = context.new_value;
-        handled_guide_point = context.layout_guide_point;
-    });
-
-    guide_point.set_point({1.0f, 2.0f});
-
-    XCTAssertTrue(handled_new_value == (ui::point{1.0f, 2.0f}));
-    XCTAssertTrue(handled_guide_point == guide_point);
-}
-
 - (void)test_point_flow {
     ui::layout_guide_point guide_point;
 

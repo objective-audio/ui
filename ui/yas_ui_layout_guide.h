@@ -53,13 +53,6 @@ class layout_guide_point : public base {
    public:
     class impl;
 
-    struct change_context {
-        ui::point const &new_value;
-        layout_guide_point const &layout_guide_point;
-    };
-
-    using value_changed_f = std::function<void(change_context const &)>;
-
     layout_guide_point();
     explicit layout_guide_point(ui::point);
     layout_guide_point(std::nullptr_t);
@@ -73,8 +66,6 @@ class layout_guide_point : public base {
 
     void set_point(ui::point);
     ui::point point() const;
-
-    void set_value_changed_handler(value_changed_f);
 
     void push_notify_caller();
     void pop_notify_caller();
