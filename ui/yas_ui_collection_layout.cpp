@@ -66,6 +66,7 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout _top_border_layout;
     ui::layout_borders const _borders;
     subject_t _subject;
+    flow::observer<float> _border_observer = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -116,13 +117,13 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     void prepare(ui::collection_layout &layout) {
-        this->_border_guide_rect.set_value_changed_handler([weak_layout = to_weak(layout)](auto const &) {
-            if (auto layout = weak_layout.lock()) {
-                layout.impl_ptr<impl>()->_update_layout();
-            }
-        });
-
         auto weak_layout = to_weak(layout);
+
+        this->_border_observer =
+            this->_border_guide_rect.begin_flow()
+                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
+                .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
+                .end();
 
         auto property_handler = [weak_layout](ui::collection_layout::method const &method) {
             if (auto layout = weak_layout.lock()) {

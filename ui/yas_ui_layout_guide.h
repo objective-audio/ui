@@ -171,8 +171,6 @@ class layout_guide_rect : public base {
 
     ui::region region() const;
 
-    void set_value_changed_handler(value_changed_f);
-
     void push_notify_caller();
     void pop_notify_caller();
 

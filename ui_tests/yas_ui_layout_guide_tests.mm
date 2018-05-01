@@ -640,23 +640,6 @@ using namespace yas;
     XCTAssertEqual(rect.height().value(), 4.0f);
 }
 
-- (void)test_rect_value_changed_handler {
-    ui::layout_guide_rect guide_rect;
-
-    ui::region handled_new_value{.origin = {-1.0f, -1.0f}, .size = {-1.0f, -1.0f}};
-    ui::layout_guide_rect handled_guide_rect{nullptr};
-
-    guide_rect.set_value_changed_handler([&handled_new_value, &handled_guide_rect](auto const &context) {
-        handled_new_value = context.new_value;
-        handled_guide_rect = context.layout_guide_rect;
-    });
-
-    guide_rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
-
-    XCTAssertTrue(handled_new_value == (ui::region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}));
-    XCTAssertEqual(handled_guide_rect, guide_rect);
-}
-
 - (void)test_rect_flow {
     ui::layout_guide_rect guide_rect;
 

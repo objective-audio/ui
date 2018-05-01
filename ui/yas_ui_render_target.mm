@@ -92,24 +92,25 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 }
             }));
 
-        this->_layout_guide_rect.set_value_changed_handler([weak_target](auto const &context) {
-            if (auto target = weak_target.lock()) {
-                auto imp = target.impl_ptr<impl>();
-                auto const region = imp->_layout_guide_rect.region();
-                ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                                   .height = static_cast<uint32_t>(region.size.height)};
+        this->_rect_observer = this->_layout_guide_rect.begin_flow()
+                                   .guard([weak_target](ui::region const &) { return !!weak_target; })
+                                   .perform([weak_target](ui::region const &region) {
+                                       auto imp = weak_target.lock().impl_ptr<impl>();
 
-                imp->_src_texture.set_point_size(size);
-                imp->_dst_texture.set_point_size(size);
+                                       ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                                                          .height = static_cast<uint32_t>(region.size.height)};
 
-                imp->_projection_matrix =
-                    ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+                                       imp->_src_texture.set_point_size(size);
+                                       imp->_dst_texture.set_point_size(size);
 
-                imp->_data.set_rect_position(region, 0);
+                                       imp->_projection_matrix = ui::matrix::ortho(
+                                           region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-                imp->_set_updated(render_target_update_reason::region);
-            }
-        });
+                                       imp->_data.set_rect_position(region, 0);
+
+                                       imp->_set_updated(render_target_update_reason::region);
+                                   })
+                                   .end();
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
@@ -195,6 +196,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
     ui::renderer::observer_t _renderer_observer = nullptr;
+    flow::observer<float> _rect_observer = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);

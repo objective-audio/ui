@@ -679,10 +679,6 @@ ui::region ui::layout_guide_rect::region() const {
     return impl_ptr<impl>()->region();
 }
 
-void ui::layout_guide_rect::set_value_changed_handler(value_changed_f handler) {
-    impl_ptr<impl>()->set_value_changed_handler(std::move(handler));
-}
-
 void ui::layout_guide_rect::push_notify_caller() {
     impl_ptr<impl>()->push_notify_caller();
 }
