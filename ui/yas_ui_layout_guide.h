@@ -25,7 +25,6 @@ class layout_guide : public base {
 
     using subject_t = subject<method, change_context>;
     using observer_t = observer<method, change_context>;
-    using value_changed_f = std::function<void(change_context const &)>;
 
     layout_guide();
     explicit layout_guide(float const);
@@ -35,8 +34,6 @@ class layout_guide : public base {
 
     void set_value(float const);
     float const &value() const;
-
-    void set_value_changed_handler(value_changed_f);
 
     subject_t &subject();
 

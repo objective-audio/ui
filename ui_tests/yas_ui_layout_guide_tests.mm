@@ -64,39 +64,18 @@ using namespace yas;
     XCTAssertEqual(guide, notified_guide);
 }
 
-- (void)test_value_changed_handler {
-    ui::layout_guide guide;
-
-    float handled_new_value = -1.0f;
-    ui::layout_guide handled_layout_guide{nullptr};
-
-    guide.set_value_changed_handler([&handled_new_value, &handled_layout_guide](auto const &context) {
-        handled_new_value = context.new_value;
-        handled_layout_guide = context.layout_guide;
-    });
-
-    guide.set_value(1.0f);
-
-    XCTAssertEqual(handled_new_value, 1.0f);
-    XCTAssertEqual(handled_layout_guide, guide);
-}
-
 - (void)test_notify_caller {
     ui::layout_guide guide;
 
-    float handled_value = 0.0f;
     float notified_new_value = 0.0f;
 
-    auto clear_values = [&handled_value, &notified_new_value]() { handled_value = notified_new_value = 0.0f; };
-
-    guide.set_value_changed_handler([&handled_value](auto const &context) { handled_value = context.new_value; });
+    auto clear_values = [&notified_new_value]() { notified_new_value = 0.0f; };
 
     auto observer =
         guide.begin_flow().perform([&notified_new_value](float const &value) { notified_new_value = value; }).end();
 
     guide.set_value(1.0f);
 
-    XCTAssertEqual(handled_value, 1.0f);
     XCTAssertEqual(notified_new_value, 1.0f);
 
     clear_values();
@@ -104,31 +83,26 @@ using namespace yas;
     guide.push_notify_caller();
     guide.set_value(2.0f);
 
-    XCTAssertEqual(handled_value, 0.0f);
     XCTAssertEqual(notified_new_value, 0.0f);
 
     guide.push_notify_caller();
     guide.set_value(3.0f);
 
-    XCTAssertEqual(handled_value, 0.0f);
     XCTAssertEqual(notified_new_value, 0.0f);
 
     guide.pop_notify_caller();
     guide.set_value(4.0f);
 
-    XCTAssertEqual(handled_value, 0.0f);
     XCTAssertEqual(notified_new_value, 0.0f);
 
     guide.pop_notify_caller();
 
-    XCTAssertEqual(handled_value, 4.0f);
     XCTAssertEqual(notified_new_value, 4.0f);
 
     clear_values();
 
     guide.set_value(5.0f);
 
-    XCTAssertEqual(handled_value, 5.0f);
     XCTAssertEqual(notified_new_value, 5.0f);
 }
 
@@ -137,7 +111,7 @@ using namespace yas;
 
     bool called = false;
 
-    guide.set_value_changed_handler([&called](auto const &) { called = true; });
+    auto flow = guide.begin_flow().perform([&called](auto const &) { called = true; }).end();
 
     guide.push_notify_caller();
 
@@ -208,25 +182,16 @@ using namespace yas;
 - (void)test_point_notify_caller {
     ui::layout_guide_point point;
 
-    ui::point handled_point;
     float notified_x;
     float notified_y;
     ui::point notified_point;
 
     auto is_all_zero = [](ui::point const &origin) { return origin.x == 0 && origin.y == 0; };
 
-    auto clear_points = [&handled_point, &notified_x, &notified_y, &notified_point]() {
-        handled_point.x = handled_point.y = 0.0f;
+    auto clear_points = [ &notified_x, &notified_y, &notified_point]() {
         notified_x = notified_y = 0.0f;
         notified_point.x = notified_point.y = 0.0f;
     };
-
-    point.x().set_value_changed_handler([&handled_x = handled_point.x](auto const &context) {
-        handled_x = context.new_value;
-    });
-    point.y().set_value_changed_handler([&handled_y = handled_point.y](auto const &context) {
-        handled_y = context.new_value;
-    });
 
     auto x_observer = point.x().begin_flow().perform([&notified_x](float const &value) { notified_x = value; }).end();
 
@@ -237,8 +202,6 @@ using namespace yas;
 
     point.set_point({1.0f, 2.0f});
 
-    XCTAssertEqual(handled_point.x, 1.0f);
-    XCTAssertEqual(handled_point.y, 2.0f);
     XCTAssertEqual(notified_x, 1.0f);
     XCTAssertEqual(notified_y, 2.0f);
     XCTAssertEqual(notified_point.x, 1.0f);
@@ -250,7 +213,6 @@ using namespace yas;
 
     point.set_point({3.0f, 4.0f});
 
-    XCTAssertTrue(is_all_zero(handled_point));
     XCTAssertEqual(notified_x, 0.0f);
     XCTAssertEqual(notified_y, 0.0f);
     XCTAssertTrue(is_all_zero(notified_point));
@@ -259,7 +221,6 @@ using namespace yas;
 
     point.set_point({5.0f, 6.0f});
 
-    XCTAssertTrue(is_all_zero(handled_point));
     XCTAssertEqual(notified_x, 0.0f);
     XCTAssertEqual(notified_y, 0.0f);
     XCTAssertTrue(is_all_zero(notified_point));
@@ -268,15 +229,12 @@ using namespace yas;
 
     point.set_point({7.0f, 8.0f});
 
-    XCTAssertTrue(is_all_zero(handled_point));
     XCTAssertEqual(notified_x, 0.0f);
     XCTAssertEqual(notified_y, 0.0f);
     XCTAssertTrue(is_all_zero(notified_point));
 
     point.pop_notify_caller();
 
-    XCTAssertEqual(handled_point.x, 7.0f);
-    XCTAssertEqual(handled_point.y, 8.0f);
     XCTAssertEqual(notified_x, 7.0f);
     XCTAssertEqual(notified_y, 8.0f);
     XCTAssertEqual(notified_point.x, 7.0f);
@@ -286,8 +244,6 @@ using namespace yas;
 
     point.set_point({9.0f, 10.0f});
 
-    XCTAssertEqual(handled_point.x, 9.0f);
-    XCTAssertEqual(handled_point.y, 10.0f);
     XCTAssertEqual(notified_x, 9.0f);
     XCTAssertEqual(notified_y, 10.0f);
     XCTAssertEqual(notified_point.x, 9.0f);
@@ -375,25 +331,13 @@ using namespace yas;
         }
     };
 
-    edge handled_edge;
     edge notified_new_edge;
     ui::range notified_range;
 
-    auto clear_edges = [&handled_edge, &notified_new_edge, &notified_range]() {
-        handled_edge.clear();
+    auto clear_edges = [&notified_new_edge, &notified_range]() {
         notified_new_edge.clear();
         notified_range = ui::range::zero();
     };
-
-    range.min().set_value_changed_handler([&handled_min = handled_edge.min](auto const &context) {
-        handled_min = context.new_value;
-    });
-    range.max().set_value_changed_handler([&handled_max = handled_edge.max](auto const &context) {
-        handled_max = context.new_value;
-    });
-    range.length().set_value_changed_handler([&handled_length = handled_edge.length](auto const &context) {
-        handled_length = context.new_value;
-    });
 
     auto min_observer =
         range.min()
@@ -416,9 +360,6 @@ using namespace yas;
 
     range.set_range({1.0f, 2.0f});
 
-    XCTAssertEqual(handled_edge.min, 1.0f);
-    XCTAssertEqual(handled_edge.max, 3.0f);
-    XCTAssertEqual(handled_edge.length, 2.0f);
     XCTAssertEqual(notified_new_edge.min, 1.0f);
     XCTAssertEqual(notified_new_edge.max, 3.0f);
     XCTAssertEqual(notified_new_edge.length, 2.0f);
@@ -431,7 +372,6 @@ using namespace yas;
 
     range.set_range({3.0f, 4.0f});
 
-    XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_range == ui::range::zero());
 
@@ -439,7 +379,6 @@ using namespace yas;
 
     range.set_range({5.0f, 6.0f});
 
-    XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_range == ui::range::zero());
 
@@ -447,15 +386,11 @@ using namespace yas;
 
     range.set_range({7.0f, 8.0f});
 
-    XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_range == ui::range::zero());
 
     range.pop_notify_caller();
 
-    XCTAssertEqual(handled_edge.min, 7.0f);
-    XCTAssertEqual(handled_edge.max, 15.0f);
-    XCTAssertEqual(handled_edge.length, 8.0f);
     XCTAssertEqual(notified_new_edge.min, 7.0f);
     XCTAssertEqual(notified_new_edge.max, 15.0f);
     XCTAssertEqual(notified_new_edge.length, 8.0f);
@@ -466,9 +401,6 @@ using namespace yas;
 
     range.set_range({9.0f, 10.0f});
 
-    XCTAssertEqual(handled_edge.min, 9.0f);
-    XCTAssertEqual(handled_edge.max, 19.0f);
-    XCTAssertEqual(handled_edge.length, 10.0f);
     XCTAssertEqual(notified_new_edge.min, 9.0f);
     XCTAssertEqual(notified_new_edge.max, 19.0f);
     XCTAssertEqual(notified_new_edge.length, 10.0f);
@@ -648,41 +580,13 @@ using namespace yas;
         }
     };
 
-    edge handled_edge;
-    edge notified_old_edge;
     edge notified_new_edge;
     ui::region notified_region;
 
-    auto clear_edges = [&handled_edge, &notified_old_edge, &notified_new_edge, &notified_region]() {
-        handled_edge.clear();
-        notified_old_edge.clear();
+    auto clear_edges = [&notified_new_edge, &notified_region]() {
         notified_new_edge.clear();
         notified_region = ui::region::zero();
     };
-
-    rect.left().set_value_changed_handler([&handled_left = handled_edge.left](auto const &context) {
-        handled_left = context.new_value;
-    });
-
-    rect.right().set_value_changed_handler([&handled_right = handled_edge.right](auto const &context) {
-        handled_right = context.new_value;
-    });
-
-    rect.bottom().set_value_changed_handler([&handled_bottom = handled_edge.bottom](auto const &context) {
-        handled_bottom = context.new_value;
-    });
-
-    rect.top().set_value_changed_handler([&handled_top = handled_edge.top](auto const &context) {
-        handled_top = context.new_value;
-    });
-
-    rect.width().set_value_changed_handler([&handled_width = handled_edge.width](auto const &context) {
-        handled_width = context.new_value;
-    });
-
-    rect.height().set_value_changed_handler([&handled_height = handled_edge.height](auto const &context) {
-        handled_height = context.new_value;
-    });
 
     auto left_observer =
         rect.left()
@@ -723,12 +627,6 @@ using namespace yas;
 
     rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
-    XCTAssertEqual(handled_edge.left, 1.0f);
-    XCTAssertEqual(handled_edge.right, 4.0f);
-    XCTAssertEqual(handled_edge.bottom, 2.0f);
-    XCTAssertEqual(handled_edge.top, 6.0f);
-    XCTAssertEqual(handled_edge.width, 3.0f);
-    XCTAssertEqual(handled_edge.height, 4.0f);
     XCTAssertEqual(notified_new_edge.left, 1.0f);
     XCTAssertEqual(notified_new_edge.right, 4.0f);
     XCTAssertEqual(notified_new_edge.bottom, 2.0f);
@@ -746,7 +644,6 @@ using namespace yas;
 
     rect.set_region({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
 
-    XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_region == ui::region::zero());
 
@@ -754,7 +651,6 @@ using namespace yas;
 
     rect.set_region({.origin = {9.0f, 10.0f}, .size = {11.0f, 12.0f}});
 
-    XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_region == ui::region::zero());
 
@@ -762,18 +658,10 @@ using namespace yas;
 
     rect.set_region({.origin = {13.0f, 14.0f}, .size = {15.0f, 16.0f}});
 
-    XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_region == ui::region::zero());
 
     rect.pop_notify_caller();
-
-    XCTAssertEqual(handled_edge.left, 13.0f);
-    XCTAssertEqual(handled_edge.right, 28.0f);
-    XCTAssertEqual(handled_edge.bottom, 14.0f);
-    XCTAssertEqual(handled_edge.top, 30.0f);
-    XCTAssertEqual(handled_edge.width, 15.0f);
-    XCTAssertEqual(handled_edge.height, 16.0f);
 
     XCTAssertEqual(notified_new_edge.left, 13.0f);
     XCTAssertEqual(notified_new_edge.right, 28.0f);
@@ -790,13 +678,6 @@ using namespace yas;
     clear_edges();
 
     rect.set_region({.origin = {17.0f, 18.0f}, .size = {19.0f, 20.0f}});
-
-    XCTAssertEqual(handled_edge.left, 17.0f);
-    XCTAssertEqual(handled_edge.right, 36.0f);
-    XCTAssertEqual(handled_edge.bottom, 18.0f);
-    XCTAssertEqual(handled_edge.top, 38.0f);
-    XCTAssertEqual(handled_edge.width, 19.0f);
-    XCTAssertEqual(handled_edge.height, 20.0f);
 
     XCTAssertEqual(notified_new_edge.left, 17.0f);
     XCTAssertEqual(notified_new_edge.right, 36.0f);

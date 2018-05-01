@@ -13,7 +13,6 @@ using namespace yas;
 struct ui::layout_guide::impl : base::impl {
     property<float> _value;
     subject_t _subject;
-    value_changed_f _value_changed_handler = nullptr;
 
     impl(float const value) : _value({.value = value}) {
     }
@@ -28,10 +27,6 @@ struct ui::layout_guide::impl : base::impl {
                                   auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
 
                                   auto const context = change_context{.new_value = value, .layout_guide = guide};
-
-                                  if (auto handler = guide_impl->_value_changed_handler) {
-                                      handler(context);
-                                  }
 
                                   guide.subject().notify(method::value_changed, context);
                               })
@@ -144,10 +139,6 @@ void ui::layout_guide::set_value(float const value) {
 
 float const &ui::layout_guide::value() const {
     return impl_ptr<impl>()->_value.value();
-}
-
-void ui::layout_guide::set_value_changed_handler(value_changed_f handler) {
-    impl_ptr<impl>()->_value_changed_handler = std::move(handler);
 }
 
 ui::layout_guide::subject_t &ui::layout_guide::subject() {
