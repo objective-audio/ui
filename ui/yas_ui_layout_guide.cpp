@@ -339,6 +339,12 @@ struct ui::layout_guide_range::impl : base::impl {
                 .guard([weak_range](float const &) { return !!weak_range; })
                 .convert([weak_range](float const &length) { return weak_range.lock().min().value() + length; })
                 .end(this->_max_guide.receivable());
+        
+        this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range){
+            if (auto guide_range = weak_range.lock()) {
+                guide_range.set_range(range);
+            }
+        }};
     }
 
     void set_range(ui::range &&range) {

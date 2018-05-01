@@ -374,6 +374,24 @@ using namespace yas;
     XCTAssertEqual(handled_guide_range, guide_range);
 }
 
+- (void)test_range_flow {
+    ui::layout_guide_range guide_range;
+    
+    ui::range notified;
+    
+    auto flow = guide_range.begin_flow().perform([&notified](ui::range const &range) { notified = range; }).end();
+    
+    guide_range.set_range({1.0f, 2.0f});
+    
+    XCTAssertEqual(notified.location, 1.0f);
+    XCTAssertEqual(notified.length, 2.0f);
+    
+    guide_range.receivable().receive_value({3.0f, 4.0f});
+    
+    XCTAssertEqual(notified.location, 3.0f);
+    XCTAssertEqual(notified.length, 4.0f);
+}
+
 - (void)test_range_notify_caller {
     ui::layout_guide_range range;
 
