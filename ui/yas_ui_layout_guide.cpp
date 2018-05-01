@@ -480,8 +480,19 @@ struct ui::layout_guide_rect::impl : base::impl {
     layout_guide_range _vertical_range;
     layout_guide_range _horizontal_range;
 
+    flow::receiver<ui::region> _receiver = nullptr;
+
     impl(ranges_args &&args)
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
+    }
+
+    void prepare(ui::layout_guide_rect &guide_rect) {
+        auto weak_guide_rect = to_weak(guide_rect);
+        this->_receiver = flow::receiver<ui::region>{[weak_guide_rect](ui::region const &region) {
+            if (auto guide_rect = weak_guide_rect.lock()) {
+                guide_rect.set_region(region);
+            }
+        }};
     }
 
     void set_vertical_range(ui::range &&range) {
@@ -493,8 +504,14 @@ struct ui::layout_guide_rect::impl : base::impl {
     }
 
     void set_ranges(ranges_args &&args) {
+        this->_vertical_range.push_notify_caller();
+        this->_horizontal_range.push_notify_caller();
+
         this->set_vertical_range(std::move(args.vertical_range));
         this->set_horizontal_range(std::move(args.horizontal_range));
+
+        this->_vertical_range.pop_notify_caller();
+        this->_horizontal_range.pop_notify_caller();
     }
 
     void set_region(ui::region &&region) {
@@ -530,6 +547,26 @@ struct ui::layout_guide_rect::impl : base::impl {
     void pop_notify_caller() {
         this->_vertical_range.pop_notify_caller();
         this->_horizontal_range.pop_notify_caller();
+    }
+
+    flow_t begin_flow() {
+        ui::region const region = this->region();
+
+        return this->_vertical_range.begin_flow().pair(this->_horizontal_range.begin_flow()).convert<ui::region>([
+            v_cache = region.vertical_range(), h_cache = region.horizontal_range()
+        ](auto const &pair) mutable {
+            if (pair.first) {
+                v_cache = *pair.first;
+            }
+            if (pair.second) {
+                h_cache = *pair.second;
+            }
+            return make_region(h_cache, v_cache);
+        });
+    }
+
+    flow::receivable<ui::region> receivable() {
+        return this->_receiver.receivable();
     }
 };
 
@@ -645,6 +682,14 @@ void ui::layout_guide_rect::push_notify_caller() {
 
 void ui::layout_guide_rect::pop_notify_caller() {
     impl_ptr<impl>()->pop_notify_caller();
+}
+
+ui::layout_guide_rect::flow_t ui::layout_guide_rect::begin_flow() {
+    return impl_ptr<impl>()->begin_flow();
+}
+
+flow::receivable<ui::region> ui::layout_guide_rect::receivable() {
+    return impl_ptr<impl>()->receivable();
 }
 
 #pragma mark - layout_guide_pair
