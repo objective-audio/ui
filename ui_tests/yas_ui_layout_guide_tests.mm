@@ -657,6 +657,28 @@ using namespace yas;
     XCTAssertEqual(handled_guide_rect, guide_rect);
 }
 
+- (void)test_rect_flow {
+    ui::layout_guide_rect guide_rect;
+
+    ui::region notified;
+
+    auto flow = guide_rect.begin_flow().perform([&notified](ui::region const &region) { notified = region; }).end();
+
+    guide_rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+
+    XCTAssertEqual(notified.origin.x, 1.0f);
+    XCTAssertEqual(notified.origin.y, 2.0f);
+    XCTAssertEqual(notified.size.width, 3.0f);
+    XCTAssertEqual(notified.size.height, 4.0f);
+
+    guide_rect.receivable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
+
+    XCTAssertEqual(notified.origin.x, 5.0f);
+    XCTAssertEqual(notified.origin.y, 6.0f);
+    XCTAssertEqual(notified.size.width, 7.0f);
+    XCTAssertEqual(notified.size.height, 8.0f);
+}
+
 - (void)test_rect_notify_caller {
     ui::layout_guide_rect rect;
 
