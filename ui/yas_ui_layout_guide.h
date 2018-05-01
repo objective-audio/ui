@@ -89,11 +89,6 @@ class layout_guide_range : public base {
    public:
     class impl;
 
-    struct change_context {
-        ui::range const &new_value;
-        layout_guide_range const &layout_guide_range;
-    };
-
     layout_guide_range();
     explicit layout_guide_range(ui::range);
     layout_guide_range(std::nullptr_t);
@@ -122,11 +117,6 @@ class layout_guide_range : public base {
 class layout_guide_rect : public base {
    public:
     class impl;
-
-    struct change_context {
-        ui::region const &new_value;
-        layout_guide_rect const &layout_guide_rect;
-    };
 
     struct ranges_args {
         ui::range horizontal_range;
