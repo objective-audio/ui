@@ -528,21 +528,7 @@ struct ui::layout_guide_rect::impl : base::impl {
         auto h_range = this->_horizontal_range.range();
         auto v_range = this->_vertical_range.range();
 
-        return ui::region{.origin = {h_range.location, v_range.location}, .size = {h_range.length, v_range.length}};
-    }
-
-    void set_value_changed_handler(value_changed_f &&handler) {
-        auto guide_handler = [handler, weak_guide_rect = to_weak(cast<ui::layout_guide_rect>())](auto const &) {
-            if (auto const guide_rect = weak_guide_rect.lock()) {
-                handler(change_context{.new_value = guide_rect.impl_ptr<impl>()->region(),
-                                       .layout_guide_rect = guide_rect});
-            }
-        };
-
-        this->_vertical_range.min().set_value_changed_handler(guide_handler);
-        this->_vertical_range.max().set_value_changed_handler(guide_handler);
-        this->_horizontal_range.min().set_value_changed_handler(guide_handler);
-        this->_horizontal_range.max().set_value_changed_handler(guide_handler);
+        return ui::make_region(h_range, v_range);
     }
 
     void push_notify_caller() {
