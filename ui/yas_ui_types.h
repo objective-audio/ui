@@ -182,6 +182,8 @@ struct region {
     static region zero_centered(ui::size const &);
 };
 
+ui::region make_region(ui::range const &horizontal, ui::range const &vertical);
+
 enum class pivot {
     left,
     center,
@@ -211,8 +213,6 @@ struct index2d_rect_t {
 }
 
 namespace yas {
-ui::region make_region(ui::range const &horizontal, ui::range const &vertical);
-
 simd::float2 to_float2(CGPoint const &);
 simd::float2 to_float2(simd::float4 const &);
 simd::float4 to_float4(simd::float2 const &);

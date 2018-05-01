@@ -567,7 +567,7 @@ struct ui::layout_guide_rect::impl : base::impl {
             if (pair.second) {
                 h_cache = *pair.second;
             }
-            return make_region(h_cache, v_cache);
+            return ui::make_region(h_cache, v_cache);
         });
     }
 
