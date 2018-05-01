@@ -122,6 +122,7 @@ struct sample::soft_keyboard::impl : base::impl {
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
     std::vector<std::vector<ui::layout>> _fixed_cell_layouts;
+    std::vector<flow::observer<float>> _dst_rect_observers;
 
     void _setup_soft_keys_if_needed() {
         if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
@@ -253,11 +254,16 @@ struct sample::soft_keyboard::impl : base::impl {
             auto &soft_key = this->_soft_keys.at(idx);
             auto &dst_guide_rect = this->_dst_cell_guide_rects.at(idx);
 
-            dst_guide_rect.set_value_changed_handler([weak_soft_key = to_weak(soft_key), handler](auto const &context) {
-                if (auto soft_key = weak_soft_key.lock()) {
-                    handler(soft_key, context.new_value);
-                }
-            });
+            auto weak_soft_key = to_weak(soft_key);
+
+            this->_dst_rect_observers.emplace_back(
+                dst_guide_rect.begin_flow()
+                    .guard([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
+                    .perform([weak_soft_key, handler](ui::region const &value) {
+                        auto soft_key = weak_soft_key.lock();
+                        handler(soft_key, value);
+                    })
+                    .end());
 
             yas::move_back_insert(guide_pairs,
                                   ui::make_layout_guide_pairs(
