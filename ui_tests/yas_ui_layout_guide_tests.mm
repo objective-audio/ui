@@ -393,10 +393,12 @@ using namespace yas;
 
     edge handled_edge;
     edge notified_new_edge;
+    ui::range notified_range;
 
-    auto clear_edges = [&handled_edge, &notified_new_edge]() {
+    auto clear_edges = [&handled_edge, &notified_new_edge, &notified_range]() {
         handled_edge.clear();
         notified_new_edge.clear();
+        notified_range = ui::range::zero();
     };
 
     range.min().set_value_changed_handler([&handled_min = handled_edge.min](auto const &context) {
@@ -426,6 +428,8 @@ using namespace yas;
                                })
                                .end();
 
+    auto flow = range.begin_flow().perform([&notified_range](ui::range const &range) { notified_range = range; }).end();
+
     range.set_range({1.0f, 2.0f});
 
     XCTAssertEqual(handled_edge.min, 1.0f);
@@ -434,6 +438,8 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.min, 1.0f);
     XCTAssertEqual(notified_new_edge.max, 3.0f);
     XCTAssertEqual(notified_new_edge.length, 2.0f);
+    XCTAssertEqual(notified_range.location, 1.0f);
+    XCTAssertEqual(notified_range.length, 2.0f);
 
     clear_edges();
 
@@ -443,6 +449,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertEqual(notified_range, ui::range::zero());
 
     range.push_notify_caller();
 
@@ -450,6 +457,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertEqual(notified_range, ui::range::zero());
 
     range.pop_notify_caller();
 
@@ -457,6 +465,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertEqual(notified_range, ui::range::zero());
 
     range.pop_notify_caller();
 
@@ -466,6 +475,8 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.min, 7.0f);
     XCTAssertEqual(notified_new_edge.max, 15.0f);
     XCTAssertEqual(notified_new_edge.length, 8.0f);
+    XCTAssertEqual(notified_range.location, 7.0f);
+    XCTAssertEqual(notified_range.length, 8.0f);
 
     clear_edges();
 
@@ -477,6 +488,8 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.min, 9.0f);
     XCTAssertEqual(notified_new_edge.max, 19.0f);
     XCTAssertEqual(notified_new_edge.length, 10.0f);
+    XCTAssertEqual(notified_range.location, 9.0f);
+    XCTAssertEqual(notified_range.length, 10.0f);
 }
 
 - (void)test_range_set_by_guide {
