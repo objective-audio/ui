@@ -14,18 +14,6 @@ class layout_guide : public base {
    public:
     class impl;
 
-    struct change_context {
-        float const &new_value;
-        layout_guide const &layout_guide;
-    };
-
-    enum class method {
-        value_changed,
-    };
-
-    using subject_t = subject<method, change_context>;
-    using observer_t = observer<method, change_context>;
-
     layout_guide();
     explicit layout_guide(float const);
     layout_guide(std::nullptr_t);
@@ -34,8 +22,6 @@ class layout_guide : public base {
 
     void set_value(float const);
     float const &value() const;
-
-    subject_t &subject();
 
     void push_notify_caller();
     void pop_notify_caller();

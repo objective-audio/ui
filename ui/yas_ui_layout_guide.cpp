@@ -12,25 +12,12 @@ using namespace yas;
 
 struct ui::layout_guide::impl : base::impl {
     property<float> _value;
-    subject_t _subject;
 
     impl(float const value) : _value({.value = value}) {
     }
 
     void prepare(layout_guide &guide) {
         auto weak_guide = to_weak(cast<layout_guide>());
-
-        this->_observer = this->begin_flow()
-                              .guard([weak_guide](float const &) { return !!weak_guide; })
-                              .perform([weak_guide](float const &value) {
-                                  auto guide = weak_guide.lock();
-                                  auto guide_impl = guide.impl_ptr<ui::layout_guide::impl>();
-
-                                  auto const context = change_context{.new_value = value, .layout_guide = guide};
-
-                                  guide.subject().notify(method::value_changed, context);
-                              })
-                              .end();
 
         this->_receiver = flow::receiver<float>([weak_guide](float const &value) {
             if (auto guide = weak_guide.lock()) {
@@ -116,7 +103,6 @@ struct ui::layout_guide::impl : base::impl {
    private:
     flow::receiver<float> _receiver = nullptr;
     flow::sender<bool> _wait_sender;
-    flow::observer<float> _observer = nullptr;
 };
 
 #pragma mark - ui::layout_guide
@@ -139,10 +125,6 @@ void ui::layout_guide::set_value(float const value) {
 
 float const &ui::layout_guide::value() const {
     return impl_ptr<impl>()->_value.value();
-}
-
-ui::layout_guide::subject_t &ui::layout_guide::subject() {
-    return impl_ptr<impl>()->_subject;
 }
 
 void ui::layout_guide::push_notify_caller() {
