@@ -662,11 +662,13 @@ using namespace yas;
     edge handled_edge;
     edge notified_old_edge;
     edge notified_new_edge;
+    ui::region notified_region;
 
-    auto clear_edges = [&handled_edge, &notified_old_edge, &notified_new_edge]() {
+    auto clear_edges = [&handled_edge, &notified_old_edge, &notified_new_edge, &notified_region]() {
         handled_edge.clear();
         notified_old_edge.clear();
         notified_new_edge.clear();
+        notified_region = ui::region::zero();
     };
 
     rect.left().set_value_changed_handler([&handled_left = handled_edge.left](auto const &context) {
@@ -727,6 +729,8 @@ using namespace yas;
                                    notified_new_height = value;
                                })
                                .end();
+    auto region_observer =
+        rect.begin_flow().perform([&notified_region](ui::region const &value) { notified_region = value; }).end();
 
     rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
@@ -742,6 +746,10 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.top, 6.0f);
     XCTAssertEqual(notified_new_edge.width, 3.0f);
     XCTAssertEqual(notified_new_edge.height, 4.0f);
+    XCTAssertEqual(notified_region.origin.x, 1.0f);
+    XCTAssertEqual(notified_region.origin.y, 2.0f);
+    XCTAssertEqual(notified_region.size.width, 3.0f);
+    XCTAssertEqual(notified_region.size.height, 4.0f);
 
     clear_edges();
 
@@ -751,6 +759,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertTrue(notified_region == ui::region::zero());
 
     rect.push_notify_caller();
 
@@ -758,6 +767,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertTrue(notified_region == ui::region::zero());
 
     rect.pop_notify_caller();
 
@@ -765,6 +775,7 @@ using namespace yas;
 
     XCTAssertTrue(handled_edge.is_all_zero());
     XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertTrue(notified_region == ui::region::zero());
 
     rect.pop_notify_caller();
 
@@ -781,6 +792,11 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.top, 30.0f);
     XCTAssertEqual(notified_new_edge.width, 15.0f);
     XCTAssertEqual(notified_new_edge.height, 16.0f);
+
+    XCTAssertEqual(notified_region.origin.x, 13.0f);
+    XCTAssertEqual(notified_region.origin.y, 14.0f);
+    XCTAssertEqual(notified_region.size.width, 15.0f);
+    XCTAssertEqual(notified_region.size.height, 16.0f);
 
     clear_edges();
 
@@ -799,6 +815,11 @@ using namespace yas;
     XCTAssertEqual(notified_new_edge.top, 38.0f);
     XCTAssertEqual(notified_new_edge.width, 19.0f);
     XCTAssertEqual(notified_new_edge.height, 20.0f);
+
+    XCTAssertEqual(notified_region.origin.x, 17.0f);
+    XCTAssertEqual(notified_region.origin.y, 18.0f);
+    XCTAssertEqual(notified_region.size.width, 19.0f);
+    XCTAssertEqual(notified_region.size.height, 20.0f);
 }
 
 - (void)test_rect_set_by_guide {
