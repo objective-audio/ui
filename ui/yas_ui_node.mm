@@ -478,6 +478,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     node::subject_t _subject;
 
+    flow::observer<float> _x_observer = nullptr;
+    flow::observer<float> _y_observer = nullptr;
+    flow::observer<float> _position_observer = nullptr;
+
    private:
     std::vector<ui::node> _children;
 
@@ -752,38 +756,47 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 }
 
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
-    auto observer = impl_ptr<impl>()->_position_property.subject().make_observer(
-        property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
-            if (auto guide = weak_guide.lock()) {
-                guide.set_value(context.value.new_value.x);
-            }
-        });
+    auto imp = impl_ptr<impl>();
+    auto &position = imp->_position_property;
+    auto weak_node = to_weak(*this);
 
-    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const &context) {
-        if (auto node = weak_node.lock()) {
-            node.set_position({context.new_value, node.position().y});
-        }
-    });
+    imp->_x_observer = guide.begin_flow()
+                           .guard([weak_node](float const &) { return !!weak_node; })
+                           .convert<ui::point>([weak_node](float const &x) {
+                               return ui::point{x, weak_node.lock().position().y};
+                           })
+                           .end(position.receivable());
+    imp->_x_observer.sync();
+
+    imp->_position_observer = nullptr;
 }
 
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
-    auto observer = impl_ptr<impl>()->_position_property.subject().make_observer(
-        property_method::did_change, [weak_guide = to_weak(guide)](auto const &context) {
-            if (auto guide = weak_guide.lock()) {
-                guide.set_value(context.value.new_value.y);
-            }
-        });
+    auto imp = impl_ptr<impl>();
+    auto &position = imp->_position_property;
+    auto weak_node = to_weak(*this);
 
-    guide.set_value_changed_handler([weak_node = to_weak(*this), observer = std::move(observer)](auto const &context) {
-        if (auto node = weak_node.lock()) {
-            node.set_position({node.position().x, context.new_value});
-        }
-    });
+    imp->_y_observer = guide.begin_flow()
+                           .guard([weak_node](float const &) { return !!weak_node; })
+                           .convert<ui::point>([weak_node](float const &y) {
+                               return ui::point{weak_node.lock().position().x, y};
+                           })
+                           .end(position.receivable());
+    imp->_y_observer.sync();
+
+    imp->_position_observer = nullptr;
 }
 
-void ui::node::attach_position_layout_guides(ui::layout_guide_point &point) {
-    this->attach_x_layout_guide(point.x());
-    this->attach_y_layout_guide(point.y());
+void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point) {
+    auto imp = impl_ptr<impl>();
+    auto &position = imp->_position_property;
+    auto weak_node = to_weak(*this);
+
+    imp->_position_observer = guide_point.begin_flow().end(position.receivable());
+    imp->_position_observer.sync();
+
+    imp->_x_observer = nullptr;
+    imp->_y_observer = nullptr;
 }
 
 std::string yas::to_string(ui::node::method const &method) {

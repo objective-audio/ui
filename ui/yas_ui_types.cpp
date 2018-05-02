@@ -249,6 +249,10 @@ ui::region ui::region::zero_centered(ui::size const &size) {
     return ui::region{.origin = {.x = -size.width * 0.5f, .y = -size.height * 0.5f}, .size = size};
 }
 
+ui::region ui::make_region(ui::range const &horizontal, ui::range const &vertical) {
+    return ui::region{.origin = {horizontal.location, vertical.location}, .size = {horizontal.length, vertical.length}};
+}
+
 #pragma mark - vertex2d_rect_t
 
 void ui::vertex2d_rect_t::set_position(ui::region const &region) {

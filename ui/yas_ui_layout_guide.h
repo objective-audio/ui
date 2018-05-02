@@ -7,25 +7,12 @@
 #include "yas_base.h"
 #include "yas_observing.h"
 #include "yas_ui_types.h"
+#include "yas_flow.h"
 
 namespace yas::ui {
 class layout_guide : public base {
    public:
     class impl;
-
-    struct change_context {
-        float const &old_value;
-        float const &new_value;
-        layout_guide const &layout_guide;
-    };
-
-    enum class method {
-        value_changed,
-    };
-
-    using subject_t = subject<method, change_context>;
-    using observer_t = observer<method, change_context>;
-    using value_changed_f = std::function<void(change_context const &)>;
 
     layout_guide();
     explicit layout_guide(float const);
@@ -36,25 +23,18 @@ class layout_guide : public base {
     void set_value(float const);
     float const &value() const;
 
-    void set_value_changed_handler(value_changed_f);
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
-    subject_t &subject();
+    using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float>;
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    flow_t begin_flow();
+    flow::receivable<float> receivable();
 };
 
 class layout_guide_point : public base {
    public:
     class impl;
-
-    struct change_context {
-        ui::point const &old_value;
-        ui::point const &new_value;
-        layout_guide_point const &layout_guide_point;
-    };
-
-    using value_changed_f = std::function<void(change_context const &)>;
 
     layout_guide_point();
     explicit layout_guide_point(ui::point);
@@ -70,23 +50,18 @@ class layout_guide_point : public base {
     void set_point(ui::point);
     ui::point point() const;
 
-    void set_value_changed_handler(value_changed_f);
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    using flow_t = flow::node<ui::point, std::pair<opt_t<float>, opt_t<float>>, float>;
+
+    flow_t begin_flow();
+    flow::receivable<ui::point> receivable();
 };
 
 class layout_guide_range : public base {
    public:
     class impl;
-
-    struct change_context {
-        ui::range const &old_value;
-        ui::range const &new_value;
-        layout_guide_range const &layout_guide_range;
-    };
-
-    using value_changed_f = std::function<void(change_context const &)>;
 
     layout_guide_range();
     explicit layout_guide_range(ui::range);
@@ -104,23 +79,18 @@ class layout_guide_range : public base {
     void set_range(ui::range);
     ui::range range() const;
 
-    void set_value_changed_handler(value_changed_f);
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float>;
+
+    flow_t begin_flow();
+    flow::receivable<ui::range> receivable();
 };
 
 class layout_guide_rect : public base {
    public:
     class impl;
-
-    struct change_context {
-        ui::region const &old_value;
-        ui::region const &new_value;
-        layout_guide_rect const &layout_guide_rect;
-    };
-
-    using value_changed_f = std::function<void(change_context const &)>;
 
     struct ranges_args {
         ui::range horizontal_range;
@@ -159,10 +129,13 @@ class layout_guide_rect : public base {
 
     ui::region region() const;
 
-    void set_value_changed_handler(value_changed_f);
+    void push_notify_waiting();
+    void pop_notify_waiting();
 
-    void push_notify_caller();
-    void pop_notify_caller();
+    using flow_t = flow::node<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float>;
+
+    flow_t begin_flow();
+    flow::receivable<ui::region> receivable();
 };
 
 struct layout_guide_pair {

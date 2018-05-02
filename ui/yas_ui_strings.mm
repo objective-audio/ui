@@ -122,6 +122,8 @@ struct ui::strings::impl : base::impl {
     }
 
     void _update_layout() {
+        this->_cell_rect_observers.clear();
+
         auto const &font_atlas = this->_font_atlas_property.value();
         if (!font_atlas || !font_atlas.texture() || !font_atlas.texture().metal_texture()) {
             this->_collection_layout.set_preferred_cell_count(0);
@@ -189,12 +191,16 @@ struct ui::strings::impl : base::impl {
             auto const word = eliminated_text.substr(idx, 1);
             auto &cell_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
 
-            cell_rect.set_value_changed_handler(
-                [idx, word, weak_strings = to_weak(strings), handler](auto const &context) {
-                    if (auto strings = weak_strings.lock()) {
-                        handler(strings, idx, word, context.new_value);
-                    }
-                });
+            auto weak_strings = to_weak(strings);
+
+            this->_cell_rect_observers.emplace_back(
+                cell_rect.begin_flow()
+                    .guard([weak_strings](ui::region const &) { return !!weak_strings; })
+                    .perform([idx, word, weak_strings, handler](ui::region const &value) {
+                        auto strings = weak_strings.lock();
+                        handler(strings, idx, word, value);
+                    })
+                    .end());
 
             handler(strings, idx, word, cell_rect.region());
         }
@@ -212,6 +218,9 @@ struct ui::strings::impl : base::impl {
             }
         }
     }
+
+   private:
+    std::vector<flow::observer<float>> _cell_rect_observers;
 };
 
 ui::strings::strings() : strings(args{}) {

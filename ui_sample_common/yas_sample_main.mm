@@ -77,7 +77,7 @@ void sample::main::setup() {
     auto &view_guide = this->renderer.view_layout_guide_rect();
     auto &target_guide = render_target.layout_guide_rect();
     this->_render_target_layout =
-        ui::make_layout({.source_guide_rect = view_guide, .destination_guide_rect = target_guide});
+        ui::make_flow({.source_guide_rect = view_guide, .destination_guide_rect = target_guide});
 
     this->_render_target_node.set_render_target(render_target);
     root_node.add_sub_node(this->_render_target_node, 1);

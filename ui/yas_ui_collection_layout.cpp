@@ -60,12 +60,13 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    ui::layout _left_border_layout;
-    ui::layout _right_border_layout;
-    ui::layout _bottom_border_layout;
-    ui::layout _top_border_layout;
+    flow::observer<float> _left_border_layout;
+    flow::observer<float> _right_border_layout;
+    flow::observer<float> _bottom_border_layout;
+    flow::observer<float> _top_border_layout;
     ui::layout_borders const _borders;
     subject_t _subject;
+    flow::observer<float> _border_observer = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -97,18 +98,18 @@ struct ui::collection_layout::impl : base::impl {
           _direction_property({.value = args.direction}),
           _row_order_property({.value = args.row_order}),
           _col_order_property({.value = args.col_order}),
-          _left_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.left(),
-                                               .destination_guide = _border_guide_rect.left(),
-                                               .distance = args.borders.left})),
-          _right_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.right(),
-                                                .destination_guide = _border_guide_rect.right(),
-                                                .distance = -args.borders.right})),
-          _bottom_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.bottom(),
-                                                 .destination_guide = _border_guide_rect.bottom(),
-                                                 .distance = args.borders.bottom})),
-          _top_border_layout(ui::make_layout({.source_guide = _frame_guide_rect.top(),
-                                              .destination_guide = _border_guide_rect.top(),
-                                              .distance = -args.borders.top})),
+          _left_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.left(),
+                                                    .destination_guide = _border_guide_rect.left(),
+                                                    .distance = args.borders.left})),
+          _right_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.right(),
+                                                     .destination_guide = _border_guide_rect.right(),
+                                                     .distance = -args.borders.right})),
+          _bottom_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.bottom(),
+                                                      .destination_guide = _border_guide_rect.bottom(),
+                                                      .distance = args.borders.bottom})),
+          _top_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.top(),
+                                                   .destination_guide = _border_guide_rect.top(),
+                                                   .distance = -args.borders.top})),
           _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";
@@ -116,13 +117,13 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     void prepare(ui::collection_layout &layout) {
-        this->_border_guide_rect.set_value_changed_handler([weak_layout = to_weak(layout)](auto const &) {
-            if (auto layout = weak_layout.lock()) {
-                layout.impl_ptr<impl>()->_update_layout();
-            }
-        });
-
         auto weak_layout = to_weak(layout);
+
+        this->_border_observer =
+            this->_border_guide_rect.begin_flow()
+                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
+                .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
+                .end();
 
         auto property_handler = [weak_layout](ui::collection_layout::method const &method) {
             if (auto layout = weak_layout.lock()) {
@@ -189,15 +190,15 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    void push_notify_caller() {
+    void push_notify_waiting() {
         for (auto &rect : this->_cell_guide_rects) {
-            rect.push_notify_caller();
+            rect.push_notify_waiting();
         }
     }
 
-    void pop_notify_caller() {
+    void pop_notify_waiting() {
         for (auto &rect : this->_cell_guide_rects) {
-            rect.pop_notify_caller();
+            rect.pop_notify_waiting();
         }
     }
 
@@ -270,7 +271,7 @@ struct ui::collection_layout::impl : base::impl {
 
         this->_cell_guide_rects.resize(actual_cell_count);
 
-        this->push_notify_caller();
+        this->push_notify_waiting();
 
         std::size_t idx = 0;
 
@@ -300,7 +301,7 @@ struct ui::collection_layout::impl : base::impl {
             }
         }
 
-        this->pop_notify_caller();
+        this->pop_notify_waiting();
 
         if (prev_actual_cell_count != actual_cell_count) {
             this->_subject.notify(ui::collection_layout::method::actual_cell_count_changed,

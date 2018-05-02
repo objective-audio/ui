@@ -7,32 +7,6 @@
 #include "yas_base.h"
 #include "yas_ui_layout_guide.h"
 
-namespace yas::ui {
-class layout_guide;
-
-class layout : public base {
-    class impl;
-
-   public:
-    using handler_f = std::function<void(std::vector<ui::layout_guide> const &source_guides,
-                                         std::vector<ui::layout_guide> &destination_guides)>;
-
-    struct args {
-        std::vector<ui::layout_guide> source_guides;
-        std::vector<ui::layout_guide> destination_guides;
-        handler_f handler;
-    };
-
-    explicit layout(args);
-    layout(std::nullptr_t);
-
-    virtual ~layout() final;
-
-    std::vector<ui::layout_guide> const &source_guides() const;
-    std::vector<ui::layout_guide> const &destination_guides() const;
-};
-}
-
 namespace yas::ui::fixed_layout {
 struct args {
     float distance;
@@ -81,12 +55,12 @@ struct args {
 }
 
 namespace yas::ui {
-[[nodiscard]] ui::layout make_layout(fixed_layout::args);
-[[nodiscard]] ui::layout make_layout(fixed_layout_point::args);
-[[nodiscard]] ui::layout make_layout(fixed_layout_rect::args);
+[[nodiscard]] flow::observer<float> make_flow(fixed_layout::args);
+[[nodiscard]] flow::observer<float> make_flow(fixed_layout_point::args);
+[[nodiscard]] flow::observer<float> make_flow(fixed_layout_rect::args);
 
-[[nodiscard]] ui::layout make_layout(justified_layout::args);
+[[nodiscard]] flow::observer<float> make_flow(justified_layout::args);
 
-[[nodiscard]] ui::layout make_layout(min_layout::args);
-[[nodiscard]] ui::layout make_layout(max_layout::args);
+[[nodiscard]] flow::observer<float> make_flow(min_layout::args);
+[[nodiscard]] flow::observer<float> make_flow(max_layout::args);
 }

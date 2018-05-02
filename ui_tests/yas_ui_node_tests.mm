@@ -796,4 +796,43 @@ struct test_render_encoder : base {
     }
 }
 
+- (void)test_attach_x_layout_guide {
+    ui::layout_guide x_guide{-1.0f};
+
+    ui::node node;
+    node.attach_x_layout_guide(x_guide);
+
+    XCTAssertEqual(node.position().x, -1.0f);
+
+    x_guide.set_value(1.0f);
+
+    XCTAssertEqual(node.position().x, 1.0f);
+}
+
+- (void)test_attach_y_layout_guide {
+    ui::layout_guide y_guide{-1.0f};
+
+    ui::node node;
+    node.attach_y_layout_guide(y_guide);
+
+    XCTAssertEqual(node.position().y, -1.0f);
+
+    y_guide.set_value(1.0f);
+
+    XCTAssertEqual(node.position().y, 1.0f);
+}
+
+- (void)test_attach_position_layout_guide {
+    ui::layout_guide_point guide_point{{-1.0f, -2.0f}};
+
+    ui::node node;
+    node.attach_position_layout_guides(guide_point);
+
+    XCTAssertTrue(node.position() == (ui::point{-1.0f, -2.0f}));
+
+    guide_point.set_point({1.0f, 2.0f});
+
+    XCTAssertTrue(node.position() == (ui::point{1.0f, 2.0f}));
+}
+
 @end

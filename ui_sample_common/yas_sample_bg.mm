@@ -19,19 +19,21 @@ struct sample::bg::impl : base::impl {
     void prepare(sample::bg &bg) {
         auto weak_bg = to_weak(bg);
 
-        this->_layout_guide_rect.set_value_changed_handler([weak_bg](auto const &context) {
-            if (auto bg = weak_bg.lock()) {
-                bg.rect_plane().data().set_rect_position(context.layout_guide_rect.region(), 0);
-            }
-        });
+        this->_rect_observer = this->_layout_guide_rect.begin_flow()
+                                   .guard([weak_bg](ui::region const &) { return !!weak_bg; })
+                                   .perform([weak_bg](ui::region const &value) {
+                                       weak_bg.lock().rect_plane().data().set_rect_position(value, 0);
+                                   })
+                                   .end();
 
         this->_renderer_observer = this->_rect_plane.node().dispatch_and_make_observer(
-            ui::node::method::renderer_changed, [weak_bg, layout = ui::layout{nullptr}](auto const &context) mutable {
+            ui::node::method::renderer_changed,
+            [weak_bg, layout = flow::observer<float>{nullptr}](auto const &context) mutable {
                 if (sample::bg bg = weak_bg.lock()) {
                     auto impl = bg.impl_ptr<sample::bg::impl>();
                     ui::node node = context.value;
                     if (ui::renderer renderer = node.renderer()) {
-                        layout = ui::make_layout(
+                        layout = ui::make_flow(
                             ui::fixed_layout_rect::args{.source_guide_rect = renderer.safe_area_layout_guide_rect(),
                                                         .destination_guide_rect = impl->_layout_guide_rect});
                     } else {
@@ -43,6 +45,7 @@ struct sample::bg::impl : base::impl {
 
    private:
     ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer<float> _rect_observer = nullptr;
 };
 
 sample::bg::bg() : base(std::make_shared<impl>()) {

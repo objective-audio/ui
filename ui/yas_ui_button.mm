@@ -57,18 +57,18 @@ struct ui::button::impl : base::impl {
             }
         });
 
-        this->_layout_guide_rect.set_value_changed_handler(
-            [weak_button, state_count = this->_state_count](auto const &context) {
-                if (auto button = weak_button.lock()) {
-                    button.impl_ptr<impl>()->_update_rect_positions(context.new_value, state_count);
-                }
-            });
+        this->_rect_observer = this->_layout_guide_rect.begin_flow()
+                                   .guard([weak_button](ui::region const &) { return !!weak_button; })
+                                   .perform([weak_button, state_count = this->_state_count](ui::region const &value) {
+                                       weak_button.lock().impl_ptr<impl>()->_update_rect_positions(value, state_count);
+                                   })
+                                   .end();
     }
 
     ui::texture &texture() {
         return this->_rect_plane.node().mesh().texture();
     }
-    
+
     void set_state_idx(std::size_t const idx) {
         if (idx >= this->_state_count) {
             throw std::invalid_argument("idx greater than or equal state count.");
@@ -249,6 +249,7 @@ struct ui::button::impl : base::impl {
 
     ui::node::observer_t _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
+    flow::observer<float> _rect_observer = nullptr;
 };
 
 #pragma mark - ui::button

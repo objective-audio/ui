@@ -19,8 +19,8 @@ struct sample::modifier_text::impl : base::impl {
         auto &node = this->_strings.rect_plane().node();
 
         this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = ui::layout{nullptr},
-            right_layout = ui::layout{nullptr}, bottom_layout = ui::layout{nullptr},
+            weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = flow::observer<float>{nullptr},
+            right_layout = flow::observer<float>{nullptr}, bottom_layout = flow::observer<float>{nullptr},
             strings_observer = ui::strings::observer_t{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
@@ -42,19 +42,20 @@ struct sample::modifier_text::impl : base::impl {
                     auto &strings_guide_rect = strings.frame_layout_guide_rect();
                     auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
 
-                    left_layout = ui::make_layout({.distance = 4.0f,
-                                                   .source_guide = safe_area_guide_rect.left(),
-                                                   .destination_guide = strings_guide_rect.left()});
+                    left_layout = ui::make_flow({.distance = 4.0f,
+                                                 .source_guide = safe_area_guide_rect.left(),
+                                                 .destination_guide = strings_guide_rect.left()});
 
-                    right_layout = ui::make_layout({.distance = -4.0f,
-                                                    .source_guide = safe_area_guide_rect.right(),
-                                                    .destination_guide = strings_guide_rect.right()});
+                    right_layout = ui::make_flow({.distance = -4.0f,
+                                                  .source_guide = safe_area_guide_rect.right(),
+                                                  .destination_guide = strings_guide_rect.right()});
 
-                    bottom_layout = ui::make_layout({.distance = 4.0f,
-                                                     .source_guide = text_impl->_bottom_guide,
-                                                     .destination_guide = strings_guide_rect.bottom()});
+                    bottom_layout = ui::make_flow({.distance = 4.0f,
+                                                   .source_guide = text_impl->_bottom_guide,
+                                                   .destination_guide = strings_guide_rect.bottom()});
 
-                    auto strings_handler = [top_layout = ui::layout{nullptr}](ui::strings & strings) mutable {
+                    auto strings_handler = [top_layout =
+                                                flow::observer<float>{nullptr}](ui::strings & strings) mutable {
                         float distance = 0.0f;
 
                         if (strings.font_atlas()) {
@@ -62,9 +63,9 @@ struct sample::modifier_text::impl : base::impl {
                             distance += font_atlas.ascent() + font_atlas.descent();
                         }
 
-                        top_layout = ui::make_layout({.distance = distance,
-                                                      .source_guide = strings.frame_layout_guide_rect().bottom(),
-                                                      .destination_guide = strings.frame_layout_guide_rect().top()});
+                        top_layout = ui::make_flow({.distance = distance,
+                                                    .source_guide = strings.frame_layout_guide_rect().bottom(),
+                                                    .destination_guide = strings.frame_layout_guide_rect().top()});
                     };
 
                     strings_handler(strings);
