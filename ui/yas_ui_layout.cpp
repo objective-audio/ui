@@ -8,63 +8,6 @@
 
 using namespace yas;
 
-struct ui::layout::impl : base::impl {
-    args _args;
-
-    impl(args &&args) : _args(std::move(args)) {
-    }
-
-    void prepare(ui::layout &layout) {
-        auto weak_layout = to_weak(layout);
-
-        auto handler = [weak_layout](auto const &context) {
-            if (auto layout = weak_layout.lock()) {
-                layout.impl_ptr<impl>()->_update_destination_values();
-            }
-        };
-
-        this->_guide_observers.reserve(_args.source_guides.size());
-
-        for (auto &guide : _args.source_guides) {
-            this->_guide_observers.emplace_back(
-                guide.begin_flow()
-                    .guard([weak_layout](float const &) { return !!weak_layout; })
-                    .perform([weak_layout](float const &) {
-                        weak_layout.lock().impl_ptr<impl>()->_update_destination_values();
-                    })
-                    .end());
-        }
-
-        this->_update_destination_values();
-    }
-
-   private:
-    std::vector<flow::observer<float>> _guide_observers;
-
-    void _update_destination_values() {
-        if (this->_args.handler) {
-            this->_args.handler(this->_args.source_guides, this->_args.destination_guides);
-        }
-    }
-};
-
-ui::layout::layout(args args) : base(std::make_shared<impl>(std::move(args))) {
-    impl_ptr<impl>()->prepare(*this);
-}
-
-ui::layout::layout(std::nullptr_t) : base(nullptr) {
-}
-
-ui::layout::~layout() = default;
-
-std::vector<ui::layout_guide> const &ui::layout::source_guides() const {
-    return impl_ptr<impl>()->_args.source_guides;
-}
-
-std::vector<ui::layout_guide> const &ui::layout::destination_guides() const {
-    return impl_ptr<impl>()->_args.destination_guides;
-}
-
 #pragma mark - fixed_layout
 
 flow::observer<float> ui::make_flow(fixed_layout::args args) {
