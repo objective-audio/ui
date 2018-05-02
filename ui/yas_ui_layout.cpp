@@ -119,7 +119,7 @@ flow::observer<float> ui::make_flow_layout(fixed_layout_rect::args args) {
 
 #pragma mark - jusitified_layout
 
-ui::layout ui::make_layout(justified_layout::args args) {
+flow::observer<float> ui::make_flow_layout(justified_layout::args args) {
     if (!args.first_source_guide) {
         throw "first_source_guide is null.";
     }
@@ -163,27 +163,37 @@ ui::layout ui::make_layout(justified_layout::args args) {
         }
     }
 
-    auto handler = [normalized_rates = std::move(normalized_rates)](auto const &src_guides, auto &dst_guides) {
-        auto const count = dst_guides.size();
-        auto const first_value = src_guides.at(0).value();
-        auto const distance = src_guides.at(1).value() - first_value;
+    std::vector<flow::receivable<float>> dst_receivables;
+    for (auto &dst_guide : args.destination_guides) {
+        dst_receivables.emplace_back(dst_guide.receivable());
+    }
 
-        if (count == 1) {
-            dst_guides.at(0).set_value(first_value + distance * 0.5f);
-        } else {
-            auto each = make_fast_each(count);
-            while (yas_each_next(each)) {
-                auto const &idx = yas_each_index(each);
-                auto &dst_guide = dst_guides.at(idx);
-                auto &rate = normalized_rates.at(idx);
-                dst_guide.set_value(first_value + distance * rate);
-            }
-        }
-    };
+    auto flow = args.first_source_guide.begin_flow()
+                    .combine(args.second_source_guide.begin_flow())
+                    .convert<std::pair<float, float>>(
+                        [](auto const &pair) { return std::make_pair(*pair.first, *pair.second); })
+                    .perform([dst_receivables, normalized_rates](auto const &pair) mutable {
+                        auto const dst_count = dst_receivables.size();
+                        auto const first_value = pair.first;
+                        auto const distance = pair.second - first_value;
 
-    return ui::layout{{.source_guides = {std::move(args.first_source_guide), std::move(args.second_source_guide)},
-                       .destination_guides = std::move(args.destination_guides),
-                       .handler = std::move(handler)}};
+                        if (dst_count == 1) {
+                            dst_receivables.at(0).receive_value(first_value + distance * 0.5f);
+                        } else {
+                            auto each = make_fast_each(dst_count);
+                            while (yas_each_next(each)) {
+                                auto const &idx = yas_each_index(each);
+                                auto &receivable = dst_receivables.at(idx);
+                                auto const &rate = normalized_rates.at(idx);
+                                receivable.receive_value(first_value + distance * rate);
+                            }
+                        }
+                    })
+                    .end();
+
+    flow.sync();
+
+    return flow;
 }
 
 #pragma mark - other layouts
