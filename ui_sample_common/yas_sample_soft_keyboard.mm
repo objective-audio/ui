@@ -197,21 +197,21 @@ struct sample::soft_keyboard::impl : base::impl {
         auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
         auto const &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
 
-        this->_frame_layouts.emplace_back(ui::make_flow_layout(
-            {.source_guide = safe_area_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
+        this->_frame_layouts.emplace_back(
+            ui::make_flow({.source_guide = safe_area_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
 
-        this->_frame_layouts.emplace_back(ui::make_flow_layout(
+        this->_frame_layouts.emplace_back(ui::make_flow(
             {.source_guide = safe_area_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
 
-        this->_frame_layouts.emplace_back(ui::make_flow_layout(
-            {.source_guide = safe_area_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
+        this->_frame_layouts.emplace_back(
+            ui::make_flow({.source_guide = safe_area_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
 
         ui::layout_guide max_right_guide;
-        this->_frame_layouts.emplace_back(ui::make_flow_layout(
+        this->_frame_layouts.emplace_back(ui::make_flow(
             {.distance = width, .source_guide = safe_area_guide_rect.left(), .destination_guide = max_right_guide}));
         this->_frame_layouts.emplace_back(
-            ui::make_flow_layout(ui::min_layout::args{.source_guides = {max_right_guide, safe_area_guide_rect.right()},
-                                                      .destination_guide = frame_guide_rect.right()}));
+            ui::make_flow(ui::min_layout::args{.source_guides = {max_right_guide, safe_area_guide_rect.right()},
+                                               .destination_guide = frame_guide_rect.right()}));
 
         this->_setup_soft_keys_layout();
         this->_update_soft_key_count();
@@ -299,13 +299,13 @@ struct sample::soft_keyboard::impl : base::impl {
                     std::vector<flow::observer<float>> layouts;
                     layouts.reserve(4);
 
-                    layouts.emplace_back(ui::make_flow_layout(
+                    layouts.emplace_back(ui::make_flow(
                         {.source_guide = src_guide_rect.left(), .destination_guide = dst_guide_rect.left()}));
-                    layouts.emplace_back(ui::make_flow_layout(
+                    layouts.emplace_back(ui::make_flow(
                         {.source_guide = src_guide_rect.bottom(), .destination_guide = dst_guide_rect.bottom()}));
-                    layouts.emplace_back(ui::make_flow_layout(
+                    layouts.emplace_back(ui::make_flow(
                         {.source_guide = src_guide_rect.right(), .destination_guide = dst_guide_rect.right()}));
-                    layouts.emplace_back(ui::make_flow_layout(
+                    layouts.emplace_back(ui::make_flow(
                         {.source_guide = src_guide_rect.top(), .destination_guide = dst_guide_rect.top()}));
 
                     this->_fixed_cell_layouts.emplace_back(std::move(layouts));

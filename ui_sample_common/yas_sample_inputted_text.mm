@@ -33,9 +33,9 @@ struct sample::inputted_text::impl : base::impl {
                             }
                         });
 
-                    layout = ui::make_flow_layout({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
-                                                   .source_guide_rect = renderer.safe_area_layout_guide_rect(),
-                                                   .destination_guide_rect = strings_frame_guide_rect});
+                    layout = ui::make_flow({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
+                                            .source_guide_rect = renderer.safe_area_layout_guide_rect(),
+                                            .destination_guide_rect = strings_frame_guide_rect});
                 } else {
                     event_observer = nullptr;
                     layout = nullptr;

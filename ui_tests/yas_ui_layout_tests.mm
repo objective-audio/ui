@@ -25,7 +25,7 @@ using namespace yas;
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
-    auto layout = ui::make_flow_layout({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = ui::make_flow({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
 
     XCTAssertTrue(layout);
 
@@ -38,7 +38,7 @@ using namespace yas;
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
     ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
 
-    auto layout = ui::make_flow_layout(
+    auto layout = ui::make_flow(
         {.distances = distances, .source_guide_point = src_guide_point, .destination_guide_point = dst_guide_point});
 
     XCTAssertTrue(layout);
@@ -54,7 +54,7 @@ using namespace yas;
     ui::layout_guide_rect src_guide_rect{{.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}}};
     ui::layout_guide_rect dst_guide_rect{{.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}}};
 
-    auto layout = ui::make_flow_layout(
+    auto layout = ui::make_flow(
         {.distances = distances, .source_guide_rect = src_guide_rect, .destination_guide_rect = dst_guide_rect});
 
     XCTAssertTrue(layout);
@@ -73,7 +73,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = ui::make_flow_layout({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = ui::make_flow({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 
@@ -89,7 +89,7 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{-1.0f};
 
-    auto layout = ui::make_flow_layout(
+    auto layout = ui::make_flow(
         ui::min_layout::args{.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 1.0f);
@@ -112,7 +112,7 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{3.0f};
 
-    auto layout = ui::make_flow_layout(
+    auto layout = ui::make_flow(
         ui::max_layout::args{.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 2.0f);

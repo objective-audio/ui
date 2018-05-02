@@ -21,15 +21,15 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_make_flow_layout {
+- (void)test_make_flow {
     ui::layout_guide first_src_guide{1.0f};
     ui::layout_guide second_src_guide{2.0f};
     ui::layout_guide first_dst_guide;
     ui::layout_guide second_dst_guide;
 
-    auto layout = ui::make_flow_layout({.first_source_guide = first_src_guide,
-                                        .second_source_guide = second_src_guide,
-                                        .destination_guides = {first_dst_guide, second_dst_guide}});
+    auto layout = ui::make_flow({.first_source_guide = first_src_guide,
+                                 .second_source_guide = second_src_guide,
+                                 .destination_guides = {first_dst_guide, second_dst_guide}});
 
     XCTAssertTrue(layout);
 
@@ -42,9 +42,9 @@ using namespace yas;
     ui::layout_guide second_src_guide{0.0f};
     ui::layout_guide dst_guide{100.0f};
 
-    auto layout = ui::make_flow_layout({.first_source_guide = first_src_guide,
-                                        .second_source_guide = second_src_guide,
-                                        .destination_guides = {dst_guide}});
+    auto layout = ui::make_flow({.first_source_guide = first_src_guide,
+                                 .second_source_guide = second_src_guide,
+                                 .destination_guides = {dst_guide}});
 
     XCTAssertEqual(dst_guide.value(), 0.0f);
 
@@ -69,9 +69,9 @@ using namespace yas;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
 
-    auto layout = ui::make_flow_layout({.first_source_guide = first_src_guide,
-                                        .second_source_guide = second_src_guide,
-                                        .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2}});
+    auto layout = ui::make_flow({.first_source_guide = first_src_guide,
+                                 .second_source_guide = second_src_guide,
+                                 .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2}});
 
     XCTAssertEqual(dst_guide_0.value(), -1.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
@@ -85,10 +85,10 @@ using namespace yas;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
 
-    auto layout = ui::make_flow_layout({.first_source_guide = first_src_guide,
-                                        .second_source_guide = second_src_guide,
-                                        .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2},
-                                        .ratios = {1.0f, 2.0f}});
+    auto layout = ui::make_flow({.first_source_guide = first_src_guide,
+                                 .second_source_guide = second_src_guide,
+                                 .destination_guides = {dst_guide_0, dst_guide_1, dst_guide_2},
+                                 .ratios = {1.0f, 2.0f}});
 
     XCTAssertEqual(dst_guide_0.value(), 0.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);

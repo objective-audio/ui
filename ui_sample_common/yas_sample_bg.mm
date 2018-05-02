@@ -33,7 +33,7 @@ struct sample::bg::impl : base::impl {
                     auto impl = bg.impl_ptr<sample::bg::impl>();
                     ui::node node = context.value;
                     if (ui::renderer renderer = node.renderer()) {
-                        layout = ui::make_flow_layout(
+                        layout = ui::make_flow(
                             ui::fixed_layout_rect::args{.source_guide_rect = renderer.safe_area_layout_guide_rect(),
                                                         .destination_guide_rect = impl->_layout_guide_rect});
                     } else {
