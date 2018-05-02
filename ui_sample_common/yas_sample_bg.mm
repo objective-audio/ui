@@ -27,12 +27,13 @@ struct sample::bg::impl : base::impl {
                                    .end();
 
         this->_renderer_observer = this->_rect_plane.node().dispatch_and_make_observer(
-            ui::node::method::renderer_changed, [weak_bg, layout = ui::layout{nullptr}](auto const &context) mutable {
+            ui::node::method::renderer_changed,
+            [weak_bg, layout = flow::observer<float>{nullptr}](auto const &context) mutable {
                 if (sample::bg bg = weak_bg.lock()) {
                     auto impl = bg.impl_ptr<sample::bg::impl>();
                     ui::node node = context.value;
                     if (ui::renderer renderer = node.renderer()) {
-                        layout = ui::make_layout(
+                        layout = ui::make_flow_layout(
                             ui::fixed_layout_rect::args{.source_guide_rect = renderer.safe_area_layout_guide_rect(),
                                                         .destination_guide_rect = impl->_layout_guide_rect});
                     } else {
