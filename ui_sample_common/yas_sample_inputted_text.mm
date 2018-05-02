@@ -18,7 +18,7 @@ struct sample::inputted_text::impl : base::impl {
         auto &node = this->_strings.rect_plane().node();
 
         this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text), event_observer = base{nullptr}, layout = ui::layout{nullptr}
+            weak_text = to_weak(text), event_observer = base{nullptr}, layout = flow::observer<float>{nullptr}
         ](auto const &context) mutable {
             if (auto text = weak_text.lock()) {
                 auto &node = context.value;
@@ -33,9 +33,9 @@ struct sample::inputted_text::impl : base::impl {
                             }
                         });
 
-                    layout = ui::make_layout({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
-                                              .source_guide_rect = renderer.safe_area_layout_guide_rect(),
-                                              .destination_guide_rect = strings_frame_guide_rect});
+                    layout = ui::make_flow_layout({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
+                                                   .source_guide_rect = renderer.safe_area_layout_guide_rect(),
+                                                   .destination_guide_rect = strings_frame_guide_rect});
                 } else {
                     event_observer = nullptr;
                     layout = nullptr;
