@@ -112,7 +112,7 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{3.0f};
 
-    auto layout = ui::make_layout(
+    auto layout = ui::make_flow_layout(
         ui::max_layout::args{.source_guides = {src_guide_0, src_guide_1}, .destination_guide = dst_guide});
 
     XCTAssertEqual(dst_guide.value(), 2.0f);

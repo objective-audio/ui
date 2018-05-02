@@ -220,30 +220,34 @@ flow::observer<float> ui::make_flow_layout(min_layout::args args) {
     return observer;
 }
 
-ui::layout ui::make_layout(max_layout::args args) {
-    if (args.source_guides.size() == 0) {
-        throw "source_guides is empty.";
+flow::observer<float> ui::make_flow_layout(max_layout::args args) {
+    if (args.source_guides.size() < 2) {
+        throw "source_guides is less than 2.";
     }
 
     if (!args.destination_guide) {
         throw "destination_guide is null.";
     }
 
-    auto handler = [](auto const &src_guides, auto &dst_guides) {
-        std::experimental::optional<float> value;
+    flow::node<float, float, float> flow = nullptr;
 
-        for (auto const &src_guide : src_guides) {
-            if (value) {
-                value = std::max(src_guide.value(), *value);
-            } else {
-                value = src_guide.value();
-            }
+    auto each = make_fast_each(args.source_guides.size());
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        auto &guide = args.source_guides.at(idx);
+
+        if (flow) {
+            flow = flow.combine(guide.begin_flow())
+                       .convert<float>([](auto const &pair) { return std::max(*pair.first, *pair.second); })
+                       .normalize();
+        } else {
+            flow = guide.begin_flow().normalize();
         }
+    }
 
-        dst_guides.at(0).set_value(*value);
-    };
+    auto observer = flow.end(args.destination_guide.receivable());
 
-    return ui::layout{{.source_guides = std::move(args.source_guides),
-                       .destination_guides = {std::move(args.destination_guide)},
-                       .handler = std::move(handler)}};
+    observer.sync();
+
+    return observer;
 }

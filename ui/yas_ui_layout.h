@@ -88,5 +88,5 @@ namespace yas::ui {
 [[nodiscard]] ui::layout make_layout(justified_layout::args);
 
 [[nodiscard]] flow::observer<float> make_flow_layout(min_layout::args);
-[[nodiscard]] ui::layout make_layout(max_layout::args);
+[[nodiscard]] flow::observer<float> make_flow_layout(max_layout::args);
 }
