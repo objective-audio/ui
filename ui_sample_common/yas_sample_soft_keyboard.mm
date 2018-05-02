@@ -31,7 +31,6 @@ struct soft_key : base {
 
         ui::button _button;
         ui::strings _strings;
-        std::vector<ui::layout> _layouts;
     };
 
     soft_key(std::string key, float const width, ui::font_atlas atlas)
