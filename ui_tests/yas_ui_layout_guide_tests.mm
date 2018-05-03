@@ -154,7 +154,7 @@ using namespace yas;
     XCTAssertEqual(notified.x, 1.0f);
     XCTAssertEqual(notified.y, 2.0f);
 
-    guide_point.receivable().receive_value({3.0f, 4.0f});
+    guide_point.receiver().flowable().receive_value({3.0f, 4.0f});
 
     XCTAssertEqual(notified.x, 3.0f);
     XCTAssertEqual(notified.y, 4.0f);
@@ -169,7 +169,7 @@ using namespace yas;
 
     auto is_all_zero = [](ui::point const &origin) { return origin.x == 0 && origin.y == 0; };
 
-    auto clear_points = [ &notified_x, &notified_y, &notified_point]() {
+    auto clear_points = [&notified_x, &notified_y, &notified_point]() {
         notified_x = notified_y = 0.0f;
         notified_point.x = notified_point.y = 0.0f;
     };
@@ -289,7 +289,7 @@ using namespace yas;
     XCTAssertEqual(notified.location, 1.0f);
     XCTAssertEqual(notified.length, 2.0f);
 
-    guide_range.receivable().receive_value({3.0f, 4.0f});
+    guide_range.receiver().flowable().receive_value({3.0f, 4.0f});
 
     XCTAssertEqual(notified.location, 3.0f);
     XCTAssertEqual(notified.length, 4.0f);
@@ -533,7 +533,7 @@ using namespace yas;
     XCTAssertEqual(notified.size.width, 3.0f);
     XCTAssertEqual(notified.size.height, 4.0f);
 
-    guide_rect.receivable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
+    guide_rect.receiver().flowable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
 
     XCTAssertEqual(notified.origin.x, 5.0f);
     XCTAssertEqual(notified.origin.y, 6.0f);
