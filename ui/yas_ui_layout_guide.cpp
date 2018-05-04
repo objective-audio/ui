@@ -12,6 +12,7 @@ using namespace yas;
 
 struct ui::layout_guide::impl : base::impl {
     property<float> _value;
+    flow::receiver<float> _receiver = nullptr;
 
     impl(float const value) : _value({.value = value}) {
     }
@@ -96,12 +97,7 @@ struct ui::layout_guide::impl : base::impl {
             .convert<float>([](auto const &pair) { return *pair.first; });
     }
 
-    flow::receivable<float> receivable() {
-        return this->_receiver.receivable();
-    }
-
    private:
-    flow::receiver<float> _receiver = nullptr;
     flow::sender<bool> _wait_sender;
 };
 
@@ -139,8 +135,8 @@ ui::layout_guide::flow_t ui::layout_guide::begin_flow() {
     return impl_ptr<impl>()->begin_flow();
 }
 
-flow::receivable<float> ui::layout_guide::receivable() {
-    return impl_ptr<impl>()->receivable();
+flow::receiver<float> &ui::layout_guide::receiver() {
+    return impl_ptr<impl>()->_receiver;
 }
 
 #pragma mark - ui::layout_guide_point::impl
@@ -148,6 +144,8 @@ flow::receivable<float> ui::layout_guide::receivable() {
 struct ui::layout_guide_point::impl : base::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
+
+    flow::receiver<ui::point> _receiver = nullptr;
 
     impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
     }
@@ -200,13 +198,6 @@ struct ui::layout_guide_point::impl : base::impl {
                 return cache;
             });
     }
-
-    flow::receivable<ui::point> receivable() {
-        return this->_receiver.receivable();
-    }
-
-   private:
-    flow::receiver<ui::point> _receiver = nullptr;
 };
 
 #pragma mark - ui::layout_guide_point
@@ -259,8 +250,8 @@ ui::layout_guide_point::flow_t ui::layout_guide_point::begin_flow() {
     return impl_ptr<impl>()->begin_flow();
 }
 
-flow::receivable<ui::point> ui::layout_guide_point::receivable() {
-    return impl_ptr<impl>()->receivable();
+flow::receiver<ui::point> &ui::layout_guide_point::receiver() {
+    return impl_ptr<impl>()->_receiver;
 }
 
 #pragma mark - ui::layout_guide_range::impl
@@ -273,6 +264,8 @@ struct ui::layout_guide_range::impl : base::impl {
     flow::observer<float> _max_observer = nullptr;
     flow::observer<float> _length_observer = nullptr;
 
+    flow::receiver<ui::range> _receiver = nullptr;
+
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
 
@@ -283,21 +276,21 @@ struct ui::layout_guide_range::impl : base::impl {
             this->_min_guide.begin_flow()
                 .guard([weak_range](float const &) { return !!weak_range; })
                 .convert([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
-                .end(this->_length_guide.receivable());
+                .end(this->_length_guide.receiver());
 
         this->_max_observer =
             this->_max_guide.begin_flow()
                 .guard([weak_range](float const &) { return !!weak_range; })
                 .convert([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
-                .end(this->_length_guide.receivable());
+                .end(this->_length_guide.receiver());
 
         this->_length_observer =
             this->_length_guide.begin_flow()
                 .guard([weak_range](float const &) { return !!weak_range; })
                 .convert([weak_range](float const &length) { return weak_range.lock().min().value() + length; })
-                .end(this->_max_guide.receivable());
-        
-        this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range){
+                .end(this->_max_guide.receiver());
+
+        this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range) {
             if (auto guide_range = weak_range.lock()) {
                 guide_range.set_range(range);
             }
@@ -348,13 +341,6 @@ struct ui::layout_guide_range::impl : base::impl {
             return ui::range{min_cache, max_cache - min_cache};
         });
     }
-
-    flow::receivable<ui::range> receivable() {
-        return this->_receiver.receivable();
-    }
-
-   private:
-    flow::receiver<ui::range> _receiver = nullptr;
 };
 
 #pragma mark - ui::layout_guide_range
@@ -415,8 +401,8 @@ ui::layout_guide_range::flow_t ui::layout_guide_range::begin_flow() {
     return impl_ptr<impl>()->begin_flow();
 }
 
-flow::receivable<ui::range> ui::layout_guide_range::receivable() {
-    return impl_ptr<impl>()->receivable();
+flow::receiver<ui::range> &ui::layout_guide_range::receiver() {
+    return impl_ptr<impl>()->_receiver;
 }
 
 #pragma mark - ui::layout_guide_rect::impl
@@ -494,10 +480,6 @@ struct ui::layout_guide_rect::impl : base::impl {
             }
             return ui::make_region(h_cache, v_cache);
         });
-    }
-
-    flow::receivable<ui::region> receivable() {
-        return this->_receiver.receivable();
     }
 };
 
@@ -616,8 +598,8 @@ ui::layout_guide_rect::flow_t ui::layout_guide_rect::begin_flow() {
     return impl_ptr<impl>()->begin_flow();
 }
 
-flow::receivable<ui::region> ui::layout_guide_rect::receivable() {
-    return impl_ptr<impl>()->receivable();
+flow::receiver<ui::region> &ui::layout_guide_rect::receiver() {
+    return impl_ptr<impl>()->_receiver;
 }
 
 #pragma mark - layout_guide_pair

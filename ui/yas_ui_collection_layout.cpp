@@ -60,13 +60,14 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    flow::observer<float> _left_border_layout;
-    flow::observer<float> _right_border_layout;
-    flow::observer<float> _bottom_border_layout;
-    flow::observer<float> _top_border_layout;
+    flow::observer<float> _left_border_flow;
+    flow::observer<float> _right_border_flow;
+    flow::observer<float> _bottom_border_flow;
+    flow::observer<float> _top_border_flow;
     ui::layout_borders const _borders;
     subject_t _subject;
-    flow::observer<float> _border_observer = nullptr;
+    flow::observer<float> _border_flow = nullptr;
+    flow::receiver<method> _properties_receiver = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -98,18 +99,18 @@ struct ui::collection_layout::impl : base::impl {
           _direction_property({.value = args.direction}),
           _row_order_property({.value = args.row_order}),
           _col_order_property({.value = args.col_order}),
-          _left_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.left(),
-                                                    .destination_guide = _border_guide_rect.left(),
-                                                    .distance = args.borders.left})),
-          _right_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.right(),
-                                                     .destination_guide = _border_guide_rect.right(),
-                                                     .distance = -args.borders.right})),
-          _bottom_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.bottom(),
-                                                      .destination_guide = _border_guide_rect.bottom(),
-                                                      .distance = args.borders.bottom})),
-          _top_border_layout(ui::make_flow({.source_guide = _frame_guide_rect.top(),
-                                                   .destination_guide = _border_guide_rect.top(),
-                                                   .distance = -args.borders.top})),
+          _left_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.left(),
+                                           .destination_guide = _border_guide_rect.left(),
+                                           .distance = args.borders.left})),
+          _right_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.right(),
+                                            .destination_guide = _border_guide_rect.right(),
+                                            .distance = -args.borders.right})),
+          _bottom_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.bottom(),
+                                             .destination_guide = _border_guide_rect.bottom(),
+                                             .distance = args.borders.bottom})),
+          _top_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.top(),
+                                          .destination_guide = _border_guide_rect.top(),
+                                          .distance = -args.borders.top})),
           _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";
@@ -119,64 +120,59 @@ struct ui::collection_layout::impl : base::impl {
     void prepare(ui::collection_layout &layout) {
         auto weak_layout = to_weak(layout);
 
-        this->_border_observer =
-            this->_border_guide_rect.begin_flow()
-                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
-                .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
-                .end();
-
-        auto property_handler = [weak_layout](ui::collection_layout::method const &method) {
+        this->_properties_receiver = flow::receiver<ui::collection_layout::method>{[weak_layout](auto const &method) {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();
                 layout_impl->_subject.notify(method, layout);
             }
-        };
+        }};
 
-        this->_property_observers.emplace_back(this->_row_spacing_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::row_spacing_changed);
-            }));
+        this->_border_flow =
+            this->_border_guide_rect.begin_flow()
+                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
+                .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
+                .end();
 
-        this->_property_observers.emplace_back(this->_col_spacing_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::col_spacing_changed);
-            }));
+        this->_property_flows.emplace_back(
+            this->_row_spacing_property.begin_value_flow()
+                .convert<method>([](auto const &) { return method::row_spacing_changed; })
+                .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_alignment_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::alignment_changed);
-            }));
+        this->_property_flows.emplace_back(
+            this->_col_spacing_property.begin_value_flow()
+                .convert<method>([](auto const &) { return method::col_spacing_changed; })
+                .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_direction_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::direction_changed);
-            }));
+        this->_property_flows.emplace_back(this->_alignment_property.begin_value_flow()
+                                               .convert<method>([](auto const &) { return method::alignment_changed; })
+                                               .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_row_order_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::row_order_changed);
-            }));
+        this->_property_flows.emplace_back(this->_direction_property.begin_value_flow()
+                                               .convert<method>([](auto const &) { return method::direction_changed; })
+                                               .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_col_order_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::col_order_changed);
-            }));
+        this->_property_flows.emplace_back(this->_row_order_property.begin_value_flow()
+                                               .convert<method>([](auto const &) { return method::row_order_changed; })
+                                               .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_preferred_cell_count_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::preferred_cell_count_changed);
-            }));
+        this->_property_flows.emplace_back(this->_col_order_property.begin_value_flow()
+                                               .convert<method>([](auto const &) { return method::col_order_changed; })
+                                               .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_default_cell_size_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::default_cell_size_changed);
-            }));
+        this->_property_flows.emplace_back(
+            this->_preferred_cell_count_property.begin_value_flow()
+                .convert<method>([](auto const &) { return method::preferred_cell_count_changed; })
+                .end(this->_properties_receiver));
 
-        this->_property_observers.emplace_back(this->_lines_property.subject().make_observer(
-            property_method::did_change, [property_handler](auto const &context) {
-                property_handler(ui::collection_layout::method::lines_changed);
-            }));
+        this->_property_flows.emplace_back(
+            this->_default_cell_size_property.begin_value_flow()
+                .convert<method>([](auto const &) { return method::default_cell_size_changed; })
+                .end(this->_properties_receiver));
+
+        this->_property_flows.emplace_back(this->_lines_property.begin_value_flow()
+                                               .convert<method>([](auto const &) { return method::lines_changed; })
+                                               .end(this->_properties_receiver));
 
         this->_update_layout();
     }
@@ -203,7 +199,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
    private:
-    std::vector<base> _property_observers;
+    std::vector<base> _property_flows;
 
     void _update_layout() {
         auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());

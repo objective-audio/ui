@@ -29,7 +29,7 @@ class layout_guide : public base {
     using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float>;
 
     flow_t begin_flow();
-    flow::receivable<float> receivable();
+    flow::receiver<float> &receiver();
 };
 
 class layout_guide_point : public base {
@@ -56,7 +56,7 @@ class layout_guide_point : public base {
     using flow_t = flow::node<ui::point, std::pair<opt_t<float>, opt_t<float>>, float>;
 
     flow_t begin_flow();
-    flow::receivable<ui::point> receivable();
+    flow::receiver<ui::point> &receiver();
 };
 
 class layout_guide_range : public base {
@@ -85,7 +85,7 @@ class layout_guide_range : public base {
     using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float>;
 
     flow_t begin_flow();
-    flow::receivable<ui::range> receivable();
+    flow::receiver<ui::range> &receiver();
 };
 
 class layout_guide_rect : public base {
@@ -135,7 +135,7 @@ class layout_guide_rect : public base {
     using flow_t = flow::node<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float>;
 
     flow_t begin_flow();
-    flow::receivable<ui::region> receivable();
+    flow::receiver<ui::region> &receiver();
 };
 
 struct layout_guide_pair {
