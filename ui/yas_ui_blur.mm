@@ -9,28 +9,25 @@
 #include "yas_ui_metal_texture.h"
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
-#include <iostream>
-
 using namespace yas;
 
 struct ui::blur::impl : base::impl {
-    void prepare(ui::blur &blur) {
-        auto weak_blur = to_weak(blur);
-
-        this->_observers.emplace_back(this->_sigma_property.subject().make_observer(
-            property_method::did_change, [weak_blur](auto const &context) {
-                if (auto blur = weak_blur.lock()) {
-                    blur.impl_ptr<impl>()->_update_effect_handler();
-                }
-            }));
-
-        this->_update_effect_handler();
-    }
-
     property<double> _sigma_property{{.value = 0.0}};
     ui::effect _effect;
 
+    void prepare(ui::blur &blur) {
+        auto weak_blur = to_weak(blur);
+
+        this->_sigma_flow =
+            this->_sigma_property.begin_value_flow()
+                .guard([weak_blur](double const &) { return !!weak_blur; })
+                .perform([weak_blur](double const &) { weak_blur.lock().impl_ptr<impl>()->_update_effect_handler(); })
+                .sync();
+    }
+
    private:
+    flow::observer<double> _sigma_flow = nullptr;
+
     void _update_effect_handler() {
         double const sigma = this->_sigma_property.value();
 
@@ -56,8 +53,6 @@ struct ui::blur::impl : base::impl {
             this->_effect.set_metal_handler(ui::effect::through_metal_handler());
         }
     }
-
-    std::vector<base> _observers;
 };
 
 ui::blur::blur() : base(std::make_shared<impl>()) {
