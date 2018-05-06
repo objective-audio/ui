@@ -58,8 +58,7 @@ struct sample::modifier_text::impl : base::impl {
                                                 flow::observer<float>{nullptr}](ui::strings & strings) mutable {
                         float distance = 0.0f;
 
-                        if (strings.font_atlas()) {
-                            auto const &font_atlas = strings.font_atlas();
+                        if (auto const &font_atlas = strings.font_atlas()) {
                             distance += font_atlas.ascent() + font_atlas.descent();
                         }
 
