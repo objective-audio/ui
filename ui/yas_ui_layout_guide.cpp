@@ -131,7 +131,7 @@ void ui::layout_guide::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide::flow_t ui::layout_guide::begin_flow() {
+ui::layout_guide::flow_t ui::layout_guide::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }
 
@@ -246,7 +246,7 @@ void ui::layout_guide_point::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide_point::flow_t ui::layout_guide_point::begin_flow() {
+ui::layout_guide_point::flow_t ui::layout_guide_point::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }
 
@@ -262,7 +262,6 @@ struct ui::layout_guide_range::impl : base::impl {
     layout_guide _length_guide;
     flow::observer<float> _min_observer = nullptr;
     flow::observer<float> _max_observer = nullptr;
-    flow::observer<float> _length_observer = nullptr;
 
     flow::receiver<ui::range> _receiver = nullptr;
 
@@ -282,12 +281,6 @@ struct ui::layout_guide_range::impl : base::impl {
                                   .to([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
                                   .end(this->_length_guide.receiver());
 
-        this->_length_observer =
-            this->_length_guide.begin_flow()
-                .guard([weak_range](float const &) { return !!weak_range; })
-                .to([weak_range](float const &length) { return weak_range.lock().min().value() + length; })
-                .end(this->_max_guide.receiver());
-
         this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range) {
             if (auto guide_range = weak_range.lock()) {
                 guide_range.set_range(range);
@@ -300,7 +293,6 @@ struct ui::layout_guide_range::impl : base::impl {
 
         this->_min_guide.set_value(range.min());
         this->_max_guide.set_value(range.max());
-        this->_length_guide.set_value(range.length);
 
         this->pop_notify_waiting();
     }
@@ -363,10 +355,6 @@ ui::layout_guide &ui::layout_guide_range::max() {
     return impl_ptr<impl>()->_max_guide;
 }
 
-ui::layout_guide &ui::layout_guide_range::length() {
-    return impl_ptr<impl>()->_length_guide;
-}
-
 ui::layout_guide const &ui::layout_guide_range::min() const {
     return impl_ptr<impl>()->_min_guide;
 }
@@ -395,7 +383,7 @@ void ui::layout_guide_range::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide_range::flow_t ui::layout_guide_range::begin_flow() {
+ui::layout_guide_range::flow_t ui::layout_guide_range::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }
 
@@ -532,14 +520,6 @@ ui::layout_guide &ui::layout_guide_rect::top() {
     return this->vertical_range().max();
 }
 
-ui::layout_guide &ui::layout_guide_rect::width() {
-    return this->horizontal_range().length();
-}
-
-ui::layout_guide &ui::layout_guide_rect::height() {
-    return this->vertical_range().length();
-}
-
 ui::layout_guide const &ui::layout_guide_rect::left() const {
     return this->horizontal_range().min();
 }
@@ -592,7 +572,7 @@ void ui::layout_guide_rect::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide_rect::flow_t ui::layout_guide_rect::begin_flow() {
+ui::layout_guide_rect::flow_t ui::layout_guide_rect::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }
 
