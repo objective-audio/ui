@@ -762,7 +762,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
 
     imp->_x_observer = guide.begin_flow()
                            .guard([weak_node](float const &) { return !!weak_node; })
-                           .convert<ui::point>([weak_node](float const &x) {
+                           .to<ui::point>([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().y};
                            })
                            .end(position.receiver());
@@ -778,7 +778,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
 
     imp->_y_observer = guide.begin_flow()
                            .guard([weak_node](float const &) { return !!weak_node; })
-                           .convert<ui::point>([weak_node](float const &y) {
+                           .to<ui::point>([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().x, y};
                            })
                            .end(position.receiver());

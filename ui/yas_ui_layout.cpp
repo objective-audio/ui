@@ -16,7 +16,7 @@ flow::observer<float> ui::make_flow(fixed_layout::args args) {
     }
 
     auto flow = args.source_guide.begin_flow()
-                    .convert([distance = args.distance](float const &value) { return value + distance; })
+                    .to([distance = args.distance](float const &value) { return value + distance; })
                     .end(args.destination_guide.receiver());
 
     flow.sync();
@@ -30,7 +30,7 @@ flow::observer<float> ui::make_flow(fixed_layout_point::args args) {
     }
 
     auto flow = args.source_guide_point.begin_flow()
-                    .convert([distance = args.distances](ui::point const &value) {
+                    .to([distance = args.distances](ui::point const &value) {
                         return ui::point{value.x + distance.x, value.y + distance.y};
                     })
                     .end(args.destination_guide_point.receiver());
@@ -46,7 +46,7 @@ flow::observer<float> ui::make_flow(fixed_layout_rect::args args) {
     }
 
     auto flow = args.source_guide_rect.begin_flow()
-                    .convert([distances = std::move(args.distances)](ui::region const &value) {
+                    .to([distances = std::move(args.distances)](ui::region const &value) {
                         float const left = value.left() + distances.left;
                         float const right = value.right() + distances.right;
                         float const bottom = value.bottom() + distances.bottom;
@@ -111,28 +111,28 @@ flow::observer<float> ui::make_flow(justified_layout::args args) {
         dst_outputs.emplace_back(dst_guide.receiver().flowable().make_output());
     }
 
-    auto flow = args.first_source_guide.begin_flow()
-                    .combine(args.second_source_guide.begin_flow())
-                    .convert<std::pair<float, float>>(
-                        [](auto const &pair) { return std::make_pair(*pair.first, *pair.second); })
-                    .perform([dst_outputs, normalized_rates](auto const &pair) mutable {
-                        auto const dst_count = dst_outputs.size();
-                        auto const first_value = pair.first;
-                        auto const distance = pair.second - first_value;
+    auto flow =
+        args.first_source_guide.begin_flow()
+            .combine(args.second_source_guide.begin_flow())
+            .to<std::pair<float, float>>([](auto const &pair) { return std::make_pair(*pair.first, *pair.second); })
+            .perform([dst_outputs, normalized_rates](auto const &pair) mutable {
+                auto const dst_count = dst_outputs.size();
+                auto const first_value = pair.first;
+                auto const distance = pair.second - first_value;
 
-                        if (dst_count == 1) {
-                            dst_outputs.at(0).output_value(first_value + distance * 0.5f);
-                        } else {
-                            auto each = make_fast_each(dst_count);
-                            while (yas_each_next(each)) {
-                                auto const &idx = yas_each_index(each);
-                                auto &output = dst_outputs.at(idx);
-                                auto const &rate = normalized_rates.at(idx);
-                                output.output_value(first_value + distance * rate);
-                            }
-                        }
-                    })
-                    .end();
+                if (dst_count == 1) {
+                    dst_outputs.at(0).output_value(first_value + distance * 0.5f);
+                } else {
+                    auto each = make_fast_each(dst_count);
+                    while (yas_each_next(each)) {
+                        auto const &idx = yas_each_index(each);
+                        auto &output = dst_outputs.at(idx);
+                        auto const &rate = normalized_rates.at(idx);
+                        output.output_value(first_value + distance * rate);
+                    }
+                }
+            })
+            .end();
 
     flow.sync();
 
@@ -159,7 +159,7 @@ flow::observer<float> ui::make_flow(min_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .convert<float>([](auto const &pair) { return std::min(*pair.first, *pair.second); })
+                       .to<float>([](auto const &pair) { return std::min(*pair.first, *pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();
@@ -191,7 +191,7 @@ flow::observer<float> ui::make_flow(max_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .convert<float>([](auto const &pair) { return std::max(*pair.first, *pair.second); })
+                       .to<float>([](auto const &pair) { return std::max(*pair.first, *pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();
