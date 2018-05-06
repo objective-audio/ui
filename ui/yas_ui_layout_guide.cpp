@@ -54,7 +54,7 @@ struct ui::layout_guide::impl : base::impl {
                     return (count == 0);
                 }
             }))
-            .convert<std::pair<opt_t<float>, bool>>(
+            .to<std::pair<opt_t<float>, bool>>(
                 [cache = opt_t<float>(), old_cache, is_wait = false, weak_guide](auto const &pair) mutable {
                     bool is_continue = false;
 
@@ -94,7 +94,7 @@ struct ui::layout_guide::impl : base::impl {
                 *old_cache = nullopt;
                 return old_value != *pair.first;
             })
-            .convert<float>([](auto const &pair) { return *pair.first; });
+            .to<float>([](auto const &pair) { return *pair.first; });
     }
 
    private:
@@ -188,7 +188,7 @@ struct ui::layout_guide_point::impl : base::impl {
 
         return this->_x_guide.begin_flow()
             .pair(this->_y_guide.begin_flow())
-            .convert<ui::point>([cache](auto const &pair) mutable {
+            .to<ui::point>([cache](auto const &pair) mutable {
                 if (pair.first) {
                     cache.x = *pair.first;
                 }
@@ -272,22 +272,20 @@ struct ui::layout_guide_range::impl : base::impl {
     void prepare(ui::layout_guide_range &range) {
         auto weak_range = to_weak(range);
 
-        this->_min_observer =
-            this->_min_guide.begin_flow()
-                .guard([weak_range](float const &) { return !!weak_range; })
-                .convert([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
-                .end(this->_length_guide.receiver());
+        this->_min_observer = this->_min_guide.begin_flow()
+                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .to([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
+                                  .end(this->_length_guide.receiver());
 
-        this->_max_observer =
-            this->_max_guide.begin_flow()
-                .guard([weak_range](float const &) { return !!weak_range; })
-                .convert([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
-                .end(this->_length_guide.receiver());
+        this->_max_observer = this->_max_guide.begin_flow()
+                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .to([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
+                                  .end(this->_length_guide.receiver());
 
         this->_length_observer =
             this->_length_guide.begin_flow()
                 .guard([weak_range](float const &) { return !!weak_range; })
-                .convert([weak_range](float const &length) { return weak_range.lock().min().value() + length; })
+                .to([weak_range](float const &length) { return weak_range.lock().min().value() + length; })
                 .end(this->_max_guide.receiver());
 
         this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range) {
@@ -329,7 +327,7 @@ struct ui::layout_guide_range::impl : base::impl {
     flow_t begin_flow() {
         ui::range const range = this->range();
 
-        return this->_min_guide.begin_flow().pair(this->_max_guide.begin_flow()).convert<ui::range>([
+        return this->_min_guide.begin_flow().pair(this->_max_guide.begin_flow()).to<ui::range>([
             min_cache = range.min(), max_cache = range.max()
         ](auto const &pair) mutable {
             if (pair.first) {
@@ -469,7 +467,7 @@ struct ui::layout_guide_rect::impl : base::impl {
     flow_t begin_flow() {
         ui::region const region = this->region();
 
-        return this->_vertical_range.begin_flow().pair(this->_horizontal_range.begin_flow()).convert<ui::region>([
+        return this->_vertical_range.begin_flow().pair(this->_horizontal_range.begin_flow()).to<ui::region>([
             v_cache = region.vertical_range(), h_cache = region.horizontal_range()
         ](auto const &pair) mutable {
             if (pair.first) {
