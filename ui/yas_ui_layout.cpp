@@ -15,13 +15,9 @@ flow::observer<float> ui::make_flow(fixed_layout::args args) {
         throw "argument is null.";
     }
 
-    auto flow = args.source_guide.begin_flow()
-                    .to([distance = args.distance](float const &value) { return value + distance; })
-                    .end(args.destination_guide.receiver());
-
-    flow.sync();
-
-    return flow;
+    return args.source_guide.begin_flow()
+        .to([distance = args.distance](float const &value) { return value + distance; })
+        .sync(args.destination_guide.receiver());
 }
 
 flow::observer<float> ui::make_flow(fixed_layout_point::args args) {
@@ -29,15 +25,11 @@ flow::observer<float> ui::make_flow(fixed_layout_point::args args) {
         throw "argument is null.";
     }
 
-    auto flow = args.source_guide_point.begin_flow()
-                    .to([distance = args.distances](ui::point const &value) {
-                        return ui::point{value.x + distance.x, value.y + distance.y};
-                    })
-                    .end(args.destination_guide_point.receiver());
-
-    flow.sync();
-
-    return flow;
+    return args.source_guide_point.begin_flow()
+        .to([distance = args.distances](ui::point const &value) {
+            return ui::point{value.x + distance.x, value.y + distance.y};
+        })
+        .sync(args.destination_guide_point.receiver());
 }
 
 flow::observer<float> ui::make_flow(fixed_layout_rect::args args) {
@@ -45,19 +37,15 @@ flow::observer<float> ui::make_flow(fixed_layout_rect::args args) {
         throw "argument is null.";
     }
 
-    auto flow = args.source_guide_rect.begin_flow()
-                    .to([distances = std::move(args.distances)](ui::region const &value) {
-                        float const left = value.left() + distances.left;
-                        float const right = value.right() + distances.right;
-                        float const bottom = value.bottom() + distances.bottom;
-                        float const top = value.top() + distances.top;
-                        return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
-                    })
-                    .end(args.destination_guide_rect.receiver());
-
-    flow.sync();
-
-    return flow;
+    return args.source_guide_rect.begin_flow()
+        .to([distances = std::move(args.distances)](ui::region const &value) {
+            float const left = value.left() + distances.left;
+            float const right = value.right() + distances.right;
+            float const bottom = value.bottom() + distances.bottom;
+            float const top = value.top() + distances.top;
+            return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+        })
+        .sync(args.destination_guide_rect.receiver());
 }
 
 #pragma mark - jusitified_layout
@@ -111,32 +99,27 @@ flow::observer<float> ui::make_flow(justified_layout::args args) {
         dst_outputs.emplace_back(dst_guide.receiver().flowable().make_output());
     }
 
-    auto flow =
-        args.first_source_guide.begin_flow()
-            .combine(args.second_source_guide.begin_flow())
-            .to<std::pair<float, float>>([](auto const &pair) { return std::make_pair(*pair.first, *pair.second); })
-            .perform([dst_outputs, normalized_rates](auto const &pair) mutable {
-                auto const dst_count = dst_outputs.size();
-                auto const first_value = pair.first;
-                auto const distance = pair.second - first_value;
+    return args.first_source_guide.begin_flow()
+        .combine(args.second_source_guide.begin_flow())
+        .to<std::pair<float, float>>([](auto const &pair) { return std::make_pair(*pair.first, *pair.second); })
+        .perform([dst_outputs, normalized_rates](auto const &pair) mutable {
+            auto const dst_count = dst_outputs.size();
+            auto const first_value = pair.first;
+            auto const distance = pair.second - first_value;
 
-                if (dst_count == 1) {
-                    dst_outputs.at(0).output_value(first_value + distance * 0.5f);
-                } else {
-                    auto each = make_fast_each(dst_count);
-                    while (yas_each_next(each)) {
-                        auto const &idx = yas_each_index(each);
-                        auto &output = dst_outputs.at(idx);
-                        auto const &rate = normalized_rates.at(idx);
-                        output.output_value(first_value + distance * rate);
-                    }
+            if (dst_count == 1) {
+                dst_outputs.at(0).output_value(first_value + distance * 0.5f);
+            } else {
+                auto each = make_fast_each(dst_count);
+                while (yas_each_next(each)) {
+                    auto const &idx = yas_each_index(each);
+                    auto &output = dst_outputs.at(idx);
+                    auto const &rate = normalized_rates.at(idx);
+                    output.output_value(first_value + distance * rate);
                 }
-            })
-            .end();
-
-    flow.sync();
-
-    return flow;
+            }
+        })
+        .sync();
 }
 
 #pragma mark - other layouts
@@ -166,11 +149,7 @@ flow::observer<float> ui::make_flow(min_layout::args args) {
         }
     }
 
-    auto observer = flow.end(args.destination_guide.receiver());
-
-    observer.sync();
-
-    return observer;
+    return flow.sync(args.destination_guide.receiver());
 }
 
 flow::observer<float> ui::make_flow(max_layout::args args) {
@@ -198,9 +177,5 @@ flow::observer<float> ui::make_flow(max_layout::args args) {
         }
     }
 
-    auto observer = flow.end(args.destination_guide.receiver());
-
-    observer.sync();
-
-    return observer;
+    return flow.sync(args.destination_guide.receiver());
 }
