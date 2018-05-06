@@ -34,83 +34,84 @@ using namespace yas;
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
     impl() {
-        this->_update_observers.reserve(9);
         this->_dispatch_observers.reserve(9);
     }
 
     void prepare(ui::node &node) {
         auto weak_node = to_weak(node);
 
-        this->_update_observers.emplace_back(this->_enabled_property.subject().make_observer(
-            property_method::did_change, [weak_node](auto const &context) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::enabled);
-                }
-            }));
+        // enabled
 
-        this->_update_observers.emplace_back(
-            this->_position_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                }
-            }));
+        auto enabled_flow = this->_enabled_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::enabled; });
 
-        this->_update_observers.emplace_back(
-            this->_angle_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                }
-            }));
+        // geometry
 
-        this->_update_observers.emplace_back(
-            this->_scale_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::geometry);
-                }
-            }));
+        auto pos_flow = this->_position_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::geometry; });
+        auto angle_flow = this->_angle_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::geometry; });
+        auto scale_flow = this->_scale_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::geometry; });
 
-        this->_update_observers.emplace_back(
-            this->_mesh_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::mesh);
-                    node.impl_ptr<impl>()->_update_mesh_color();
-                }
-            }));
+        // mesh and mesh_color
 
-        this->_update_observers.emplace_back(
-            this->_color_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_update_mesh_color();
-                }
-            }));
+        auto mesh_flow =
+            this->_mesh_property.begin_value_flow()
+                .guard([weak_node](auto const &) { return !!weak_node; })
+                .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
+                .to<ui::node_update_reason>([](auto const &) { return ui::node_update_reason::mesh; })
+                .normalize();
 
-        this->_update_observers.emplace_back(
-            this->_alpha_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_update_mesh_color();
-                }
-            }));
+        auto color_flow =
+            this->_color_property.begin_value_flow().to<std::nullptr_t>([](auto const &) { return nullptr; });
+        auto alpha_flow =
+            this->_alpha_property.begin_value_flow().to<std::nullptr_t>([](auto const &) { return nullptr; });
 
-        this->_update_observers.emplace_back(
-            this->_collider_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::collider);
-                }
-            }));
+        auto mesh_color_flow =
+            color_flow.merge(alpha_flow)
+                .guard([weak_node](auto const &) { return !!weak_node; })
+                .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
+                .end();
 
-        this->_update_observers.emplace_back(
-            this->_batch_property.subject().make_observer(property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::batch);
-                }
-            }));
+        // collider
 
-        this->_update_observers.emplace_back(this->_render_target_property.subject().make_observer(
-            property_method::did_change, [weak_node](auto const &) {
-                if (auto node = weak_node.lock()) {
-                    node.impl_ptr<impl>()->_set_updated(ui::node_update_reason::render_target);
-                }
-            }));
+        auto collider_flow = this->_collider_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::collider; });
+
+        // batch
+
+        auto batch_flow = this->_batch_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::batch; });
+
+        // render_target
+
+        auto render_target_flow = this->_render_target_property.begin_value_flow().to<ui::node_update_reason>(
+            [](auto const &) { return ui::node_update_reason::render_target; });
+
+        auto updates_flow = enabled_flow.merge(pos_flow)
+                                .merge(angle_flow)
+                                .merge(scale_flow)
+                                .merge(mesh_flow)
+                                .merge(collider_flow)
+                                .merge(batch_flow)
+                                .merge(render_target_flow)
+                                .perform([weak_node](ui::node_update_reason const &reason) {
+                                    weak_node.lock().impl_ptr<impl>()->_set_updated(reason);
+                                })
+                                .end();
+
+        this->_update_flows.reserve(2);
+        this->_update_flows.emplace_back(std::move(mesh_color_flow));
+        this->_update_flows.emplace_back(std::move(updates_flow));
+
+        // dispatch
+
+        this->_dispatch_receiver = flow::receiver<ui::node::method>([weak_node](ui::node::method const &method) {
+            if (auto node = weak_node.lock()) {
+                node.impl_ptr<impl>()->_dispatch_sender.send_value(std::make_pair(method, node));
+            }
+        });
     }
 
     std::vector<ui::node> &children() {
@@ -447,6 +448,81 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
+    flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(std::vector<ui::node::method> const &methods) {
+        for (auto const &method : methods) {
+            if (this->_dispatch_flows.count(method) == 0) {
+                base flow = nullptr;
+
+                auto make_flow = [receiver = this->_dispatch_receiver, weak_node = to_weak(cast<ui::node>())](
+                    ui::node::method const &method, auto &property) mutable {
+                    return property.begin_value_flow()
+                        .template to<ui::node::method>([method](auto const &) { return method; })
+                        .end(receiver);
+                };
+
+                switch (method) {
+                    case ui::node::method::position_changed:
+                        flow = make_flow(method, this->_position_property);
+                        break;
+                    case ui::node::method::angle_changed:
+                        flow = make_flow(method, this->_angle_property);
+                        break;
+                    case ui::node::method::scale_changed:
+                        flow = this->_scale_property.begin_value_flow()
+                                   .to<ui::node::method>([](auto const &) { return ui::node::method::scale_changed; })
+                                   .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::color_changed:
+                        flow = this->_color_property.begin_value_flow()
+                                   .to<ui::node::method>([](auto const &) { return ui::node::method::color_changed; })
+                                   .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::alpha_changed:
+                        flow = this->_alpha_property.begin_value_flow()
+                                   .to<ui::node::method>([](auto const &) { return ui::node::method::alpha_changed; })
+                                   .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::enabled_changed:
+                        flow = this->_enabled_property.begin_value_flow()
+                                   .to<ui::node::method>([](auto const &) { return ui::node::method::enabled_changed; })
+                                   .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::mesh_changed:
+                        flow = this->_mesh_property.begin_value_flow()
+                                   .to<ui::node::method>([](auto const &) { return ui::node::method::mesh_changed; })
+                                   .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::collider_changed:
+                        flow =
+                            this->_collider_property.begin_value_flow()
+                                .to<ui::node::method>([](auto const &) { return ui::node::method::collider_changed; })
+                                .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::parent_changed:
+                        flow = this->_parent_property.begin_value_flow()
+                                   .to<ui::node::method>([](auto const &) { return ui::node::method::parent_changed; })
+                                   .end(this->_dispatch_receiver);
+                        break;
+                    case ui::node::method::renderer_changed:
+                        flow =
+                            this->_renderer_property.begin_value_flow()
+                                .to<ui::node::method>([](auto const &) { return ui::node::method::renderer_changed; })
+                                .end(this->_dispatch_receiver);
+                        break;
+
+                    default:
+                        throw std::invalid_argument("invalid method");
+                        break;
+                }
+
+                this->_dispatch_flows.emplace(method, std::move(flow));
+            }
+        }
+
+        return this->_dispatch_sender.begin().guard(
+            [methods](flow_pair_t const &pair) { return contains(methods, pair.first); });
+    }
+
     simd::float4x4 &local_matrix() {
         this->_update_local_matrix();
         return this->_local_matrix;
@@ -488,8 +564,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<base> _update_observers;
+    std::vector<base> _update_flows;
     std::unordered_map<ui::node::method, base> _dispatch_observers;
+    std::unordered_map<ui::node::method, base> _dispatch_flows;
+    flow::sender<flow_pair_t> _dispatch_sender;
+    flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
 
     node_updates_t _updates;
 
@@ -751,6 +830,16 @@ ui::node::observer_t ui::node::dispatch_and_make_wild_card_observer(std::vector<
     return this->subject().make_wild_card_observer(handler);
 }
 
+flow::node<ui::node::flow_pair_t, ui::node::flow_pair_t, ui::node::flow_pair_t> ui::node::begin_flow(
+    ui::node::method const &method) {
+    return impl_ptr<impl>()->begin_flow({method});
+}
+
+flow::node<ui::node::flow_pair_t, ui::node::flow_pair_t, ui::node::flow_pair_t> ui::node::begin_flow(
+    std::vector<ui::node::method> const &methods) {
+    return impl_ptr<impl>()->begin_flow(methods);
+}
+
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }
@@ -765,8 +854,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
                            .to<ui::point>([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().y};
                            })
-                           .end(position.receiver());
-    imp->_x_observer.sync();
+                           .sync(position.receiver());
 
     imp->_position_observer = nullptr;
 }
@@ -781,8 +869,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
                            .to<ui::point>([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().x, y};
                            })
-                           .end(position.receiver());
-    imp->_y_observer.sync();
+                           .sync(position.receiver());
 
     imp->_position_observer = nullptr;
 }
@@ -792,8 +879,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
     auto &position = imp->_position_property;
     auto weak_node = to_weak(*this);
 
-    imp->_position_observer = guide_point.begin_flow().end(position.receiver());
-    imp->_position_observer.sync();
+    imp->_position_observer = guide_point.begin_flow().sync(position.receiver());
 
     imp->_x_observer = nullptr;
     imp->_y_observer = nullptr;

@@ -474,6 +474,50 @@ struct test_render_encoder : base {
     called_method = nullptr;
 }
 
+- (void)test_begin_flow_with_method {
+    {
+        opt_t<ui::node::method> called;
+
+        ui::node node;
+
+        auto flow = node.begin_flow(ui::node::method::position_changed)
+                        .perform([&called](auto const &pair) { called = pair.first; })
+                        .end();
+
+        node.set_position({1.0f, 2.0f});
+
+        XCTAssertEqual(*called, ui::node::method::position_changed);
+    }
+}
+
+- (void)test_begin_flow_with_methods {
+    opt_t<ui::node::method> called;
+
+    ui::node node;
+
+    auto flow = node.begin_flow({ui::node::method::position_changed, ui::node::method::angle_changed})
+                    .perform([&called](auto const &pair) { called = pair.first; })
+                    .end();
+
+    node.set_position({1.0f, 2.0f});
+
+    XCTAssertTrue(called);
+    XCTAssertEqual(*called, ui::node::method::position_changed);
+
+    called = nullopt;
+
+    node.set_angle({90.0f});
+
+    XCTAssertTrue(called);
+    XCTAssertEqual(*called, ui::node::method::angle_changed);
+
+    called = nullopt;
+
+    node.set_alpha(0.5f);
+
+    XCTAssertFalse(called);
+}
+
 - (void)test_fetch_updates {
     ui::node node;
 
