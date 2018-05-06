@@ -403,12 +403,6 @@ using namespace yas;
     XCTAssertEqual(range.min().value(), -1.0f);
     XCTAssertEqual(range.max().value(), 1.0f);
     XCTAssertEqual(range.length().value(), 2.0f);
-
-    range.length().set_value(3.0f);
-
-    XCTAssertEqual(range.min().value(), -1.0f);
-    XCTAssertEqual(range.max().value(), 2.0f);
-    XCTAssertEqual(range.length().value(), 3.0f);
 }
 
 #pragma mark - ui::layout_guide_rect
@@ -690,12 +684,6 @@ using namespace yas;
     XCTAssertEqual(rect.right().value(), 1.0f);
     XCTAssertEqual(rect.width().value(), 2.0f);
 
-    rect.width().set_value(3.0f);
-
-    XCTAssertEqual(rect.left().value(), -1.0f);
-    XCTAssertEqual(rect.right().value(), 2.0f);
-    XCTAssertEqual(rect.width().value(), 3.0f);
-
     // vertical
 
     rect.top().set_value(1.0f);
@@ -709,12 +697,6 @@ using namespace yas;
     XCTAssertEqual(rect.bottom().value(), -1.0f);
     XCTAssertEqual(rect.top().value(), 1.0f);
     XCTAssertEqual(rect.height().value(), 2.0f);
-
-    rect.height().set_value(3.0f);
-
-    XCTAssertEqual(rect.bottom().value(), -1.0f);
-    XCTAssertEqual(rect.top().value(), 2.0f);
-    XCTAssertEqual(rect.height().value(), 3.0f);
 }
 
 @end
