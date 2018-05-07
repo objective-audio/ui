@@ -122,6 +122,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set_phase(phase);
             manageable_event.set<cursor>(std::move(value));
 
+            this->_sender.send_value({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
             this->_subject.notify(event_manager::method::cursor_changed, this->_cursor_event);
 
             if (phase == event_phase::ended) {
@@ -147,6 +148,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set_phase(phase);
             manageable_event.set<touch>(std::move(value));
 
+            this->_sender.send_value({.method = event_manager::method::touch_changed, .event = event});
             this->_subject.notify(event_manager::method::touch_changed, event);
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
@@ -171,6 +173,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             event.manageable().set_phase(phase);
             event.manageable().set<key>(value);
 
+            this->_sender.send_value({.method = event_manager::method::key_changed, .event = event});
             this->_subject.notify(event_manager::method::key_changed, event);
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
@@ -192,6 +195,8 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                     event.manageable().set_phase(ui::event_phase::began);
                     this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
+                    this->_sender.send_value(
+                        {.method = event_manager::method::modifier_changed, .event = this->_modifier_events.at(flag)});
                     this->_subject.notify(event_manager::method::modifier_changed, this->_modifier_events.at(flag));
                 }
             } else {
@@ -199,6 +204,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                     auto &event = this->_modifier_events.at(flag);
                     event.manageable().set_phase(ui::event_phase::ended);
 
+                    this->_sender.send_value({.method = event_manager::method::modifier_changed, .event = event});
                     this->_subject.notify(event_manager::method::modifier_changed, event);
 
                     this->_modifier_events.erase(flag);
@@ -207,11 +213,24 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
         }
     }
 
+    flow::node<event, context, context> begin_flow(method const &method) {
+        return this->_sender.begin()
+            .guard([method](auto const &context) { return context.method == method; })
+            .to<event>([](auto const &context) { return context.event; });
+    }
+
+    flow::node<context, context, context> begin_flow() {
+        return this->_sender.begin();
+    }
+
     event _cursor_event{nullptr};
     std::unordered_map<uintptr_t, event> _touch_events;
     std::unordered_map<uint16_t, event> _key_events;
     std::unordered_map<uint32_t, event> _modifier_events;
     yas::subject<ui::event_manager::method, ui::event> _subject;
+
+    flow::receiver<context> _receiver = nullptr;
+    flow::sender<context> _sender;
 };
 
 #pragma mark - manageable_event
@@ -252,6 +271,16 @@ ui::event_manager::~event_manager() = default;
 
 subject<ui::event_manager::method, ui::event> &ui::event_manager::subject() {
     return impl_ptr<impl>()->_subject;
+}
+
+flow::node<ui::event, ui::event_manager::context, ui::event_manager::context> ui::event_manager::begin_flow(
+    method const &method) const {
+    return impl_ptr<impl>()->begin_flow(method);
+}
+
+flow::node<ui::event_manager::context, ui::event_manager::context, ui::event_manager::context>
+ui::event_manager::begin_flow() const {
+    return impl_ptr<impl>()->begin_flow();
 }
 
 ui::event_inputtable &ui::event_manager::inputtable() {
