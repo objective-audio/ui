@@ -660,4 +660,281 @@ using namespace yas;
     ended_called = false;
 }
 
+- (void)test_flow_input_cursor_events {
+    ui::event_manager manager;
+
+    bool began_called = false;
+    bool ended_called = false;
+
+    auto flow = manager.begin_flow(ui::event_manager::method::cursor_changed)
+                    .perform([&began_called, &ended_called, self](ui::event const &event) {
+                        if (event.phase() == ui::event_phase::began) {
+                            began_called = true;
+                        } else if (event.phase() == ui::event_phase::ended) {
+                            ended_called = true;
+                        }
+                    })
+                    .end();
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+
+    XCTAssertTrue(began_called);
+    began_called = false;
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+
+    XCTAssertFalse(began_called);
+    XCTAssertTrue(ended_called);
+    ended_called = false;
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+}
+
+- (void)test_flow_input_touch_events {
+    ui::event_manager manager;
+
+    bool began_called = false;
+    bool ended_called = false;
+
+    auto flow = manager.begin_flow(ui::event_manager::method::touch_changed)
+                    .perform([&began_called, &ended_called, self](ui::event const &event) {
+                        if (event.get<ui::touch>().identifier() == 1) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        }
+                    })
+                    .end();
+
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {.v = 0.0f}, 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertTrue(began_called);
+    began_called = false;
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertTrue(ended_called);
+    ended_called = false;
+
+    manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+}
+
+- (void)test_flow_input_key_events {
+    ui::event_manager manager;
+
+    bool began_called = false;
+    bool ended_called = false;
+
+    auto flow = manager.begin_flow(ui::event_manager::method::key_changed)
+                    .perform([&began_called, &ended_called, self](ui::event const &event) {
+                        if (event.get<ui::key>().key_code() == 1) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        }
+                    })
+                    .end();
+
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{2, "", "", 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertTrue(began_called);
+    began_called = false;
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertTrue(ended_called);
+    ended_called = false;
+
+    manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+}
+
+- (void)test_flow_input_modifier_events {
+    ui::event_manager manager;
+
+    bool began_called = false;
+    bool ended_called = false;
+
+    auto flow = manager.begin_flow(ui::event_manager::method::modifier_changed)
+                    .perform([&began_called, &ended_called, self](ui::event const &event) {
+                        if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        }
+                    })
+                    .end();
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags::command, 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
+
+    XCTAssertTrue(began_called);
+    began_called = false;
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertTrue(ended_called);
+    ended_called = false;
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(
+        ui::modifier_flags(ui::modifier_flags::alpha_shift | ui::modifier_flags::command), 0.0);
+
+    XCTAssertTrue(began_called);
+    began_called = false;
+    XCTAssertFalse(ended_called);
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags::command, 0.0);
+
+    XCTAssertFalse(began_called);
+    XCTAssertTrue(ended_called);
+    ended_called = false;
+}
+
+- (void)test_flow {
+    ui::event_manager manager;
+    std::vector<ui::event_manager::method> called_methods;
+    std::vector<ui::event> called_events;
+
+    auto clear = [&called_methods, &called_events]() {
+        called_methods.clear();
+        called_events.clear();
+    };
+
+    auto flow = manager.begin_flow()
+                    .perform([&called_methods, &called_events](auto const &context) {
+                        called_methods.push_back(context.method);
+                        called_events.push_back(context.event);
+                    })
+                    .end();
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::cursor_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::cursor));
+
+    clear();
+
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::touch_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::touch));
+
+    clear();
+
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::key_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::key));
+
+    clear();
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::modifier_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::modifier));
+}
+
 @end

@@ -6,6 +6,7 @@
 
 #include "yas_base.h"
 #include "yas_ui_event_protocol.h"
+#include "yas_flow.h"
 
 namespace yas {
 template <typename K, typename T>
@@ -61,12 +62,19 @@ class event_manager : public base {
 
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
 
+    struct context {
+        method const &method;
+        event const &event;
+    };
+
     event_manager();
     event_manager(std::nullptr_t);
 
     virtual ~event_manager() final;
 
     subject<method, event> &subject();
+    flow::node<event, context, context> begin_flow(method const &) const;
+    flow::node<context, context, context> begin_flow() const;
 
     ui::event_inputtable &inputtable();
 
