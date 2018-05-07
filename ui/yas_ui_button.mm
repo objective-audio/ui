@@ -33,25 +33,24 @@ struct ui::button::impl : base::impl {
         auto &node = this->_rect_plane.node();
 
         this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            event_observer = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
-            weak_button
+            event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr}, weak_button
         ](auto const &context) mutable {
             ui::node const &node = context.value;
 
             if (auto renderer = node.renderer()) {
-                event_observer = renderer.event_manager().subject().make_observer(
-                    ui::event_manager::method::touch_changed, [weak_button](auto const &context) {
-                        if (auto button = weak_button.lock()) {
-                            button.impl_ptr<impl>()->_update_tracking(context.value);
-                        }
-                    });
-
+                event_flow = renderer.event_manager()
+                                 .begin_flow(ui::event_manager::method::touch_changed)
+                                 .guard([weak_button](ui::event const &) { return !!weak_button; })
+                                 .perform([weak_button](ui::event const &event) {
+                                     weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
+                                 })
+                                 .end();
                 if (auto button = weak_button.lock()) {
                     leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
                     collider_observer = button.impl_ptr<impl>()->_make_collider_observer();
                 }
             } else {
-                event_observer = nullptr;
+                event_flow = nullptr;
                 leave_observer = nullptr;
                 collider_observer = nullptr;
             }
