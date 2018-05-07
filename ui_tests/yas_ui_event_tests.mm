@@ -885,4 +885,56 @@ using namespace yas;
     ended_called = false;
 }
 
+- (void)test_flow {
+    ui::event_manager manager;
+    std::vector<ui::event_manager::method> called_methods;
+    std::vector<ui::event> called_events;
+
+    auto clear = [&called_methods, &called_events]() {
+        called_methods.clear();
+        called_events.clear();
+    };
+
+    auto flow = manager.begin_flow()
+                    .perform([&called_methods, &called_events](auto const &context) {
+                        called_methods.push_back(context.method);
+                        called_events.push_back(context.event);
+                    })
+                    .end();
+
+    manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::cursor_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::cursor));
+
+    clear();
+
+    manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {.v = 0.0f}, 0.0});
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::touch_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::touch));
+
+    clear();
+
+    manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::key_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::key));
+
+    clear();
+
+    manager.inputtable().input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
+
+    XCTAssertEqual(called_methods.size(), 1);
+    XCTAssertEqual(called_events.size(), 1);
+    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::modifier_changed);
+    XCTAssertTrue(called_events.at(0).type_info() == typeid(ui::modifier));
+}
+
 @end
