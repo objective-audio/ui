@@ -54,6 +54,17 @@ struct ui::font_atlas::impl : base::impl {
         this->_leading = CTFontGetLeading(ct_font_obj);
     }
 
+    void prepare(ui::font_atlas &atlas) {
+        auto weak_atlas = to_weak(atlas);
+
+        this->_word_tex_coords_receiver =
+            flow::receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
+                if (auto atlas = weak_atlas.lock()) {
+                    atlas.impl_ptr<impl>()->_word_infos.at(pair.second).rect.set_tex_coord(pair.first);
+                }
+            });
+    }
+
     ui::texture &texture() {
         return this->_texture;
     }
@@ -118,10 +129,11 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
     ui::texture::observer_t _texture_observer = nullptr;
-    std::vector<ui::texture_element::observer_t> _element_observers;
+    flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
+    std::vector<flow::observer<ui::uint_region>> _element_flows;
 
     void _update_texture() {
-        this->_element_observers.clear();
+        this->_element_flows.clear();
 
         if (!this->_texture) {
             this->_word_infos.clear();
@@ -172,15 +184,11 @@ struct ui::font_atlas::impl : base::impl {
                     CGContextRestoreGState(ctx);
                 });
 
-            this->_word_infos.at(idx).rect.set_tex_coord(texture_element.tex_coords());
-
-            this->_element_observers.emplace_back(texture_element.subject().make_observer(
-                ui::texture_element::method::tex_coords_changed, [weak_atlas, idx](auto const &context) {
-                    if (auto atlas = weak_atlas.lock()) {
-                        ui::texture_element const &element = context.value;
-                        atlas.impl_ptr<impl>()->_word_infos.at(idx).rect.set_tex_coord(element.tex_coords());
-                    }
-                }));
+            this->_element_flows.emplace_back(
+                texture_element.begin_tex_coords_flow()
+                    .to<std::pair<ui::uint_region, std::size_t>>(
+                        [idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
+                    .sync(this->_word_tex_coords_receiver));
 
             auto const &advance = advances[idx];
             this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
@@ -190,6 +198,7 @@ struct ui::font_atlas::impl : base::impl {
 
 ui::font_atlas::font_atlas(args args)
     : base(std::make_shared<impl>(std::move(args.font_name), args.font_size, std::move(args.words))) {
+    impl_ptr<impl>()->prepare(*this);
     set_texture(std::move(args.texture));
 }
 

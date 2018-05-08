@@ -40,7 +40,7 @@ struct sample::touch_holder::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
-        this->_rect_plane_data.clear_observers();
+        this->_rect_plane_data.clear_flows();
 
         this->_set_texture(std::move(texture));
 
