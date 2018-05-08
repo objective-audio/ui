@@ -46,7 +46,7 @@ class rect_plane_data : public base {
 
     void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
     void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx, tex_coords_transform_f);
-    void clear_observers();
+    void clear_flows();
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
 

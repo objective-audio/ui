@@ -486,7 +486,7 @@ using namespace yas;
     XCTAssertEqual(vertices[3].tex_coord.x, 40.0f);
     XCTAssertEqual(vertices[3].tex_coord.y, 20.0f);
 
-    plane_data.clear_observers();
+    plane_data.clear_flows();
 
     element.set_tex_coords(ui::uint_region{.origin = {100, 200}, .size = {300, 400}});
 

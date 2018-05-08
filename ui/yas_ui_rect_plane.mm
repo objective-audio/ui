@@ -206,8 +206,8 @@ void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, 
     impl_ptr<impl>()->observe_rect_tex_coords(*this, element, rect_idx, std::move(transformer));
 }
 
-void ui::rect_plane_data::clear_observers() {
-    impl_ptr<impl>()->_element_observers.clear();
+void ui::rect_plane_data::clear_flows() {
+    impl_ptr<impl>()->_element_flows.clear();
 }
 
 ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
