@@ -49,6 +49,8 @@ class rect_plane_data : public base {
     void clear_observers();
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
+
+    flow::receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
 };
 
 class rect_plane : public base {
