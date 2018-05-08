@@ -57,12 +57,6 @@ struct ui::font_atlas::impl : base::impl {
     void prepare(ui::font_atlas &atlas) {
         auto weak_atlas = to_weak(atlas);
 
-        this->_notify_receiver = flow::receiver<method>([weak_atlas](method const &method) {
-            if (auto atlas = weak_atlas.lock()) {
-                atlas.subject().notify(method, atlas);
-            }
-        });
-
         this->_word_tex_coords_receiver =
             flow::receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
                 if (auto atlas = weak_atlas.lock()) {
@@ -135,7 +129,6 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<ui::word_info> _word_infos;
     ui::texture _texture = nullptr;
     ui::texture::observer_t _texture_observer = nullptr;
-    flow::receiver<ui::font_atlas::method> _notify_receiver = nullptr;
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<flow::observer<ui::uint_region>> _element_flows;
 
