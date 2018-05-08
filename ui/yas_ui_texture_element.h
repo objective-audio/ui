@@ -30,5 +30,6 @@ class texture_element : public base {
     ui::uint_region const &tex_coords() const;
 
     subject_t &subject();
+    flow::node<uint_region, uint_region, uint_region> begin_tex_coords_flow() const;
 };
 }

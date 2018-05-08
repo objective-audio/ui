@@ -73,8 +73,8 @@ class event_manager : public base {
     virtual ~event_manager() final;
 
     subject<method, event> &subject();
-    flow::node<event, context, context> begin_flow(method const &) const;
-    flow::node<context, context, context> begin_flow() const;
+    [[nodiscard]] flow::node<event, context, context> begin_flow(method const &) const;
+    [[nodiscard]] flow::node<context, context, context> begin_flow() const;
 
     ui::event_inputtable &inputtable();
 

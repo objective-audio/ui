@@ -16,39 +16,33 @@ using namespace yas;
 struct ui::rect_plane_data::impl : base::impl {
     ui::dynamic_mesh_data _dynamic_mesh_data;
     std::vector<ui::texture_element::observer_t> _element_observers;
+    std::vector<flow::observer<ui::uint_region>> _element_flows;
+    flow::receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
 
     impl(ui::dynamic_mesh_data &&data) : _dynamic_mesh_data(std::move(data)) {
     }
 
-    void observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element &element, std::size_t const rect_idx) {
-        this->_element_observers.emplace_back(
-            element.subject().make_observer(ui::texture_element::method::tex_coords_changed,
-                                            [weak_data = to_weak(data), rect_idx](auto const &context) {
-                                                if (auto data = weak_data.lock()) {
-                                                    ui::texture_element const &element = context.value;
-                                                    data.set_rect_tex_coords(element.tex_coords(), rect_idx);
-                                                }
-                                            }));
-
-        data.set_rect_tex_coords(element.tex_coords(), rect_idx);
+    void prepare(ui::rect_plane_data &data) {
+        this->_rect_tex_coords_receiver =
+            flow::receiver<std::pair<ui::uint_region, std::size_t>>([weak_data = to_weak(data)](auto const &pair) {
+                if (auto data = weak_data.lock()) {
+                    data.set_rect_tex_coords(pair.first, pair.second);
+                }
+            });
     }
 
     void observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element &element, std::size_t const rect_idx,
                                  tex_coords_transform_f &&transformer) {
-        if (!transformer) {
-            throw std::invalid_argument("tex_coords transformer is null.");
+        auto flow = element.begin_tex_coords_flow();
+
+        if (transformer) {
+            flow = flow.to(std::move(transformer));
         }
 
-        this->_element_observers.emplace_back(element.subject().make_observer(
-            ui::texture_element::method::tex_coords_changed,
-            [weak_data = to_weak(data), transformer = std::move(transformer), rect_idx](auto const &context) {
-                if (auto data = weak_data.lock()) {
-                    ui::texture_element const &element = context.value;
-                    data.set_rect_tex_coords(transformer(element.tex_coords()), rect_idx);
-                }
-            }));
-
-        data.set_rect_tex_coords(transformer(element.tex_coords()), rect_idx);
+        this->_element_flows.emplace_back(
+            flow.to<std::pair<ui::uint_region, std::size_t>>(
+                    [rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
+                .sync(this->_rect_tex_coords_receiver));
     }
 };
 
@@ -56,6 +50,7 @@ struct ui::rect_plane_data::impl : base::impl {
 
 ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data mesh_data)
     : base(std::make_shared<impl>(std::move(mesh_data))) {
+    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::rect_plane_data::rect_plane_data(std::size_t const rect_count) : rect_plane_data(rect_count, rect_count) {
@@ -203,7 +198,7 @@ void ui::rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::s
 }
 
 void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, std::size_t const rect_idx) {
-    impl_ptr<impl>()->observe_rect_tex_coords(*this, element, rect_idx);
+    impl_ptr<impl>()->observe_rect_tex_coords(*this, element, rect_idx, nullptr);
 }
 
 void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, std::size_t const rect_idx,
@@ -211,12 +206,16 @@ void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, 
     impl_ptr<impl>()->observe_rect_tex_coords(*this, element, rect_idx, std::move(transformer));
 }
 
-void ui::rect_plane_data::clear_observers() {
-    impl_ptr<impl>()->_element_observers.clear();
+void ui::rect_plane_data::clear_flows() {
+    impl_ptr<impl>()->_element_flows.clear();
 }
 
 ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return impl_ptr<impl>()->_dynamic_mesh_data;
+}
+
+flow::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
+    return impl_ptr<impl>()->_rect_tex_coords_receiver;
 }
 
 #pragma mark - ui::rect_plane::impl
