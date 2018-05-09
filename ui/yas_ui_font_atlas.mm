@@ -70,6 +70,30 @@ struct ui::font_atlas::impl : base::impl {
                 atlas.subject().notify(method, atlas);
             }
         });
+
+        this->_texture_changed_flow =
+            this->_texture_property.begin_value_flow()
+                .guard([weak_atlas](ui::texture const &) { return !!weak_atlas; })
+                .perform([weak_atlas](ui::texture const &texture) {
+                    auto atlas = weak_atlas.lock();
+                    auto atlas_impl = atlas.impl_ptr<impl>();
+
+                    atlas_impl->_update_texture();
+
+                    if (atlas.texture()) {
+                        atlas_impl->_texture_flow =
+                            atlas_impl->texture()
+                                .begin_flow(texture::method::metal_texture_changed)
+                                .to<method>([](auto const &) { return method::texture_updated; })
+                                .end(atlas_impl->_notify_receiver);
+                    } else {
+                        atlas_impl->_texture_flow = nullptr;
+                    }
+
+                    atlas_impl->_notify_receiver.flowable().receive_value(method::texture_changed);
+                })
+                .to<method>([](auto const &) { return method::texture_changed; })
+                .end(this->_notify_receiver);
     }
 
     ui::texture &texture() {
@@ -79,17 +103,6 @@ struct ui::font_atlas::impl : base::impl {
     void set_texture(ui::texture &&texture) {
         if (!is_same(this->texture(), texture)) {
             this->_texture_property.set_value(std::move(texture));
-
-            this->_update_texture();
-
-            if (this->texture()) {
-                this->_texture_flow = this->texture()
-                                          .begin_flow(texture::method::metal_texture_changed)
-                                          .to<method>([](auto const &) { return method::texture_updated; })
-                                          .end(this->_notify_receiver);
-            }
-
-            this->_notify_receiver.flowable().receive_value(method::texture_changed);
         }
     }
 
@@ -136,10 +149,11 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<flow::observer<ui::uint_region>> _element_flows;
     flow::receiver<method> _notify_receiver = nullptr;
     flow::observer<ui::texture::flow_pair_t> _texture_flow = nullptr;
+    flow::observer<ui::texture> _texture_changed_flow = nullptr;
 
     void _update_texture() {
         this->_element_flows.clear();
-        
+
         auto &texture = this->texture();
 
         if (!texture) {
