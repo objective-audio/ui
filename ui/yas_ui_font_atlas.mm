@@ -71,6 +71,15 @@ struct ui::font_atlas::impl : base::impl {
             }
         });
 
+        this->_texture_setter_flow = this->_texture_setter.begin()
+                                         .guard([weak_atlas](ui::texture const &texture) {
+                                             if (auto atlas = weak_atlas.lock()) {
+                                                 return !is_same(atlas.texture(), texture);
+                                             }
+                                             return false;
+                                         })
+                                         .end(this->_texture_property.receiver());
+
         this->_texture_changed_flow =
             this->_texture_property.begin_value_flow()
                 .guard([weak_atlas](ui::texture const &) { return !!weak_atlas; })
@@ -101,9 +110,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
-        if (!is_same(this->texture(), texture)) {
-            this->_texture_property.set_value(std::move(texture));
-        }
+        this->_texture_setter.send_value(texture);
     }
 
     ui::vertex2d_rect_t const &rect(std::string const &word) {
@@ -149,6 +156,8 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<flow::observer<ui::uint_region>> _element_flows;
     flow::receiver<method> _notify_receiver = nullptr;
     flow::observer<ui::texture::flow_pair_t> _texture_flow = nullptr;
+    flow::sender<ui::texture> _texture_setter;
+    flow::observer<ui::texture> _texture_setter_flow = nullptr;
     flow::observer<ui::texture> _texture_changed_flow = nullptr;
 
     void _update_texture() {
