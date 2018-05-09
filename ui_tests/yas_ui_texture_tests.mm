@@ -202,4 +202,32 @@ using namespace yas;
     }
 }
 
+- (void)test_begin_flow {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    ui::metal_system metal_system{device.object()};
+
+    ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
+
+    opt_t<ui::texture::method> received;
+
+    auto flow = texture.begin_flow().perform([&received](auto const &pair) { received = pair.first; }).end();
+
+    texture.set_point_size({16, 16});
+
+    XCTAssertTrue(received);
+    XCTAssertEqual(*received, ui::texture::method::size_updated);
+
+    received = nullopt;
+
+    texture.metal().metal_setup(metal_system);
+
+    XCTAssertTrue(received);
+    XCTAssertEqual(*received, ui::texture::method::metal_texture_changed);
+}
+
 @end
