@@ -60,8 +60,8 @@ class texture : public base {
 
     subject_t &subject();
     using flow_pair_t = std::pair<method, texture>;
-    flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow() const;
-    flow::node<texture, flow_pair_t, flow_pair_t> begin_flow(method const &) const;
+    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow() const;
+    [[nodiscard]] flow::node<texture, flow_pair_t, flow_pair_t> begin_flow(method const &) const;
 
     ui::metal_object &metal();
 
