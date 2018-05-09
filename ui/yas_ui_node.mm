@@ -63,10 +63,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 .to<ui::node_update_reason>([](auto const &) { return ui::node_update_reason::mesh; })
                 .normalize();
 
-        auto color_flow =
-            this->_color_property.begin_value_flow().to<std::nullptr_t>([](auto const &) { return nullptr; });
-        auto alpha_flow =
-            this->_alpha_property.begin_value_flow().to<std::nullptr_t>([](auto const &) { return nullptr; });
+        auto color_flow = this->_color_property.begin_value_flow().to_null();
+        auto alpha_flow = this->_alpha_property.begin_value_flow().to_null();
 
         auto mesh_color_flow =
             color_flow.merge(alpha_flow)
