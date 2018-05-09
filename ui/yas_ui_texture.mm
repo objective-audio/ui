@@ -35,6 +35,17 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl, metal_object::impl {
+    property<ui::uint_size> _point_size_property;
+    property<double> _scale_factor_property;
+    uint32_t const _depth = 1;
+    bool const _has_alpha = false;
+    ui::texture_usages_t const _usages;
+    ui::pixel_format const _pixel_format;
+
+    ui::metal_texture _metal_texture = nullptr;
+
+    subject_t _subject;
+
     impl(ui::uint_size &&point_size, double const scale_factor, uint32_t const draw_padding,
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
@@ -48,19 +59,26 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     void prepare(ui::texture &texture) {
         auto weak_texture = to_weak(texture);
 
-        this->_property_observers.emplace_back(this->_point_size_property.subject().make_observer(
-            property_method::did_change, [weak_texture](auto const &context) {
-                if (auto texture = weak_texture.lock()) {
-                    texture.impl_ptr<impl>()->_property_changed();
-                }
-            }));
+        this->_notify_receiver = flow::receiver<method>([weak_texture](method const &method) {
+            if (auto texture = weak_texture.lock()) {
+                texture.impl_ptr<impl>()->_notify_sender.send_value(std::make_pair(method, texture));
+                texture.subject().notify(method, texture);
+            }
+        });
 
-        this->_property_observers.emplace_back(this->_scale_factor_property.subject().make_observer(
-            property_method::did_change, [weak_texture](auto const &context) {
-                if (auto texture = weak_texture.lock()) {
-                    texture.impl_ptr<impl>()->_property_changed();
-                }
-            }));
+        auto point_size_flow = this->_point_size_property.begin_value_flow().to_null();
+        auto scale_factor_flow = this->_scale_factor_property.begin_value_flow().to_null();
+
+        this->_properties_flow = point_size_flow.merge(scale_factor_flow)
+                                     .guard([weak_texture](auto const &) { return !!weak_texture; })
+                                     .perform([weak_texture](auto const &) {
+                                         auto texture_impl = weak_texture.lock().impl_ptr<impl>();
+                                         texture_impl->_metal_texture = nullptr;
+                                         texture_impl->_draw_actual_pos = {texture_impl->_draw_actual_padding,
+                                                                           texture_impl->_draw_actual_padding};
+                                     })
+                                     .to<method>([](auto const &) { return method::size_updated; })
+                                     .end(this->_notify_receiver);
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
@@ -78,7 +96,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
             this->_add_images_to_metal_texture();
 
-            this->_subject.notify(method::metal_texture_changed, cast<ui::texture>());
+            this->_notify_receiver.flowable().receive_value(method::metal_texture_changed);
         }
 
         return ui::setup_metal_result{nullptr};
@@ -119,16 +137,9 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         this->_scale_factor_property.set_value(renderer.scale_factor());
     }
 
-    property<ui::uint_size> _point_size_property;
-    property<double> _scale_factor_property;
-    uint32_t const _depth = 1;
-    bool const _has_alpha = false;
-    ui::texture_usages_t const _usages;
-    ui::pixel_format const _pixel_format;
-
-    ui::metal_texture _metal_texture = nullptr;
-
-    subject_t _subject;
+    flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow() {
+        return this->_notify_sender.begin();
+    }
 
    private:
     ui::metal_system _metal_system = nullptr;
@@ -136,15 +147,10 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element> _texture_elements;
-    std::vector<base> _property_observers;
     ui::renderer::observer_t _renderer_observer = nullptr;
-
-    void _property_changed() {
-        this->_metal_texture = nullptr;
-        this->_draw_actual_pos = {_draw_actual_padding, _draw_actual_padding};
-
-        this->_subject.notify(ui::texture::method::size_updated, cast<ui::texture>());
-    }
+    flow::observer<ui::uint_size> _properties_flow = nullptr;
+    flow::sender<flow_pair_t> _notify_sender;
+    flow::receiver<method> _notify_receiver = nullptr;
 
     draw_image_result _reserve_image_size(image const &image) {
         if (!image) {
@@ -308,6 +314,11 @@ ui::metal_texture const &ui::texture::metal_texture() const {
 
 ui::texture::subject_t &ui::texture::subject() {
     return impl_ptr<impl>()->_subject;
+}
+
+flow::node<ui::texture::flow_pair_t, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::texture::begin_flow()
+    const {
+    return impl_ptr<impl>()->begin_flow();
 }
 
 ui::metal_object &ui::texture::metal() {
