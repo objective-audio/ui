@@ -66,10 +66,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             }
         });
 
-        auto point_size_flow =
-            this->_point_size_property.begin_value_flow().to<std::nullptr_t>([](auto const &) { return nullptr; });
-        auto scale_factor_flow =
-            this->_scale_factor_property.begin_value_flow().to<std::nullptr_t>([](auto const &) { return nullptr; });
+        auto point_size_flow = this->_point_size_property.begin_value_flow().to_null();
+        auto scale_factor_flow = this->_scale_factor_property.begin_value_flow().to_null();
 
         this->_properties_flow = point_size_flow.merge(scale_factor_flow)
                                      .guard([weak_texture](auto const &) { return !!weak_texture; })
