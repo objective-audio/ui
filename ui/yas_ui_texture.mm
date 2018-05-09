@@ -321,6 +321,14 @@ flow::node<ui::texture::flow_pair_t, ui::texture::flow_pair_t, ui::texture::flow
     return impl_ptr<impl>()->begin_flow();
 }
 
+flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::texture::begin_flow(
+    method const &method) const {
+    return impl_ptr<impl>()
+        ->begin_flow()
+        .guard([method](flow_pair_t const &pair) { return pair.first == method; })
+        .to<ui::texture>([](auto const &pair) { return pair.second; });
+}
+
 ui::metal_object &ui::texture::metal() {
     if (!this->_metal_object) {
         this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};

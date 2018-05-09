@@ -230,4 +230,31 @@ using namespace yas;
     XCTAssertEqual(*received, ui::texture::method::metal_texture_changed);
 }
 
+- (void)test_begin_flow_with_method {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+    
+    ui::metal_system metal_system{device.object()};
+    
+    ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
+    
+    bool called = false;
+
+    auto flow =
+        texture.begin_flow(ui::texture::method::size_updated).perform([&called](auto const &) { called = true; }).end();
+
+    texture.set_point_size({16, 16});
+
+    XCTAssertTrue(called);
+    
+    called = false;
+    
+    texture.metal().metal_setup(metal_system);
+    
+    XCTAssertFalse(called);
+}
+
 @end
