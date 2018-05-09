@@ -13,6 +13,7 @@
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"
+#include "yas_property.h"
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIKit.h>
@@ -72,17 +73,18 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     ui::texture &texture() {
-        return this->_texture;
+        return this->_texture_property.value();
     }
 
     void set_texture(ui::texture &&texture) {
-        if (!is_same(this->_texture, texture)) {
-            this->_texture = std::move(texture);
+        if (!is_same(this->texture(), texture)) {
+            this->_texture_property.set_value(std::move(texture));
 
             this->_update_texture();
 
-            if (this->_texture) {
-                this->_texture_flow = this->_texture.begin_flow(texture::method::metal_texture_changed)
+            if (this->texture()) {
+                this->_texture_flow = this->texture()
+                                          .begin_flow(texture::method::metal_texture_changed)
                                           .to<method>([](auto const &) { return method::texture_updated; })
                                           .end(this->_notify_receiver);
             }
@@ -129,7 +131,7 @@ struct ui::font_atlas::impl : base::impl {
 
    private:
     std::vector<ui::word_info> _word_infos;
-    ui::texture _texture = nullptr;
+    property<ui::texture> _texture_property{{.value = nullptr}};
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<flow::observer<ui::uint_region>> _element_flows;
     flow::receiver<method> _notify_receiver = nullptr;
@@ -137,8 +139,10 @@ struct ui::font_atlas::impl : base::impl {
 
     void _update_texture() {
         this->_element_flows.clear();
+        
+        auto &texture = this->texture();
 
-        if (!this->_texture) {
+        if (!texture) {
             this->_word_infos.clear();
             return;
         }
@@ -160,7 +164,7 @@ struct ui::font_atlas::impl : base::impl {
         CGFloat const ascent = CTFontGetAscent(ct_font_obj);
         CGFloat const descent = CTFontGetDescent(ct_font_obj);
         CGFloat const string_height = descent + ascent;
-        double const scale_factor = this->_texture.scale_factor();
+        double const scale_factor = texture.scale_factor();
 
         for (auto const &idx : each_index<std::size_t>(word_count)) {
             ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
@@ -171,7 +175,7 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            auto texture_element = this->_texture.add_draw_handler(
+            auto texture_element = texture.add_draw_handler(
                 image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
                     CGContextSaveGState(ctx);
 
