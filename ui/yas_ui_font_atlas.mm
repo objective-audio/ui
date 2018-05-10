@@ -13,6 +13,7 @@
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"
+#include "yas_property.h"
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIKit.h>
@@ -63,30 +64,50 @@ struct ui::font_atlas::impl : base::impl {
                     atlas.impl_ptr<impl>()->_word_infos.at(pair.second).rect.set_tex_coord(pair.first);
                 }
             });
+
+        this->_notify_receiver = flow::receiver<method>([weak_atlas](method const &method) {
+            if (auto atlas = weak_atlas.lock()) {
+                atlas.subject().notify(method, atlas);
+            }
+        });
+
+        this->_texture_setter_flow = this->_texture_setter.begin()
+                                         .guard([weak_atlas](ui::texture const &texture) {
+                                             if (auto atlas = weak_atlas.lock()) {
+                                                 return !is_same(atlas.texture(), texture);
+                                             }
+                                             return false;
+                                         })
+                                         .end(this->_texture_property.receiver());
+
+        this->_texture_changed_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+            if (auto atlas = weak_atlas.lock()) {
+                auto atlas_impl = atlas.impl_ptr<impl>();
+
+                atlas_impl->_update_word_infos();
+
+                if (texture) {
+                    atlas_impl->_texture_flow = texture.begin_flow(texture::method::metal_texture_changed)
+                                                    .to<method>([](auto const &) { return method::texture_updated; })
+                                                    .end(atlas_impl->_notify_receiver);
+                } else {
+                    atlas_impl->_texture_flow = nullptr;
+                }
+            }
+        });
+
+        this->_texture_changed_flow = this->_texture_property.begin_value_flow()
+                                          .receive(this->_texture_changed_receiver)
+                                          .to<method>([](auto const &) { return method::texture_changed; })
+                                          .end(this->_notify_receiver);
     }
 
     ui::texture &texture() {
-        return this->_texture;
+        return this->_texture_property.value();
     }
 
     void set_texture(ui::texture &&texture) {
-        if (!is_same(this->_texture, texture)) {
-            this->_texture = std::move(texture);
-
-            this->_update_texture();
-
-            if (this->_texture) {
-                auto weak_atlas = to_weak(cast<ui::font_atlas>());
-                this->_texture_observer = this->_texture.subject().make_observer(
-                    ui::texture::method::metal_texture_changed, [weak_atlas](auto const &context) {
-                        if (auto atlas = weak_atlas.lock()) {
-                            atlas.subject().notify(ui::font_atlas::method::texture_updated, atlas);
-                        }
-                    });
-            }
-
-            this->_subject.notify(ui::font_atlas::method::texture_changed, cast<ui::font_atlas>());
-        }
+        this->_texture_setter.send_value(texture);
     }
 
     ui::vertex2d_rect_t const &rect(std::string const &word) {
@@ -127,15 +148,22 @@ struct ui::font_atlas::impl : base::impl {
 
    private:
     std::vector<ui::word_info> _word_infos;
-    ui::texture _texture = nullptr;
-    ui::texture::observer_t _texture_observer = nullptr;
+    property<ui::texture> _texture_property{{.value = nullptr}};
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<flow::observer<ui::uint_region>> _element_flows;
+    flow::receiver<method> _notify_receiver = nullptr;
+    flow::observer<ui::texture::flow_pair_t> _texture_flow = nullptr;
+    flow::sender<ui::texture> _texture_setter;
+    flow::observer<ui::texture> _texture_setter_flow = nullptr;
+    flow::observer<ui::texture> _texture_changed_flow = nullptr;
+    flow::receiver<ui::texture> _texture_changed_receiver = nullptr;
 
-    void _update_texture() {
+    void _update_word_infos() {
         this->_element_flows.clear();
 
-        if (!this->_texture) {
+        auto &texture = this->texture();
+
+        if (!texture) {
             this->_word_infos.clear();
             return;
         }
@@ -157,7 +185,7 @@ struct ui::font_atlas::impl : base::impl {
         CGFloat const ascent = CTFontGetAscent(ct_font_obj);
         CGFloat const descent = CTFontGetDescent(ct_font_obj);
         CGFloat const string_height = descent + ascent;
-        double const scale_factor = this->_texture.scale_factor();
+        double const scale_factor = texture.scale_factor();
 
         for (auto const &idx : each_index<std::size_t>(word_count)) {
             ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
@@ -168,7 +196,7 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            auto texture_element = this->_texture.add_draw_handler(
+            auto texture_element = texture.add_draw_handler(
                 image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
                     CGContextSaveGState(ctx);
 
