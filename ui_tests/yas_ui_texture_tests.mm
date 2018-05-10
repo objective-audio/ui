@@ -132,8 +132,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = element.subject().make_observer(ui::texture_element::method::tex_coords_changed,
-                                                    [&called](auto const &context) { called = true; });
+    auto flow = element.begin_tex_coords_flow().perform([&called](auto const &) { called = true; }).end();
 
     XCTAssertFalse(called);
 
@@ -236,11 +235,11 @@ using namespace yas;
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
     }
-    
+
     ui::metal_system metal_system{device.object()};
-    
+
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
-    
+
     bool called = false;
 
     auto flow =
@@ -249,11 +248,11 @@ using namespace yas;
     texture.set_point_size({16, 16});
 
     XCTAssertTrue(called);
-    
+
     called = false;
-    
+
     texture.metal().metal_setup(metal_system);
-    
+
     XCTAssertFalse(called);
 }
 
