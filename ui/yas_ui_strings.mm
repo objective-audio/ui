@@ -95,29 +95,31 @@ struct ui::strings::impl : base::impl {
 
    private:
     std::size_t const _max_word_count = 0;
-    ui::font_atlas::observer_t _font_atlas_observer = nullptr;
     std::vector<ui::collection_layout::observer_t> _collection_observers;
     std::vector<base> _property_observers;
+    flow::observer<ui::texture> _texture_flow = nullptr;
 
     void _update_font_atlas_observer() {
         if (auto &font_atlas = _font_atlas_property.value()) {
-            if (!this->_font_atlas_observer) {
-                this->_font_atlas_observer =
-                    font_atlas.subject().make_wild_card_observer([weak_strings = to_weak(cast<ui::strings>())](
-                        auto const &context) {
-                        if (auto strings = weak_strings.lock()) {
-                            if (context.key == ui::font_atlas::method::texture_changed) {
-                                strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
-                            }
+            if (!this->_texture_flow) {
+                auto weak_strings = to_weak(cast<ui::strings>());
+                this->_texture_flow =
+                    font_atlas.begin_texture_changed_flow()
+                        .guard([weak_strings](auto const &) { return !!weak_strings; })
+                        .perform([weak_strings](ui::texture const &) {
+                            auto strings = weak_strings.lock();
+                            strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
+                        })
+                        .merge(font_atlas.begin_texture_updated_flow())
+                        .perform([weak_strings](auto const &) {
+                            auto strings = weak_strings.lock();
                             strings.impl_ptr<impl>()->_update_layout();
-                        }
-                    });
-
-                this->_rect_plane.node().mesh().set_texture(font_atlas.texture());
+                        })
+                        .sync();
             }
         } else {
             this->_rect_plane.node().mesh().set_texture(nullptr);
-            this->_font_atlas_observer = nullptr;
+            this->_texture_flow = nullptr;
         }
     }
 
