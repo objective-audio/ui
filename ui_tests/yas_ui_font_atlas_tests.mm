@@ -59,7 +59,7 @@ using namespace yas;
     XCTAssertFalse(atlas);
 }
 
-- (void)test_observe_texture_changed {
+- (void)test_texture_changed_flow {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -70,9 +70,8 @@ using namespace yas;
 
     ui::texture observed_texture = nullptr;
 
-    auto flow = font_atlas.subject()
-                    .begin_flow(ui::font_atlas::method::texture_changed)
-                    .perform([&observed_texture](auto const &atlas) { observed_texture = atlas.texture(); })
+    auto flow = font_atlas.begin_texture_changed_flow()
+                    .perform([&observed_texture](ui::texture const &texture) { observed_texture = texture; })
                     .end();
 
     ui::metal_system metal_system{device.object()};
@@ -87,10 +86,6 @@ using namespace yas;
 
     XCTAssertFalse(font_atlas.texture());
     XCTAssertFalse(observed_texture);
-}
-
-- (void)test_method_to_string {
-    XCTAssertEqual(to_string(ui::font_atlas::method::texture_changed), "texture_changed");
 }
 
 @end

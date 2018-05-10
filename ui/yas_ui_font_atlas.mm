@@ -43,6 +43,8 @@ struct ui::font_atlas::impl : base::impl {
     double _leading;
     std::string _words;
     ui::font_atlas::subject_t _subject;
+    flow::sender<ui::texture> _texture_changed_sender;
+    flow::sender<ui::texture> _texture_updated_sender;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
         : _ct_font_ref(make_cf_ref(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
@@ -65,9 +67,10 @@ struct ui::font_atlas::impl : base::impl {
                 }
             });
 
-        this->_notify_receiver = flow::receiver<method>([weak_atlas](method const &method) {
+        this->_texture_updated_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
             if (auto atlas = weak_atlas.lock()) {
-                atlas.subject().notify(method, atlas);
+                atlas.impl_ptr<impl>()->_texture_updated_sender.send_value(texture);
+                atlas.impl_ptr<impl>()->_subject.notify(method::texture_updated, atlas);
             }
         });
 
@@ -88,18 +91,20 @@ struct ui::font_atlas::impl : base::impl {
 
                 if (texture) {
                     atlas_impl->_texture_flow = texture.begin_flow(texture::method::metal_texture_changed)
-                                                    .to<method>([](auto const &) { return method::texture_updated; })
-                                                    .end(atlas_impl->_notify_receiver);
+                                                    .end(atlas_impl->_texture_updated_receiver);
                 } else {
                     atlas_impl->_texture_flow = nullptr;
                 }
+
+                atlas_impl->_texture_changed_sender.send_value(texture);
+                atlas_impl->_subject.notify(method::texture_changed, atlas);
             }
         });
 
-        this->_texture_changed_flow = this->_texture_property.begin_value_flow()
-                                          .receive(this->_texture_changed_receiver)
-                                          .to<method>([](auto const &) { return method::texture_changed; })
-                                          .end(this->_notify_receiver);
+        this->_texture_changed_flow = this->_texture_property.begin_value_flow().end(this->_texture_changed_receiver);
+
+        this->_texture_changed_sender.set_can_sync_handler([weak_atlas]() { return !!weak_atlas; });
+        this->_texture_changed_sender.set_sync_handler([weak_atlas]() { return weak_atlas.lock().texture(); });
     }
 
     ui::texture &texture() {
@@ -147,11 +152,11 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    std::vector<ui::word_info> _word_infos;
     property<ui::texture> _texture_property{{.value = nullptr}};
+    std::vector<ui::word_info> _word_infos;
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<flow::observer<ui::uint_region>> _element_flows;
-    flow::receiver<method> _notify_receiver = nullptr;
+    flow::receiver<ui::texture> _texture_updated_receiver = nullptr;
     flow::observer<ui::texture::flow_pair_t> _texture_flow = nullptr;
     flow::sender<ui::texture> _texture_setter;
     flow::observer<ui::texture> _texture_setter_flow = nullptr;
@@ -277,6 +282,14 @@ void ui::font_atlas::set_texture(ui::texture texture) {
 
 ui::font_atlas::subject_t &ui::font_atlas::subject() {
     return impl_ptr<impl>()->_subject;
+}
+
+flow::node<ui::texture, ui::texture, ui::texture> ui::font_atlas::begin_texture_changed_flow() const {
+    return impl_ptr<impl>()->_texture_changed_sender.begin();
+}
+
+flow::node<ui::texture, ui::texture, ui::texture> ui::font_atlas::begin_texture_updated_flow() const {
+    return impl_ptr<impl>()->_texture_updated_sender.begin();
 }
 
 #pragma mark -
