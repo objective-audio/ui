@@ -70,9 +70,10 @@ using namespace yas;
 
     ui::texture observed_texture = nullptr;
 
-    auto observer = font_atlas.subject().make_observer(
-        ui::font_atlas::method::texture_changed,
-        [&observed_texture](auto const &context) mutable { observed_texture = context.value.texture(); });
+    auto flow = font_atlas.subject()
+                    .begin_flow(ui::font_atlas::method::texture_changed)
+                    .perform([&observed_texture](auto const &atlas) { observed_texture = atlas.texture(); })
+                    .end();
 
     ui::metal_system metal_system{device.object()};
 
