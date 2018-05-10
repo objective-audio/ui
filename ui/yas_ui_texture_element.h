@@ -29,6 +29,6 @@ class texture_element : public base {
     void set_tex_coords(ui::uint_region const &);
     ui::uint_region const &tex_coords() const;
 
-    flow::node<uint_region, uint_region, uint_region> begin_tex_coords_flow() const;
+    [[nodiscard]] flow::node<uint_region, uint_region, uint_region> begin_tex_coords_flow() const;
 };
 }
