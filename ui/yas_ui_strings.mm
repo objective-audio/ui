@@ -80,6 +80,19 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
+        auto atlas_flow = this->_font_atlas_property.begin_value_flow()
+                              .guard([weak_strings](auto const &) { return !!weak_strings; })
+                              .perform([weak_strings](auto const &) {
+                                  auto strings = weak_strings.lock();
+
+                                  strings.impl_ptr<impl>()->_update_font_atlas_observer();
+                                  strings.impl_ptr<impl>()->_update_layout();
+
+                                  strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
+                              })
+                              .sync();
+        this->_property_observers.emplace_back(std::move(atlas_flow));
+
         this->_property_observers.emplace_back(this->_line_height_property.subject().make_observer(
             property_method::did_change, [weak_strings](auto const &context) {
                 if (auto strings = weak_strings.lock()) {
@@ -89,7 +102,6 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        this->_update_font_atlas_observer();
         this->_update_layout();
     }
 
