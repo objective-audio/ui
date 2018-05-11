@@ -112,13 +112,11 @@ struct ui::strings::impl : base::impl {
         if (auto &font_atlas = _font_atlas_property.value()) {
             if (!this->_texture_flow) {
                 auto weak_strings = to_weak(cast<ui::strings>());
+                auto strings_impl = weak_strings.lock().impl_ptr<impl>();
                 this->_texture_flow =
                     font_atlas.begin_texture_changed_flow()
                         .guard([weak_strings](auto const &) { return !!weak_strings; })
-                        .perform([weak_strings](ui::texture const &) {
-                            auto strings = weak_strings.lock();
-                            strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
-                        })
+                        .receive(strings_impl->_texture_receiver)
                         .merge(font_atlas.begin_texture_updated_flow())
                         .perform([weak_strings](auto const &) {
                             auto strings = weak_strings.lock();
