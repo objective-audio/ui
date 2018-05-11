@@ -85,6 +85,12 @@ struct ui::strings::impl : base::impl {
             }
         });
 
+        this->_update_layout_receiver = flow::receiver<std::nullptr_t>([weak_strings](auto const &) {
+            if (auto strings = weak_strings.lock()) {
+                strings.impl_ptr<impl>()->_update_layout();
+            }
+        });
+
         auto atlas_flow = this->_font_atlas_property.begin_value_flow().sync(this->_font_atlas_receiver);
         this->_property_observers.emplace_back(std::move(atlas_flow));
 
@@ -107,22 +113,20 @@ struct ui::strings::impl : base::impl {
     flow::receiver<ui::font_atlas> _font_atlas_receiver = nullptr;
     flow::receiver<ui::texture> _texture_receiver = nullptr;
     flow::observer<ui::texture> _texture_flow = nullptr;
+    flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
 
     void _update_font_atlas_observer() {
         if (auto &font_atlas = _font_atlas_property.value()) {
             if (!this->_texture_flow) {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
-                this->_texture_flow =
-                    font_atlas.begin_texture_changed_flow()
-                        .guard([weak_strings](auto const &) { return !!weak_strings; })
-                        .receive(strings_impl->_texture_receiver)
-                        .merge(font_atlas.begin_texture_updated_flow())
-                        .perform([weak_strings](auto const &) {
-                            auto strings = weak_strings.lock();
-                            strings.impl_ptr<impl>()->_update_layout();
-                        })
-                        .sync();
+                this->_texture_flow = font_atlas.begin_texture_changed_flow()
+                                          .guard([weak_strings](auto const &) { return !!weak_strings; })
+                                          .receive(strings_impl->_texture_receiver)
+                                          .merge(font_atlas.begin_texture_updated_flow())
+                                          .to_null()
+                                          .receive(strings_impl->_update_layout_receiver)
+                                          .sync();
             }
         } else {
             this->_rect_plane.node().mesh().set_texture(nullptr);
