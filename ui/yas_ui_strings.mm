@@ -79,6 +79,12 @@ struct ui::strings::impl : base::impl {
             }
         });
 
+        this->_texture_receiver = flow::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
+            if (auto strings = weak_strings.lock()) {
+                strings.rect_plane().node().mesh().set_texture(texture);
+            }
+        });
+
         auto atlas_flow = this->_font_atlas_property.begin_value_flow().sync(this->_font_atlas_receiver);
         this->_property_observers.emplace_back(std::move(atlas_flow));
 
@@ -99,6 +105,7 @@ struct ui::strings::impl : base::impl {
     std::vector<ui::collection_layout::observer_t> _collection_observers;
     std::vector<base> _property_observers;
     flow::receiver<ui::font_atlas> _font_atlas_receiver = nullptr;
+    flow::receiver<ui::texture> _texture_receiver = nullptr;
     flow::observer<ui::texture> _texture_flow = nullptr;
 
     void _update_font_atlas_observer() {
