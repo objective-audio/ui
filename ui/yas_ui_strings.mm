@@ -70,17 +70,7 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        this->_property_observers.emplace_back(this->_font_atlas_property.subject().make_observer(
-            property_method::did_change, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_font_atlas_observer();
-                    strings.impl_ptr<impl>()->_update_layout();
-
-                    strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
-                }
-            }));
-
-        this->_font_atlas_receiver = flow::receiver<ui::font_atlas>([weak_strings](auto const &) {
+        this->_font_atlas_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
             if (auto strings = weak_strings.lock()) {
                 strings.impl_ptr<impl>()->_update_font_atlas_observer();
                 strings.impl_ptr<impl>()->_update_layout();
