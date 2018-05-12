@@ -54,6 +54,7 @@ struct ui::collection_layout::impl : base::impl {
     property<ui::layout_order> _row_order_property;
     property<ui::layout_order> _col_order_property;
     property<std::size_t> _preferred_cell_count_property;
+    property<std::size_t> _actual_cell_count_property;
     property<ui::size> _default_cell_size_property;
     property<std::vector<ui::collection_layout::line>> _lines_property;
 
@@ -205,6 +206,7 @@ struct ui::collection_layout::impl : base::impl {
 
         if (preferred_cell_count == 0) {
             this->_cell_guide_rects.clear();
+            this->_actual_cell_count_property.set_value(0);
             return;
         }
 
@@ -298,6 +300,7 @@ struct ui::collection_layout::impl : base::impl {
         this->pop_notify_waiting();
 
         if (prev_actual_cell_count != actual_cell_count) {
+            this->_actual_cell_count_property.set_value(actual_cell_count);
             this->_subject.notify(ui::collection_layout::method::actual_cell_count_changed,
                                   cast<ui::collection_layout>());
         }
@@ -559,4 +562,13 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
 
 ui::collection_layout::subject_t &ui::collection_layout::subject() {
     return impl_ptr<impl>()->_subject;
+}
+
+flow::node<std::size_t, std::size_t, std::size_t> ui::collection_layout::begin_actual_cell_count_flow() const {
+    return impl_ptr<impl>()->_actual_cell_count_property.begin_value_flow();
+}
+
+flow::node<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment>
+ui::collection_layout::begin_alignment_flow() const {
+    return impl_ptr<impl>()->_alignment_property.begin_value_flow();
 }
