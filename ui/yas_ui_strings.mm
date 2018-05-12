@@ -50,20 +50,6 @@ struct ui::strings::impl : base::impl {
         this->_prepare_receivers(weak_strings);
         this->_prepare_flows(weak_strings);
 
-        this->_collection_observers.emplace_back(this->_collection_layout.subject().make_observer(
-            ui::collection_layout::method::actual_cell_count_changed, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_layout();
-                }
-            }));
-
-        this->_collection_observers.emplace_back(this->_collection_layout.subject().make_observer(
-            ui::collection_layout::method::alignment_changed, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.subject().notify(ui::strings::method::alignment_changed, strings);
-                }
-            }));
-
         this->_update_layout();
     }
 
@@ -124,6 +110,14 @@ struct ui::strings::impl : base::impl {
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
                                                .to<method>([](auto const &) { return method::line_height_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .end());
+
+        this->_property_flows.emplace_back(
+            this->_collection_layout.begin_actual_cell_count_flow().to_null().receive(this->_update_layout_receiver));
+
+        this->_property_flows.emplace_back(this->_collection_layout.begin_alignment_flow()
+                                               .to<method>([](auto const &) { return method::alignment_changed; })
                                                .receive(this->_notify_receiver)
                                                .end());
     }
