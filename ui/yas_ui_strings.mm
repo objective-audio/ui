@@ -72,7 +72,6 @@ struct ui::strings::impl : base::impl {
 
         this->_font_atlas_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
             if (auto strings = weak_strings.lock()) {
-                strings.impl_ptr<impl>()->_update_font_atlas_observer();
                 strings.impl_ptr<impl>()->_update_layout();
 
                 strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
@@ -85,13 +84,21 @@ struct ui::strings::impl : base::impl {
             }
         });
 
+        this->_update_texture_flow_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
+            if (auto strings = weak_strings.lock()) {
+                strings.impl_ptr<impl>()->_update_texture_flow();
+            }
+        });
+
         this->_update_layout_receiver = flow::receiver<std::nullptr_t>([weak_strings](auto const &) {
             if (auto strings = weak_strings.lock()) {
                 strings.impl_ptr<impl>()->_update_layout();
             }
         });
 
-        auto atlas_flow = this->_font_atlas_property.begin_value_flow().sync(this->_font_atlas_receiver);
+        auto atlas_flow = this->_font_atlas_property.begin_value_flow()
+                              .receive(this->_update_texture_flow_receiver)
+                              .sync(this->_font_atlas_receiver);
         this->_property_observers.emplace_back(std::move(atlas_flow));
 
         this->_property_observers.emplace_back(this->_line_height_property.subject().make_observer(
@@ -113,9 +120,10 @@ struct ui::strings::impl : base::impl {
     flow::receiver<ui::font_atlas> _font_atlas_receiver = nullptr;
     flow::receiver<ui::texture> _texture_receiver = nullptr;
     flow::observer<ui::texture> _texture_flow = nullptr;
+    flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
     flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
 
-    void _update_font_atlas_observer() {
+    void _update_texture_flow() {
         if (auto &font_atlas = _font_atlas_property.value()) {
             if (!this->_texture_flow) {
                 auto weak_strings = to_weak(cast<ui::strings>());
