@@ -64,24 +64,6 @@ struct ui::strings::impl : base::impl {
                 }
             }));
 
-        this->_property_observers.emplace_back(this->_text_property.subject().make_observer(
-            property_method::did_change, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_layout();
-
-                    strings.subject().notify(ui::strings::method::text_changed, strings);
-                }
-            }));
-
-        this->_property_observers.emplace_back(this->_line_height_property.subject().make_observer(
-            property_method::did_change, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_layout();
-
-                    strings.subject().notify(ui::strings::method::line_height_changed, strings);
-                }
-            }));
-
         this->_update_layout();
     }
 
@@ -130,6 +112,20 @@ struct ui::strings::impl : base::impl {
                                                .to<method>([](auto const &) { return method::font_atlas_changed; })
                                                .receive(this->_notify_receiver)
                                                .sync());
+
+        this->_property_flows.emplace_back(this->_text_property.begin_value_flow()
+                                               .to_null()
+                                               .receive(this->_update_layout_receiver)
+                                               .to<method>([](auto const &) { return method::text_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .end());
+
+        this->_property_flows.emplace_back(this->_line_height_property.begin_value_flow()
+                                               .to_null()
+                                               .receive(this->_update_layout_receiver)
+                                               .to<method>([](auto const &) { return method::line_height_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .end());
     }
 
     void _update_texture_flow() {
