@@ -89,22 +89,14 @@ struct ui::strings::impl : base::impl {
     std::size_t const _max_word_count = 0;
     std::vector<ui::collection_layout::observer_t> _collection_observers;
     std::vector<base> _property_observers;
-    flow::receiver<ui::font_atlas> _font_atlas_receiver = nullptr;
     flow::receiver<ui::texture> _texture_receiver = nullptr;
     flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
     flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
+    flow::receiver<method> _notify_receiver = nullptr;
     flow::observer<ui::texture> _texture_flow = nullptr;
     std::vector<base> _property_flows;
 
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
-        this->_font_atlas_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
-            if (auto strings = weak_strings.lock()) {
-                strings.impl_ptr<impl>()->_update_layout();
-
-                strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
-            }
-        });
-
         this->_texture_receiver = flow::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
             if (auto strings = weak_strings.lock()) {
                 strings.rect_plane().node().mesh().set_texture(texture);
@@ -122,12 +114,22 @@ struct ui::strings::impl : base::impl {
                 strings.impl_ptr<impl>()->_update_layout();
             }
         });
+
+        this->_notify_receiver = flow::receiver<method>([weak_strings](method const &method) {
+            if (auto strings = weak_strings.lock()) {
+                strings.subject().notify(method, strings);
+            }
+        });
     }
 
     void _prepare_flows(weak<ui::strings> &weak_strings) {
         this->_property_flows.emplace_back(this->_font_atlas_property.begin_value_flow()
                                                .receive(this->_update_texture_flow_receiver)
-                                               .sync(this->_font_atlas_receiver));
+                                               .to_null()
+                                               .receive(this->_update_layout_receiver)
+                                               .to<method>([](auto const &) { return method::font_atlas_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .sync());
     }
 
     void _update_texture_flow() {
