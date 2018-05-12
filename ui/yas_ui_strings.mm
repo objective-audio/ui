@@ -91,9 +91,10 @@ struct ui::strings::impl : base::impl {
     std::vector<base> _property_observers;
     flow::receiver<ui::font_atlas> _font_atlas_receiver = nullptr;
     flow::receiver<ui::texture> _texture_receiver = nullptr;
-    flow::observer<ui::texture> _texture_flow = nullptr;
     flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
     flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
+    flow::observer<ui::texture> _texture_flow = nullptr;
+    std::vector<base> _property_flows;
 
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
         this->_font_atlas_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
@@ -124,11 +125,9 @@ struct ui::strings::impl : base::impl {
     }
 
     void _prepare_flows(weak<ui::strings> &weak_strings) {
-        auto atlas_flow = this->_font_atlas_property.begin_value_flow()
-                              .receive(this->_update_texture_flow_receiver)
-                              .sync(this->_font_atlas_receiver);
-
-        this->_property_observers.emplace_back(std::move(atlas_flow));
+        this->_property_flows.emplace_back(this->_font_atlas_property.begin_value_flow()
+                                               .receive(this->_update_texture_flow_receiver)
+                                               .sync(this->_font_atlas_receiver));
     }
 
     void _update_texture_flow() {
