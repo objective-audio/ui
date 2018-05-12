@@ -466,8 +466,8 @@
 				B6F9E46F208A3951000B390E /* yas_flow.h */,
 			);
 			name = cpp_utils;
-			path = /Users/yuki/Documents/Programming/Project/Git/ui/ui_tests/../submodules/cpp_utils/cpp_utils;
-			sourceTree = "<absolute>";
+			path = ../submodules/cpp_utils/cpp_utils;
+			sourceTree = "<group>";
 		};
 		B6F501911C9BFFD400A0B4A1 /* shader_mac */ = {
 			isa = PBXGroup;
@@ -591,8 +591,8 @@
 				B630B46E1C9FC3A3009793A9 /* yas_ui.h */,
 			);
 			name = ui;
-			path = /Users/yuki/Documents/Programming/Project/Git/ui/ui_tests/../ui;
-			sourceTree = "<absolute>";
+			path = ../ui;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
