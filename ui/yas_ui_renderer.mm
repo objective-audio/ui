@@ -2,6 +2,7 @@
 //  yas_ui_renderer.mm
 //
 
+#include "yas_ui_renderer.h"
 #include <simd/simd.h>
 #include <chrono>
 #include "yas_each_index.h"
@@ -20,7 +21,6 @@
 #include "yas_ui_metal_view.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
-#include "yas_ui_renderer.h"
 #include "yas_ui_types.h"
 
 #if TARGET_OS_IPHONE
@@ -405,4 +405,3 @@ std::ostream &operator<<(std::ostream &os, yas::ui::renderer::method const &meth
     os << to_string(method);
     return os;
 }
-

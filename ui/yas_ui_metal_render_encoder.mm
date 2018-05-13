@@ -2,15 +2,15 @@
 //  yas_ui_metal_render_encoder.mm
 //
 
+#include "yas_ui_metal_render_encoder.h"
 #include "yas_objc_ptr.h"
+#include "yas_ui_effect.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_encode_info.h"
-#include "yas_ui_metal_render_encoder.h"
 #include "yas_ui_metal_system.h"
+#include "yas_ui_metal_texture.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
-#include "yas_ui_metal_texture.h"
-#include "yas_ui_effect.h"
 
 using namespace yas;
 

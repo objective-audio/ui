@@ -30,4 +30,4 @@ class batch : public base {
     ui::render_encodable _encodable = nullptr;
     ui::metal_object _metal_object = nullptr;
 };
-}
+}  // namespace yas::ui

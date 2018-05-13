@@ -2,10 +2,10 @@
 //  yas_ui_metal_view.mm
 //
 
+#include "yas_ui_metal_view.h"
 #include "yas_cf_utils.h"
 #include "yas_objc_ptr.h"
 #include "yas_ui_event.h"
-#include "yas_ui_metal_view.h"
 #include "yas_ui_types.h"
 
 using namespace yas;

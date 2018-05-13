@@ -28,4 +28,4 @@ class detector : public base {
 
     ui::updatable_detector _updatable = nullptr;
 };
-}
+}  // namespace yas::ui

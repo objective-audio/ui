@@ -2,8 +2,8 @@
 //  yas_sample_cursor.mm
 //
 
-#include "yas_fast_each.h"
 #include "yas_sample_cursor.h"
+#include "yas_fast_each.h"
 
 using namespace yas;
 

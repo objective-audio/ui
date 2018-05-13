@@ -12,7 +12,7 @@ template <typename K, typename T>
 class subject;
 template <typename K, typename T>
 class observer;
-}
+}  // namespace yas
 
 namespace yas::ui {
 class font_atlas;
@@ -60,4 +60,4 @@ class strings : public base {
 
     subject_t &subject();
 };
-}
+}  // namespace yas::ui

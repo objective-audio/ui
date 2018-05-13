@@ -30,4 +30,4 @@ struct view_renderable : protocol {
     void safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets);
     void render(yas_objc_view *const view);
 };
-}
+}  // namespace yas::ui

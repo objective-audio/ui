@@ -6,10 +6,10 @@
 
 #include "yas_flagset.h"
 #include "yas_protocol.h"
+#include "yas_ui_effect_protocol.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"
 #include "yas_ui_render_target_protocol.h"
-#include "yas_ui_effect_protocol.h"
 
 namespace yas::ui {
 class renderer;
@@ -63,7 +63,7 @@ struct renderable_node : protocol {
     bool is_rendering_color_exists();
     void clear_updates();
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::node_update_reason const &);

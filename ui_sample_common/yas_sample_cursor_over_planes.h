@@ -15,4 +15,4 @@ struct cursor_over_planes : base {
 
     ui::node &node();
 };
-}
+}  // namespace yas::sample

@@ -17,4 +17,4 @@ struct touch_holder : base {
 
     ui::node &node();
 };
-}
+}  // namespace yas::sample

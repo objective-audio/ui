@@ -6,8 +6,8 @@
 
 #include <Metal/Metal.h>
 #include "yas_base.h"
-#include "yas_ui_types.h"
 #include "yas_ui_metal_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas::ui {
 class uint_size;
@@ -37,4 +37,4 @@ class metal_texture : public base {
    private:
     ui::metal_object _metal_object = nullptr;
 };
-}
+}  // namespace yas::ui

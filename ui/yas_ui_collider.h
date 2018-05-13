@@ -15,7 +15,7 @@ template <typename K, typename T>
 class subject;
 template <typename K, typename T>
 class observer;
-}
+}  // namespace yas
 
 namespace yas::ui {
 struct anywhere_shape {
@@ -103,4 +103,4 @@ class collider : public base {
    private:
     ui::renderable_collider _renderable = nullptr;
 };
-}
+}  // namespace yas::ui

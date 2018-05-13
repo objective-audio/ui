@@ -13,7 +13,7 @@ template <typename K, typename T>
 class subject;
 template <typename K, typename T>
 class observer;
-}
+}  // namespace yas
 
 namespace yas::ui {
 class rect_plane;
@@ -63,11 +63,11 @@ class button : public base {
 
     ui::layout_guide_rect &layout_guide_rect();
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::size_t to_rect_index(std::size_t const state_idx, bool is_tracking);
 std::string to_string(ui::button::method const &);
-}
+}  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::button::method const &);

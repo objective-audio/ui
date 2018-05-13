@@ -20,4 +20,4 @@ struct renderable_collider : protocol {
     simd::float4x4 const &matrix();
     void set_matrix(simd::float4x4);
 };
-}
+}  // namespace yas::ui

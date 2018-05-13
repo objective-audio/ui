@@ -2,7 +2,6 @@
 //  yas_ui_metal_view_controller.mm
 //
 
-#include "yas_objc_ptr.h"
 #include "yas_ui_metal_view_controller.h"
 
 NS_ASSUME_NONNULL_BEGIN

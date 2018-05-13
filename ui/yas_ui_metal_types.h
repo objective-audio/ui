@@ -20,4 +20,4 @@ MTLPrimitiveType to_mtl_primitive_type(ui::primitive_type const type);
 
 MTLTextureUsage to_mtl_texture_usage(ui::texture_usages_t const);
 MTLPixelFormat to_mtl_pixel_format(ui::pixel_format const);
-}
+}  // namespace yas

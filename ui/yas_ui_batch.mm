@@ -2,9 +2,9 @@
 //  yas_ui_batch.mm
 //
 
+#include "yas_ui_batch.h"
 #include "yas_stl_utils.h"
 #include "yas_to_bool.h"
-#include "yas_ui_batch.h"
 #include "yas_ui_batch_render_mesh_info.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"

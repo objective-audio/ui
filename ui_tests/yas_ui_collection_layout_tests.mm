@@ -811,13 +811,13 @@ using namespace yas;
 
 - (void)test_col_spacing_flow {
     ui::collection_layout layout;
-    
+
     opt_t<float> notified;
-    
-    auto flow = layout.begin_col_spacing_flow().perform([&notified](auto const &spacing){notified = spacing;}).end();
-    
+
+    auto flow = layout.begin_col_spacing_flow().perform([&notified](auto const &spacing) { notified = spacing; }).end();
+
     layout.set_col_spacing(11.0f);
-    
+
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, 11.0f);
 }

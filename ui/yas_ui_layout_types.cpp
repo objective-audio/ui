@@ -2,7 +2,6 @@
 //  yas_ui_layout_types.cpp
 //
 
-#include <string>
 #include "yas_ui_layout_types.h"
 
 using namespace yas;
@@ -39,8 +38,8 @@ std::string yas::to_string(ui::layout_alignment const &align) {
 }
 
 std::string yas::to_string(ui::layout_borders const &borders) {
-    return "{left=" + std::to_string(borders.left) + ", right=" + std::to_string(borders.right) + ", bottom=" +
-           std::to_string(borders.bottom) + ", top=" + std::to_string(borders.top) + "}";
+    return "{left=" + std::to_string(borders.left) + ", right=" + std::to_string(borders.right) +
+           ", bottom=" + std::to_string(borders.bottom) + ", top=" + std::to_string(borders.top) + "}";
 }
 
 #pragma mark - ostream

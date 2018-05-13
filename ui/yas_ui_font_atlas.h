@@ -12,7 +12,7 @@ template <typename K, typename T>
 class subject;
 template <typename K, typename T>
 class observer;
-}
+}  // namespace yas
 
 namespace yas::ui {
 class font_atlas : public base {
@@ -53,7 +53,7 @@ class font_atlas : public base {
     [[nodiscard]] flow::node<ui::texture, ui::texture, ui::texture> begin_texture_changed_flow() const;
     [[nodiscard]] flow::node<ui::texture, ui::texture, ui::texture> begin_texture_updated_flow() const;
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::font_atlas::method const &);

@@ -6,8 +6,8 @@
 
 #include <functional>
 #include "yas_base.h"
-#include "yas_ui_types.h"
 #include "yas_ui_texture_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas::ui {
 class uint_size;
@@ -36,4 +36,4 @@ class image : public base {
     void clear();
     void draw(ui::draw_handler_f const &);
 };
-}
+}  // namespace yas::ui

@@ -15,4 +15,4 @@ struct cursor : base {
 
     ui::node &node();
 };
-}
+}  // namespace yas::sample

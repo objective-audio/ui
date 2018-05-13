@@ -5,8 +5,8 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 #include "yas_base.h"
 
 namespace yas::ui {
@@ -40,4 +40,4 @@ class metal_encode_info : public base {
     std::vector<ui::effect> &effects() const;
     std::unordered_map<uintptr_t, ui::texture> &textures() const;
 };
-}
+}  // namespace yas::ui

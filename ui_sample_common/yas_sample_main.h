@@ -10,12 +10,12 @@
 #include "yas_sample_big_button_text.h"
 #include "yas_sample_cursor.h"
 #include "yas_sample_cursor_over_planes.h"
+#include "yas_sample_draw_call_text.hpp"
 #include "yas_sample_inputted_text.h"
 #include "yas_sample_justified_points.h"
 #include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
 #include "yas_sample_touch_holder.h"
-#include "yas_sample_draw_call_text.hpp"
 #include "yas_ui.h"
 #include "yas_ui_metal_system.h"
 
@@ -53,4 +53,4 @@ struct main {
     ui::rect_plane _plane_on_target{1};
     flow::observer<float> _render_target_layout = nullptr;
 };
-}
+}  // namespace yas::sample

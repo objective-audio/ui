@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "yas_protocol.h"
-#include "yas_flagset.h"
 #include <Metal/Metal.h>
+#include "yas_flagset.h"
+#include "yas_protocol.h"
 
 namespace yas::ui {
 class texture;
@@ -45,9 +45,9 @@ struct encodable_effect : protocol {
 
     void encode(id<MTLCommandBuffer> const);
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
-    std::string to_string(ui::effect_update_reason const &);
-    std::string to_string(ui::effect_updates_t const &);
-}
+std::string to_string(ui::effect_update_reason const &);
+std::string to_string(ui::effect_updates_t const &);
+}  // namespace yas

@@ -2,9 +2,9 @@
 //  yas_ui_button.mm
 //
 
+#include "yas_ui_button.h"
 #include "yas_fast_each.h"
 #include "yas_observing.h"
-#include "yas_ui_button.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_event.h"
@@ -32,29 +32,30 @@ struct ui::button::impl : base::impl {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr}, weak_button
-        ](auto const &context) mutable {
-            ui::node const &node = context.value;
+        this->_renderer_observer = node.dispatch_and_make_observer(
+            ui::node::method::renderer_changed,
+            [event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
+             weak_button](auto const &context) mutable {
+                ui::node const &node = context.value;
 
-            if (auto renderer = node.renderer()) {
-                event_flow = renderer.event_manager()
-                                 .begin_flow(ui::event_manager::method::touch_changed)
-                                 .guard([weak_button](ui::event const &) { return !!weak_button; })
-                                 .perform([weak_button](ui::event const &event) {
-                                     weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
-                                 })
-                                 .end();
-                if (auto button = weak_button.lock()) {
-                    leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
-                    collider_observer = button.impl_ptr<impl>()->_make_collider_observer();
+                if (auto renderer = node.renderer()) {
+                    event_flow = renderer.event_manager()
+                                     .begin_flow(ui::event_manager::method::touch_changed)
+                                     .guard([weak_button](ui::event const &) { return !!weak_button; })
+                                     .perform([weak_button](ui::event const &event) {
+                                         weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
+                                     })
+                                     .end();
+                    if (auto button = weak_button.lock()) {
+                        leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
+                        collider_observer = button.impl_ptr<impl>()->_make_collider_observer();
+                    }
+                } else {
+                    event_flow = nullptr;
+                    leave_observer = nullptr;
+                    collider_observer = nullptr;
                 }
-            } else {
-                event_flow = nullptr;
-                leave_observer = nullptr;
-                collider_observer = nullptr;
-            }
-        });
+            });
 
         this->_rect_observer = this->_layout_guide_rect.begin_flow()
                                    .guard([weak_button](ui::region const &) { return !!weak_button; })

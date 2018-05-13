@@ -34,7 +34,7 @@ struct metal_object : protocol {
 
     ui::setup_metal_result metal_setup(ui::metal_system const &);
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::setup_metal_error const);

@@ -2,9 +2,9 @@
 //  yas_ui_transformer.cpp
 //
 
+#include "yas_ui_transformer.h"
 #include <math.h>
 #include "yas_each_index.h"
-#include "yas_ui_transformer.h"
 
 using namespace yas;
 
@@ -33,7 +33,7 @@ static float _convert_value(std::vector<float> const &vector, float pos) {
     float const frac = frame - cur_index;
     return cur_val + (next_val - cur_val) * frac;
 }
-}
+}  // namespace yas::ui
 
 ui::transform_f const &ui::ease_in_sine_transformer() {
     static transform_f const _transformer = [](float const pos) {
@@ -96,7 +96,6 @@ ui::transform_f const &ui::ease_in_out_quad_transformer() {
                     return -0.5f * (val * (val - 2.0f) - 1.0f);
                 }
             }
-
         });
         return ui::_convert_value(curve, pos);
     };
@@ -225,7 +224,6 @@ ui::transform_f const &ui::ease_in_expo_transformer() {
             static float const zero_value = value_handler(0.0f);
             static float const diff = value_handler(1.0f) - zero_value;
             return (value_handler(pos) - zero_value) / diff;
-
         });
         return ui::_convert_value(curve, pos);
     };

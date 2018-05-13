@@ -17,31 +17,31 @@ struct sample::inputted_text::impl : base::impl {
     void prepare(sample::inputted_text &text) {
         auto &node = this->_strings.rect_plane().node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text), event_observer = base{nullptr}, layout = flow::observer<float>{nullptr}
-        ](auto const &context) mutable {
-            if (auto text = weak_text.lock()) {
-                auto &node = context.value;
-                if (auto renderer = node.renderer()) {
-                    auto text_impl = text.impl_ptr<inputted_text::impl>();
-                    auto &strings_frame_guide_rect = text_impl->_strings.frame_layout_guide_rect();
+        this->_renderer_observer = node.dispatch_and_make_observer(
+            ui::node::method::renderer_changed, [weak_text = to_weak(text), event_observer = base{nullptr},
+                                                 layout = flow::observer<float>{nullptr}](auto const &context) mutable {
+                if (auto text = weak_text.lock()) {
+                    auto &node = context.value;
+                    if (auto renderer = node.renderer()) {
+                        auto text_impl = text.impl_ptr<inputted_text::impl>();
+                        auto &strings_frame_guide_rect = text_impl->_strings.frame_layout_guide_rect();
 
-                    event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::key_changed, [weak_text](auto const &context) {
-                            if (auto text = weak_text.lock()) {
-                                text.impl_ptr<inputted_text::impl>()->update_text(context.value);
-                            }
-                        });
+                        event_observer = renderer.event_manager().subject().make_observer(
+                            ui::event_manager::method::key_changed, [weak_text](auto const &context) {
+                                if (auto text = weak_text.lock()) {
+                                    text.impl_ptr<inputted_text::impl>()->update_text(context.value);
+                                }
+                            });
 
-                    layout = ui::make_flow({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
-                                            .source_guide_rect = renderer.safe_area_layout_guide_rect(),
-                                            .destination_guide_rect = strings_frame_guide_rect});
-                } else {
-                    event_observer = nullptr;
-                    layout = nullptr;
+                        layout = ui::make_flow({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
+                                                .source_guide_rect = renderer.safe_area_layout_guide_rect(),
+                                                .destination_guide_rect = strings_frame_guide_rect});
+                    } else {
+                        event_observer = nullptr;
+                        layout = nullptr;
+                    }
                 }
-            }
-        });
+            });
     }
 
     void update_text(ui::event const &event) {

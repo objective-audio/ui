@@ -6,17 +6,17 @@
 
 #include <vector>
 #include "yas_base.h"
+#include "yas_flow.h"
 #include "yas_result.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
-#include "yas_flow.h"
 
 namespace yas {
 template <typename K, typename T>
 class subject;
 template <typename K, typename T>
 class observer;
-}
+}  // namespace yas
 
 namespace yas::ui {
 class layout_guide_rect;
@@ -107,4 +107,4 @@ class collection_layout : public base {
     [[nodiscard]] flow::node<ui::layout_order> begin_row_order_flow() const;
     [[nodiscard]] flow::node<ui::layout_order> begin_col_order_flow() const;
 };
-}
+}  // namespace yas::ui

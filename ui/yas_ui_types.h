@@ -8,8 +8,8 @@
 #include <simd/simd.h>
 #include <ostream>
 #include <string>
-#include "yas_ui_shared_types.h"
 #include "yas_flagset.h"
+#include "yas_ui_shared_types.h"
 
 namespace yas::ui {
 enum class system_type {
@@ -210,7 +210,7 @@ using index2d_t = uint32_t;
 struct index2d_rect_t {
     index2d_t v[6];
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 simd::float2 to_float2(CGPoint const &);
@@ -238,7 +238,7 @@ bool is_equal(simd::float3 const &, simd::float3 const &);
 bool is_equal(simd::float4 const &, simd::float4 const &);
 
 bool is_equal(simd::float4x4 const &, simd::float4x4 const &);
-}
+}  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::uint_point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);

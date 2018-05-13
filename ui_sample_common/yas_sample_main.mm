@@ -31,17 +31,15 @@ void sample::main::setup() {
     this->_big_button_text.strings().frame_layout_guide_rect().set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
-    this->_button_observer =
-        this->_big_button.button().subject().make_wild_card_observer([weak_text = to_weak(this->_big_button_text)](
-            auto const &context) {
+    this->_button_observer = this->_big_button.button().subject().make_wild_card_observer(
+        [weak_text = to_weak(this->_big_button_text)](auto const &context) {
             if (auto text = weak_text.lock()) {
                 text.set_status(context.key);
             }
         });
 
-    this->_keyboard_observer =
-        this->_soft_keyboard.subject().make_wild_card_observer([weak_text = to_weak(this->_inputted_text)](
-            auto const &context) {
+    this->_keyboard_observer = this->_soft_keyboard.subject().make_wild_card_observer(
+        [weak_text = to_weak(this->_inputted_text)](auto const &context) {
             if (auto text = weak_text.lock()) {
                 text.append_text(context.key);
             }

@@ -41,12 +41,12 @@ ui::color const &magenta_color();
 ui::color const &orange_color();
 ui::color const &purple_color();
 ui::color const &brown_color();
-}
+}  // namespace yas::ui
 
 namespace yas {
 simd::float4 to_float4(ui::color const &, float alpha);
 
 std::string to_string(ui::color const &);
-}
+}  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::color const &);

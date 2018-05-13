@@ -5,9 +5,9 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_ui_types.h"
 #include "yas_observing.h"
 #include "yas_ui_texture_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas::ui {
 class image;
@@ -31,4 +31,4 @@ class texture_element : public base {
 
     [[nodiscard]] flow::node<uint_region, uint_region, uint_region> begin_tex_coords_flow() const;
 };
-}
+}  // namespace yas::ui

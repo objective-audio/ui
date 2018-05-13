@@ -2,9 +2,9 @@
 //  yas_ui_metal_texture.mm
 //
 
+#include "yas_ui_metal_texture.h"
 #include "yas_objc_ptr.h"
 #include "yas_ui_metal_system.h"
-#include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
 
 using namespace yas;
@@ -30,12 +30,13 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
             }
 
-            auto texture_desc = make_objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = this->_size] {
-                return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
-                                                                          width:size.width
-                                                                         height:size.height
-                                                                      mipmapped:false];
-            });
+            auto texture_desc =
+                make_objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = this->_size] {
+                    return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
+                                                                              width:size.width
+                                                                             height:size.height
+                                                                          mipmapped:false];
+                });
 
             if (!texture_desc) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};

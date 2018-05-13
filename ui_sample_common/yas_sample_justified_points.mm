@@ -2,8 +2,8 @@
 //  yas_sample_justified_points.mm
 //
 
-#include "yas_fast_each.h"
 #include "yas_sample_justified_points.h"
+#include "yas_fast_each.h"
 
 using namespace yas;
 
@@ -26,40 +26,40 @@ struct sample::justified_points::impl : base::impl {
     void prepare(sample::justified_points &points) {
         auto &node = this->_rect_plane.node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            weak_points = to_weak(points), x_layout = flow::observer<float>{nullptr},
-            y_layout = flow::observer<float>{nullptr}
-        ](auto const &context) mutable {
-            if (auto points = weak_points.lock()) {
-                auto &node = context.value;
-                if (auto renderer = node.renderer()) {
-                    x_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().left(),
-                                              .second_source_guide = renderer.view_layout_guide_rect().right(),
-                                              .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
+        this->_renderer_observer = node.dispatch_and_make_observer(
+            ui::node::method::renderer_changed,
+            [weak_points = to_weak(points), x_layout = flow::observer<float>{nullptr},
+             y_layout = flow::observer<float>{nullptr}](auto const &context) mutable {
+                if (auto points = weak_points.lock()) {
+                    auto &node = context.value;
+                    if (auto renderer = node.renderer()) {
+                        x_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().left(),
+                                                  .second_source_guide = renderer.view_layout_guide_rect().right(),
+                                                  .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
 
-                    std::vector<float> ratios;
-                    ratios.reserve(sample::y_point_count - 1);
+                        std::vector<float> ratios;
+                        ratios.reserve(sample::y_point_count - 1);
 
-                    auto each = make_fast_each(sample::y_point_count - 1);
-                    while (yas_each_next(each)) {
-                        auto const &idx = yas_each_index(each);
-                        if (idx < y_point_count / 2) {
-                            ratios.emplace_back(std::pow(2.0f, idx));
-                        } else {
-                            ratios.emplace_back(std::pow(2.0f, y_point_count - 2 - idx));
+                        auto each = make_fast_each(sample::y_point_count - 1);
+                        while (yas_each_next(each)) {
+                            auto const &idx = yas_each_index(each);
+                            if (idx < y_point_count / 2) {
+                                ratios.emplace_back(std::pow(2.0f, idx));
+                            } else {
+                                ratios.emplace_back(std::pow(2.0f, y_point_count - 2 - idx));
+                            }
                         }
-                    }
 
-                    y_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
-                                              .second_source_guide = renderer.view_layout_guide_rect().top(),
-                                              .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
-                                              .ratios = std::move(ratios)});
-                } else {
-                    x_layout = nullptr;
-                    y_layout = nullptr;
+                        y_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
+                                                  .second_source_guide = renderer.view_layout_guide_rect().top(),
+                                                  .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
+                                                  .ratios = std::move(ratios)});
+                    } else {
+                        x_layout = nullptr;
+                        y_layout = nullptr;
+                    }
                 }
-            }
-        });
+            });
     }
 
    private:

@@ -4,11 +4,11 @@
 
 #pragma once
 
+#include <Metal/Metal.h>
+#include <functional>
 #include "yas_base.h"
 #include "yas_ui_effect_protocol.h"
 #include "yas_ui_metal_protocol.h"
-#include <functional>
-#include <Metal/Metal.h>
 
 namespace yas::ui {
 class texture;
@@ -38,4 +38,4 @@ class effect : public base {
     ui::encodable_effect _encodable = nullptr;
     ui::metal_object _metal = nullptr;
 };
-}
+}  // namespace yas::ui

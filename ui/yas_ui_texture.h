@@ -5,12 +5,12 @@
 #pragma once
 
 #include "yas_base.h"
+#include "yas_observing.h"
 #include "yas_result.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
-#include "yas_ui_types.h"
-#include "yas_observing.h"
 #include "yas_ui_texture_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas::ui {
 class image;
@@ -70,7 +70,7 @@ class texture : public base {
    private:
     ui::metal_object _metal_object = nullptr;
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::texture::method const &);

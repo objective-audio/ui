@@ -19,5 +19,5 @@ namespace ui {
         simd::float4 color = 1.0f;
         bool use_mesh_color = false;
     } __attribute__((aligned(256)));
-}
-}
+}  // namespace ui
+}  // namespace yas
