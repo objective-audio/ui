@@ -99,7 +99,15 @@ class collection_layout : public base {
     subject_t &subject();
 
     [[nodiscard]] flow::node<std::size_t, std::size_t, std::size_t> begin_actual_cell_count_flow() const;
+    [[nodiscard]] flow::node<ui::size, ui::size, ui::size> begin_default_cell_size_flow() const;
+    [[nodiscard]] flow::node<std::vector<line>, std::vector<line>, std::vector<line>> begin_lines_flow() const;
+    [[nodiscard]] flow::node<float, float, float> begin_row_spacing_flow() const;
+    [[nodiscard]] flow::node<float, float, float> begin_col_spacing_flow() const;
     [[nodiscard]] flow::node<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment> begin_alignment_flow()
         const;
+    [[nodiscard]] flow::node<ui::layout_direction, ui::layout_direction, ui::layout_direction> begin_direction_flow()
+        const;
+    [[nodiscard]] flow::node<ui::layout_order, ui::layout_order, ui::layout_order> begin_row_order_flow() const;
+    [[nodiscard]] flow::node<ui::layout_order, ui::layout_order, ui::layout_order> begin_col_order_flow() const;
 };
 }

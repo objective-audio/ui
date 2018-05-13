@@ -568,7 +568,40 @@ flow::node<std::size_t, std::size_t, std::size_t> ui::collection_layout::begin_a
     return impl_ptr<impl>()->_actual_cell_count_property.begin_value_flow();
 }
 
+[[nodiscard]] flow::node<ui::size, ui::size, ui::size> ui::collection_layout::begin_default_cell_size_flow() const {
+    return impl_ptr<impl>()->_default_cell_size_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<std::vector<ui::collection_layout::line>, std::vector<ui::collection_layout::line>,
+                         std::vector<ui::collection_layout::line>>
+ui::collection_layout::begin_lines_flow() const {
+    return impl_ptr<impl>()->_lines_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<float, float, float> ui::collection_layout::begin_row_spacing_flow() const {
+    return impl_ptr<impl>()->_row_spacing_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<float, float, float> ui::collection_layout::begin_col_spacing_flow() const {
+    return impl_ptr<impl>()->_col_spacing_property.begin_value_flow();
+}
+
 flow::node<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment>
 ui::collection_layout::begin_alignment_flow() const {
     return impl_ptr<impl>()->_alignment_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::layout_direction, ui::layout_direction, ui::layout_direction>
+ui::collection_layout::begin_direction_flow() const {
+    return impl_ptr<impl>()->_direction_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::layout_order, ui::layout_order, ui::layout_order>
+ui::collection_layout::begin_row_order_flow() const {
+    return impl_ptr<impl>()->_row_order_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::layout_order, ui::layout_order, ui::layout_order>
+ui::collection_layout::begin_col_order_flow() const {
+    return impl_ptr<impl>()->_col_order_property.begin_value_flow();
 }
