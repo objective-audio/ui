@@ -2,17 +2,20 @@
 //  yas_ui_node.mm
 //
 
-#include "yas_ui_types.h"
 #include "yas_ui_color.h"
+#include "yas_ui_types.h"
 // workaround for equation
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_to_bool.h"
+#include "yas_ui_angle.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
+#include "yas_ui_effect.h"
 #include "yas_ui_layout_guide.h"
+#include "yas_ui_math.h"
 #include "yas_ui_matrix.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
@@ -20,12 +23,9 @@
 #include "yas_ui_metal_system.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
-#include "yas_ui_renderer.h"
-#include "yas_ui_math.h"
-#include "yas_unless.h"
-#include "yas_ui_angle.h"
 #include "yas_ui_render_target.h"
-#include "yas_ui_effect.h"
+#include "yas_ui_renderer.h"
+#include "yas_unless.h"
 
 using namespace yas;
 
@@ -452,7 +452,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 base flow = nullptr;
 
                 auto make_flow = [receiver = this->_dispatch_receiver, weak_node = to_weak(cast<ui::node>())](
-                    ui::node::method const &method, auto &property) mutable {
+                                     ui::node::method const &method, auto &property) mutable {
                     return property.begin_value_flow()
                         .template to<ui::node::method>([method](auto const &) { return method; })
                         .end(receiver);

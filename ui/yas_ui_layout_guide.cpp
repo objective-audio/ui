@@ -2,9 +2,9 @@
 //  yas_ui_layout_guide.cpp
 //
 
+#include "yas_ui_layout_guide.h"
 #include "yas_delaying_caller.h"
 #include "yas_property.h"
-#include "yas_ui_layout_guide.h"
 
 using namespace yas;
 
@@ -319,17 +319,17 @@ struct ui::layout_guide_range::impl : base::impl {
     flow_t begin_flow() {
         ui::range const range = this->range();
 
-        return this->_min_guide.begin_flow().pair(this->_max_guide.begin_flow()).to<ui::range>([
-            min_cache = range.min(), max_cache = range.max()
-        ](auto const &pair) mutable {
-            if (pair.first) {
-                min_cache = *pair.first;
-            }
-            if (pair.second) {
-                max_cache = *pair.second;
-            }
-            return ui::range{min_cache, max_cache - min_cache};
-        });
+        return this->_min_guide.begin_flow()
+            .pair(this->_max_guide.begin_flow())
+            .to<ui::range>([min_cache = range.min(), max_cache = range.max()](auto const &pair) mutable {
+                if (pair.first) {
+                    min_cache = *pair.first;
+                }
+                if (pair.second) {
+                    max_cache = *pair.second;
+                }
+                return ui::range{min_cache, max_cache - min_cache};
+            });
     }
 };
 
@@ -455,17 +455,18 @@ struct ui::layout_guide_rect::impl : base::impl {
     flow_t begin_flow() {
         ui::region const region = this->region();
 
-        return this->_vertical_range.begin_flow().pair(this->_horizontal_range.begin_flow()).to<ui::region>([
-            v_cache = region.vertical_range(), h_cache = region.horizontal_range()
-        ](auto const &pair) mutable {
-            if (pair.first) {
-                v_cache = *pair.first;
-            }
-            if (pair.second) {
-                h_cache = *pair.second;
-            }
-            return ui::make_region(h_cache, v_cache);
-        });
+        return this->_vertical_range.begin_flow()
+            .pair(this->_horizontal_range.begin_flow())
+            .to<ui::region>(
+                [v_cache = region.vertical_range(), h_cache = region.horizontal_range()](auto const &pair) mutable {
+                    if (pair.first) {
+                        v_cache = *pair.first;
+                    }
+                    if (pair.second) {
+                        h_cache = *pair.second;
+                    }
+                    return ui::make_region(h_cache, v_cache);
+                });
     }
 };
 

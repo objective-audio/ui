@@ -11,6 +11,7 @@
 
 namespace yas::ui {
 class metal_encode_info;
+class metal_system;
 
 class metal_render_encoder : public base {
     class impl;
@@ -38,4 +39,4 @@ class metal_render_encoder : public base {
     ui::render_effectable _effectable = nullptr;
     ui::render_stackable _stackable = nullptr;
 };
-}
+}  // namespace yas::ui

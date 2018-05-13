@@ -5,8 +5,8 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_ui_event_protocol.h"
 #include "yas_flow.h"
+#include "yas_ui_event_protocol.h"
 
 namespace yas {
 template <typename K, typename T>
@@ -81,12 +81,12 @@ class event_manager : public base {
    private:
     ui::event_inputtable _inputtable = nullptr;
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::event const &);
 std::string to_string(ui::event_manager::method const &);
-}
+}  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::event const &);
 std::ostream &operator<<(std::ostream &, yas::ui::event_manager::method const &);

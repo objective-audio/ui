@@ -33,7 +33,7 @@ struct renderable_batch : protocol {
     void commit_render_meshes_building();
     void clear_render_meshes();
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::batch_building_type const &);

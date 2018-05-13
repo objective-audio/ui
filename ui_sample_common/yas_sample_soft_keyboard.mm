@@ -2,9 +2,9 @@
 //  yas_sample_soft_keyboard.mm
 //
 
+#include "yas_sample_soft_keyboard.h"
 #include <limits>
 #include "yas_fast_each.h"
-#include "yas_sample_soft_keyboard.h"
 
 using namespace yas;
 

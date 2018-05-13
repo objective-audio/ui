@@ -13,5 +13,5 @@ namespace matrix {
     simd::float4x4 rotation(float const degree);
     simd::float4x4 ortho(float const left, float const right, float const bottom, float const top, float const near,
                          float const far);
-}
-}
+}  // namespace matrix
+}  // namespace yas::ui

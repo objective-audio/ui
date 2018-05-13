@@ -5,9 +5,9 @@
 #pragma once
 
 #include "yas_base.h"
+#include "yas_flow.h"
 #include "yas_observing.h"
 #include "yas_ui_types.h"
-#include "yas_flow.h"
 
 namespace yas::ui {
 class layout_guide : public base {
@@ -158,4 +158,4 @@ struct layout_guide_rect_pair {
 std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_point_pair);
 std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_range_pair);
 std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_rect_pair);
-}
+}  // namespace yas::ui

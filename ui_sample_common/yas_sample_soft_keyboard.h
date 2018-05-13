@@ -22,4 +22,4 @@ struct soft_keyboard : base {
 
     subject_t &subject();
 };
-}
+}  // namespace yas::sample

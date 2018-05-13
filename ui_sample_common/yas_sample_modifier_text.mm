@@ -18,73 +18,74 @@ struct sample::modifier_text::impl : base::impl {
     void prepare(sample::modifier_text &text) {
         auto &node = this->_strings.rect_plane().node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(ui::node::method::renderer_changed, [
-            weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = flow::observer<float>{nullptr},
-            right_layout = flow::observer<float>{nullptr}, bottom_layout = flow::observer<float>{nullptr},
-            strings_observer = ui::strings::observer_t{nullptr}
-        ](auto const &context) mutable {
-            if (auto text = weak_text.lock()) {
-                auto node = context.value;
-                if (auto renderer = node.renderer()) {
-                    event_observer = renderer.event_manager().subject().make_observer(
-                        ui::event_manager::method::modifier_changed,
-                        [weak_text, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
-                            ui::event const &event = context.value;
-                            if (auto text = weak_text.lock()) {
-                                auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
+        this->_renderer_observer = node.dispatch_and_make_observer(
+            ui::node::method::renderer_changed,
+            [weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = flow::observer<float>{nullptr},
+             right_layout = flow::observer<float>{nullptr}, bottom_layout = flow::observer<float>{nullptr},
+             strings_observer = ui::strings::observer_t{nullptr}](auto const &context) mutable {
+                if (auto text = weak_text.lock()) {
+                    auto node = context.value;
+                    if (auto renderer = node.renderer()) {
+                        event_observer = renderer.event_manager().subject().make_observer(
+                            ui::event_manager::method::modifier_changed,
+                            [weak_text, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
+                                ui::event const &event = context.value;
+                                if (auto text = weak_text.lock()) {
+                                    auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
-                                text_impl->_update_text(event, flags);
+                                    text_impl->_update_text(event, flags);
+                                }
+                            });
+
+                        auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
+                        auto &strings = text_impl->_strings;
+                        auto &strings_guide_rect = strings.frame_layout_guide_rect();
+                        auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
+
+                        left_layout = ui::make_flow({.distance = 4.0f,
+                                                     .source_guide = safe_area_guide_rect.left(),
+                                                     .destination_guide = strings_guide_rect.left()});
+
+                        right_layout = ui::make_flow({.distance = -4.0f,
+                                                      .source_guide = safe_area_guide_rect.right(),
+                                                      .destination_guide = strings_guide_rect.right()});
+
+                        bottom_layout = ui::make_flow({.distance = 4.0f,
+                                                       .source_guide = text_impl->_bottom_guide,
+                                                       .destination_guide = strings_guide_rect.bottom()});
+
+                        auto strings_handler = [top_layout =
+                                                    flow::observer<float>{nullptr}](ui::strings &strings) mutable {
+                            float distance = 0.0f;
+
+                            if (auto const &font_atlas = strings.font_atlas()) {
+                                distance += font_atlas.ascent() + font_atlas.descent();
                             }
-                        });
 
-                    auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
-                    auto &strings = text_impl->_strings;
-                    auto &strings_guide_rect = strings.frame_layout_guide_rect();
-                    auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
+                            top_layout = ui::make_flow({.distance = distance,
+                                                        .source_guide = strings.frame_layout_guide_rect().bottom(),
+                                                        .destination_guide = strings.frame_layout_guide_rect().top()});
+                        };
 
-                    left_layout = ui::make_flow({.distance = 4.0f,
-                                                 .source_guide = safe_area_guide_rect.left(),
-                                                 .destination_guide = strings_guide_rect.left()});
+                        strings_handler(strings);
 
-                    right_layout = ui::make_flow({.distance = -4.0f,
-                                                  .source_guide = safe_area_guide_rect.right(),
-                                                  .destination_guide = strings_guide_rect.right()});
-
-                    bottom_layout = ui::make_flow({.distance = 4.0f,
-                                                   .source_guide = text_impl->_bottom_guide,
-                                                   .destination_guide = strings_guide_rect.bottom()});
-
-                    auto strings_handler = [top_layout =
-                                                flow::observer<float>{nullptr}](ui::strings & strings) mutable {
-                        float distance = 0.0f;
-
-                        if (auto const &font_atlas = strings.font_atlas()) {
-                            distance += font_atlas.ascent() + font_atlas.descent();
-                        }
-
-                        top_layout = ui::make_flow({.distance = distance,
-                                                    .source_guide = strings.frame_layout_guide_rect().bottom(),
-                                                    .destination_guide = strings.frame_layout_guide_rect().top()});
-                    };
-
-                    strings_handler(strings);
-
-                    strings_observer = strings.subject().make_observer(ui::strings::method::font_atlas_changed, [
-                        strings_handler = std::move(strings_handler), weak_strings = to_weak(strings)
-                    ](auto const &context) mutable {
-                        if (auto strings = weak_strings.lock()) {
-                            strings_handler(strings);
-                        }
-                    });
-                } else {
-                    event_observer = nullptr;
-                    left_layout = nullptr;
-                    right_layout = nullptr;
-                    bottom_layout = nullptr;
-                    strings_observer = nullptr;
+                        strings_observer = strings.subject().make_observer(
+                            ui::strings::method::font_atlas_changed,
+                            [strings_handler = std::move(strings_handler),
+                             weak_strings = to_weak(strings)](auto const &context) mutable {
+                                if (auto strings = weak_strings.lock()) {
+                                    strings_handler(strings);
+                                }
+                            });
+                    } else {
+                        event_observer = nullptr;
+                        left_layout = nullptr;
+                        right_layout = nullptr;
+                        bottom_layout = nullptr;
+                        strings_observer = nullptr;
+                    }
                 }
-            }
-        });
+            });
     }
 
    private:

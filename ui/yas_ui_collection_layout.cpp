@@ -2,12 +2,12 @@
 //  yas_ui_collection_layout.cpp
 //
 
-#include "yas_delaying_caller.h"
-#include "yas_property.h"
 #include "yas_ui_collection_layout.h"
+#include "yas_delaying_caller.h"
+#include "yas_fast_each.h"
+#include "yas_property.h"
 #include "yas_ui_layout.h"
 #include "yas_ui_layout_guide.h"
-#include "yas_fast_each.h"
 
 using namespace yas;
 
@@ -567,8 +567,7 @@ flow::node<std::size_t> ui::collection_layout::begin_actual_cell_count_flow() co
     return impl_ptr<impl>()->_default_cell_size_property.begin_value_flow();
 }
 
-[[nodiscard]] flow::node<std::vector<ui::collection_layout::line>>
-ui::collection_layout::begin_lines_flow() const {
+    [[nodiscard]] flow::node<std::vector<ui::collection_layout::line>> ui::collection_layout::begin_lines_flow() const {
     return impl_ptr<impl>()->_lines_property.begin_value_flow();
 }
 
@@ -576,7 +575,7 @@ ui::collection_layout::begin_lines_flow() const {
     return impl_ptr<impl>()->_row_spacing_property.begin_value_flow();
 }
 
-[[nodiscard]] flow::node<float> ui::collection_layout::begin_col_spacing_flow() const {
+    [[nodiscard]] flow::node<float> ui::collection_layout::begin_col_spacing_flow() const {
     return impl_ptr<impl>()->_col_spacing_property.begin_value_flow();
 }
 
@@ -588,7 +587,7 @@ flow::node<ui::layout_alignment> ui::collection_layout::begin_alignment_flow() c
     return impl_ptr<impl>()->_direction_property.begin_value_flow();
 }
 
-[[nodiscard]] flow::node<ui::layout_order> ui::collection_layout::begin_row_order_flow() const {
+    [[nodiscard]] flow::node<ui::layout_order> ui::collection_layout::begin_row_order_flow() const {
     return impl_ptr<impl>()->_row_order_property.begin_value_flow();
 }
 

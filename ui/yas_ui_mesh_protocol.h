@@ -54,7 +54,7 @@ struct renderable_mesh : protocol {
     bool is_rendering_color_exists();
     void clear_updates();
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::mesh_update_reason const &);

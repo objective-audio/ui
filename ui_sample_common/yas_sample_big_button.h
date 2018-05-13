@@ -21,4 +21,4 @@ struct big_button : public base {
 
     ui::button &button();
 };
-}
+}  // namespace yas::sample

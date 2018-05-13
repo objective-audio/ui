@@ -15,7 +15,7 @@ template <typename K, typename T>
 class subject;
 template <typename K, typename T>
 class observer;
-}
+}  // namespace yas
 
 namespace yas::ui {
 class view_renderable;
@@ -84,7 +84,7 @@ class renderer : public base {
 
     explicit renderer(std::shared_ptr<impl> &&);
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::renderer::method const &);

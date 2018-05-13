@@ -2,16 +2,16 @@
 //  yas_ui_texture.mm
 //
 
+#include "yas_ui_texture.h"
+#include <map>
 #include "yas_objc_ptr.h"
+#include "yas_property.h"
 #include "yas_ui_image.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
 #include "yas_ui_renderer.h"
-#include "yas_ui_texture.h"
-#include "yas_unless.h"
-#include "yas_property.h"
 #include "yas_ui_texture_element.h"
-#include <map>
+#include "yas_unless.h"
 
 using namespace yas;
 

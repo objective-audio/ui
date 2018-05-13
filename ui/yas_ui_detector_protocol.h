@@ -26,4 +26,4 @@ struct updatable_detector : protocol {
     void push_front_collider(ui::collider);
     void end_update();
 };
-}
+}  // namespace yas::ui

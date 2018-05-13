@@ -58,4 +58,4 @@ class dynamic_mesh_data : public mesh_data {
     void set_vertex_count(std::size_t const);
     void set_index_count(std::size_t const);
 };
-}
+}  // namespace yas::ui

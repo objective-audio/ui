@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace yas::ui {
 enum class layout_direction {
     vertical,
@@ -27,14 +29,14 @@ struct layout_borders {
     float bottom = 0.0f;
     float top = 0.0f;
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::layout_direction const &);
 std::string to_string(ui::layout_order const &);
 std::string to_string(ui::layout_alignment const &);
 std::string to_string(ui::layout_borders const &);
-}
+}  // namespace yas
 
 std::ostream &operator<<(std::ostream &os, yas::ui::layout_direction const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::layout_order const &);

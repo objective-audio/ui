@@ -2,10 +2,10 @@
 //  yas_ui_collider.cpp
 //
 
+#include "yas_ui_collider.h"
 #include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_to_bool.h"
-#include "yas_ui_collider.h"
 
 using namespace yas;
 

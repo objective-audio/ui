@@ -13,4 +13,4 @@ float ceilf(float const value, double const scale);
 double ceil(double const value, double const scale);
 
 float distance(ui::point const &src, ui::point const &dst);
-}
+}  // namespace yas

@@ -18,7 +18,7 @@ namespace layout_action {
 
         continuous_action::args continuous_action;
     };
-}
+}  // namespace layout_action
 
 [[nodiscard]] ui::continuous_action make_action(layout_action::args);
 
@@ -38,4 +38,4 @@ class layout_animator : public base {
     void set_value_transformer(ui::transform_f);
     ui::transform_f const &value_transformer() const;
 };
-}
+}  // namespace yas::ui

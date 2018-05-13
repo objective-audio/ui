@@ -2,8 +2,8 @@
 //  yas_ui_node_protocol.mm
 //
 
-#include "yas_ui_batch_protocol.h"
 #include "yas_ui_node_protocol.h"
+#include "yas_ui_batch_protocol.h"
 #include "yas_ui_renderer.h"
 
 using namespace yas;

@@ -5,10 +5,10 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_ui_metal_system.h"
 #include "yas_ui_metal_protocol.h"
-#include "yas_ui_types.h"
+#include "yas_ui_metal_system.h"
 #include "yas_ui_render_target_protocol.h"
+#include "yas_ui_types.h"
 
 namespace yas::ui {
 class mesh;
@@ -39,4 +39,4 @@ class render_target : public base {
     ui::metal_object _metal_object = nullptr;
     ui::renderable_render_target _renderable = nullptr;
 };
-}
+}  // namespace yas::ui

@@ -32,4 +32,4 @@ struct angle {
 
 angle make_radians_angle(float const);
 angle make_degrees_angle(float const);
-}
+}  // namespace yas::ui

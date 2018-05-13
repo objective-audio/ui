@@ -21,4 +21,4 @@ class blur : public base {
 
     ui::effect &effect();
 };
-}
+}  // namespace yas::ui

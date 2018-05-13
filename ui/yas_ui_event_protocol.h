@@ -135,7 +135,7 @@ struct event_inputtable : protocol {
     void input_key_event(event_phase const, key_event);
     void input_modifier_event(modifier_flags, double const timestamp);
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::cursor_event const &);
@@ -144,7 +144,7 @@ std::string to_string(ui::key_event const &);
 std::string to_string(ui::modifier_event const &);
 std::string to_string(ui::event_phase const &);
 std::string to_string(ui::modifier_flags const &);
-}
+}  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::event_phase const &);
 std::ostream &operator<<(std::ostream &, yas::ui::modifier_flags const &);

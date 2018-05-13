@@ -42,4 +42,4 @@ transform_f const &ping_pong_transformer();
 transform_f const &reverse_transformer();
 
 transform_f connect(std::vector<transform_f>);
-}
+}  // namespace yas::ui

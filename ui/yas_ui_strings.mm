@@ -2,6 +2,7 @@
 //  yas_ui_strings.mm
 //
 
+#include "yas_ui_strings.h"
 #include <numeric>
 #include "yas_fast_each.h"
 #include "yas_observing.h"
@@ -10,10 +11,9 @@
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_metal_texture.h"
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
-#include "yas_ui_strings.h"
-#include "yas_ui_metal_texture.h"
 
 using namespace yas;
 

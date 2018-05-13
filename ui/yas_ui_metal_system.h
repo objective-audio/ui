@@ -32,4 +32,4 @@ class metal_system : public base {
     ui::makable_metal_system _makable = nullptr;
     ui::renderable_metal_system _renderable = nullptr;
 };
-}
+}  // namespace yas::ui

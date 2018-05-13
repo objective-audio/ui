@@ -2,20 +2,20 @@
 //  yas_ui_metal_system.mm
 //
 
+#include "yas_ui_metal_system.h"
 #include "yas_each_index.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_metal_render_encoder.h"
-#include "yas_ui_metal_system.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
 #include "yas_ui_metal_view.h"
 #include "yas_ui_node.h"
 #include "yas_ui_render_info.h"
+#include "yas_ui_render_target.h"
 #include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
-#include "yas_ui_render_target.h"
 
 using namespace yas;
 
@@ -116,7 +116,7 @@ struct ui::metal_system::impl : base::impl,
             return;
         }
 
-        auto view = (YASUIMetalView * const)objc_view;
+        auto view = (YASUIMetalView *const)objc_view;
         view.device = this->_device.object();
         view.sampleCount = this->_sample_count;
     }
@@ -126,7 +126,7 @@ struct ui::metal_system::impl : base::impl,
             return;
         }
 
-        auto view = (YASUIMetalView * const)objc_view;
+        auto view = (YASUIMetalView *const)objc_view;
 
         auto renderPassDesc = view.currentRenderPassDescriptor;
         auto currentDrawable = view.currentDrawable;
@@ -137,9 +137,8 @@ struct ui::metal_system::impl : base::impl,
 
         dispatch_semaphore_wait(this->_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
-        auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>([commandQueue = this->_command_queue.object()]() {
-            return [commandQueue commandBuffer];
-        });
+        auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>(
+            [commandQueue = this->_command_queue.object()]() { return [commandQueue commandBuffer]; });
         auto commandBuffer = command_buffer.object();
 
         this->_uniforms_buffer_offset = 0;

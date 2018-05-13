@@ -44,7 +44,7 @@ struct renderable_mesh_data : protocol {
     void update_render_buffer();
     void clear_updates();
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::mesh_data_update_reason const &);

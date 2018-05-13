@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "yas_protocol.h"
-#include "yas_flagset.h"
-#include "yas_ui_render_encoder_protocol.h"
 #include <Metal/Metal.h>
 #include <simd/simd.h>
+#include "yas_flagset.h"
+#include "yas_protocol.h"
+#include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
 class mesh;
@@ -46,4 +46,4 @@ struct renderable_render_target : protocol {
     simd::float4x4 const &projection_matrix();
     bool push_encode_info(ui::render_stackable &);
 };
-}
+}  // namespace yas::ui

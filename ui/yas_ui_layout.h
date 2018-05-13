@@ -13,7 +13,7 @@ struct args {
     ui::layout_guide source_guide;
     ui::layout_guide destination_guide;
 };
-}
+}  // namespace yas::ui::fixed_layout
 
 namespace yas::ui::fixed_layout_point {
 struct args {
@@ -21,7 +21,7 @@ struct args {
     ui::layout_guide_point source_guide_point;
     ui::layout_guide_point destination_guide_point;
 };
-}
+}  // namespace yas::ui::fixed_layout_point
 
 namespace yas::ui::fixed_layout_rect {
 struct args {
@@ -29,7 +29,7 @@ struct args {
     ui::layout_guide_rect source_guide_rect;
     ui::layout_guide_rect destination_guide_rect;
 };
-}
+}  // namespace yas::ui::fixed_layout_rect
 
 namespace yas::ui::justified_layout {
 struct args {
@@ -38,21 +38,21 @@ struct args {
     std::vector<ui::layout_guide> destination_guides;
     std::vector<float> ratios;
 };
-}
+}  // namespace yas::ui::justified_layout
 
 namespace yas::ui::min_layout {
 struct args {
     std::vector<ui::layout_guide> source_guides;
     ui::layout_guide destination_guide;
 };
-}
+}  // namespace yas::ui::min_layout
 
 namespace yas::ui::max_layout {
 struct args {
     std::vector<ui::layout_guide> source_guides;
     ui::layout_guide destination_guide;
 };
-}
+}  // namespace yas::ui::max_layout
 
 namespace yas::ui {
 [[nodiscard]] flow::observer<float> make_flow(fixed_layout::args);
@@ -63,4 +63,4 @@ namespace yas::ui {
 
 [[nodiscard]] flow::observer<float> make_flow(min_layout::args);
 [[nodiscard]] flow::observer<float> make_flow(max_layout::args);
-}
+}  // namespace yas::ui

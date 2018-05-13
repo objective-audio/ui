@@ -6,8 +6,8 @@
 
 #include <vector>
 #include "yas_ui_mesh_data.h"
-#include "yas_ui_types.h"
 #include "yas_ui_texture_element.h"
+#include "yas_ui_types.h"
 
 namespace yas::ui {
 class node;
@@ -67,4 +67,4 @@ class rect_plane : public base {
     ui::node &node();
     ui::rect_plane_data &data();
 };
-}
+}  // namespace yas::ui

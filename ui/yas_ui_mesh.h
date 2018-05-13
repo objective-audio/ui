@@ -44,4 +44,4 @@ class mesh : public base {
     ui::metal_object _metal_object = nullptr;
     ui::renderable_mesh _renderable = nullptr;
 };
-}
+}  // namespace yas::ui

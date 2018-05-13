@@ -71,4 +71,4 @@ struct testable_metal_system : protocol {
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture();
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture();
 };
-}
+}  // namespace yas::ui

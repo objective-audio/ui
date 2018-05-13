@@ -10,8 +10,8 @@
 #include "yas_base.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_detector.h"
-#include "yas_ui_render_encoder_protocol.h"
 #include "yas_ui_metal_system.h"
+#include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
 struct render_info {
@@ -22,4 +22,4 @@ struct render_info {
     ui::render_effectable render_effectable = nullptr;
     ui::render_stackable render_stackable = nullptr;
 };
-}
+}  // namespace yas::ui

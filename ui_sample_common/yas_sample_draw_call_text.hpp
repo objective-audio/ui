@@ -15,4 +15,4 @@ struct draw_call_text : base {
 
     ui::strings &strings();
 };
-}
+}  // namespace yas::sample

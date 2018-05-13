@@ -2,9 +2,9 @@
 //  yas_ui_detector.cpp
 //
 
+#include "yas_ui_detector.h"
 #include <deque>
 #include "yas_ui_collider.h"
-#include "yas_ui_detector.h"
 
 using namespace yas;
 

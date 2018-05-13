@@ -15,4 +15,4 @@ struct modifier_text : base {
 
     ui::strings &strings();
 };
-}
+}  // namespace yas::sample

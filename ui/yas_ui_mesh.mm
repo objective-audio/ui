@@ -2,11 +2,11 @@
 //  yas_ui_mesh.mm
 //
 
+#include "yas_ui_mesh.h"
 #include "yas_fast_each.h"
 #include "yas_objc_ptr.h"
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_batch_render_mesh_info.h"
-#include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_metal_system.h"
@@ -81,10 +81,9 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
         if (this->_needs_write(building_type)) {
-            mesh_info.mesh_data.write([
-                    &src_mesh_data = this->_mesh_data, &matrix = this->_matrix, &color = this->_color,
-                    is_use_mesh_color = this->_use_mesh_color, &mesh_info
-            ](auto &vertices, auto &indices) {
+            mesh_info.mesh_data.write([&src_mesh_data = this->_mesh_data, &matrix = this->_matrix,
+                                       &color = this->_color, is_use_mesh_color = this->_use_mesh_color,
+                                       &mesh_info](auto &vertices, auto &indices) {
                 auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
                 auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
 

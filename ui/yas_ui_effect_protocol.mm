@@ -3,9 +3,9 @@
 //
 
 #include "yas_ui_effect_protocol.h"
-#include "yas_ui_texture.h"
 #include "yas_fast_each.h"
 #include "yas_stl_utils.h"
+#include "yas_ui_texture.h"
 
 using namespace yas;
 

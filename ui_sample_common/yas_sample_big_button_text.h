@@ -17,4 +17,4 @@ struct big_button_text : base {
 
     ui::strings &strings();
 };
-}
+}  // namespace yas::sample

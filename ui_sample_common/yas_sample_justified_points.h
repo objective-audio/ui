@@ -17,4 +17,4 @@ struct justified_points : base {
 
     ui::rect_plane &rect_plane();
 };
-}
+}  // namespace yas::sample

@@ -48,4 +48,4 @@ struct render_stackable : protocol {
     void pop_encode_info();
     ui::metal_encode_info const &current_encode_info();
 };
-}
+}  // namespace yas::ui

@@ -2,8 +2,8 @@
 //  yas_ui_matrix.cpp
 //
 
-#include <GLKit/GLKMath.h>
 #include "yas_ui_matrix.h"
+#include <GLKit/GLKMath.h>
 
 using namespace simd;
 using namespace yas;
@@ -13,7 +13,7 @@ static float4x4 to_float4x4(GLKMatrix4 const &m) {
     return float4x4{float4{m.m00, m.m01, m.m02, m.m03}, float4{m.m10, m.m11, m.m12, m.m13},
                     float4{m.m20, m.m21, m.m22, m.m23}, float4{m.m30, m.m31, m.m32, m.m33}};
 }
-}
+}  // namespace yas
 
 float4x4 ui::matrix::scale(float const x, float const y) {
     return to_float4x4(GLKMatrix4MakeScale(x, y, 1.0f));

@@ -2,6 +2,7 @@
 //  yas_ui_font.mm
 //
 
+#include "yas_ui_font_atlas.h"
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreText/CoreText.h>
 #include "yas_cf_ref.h"
@@ -9,11 +10,10 @@
 #include "yas_each_index.h"
 #include "yas_objc_macros.h"
 #include "yas_observing.h"
-#include "yas_ui_font_atlas.h"
+#include "yas_property.h"
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"
-#include "yas_property.h"
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIKit.h>

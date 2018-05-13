@@ -19,4 +19,4 @@ struct batch_render_mesh_info {
     std::size_t vertex_idx = 0;
     std::size_t index_idx = 0;
 };
-}
+}  // namespace yas::ui

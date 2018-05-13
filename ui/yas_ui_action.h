@@ -62,7 +62,7 @@ class action : public base {
    private:
     ui::updatable_action _updatable = nullptr;
 };
-}
+}  // namespace yas::ui
 
 template <>
 struct std::hash<yas::ui::action> {
@@ -122,4 +122,4 @@ class parallel_action : public action {
 };
 
 [[nodiscard]] parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &begin_time);
-}
+}  // namespace yas::ui

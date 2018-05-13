@@ -6,9 +6,9 @@
 
 #include <vector>
 #include "yas_base.h"
+#include "yas_observing.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
-#include "yas_observing.h"
 
 namespace yas::ui {
 class mesh;
@@ -103,8 +103,8 @@ class node : public base {
     [[nodiscard]] observer_t dispatch_and_make_wild_card_observer(std::vector<method> const &,
                                                                   observer_t::handler_f const &);
     using flow_pair_t = std::pair<method, node>;
-    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t , flow_pair_t> begin_flow(method const &);
-    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t , flow_pair_t> begin_flow(std::vector<method> const &);
+    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(method const &);
+    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(std::vector<method> const &);
 
     ui::point convert_position(ui::point const &) const;
 
@@ -116,7 +116,7 @@ class node : public base {
     ui::metal_object _metal_object = nullptr;
     ui::renderable_node _renderable = nullptr;
 };
-}
+}  // namespace yas::ui
 
 namespace yas {
 std::string to_string(ui::node::method const &);
