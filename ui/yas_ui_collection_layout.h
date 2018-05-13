@@ -96,7 +96,6 @@ class collection_layout : public base {
     ui::layout_guide_rect &frame_layout_guide_rect();
     std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
 
-    subject_t &subject();
 
     [[nodiscard]] flow::node<std::size_t, std::size_t, std::size_t> begin_preferred_cell_count_flow() const;
     [[nodiscard]] flow::node<std::size_t, std::size_t, std::size_t> begin_actual_cell_count_flow() const;

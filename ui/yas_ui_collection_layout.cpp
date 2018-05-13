@@ -66,7 +66,6 @@ struct ui::collection_layout::impl : base::impl {
     flow::observer<float> _bottom_border_flow;
     flow::observer<float> _top_border_flow;
     ui::layout_borders const _borders;
-    subject_t _subject;
     flow::observer<float> _border_flow = nullptr;
     flow::receiver<method> _properties_receiver = nullptr;
 
@@ -125,7 +124,6 @@ struct ui::collection_layout::impl : base::impl {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();
-                layout_impl->_subject.notify(method, layout);
             }
         }};
 
@@ -181,7 +179,6 @@ struct ui::collection_layout::impl : base::impl {
             this->_frame_guide_rect.set_region(std::move(frame));
 
             this->_update_layout();
-            this->_subject.notify(ui::collection_layout::method::frame_changed, cast<ui::collection_layout>());
         }
     }
 
@@ -301,8 +298,6 @@ struct ui::collection_layout::impl : base::impl {
 
         if (prev_actual_cell_count != actual_cell_count) {
             this->_actual_cell_count_property.set_value(actual_cell_count);
-            this->_subject.notify(ui::collection_layout::method::actual_cell_count_changed,
-                                  cast<ui::collection_layout>());
         }
     }
 
@@ -558,10 +553,6 @@ ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
 
 std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rects() {
     return impl_ptr<impl>()->_cell_guide_rects;
-}
-
-ui::collection_layout::subject_t &ui::collection_layout::subject() {
-    return impl_ptr<impl>()->_subject;
 }
 
 flow::node<std::size_t, std::size_t, std::size_t> ui::collection_layout::begin_preferred_cell_count_flow() const {
