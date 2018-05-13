@@ -564,6 +564,10 @@ ui::collection_layout::subject_t &ui::collection_layout::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
+flow::node<std::size_t, std::size_t, std::size_t> ui::collection_layout::begin_preferred_cell_count_flow() const {
+    return impl_ptr<impl>()->_preferred_cell_count_property.begin_value_flow();
+}
+
 flow::node<std::size_t, std::size_t, std::size_t> ui::collection_layout::begin_actual_cell_count_flow() const {
     return impl_ptr<impl>()->_actual_cell_count_property.begin_value_flow();
 }
