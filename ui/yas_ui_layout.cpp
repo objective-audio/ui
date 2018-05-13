@@ -133,7 +133,7 @@ flow::observer<float> ui::make_flow(min_layout::args args) {
         throw "destination_guide is null.";
     }
 
-    flow::node<float, float, float> flow = nullptr;
+    flow::node<float> flow = nullptr;
 
     auto each = make_fast_each(args.source_guides.size());
     while (yas_each_next(each)) {
@@ -161,7 +161,7 @@ flow::observer<float> ui::make_flow(max_layout::args args) {
         throw "destination_guide is null.";
     }
 
-    flow::node<float, float, float> flow = nullptr;
+    flow::node<float> flow = nullptr;
 
     auto each = make_fast_each(args.source_guides.size());
     while (yas_each_next(each)) {
