@@ -47,77 +47,97 @@ struct ui::strings::impl : base::impl {
     void prepare(ui::strings &strings) {
         auto weak_strings = to_weak(strings);
 
-        this->_collection_observers.emplace_back(this->_collection_layout.subject().make_observer(
-            ui::collection_layout::method::actual_cell_count_changed, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_layout();
-                }
-            }));
+        this->_prepare_receivers(weak_strings);
+        this->_prepare_flows(weak_strings);
 
-        this->_collection_observers.emplace_back(this->_collection_layout.subject().make_observer(
-            ui::collection_layout::method::alignment_changed, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.subject().notify(ui::strings::method::alignment_changed, strings);
-                }
-            }));
-
-        this->_property_observers.emplace_back(this->_text_property.subject().make_observer(
-            property_method::did_change, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_layout();
-
-                    strings.subject().notify(ui::strings::method::text_changed, strings);
-                }
-            }));
-
-        this->_property_observers.emplace_back(this->_font_atlas_property.subject().make_observer(
-            property_method::did_change, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_font_atlas_observer();
-                    strings.impl_ptr<impl>()->_update_layout();
-
-                    strings.subject().notify(ui::strings::method::font_atlas_changed, strings);
-                }
-            }));
-
-        this->_property_observers.emplace_back(this->_line_height_property.subject().make_observer(
-            property_method::did_change, [weak_strings](auto const &context) {
-                if (auto strings = weak_strings.lock()) {
-                    strings.impl_ptr<impl>()->_update_layout();
-
-                    strings.subject().notify(ui::strings::method::line_height_changed, strings);
-                }
-            }));
-
-        this->_update_font_atlas_observer();
         this->_update_layout();
     }
 
    private:
     std::size_t const _max_word_count = 0;
-    ui::font_atlas::observer_t _font_atlas_observer = nullptr;
     std::vector<ui::collection_layout::observer_t> _collection_observers;
     std::vector<base> _property_observers;
+    flow::receiver<ui::texture> _texture_receiver = nullptr;
+    flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
+    flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
+    flow::receiver<method> _notify_receiver = nullptr;
+    flow::observer<ui::texture> _texture_flow = nullptr;
+    std::vector<base> _property_flows;
 
-    void _update_font_atlas_observer() {
+    void _prepare_receivers(weak<ui::strings> &weak_strings) {
+        this->_texture_receiver = flow::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
+            if (auto strings = weak_strings.lock()) {
+                strings.rect_plane().node().mesh().set_texture(texture);
+            }
+        });
+
+        this->_update_texture_flow_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
+            if (auto strings = weak_strings.lock()) {
+                strings.impl_ptr<impl>()->_update_texture_flow();
+            }
+        });
+
+        this->_update_layout_receiver = flow::receiver<std::nullptr_t>([weak_strings](auto const &) {
+            if (auto strings = weak_strings.lock()) {
+                strings.impl_ptr<impl>()->_update_layout();
+            }
+        });
+
+        this->_notify_receiver = flow::receiver<method>([weak_strings](method const &method) {
+            if (auto strings = weak_strings.lock()) {
+                strings.subject().notify(method, strings);
+            }
+        });
+    }
+
+    void _prepare_flows(weak<ui::strings> &weak_strings) {
+        this->_property_flows.emplace_back(this->_font_atlas_property.begin_value_flow()
+                                               .receive(this->_update_texture_flow_receiver)
+                                               .to_null()
+                                               .receive(this->_update_layout_receiver)
+                                               .to<method>([](auto const &) { return method::font_atlas_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .sync());
+
+        this->_property_flows.emplace_back(this->_text_property.begin_value_flow()
+                                               .to_null()
+                                               .receive(this->_update_layout_receiver)
+                                               .to<method>([](auto const &) { return method::text_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .end());
+
+        this->_property_flows.emplace_back(this->_line_height_property.begin_value_flow()
+                                               .to_null()
+                                               .receive(this->_update_layout_receiver)
+                                               .to<method>([](auto const &) { return method::line_height_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .end());
+
+        this->_property_flows.emplace_back(
+            this->_collection_layout.begin_actual_cell_count_flow().to_null().receive(this->_update_layout_receiver));
+
+        this->_property_flows.emplace_back(this->_collection_layout.begin_alignment_flow()
+                                               .to<method>([](auto const &) { return method::alignment_changed; })
+                                               .receive(this->_notify_receiver)
+                                               .end());
+    }
+
+    void _update_texture_flow() {
         if (auto &font_atlas = _font_atlas_property.value()) {
-            if (!this->_font_atlas_observer) {
-                this->_font_atlas_observer =
-                    font_atlas.subject().make_wild_card_observer([weak_strings = to_weak(cast<ui::strings>())](
-                        auto const &context) {
-                        if (auto strings = weak_strings.lock()) {
-                            if (context.key == ui::font_atlas::method::texture_changed) {
-                                strings.rect_plane().node().mesh().set_texture(strings.font_atlas().texture());
-                            }
-                            strings.impl_ptr<impl>()->_update_layout();
-                        }
-                    });
-
-                this->_rect_plane.node().mesh().set_texture(font_atlas.texture());
+            if (!this->_texture_flow) {
+                auto weak_strings = to_weak(cast<ui::strings>());
+                auto strings_impl = weak_strings.lock().impl_ptr<impl>();
+                this->_texture_flow = font_atlas.begin_texture_changed_flow()
+                                          .guard([weak_strings](auto const &) { return !!weak_strings; })
+                                          .receive(strings_impl->_texture_receiver)
+                                          .merge(font_atlas.begin_texture_updated_flow())
+                                          .to_null()
+                                          .receive(strings_impl->_update_layout_receiver)
+                                          .sync();
             }
         } else {
             this->_rect_plane.node().mesh().set_texture(nullptr);
-            this->_font_atlas_observer = nullptr;
+            this->_texture_flow = nullptr;
         }
     }
 

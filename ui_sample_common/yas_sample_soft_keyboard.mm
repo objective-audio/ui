@@ -116,7 +116,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
     std::vector<ui::button::observer_t> _soft_key_observers;
     ui::node::observer_t _renderer_observer = nullptr;
-    ui::collection_layout::observer_t _collection_observer;
+    flow::observer<std::size_t> _actual_cell_count_flow = nullptr;
     ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
@@ -125,7 +125,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
     void _setup_soft_keys_if_needed() {
         if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
-            this->_frame_layouts.size() > 0 && this->_collection_observer) {
+            this->_frame_layouts.size() > 0 && this->_actual_cell_count_flow) {
             return;
         }
 
@@ -179,14 +179,15 @@ struct sample::soft_keyboard::impl : base::impl {
             this->_soft_keys.emplace_back(std::move(soft_key));
         }
 
-        this->_collection_observer = this->_collection_layout.subject().make_observer(
-            ui::collection_layout::method::actual_cell_count_changed,
-            [weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &context) {
-                if (auto keyboard = weak_keyboard.lock()) {
-                    keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
-                    keyboard.impl_ptr<impl>()->_update_soft_key_count();
-                }
-            });
+        this->_actual_cell_count_flow =
+            this->_collection_layout.begin_actual_cell_count_flow()
+                .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &) {
+                    if (auto keyboard = weak_keyboard.lock()) {
+                        keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
+                        keyboard.impl_ptr<impl>()->_update_soft_key_count();
+                    }
+                })
+                .end();
 
         this->_src_cell_guide_rects.resize(key_count);
         this->_dst_cell_guide_rects.resize(key_count);
@@ -222,7 +223,7 @@ struct sample::soft_keyboard::impl : base::impl {
         this->_soft_key_observers.clear();
         this->_frame_layouts.clear();
         this->_collection_layout = nullptr;
-        this->_collection_observer = nullptr;
+        this->_actual_cell_count_flow = nullptr;
         this->_src_cell_guide_rects.clear();
         this->_dst_cell_guide_rects.clear();
         this->_cell_interporator = nullptr;

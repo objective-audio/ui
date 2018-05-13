@@ -297,8 +297,6 @@
 		B6F58D231D681D6700807724 /* yas_delaying_caller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_delaying_caller.h; sourceTree = "<group>"; };
 		B6F73B901CDB1DBA009FD0DD /* yas_sample_bg.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_bg.mm; path = ../../ui_sample_common/yas_sample_bg.mm; sourceTree = "<group>"; };
 		B6F73B911CDB1DBA009FD0DD /* yas_sample_bg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_bg.h; path = ../../ui_sample_common/yas_sample_bg.h; sourceTree = "<group>"; };
-		B6F9E46A208A394F000B390E /* yas_flow_observing_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_observing_private.h; sourceTree = "<group>"; };
-		B6F9E46B208A394F000B390E /* yas_flow_observing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_observing.h; sourceTree = "<group>"; };
 		B6F9E46C208A3950000B390E /* yas_flow_graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph.h; sourceTree = "<group>"; };
 		B6F9E46D208A3950000B390E /* yas_flow_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_private.h; sourceTree = "<group>"; };
 		B6F9E46E208A3950000B390E /* yas_flow_graph_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph_private.h; sourceTree = "<group>"; };
@@ -464,14 +462,12 @@
 				B6F501891C9BFFD400A0B4A1 /* yas_version.h */,
 				B6F9E46E208A3950000B390E /* yas_flow_graph_private.h */,
 				B6F9E46C208A3950000B390E /* yas_flow_graph.h */,
-				B6F9E46A208A394F000B390E /* yas_flow_observing_private.h */,
-				B6F9E46B208A394F000B390E /* yas_flow_observing.h */,
 				B6F9E46D208A3950000B390E /* yas_flow_private.h */,
 				B6F9E46F208A3951000B390E /* yas_flow.h */,
 			);
 			name = cpp_utils;
-			path = /Users/yuki/Documents/Programming/Project/Git/ui/ui_tests/../submodules/cpp_utils/cpp_utils;
-			sourceTree = "<absolute>";
+			path = ../submodules/cpp_utils/cpp_utils;
+			sourceTree = "<group>";
 		};
 		B6F501911C9BFFD400A0B4A1 /* shader_mac */ = {
 			isa = PBXGroup;
@@ -595,8 +591,8 @@
 				B630B46E1C9FC3A3009793A9 /* yas_ui.h */,
 			);
 			name = ui;
-			path = /Users/yuki/Documents/Programming/Project/Git/ui/ui_tests/../ui;
-			sourceTree = "<absolute>";
+			path = ../ui;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 

@@ -9,6 +9,7 @@
 #include "yas_result.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
+#include "yas_flow.h"
 
 namespace yas {
 template <typename K, typename T>
@@ -95,6 +96,15 @@ class collection_layout : public base {
     ui::layout_guide_rect &frame_layout_guide_rect();
     std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
 
-    subject_t &subject();
+    [[nodiscard]] flow::node<std::size_t> begin_preferred_cell_count_flow() const;
+    [[nodiscard]] flow::node<std::size_t> begin_actual_cell_count_flow() const;
+    [[nodiscard]] flow::node<ui::size> begin_default_cell_size_flow() const;
+    [[nodiscard]] flow::node<std::vector<line>> begin_lines_flow() const;
+    [[nodiscard]] flow::node<float> begin_row_spacing_flow() const;
+    [[nodiscard]] flow::node<float> begin_col_spacing_flow() const;
+    [[nodiscard]] flow::node<ui::layout_alignment> begin_alignment_flow() const;
+    [[nodiscard]] flow::node<ui::layout_direction> begin_direction_flow() const;
+    [[nodiscard]] flow::node<ui::layout_order> begin_row_order_flow() const;
+    [[nodiscard]] flow::node<ui::layout_order> begin_col_order_flow() const;
 };
 }

@@ -54,6 +54,7 @@ struct ui::collection_layout::impl : base::impl {
     property<ui::layout_order> _row_order_property;
     property<ui::layout_order> _col_order_property;
     property<std::size_t> _preferred_cell_count_property;
+    property<std::size_t> _actual_cell_count_property;
     property<ui::size> _default_cell_size_property;
     property<std::vector<ui::collection_layout::line>> _lines_property;
 
@@ -65,7 +66,6 @@ struct ui::collection_layout::impl : base::impl {
     flow::observer<float> _bottom_border_flow;
     flow::observer<float> _top_border_flow;
     ui::layout_borders const _borders;
-    subject_t _subject;
     flow::observer<float> _border_flow = nullptr;
     flow::receiver<method> _properties_receiver = nullptr;
 
@@ -124,7 +124,6 @@ struct ui::collection_layout::impl : base::impl {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();
-                layout_impl->_subject.notify(method, layout);
             }
         }};
 
@@ -180,7 +179,6 @@ struct ui::collection_layout::impl : base::impl {
             this->_frame_guide_rect.set_region(std::move(frame));
 
             this->_update_layout();
-            this->_subject.notify(ui::collection_layout::method::frame_changed, cast<ui::collection_layout>());
         }
     }
 
@@ -205,6 +203,7 @@ struct ui::collection_layout::impl : base::impl {
 
         if (preferred_cell_count == 0) {
             this->_cell_guide_rects.clear();
+            this->_actual_cell_count_property.set_value(0);
             return;
         }
 
@@ -298,8 +297,7 @@ struct ui::collection_layout::impl : base::impl {
         this->pop_notify_waiting();
 
         if (prev_actual_cell_count != actual_cell_count) {
-            this->_subject.notify(ui::collection_layout::method::actual_cell_count_changed,
-                                  cast<ui::collection_layout>());
+            this->_actual_cell_count_property.set_value(actual_cell_count);
         }
     }
 
@@ -557,6 +555,43 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
     return impl_ptr<impl>()->_cell_guide_rects;
 }
 
-ui::collection_layout::subject_t &ui::collection_layout::subject() {
-    return impl_ptr<impl>()->_subject;
+flow::node<std::size_t> ui::collection_layout::begin_preferred_cell_count_flow() const {
+    return impl_ptr<impl>()->_preferred_cell_count_property.begin_value_flow();
+}
+
+flow::node<std::size_t> ui::collection_layout::begin_actual_cell_count_flow() const {
+    return impl_ptr<impl>()->_actual_cell_count_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::size> ui::collection_layout::begin_default_cell_size_flow() const {
+    return impl_ptr<impl>()->_default_cell_size_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<std::vector<ui::collection_layout::line>>
+ui::collection_layout::begin_lines_flow() const {
+    return impl_ptr<impl>()->_lines_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<float> ui::collection_layout::begin_row_spacing_flow() const {
+    return impl_ptr<impl>()->_row_spacing_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<float> ui::collection_layout::begin_col_spacing_flow() const {
+    return impl_ptr<impl>()->_col_spacing_property.begin_value_flow();
+}
+
+flow::node<ui::layout_alignment> ui::collection_layout::begin_alignment_flow() const {
+    return impl_ptr<impl>()->_alignment_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::layout_direction> ui::collection_layout::begin_direction_flow() const {
+    return impl_ptr<impl>()->_direction_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::layout_order> ui::collection_layout::begin_row_order_flow() const {
+    return impl_ptr<impl>()->_row_order_property.begin_value_flow();
+}
+
+[[nodiscard]] flow::node<ui::layout_order> ui::collection_layout::begin_col_order_flow() const {
+    return impl_ptr<impl>()->_col_order_property.begin_value_flow();
 }
