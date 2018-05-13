@@ -5,6 +5,8 @@ branches:
     - master
 notifications:
   email: false
+install:
+  - brew install clang-format
 script:
   - git submodule update --init --recursive
   - xcodebuild -project ui_mac_tests/ui_mac_tests.xcodeproj -scheme ui_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
