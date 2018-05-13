@@ -59,5 +59,7 @@ class strings : public base {
     ui::rect_plane &rect_plane();
 
     subject_t &subject();
+
+    flow::receiver<std::string> &text_receiver();
 };
 }  // namespace yas::ui
