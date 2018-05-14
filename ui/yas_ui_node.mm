@@ -451,8 +451,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             if (this->_dispatch_flows.count(method) == 0) {
                 base flow = nullptr;
 
-                auto make_flow = [receiver = this->_dispatch_receiver, weak_node = to_weak(cast<ui::node>())](
-                                     ui::node::method const &method, auto &property) mutable {
+                auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
+                                                                       auto &property) mutable {
                     return property.begin_value_flow()
                         .template to<ui::node::method>([method](auto const &) { return method; })
                         .end(receiver);
@@ -466,46 +466,28 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                         flow = make_flow(method, this->_angle_property);
                         break;
                     case ui::node::method::scale_changed:
-                        flow = this->_scale_property.begin_value_flow()
-                                   .to<ui::node::method>([](auto const &) { return ui::node::method::scale_changed; })
-                                   .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_scale_property);
                         break;
                     case ui::node::method::color_changed:
-                        flow = this->_color_property.begin_value_flow()
-                                   .to<ui::node::method>([](auto const &) { return ui::node::method::color_changed; })
-                                   .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_color_property);
                         break;
                     case ui::node::method::alpha_changed:
-                        flow = this->_alpha_property.begin_value_flow()
-                                   .to<ui::node::method>([](auto const &) { return ui::node::method::alpha_changed; })
-                                   .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_alpha_property);
                         break;
                     case ui::node::method::enabled_changed:
-                        flow = this->_enabled_property.begin_value_flow()
-                                   .to<ui::node::method>([](auto const &) { return ui::node::method::enabled_changed; })
-                                   .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_enabled_property);
                         break;
                     case ui::node::method::mesh_changed:
-                        flow = this->_mesh_property.begin_value_flow()
-                                   .to<ui::node::method>([](auto const &) { return ui::node::method::mesh_changed; })
-                                   .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_mesh_property);
                         break;
                     case ui::node::method::collider_changed:
-                        flow =
-                            this->_collider_property.begin_value_flow()
-                                .to<ui::node::method>([](auto const &) { return ui::node::method::collider_changed; })
-                                .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_collider_property);
                         break;
                     case ui::node::method::parent_changed:
-                        flow = this->_parent_property.begin_value_flow()
-                                   .to<ui::node::method>([](auto const &) { return ui::node::method::parent_changed; })
-                                   .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_parent_property);
                         break;
                     case ui::node::method::renderer_changed:
-                        flow =
-                            this->_renderer_property.begin_value_flow()
-                                .to<ui::node::method>([](auto const &) { return ui::node::method::renderer_changed; })
-                                .end(this->_dispatch_receiver);
+                        flow = make_flow(method, this->_renderer_property);
                         break;
 
                     default:
