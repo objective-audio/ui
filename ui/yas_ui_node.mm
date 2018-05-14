@@ -448,55 +448,57 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
-            if (this->_dispatch_flows.count(method) == 0) {
-                base flow = nullptr;
-
-                auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
-                                                                       auto &property) mutable {
-                    return property.begin_value_flow()
-                        .template to<ui::node::method>([method](auto const &) { return method; })
-                        .end(receiver);
-                };
-
-                switch (method) {
-                    case ui::node::method::position_changed:
-                        flow = make_flow(method, this->_position_property);
-                        break;
-                    case ui::node::method::angle_changed:
-                        flow = make_flow(method, this->_angle_property);
-                        break;
-                    case ui::node::method::scale_changed:
-                        flow = make_flow(method, this->_scale_property);
-                        break;
-                    case ui::node::method::color_changed:
-                        flow = make_flow(method, this->_color_property);
-                        break;
-                    case ui::node::method::alpha_changed:
-                        flow = make_flow(method, this->_alpha_property);
-                        break;
-                    case ui::node::method::enabled_changed:
-                        flow = make_flow(method, this->_enabled_property);
-                        break;
-                    case ui::node::method::mesh_changed:
-                        flow = make_flow(method, this->_mesh_property);
-                        break;
-                    case ui::node::method::collider_changed:
-                        flow = make_flow(method, this->_collider_property);
-                        break;
-                    case ui::node::method::parent_changed:
-                        flow = make_flow(method, this->_parent_property);
-                        break;
-                    case ui::node::method::renderer_changed:
-                        flow = make_flow(method, this->_renderer_property);
-                        break;
-
-                    default:
-                        throw std::invalid_argument("invalid method");
-                        break;
-                }
-
-                this->_dispatch_flows.emplace(method, std::move(flow));
+            if (this->_dispatch_flows.count(method) > 0) {
+                continue;
             }
+
+            base flow = nullptr;
+
+            auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
+                                                                   auto &property) mutable {
+                return property.begin_value_flow()
+                    .template to<ui::node::method>([method](auto const &) { return method; })
+                    .end(receiver);
+            };
+
+            switch (method) {
+                case ui::node::method::position_changed:
+                    flow = make_flow(method, this->_position_property);
+                    break;
+                case ui::node::method::angle_changed:
+                    flow = make_flow(method, this->_angle_property);
+                    break;
+                case ui::node::method::scale_changed:
+                    flow = make_flow(method, this->_scale_property);
+                    break;
+                case ui::node::method::color_changed:
+                    flow = make_flow(method, this->_color_property);
+                    break;
+                case ui::node::method::alpha_changed:
+                    flow = make_flow(method, this->_alpha_property);
+                    break;
+                case ui::node::method::enabled_changed:
+                    flow = make_flow(method, this->_enabled_property);
+                    break;
+                case ui::node::method::mesh_changed:
+                    flow = make_flow(method, this->_mesh_property);
+                    break;
+                case ui::node::method::collider_changed:
+                    flow = make_flow(method, this->_collider_property);
+                    break;
+                case ui::node::method::parent_changed:
+                    flow = make_flow(method, this->_parent_property);
+                    break;
+                case ui::node::method::renderer_changed:
+                    flow = make_flow(method, this->_renderer_property);
+                    break;
+
+                default:
+                    throw std::invalid_argument("invalid method");
+                    break;
+            }
+
+            this->_dispatch_flows.emplace(method, std::move(flow));
         }
 
         return this->_dispatch_sender.begin().guard(

@@ -601,10 +601,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B6F501631C9BFF9800A0B4A1 /* Build configuration list for PBXNativeTarget "ui_mac_sample" */;
 			buildPhases = (
+				B6302A0820A86F43009A5C2A /* ShellScript */,
 				B6F5014B1C9BFF9800A0B4A1 /* Sources */,
 				B6F5014C1C9BFF9800A0B4A1 /* Frameworks */,
 				B6F5014D1C9BFF9800A0B4A1 /* Resources */,
-				B6302A0820A86F43009A5C2A /* ShellScript */,
 			);
 			buildRules = (
 			);
