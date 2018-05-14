@@ -164,4 +164,18 @@ using namespace yas;
     XCTAssertNoThrow(strings.set_font_atlas(font_atlas));
 }
 
+- (void)test_text_receiver {
+    ui::strings strings;
+
+    flow::sender<std::string> sender;
+
+    auto flow = sender.begin().end(strings.text_receiver());
+
+    XCTAssertEqual(strings.text(), "");
+
+    sender.send_value("test_text");
+
+    XCTAssertEqual(strings.text(), "test_text");
+}
+
 @end

@@ -21,6 +21,7 @@ struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
     subject_t _subject;
+    flow::receiver<std::string> _text_receiver = nullptr;
 
     property<std::string> _text_property;
     property<ui::font_atlas> _font_atlas_property;
@@ -86,6 +87,12 @@ struct ui::strings::impl : base::impl {
         this->_notify_receiver = flow::receiver<method>([weak_strings](method const &method) {
             if (auto strings = weak_strings.lock()) {
                 strings.subject().notify(method, strings);
+            }
+        });
+
+        this->_text_receiver = flow::receiver<std::string>([weak_strings](std::string const &text) {
+            if (auto strings = weak_strings.lock()) {
+                strings.set_text(text);
             }
         });
     }
@@ -297,4 +304,8 @@ ui::rect_plane &ui::strings::rect_plane() {
 
 ui::strings::subject_t &ui::strings::subject() {
     return impl_ptr<impl>()->_subject;
+}
+
+flow::receiver<std::string> &ui::strings::text_receiver() {
+    return impl_ptr<impl>()->_text_receiver;
 }
