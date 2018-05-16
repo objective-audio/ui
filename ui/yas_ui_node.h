@@ -103,8 +103,8 @@ class node : public base {
     [[nodiscard]] observer_t dispatch_and_make_wild_card_observer(std::vector<method> const &,
                                                                   observer_t::handler_f const &);
     using flow_pair_t = std::pair<method, node>;
-    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(method const &);
-    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(std::vector<method> const &);
+    [[nodiscard]] flow::node<flow_pair_t> begin_flow(method const &);
+    [[nodiscard]] flow::node<flow_pair_t> begin_flow(std::vector<method> const &);
 
     ui::point convert_position(ui::point const &) const;
 

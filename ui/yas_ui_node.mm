@@ -446,7 +446,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow(std::vector<ui::node::method> const &methods) {
+    flow::node<flow_pair_t> begin_flow(std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
             if (this->_dispatch_flows.count(method) > 0) {
                 continue;
@@ -812,13 +812,11 @@ ui::node::observer_t ui::node::dispatch_and_make_wild_card_observer(std::vector<
     return this->subject().make_wild_card_observer(handler);
 }
 
-flow::node<ui::node::flow_pair_t, ui::node::flow_pair_t, ui::node::flow_pair_t> ui::node::begin_flow(
-    ui::node::method const &method) {
+flow::node<ui::node::flow_pair_t> ui::node::begin_flow(ui::node::method const &method) {
     return impl_ptr<impl>()->begin_flow({method});
 }
 
-flow::node<ui::node::flow_pair_t, ui::node::flow_pair_t, ui::node::flow_pair_t> ui::node::begin_flow(
-    std::vector<ui::node::method> const &methods) {
+flow::node<ui::node::flow_pair_t> ui::node::begin_flow(std::vector<ui::node::method> const &methods) {
     return impl_ptr<impl>()->begin_flow(methods);
 }
 
