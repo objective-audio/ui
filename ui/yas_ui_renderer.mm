@@ -152,6 +152,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             throw "metal_system not found.";
         }
 
+        this->_will_render_sender.send_value(nullptr);
         this->_subject.notify(renderer::method::will_render, cast<ui::renderer>());
 
         if (to_bool(pre_render())) {
@@ -200,6 +201,8 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::event_manager _event_manager;
     ui::layout_guide_rect _view_layout_guide_rect;
     ui::layout_guide_rect _safe_area_layout_guide_rect;
+
+    flow::sender<std::nullptr_t> _will_render_sender;
 
    private:
     update_result _update_view_size(CGSize const v_size, CGSize const d_size) {
@@ -384,6 +387,10 @@ ui::layout_guide_rect const &ui::renderer::safe_area_layout_guide_rect() const {
 
 ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
     return impl_ptr<impl>()->_safe_area_layout_guide_rect;
+}
+
+flow::node<std::nullptr_t> ui::renderer::begin_will_render_flow() const {
+    return impl_ptr<impl>()->_will_render_sender.begin();
 }
 
 #pragma mark -
