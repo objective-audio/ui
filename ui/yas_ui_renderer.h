@@ -78,6 +78,8 @@ class renderer : public base {
     ui::layout_guide_rect &view_layout_guide_rect();
     ui::layout_guide_rect const &safe_area_layout_guide_rect() const;
     ui::layout_guide_rect &safe_area_layout_guide_rect();
+    
+    flow::node<std::nullptr_t> begin_will_render_flow() const;
 
    private:
     ui::view_renderable _view_renderable = nullptr;
