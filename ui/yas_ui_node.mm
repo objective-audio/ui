@@ -820,6 +820,17 @@ flow::node<ui::node::flow_pair_t> ui::node::begin_flow(std::vector<ui::node::met
     return impl_ptr<impl>()->begin_flow(methods);
 }
 
+flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>> ui::node::begin_renderer_flow() const {
+    return impl_ptr<impl>()->_renderer_property.begin_value_flow().to<ui::renderer>(
+        [](weak<ui::renderer> const &weak_renderer) {
+            if (auto renderer = weak_renderer.lock()) {
+                return renderer;
+            } else {
+                return ui::renderer{nullptr};
+            }
+        });
+}
+
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }
