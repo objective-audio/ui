@@ -518,6 +518,25 @@ struct test_render_encoder : base {
     XCTAssertFalse(called);
 }
 
+- (void)test_begin_renderer_flow {
+    ui::renderer notified{nullptr};
+
+    ui::node node;
+
+    auto flow =
+        node.begin_renderer_flow().perform([&notified](ui::renderer const &renderer) { notified = renderer; }).end();
+
+    ui::renderer renderer;
+
+    node.renderable().set_renderer(renderer);
+
+    XCTAssertEqual(notified, renderer);
+
+    node.renderable().set_renderer(nullptr);
+
+    XCTAssertTrue(!notified);
+}
+
 - (void)test_fetch_updates {
     ui::node node;
 
