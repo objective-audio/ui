@@ -812,11 +812,11 @@ ui::node::observer_t ui::node::dispatch_and_make_wild_card_observer(std::vector<
     return this->subject().make_wild_card_observer(handler);
 }
 
-flow::node<ui::node::flow_pair_t> ui::node::begin_flow(ui::node::method const &method) {
+flow::node<ui::node::flow_pair_t> ui::node::begin_flow(ui::node::method const &method) const {
     return impl_ptr<impl>()->begin_flow({method});
 }
 
-flow::node<ui::node::flow_pair_t> ui::node::begin_flow(std::vector<ui::node::method> const &methods) {
+flow::node<ui::node::flow_pair_t> ui::node::begin_flow(std::vector<ui::node::method> const &methods) const {
     return impl_ptr<impl>()->begin_flow(methods);
 }
 
