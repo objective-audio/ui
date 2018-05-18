@@ -196,7 +196,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
     ui::renderer::observer_t _renderer_observer = nullptr;
-    flow::observer<float> _rect_observer = nullptr;
+    flow::observer _rect_observer = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);

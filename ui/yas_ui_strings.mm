@@ -62,7 +62,7 @@ struct ui::strings::impl : base::impl {
     flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
     flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
     flow::receiver<method> _notify_receiver = nullptr;
-    flow::observer<ui::texture> _texture_flow = nullptr;
+    flow::observer _texture_flow = nullptr;
     std::vector<base> _property_flows;
 
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
@@ -247,7 +247,7 @@ struct ui::strings::impl : base::impl {
     }
 
    private:
-    std::vector<flow::observer<float>> _cell_rect_observers;
+    std::vector<flow::observer> _cell_rect_observers;
 };
 
 ui::strings::strings() : strings(args{}) {

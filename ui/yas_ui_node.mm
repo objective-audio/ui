@@ -536,9 +536,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     node::subject_t _subject;
 
-    flow::observer<float> _x_observer = nullptr;
-    flow::observer<float> _y_observer = nullptr;
-    flow::observer<float> _position_observer = nullptr;
+    flow::observer _x_observer = nullptr;
+    flow::observer _y_observer = nullptr;
+    flow::observer _position_observer = nullptr;
 
    private:
     std::vector<ui::node> _children;

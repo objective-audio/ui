@@ -55,12 +55,12 @@ struct args {
 }  // namespace yas::ui::max_layout
 
 namespace yas::ui {
-[[nodiscard]] flow::observer<float> make_flow(fixed_layout::args);
-[[nodiscard]] flow::observer<float> make_flow(fixed_layout_point::args);
-[[nodiscard]] flow::observer<float> make_flow(fixed_layout_rect::args);
+[[nodiscard]] flow::observer make_flow(fixed_layout::args);
+[[nodiscard]] flow::observer make_flow(fixed_layout_point::args);
+[[nodiscard]] flow::observer make_flow(fixed_layout_rect::args);
 
-[[nodiscard]] flow::observer<float> make_flow(justified_layout::args);
+[[nodiscard]] flow::observer make_flow(justified_layout::args);
 
-[[nodiscard]] flow::observer<float> make_flow(min_layout::args);
-[[nodiscard]] flow::observer<float> make_flow(max_layout::args);
+[[nodiscard]] flow::observer make_flow(min_layout::args);
+[[nodiscard]] flow::observer make_flow(max_layout::args);
 }  // namespace yas::ui

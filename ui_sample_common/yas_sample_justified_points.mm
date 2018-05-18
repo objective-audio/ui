@@ -27,9 +27,8 @@ struct sample::justified_points::impl : base::impl {
         auto &node = this->_rect_plane.node();
 
         this->_renderer_observer = node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed,
-            [weak_points = to_weak(points), x_layout = flow::observer<float>{nullptr},
-             y_layout = flow::observer<float>{nullptr}](auto const &context) mutable {
+            ui::node::method::renderer_changed, [weak_points = to_weak(points), x_layout = flow::observer{nullptr},
+                                                 y_layout = flow::observer{nullptr}](auto const &context) mutable {
                 if (auto points = weak_points.lock()) {
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
@@ -64,7 +63,7 @@ struct sample::justified_points::impl : base::impl {
 
    private:
     ui::node::observer_t _renderer_observer = nullptr;
-    std::vector<flow::observer<float>> _guide_observers;
+    std::vector<flow::observer> _guide_observers;
 
     void _setup_colors() {
         this->_rect_plane.node().mesh().set_use_mesh_color(true);

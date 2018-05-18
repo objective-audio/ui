@@ -112,16 +112,16 @@ struct sample::soft_keyboard::impl : base::impl {
     ui::font_atlas _font_atlas = nullptr;
 
     ui::collection_layout _collection_layout = nullptr;
-    std::vector<flow::observer<float>> _frame_layouts;
+    std::vector<flow::observer> _frame_layouts;
 
     std::vector<ui::button::observer_t> _soft_key_observers;
     ui::node::observer_t _renderer_observer = nullptr;
-    flow::observer<std::size_t> _actual_cell_count_flow = nullptr;
+    flow::observer _actual_cell_count_flow = nullptr;
     ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
-    std::vector<std::vector<flow::observer<float>>> _fixed_cell_layouts;
-    std::vector<flow::observer<float>> _dst_rect_observers;
+    std::vector<std::vector<flow::observer>> _fixed_cell_layouts;
+    std::vector<flow::observer> _dst_rect_observers;
 
     void _setup_soft_keys_if_needed() {
         if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
@@ -296,7 +296,7 @@ struct sample::soft_keyboard::impl : base::impl {
                     auto &src_guide_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
                     auto &dst_guide_rect = this->_src_cell_guide_rects.at(idx);
 
-                    std::vector<flow::observer<float>> layouts;
+                    std::vector<flow::observer> layouts;
                     layouts.reserve(4);
 
                     layouts.emplace_back(ui::make_flow(

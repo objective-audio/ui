@@ -16,7 +16,7 @@ using namespace yas;
 struct ui::rect_plane_data::impl : base::impl {
     ui::dynamic_mesh_data _dynamic_mesh_data;
     std::vector<ui::texture_element::observer_t> _element_observers;
-    std::vector<flow::observer<ui::uint_region>> _element_flows;
+    std::vector<flow::observer> _element_flows;
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
 
     impl(ui::dynamic_mesh_data &&data) : _dynamic_mesh_data(std::move(data)) {

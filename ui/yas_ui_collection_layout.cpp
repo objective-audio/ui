@@ -61,12 +61,12 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    flow::observer<float> _left_border_flow;
-    flow::observer<float> _right_border_flow;
-    flow::observer<float> _bottom_border_flow;
-    flow::observer<float> _top_border_flow;
+    flow::observer _left_border_flow;
+    flow::observer _right_border_flow;
+    flow::observer _bottom_border_flow;
+    flow::observer _top_border_flow;
     ui::layout_borders const _borders;
-    flow::observer<float> _border_flow = nullptr;
+    flow::observer _border_flow = nullptr;
     flow::receiver<method> _properties_receiver = nullptr;
 
     impl(args &&args)

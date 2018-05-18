@@ -19,7 +19,7 @@ struct sample::inputted_text::impl : base::impl {
 
         this->_renderer_observer = node.dispatch_and_make_observer(
             ui::node::method::renderer_changed, [weak_text = to_weak(text), event_observer = base{nullptr},
-                                                 layout = flow::observer<float>{nullptr}](auto const &context) mutable {
+                                                 layout = flow::observer{nullptr}](auto const &context) mutable {
                 if (auto text = weak_text.lock()) {
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {

@@ -10,7 +10,7 @@ using namespace yas;
 
 #pragma mark - fixed_layout
 
-flow::observer<float> ui::make_flow(fixed_layout::args args) {
+flow::observer ui::make_flow(fixed_layout::args args) {
     if (!args.source_guide || !args.destination_guide) {
         throw "argument is null.";
     }
@@ -20,7 +20,7 @@ flow::observer<float> ui::make_flow(fixed_layout::args args) {
         .sync(args.destination_guide.receiver());
 }
 
-flow::observer<float> ui::make_flow(fixed_layout_point::args args) {
+flow::observer ui::make_flow(fixed_layout_point::args args) {
     if (!args.source_guide_point || !args.destination_guide_point) {
         throw "argument is null.";
     }
@@ -32,7 +32,7 @@ flow::observer<float> ui::make_flow(fixed_layout_point::args args) {
         .sync(args.destination_guide_point.receiver());
 }
 
-flow::observer<float> ui::make_flow(fixed_layout_rect::args args) {
+flow::observer ui::make_flow(fixed_layout_rect::args args) {
     if (!args.source_guide_rect || !args.destination_guide_rect) {
         throw "argument is null.";
     }
@@ -50,7 +50,7 @@ flow::observer<float> ui::make_flow(fixed_layout_rect::args args) {
 
 #pragma mark - jusitified_layout
 
-flow::observer<float> ui::make_flow(justified_layout::args args) {
+flow::observer ui::make_flow(justified_layout::args args) {
     if (!args.first_source_guide) {
         throw "first_source_guide is null.";
     }
@@ -124,7 +124,7 @@ flow::observer<float> ui::make_flow(justified_layout::args args) {
 
 #pragma mark - other layouts
 
-flow::observer<float> ui::make_flow(min_layout::args args) {
+flow::observer ui::make_flow(min_layout::args args) {
     if (args.source_guides.size() < 2) {
         throw "source_guides is less than 2.";
     }
@@ -152,7 +152,7 @@ flow::observer<float> ui::make_flow(min_layout::args args) {
     return flow.sync(args.destination_guide.receiver());
 }
 
-flow::observer<float> ui::make_flow(max_layout::args args) {
+flow::observer ui::make_flow(max_layout::args args) {
     if (args.source_guides.size() < 2) {
         throw "source_guides is less than 2.";
     }
