@@ -148,7 +148,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint_point _draw_actual_pos;
     std::vector<texture_element> _texture_elements;
     ui::renderer::observer_t _renderer_observer = nullptr;
-    flow::observer<ui::uint_size> _properties_flow = nullptr;
+    flow::observer _properties_flow = nullptr;
     flow::sender<flow_pair_t> _notify_sender;
     flow::receiver<method> _notify_receiver = nullptr;
 

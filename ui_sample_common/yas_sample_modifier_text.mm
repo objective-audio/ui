@@ -20,8 +20,8 @@ struct sample::modifier_text::impl : base::impl {
 
         this->_renderer_observer = node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
-            [weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = flow::observer<float>{nullptr},
-             right_layout = flow::observer<float>{nullptr}, bottom_layout = flow::observer<float>{nullptr},
+            [weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = flow::observer{nullptr},
+             right_layout = flow::observer{nullptr}, bottom_layout = flow::observer{nullptr},
              strings_observer = ui::strings::observer_t{nullptr}](auto const &context) mutable {
                 if (auto text = weak_text.lock()) {
                     auto node = context.value;
@@ -54,8 +54,7 @@ struct sample::modifier_text::impl : base::impl {
                                                        .source_guide = text_impl->_bottom_guide,
                                                        .destination_guide = strings_guide_rect.bottom()});
 
-                        auto strings_handler = [top_layout =
-                                                    flow::observer<float>{nullptr}](ui::strings &strings) mutable {
+                        auto strings_handler = [top_layout = flow::observer{nullptr}](ui::strings &strings) mutable {
                             float distance = 0.0f;
 
                             if (auto const &font_atlas = strings.font_atlas()) {

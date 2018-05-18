@@ -260,8 +260,8 @@ struct ui::layout_guide_range::impl : base::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
     layout_guide _length_guide;
-    flow::observer<float> _min_observer = nullptr;
-    flow::observer<float> _max_observer = nullptr;
+    flow::observer _min_observer = nullptr;
+    flow::observer _max_observer = nullptr;
 
     flow::receiver<ui::range> _receiver = nullptr;
 

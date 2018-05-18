@@ -26,7 +26,7 @@ struct ui::blur::impl : base::impl {
     }
 
    private:
-    flow::observer<double> _sigma_flow = nullptr;
+    flow::observer _sigma_flow = nullptr;
 
     void _update_effect_handler() {
         double const sigma = this->_sigma_property.value();

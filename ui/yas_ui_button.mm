@@ -249,7 +249,7 @@ struct ui::button::impl : base::impl {
 
     ui::node::observer_t _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
-    flow::observer<float> _rect_observer = nullptr;
+    flow::observer _rect_observer = nullptr;
 };
 
 #pragma mark - ui::button

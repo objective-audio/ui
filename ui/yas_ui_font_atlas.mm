@@ -103,8 +103,13 @@ struct ui::font_atlas::impl : base::impl {
 
         this->_texture_changed_flow = this->_texture_property.begin_value_flow().end(this->_texture_changed_receiver);
 
-        this->_texture_changed_sender.set_can_sync_handler([weak_atlas]() { return !!weak_atlas; });
-        this->_texture_changed_sender.set_sync_handler([weak_atlas]() { return weak_atlas.lock().texture(); });
+        this->_texture_changed_sender.set_sync_handler([weak_atlas]() {
+            if (auto atlas = weak_atlas.lock()) {
+                return opt_t<ui::texture>{atlas.texture()};
+            } else {
+                return opt_t<ui::texture>{nullopt};
+            }
+        });
     }
 
     ui::texture &texture() {
@@ -155,12 +160,12 @@ struct ui::font_atlas::impl : base::impl {
     property<ui::texture> _texture_property{{.value = nullptr}};
     std::vector<ui::word_info> _word_infos;
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
-    std::vector<flow::observer<ui::uint_region>> _element_flows;
+    std::vector<flow::observer> _element_flows;
     flow::receiver<ui::texture> _texture_updated_receiver = nullptr;
-    flow::observer<ui::texture::flow_pair_t> _texture_flow = nullptr;
+    flow::observer _texture_flow = nullptr;
     flow::sender<ui::texture> _texture_setter;
-    flow::observer<ui::texture> _texture_setter_flow = nullptr;
-    flow::observer<ui::texture> _texture_changed_flow = nullptr;
+    flow::observer _texture_setter_flow = nullptr;
+    flow::observer _texture_changed_flow = nullptr;
     flow::receiver<ui::texture> _texture_changed_receiver = nullptr;
 
     void _update_word_infos() {

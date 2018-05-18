@@ -28,7 +28,7 @@ struct sample::bg::impl : base::impl {
 
         this->_renderer_observer = this->_rect_plane.node().dispatch_and_make_observer(
             ui::node::method::renderer_changed,
-            [weak_bg, layout = flow::observer<float>{nullptr}](auto const &context) mutable {
+            [weak_bg, layout = flow::observer{nullptr}](auto const &context) mutable {
                 if (sample::bg bg = weak_bg.lock()) {
                     auto impl = bg.impl_ptr<sample::bg::impl>();
                     ui::node node = context.value;
@@ -45,7 +45,7 @@ struct sample::bg::impl : base::impl {
 
    private:
     ui::node::observer_t _renderer_observer = nullptr;
-    flow::observer<float> _rect_observer = nullptr;
+    flow::observer _rect_observer = nullptr;
 };
 
 sample::bg::bg() : base(std::make_shared<impl>()) {
