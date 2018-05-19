@@ -101,7 +101,6 @@ flow::observer ui::make_flow(justified_layout::args args) {
 
     return args.first_source_guide.begin_flow()
         .combine(args.second_source_guide.begin_flow())
-        .to<std::pair<float, float>>([](auto const &pair) { return std::make_pair(*pair.first, *pair.second); })
         .perform([dst_outputs, normalized_rates](auto const &pair) mutable {
             auto const dst_count = dst_outputs.size();
             auto const first_value = pair.first;
@@ -142,7 +141,7 @@ flow::observer ui::make_flow(min_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .to<float>([](auto const &pair) { return std::min(*pair.first, *pair.second); })
+                       .to<float>([](auto const &pair) { return std::min(pair.first, pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();
@@ -170,7 +169,7 @@ flow::observer ui::make_flow(max_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .to<float>([](auto const &pair) { return std::max(*pair.first, *pair.second); })
+                       .to<float>([](auto const &pair) { return std::max(pair.first, pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();
