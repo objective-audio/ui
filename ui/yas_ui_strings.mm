@@ -102,31 +102,32 @@ struct ui::strings::impl : base::impl {
                                                .receive(this->_update_texture_flow_receiver)
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
-                                               .to<method>([](auto const &) { return method::font_atlas_changed; })
+                                               .to([](std::nullptr_t const &) { return method::font_atlas_changed; })
                                                .receive(this->_notify_receiver)
                                                .sync());
 
         this->_property_flows.emplace_back(this->_text_property.begin_value_flow()
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
-                                               .to<method>([](auto const &) { return method::text_changed; })
+                                               .to([](std::nullptr_t const &) { return method::text_changed; })
                                                .receive(this->_notify_receiver)
                                                .end());
 
         this->_property_flows.emplace_back(this->_line_height_property.begin_value_flow()
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
-                                               .to<method>([](auto const &) { return method::line_height_changed; })
+                                               .to([](std::nullptr_t const &) { return method::line_height_changed; })
                                                .receive(this->_notify_receiver)
                                                .end());
 
         this->_property_flows.emplace_back(
             this->_collection_layout.begin_actual_cell_count_flow().to_null().receive(this->_update_layout_receiver));
 
-        this->_property_flows.emplace_back(this->_collection_layout.begin_alignment_flow()
-                                               .to<method>([](auto const &) { return method::alignment_changed; })
-                                               .receive(this->_notify_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_collection_layout.begin_alignment_flow()
+                .to([](ui::layout_alignment const &) { return method::alignment_changed; })
+                .receive(this->_notify_receiver)
+                .end());
     }
 
     void _update_texture_flow() {

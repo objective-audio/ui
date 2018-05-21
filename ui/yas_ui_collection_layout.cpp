@@ -134,42 +134,44 @@ struct ui::collection_layout::impl : base::impl {
                 .end();
 
         this->_property_flows.emplace_back(this->_row_spacing_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::row_spacing_changed; })
+                                               .to([](float const &) { return method::row_spacing_changed; })
                                                .end(this->_properties_receiver));
 
         this->_property_flows.emplace_back(this->_col_spacing_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::col_spacing_changed; })
+                                               .to([](float const &) { return method::col_spacing_changed; })
                                                .end(this->_properties_receiver));
 
-        this->_property_flows.emplace_back(this->_alignment_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::alignment_changed; })
-                                               .end(this->_properties_receiver));
+        this->_property_flows.emplace_back(
+            this->_alignment_property.begin_value_flow()
+                .to([](ui::layout_alignment const &) { return method::alignment_changed; })
+                .end(this->_properties_receiver));
 
-        this->_property_flows.emplace_back(this->_direction_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::direction_changed; })
-                                               .end(this->_properties_receiver));
+        this->_property_flows.emplace_back(
+            this->_direction_property.begin_value_flow()
+                .to([](ui::layout_direction const &) { return method::direction_changed; })
+                .end(this->_properties_receiver));
 
         this->_property_flows.emplace_back(this->_row_order_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::row_order_changed; })
+                                               .to([](ui::layout_order const &) { return method::row_order_changed; })
                                                .end(this->_properties_receiver));
 
         this->_property_flows.emplace_back(this->_col_order_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::col_order_changed; })
+                                               .to([](ui::layout_order const &) { return method::col_order_changed; })
                                                .end(this->_properties_receiver));
 
         this->_property_flows.emplace_back(
             this->_preferred_cell_count_property.begin_value_flow()
-                .to<method>([](auto const &) { return method::preferred_cell_count_changed; })
+                .to([](std::size_t const &) { return method::preferred_cell_count_changed; })
                 .end(this->_properties_receiver));
+
+        this->_property_flows.emplace_back(this->_default_cell_size_property.begin_value_flow()
+                                               .to([](ui::size const &) { return method::default_cell_size_changed; })
+                                               .end(this->_properties_receiver));
 
         this->_property_flows.emplace_back(
-            this->_default_cell_size_property.begin_value_flow()
-                .to<method>([](auto const &) { return method::default_cell_size_changed; })
+            this->_lines_property.begin_value_flow()
+                .to([](std::vector<ui::collection_layout::line> const &) { return method::lines_changed; })
                 .end(this->_properties_receiver));
-
-        this->_property_flows.emplace_back(this->_lines_property.begin_value_flow()
-                                               .to<method>([](auto const &) { return method::lines_changed; })
-                                               .end(this->_properties_receiver));
 
         this->_update_layout();
     }

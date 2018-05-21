@@ -77,7 +77,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                                          texture_impl->_draw_actual_pos = {texture_impl->_draw_actual_padding,
                                                                            texture_impl->_draw_actual_padding};
                                      })
-                                     .to<method>([](auto const &) { return method::size_updated; })
+                                     .to([](std::nullptr_t const &) { return method::size_updated; })
                                      .end(this->_notify_receiver);
     }
 
@@ -326,7 +326,7 @@ flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::
     return impl_ptr<impl>()
         ->begin_flow()
         .guard([method](flow_pair_t const &pair) { return pair.first == method; })
-        .to<ui::texture>([](auto const &pair) { return pair.second; });
+        .to([](flow_pair_t const &pair) { return pair.second; });
 }
 
 ui::metal_object &ui::texture::metal() {

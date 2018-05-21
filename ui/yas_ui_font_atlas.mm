@@ -224,8 +224,7 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_element_flows.emplace_back(
                 texture_element.begin_tex_coords_flow()
-                    .to<std::pair<ui::uint_region, std::size_t>>(
-                        [idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
+                    .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
                     .sync(this->_word_tex_coords_receiver));
 
             auto const &advance = advances[idx];
