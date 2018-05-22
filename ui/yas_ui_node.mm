@@ -42,17 +42,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // enabled
 
-        auto enabled_flow =
-            this->_enabled_property.begin_value_flow().to([](bool const &) { return ui::node_update_reason::enabled; });
+        auto enabled_flow = this->_enabled_property.begin_value_flow().to_value(ui::node_update_reason::enabled);
 
         // geometry
 
-        auto pos_flow = this->_position_property.begin_value_flow().to(
-            [](ui::point const &) { return ui::node_update_reason::geometry; });
-        auto angle_flow = this->_angle_property.begin_value_flow().to(
-            [](ui::angle const &) { return ui::node_update_reason::geometry; });
-        auto scale_flow = this->_scale_property.begin_value_flow().to(
-            [](ui::size const &) { return ui::node_update_reason::geometry; });
+        auto pos_flow = this->_position_property.begin_value_flow().to_value(ui::node_update_reason::geometry);
+        auto angle_flow = this->_angle_property.begin_value_flow().to_value(ui::node_update_reason::geometry);
+        auto scale_flow = this->_scale_property.begin_value_flow().to_value(ui::node_update_reason::geometry);
 
         // mesh and mesh_color
 
@@ -60,7 +56,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             this->_mesh_property.begin_value_flow()
                 .guard([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
-                .to([](ui::mesh const &) { return ui::node_update_reason::mesh; })
+                .to_value(ui::node_update_reason::mesh)
                 .normalize();
 
         auto color_flow = this->_color_property.begin_value_flow().to_null();
@@ -74,18 +70,16 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // collider
 
-        auto collider_flow = this->_collider_property.begin_value_flow().to(
-            [](ui::collider const &) { return ui::node_update_reason::collider; });
+        auto collider_flow = this->_collider_property.begin_value_flow().to_value(ui::node_update_reason::collider);
 
         // batch
 
-        auto batch_flow = this->_batch_property.begin_value_flow().to(
-            [](ui::batch const &) { return ui::node_update_reason::batch; });
+        auto batch_flow = this->_batch_property.begin_value_flow().to_value(ui::node_update_reason::batch);
 
         // render_target
 
-        auto render_target_flow = this->_render_target_property.begin_value_flow().to(
-            [](ui::render_target const &) { return ui::node_update_reason::render_target; });
+        auto render_target_flow =
+            this->_render_target_property.begin_value_flow().to_value(ui::node_update_reason::render_target);
 
         auto updates_flow = enabled_flow.merge(pos_flow)
                                 .merge(angle_flow)
@@ -456,10 +450,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
                                                                    auto &property) mutable {
-                return property.begin_value_flow()
-                    .to_null()
-                    .to([method](std::nullptr_t const &) { return method; })
-                    .end(receiver);
+                return property.begin_value_flow().to_value(method).end(receiver);
             };
 
             switch (method) {

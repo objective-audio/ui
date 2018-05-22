@@ -77,7 +77,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                                          texture_impl->_draw_actual_pos = {texture_impl->_draw_actual_padding,
                                                                            texture_impl->_draw_actual_padding};
                                      })
-                                     .to([](std::nullptr_t const &) { return method::size_updated; })
+                                     .to_value(method::size_updated)
                                      .end(this->_notify_receiver);
     }
 
