@@ -141,7 +141,7 @@ flow::observer ui::make_flow(min_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .to<float>([](auto const &pair) { return std::min(pair.first, pair.second); })
+                       .to([](std::pair<float, float> const &pair) { return std::min(pair.first, pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();
@@ -169,7 +169,7 @@ flow::observer ui::make_flow(max_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .to<float>([](auto const &pair) { return std::max(pair.first, pair.second); })
+                       .to([](std::pair<float, float> const &pair) { return std::max(pair.first, pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();

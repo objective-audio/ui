@@ -54,36 +54,36 @@ struct ui::layout_guide::impl : base::impl {
                     return (count == 0);
                 }
             }))
-            .to<std::pair<opt_t<float>, bool>>(
-                [cache = opt_t<float>(), old_cache, is_wait = false, weak_guide](auto const &pair) mutable {
-                    bool is_continue = false;
+            .to([cache = opt_t<float>(), old_cache, is_wait = false,
+                 weak_guide](std::pair<opt_t<float>, opt_t<bool>> const &pair) mutable {
+                bool is_continue = false;
 
-                    if (pair.first) {
-                        // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
-                        cache = *pair.first;
-                        is_continue = !is_wait;
-                    } else if (pair.second) {
-                        // waitフラグが来た場合
-                        is_wait = *pair.second;
+                if (pair.first) {
+                    // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
+                    cache = *pair.first;
+                    is_continue = !is_wait;
+                } else if (pair.second) {
+                    // waitフラグが来た場合
+                    is_wait = *pair.second;
 
-                        auto guide_impl = weak_guide.lock().impl_ptr<layout_guide::impl>();
+                    auto guide_impl = weak_guide.lock().impl_ptr<layout_guide::impl>();
 
-                        if (is_wait) {
-                            // wait開始ならキャッシュをクリアしてフロー中断
-                            cache = nullopt;
-                            is_continue = false;
-                            *old_cache = guide_impl->_value.value();
-                        } else {
-                            // wait終了ならキャッシュに値があればフロー継続
-                            is_continue = !!cache;
-                            if (!is_continue) {
-                                *old_cache = nullopt;
-                            }
+                    if (is_wait) {
+                        // wait開始ならキャッシュをクリアしてフロー中断
+                        cache = nullopt;
+                        is_continue = false;
+                        *old_cache = guide_impl->_value.value();
+                    } else {
+                        // wait終了ならキャッシュに値があればフロー継続
+                        is_continue = !!cache;
+                        if (!is_continue) {
+                            *old_cache = nullopt;
                         }
                     }
+                }
 
-                    return std::make_pair(cache, is_continue);
-                })
+                return std::make_pair(cache, is_continue);
+            })
             .guard([](auto const &pair) { return pair.second; })
             .guard([weak_guide, old_cache](auto const &pair) {
                 auto guide_impl = weak_guide.lock().impl_ptr<ui::layout_guide::impl>();
@@ -94,7 +94,7 @@ struct ui::layout_guide::impl : base::impl {
                 *old_cache = nullopt;
                 return old_value != *pair.first;
             })
-            .to<float>([](auto const &pair) { return *pair.first; });
+            .to([](std::pair<opt_t<float>, bool> const &pair) { return *pair.first; });
     }
 
    private:
@@ -188,7 +188,7 @@ struct ui::layout_guide_point::impl : base::impl {
 
         return this->_x_guide.begin_flow()
             .pair(this->_y_guide.begin_flow())
-            .to<ui::point>([cache](auto const &pair) mutable {
+            .to([cache](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
                 if (pair.first) {
                     cache.x = *pair.first;
                 }
@@ -321,7 +321,8 @@ struct ui::layout_guide_range::impl : base::impl {
 
         return this->_min_guide.begin_flow()
             .pair(this->_max_guide.begin_flow())
-            .to<ui::range>([min_cache = range.min(), max_cache = range.max()](auto const &pair) mutable {
+            .to([min_cache = range.min(),
+                 max_cache = range.max()](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
                 if (pair.first) {
                     min_cache = *pair.first;
                 }
@@ -457,16 +458,16 @@ struct ui::layout_guide_rect::impl : base::impl {
 
         return this->_vertical_range.begin_flow()
             .pair(this->_horizontal_range.begin_flow())
-            .to<ui::region>(
-                [v_cache = region.vertical_range(), h_cache = region.horizontal_range()](auto const &pair) mutable {
-                    if (pair.first) {
-                        v_cache = *pair.first;
-                    }
-                    if (pair.second) {
-                        h_cache = *pair.second;
-                    }
-                    return ui::make_region(h_cache, v_cache);
-                });
+            .to([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
+                    std::pair<opt_t<ui::range>, opt_t<ui::range>> const &pair) mutable {
+                if (pair.first) {
+                    v_cache = *pair.first;
+                }
+                if (pair.second) {
+                    h_cache = *pair.second;
+                }
+                return ui::make_region(h_cache, v_cache);
+            });
     }
 };
 
