@@ -169,7 +169,7 @@ using namespace yas;
 
     flow::sender<std::string> sender;
 
-    auto flow = sender.begin().end(strings.text_receiver());
+    auto flow = sender.begin().receive(strings.text_receiver()).end();
 
     XCTAssertEqual(strings.text(), "");
 
