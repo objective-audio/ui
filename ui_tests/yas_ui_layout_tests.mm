@@ -39,8 +39,7 @@ using namespace yas;
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
     ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
 
-    auto layout = ui::make_flow(
-        {.distances = distances, .source_guide_point = src_guide_point, .destination_guide_point = dst_guide_point});
+    auto layout = src_guide_point.begin_flow().map(flow::add(distances)).receive(dst_guide_point.receiver()).sync();
 
     XCTAssertTrue(layout);
 
