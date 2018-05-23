@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_flow_utils.h"
 #import "yas_ui_layout.h"
 
 using namespace yas;
@@ -25,7 +26,7 @@ using namespace yas;
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
-    auto layout = ui::make_flow({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = src_guide.begin_flow().map(flow::add(8.0f)).receive(dst_guide.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -38,8 +39,7 @@ using namespace yas;
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
     ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
 
-    auto layout = ui::make_flow(
-        {.distances = distances, .source_guide_point = src_guide_point, .destination_guide_point = dst_guide_point});
+    auto layout = src_guide_point.begin_flow().map(flow::add(distances)).receive(dst_guide_point.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -54,8 +54,8 @@ using namespace yas;
     ui::layout_guide_rect src_guide_rect{{.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}}};
     ui::layout_guide_rect dst_guide_rect{{.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}}};
 
-    auto layout = ui::make_flow(
-        {.distances = distances, .source_guide_rect = src_guide_rect, .destination_guide_rect = dst_guide_rect});
+    auto layout =
+        src_guide_rect.begin_flow().map(flow::add<ui::region>(distances)).receive(dst_guide_rect.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -73,7 +73,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = ui::make_flow({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = src_guide.begin_flow().map(flow::add(1.0f)).receive(dst_guide.receiver()).sync();
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 
