@@ -635,4 +635,44 @@ using namespace yas;
     XCTAssertEqual(region.size.height, 4.0f);
 }
 
+- (void)test_region_add_inset {
+    ui::region const source{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}};
+    ui::insets const insets{.left = -1.0f, .right = 2.0f, .bottom = -3.0f, .top = 4.0f};
+
+    ui::region const added = source + insets;
+    ui::region const expected = ui::region{.origin = {.x = 0.0f, .y = -1.0f}, .size = {.width = 6.0f, .height = 11.0f}};
+
+    XCTAssertTrue(added == expected);
+}
+
+- (void)test_region_subtract_inset {
+    ui::region const source{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}};
+    ui::insets const insets{.left = -1.0f, .right = 2.0f, .bottom = -3.0f, .top = 4.0f};
+
+    ui::region const subtracted = source - insets;
+    ui::region const expected = ui::region{.origin = {.x = 2.0f, .y = 5.0f}, .size = {.width = 0.0f, .height = -3.0f}};
+
+    XCTAssertTrue(subtracted == expected);
+}
+
+- (void)test_region_add_assign_inset {
+    ui::region region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}};
+    ui::insets const insets{.left = -1.0f, .right = 2.0f, .bottom = -3.0f, .top = 4.0f};
+
+    region += insets;
+    ui::region const expected = ui::region{.origin = {.x = 0.0f, .y = -1.0f}, .size = {.width = 6.0f, .height = 11.0f}};
+
+    XCTAssertTrue(region == expected);
+}
+
+- (void)test_region_subtract_assign_inset {
+    ui::region region{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}};
+    ui::insets const insets{.left = -1.0f, .right = 2.0f, .bottom = -3.0f, .top = 4.0f};
+
+    region -= insets;
+    ui::region const expected = ui::region{.origin = {.x = 2.0f, .y = 5.0f}, .size = {.width = 0.0f, .height = -3.0f}};
+
+    XCTAssertTrue(region == expected);
+}
+
 @end
