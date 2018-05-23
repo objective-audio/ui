@@ -204,6 +204,32 @@ bool ui::region::operator!=(ui::region const &rhs) const {
     return this->origin != rhs.origin || this->size != rhs.size;
 }
 
+ui::region ui::region::operator+(ui::insets const &rhs) const {
+    float const left = this->left() + rhs.left;
+    float const right = this->right() + rhs.right;
+    float const bottom = this->bottom() + rhs.bottom;
+    float const top = this->top() + rhs.top;
+    return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+}
+
+ui::region ui::region::operator-(ui::insets const &rhs) const {
+    float const left = this->left() - rhs.left;
+    float const right = this->right() - rhs.right;
+    float const bottom = this->bottom() - rhs.bottom;
+    float const top = this->top() - rhs.top;
+    return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+}
+
+ui::region &ui::region::operator+=(ui::insets const &rhs) {
+    *this = *this + rhs;
+    return *this;
+}
+
+ui::region &ui::region::operator-=(ui::insets const &rhs) {
+    *this = *this - rhs;
+    return *this;
+}
+
 ui::region::operator bool() const {
     return this->origin || this->size;
 }

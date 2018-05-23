@@ -166,6 +166,10 @@ struct region {
 
     bool operator==(region const &rhs) const;
     bool operator!=(region const &rhs) const;
+    region operator+(insets const &rhs) const;
+    region operator-(insets const &rhs) const;
+    region &operator+=(insets const &rhs);
+    region &operator-=(insets const &rhs);
 
     explicit operator bool() const;
 
