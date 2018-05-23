@@ -41,7 +41,8 @@ struct ui::rect_plane_data::impl : base::impl {
 
         this->_element_flows.emplace_back(
             flow.map([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
-                .sync(this->_rect_tex_coords_receiver));
+                .receive(this->_rect_tex_coords_receiver)
+                .sync());
     }
 };
 
