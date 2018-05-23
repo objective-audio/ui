@@ -813,7 +813,7 @@ flow::node<ui::node::flow_pair_t> ui::node::begin_flow(std::vector<ui::node::met
 }
 
 flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>> ui::node::begin_renderer_flow() const {
-    return impl_ptr<impl>()->_renderer_property.begin_value_flow().to([](weak<ui::renderer> const &weak_renderer) {
+    return impl_ptr<impl>()->_renderer_property.begin_value_flow().map([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
         } else {
@@ -833,7 +833,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
 
     imp->_x_observer = guide.begin_flow()
                            .guard([weak_node](float const &) { return !!weak_node; })
-                           .to([weak_node](float const &x) {
+                           .map([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().y};
                            })
                            .sync(position.receiver());
@@ -848,7 +848,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
 
     imp->_y_observer = guide.begin_flow()
                            .guard([weak_node](float const &) { return !!weak_node; })
-                           .to([weak_node](float const &y) {
+                           .map([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().x, y};
                            })
                            .sync(position.receiver());

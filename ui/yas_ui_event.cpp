@@ -216,7 +216,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     flow::node<event, context, context> begin_flow(method const &method) {
         return this->_sender.begin()
             .guard([method](context const &context) { return context.method == method; })
-            .to([](ui::event_manager::context const &context) { return context.event; });
+            .map([](ui::event_manager::context const &context) { return context.event; });
     }
 
     flow::node<context, context, context> begin_flow() {

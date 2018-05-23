@@ -36,11 +36,11 @@ struct ui::rect_plane_data::impl : base::impl {
         auto flow = element.begin_tex_coords_flow();
 
         if (transformer) {
-            flow = flow.to(std::move(transformer));
+            flow = flow.map(std::move(transformer));
         }
 
         this->_element_flows.emplace_back(
-            flow.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
+            flow.map([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
                 .sync(this->_rect_tex_coords_receiver));
     }
 };
