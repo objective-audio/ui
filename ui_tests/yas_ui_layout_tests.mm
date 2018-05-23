@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "yas_flow_utils.h"
 #import "yas_ui_layout.h"
 
 using namespace yas;
@@ -25,7 +26,7 @@ using namespace yas;
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
-    auto layout = ui::make_flow({.distance = 8.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = src_guide.begin_flow().map(flow::add(8.0f)).receive(dst_guide.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -73,7 +74,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = ui::make_flow({.distance = 1.0f, .source_guide = src_guide, .destination_guide = dst_guide});
+    auto layout = src_guide.begin_flow().map(flow::add(1.0f)).receive(dst_guide.receiver()).sync();
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 

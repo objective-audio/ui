@@ -10,17 +10,6 @@ using namespace yas;
 
 #pragma mark - fixed_layout
 
-flow::observer ui::make_flow(fixed_layout::args args) {
-    if (!args.source_guide || !args.destination_guide) {
-        throw "argument is null.";
-    }
-
-    return args.source_guide.begin_flow()
-        .map([distance = args.distance](float const &value) { return value + distance; })
-        .receive(args.destination_guide.receiver())
-        .sync();
-}
-
 flow::observer ui::make_flow(fixed_layout_point::args args) {
     if (!args.source_guide_point || !args.destination_guide_point) {
         throw "argument is null.";

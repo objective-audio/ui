@@ -7,14 +7,6 @@
 #include "yas_base.h"
 #include "yas_ui_layout_guide.h"
 
-namespace yas::ui::fixed_layout {
-struct args {
-    float distance;
-    ui::layout_guide source_guide;
-    ui::layout_guide destination_guide;
-};
-}  // namespace yas::ui::fixed_layout
-
 namespace yas::ui::fixed_layout_point {
 struct args {
     ui::point distances;
@@ -55,7 +47,7 @@ struct args {
 }  // namespace yas::ui::max_layout
 
 namespace yas::ui {
-[[nodiscard]] flow::observer make_flow(fixed_layout::args);
+//[[nodiscard]] flow::observer make_flow(fixed_layout::args);
 [[nodiscard]] flow::observer make_flow(fixed_layout_point::args);
 [[nodiscard]] flow::observer make_flow(fixed_layout_rect::args);
 

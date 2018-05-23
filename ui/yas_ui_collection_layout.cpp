@@ -5,6 +5,7 @@
 #include "yas_ui_collection_layout.h"
 #include "yas_delaying_caller.h"
 #include "yas_fast_each.h"
+#include "yas_flow_utils.h"
 #include "yas_property.h"
 #include "yas_ui_layout.h"
 #include "yas_ui_layout_guide.h"
@@ -99,18 +100,27 @@ struct ui::collection_layout::impl : base::impl {
           _direction_property({.value = args.direction}),
           _row_order_property({.value = args.row_order}),
           _col_order_property({.value = args.col_order}),
-          _left_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.left(),
-                                           .destination_guide = _border_guide_rect.left(),
-                                           .distance = args.borders.left})),
-          _right_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.right(),
-                                            .destination_guide = _border_guide_rect.right(),
-                                            .distance = -args.borders.right})),
-          _bottom_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.bottom(),
-                                             .destination_guide = _border_guide_rect.bottom(),
-                                             .distance = args.borders.bottom})),
-          _top_border_flow(ui::make_flow({.source_guide = _frame_guide_rect.top(),
-                                          .destination_guide = _border_guide_rect.top(),
-                                          .distance = -args.borders.top})),
+          _left_border_flow(_frame_guide_rect.left()
+                                .begin_flow()
+                                .map(flow::add(args.borders.left))
+                                .receive(_border_guide_rect.left().receiver())
+                                .sync()),
+          _right_border_flow(_frame_guide_rect.right()
+                                 .begin_flow()
+                                 .map(flow::add(-args.borders.right))
+                                 .receive(_border_guide_rect.right().receiver())
+                                 .sync()),
+          _bottom_border_flow(_frame_guide_rect.bottom()
+                                  .begin_flow()
+                                  .map(flow::add(args.borders.bottom))
+                                  .receive(_border_guide_rect.bottom().receiver())
+                                  .sync()),
+          _top_border_flow(_frame_guide_rect.top()
+                               .begin_flow()
+                               .map(flow::add(-args.borders.top))
+                               .receive(_border_guide_rect.top().receiver())
+                               .sync()),
+
           _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
             throw "borders value is negative.";
