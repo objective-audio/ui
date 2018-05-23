@@ -8,25 +8,6 @@
 
 using namespace yas;
 
-#pragma mark - fixed_layout
-
-flow::observer ui::make_flow(fixed_layout_rect::args args) {
-    if (!args.source_guide_rect || !args.destination_guide_rect) {
-        throw "argument is null.";
-    }
-
-    return args.source_guide_rect.begin_flow()
-        .map([distances = std::move(args.distances)](ui::region const &value) {
-            float const left = value.left() + distances.left;
-            float const right = value.right() + distances.right;
-            float const bottom = value.bottom() + distances.bottom;
-            float const top = value.top() + distances.top;
-            return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
-        })
-        .receive(args.destination_guide_rect.receiver())
-        .sync();
-}
-
 #pragma mark - jusitified_layout
 
 flow::observer ui::make_flow(justified_layout::args args) {

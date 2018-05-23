@@ -7,14 +7,6 @@
 #include "yas_base.h"
 #include "yas_ui_layout_guide.h"
 
-namespace yas::ui::fixed_layout_rect {
-struct args {
-    ui::insets distances;
-    ui::layout_guide_rect source_guide_rect;
-    ui::layout_guide_rect destination_guide_rect;
-};
-}  // namespace yas::ui::fixed_layout_rect
-
 namespace yas::ui::justified_layout {
 struct args {
     ui::layout_guide first_source_guide = nullptr;
@@ -39,8 +31,6 @@ struct args {
 }  // namespace yas::ui::max_layout
 
 namespace yas::ui {
-[[nodiscard]] flow::observer make_flow(fixed_layout_rect::args);
-
 [[nodiscard]] flow::observer make_flow(justified_layout::args);
 
 [[nodiscard]] flow::observer make_flow(min_layout::args);
