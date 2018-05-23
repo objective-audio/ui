@@ -135,38 +135,48 @@ struct ui::collection_layout::impl : base::impl {
 
         this->_property_flows.emplace_back(this->_row_spacing_property.begin_value_flow()
                                                .to_value(method::row_spacing_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_col_spacing_property.begin_value_flow()
                                                .to_value(method::col_spacing_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_alignment_property.begin_value_flow()
                                                .to_value(method::alignment_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_direction_property.begin_value_flow()
                                                .to_value(method::direction_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_row_order_property.begin_value_flow()
                                                .to_value(method::row_order_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_col_order_property.begin_value_flow()
                                                .to_value(method::col_order_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_preferred_cell_count_property.begin_value_flow()
                                                .to_value(method::preferred_cell_count_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_property_flows.emplace_back(this->_default_cell_size_property.begin_value_flow()
                                                .to_value(method::default_cell_size_changed)
-                                               .end(this->_properties_receiver));
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
-        this->_property_flows.emplace_back(
-            this->_lines_property.begin_value_flow().to_value(method::lines_changed).end(this->_properties_receiver));
+        this->_property_flows.emplace_back(this->_lines_property.begin_value_flow()
+                                               .to_value(method::lines_changed)
+                                               .receive(this->_properties_receiver)
+                                               .end());
 
         this->_update_layout();
     }

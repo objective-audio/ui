@@ -17,7 +17,8 @@ flow::observer ui::make_flow(fixed_layout::args args) {
 
     return args.source_guide.begin_flow()
         .map([distance = args.distance](float const &value) { return value + distance; })
-        .sync(args.destination_guide.receiver());
+        .receive(args.destination_guide.receiver())
+        .sync();
 }
 
 flow::observer ui::make_flow(fixed_layout_point::args args) {
@@ -29,7 +30,8 @@ flow::observer ui::make_flow(fixed_layout_point::args args) {
         .map([distance = args.distances](ui::point const &value) {
             return ui::point{value.x + distance.x, value.y + distance.y};
         })
-        .sync(args.destination_guide_point.receiver());
+        .receive(args.destination_guide_point.receiver())
+        .sync();
 }
 
 flow::observer ui::make_flow(fixed_layout_rect::args args) {
@@ -45,7 +47,8 @@ flow::observer ui::make_flow(fixed_layout_rect::args args) {
             float const top = value.top() + distances.top;
             return ui::region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
         })
-        .sync(args.destination_guide_rect.receiver());
+        .receive(args.destination_guide_rect.receiver())
+        .sync();
 }
 
 #pragma mark - jusitified_layout
@@ -148,7 +151,7 @@ flow::observer ui::make_flow(min_layout::args args) {
         }
     }
 
-    return flow.sync(args.destination_guide.receiver());
+    return flow.receive(args.destination_guide.receiver()).sync();
 }
 
 flow::observer ui::make_flow(max_layout::args args) {
@@ -176,5 +179,5 @@ flow::observer ui::make_flow(max_layout::args args) {
         }
     }
 
-    return flow.sync(args.destination_guide.receiver());
+    return flow.receive(args.destination_guide.receiver()).sync();
 }

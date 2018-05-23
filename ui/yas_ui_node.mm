@@ -450,7 +450,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
                                                                    auto &property) mutable {
-                return property.begin_value_flow().to_value(method).end(receiver);
+                return property.begin_value_flow().to_value(method).receive(receiver).end();
             };
 
             switch (method) {
@@ -836,7 +836,8 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
                            .map([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().y};
                            })
-                           .sync(position.receiver());
+                           .receive(position.receiver())
+                           .sync();
 
     imp->_position_observer = nullptr;
 }
@@ -851,7 +852,8 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
                            .map([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().x, y};
                            })
-                           .sync(position.receiver());
+                           .receive(position.receiver())
+                           .sync();
 
     imp->_position_observer = nullptr;
 }
@@ -861,7 +863,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
     auto &position = imp->_position_property;
     auto weak_node = to_weak(*this);
 
-    imp->_position_observer = guide_point.begin_flow().sync(position.receiver());
+    imp->_position_observer = guide_point.begin_flow().receive(position.receiver()).sync();
 
     imp->_x_observer = nullptr;
     imp->_y_observer = nullptr;
