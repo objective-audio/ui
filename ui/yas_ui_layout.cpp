@@ -16,7 +16,7 @@ flow::observer ui::make_flow(fixed_layout::args args) {
     }
 
     return args.source_guide.begin_flow()
-        .to([distance = args.distance](float const &value) { return value + distance; })
+        .map([distance = args.distance](float const &value) { return value + distance; })
         .sync(args.destination_guide.receiver());
 }
 
@@ -26,7 +26,7 @@ flow::observer ui::make_flow(fixed_layout_point::args args) {
     }
 
     return args.source_guide_point.begin_flow()
-        .to([distance = args.distances](ui::point const &value) {
+        .map([distance = args.distances](ui::point const &value) {
             return ui::point{value.x + distance.x, value.y + distance.y};
         })
         .sync(args.destination_guide_point.receiver());
@@ -38,7 +38,7 @@ flow::observer ui::make_flow(fixed_layout_rect::args args) {
     }
 
     return args.source_guide_rect.begin_flow()
-        .to([distances = std::move(args.distances)](ui::region const &value) {
+        .map([distances = std::move(args.distances)](ui::region const &value) {
             float const left = value.left() + distances.left;
             float const right = value.right() + distances.right;
             float const bottom = value.bottom() + distances.bottom;
@@ -141,7 +141,7 @@ flow::observer ui::make_flow(min_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .to([](std::pair<float, float> const &pair) { return std::min(pair.first, pair.second); })
+                       .map([](std::pair<float, float> const &pair) { return std::min(pair.first, pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();
@@ -169,7 +169,7 @@ flow::observer ui::make_flow(max_layout::args args) {
 
         if (flow) {
             flow = flow.combine(guide.begin_flow())
-                       .to([](std::pair<float, float> const &pair) { return std::max(pair.first, pair.second); })
+                       .map([](std::pair<float, float> const &pair) { return std::max(pair.first, pair.second); })
                        .normalize();
         } else {
             flow = guide.begin_flow().normalize();

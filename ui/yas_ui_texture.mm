@@ -326,7 +326,7 @@ flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::
     return impl_ptr<impl>()
         ->begin_flow()
         .guard([method](flow_pair_t const &pair) { return pair.first == method; })
-        .to([](flow_pair_t const &pair) { return pair.second; });
+        .map([](flow_pair_t const &pair) { return pair.second; });
 }
 
 ui::metal_object &ui::texture::metal() {
