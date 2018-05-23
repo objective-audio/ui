@@ -78,7 +78,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                                                                            texture_impl->_draw_actual_padding};
                                      })
                                      .to_value(method::size_updated)
-                                     .end(this->_notify_receiver);
+                                     .receive(this->_notify_receiver)
+                                     .end();
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {

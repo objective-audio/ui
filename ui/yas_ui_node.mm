@@ -450,7 +450,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
                                                                    auto &property) mutable {
-                return property.begin_value_flow().to_value(method).end(receiver);
+                return property.begin_value_flow().to_value(method).receive(receiver).end();
             };
 
             switch (method) {

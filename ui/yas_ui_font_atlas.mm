@@ -81,7 +81,8 @@ struct ui::font_atlas::impl : base::impl {
                                              }
                                              return false;
                                          })
-                                         .end(this->_texture_property.receiver());
+                                         .receive(this->_texture_property.receiver())
+                                         .end();
 
         this->_texture_changed_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
             if (auto atlas = weak_atlas.lock()) {
@@ -91,7 +92,8 @@ struct ui::font_atlas::impl : base::impl {
 
                 if (texture) {
                     atlas_impl->_texture_flow = texture.begin_flow(texture::method::metal_texture_changed)
-                                                    .end(atlas_impl->_texture_updated_receiver);
+                                                    .receive(atlas_impl->_texture_updated_receiver)
+                                                    .end();
                 } else {
                     atlas_impl->_texture_flow = nullptr;
                 }
@@ -101,7 +103,8 @@ struct ui::font_atlas::impl : base::impl {
             }
         });
 
-        this->_texture_changed_flow = this->_texture_property.begin_value_flow().end(this->_texture_changed_receiver);
+        this->_texture_changed_flow =
+            this->_texture_property.begin_value_flow().receive(this->_texture_changed_receiver).end();
 
         this->_texture_changed_sender.set_sync_handler([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {

@@ -274,12 +274,14 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_min_observer = this->_min_guide.begin_flow()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .map([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
-                                  .end(this->_length_guide.receiver());
+                                  .receive(this->_length_guide.receiver())
+                                  .end();
 
         this->_max_observer = this->_max_guide.begin_flow()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .map([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
-                                  .end(this->_length_guide.receiver());
+                                  .receive(this->_length_guide.receiver())
+                                  .end();
 
         this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range) {
             if (auto guide_range = weak_range.lock()) {
