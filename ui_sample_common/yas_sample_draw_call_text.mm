@@ -3,6 +3,7 @@
 //
 
 #include "yas_sample_draw_call_text.hpp"
+#include "yas_flow_utils.h"
 #include "yas_timer.h"
 
 using namespace yas;
@@ -31,17 +32,23 @@ struct sample::draw_call_text::impl : base::impl {
                         auto &strings = text.strings();
                         auto &strings_guide_rect = strings.frame_layout_guide_rect();
                         auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
-                        left_layout = ui::make_flow({.distance = 4.0f,
-                                                     .source_guide = safe_area_guide_rect.left(),
-                                                     .destination_guide = strings_guide_rect.right()});
+                        left_layout = safe_area_guide_rect.left()
+                                          .begin_flow()
+                                          .map(flow::add(4.0f))
+                                          .receive(strings_guide_rect.right().receiver())
+                                          .sync();
 
-                        right_layout = ui::make_flow({.distance = -4.0f,
-                                                      .source_guide = safe_area_guide_rect.right(),
-                                                      .destination_guide = strings_guide_rect.right()});
+                        right_layout = safe_area_guide_rect.right()
+                                           .begin_flow()
+                                           .map(flow::add(-4.0f))
+                                           .receive(strings_guide_rect.right().receiver())
+                                           .sync();
 
-                        bottom_layout = ui::make_flow({.distance = 4.0f,
-                                                       .source_guide = safe_area_guide_rect.bottom(),
-                                                       .destination_guide = strings_guide_rect.bottom()});
+                        bottom_layout = safe_area_guide_rect.bottom()
+                                            .begin_flow()
+                                            .map(flow::add(4.0f))
+                                            .receive(strings_guide_rect.bottom().receiver())
+                                            .sync();
 
                         auto strings_handler = [top_layout = flow::observer{nullptr}](ui::strings &strings) mutable {
                             float distance = 0.0f;
@@ -51,9 +58,11 @@ struct sample::draw_call_text::impl : base::impl {
                                 distance += font_atlas.ascent() + font_atlas.descent();
                             }
 
-                            top_layout = ui::make_flow({.distance = distance,
-                                                        .source_guide = strings.frame_layout_guide_rect().bottom(),
-                                                        .destination_guide = strings.frame_layout_guide_rect().top()});
+                            top_layout = strings.frame_layout_guide_rect()
+                                             .bottom()
+                                             .begin_flow()
+                                             .receive(strings.frame_layout_guide_rect().top().receiver())
+                                             .sync();
                         };
 
                         strings_handler(strings);

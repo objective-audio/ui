@@ -5,6 +5,7 @@
 #include "yas_sample_soft_keyboard.h"
 #include <limits>
 #include "yas_fast_each.h"
+#include "yas_flow_utils.h"
 
 using namespace yas;
 
@@ -195,23 +196,23 @@ struct sample::soft_keyboard::impl : base::impl {
 
         auto renderer = this->_root_node.renderer();
         auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
-        auto const &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
+        auto &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
 
         this->_frame_layouts.emplace_back(
-            ui::make_flow({.source_guide = safe_area_guide_rect.left(), .destination_guide = frame_guide_rect.left()}));
-
-        this->_frame_layouts.emplace_back(ui::make_flow(
-            {.source_guide = safe_area_guide_rect.bottom(), .destination_guide = frame_guide_rect.bottom()}));
-
+            safe_area_guide_rect.left().begin_flow().receive(frame_guide_rect.left().receiver()).sync());
         this->_frame_layouts.emplace_back(
-            ui::make_flow({.source_guide = safe_area_guide_rect.top(), .destination_guide = frame_guide_rect.top()}));
+            safe_area_guide_rect.bottom().begin_flow().receive(frame_guide_rect.bottom().receiver()).sync());
+        this->_frame_layouts.emplace_back(
+            safe_area_guide_rect.top().begin_flow().receive(frame_guide_rect.top().receiver()).sync());
 
         ui::layout_guide max_right_guide;
-        this->_frame_layouts.emplace_back(ui::make_flow(
-            {.distance = width, .source_guide = safe_area_guide_rect.left(), .destination_guide = max_right_guide}));
         this->_frame_layouts.emplace_back(
-            ui::make_flow(ui::min_layout::args{.source_guides = {max_right_guide, safe_area_guide_rect.right()},
-                                               .destination_guide = frame_guide_rect.right()}));
+            safe_area_guide_rect.left().begin_flow().map(flow::add(width)).receive(max_right_guide.receiver()).sync());
+        this->_frame_layouts.emplace_back(max_right_guide.begin_flow()
+                                              .combine(safe_area_guide_rect.right().begin_flow())
+                                              .map(flow::min<float>())
+                                              .receive(frame_guide_rect.right().receiver())
+                                              .sync());
 
         this->_setup_soft_keys_layout();
         this->_update_soft_key_count();
@@ -259,7 +260,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
             this->_dst_rect_observers.emplace_back(
                 dst_guide_rect.begin_flow()
-                    .guard([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
+                    .filter([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
                     .perform([weak_soft_key, handler](ui::region const &value) {
                         auto soft_key = weak_soft_key.lock();
                         handler(soft_key, value);
@@ -299,14 +300,14 @@ struct sample::soft_keyboard::impl : base::impl {
                     std::vector<flow::observer> layouts;
                     layouts.reserve(4);
 
-                    layouts.emplace_back(ui::make_flow(
-                        {.source_guide = src_guide_rect.left(), .destination_guide = dst_guide_rect.left()}));
-                    layouts.emplace_back(ui::make_flow(
-                        {.source_guide = src_guide_rect.bottom(), .destination_guide = dst_guide_rect.bottom()}));
-                    layouts.emplace_back(ui::make_flow(
-                        {.source_guide = src_guide_rect.right(), .destination_guide = dst_guide_rect.right()}));
-                    layouts.emplace_back(ui::make_flow(
-                        {.source_guide = src_guide_rect.top(), .destination_guide = dst_guide_rect.top()}));
+                    layouts.emplace_back(
+                        src_guide_rect.left().begin_flow().receive(dst_guide_rect.left().receiver()).sync());
+                    layouts.emplace_back(
+                        src_guide_rect.bottom().begin_flow().receive(dst_guide_rect.bottom().receiver()).sync());
+                    layouts.emplace_back(
+                        src_guide_rect.right().begin_flow().receive(dst_guide_rect.right().receiver()).sync());
+                    layouts.emplace_back(
+                        src_guide_rect.top().begin_flow().receive(dst_guide_rect.top().receiver()).sync());
 
                     this->_fixed_cell_layouts.emplace_back(std::move(layouts));
                 }
