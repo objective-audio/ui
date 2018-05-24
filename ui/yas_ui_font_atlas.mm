@@ -75,7 +75,7 @@ struct ui::font_atlas::impl : base::impl {
         });
 
         this->_texture_setter_flow = this->_texture_setter.begin()
-                                         .guard([weak_atlas](ui::texture const &texture) {
+                                         .filter([weak_atlas](ui::texture const &texture) {
                                              if (auto atlas = weak_atlas.lock()) {
                                                  return !is_same(atlas.texture(), texture);
                                              }

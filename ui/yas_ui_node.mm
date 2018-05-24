@@ -54,7 +54,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         auto mesh_flow =
             this->_mesh_property.begin_value_flow()
-                .guard([weak_node](auto const &) { return !!weak_node; })
+                .filter([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .to_value(ui::node_update_reason::mesh)
                 .normalize();
@@ -64,7 +64,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         auto mesh_color_flow =
             color_flow.merge(alpha_flow)
-                .guard([weak_node](auto const &) { return !!weak_node; })
+                .filter([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .end();
 
@@ -493,7 +493,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             this->_dispatch_flows.emplace(method, std::move(flow));
         }
 
-        return this->_dispatch_sender.begin().guard(
+        return this->_dispatch_sender.begin().filter(
             [methods](flow_pair_t const &pair) { return contains(methods, pair.first); });
     }
 
@@ -832,7 +832,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     auto weak_node = to_weak(*this);
 
     imp->_x_observer = guide.begin_flow()
-                           .guard([weak_node](float const &) { return !!weak_node; })
+                           .filter([weak_node](float const &) { return !!weak_node; })
                            .map([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().y};
                            })
@@ -848,7 +848,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     auto weak_node = to_weak(*this);
 
     imp->_y_observer = guide.begin_flow()
-                           .guard([weak_node](float const &) { return !!weak_node; })
+                           .filter([weak_node](float const &) { return !!weak_node; })
                            .map([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().x, y};
                            })

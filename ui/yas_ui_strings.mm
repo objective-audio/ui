@@ -135,7 +135,7 @@ struct ui::strings::impl : base::impl {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
                 this->_texture_flow = font_atlas.begin_texture_changed_flow()
-                                          .guard([weak_strings](auto const &) { return !!weak_strings; })
+                                          .filter([weak_strings](auto const &) { return !!weak_strings; })
                                           .receive(strings_impl->_texture_receiver)
                                           .merge(font_atlas.begin_texture_updated_flow())
                                           .to_null()
@@ -222,7 +222,7 @@ struct ui::strings::impl : base::impl {
 
             this->_cell_rect_observers.emplace_back(
                 cell_rect.begin_flow()
-                    .guard([weak_strings](ui::region const &) { return !!weak_strings; })
+                    .filter([weak_strings](ui::region const &) { return !!weak_strings; })
                     .perform([idx, word, weak_strings, handler](ui::region const &value) {
                         auto strings = weak_strings.lock();
                         handler(strings, idx, word, value);

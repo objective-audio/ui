@@ -52,7 +52,7 @@ struct ui::layout_animator::impl : base::impl {
             auto weak_dst_guide = to_weak(dst_guide);
 
             auto observer = src_guide.begin_flow()
-                                .guard([weak_interporator, weak_dst_guide](float const &) {
+                                .filter([weak_interporator, weak_dst_guide](float const &) {
                                     return weak_interporator && weak_dst_guide;
                                 })
                                 .perform([weak_interporator, weak_dst_guide](float const &value) {

@@ -41,7 +41,7 @@ struct ui::button::impl : base::impl {
                 if (auto renderer = node.renderer()) {
                     event_flow = renderer.event_manager()
                                      .begin_flow(ui::event_manager::method::touch_changed)
-                                     .guard([weak_button](ui::event const &) { return !!weak_button; })
+                                     .filter([weak_button](ui::event const &) { return !!weak_button; })
                                      .perform([weak_button](ui::event const &event) {
                                          weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
                                      })
@@ -58,7 +58,7 @@ struct ui::button::impl : base::impl {
             });
 
         this->_rect_observer = this->_layout_guide_rect.begin_flow()
-                                   .guard([weak_button](ui::region const &) { return !!weak_button; })
+                                   .filter([weak_button](ui::region const &) { return !!weak_button; })
                                    .perform([weak_button, state_count = this->_state_count](ui::region const &value) {
                                        weak_button.lock().impl_ptr<impl>()->_update_rect_positions(value, state_count);
                                    })
