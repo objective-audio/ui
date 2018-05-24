@@ -89,7 +89,7 @@ struct sample::justified_points::impl : base::impl {
             auto const &idx = yas_each_index(x_each);
             this->_guide_observers.emplace_back(this->_x_layout_guides.at(idx)
                                                     .begin_flow()
-                                                    .guard([weak_plane](float const &) { return !!weak_plane; })
+                                                    .filter([weak_plane](float const &) { return !!weak_plane; })
                                                     .perform([weak_plane, idx](float const &value) {
                                                         weak_plane.lock().data().set_rect_position(
                                                             {.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}},
@@ -103,7 +103,7 @@ struct sample::justified_points::impl : base::impl {
             auto const &idx = yas_each_index(y_each);
             this->_guide_observers.emplace_back(this->_y_layout_guides.at(idx)
                                                     .begin_flow()
-                                                    .guard([weak_plane](float const &) { return !!weak_plane; })
+                                                    .filter([weak_plane](float const &) { return !!weak_plane; })
                                                     .perform([weak_plane, idx](float const &value) {
                                                         weak_plane.lock().data().set_rect_position(
                                                             {.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
