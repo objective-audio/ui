@@ -41,8 +41,8 @@ struct ui::layout_guide::impl : base::impl {
         auto old_cache = std::make_shared<opt_t<float>>();
 
         return this->_value.begin_value_flow()
-            .guard([weak_guide](float const &) { return !!weak_guide; })
-            .pair(this->_wait_sender.begin().guard([count = int32_t(0)](bool const &is_wait) mutable {
+            .filter([weak_guide](float const &) { return !!weak_guide; })
+            .pair(this->_wait_sender.begin().filter([count = int32_t(0)](bool const &is_wait) mutable {
                 if (is_wait) {
                     ++count;
                     return (count == 1);
@@ -84,8 +84,8 @@ struct ui::layout_guide::impl : base::impl {
 
                 return std::make_pair(cache, is_continue);
             })
-            .guard([](auto const &pair) { return pair.second; })
-            .guard([weak_guide, old_cache](auto const &pair) {
+            .filter([](auto const &pair) { return pair.second; })
+            .filter([weak_guide, old_cache](auto const &pair) {
                 auto guide_impl = weak_guide.lock().impl_ptr<ui::layout_guide::impl>();
                 if (!*old_cache) {
                     return true;
@@ -272,13 +272,13 @@ struct ui::layout_guide_range::impl : base::impl {
         auto weak_range = to_weak(range);
 
         this->_min_observer = this->_min_guide.begin_flow()
-                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .filter([weak_range](float const &) { return !!weak_range; })
                                   .map([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
                                   .receive(this->_length_guide.receiver())
                                   .end();
 
         this->_max_observer = this->_max_guide.begin_flow()
-                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .filter([weak_range](float const &) { return !!weak_range; })
                                   .map([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
                                   .receive(this->_length_guide.receiver())
                                   .end();

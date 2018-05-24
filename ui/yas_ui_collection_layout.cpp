@@ -139,7 +139,7 @@ struct ui::collection_layout::impl : base::impl {
 
         this->_border_flow =
             this->_border_guide_rect.begin_flow()
-                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
+                .filter([weak_layout](ui::region const &) { return !!weak_layout; })
                 .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
                 .end();
 

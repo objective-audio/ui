@@ -70,7 +70,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         auto scale_factor_flow = this->_scale_factor_property.begin_value_flow().to_null();
 
         this->_properties_flow = point_size_flow.merge(scale_factor_flow)
-                                     .guard([weak_texture](auto const &) { return !!weak_texture; })
+                                     .filter([weak_texture](auto const &) { return !!weak_texture; })
                                      .perform([weak_texture](auto const &) {
                                          auto texture_impl = weak_texture.lock().impl_ptr<impl>();
                                          texture_impl->_metal_texture = nullptr;
@@ -326,7 +326,7 @@ flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::
     method const &method) const {
     return impl_ptr<impl>()
         ->begin_flow()
-        .guard([method](flow_pair_t const &pair) { return pair.first == method; })
+        .filter([method](flow_pair_t const &pair) { return pair.first == method; })
         .map([](flow_pair_t const &pair) { return pair.second; });
 }
 

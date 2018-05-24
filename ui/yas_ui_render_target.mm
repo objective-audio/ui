@@ -93,7 +93,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
             }));
 
         this->_rect_observer = this->_layout_guide_rect.begin_flow()
-                                   .guard([weak_target](ui::region const &) { return !!weak_target; })
+                                   .filter([weak_target](ui::region const &) { return !!weak_target; })
                                    .perform([weak_target](ui::region const &region) {
                                        auto imp = weak_target.lock().impl_ptr<impl>();
 
