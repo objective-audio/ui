@@ -3,6 +3,7 @@
 //
 
 #include "yas_sample_inputted_text.h"
+#include "yas_flow_utils.h"
 
 using namespace yas;
 
@@ -33,9 +34,11 @@ struct sample::inputted_text::impl : base::impl {
                                 }
                             });
 
-                        layout = ui::make_flow({.distances = ui::insets{4.0f, -4.0f, 4.0f, -4.0f},
-                                                .source_guide_rect = renderer.safe_area_layout_guide_rect(),
-                                                .destination_guide_rect = strings_frame_guide_rect});
+                        layout = renderer.safe_area_layout_guide_rect()
+                                     .begin_flow()
+                                     .map(flow::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
+                                     .receive(strings_frame_guide_rect.receiver())
+                                     .sync();
                     } else {
                         event_observer = nullptr;
                         layout = nullptr;

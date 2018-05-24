@@ -16,23 +16,6 @@ struct args {
 };
 }  // namespace yas::ui::justified_layout
 
-namespace yas::ui::min_layout {
-struct args {
-    std::vector<ui::layout_guide> source_guides;
-    ui::layout_guide destination_guide;
-};
-}  // namespace yas::ui::min_layout
-
-namespace yas::ui::max_layout {
-struct args {
-    std::vector<ui::layout_guide> source_guides;
-    ui::layout_guide destination_guide;
-};
-}  // namespace yas::ui::max_layout
-
 namespace yas::ui {
 [[nodiscard]] flow::observer make_flow(justified_layout::args);
-
-[[nodiscard]] flow::observer make_flow(min_layout::args);
-[[nodiscard]] flow::observer make_flow(max_layout::args);
 }  // namespace yas::ui

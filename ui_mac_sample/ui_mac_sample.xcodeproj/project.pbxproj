@@ -144,6 +144,7 @@
 		B644A9F51CB52D7800E8F81B /* yas_ui_metal_view.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_view.h; sourceTree = "<group>"; };
 		B64F910E1CF2930800365111 /* yas_ui_batch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_batch.mm; sourceTree = "<group>"; };
 		B64F910F1CF2930800365111 /* yas_ui_batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_batch.h; sourceTree = "<group>"; };
+		B654F1F320B6D4DA00833208 /* yas_flow_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_utils.h; sourceTree = "<group>"; };
 		B65553841D6400C5000FB98F /* yas_sample_justified_points.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_justified_points.mm; path = ../../ui_sample_common/yas_sample_justified_points.mm; sourceTree = "<group>"; };
 		B65553851D6400C5000FB98F /* yas_sample_justified_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_justified_points.h; path = ../../ui_sample_common/yas_sample_justified_points.h; sourceTree = "<group>"; };
 		B659DB1D1EA0589300F29AD3 /* yas_fast_each_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_fast_each_private.h; sourceTree = "<group>"; };
@@ -463,6 +464,7 @@
 				B6F9E46E208A3950000B390E /* yas_flow_graph_private.h */,
 				B6F9E46C208A3950000B390E /* yas_flow_graph.h */,
 				B6F9E46D208A3950000B390E /* yas_flow_private.h */,
+				B654F1F320B6D4DA00833208 /* yas_flow_utils.h */,
 				B6F9E46F208A3951000B390E /* yas_flow.h */,
 			);
 			name = cpp_utils;
