@@ -136,14 +136,4 @@ using namespace yas;
     XCTAssertEqual(dst_guide.value(), 4.0f);
 }
 
-- (void)test_justify {
-    std::array<float, 2> array{1.0f, 2.0f};
-    auto justify = ui::justify<2>(array);
-    auto justified = justify(std::make_pair(1.0f, 7.0f));
-
-    XCTAssertEqual(std::get<0>(justified), 1.0f);
-    XCTAssertEqual(std::get<1>(justified), 3.0f);
-    XCTAssertEqual(std::get<2>(justified), 7.0f);
-}
-
 @end
