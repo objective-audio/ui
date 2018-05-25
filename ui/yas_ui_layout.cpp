@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_layout.h"
-#include <numeric>
 #include "yas_fast_each.h"
 
 using namespace yas;
