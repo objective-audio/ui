@@ -105,4 +105,48 @@ using namespace yas;
     XCTAssertEqual(std::get<2>(justified), 7.0f);
 }
 
+- (void)test_justify_flow_with_array_receivers {
+    ui::layout_guide first_src_guide{0.0f};
+    ui::layout_guide second_src_guide{3.0f};
+    ui::layout_guide dst_guide_0;
+    ui::layout_guide dst_guide_1;
+    ui::layout_guide dst_guide_2;
+    std::array<flow::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                   dst_guide_2.receiver()};
+
+    std::array<float, 2> array{1.0f, 2.0f};
+
+    auto flow = first_src_guide.begin_flow()
+                    .combine(second_src_guide.begin_flow())
+                    .map(ui::justify<2>(array))
+                    .receive(receivers)
+                    .sync();
+
+    XCTAssertEqual(dst_guide_0.value(), 0.0f);
+    XCTAssertEqual(dst_guide_1.value(), 1.0f);
+    XCTAssertEqual(dst_guide_2.value(), 3.0f);
+}
+
+- (void)test_justify_flow_with_vector_receivers {
+    ui::layout_guide first_src_guide{0.0f};
+    ui::layout_guide second_src_guide{3.0f};
+    ui::layout_guide dst_guide_0;
+    ui::layout_guide dst_guide_1;
+    ui::layout_guide dst_guide_2;
+    std::vector<flow::receiver<float>> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                 dst_guide_2.receiver()};
+
+    std::array<float, 2> array{1.0f, 2.0f};
+
+    auto flow = first_src_guide.begin_flow()
+                    .combine(second_src_guide.begin_flow())
+                    .map(ui::justify<2>(array))
+                    .receive(receivers)
+                    .sync();
+
+    XCTAssertEqual(dst_guide_0.value(), 0.0f);
+    XCTAssertEqual(dst_guide_1.value(), 1.0f);
+    XCTAssertEqual(dst_guide_2.value(), 3.0f);
+}
+
 @end
