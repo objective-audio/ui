@@ -36,23 +36,31 @@ struct sample::justified_points::impl : base::impl {
                                                   .second_source_guide = renderer.view_layout_guide_rect().right(),
                                                   .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
 
-                        std::vector<float> ratios;
-                        ratios.reserve(sample::y_point_count - 1);
+                        std::array<float, sample::y_point_count - 1> ratios;
 
                         auto each = make_fast_each(sample::y_point_count - 1);
                         while (yas_each_next(each)) {
                             auto const &idx = yas_each_index(each);
                             if (idx < y_point_count / 2) {
-                                ratios.emplace_back(std::pow(2.0f, idx));
+                                ratios.at(idx) = std::pow(2.0f, idx);
                             } else {
-                                ratios.emplace_back(std::pow(2.0f, y_point_count - 2 - idx));
+                                ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
                             }
                         }
 
-                        y_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                  .second_source_guide = renderer.view_layout_guide_rect().top(),
-                                                  .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
-                                                  .ratios = std::move(ratios)});
+                        std::vector<flow::receiver<float>> receivers;
+                        for (auto &guide : points.impl_ptr<impl>()->_y_layout_guides) {
+                            receivers.push_back(guide.receiver());
+                        }
+
+                        y_layout = renderer.view_layout_guide_rect()
+                                       .bottom()
+                                       .begin_flow()
+                                       .combine(renderer.view_layout_guide_rect().top().begin_flow())
+                                       .map(ui::justify<sample::y_point_count - 1>(ratios))
+                                       .perform([](std::array<float, sample::y_point_count> const &value) {})
+                                       .receive(receivers)
+                                       .sync();
                     } else {
                         x_layout = nullptr;
                         y_layout = nullptr;
