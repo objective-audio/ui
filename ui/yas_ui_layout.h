@@ -5,10 +5,7 @@
 #pragma once
 
 #include <numeric>
-#include "yas_base.h"
 #include "yas_fast_each.h"
-#include "yas_stl_utils.h"
-#include "yas_ui_layout_guide.h"
 
 namespace yas::ui {
 template <int N>
@@ -35,17 +32,15 @@ auto justify(std::array<float, N> const &ratios) {
         return out_values;
     };
 }
-}  // namespace yas::ui
 
-namespace yas::ui::justified_layout {
-struct args {
-    ui::layout_guide first_source_guide = nullptr;
-    ui::layout_guide second_source_guide = nullptr;
-    std::vector<ui::layout_guide> destination_guides;
-    std::vector<float> ratios;
-};
-}  // namespace yas::ui::justified_layout
-
-namespace yas::ui {
-[[nodiscard]] flow::observer make_flow(justified_layout::args);
+template <int N>
+auto justify() {
+    std::array<float, N> ratios;
+    auto each = make_fast_each(N);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        ratios.at(idx) = 1.0f;
+    }
+    return justify<N>(ratios);
+}
 }  // namespace yas::ui
