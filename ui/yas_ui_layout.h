@@ -32,7 +32,7 @@ auto justify(std::array<float, N> const &ratios) {
             }
         }
 
-        return to_tuple<float, N + 1>(out_values);
+        return out_values;
     };
 }
 }  // namespace yas::ui
