@@ -32,34 +32,48 @@ struct sample::justified_points::impl : base::impl {
                 if (auto points = weak_points.lock()) {
                     auto &node = context.value;
                     if (auto renderer = node.renderer()) {
-                        x_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().left(),
-                                                  .second_source_guide = renderer.view_layout_guide_rect().right(),
-                                                  .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
+                        std::array<float, sample::x_point_count - 1> x_ratios;
+                        for (auto &ratio : x_ratios) {
+                            ratio = 1.0f;
+                        }
 
-                        std::array<float, sample::y_point_count - 1> ratios;
+                        std::vector<flow::receiver<float>> x_receivers;
+                        for (auto &guide : points.impl_ptr<impl>()->_x_layout_guides) {
+                            x_receivers.push_back(guide.receiver());
+                        }
+
+                        x_layout = renderer.view_layout_guide_rect()
+                                       .left()
+                                       .begin_flow()
+                                       .combine(renderer.view_layout_guide_rect().right().begin_flow())
+                                       .map(ui::justify<sample::x_point_count - 1>(x_ratios))
+                                       .receive(x_receivers)
+                                       .sync();
+
+                        std::array<float, sample::y_point_count - 1> y_ratios;
 
                         auto each = make_fast_each(sample::y_point_count - 1);
                         while (yas_each_next(each)) {
                             auto const &idx = yas_each_index(each);
                             if (idx < y_point_count / 2) {
-                                ratios.at(idx) = std::pow(2.0f, idx);
+                                y_ratios.at(idx) = std::pow(2.0f, idx);
                             } else {
-                                ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
+                                y_ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
                             }
                         }
 
-                        std::vector<flow::receiver<float>> receivers;
+                        std::vector<flow::receiver<float>> y_receivers;
                         for (auto &guide : points.impl_ptr<impl>()->_y_layout_guides) {
-                            receivers.push_back(guide.receiver());
+                            y_receivers.push_back(guide.receiver());
                         }
 
                         y_layout = renderer.view_layout_guide_rect()
                                        .bottom()
                                        .begin_flow()
                                        .combine(renderer.view_layout_guide_rect().top().begin_flow())
-                                       .map(ui::justify<sample::y_point_count - 1>(ratios))
+                                       .map(ui::justify<sample::y_point_count - 1>(y_ratios))
                                        .perform([](std::array<float, sample::y_point_count> const &value) {})
-                                       .receive(receivers)
+                                       .receive(y_receivers)
                                        .sync();
                     } else {
                         x_layout = nullptr;
