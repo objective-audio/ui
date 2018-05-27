@@ -56,7 +56,6 @@ struct ui::strings::impl : base::impl {
 
    private:
     std::size_t const _max_word_count = 0;
-    std::vector<ui::collection_layout::observer_t> _collection_observers;
     std::vector<base> _property_observers;
     flow::receiver<ui::texture> _texture_receiver = nullptr;
     flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;

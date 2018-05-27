@@ -25,23 +25,6 @@ class collection_layout : public base {
    public:
     class impl;
 
-    enum class method {
-        frame_changed,
-        preferred_cell_count_changed,
-        actual_cell_count_changed,
-        default_cell_size_changed,
-        lines_changed,
-        row_spacing_changed,
-        col_spacing_changed,
-        alignment_changed,
-        direction_changed,
-        row_order_changed,
-        col_order_changed
-    };
-
-    using subject_t = subject<method, collection_layout>;
-    using observer_t = observer<method, collection_layout>;
-
     struct line {
         std::vector<ui::size> cell_sizes;
         float new_line_min_offset = 0.0f;
