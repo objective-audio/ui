@@ -26,43 +26,61 @@ struct sample::justified_points::impl : base::impl {
     void prepare(sample::justified_points &points) {
         auto &node = this->_rect_plane.node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed, [weak_points = to_weak(points), x_layout = flow::observer{nullptr},
-                                                 y_layout = flow::observer{nullptr}](auto const &context) mutable {
-                if (auto points = weak_points.lock()) {
-                    auto &node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        x_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().left(),
-                                                  .second_source_guide = renderer.view_layout_guide_rect().right(),
-                                                  .destination_guides = points.impl_ptr<impl>()->_x_layout_guides});
-
-                        std::vector<float> ratios;
-                        ratios.reserve(sample::y_point_count - 1);
-
-                        auto each = make_fast_each(sample::y_point_count - 1);
-                        while (yas_each_next(each)) {
-                            auto const &idx = yas_each_index(each);
-                            if (idx < y_point_count / 2) {
-                                ratios.emplace_back(std::pow(2.0f, idx));
-                            } else {
-                                ratios.emplace_back(std::pow(2.0f, y_point_count - 2 - idx));
+        this->_renderer_flow =
+            node.begin_renderer_flow()
+                .perform([weak_points = to_weak(points), x_layout = flow::observer{nullptr},
+                          y_layout = flow::observer{nullptr}](ui::renderer const &renderer) mutable {
+                    if (auto points = weak_points.lock()) {
+                        if (renderer) {
+                            std::vector<flow::receiver<float>> x_receivers;
+                            for (auto &guide : points.impl_ptr<impl>()->_x_layout_guides) {
+                                x_receivers.push_back(guide.receiver());
                             }
-                        }
 
-                        y_layout = ui::make_flow({.first_source_guide = renderer.view_layout_guide_rect().bottom(),
-                                                  .second_source_guide = renderer.view_layout_guide_rect().top(),
-                                                  .destination_guides = points.impl_ptr<impl>()->_y_layout_guides,
-                                                  .ratios = std::move(ratios)});
-                    } else {
-                        x_layout = nullptr;
-                        y_layout = nullptr;
+                            x_layout = renderer.view_layout_guide_rect()
+                                           .left()
+                                           .begin_flow()
+                                           .combine(renderer.view_layout_guide_rect().right().begin_flow())
+                                           .map(ui::justify<sample::x_point_count - 1>())
+                                           .receive(x_receivers)
+                                           .sync();
+
+                            std::array<float, sample::y_point_count - 1> y_ratios;
+
+                            auto each = make_fast_each(sample::y_point_count - 1);
+                            while (yas_each_next(each)) {
+                                auto const &idx = yas_each_index(each);
+                                if (idx < y_point_count / 2) {
+                                    y_ratios.at(idx) = std::pow(2.0f, idx);
+                                } else {
+                                    y_ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
+                                }
+                            }
+
+                            std::vector<flow::receiver<float>> y_receivers;
+                            for (auto &guide : points.impl_ptr<impl>()->_y_layout_guides) {
+                                y_receivers.push_back(guide.receiver());
+                            }
+
+                            y_layout = renderer.view_layout_guide_rect()
+                                           .bottom()
+                                           .begin_flow()
+                                           .combine(renderer.view_layout_guide_rect().top().begin_flow())
+                                           .map(ui::justify<sample::y_point_count - 1>(y_ratios))
+                                           .perform([](std::array<float, sample::y_point_count> const &value) {})
+                                           .receive(y_receivers)
+                                           .sync();
+                        } else {
+                            x_layout = nullptr;
+                            y_layout = nullptr;
+                        }
                     }
-                }
-            });
+                })
+                .sync();
     }
 
    private:
-    ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer _renderer_flow = nullptr;
     std::vector<flow::observer> _guide_observers;
 
     void _setup_colors() {

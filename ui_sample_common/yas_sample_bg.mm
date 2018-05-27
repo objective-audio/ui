@@ -3,7 +3,6 @@
 //
 
 #include "yas_sample_bg.h"
-#include "yas_ui_layout.h"
 
 using namespace yas;
 

@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import "yas_flow_utils.h"
-#import "yas_ui_layout.h"
+#import "yas_ui_layout_guide.h"
 
 using namespace yas;
 

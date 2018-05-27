@@ -7,7 +7,6 @@
 #include "yas_fast_each.h"
 #include "yas_flow_utils.h"
 #include "yas_property.h"
-#include "yas_ui_layout.h"
 #include "yas_ui_layout_guide.h"
 
 using namespace yas;
