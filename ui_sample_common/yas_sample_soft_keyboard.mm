@@ -81,20 +81,17 @@ struct sample::soft_keyboard::impl : base::impl {
     void prepare(sample::soft_keyboard &keyboard) {
         auto weak_keyboard = to_weak(keyboard);
 
-        this->_renderer_observer = this->_root_node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed, [weak_keyboard](auto const &context) mutable {
-                auto &node = context.value;
-                if (auto keyboard = weak_keyboard.lock()) {
-                    auto keyboard_impl = keyboard.impl_ptr<impl>();
-                    if (auto renderer = node.renderer()) {
-                        keyboard_impl->_setup_soft_keys_if_needed();
-                    } else {
-                        keyboard_impl->_dispose_soft_keys();
-                    }
-                }
-            });
-
-        this->_setup_soft_keys_if_needed();
+        this->_renderer_flow = this->_root_node.begin_renderer_flow()
+                                   .filter([weak_keyboard](auto const &) { return !!weak_keyboard; })
+                                   .perform([weak_keyboard](ui::renderer const &renderer) {
+                                       auto keyboard_impl = weak_keyboard.lock().impl_ptr<impl>();
+                                       if (renderer) {
+                                           keyboard_impl->_setup_soft_keys_if_needed();
+                                       } else {
+                                           keyboard_impl->_dispose_soft_keys();
+                                       }
+                                   })
+                                   .sync();
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
@@ -115,17 +112,17 @@ struct sample::soft_keyboard::impl : base::impl {
     ui::collection_layout _collection_layout = nullptr;
     std::vector<flow::observer> _frame_layouts;
 
-    std::vector<ui::button::observer_t> _soft_key_observers;
-    ui::node::observer_t _renderer_observer = nullptr;
+    std::vector<flow::observer> _soft_key_flows;
+    flow::observer _renderer_flow = nullptr;
     flow::observer _actual_cell_count_flow = nullptr;
     ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
     std::vector<std::vector<flow::observer>> _fixed_cell_layouts;
-    std::vector<flow::observer> _dst_rect_observers;
+    std::vector<flow::observer> _dst_rect_flows;
 
     void _setup_soft_keys_if_needed() {
-        if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
+        if (this->_soft_keys.size() > 0 && this->_soft_key_flows.size() > 0 && this->_collection_layout &&
             this->_frame_layouts.size() > 0 && this->_actual_cell_count_flow) {
             return;
         }
@@ -152,7 +149,7 @@ struct sample::soft_keyboard::impl : base::impl {
         }
 
         this->_soft_keys.reserve(key_count);
-        this->_soft_key_observers.reserve(key_count);
+        this->_soft_key_flows.reserve(key_count);
 
         this->_collection_layout =
             ui::collection_layout{{.frame = {.size = {width, 0.0f}},
@@ -165,14 +162,18 @@ struct sample::soft_keyboard::impl : base::impl {
         for (auto const &key : keys) {
             sample::soft_key soft_key{key, key_width, this->_font_atlas};
 
-            auto observer = soft_key.button().subject().make_observer(
-                ui::button::method::ended,
-                [weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
-                    if (auto keyboard = weak_keyboard.lock()) {
-                        keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
-                    }
-                });
-            this->_soft_key_observers.emplace_back(std::move(observer));
+            flow::observer flow =
+                soft_key.button()
+                    .subject()
+                    .begin_flow(ui::button::method::ended)
+                    .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
+                        if (auto keyboard = weak_keyboard.lock()) {
+                            keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
+                        }
+                    })
+                    .end();
+
+            this->_soft_key_flows.emplace_back(std::move(flow));
 
             auto &node = soft_key.button().rect_plane().node();
 
@@ -221,14 +222,14 @@ struct sample::soft_keyboard::impl : base::impl {
 
     void _dispose_soft_keys() {
         this->_soft_keys.clear();
-        this->_soft_key_observers.clear();
+        this->_soft_key_flows.clear();
         this->_frame_layouts.clear();
         this->_collection_layout = nullptr;
         this->_actual_cell_count_flow = nullptr;
         this->_src_cell_guide_rects.clear();
         this->_dst_cell_guide_rects.clear();
         this->_cell_interporator = nullptr;
-        this->_dst_rect_observers.clear();
+        this->_dst_rect_flows.clear();
     }
 
     void _setup_soft_keys_layout() {
@@ -258,7 +259,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
             auto weak_soft_key = to_weak(soft_key);
 
-            this->_dst_rect_observers.emplace_back(
+            this->_dst_rect_flows.emplace_back(
                 dst_guide_rect.begin_flow()
                     .filter([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
                     .perform([weak_soft_key, handler](ui::region const &value) {
