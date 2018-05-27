@@ -122,7 +122,7 @@ struct sample::soft_keyboard::impl : base::impl {
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
     std::vector<std::vector<flow::observer>> _fixed_cell_layouts;
-    std::vector<flow::observer> _dst_rect_observers;
+    std::vector<flow::observer> _dst_rect_flows;
 
     void _setup_soft_keys_if_needed() {
         if (this->_soft_keys.size() > 0 && this->_soft_key_flows.size() > 0 && this->_collection_layout &&
@@ -232,7 +232,7 @@ struct sample::soft_keyboard::impl : base::impl {
         this->_src_cell_guide_rects.clear();
         this->_dst_cell_guide_rects.clear();
         this->_cell_interporator = nullptr;
-        this->_dst_rect_observers.clear();
+        this->_dst_rect_flows.clear();
     }
 
     void _setup_soft_keys_layout() {
@@ -262,7 +262,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
             auto weak_soft_key = to_weak(soft_key);
 
-            this->_dst_rect_observers.emplace_back(
+            this->_dst_rect_flows.emplace_back(
                 dst_guide_rect.begin_flow()
                     .filter([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
                     .perform([weak_soft_key, handler](ui::region const &value) {
