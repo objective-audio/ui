@@ -67,7 +67,7 @@ struct ui::collection_layout::impl : base::impl {
     flow::observer _top_border_flow;
     ui::layout_borders const _borders;
     flow::observer _border_flow = nullptr;
-    flow::receiver<method> _properties_receiver = nullptr;
+    flow::receiver<> _layout_receiver = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -129,7 +129,7 @@ struct ui::collection_layout::impl : base::impl {
     void prepare(ui::collection_layout &layout) {
         auto weak_layout = to_weak(layout);
 
-        this->_properties_receiver = flow::receiver<ui::collection_layout::method>{[weak_layout](auto const &method) {
+        this->_layout_receiver = flow::receiver<>{[weak_layout]() {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();
@@ -142,50 +142,32 @@ struct ui::collection_layout::impl : base::impl {
                 .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
                 .end();
 
-        this->_property_flows.emplace_back(this->_row_spacing_property.begin_value_flow()
-                                               .to_value(method::row_spacing_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_row_spacing_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_col_spacing_property.begin_value_flow()
-                                               .to_value(method::col_spacing_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_col_spacing_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_alignment_property.begin_value_flow()
-                                               .to_value(method::alignment_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_alignment_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_direction_property.begin_value_flow()
-                                               .to_value(method::direction_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_direction_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_row_order_property.begin_value_flow()
-                                               .to_value(method::row_order_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_row_order_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_col_order_property.begin_value_flow()
-                                               .to_value(method::col_order_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_col_order_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_preferred_cell_count_property.begin_value_flow()
-                                               .to_value(method::preferred_cell_count_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_preferred_cell_count_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_default_cell_size_property.begin_value_flow()
-                                               .to_value(method::default_cell_size_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_default_cell_size_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_lines_property.begin_value_flow()
-                                               .to_value(method::lines_changed)
-                                               .receive(this->_properties_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_lines_property.begin_value_flow().receive_null(this->_layout_receiver).end());
 
         this->_update_layout();
     }
