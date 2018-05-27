@@ -81,20 +81,17 @@ struct sample::soft_keyboard::impl : base::impl {
     void prepare(sample::soft_keyboard &keyboard) {
         auto weak_keyboard = to_weak(keyboard);
 
-        this->_renderer_observer = this->_root_node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed, [weak_keyboard](auto const &context) mutable {
-                auto &node = context.value;
-                if (auto keyboard = weak_keyboard.lock()) {
-                    auto keyboard_impl = keyboard.impl_ptr<impl>();
-                    if (auto renderer = node.renderer()) {
-                        keyboard_impl->_setup_soft_keys_if_needed();
-                    } else {
-                        keyboard_impl->_dispose_soft_keys();
-                    }
-                }
-            });
-
-        this->_setup_soft_keys_if_needed();
+        this->_renderer_flow = this->_root_node.begin_renderer_flow()
+                                   .filter([weak_keyboard](auto const &) { return !!weak_keyboard; })
+                                   .perform([weak_keyboard](ui::renderer const &renderer) {
+                                       auto keyboard_impl = weak_keyboard.lock().impl_ptr<impl>();
+                                       if (renderer) {
+                                           keyboard_impl->_setup_soft_keys_if_needed();
+                                       } else {
+                                           keyboard_impl->_dispose_soft_keys();
+                                       }
+                                   })
+                                   .sync();
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
@@ -116,7 +113,7 @@ struct sample::soft_keyboard::impl : base::impl {
     std::vector<flow::observer> _frame_layouts;
 
     std::vector<flow::observer> _soft_key_flows;
-    ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer _renderer_flow = nullptr;
     flow::observer _actual_cell_count_flow = nullptr;
     ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
