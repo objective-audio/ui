@@ -113,7 +113,7 @@ struct ui::button::impl : base::impl {
         }
 
         ui::collider &collider = this->_rect_plane.node().collider();
-        if (!collider.shape() || (collider.shape().type_info() == typeid(ui::shape::rect::type))) {
+        if (!collider.shape() || (collider.shape().type_info() == typeid(ui::shape::rect))) {
             this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
         }
     }
