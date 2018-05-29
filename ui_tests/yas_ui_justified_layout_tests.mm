@@ -152,4 +152,18 @@ using namespace yas;
     XCTAssertEqual(dst_guide_2.value(), 3.0f);
 }
 
+- (void)test_zero_ratio {
+    ui::layout_guide first_src_guide{0.0f};
+    ui::layout_guide second_src_guide{2.0f};
+    ui::layout_guide dst_guide;
+
+    auto flow = first_src_guide.begin_flow()
+                    .combine(second_src_guide.begin_flow())
+                    .map(ui::justify())
+                    .receive(dst_guide.receiver())
+                    .sync();
+
+    XCTAssertEqual(dst_guide.value(), 1.0f);
+}
+
 @end
