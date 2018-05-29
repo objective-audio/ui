@@ -10,6 +10,8 @@
 namespace yas::ui {
 template <int N>
 auto justify(std::array<float, N> const &ratios) {
+    static_assert(N >= 0, "justify N must be greater than or equal 0.");
+
     return [ratios](std::pair<float, float> const &pair) {
         std::array<float, N + 1> out_values;
 
@@ -22,7 +24,11 @@ auto justify(std::array<float, N> const &ratios) {
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             if (idx == 0) {
-                out_values.at(idx) = first_value;
+                if (N == 0) {
+                    out_values.at(idx) = first_value + distance * 0.5f;
+                } else {
+                    out_values.at(idx) = first_value;
+                }
             } else {
                 sum += ratios.at(idx - 1);
                 out_values.at(idx) = first_value + distance * (sum / total);
@@ -33,8 +39,10 @@ auto justify(std::array<float, N> const &ratios) {
     };
 }
 
-template <int N>
+template <int N = 0>
 auto justify() {
+    static_assert(N >= 0, "justify N must be greater than or equal 2.");
+
     std::array<float, N> ratios;
     auto each = make_fast_each(N);
     while (yas_each_next(each)) {
