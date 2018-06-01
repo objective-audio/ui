@@ -675,4 +675,22 @@ using namespace yas;
     XCTAssertTrue(region == expected);
 }
 
+- (void)test_uint_point_to_point {
+    XCTAssertTrue(ui::to_point(ui::uint_point{.x = 1, .y = 2}) == (ui::point{.x = 1.0f, .y = 2.0f}));
+}
+
+- (void)test_uint_size_to_size {
+    XCTAssertTrue(ui::to_size(ui::uint_size{.width = 4, .height = 8}) == (ui::size{.width = 4.0f, .height = 8.0f}));
+}
+
+- (void)test_uint_range_to_range {
+    XCTAssertTrue(ui::to_range(ui::uint_range{.location = 2, .length = 4}) ==
+                  (ui::range{.location = 2.0f, .length = 4.0f}));
+}
+
+- (void)test_uint_region_to_region {
+    XCTAssertTrue(ui::to_region(ui::uint_region{.origin = {.x = 1, .y = 2}, .size = {.width = 4, .height = 8}}) ==
+                  (ui::region{.origin = {.x = 1.0f, .y = 2.0f}, .size = {.width = 4.0f, .height = 8.0f}}));
+}
+
 @end

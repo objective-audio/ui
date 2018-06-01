@@ -214,6 +214,11 @@ using index2d_t = uint32_t;
 struct index2d_rect_t {
     index2d_t v[6];
 };
+
+ui::point to_point(ui::uint_point const &);
+ui::size to_size(ui::uint_size const &);
+ui::range to_range(ui::uint_range const &);
+ui::region to_region(ui::uint_region const &);
 }  // namespace yas::ui
 
 namespace yas {
