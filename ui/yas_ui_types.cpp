@@ -297,6 +297,25 @@ void ui::vertex2d_rect_t::set_tex_coord(ui::uint_region const &region) {
 
 #pragma mark -
 
+ui::point ui::to_point(ui::uint_point const &uint_point) {
+    return ui::point{.x = static_cast<float>(uint_point.x), .y = static_cast<float>(uint_point.y)};
+}
+
+ui::size ui::to_size(ui::uint_size const &uint_size) {
+    return ui::size{.width = static_cast<float>(uint_size.width), .height = static_cast<float>(uint_size.height)};
+}
+
+ui::range ui::to_range(ui::uint_range const &uint_range) {
+    return ui::range{.location = static_cast<float>(uint_range.location),
+                     .length = static_cast<float>(uint_range.length)};
+}
+
+ui::region ui::to_region(ui::uint_region const &uint_region) {
+    return ui::region{.origin = ui::to_point(uint_region.origin), .size = ui::to_size(uint_region.size)};
+}
+
+#pragma mark -
+
 simd::float2 yas::to_float2(CGPoint const &point) {
     return simd::float2{static_cast<float>(point.x), static_cast<float>(point.y)};
 }
