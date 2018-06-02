@@ -183,6 +183,14 @@ void ui::collider::dispatch_method(ui::collider::method const method) {
     impl_ptr<impl>()->dispatch_method(method);
 }
 
+flow::receiver<ui::shape> &ui::collider::shape_receiver() {
+    return impl_ptr<impl>()->_shape_property.receiver();
+}
+
+flow::receiver<bool> &ui::collider::enabled_receiver() {
+    return impl_ptr<impl>()->_enabled_property.receiver();
+}
+
 ui::renderable_collider &ui::collider::renderable() {
     if (!this->_renderable) {
         this->_renderable = ui::renderable_collider{impl_ptr<ui::renderable_collider::impl>()};

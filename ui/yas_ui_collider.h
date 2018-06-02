@@ -17,6 +17,11 @@ template <typename K, typename T>
 class observer;
 }  // namespace yas
 
+namespace yas::flow {
+template <typename T>
+class receiver;
+}
+
 namespace yas::ui {
 struct anywhere_shape {
     bool hit_test(ui::point const &) const;
@@ -97,6 +102,9 @@ class collider : public base {
 
     subject_t &subject();
     void dispatch_method(ui::collider::method const);
+
+    flow::receiver<ui::shape> &shape_receiver();
+    flow::receiver<bool> &enabled_receiver();
 
     ui::renderable_collider &renderable();
 
