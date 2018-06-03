@@ -144,4 +144,28 @@ using namespace yas;
     }
 }
 
+- (void)test_begin_scale_factor_flow {
+    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    if (!device) {
+        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
+        return;
+    }
+
+    auto view = [YASTestMetalViewController sharedViewController].metalView;
+    [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
+
+    ui::renderer renderer{ui::metal_system{device.object()}};
+
+    double notified = 0.0f;
+
+    auto flow =
+        renderer.begin_scale_factor_flow().perform([&notified](double const &value) { notified = value; }).sync();
+
+    XCTAssertEqual(notified, 0.0f);
+
+    renderer.view_renderable().configure(view);
+
+    XCTAssertEqual(notified, renderer.scale_factor());
+}
+
 @end
