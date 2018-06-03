@@ -9,6 +9,7 @@
 #include "yas_objc_cast.h"
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
+#include "yas_property.h"
 #include "yas_to_bool.h"
 #include "yas_ui_action.h"
 #include "yas_ui_detector.h"
@@ -45,6 +46,27 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         none,
         updated,
     };
+
+    ui::metal_system _metal_system = nullptr;
+
+    ui::uint_size _view_size = {.width = 0, .height = 0};
+    ui::uint_size _drawable_size = {.width = 0, .height = 0};
+    double _scale_factor{0.0f};
+    property<double> _scale_factor_notify{{.value = 0.0f}};
+    flow::sender<bool> _scale_factor_wait;
+    yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
+    simd::float4x4 _projection_matrix = matrix_identity_float4x4;
+
+    yas::ui::renderer::subject_t _subject;
+
+    ui::node _root_node;
+    ui::parallel_action _action;
+    ui::detector _detector;
+    ui::event_manager _event_manager;
+    ui::layout_guide_rect _view_layout_guide_rect;
+    ui::layout_guide_rect _safe_area_layout_guide_rect;
+
+    flow::sender<std::nullptr_t> _will_render_sender;
 
     impl() {
     }
@@ -85,6 +107,8 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             throw "system not found.";
         }
 
+        this->_scale_factor_wait.send_value(true);
+
         auto const view_size = view.bounds.size;
         auto const update_view_size_result = this->_update_view_size(view_size, drawable_size);
         auto const update_scale_result = this->_update_scale_factor();
@@ -102,6 +126,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             this->_subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
 
             if (to_bool(update_scale_result)) {
+                this->_scale_factor_notify.set_value(this->_scale_factor);
                 this->_subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
             }
 
@@ -109,6 +134,8 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
                 this->_subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
             }
         }
+
+        this->_scale_factor_wait.send_value(false);
     }
 
     void view_safe_area_insets_did_change(yas_objc_view *const view) override {
@@ -184,25 +211,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             }
         }
     }
-
-    ui::metal_system _metal_system = nullptr;
-
-    ui::uint_size _view_size = {.width = 0, .height = 0};
-    ui::uint_size _drawable_size = {.width = 0, .height = 0};
-    double _scale_factor = 0.0;
-    yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
-    simd::float4x4 _projection_matrix = matrix_identity_float4x4;
-
-    yas::ui::renderer::subject_t _subject;
-
-    ui::node _root_node;
-    ui::parallel_action _action;
-    ui::detector _detector;
-    ui::event_manager _event_manager;
-    ui::layout_guide_rect _view_layout_guide_rect;
-    ui::layout_guide_rect _safe_area_layout_guide_rect;
-
-    flow::sender<std::nullptr_t> _will_render_sender;
 
    private:
     update_result _update_view_size(CGSize const v_size, CGSize const d_size) {
@@ -391,6 +399,10 @@ ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
 
 flow::node<std::nullptr_t> ui::renderer::begin_will_render_flow() const {
     return impl_ptr<impl>()->_will_render_sender.begin();
+}
+
+flow::node<double> ui::renderer::begin_scale_factor_flow() const {
+    return impl_ptr<impl>()->_scale_factor_notify.begin_value_flow();
 }
 
 #pragma mark -

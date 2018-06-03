@@ -81,6 +81,7 @@ class renderer : public base {
     ui::layout_guide_rect &safe_area_layout_guide_rect();
 
     [[nodiscard]] flow::node<std::nullptr_t> begin_will_render_flow() const;
+    [[nodiscard]] flow::node<double> begin_scale_factor_flow() const;
 
    private:
     ui::view_renderable _view_renderable = nullptr;
