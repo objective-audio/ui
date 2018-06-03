@@ -22,7 +22,7 @@ using namespace yas;
     [super tearDown];
 }
 
-- (void)test_justify_with_ratios {
+- (void)test_justify_with_array_ratios {
     std::array<float, 2> array{1.0f, 2.0f};
     auto justify = ui::justify<2>(array);
     auto justified = justify(std::make_pair(1.0f, 7.0f));
@@ -39,6 +39,29 @@ using namespace yas;
     XCTAssertEqual(std::get<0>(justified), 1.0f);
     XCTAssertEqual(std::get<1>(justified), 2.0f);
     XCTAssertEqual(std::get<2>(justified), 3.0f);
+}
+
+- (void)test_justify_functional_ratios {
+    auto justify = ui::justify([](std::size_t const &idx) { return float(idx + 1); });
+    auto justified = justify(std::make_tuple(0.0f, 6.0f, 3));
+
+    XCTAssertEqual(justified.size(), 4);
+    XCTAssertEqual(justified.at(0), 0.0f);
+    XCTAssertEqual(justified.at(1), 1.0f);
+    XCTAssertEqual(justified.at(2), 3.0f);
+    XCTAssertEqual(justified.at(3), 6.0f);
+}
+
+- (void)test_justify_vector_ratios {
+    std::vector ratios{1.0f, 2.0f, 3.0f};
+    auto justify = ui::justify(ratios);
+    auto justified = justify(std::make_tuple(0.0f, 6.0f, 3));
+
+    XCTAssertEqual(justified.size(), 4);
+    XCTAssertEqual(justified.at(0), 0.0f);
+    XCTAssertEqual(justified.at(1), 1.0f);
+    XCTAssertEqual(justified.at(2), 3.0f);
+    XCTAssertEqual(justified.at(3), 6.0f);
 }
 
 - (void)test_flow {
