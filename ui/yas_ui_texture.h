@@ -62,6 +62,7 @@ class texture : public base {
     using flow_pair_t = std::pair<method, texture>;
     [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow() const;
     [[nodiscard]] flow::node<texture, flow_pair_t, flow_pair_t> begin_flow(method const &) const;
+    flow::receiver<double> &scale_factor_receiver();
 
     ui::metal_object &metal();
 

@@ -330,6 +330,10 @@ flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::
         .map([](flow_pair_t const &pair) { return pair.second; });
 }
 
+flow::receiver<double> &ui::texture::scale_factor_receiver() {
+    return impl_ptr<impl>()->_scale_factor_property.receiver();
+}
+
 ui::metal_object &ui::texture::metal() {
     if (!this->_metal_object) {
         this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
