@@ -92,25 +92,25 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 }
             }));
 
-        this->_rect_observer = this->_layout_guide_rect.begin_flow()
-                                   .filter([weak_target](ui::region const &) { return !!weak_target; })
-                                   .perform([weak_target](ui::region const &region) {
-                                       auto imp = weak_target.lock().impl_ptr<impl>();
+        this->_rect_flow = this->_layout_guide_rect.begin_flow()
+                               .filter([weak_target](ui::region const &) { return !!weak_target; })
+                               .perform([weak_target](ui::region const &region) {
+                                   auto imp = weak_target.lock().impl_ptr<impl>();
 
-                                       ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                                                          .height = static_cast<uint32_t>(region.size.height)};
+                                   ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                                                      .height = static_cast<uint32_t>(region.size.height)};
 
-                                       imp->_src_texture.set_point_size(size);
-                                       imp->_dst_texture.set_point_size(size);
+                                   imp->_src_texture.set_point_size(size);
+                                   imp->_dst_texture.set_point_size(size);
 
-                                       imp->_projection_matrix = ui::matrix::ortho(
-                                           region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+                                   imp->_projection_matrix = ui::matrix::ortho(
+                                       region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-                                       imp->_data.set_rect_position(region, 0);
+                                   imp->_data.set_rect_position(region, 0);
 
-                                       imp->_set_updated(render_target_update_reason::region);
-                                   })
-                                   .end();
+                                   imp->_set_updated(render_target_update_reason::region);
+                               })
+                               .end();
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
@@ -170,16 +170,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         return false;
     }
 
-    void observe_scale_from_renderer(ui::renderer &renderer, ui::render_target &target) {
-        this->_renderer_observer = renderer.subject().make_observer(
-            ui::renderer::method::scale_factor_changed, [weak_target = to_weak(target)](auto const &context) {
-                if (auto target = weak_target.lock()) {
-                    ui::renderer const &renderer = context.value;
-                    target.set_scale_factor(renderer.scale_factor());
-                }
-            });
-
-        this->_scale_factor_property.set_value(renderer.scale_factor());
+    void sync_scale_from_renderer(ui::renderer &renderer, ui::render_target &target) {
+        this->_scale_factor_flow = renderer.begin_scale_factor_flow().receive(target.scale_factor_receiver()).sync();
     }
 
     ui::layout_guide_rect _layout_guide_rect;
@@ -195,8 +187,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::texture::observer_t _dst_texture_observer = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    ui::renderer::observer_t _renderer_observer = nullptr;
-    flow::observer _rect_observer = nullptr;
+    flow::observer _scale_factor_flow = nullptr;
+    flow::observer _rect_flow = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);
@@ -257,6 +249,10 @@ ui::effect const &ui::render_target::effect() const {
     return impl_ptr<impl>()->_effect_property.value();
 }
 
+flow::receiver<double> &ui::render_target::scale_factor_receiver() {
+    return impl_ptr<impl>()->_scale_factor_property.receiver();
+}
+
 ui::renderable_render_target &ui::render_target::renderable() {
     if (!this->_renderable) {
         this->_renderable = ui::renderable_render_target{impl_ptr<ui::renderable_render_target::impl>()};
@@ -271,6 +267,6 @@ ui::metal_object &ui::render_target::metal() {
     return this->_metal_object;
 }
 
-void ui::render_target::observe_scale_from_renderer(ui::renderer &renderer) {
-    impl_ptr<impl>()->observe_scale_from_renderer(renderer, *this);
+void ui::render_target::sync_scale_from_renderer(ui::renderer &renderer) {
+    impl_ptr<impl>()->sync_scale_from_renderer(renderer, *this);
 }
