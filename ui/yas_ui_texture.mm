@@ -126,16 +126,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                  [&erase_element](texture_element const &element) { return element == erase_element; });
     }
 
-    void observe_scale_from_renderer(ui::renderer &renderer, ui::texture &texture) {
-        this->_renderer_observer = renderer.subject().make_observer(
-            ui::renderer::method::scale_factor_changed, [weak_texture = to_weak(texture)](auto const &context) {
-                if (auto texture = weak_texture.lock()) {
-                    ui::renderer const &renderer = context.value;
-                    texture.set_scale_factor(renderer.scale_factor());
-                }
-            });
-
-        this->_scale_factor_property.set_value(renderer.scale_factor());
+    void sync_scale_from_renderer(ui::renderer &renderer, ui::texture &texture) {
+        this->_scale_flow = renderer.begin_scale_factor_flow().receive(texture.scale_factor_receiver()).sync();
     }
 
     flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow() {
@@ -149,6 +141,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint_point _draw_actual_pos;
     std::vector<texture_element> _texture_elements;
     ui::renderer::observer_t _renderer_observer = nullptr;
+    flow::observer _scale_flow = nullptr;
     flow::observer _properties_flow = nullptr;
     flow::sender<flow_pair_t> _notify_sender;
     flow::receiver<method> _notify_receiver = nullptr;
@@ -341,8 +334,8 @@ ui::metal_object &ui::texture::metal() {
     return this->_metal_object;
 }
 
-void ui::texture::observe_scale_from_renderer(ui::renderer &renderer) {
-    impl_ptr<impl>()->observe_scale_from_renderer(renderer, *this);
+void ui::texture::sync_scale_from_renderer(ui::renderer &renderer) {
+    impl_ptr<impl>()->sync_scale_from_renderer(renderer, *this);
 }
 
 #pragma mark -

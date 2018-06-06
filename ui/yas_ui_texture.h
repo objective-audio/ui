@@ -66,7 +66,7 @@ class texture : public base {
 
     ui::metal_object &metal();
 
-    void observe_scale_from_renderer(ui::renderer &);
+    void sync_scale_from_renderer(ui::renderer &);
 
    private:
     ui::metal_object _metal_object = nullptr;
