@@ -171,7 +171,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     void sync_scale_from_renderer(ui::renderer &renderer, ui::render_target &target) {
-        this->_scale_factor_flow = renderer.begin_scale_factor_flow().receive(target.scale_factor_receiver()).sync();
+        this->_scale_flow = renderer.begin_scale_factor_flow().receive(target.scale_factor_receiver()).sync();
     }
 
     ui::layout_guide_rect _layout_guide_rect;
@@ -187,7 +187,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::texture::observer_t _dst_texture_observer = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    flow::observer _scale_factor_flow = nullptr;
+    flow::observer _scale_flow = nullptr;
     flow::observer _rect_flow = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
