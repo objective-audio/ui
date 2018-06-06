@@ -140,7 +140,6 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element> _texture_elements;
-    ui::renderer::observer_t _renderer_observer = nullptr;
     flow::observer _scale_flow = nullptr;
     flow::observer _properties_flow = nullptr;
     flow::sender<flow_pair_t> _notify_sender;
