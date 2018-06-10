@@ -170,7 +170,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         return false;
     }
 
-    void sync_scale_from_renderer(ui::renderer &renderer, ui::render_target &target) {
+    void sync_scale_from_renderer(ui::renderer const &renderer, ui::render_target &target) {
         this->_scale_flow = renderer.begin_scale_factor_flow().receive(target.scale_factor_receiver()).sync();
     }
 
@@ -267,6 +267,6 @@ ui::metal_object &ui::render_target::metal() {
     return this->_metal_object;
 }
 
-void ui::render_target::sync_scale_from_renderer(ui::renderer &renderer) {
+void ui::render_target::sync_scale_from_renderer(ui::renderer const &renderer) {
     impl_ptr<impl>()->sync_scale_from_renderer(renderer, *this);
 }

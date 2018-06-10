@@ -126,7 +126,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                  [&erase_element](texture_element const &element) { return element == erase_element; });
     }
 
-    void sync_scale_from_renderer(ui::renderer &renderer, ui::texture &texture) {
+    void sync_scale_from_renderer(ui::renderer const &renderer, ui::texture &texture) {
         this->_scale_flow = renderer.begin_scale_factor_flow().receive(texture.scale_factor_receiver()).sync();
     }
 
@@ -333,7 +333,7 @@ ui::metal_object &ui::texture::metal() {
     return this->_metal_object;
 }
 
-void ui::texture::sync_scale_from_renderer(ui::renderer &renderer) {
+void ui::texture::sync_scale_from_renderer(ui::renderer const &renderer) {
     impl_ptr<impl>()->sync_scale_from_renderer(renderer, *this);
 }
 
