@@ -5,7 +5,6 @@
 #include "yas_ui_texture.h"
 #include <map>
 #include "yas_objc_ptr.h"
-#include "yas_property.h"
 #include "yas_ui_image.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
@@ -35,8 +34,8 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl, metal_object::impl {
-    property<ui::uint_size> _point_size_property;
-    property<double> _scale_factor_property;
+    flow::property<ui::uint_size> _point_size_property;
+    flow::property<double> _scale_factor_property;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -50,8 +49,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
           _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
-          _point_size_property({.value = std::move(point_size)}),
-          _scale_factor_property({.value = std::move(scale_factor)}),
+          _point_size_property(std::move(point_size)),
+          _scale_factor_property(std::move(scale_factor)),
           _usages(usages),
           _pixel_format(format) {
     }
@@ -66,8 +65,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             }
         });
 
-        auto point_size_flow = this->_point_size_property.begin_value_flow().to_null();
-        auto scale_factor_flow = this->_scale_factor_property.begin_value_flow().to_null();
+        auto point_size_flow = this->_point_size_property.begin().to_null();
+        auto scale_factor_flow = this->_scale_factor_property.begin().to_null();
 
         this->_properties_flow = point_size_flow.merge(scale_factor_flow)
                                      .filter([weak_texture](auto const &) { return !!weak_texture; })
