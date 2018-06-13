@@ -26,7 +26,7 @@ class layout_guide : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float>;
+    using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float, true>;
 
     flow_t begin_flow() const;
     flow::receiver<float> &receiver();
@@ -53,7 +53,7 @@ class layout_guide_point : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<ui::point, std::pair<opt_t<float>, opt_t<float>>, float>;
+    using flow_t = flow::node<ui::point, std::pair<opt_t<float>, opt_t<float>>, float, true>;
 
     flow_t begin_flow() const;
     flow::receiver<ui::point> &receiver();
@@ -81,7 +81,7 @@ class layout_guide_range : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float>;
+    using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float, true>;
 
     flow_t begin_flow() const;
     flow::receiver<ui::range> &receiver();
@@ -129,7 +129,7 @@ class layout_guide_rect : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float>;
+    using flow_t = flow::node<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float, true>;
 
     flow_t begin_flow() const;
     flow::receiver<ui::region> &receiver();

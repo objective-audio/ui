@@ -139,7 +139,7 @@ struct ui::strings::impl : base::impl {
                                           .merge(font_atlas.begin_texture_updated_flow())
                                           .to_null()
                                           .receive(strings_impl->_update_layout_receiver)
-                                          .sync();
+                                          .end();
             }
         } else {
             this->_rect_plane.node().mesh().set_texture(nullptr);

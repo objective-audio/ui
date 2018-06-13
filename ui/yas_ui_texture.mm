@@ -130,7 +130,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         this->_scale_flow = renderer.begin_scale_factor_flow().receive(texture.scale_factor_receiver()).sync();
     }
 
-    flow::node<flow_pair_t, flow_pair_t, flow_pair_t> begin_flow() {
+    flow::node<flow_pair_t, flow_pair_t, flow_pair_t, false> begin_flow() {
         return this->_notify_sender.begin();
     }
 
@@ -309,12 +309,12 @@ ui::texture::subject_t &ui::texture::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-flow::node<ui::texture::flow_pair_t, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::texture::begin_flow()
-    const {
+flow::node<ui::texture::flow_pair_t, ui::texture::flow_pair_t, ui::texture::flow_pair_t, false>
+ui::texture::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }
 
-flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t> ui::texture::begin_flow(
+flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t, false> ui::texture::begin_flow(
     method const &method) const {
     return impl_ptr<impl>()
         ->begin_flow()

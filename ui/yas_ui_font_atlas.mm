@@ -292,11 +292,11 @@ ui::font_atlas::subject_t &ui::font_atlas::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-flow::node<ui::texture, ui::texture, ui::texture> ui::font_atlas::begin_texture_changed_flow() const {
+flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_changed_flow() const {
     return impl_ptr<impl>()->_texture_changed_sender.begin();
 }
 
-flow::node<ui::texture, ui::texture, ui::texture> ui::font_atlas::begin_texture_updated_flow() const {
+flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_updated_flow() const {
     return impl_ptr<impl>()->_texture_updated_sender.begin();
 }
 

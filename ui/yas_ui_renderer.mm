@@ -397,11 +397,11 @@ ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
     return impl_ptr<impl>()->_safe_area_layout_guide_rect;
 }
 
-flow::node<std::nullptr_t> ui::renderer::begin_will_render_flow() const {
+flow::node_t<std::nullptr_t, false> ui::renderer::begin_will_render_flow() const {
     return impl_ptr<impl>()->_will_render_sender.begin();
 }
 
-flow::node<double> ui::renderer::begin_scale_factor_flow() const {
+flow::node_t<double, true> ui::renderer::begin_scale_factor_flow() const {
     return impl_ptr<impl>()->_scale_factor_notify.begin_value_flow();
 }
 

@@ -53,14 +53,14 @@ void sample::main::setup() {
     this->renderer.insert_action(std::move(button_pos_action));
 
     ui::texture texture{{.point_size = {1024, 1024}}};
-    texture.observe_scale_from_renderer(this->renderer);
+    texture.sync_scale_from_renderer(this->renderer);
 
     this->_font_atlas.set_texture(texture);
     this->_big_button.set_texture(texture);
     this->_touch_holder.set_texture(texture);
 
     ui::render_target render_target;
-    render_target.observe_scale_from_renderer(this->renderer);
+    render_target.sync_scale_from_renderer(this->renderer);
     render_target.set_effect(this->_blur.effect());
 
     ui::continuous_action blur_action{{.duration = 5.0, .loop_count = 0}};

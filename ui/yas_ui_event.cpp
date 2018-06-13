@@ -213,13 +213,13 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
         }
     }
 
-    flow::node<event, context, context> begin_flow(method const &method) {
+    flow::node<event, context, context, false> begin_flow(method const &method) {
         return this->_sender.begin()
             .filter([method](context const &context) { return context.method == method; })
             .map([](ui::event_manager::context const &context) { return context.event; });
     }
 
-    flow::node<context, context, context> begin_flow() {
+    flow::node<context, context, context, false> begin_flow() {
         return this->_sender.begin();
     }
 
@@ -273,12 +273,12 @@ subject<ui::event_manager::method, ui::event> &ui::event_manager::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-flow::node<ui::event, ui::event_manager::context, ui::event_manager::context> ui::event_manager::begin_flow(
+flow::node<ui::event, ui::event_manager::context, ui::event_manager::context, false> ui::event_manager::begin_flow(
     method const &method) const {
     return impl_ptr<impl>()->begin_flow(method);
 }
 
-flow::node<ui::event_manager::context, ui::event_manager::context, ui::event_manager::context>
+flow::node<ui::event_manager::context, ui::event_manager::context, ui::event_manager::context, false>
 ui::event_manager::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }

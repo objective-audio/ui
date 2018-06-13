@@ -79,15 +79,15 @@ class collection_layout : public base {
     ui::layout_guide_rect &frame_layout_guide_rect();
     std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
 
-    [[nodiscard]] flow::node<std::size_t> begin_preferred_cell_count_flow() const;
-    [[nodiscard]] flow::node<std::size_t> begin_actual_cell_count_flow() const;
-    [[nodiscard]] flow::node<ui::size> begin_default_cell_size_flow() const;
-    [[nodiscard]] flow::node<std::vector<line>> begin_lines_flow() const;
-    [[nodiscard]] flow::node<float> begin_row_spacing_flow() const;
-    [[nodiscard]] flow::node<float> begin_col_spacing_flow() const;
-    [[nodiscard]] flow::node<ui::layout_alignment> begin_alignment_flow() const;
-    [[nodiscard]] flow::node<ui::layout_direction> begin_direction_flow() const;
-    [[nodiscard]] flow::node<ui::layout_order> begin_row_order_flow() const;
-    [[nodiscard]] flow::node<ui::layout_order> begin_col_order_flow() const;
+    [[nodiscard]] flow::node_t<std::size_t, true> begin_preferred_cell_count_flow() const;
+    [[nodiscard]] flow::node_t<std::size_t, true> begin_actual_cell_count_flow() const;
+    [[nodiscard]] flow::node_t<ui::size, true> begin_default_cell_size_flow() const;
+    [[nodiscard]] flow::node_t<std::vector<line>, true> begin_lines_flow() const;
+    [[nodiscard]] flow::node_t<float, true> begin_row_spacing_flow() const;
+    [[nodiscard]] flow::node_t<float, true> begin_col_spacing_flow() const;
+    [[nodiscard]] flow::node_t<ui::layout_alignment, true> begin_alignment_flow() const;
+    [[nodiscard]] flow::node_t<ui::layout_direction, true> begin_direction_flow() const;
+    [[nodiscard]] flow::node_t<ui::layout_order, true> begin_row_order_flow() const;
+    [[nodiscard]] flow::node_t<ui::layout_order, true> begin_col_order_flow() const;
 };
 }  // namespace yas::ui
