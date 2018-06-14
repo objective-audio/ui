@@ -6,7 +6,6 @@
 #include "yas_delaying_caller.h"
 #include "yas_fast_each.h"
 #include "yas_flow_utils.h"
-#include "yas_property.h"
 #include "yas_ui_layout_guide.h"
 
 using namespace yas;
@@ -47,16 +46,16 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t cell_idx;
     };
 
-    property<float> _row_spacing_property;
-    property<float> _col_spacing_property;
-    property<ui::layout_alignment> _alignment_property;
-    property<ui::layout_direction> _direction_property;
-    property<ui::layout_order> _row_order_property;
-    property<ui::layout_order> _col_order_property;
-    property<std::size_t> _preferred_cell_count_property;
-    property<std::size_t> _actual_cell_count_property;
-    property<ui::size> _default_cell_size_property;
-    property<std::vector<ui::collection_layout::line>> _lines_property;
+    flow::property<float> _row_spacing_property;
+    flow::property<float> _col_spacing_property;
+    flow::property<ui::layout_alignment> _alignment_property;
+    flow::property<ui::layout_direction> _direction_property;
+    flow::property<ui::layout_order> _row_order_property;
+    flow::property<ui::layout_order> _col_order_property;
+    flow::property<std::size_t> _preferred_cell_count_property;
+    flow::property<std::size_t> _actual_cell_count_property{std::size_t(0)};
+    flow::property<ui::size> _default_cell_size_property;
+    flow::property<std::vector<ui::collection_layout::line>> _lines_property;
 
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
@@ -71,34 +70,15 @@ struct ui::collection_layout::impl : base::impl {
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
-          _preferred_cell_count_property({.value = args.preferred_cell_count}),
-          _default_cell_size_property(
-              {.value = std::move(args.default_cell_size),
-               .validator = [](auto const &value) { return value.width >= 0.0f && value.height >= 0.0f; }}),
-          _lines_property({.value = std::move(args.lines),
-                           .validator =
-                               [](auto const &value) {
-                                   for (auto const &line : value) {
-                                       if (line.new_line_min_offset < 0.0f) {
-                                           return false;
-                                       }
-
-                                       for (auto const &cell_size : line.cell_sizes) {
-                                           if (cell_size.width < 0.0f || cell_size.height < 0.0f) {
-                                               return false;
-                                           }
-                                       }
-                                   }
-                                   return true;
-                               }}),
-          _row_spacing_property(
-              {.value = args.row_spacing, .validator = [](auto const &value) { return value >= 0.0f; }}),
-          _col_spacing_property(
-              {.value = args.col_spacing, .validator = [](auto const &value) { return value >= 0.0f; }}),
-          _alignment_property({.value = args.alignment}),
-          _direction_property({.value = args.direction}),
-          _row_order_property({.value = args.row_order}),
-          _col_order_property({.value = args.col_order}),
+          _preferred_cell_count_property(args.preferred_cell_count),
+          _default_cell_size_property(std::move(args.default_cell_size)),
+          _lines_property(std::move(args.lines)),
+          _row_spacing_property(args.row_spacing),
+          _col_spacing_property(args.col_spacing),
+          _alignment_property(args.alignment),
+          _direction_property(args.direction),
+          _row_order_property(args.row_order),
+          _col_order_property(args.col_order),
           _left_border_flow(_frame_guide_rect.left()
                                 .begin_flow()
                                 .map(flow::add(args.borders.left))
@@ -143,31 +123,30 @@ struct ui::collection_layout::impl : base::impl {
                 .end();
 
         this->_property_flows.emplace_back(
-            this->_row_spacing_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_row_spacing_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_col_spacing_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_col_spacing_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_alignment_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_alignment_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_direction_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_direction_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_row_order_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_row_order_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_col_order_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_col_order_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_preferred_cell_count_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_preferred_cell_count_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_default_cell_size_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+            this->_default_cell_size_property.begin().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(
-            this->_lines_property.begin_value_flow().receive_null(this->_layout_receiver).end());
+        this->_property_flows.emplace_back(this->_lines_property.begin().receive_null(this->_layout_receiver).end());
 
         this->_update_layout();
     }
@@ -554,41 +533,41 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
 }
 
 flow::node_t<std::size_t, true> ui::collection_layout::begin_preferred_cell_count_flow() const {
-    return impl_ptr<impl>()->_preferred_cell_count_property.begin_value_flow();
+    return impl_ptr<impl>()->_preferred_cell_count_property.begin();
 }
 
 flow::node_t<std::size_t, true> ui::collection_layout::begin_actual_cell_count_flow() const {
-    return impl_ptr<impl>()->_actual_cell_count_property.begin_value_flow();
+    return impl_ptr<impl>()->_actual_cell_count_property.begin();
 }
 
 flow::node_t<ui::size, true> ui::collection_layout::begin_default_cell_size_flow() const {
-    return impl_ptr<impl>()->_default_cell_size_property.begin_value_flow();
+    return impl_ptr<impl>()->_default_cell_size_property.begin();
 }
 
 flow::node_t<std::vector<ui::collection_layout::line>, true> ui::collection_layout::begin_lines_flow() const {
-    return impl_ptr<impl>()->_lines_property.begin_value_flow();
+    return impl_ptr<impl>()->_lines_property.begin();
 }
 
 flow::node_t<float, true> ui::collection_layout::begin_row_spacing_flow() const {
-    return impl_ptr<impl>()->_row_spacing_property.begin_value_flow();
+    return impl_ptr<impl>()->_row_spacing_property.begin();
 }
 
 flow::node_t<float, true> ui::collection_layout::begin_col_spacing_flow() const {
-    return impl_ptr<impl>()->_col_spacing_property.begin_value_flow();
+    return impl_ptr<impl>()->_col_spacing_property.begin();
 }
 
 flow::node_t<ui::layout_alignment, true> ui::collection_layout::begin_alignment_flow() const {
-    return impl_ptr<impl>()->_alignment_property.begin_value_flow();
+    return impl_ptr<impl>()->_alignment_property.begin();
 }
 
 flow::node_t<ui::layout_direction, true> ui::collection_layout::begin_direction_flow() const {
-    return impl_ptr<impl>()->_direction_property.begin_value_flow();
+    return impl_ptr<impl>()->_direction_property.begin();
 }
 
 flow::node_t<ui::layout_order, true> ui::collection_layout::begin_row_order_flow() const {
-    return impl_ptr<impl>()->_row_order_property.begin_value_flow();
+    return impl_ptr<impl>()->_row_order_property.begin();
 }
 
 flow::node_t<ui::layout_order, true> ui::collection_layout::begin_col_order_flow() const {
-    return impl_ptr<impl>()->_col_order_property.begin_value_flow();
+    return impl_ptr<impl>()->_col_order_property.begin();
 }
