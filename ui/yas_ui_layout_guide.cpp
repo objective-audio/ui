@@ -4,17 +4,16 @@
 
 #include "yas_ui_layout_guide.h"
 #include "yas_delaying_caller.h"
-#include "yas_property.h"
 
 using namespace yas;
 
 #pragma mark - ui::layout_guide::impl
 
 struct ui::layout_guide::impl : base::impl {
-    property<float> _value;
+    flow::property<float> _value;
     flow::receiver<float> _receiver = nullptr;
 
-    impl(float const value) : _value({.value = value}) {
+    impl(float const value) : _value(value) {
     }
 
     void prepare(layout_guide &guide) {
@@ -40,7 +39,7 @@ struct ui::layout_guide::impl : base::impl {
 
         auto old_cache = std::make_shared<opt_t<float>>();
 
-        return this->_value.begin_value_flow()
+        return this->_value.begin()
             .filter([weak_guide](float const &) { return !!weak_guide; })
             .pair(this->_wait_sender.begin().filter([count = int32_t(0)](bool const &is_wait) mutable {
                 if (is_wait) {
