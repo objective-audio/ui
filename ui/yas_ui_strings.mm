@@ -6,7 +6,6 @@
 #include <numeric>
 #include "yas_fast_each.h"
 #include "yas_observing.h"
-#include "yas_property.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
@@ -23,25 +22,17 @@ struct ui::strings::impl : base::impl {
     subject_t _subject;
     flow::receiver<std::string> _text_receiver = nullptr;
 
-    property<std::string> _text_property;
-    property<ui::font_atlas> _font_atlas_property;
-    property<std::experimental::optional<float>> _line_height_property;
+    flow::property<std::string> _text_property;
+    flow::property<ui::font_atlas> _font_atlas_property;
+    flow::property<std::experimental::optional<float>> _line_height_property;
 
     impl(args &&args)
         : _collection_layout(
               {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending}),
           _rect_plane(args.max_word_count),
-          _text_property({.value = std::move(args.text)}),
-          _font_atlas_property({.value = std::move(args.font_atlas)}),
-          _line_height_property({.value = args.line_height,
-                                 .validator =
-                                     [](auto const &value) {
-                                         if (value) {
-                                             return *value >= 0.0f;
-                                         } else {
-                                             return true;
-                                         }
-                                     }}),
+          _text_property(std::move(args.text)),
+          _font_atlas_property(std::move(args.font_atlas)),
+          _line_height_property(args.line_height),
           _max_word_count(args.max_word_count) {
     }
 
@@ -97,7 +88,7 @@ struct ui::strings::impl : base::impl {
     }
 
     void _prepare_flows(weak<ui::strings> &weak_strings) {
-        this->_property_flows.emplace_back(this->_font_atlas_property.begin_value_flow()
+        this->_property_flows.emplace_back(this->_font_atlas_property.begin()
                                                .receive(this->_update_texture_flow_receiver)
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
@@ -105,14 +96,14 @@ struct ui::strings::impl : base::impl {
                                                .receive(this->_notify_receiver)
                                                .sync());
 
-        this->_property_flows.emplace_back(this->_text_property.begin_value_flow()
+        this->_property_flows.emplace_back(this->_text_property.begin()
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
                                                .to_value(method::text_changed)
                                                .receive(this->_notify_receiver)
                                                .end());
 
-        this->_property_flows.emplace_back(this->_line_height_property.begin_value_flow()
+        this->_property_flows.emplace_back(this->_line_height_property.begin()
                                                .to_null()
                                                .receive(this->_update_layout_receiver)
                                                .to_value(method::line_height_changed)
