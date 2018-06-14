@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_texture_element.h"
-#include "yas_property.h"
 
 using namespace yas;
 
@@ -11,7 +10,7 @@ using namespace yas;
 
 struct ui::texture_element::impl : base::impl {
     draw_pair_t const _draw_pair;
-    property<ui::uint_region> _tex_coords{{.value = ui::uint_region::zero()}};
+    flow::property<ui::uint_region> _tex_coords{ui::uint_region::zero()};
 
     impl(draw_pair_t &&pair) : _draw_pair(std::move(pair)) {
     }
@@ -38,5 +37,5 @@ ui::uint_region const &ui::texture_element::tex_coords() const {
 }
 
 flow::node_t<ui::uint_region, true> ui::texture_element::begin_tex_coords_flow() const {
-    return impl_ptr<impl>()->_tex_coords.begin_value_flow();
+    return impl_ptr<impl>()->_tex_coords.begin();
 }
