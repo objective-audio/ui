@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_render_target.h"
-#include "yas_property.h"
 #include "yas_ui_effect.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_matrix.h"
@@ -36,8 +35,11 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_mesh.set_texture(this->_dst_texture);
 
         this->_effect_property.set_value(ui::effect::make_through_effect());
-        this->_effect_property.set_limiter(
-            [](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); });
+        this->_effect_flow =
+            this->_effect_setter.begin()
+                .map([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
+                .receive(this->_effect_property.receiver())
+                .end();
         this->_set_textures_to_effect();
     }
 
@@ -73,24 +75,27 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 }
             });
 
-        this->_update_observers.emplace_back(this->_effect_property.subject().make_observer(
-            property_method::did_change, [weak_target](auto const &context) {
-                if (auto target = weak_target.lock()) {
-                    target.impl_ptr<impl>()->_set_updated(render_target_update_reason::effect);
-                    target.impl_ptr<impl>()->_set_textures_to_effect();
-                }
-            }));
+        this->_update_flows.emplace_back(this->_effect_property.begin()
+                                             .perform([weak_target](ui::effect const &) {
+                                                 if (auto target = weak_target.lock()) {
+                                                     target.impl_ptr<impl>()->_set_updated(
+                                                         render_target_update_reason::effect);
+                                                     target.impl_ptr<impl>()->_set_textures_to_effect();
+                                                 }
+                                             })
+                                             .end());
 
-        this->_update_observers.emplace_back(this->_scale_factor_property.subject().make_observer(
-            property_method::did_change, [weak_target](auto const &context) {
-                if (auto target = weak_target.lock()) {
-                    auto imp = target.impl_ptr<impl>();
-                    double const scale_factor = context.value.new_value;
-                    imp->_src_texture.set_scale_factor(scale_factor);
-                    imp->_dst_texture.set_scale_factor(scale_factor);
-                    target.impl_ptr<impl>()->_set_updated(render_target_update_reason::scale_factor);
-                }
-            }));
+        this->_update_flows.emplace_back(this->_scale_factor_property.begin()
+                                             .perform([weak_target](double const &scale_factor) {
+                                                 if (auto target = weak_target.lock()) {
+                                                     auto imp = target.impl_ptr<impl>();
+                                                     imp->_src_texture.set_scale_factor(scale_factor);
+                                                     imp->_dst_texture.set_scale_factor(scale_factor);
+                                                     target.impl_ptr<impl>()->_set_updated(
+                                                         render_target_update_reason::scale_factor);
+                                                 }
+                                             })
+                                             .end());
 
         this->_rect_flow = this->_layout_guide_rect.begin_flow()
                                .filter([weak_target](ui::region const &) { return !!weak_target; })
@@ -175,8 +180,9 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::layout_guide_rect _layout_guide_rect;
-    property<ui::effect> _effect_property{{.value = nullptr}};
-    property<double> _scale_factor_property{{.value = 1.0}};
+    flow::property<ui::effect> _effect_property{ui::effect{nullptr}};
+    flow::sender<ui::effect> _effect_setter;
+    flow::property<double> _scale_factor_property{1.0};
 
    private:
     ui::rect_plane_data _data{1};
@@ -189,6 +195,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     simd::float4x4 _projection_matrix;
     flow::observer _scale_flow = nullptr;
     flow::observer _rect_flow = nullptr;
+    flow::observer _effect_flow = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);
@@ -219,7 +226,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::metal_system _metal_system = nullptr;
 
     render_target_updates_t _updates;
-    std::vector<base> _update_observers;
+    std::vector<flow::observer> _update_flows;
 };
 
 ui::render_target::render_target() : base(std::make_shared<impl>()) {
@@ -242,7 +249,7 @@ double ui::render_target::scale_factor() const {
 }
 
 void ui::render_target::set_effect(ui::effect effect) {
-    impl_ptr<impl>()->_effect_property.set_value(std::move(effect));
+    impl_ptr<impl>()->_effect_setter.send_value(effect);
 }
 
 ui::effect const &ui::render_target::effect() const {
