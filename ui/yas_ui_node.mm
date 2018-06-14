@@ -446,7 +446,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 continue;
             }
 
-            base flow = nullptr;
+            flow::observer flow = nullptr;
 
             auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
                                                                    auto &property) mutable {
@@ -538,9 +538,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<base> _update_flows;
+    std::vector<flow::observer> _update_flows;
     std::unordered_map<ui::node::method, base> _dispatch_observers;
-    std::unordered_map<ui::node::method, base> _dispatch_flows;
+    std::unordered_map<ui::node::method, flow::observer> _dispatch_flows;
     flow::sender<flow_pair_t> _dispatch_sender;
     flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
 
