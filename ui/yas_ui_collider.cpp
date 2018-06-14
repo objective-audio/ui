@@ -83,7 +83,7 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    flow::property<ui::shape> _shape_property{nullptr};
+    flow::property<ui::shape> _shape_property{ui::shape{nullptr}};
     flow::property<bool> _enabled_property{true};
     subject_t _subject;
 
