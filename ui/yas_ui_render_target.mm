@@ -40,6 +40,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 .map([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
                 .receive(this->_effect_property.receiver())
                 .end();
+
         this->_set_textures_to_effect();
     }
 
