@@ -9,7 +9,6 @@
 #include "yas_objc_cast.h"
 #include "yas_objc_ptr.h"
 #include "yas_observing.h"
-#include "yas_property.h"
 #include "yas_to_bool.h"
 #include "yas_ui_action.h"
 #include "yas_ui_detector.h"
@@ -52,7 +51,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::uint_size _view_size = {.width = 0, .height = 0};
     ui::uint_size _drawable_size = {.width = 0, .height = 0};
     double _scale_factor{0.0f};
-    property<double> _scale_factor_notify{{.value = 0.0f}};
+    flow::property<double> _scale_factor_notify{0.0f};
     flow::sender<bool> _scale_factor_wait;
     yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
@@ -402,7 +401,7 @@ flow::node_t<std::nullptr_t, false> ui::renderer::begin_will_render_flow() const
 }
 
 flow::node_t<double, true> ui::renderer::begin_scale_factor_flow() const {
-    return impl_ptr<impl>()->_scale_factor_notify.begin_value_flow();
+    return impl_ptr<impl>()->_scale_factor_notify.begin();
 }
 
 #pragma mark -
