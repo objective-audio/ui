@@ -308,8 +308,7 @@ ui::texture::subject_t &ui::texture::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-flow::node<ui::texture::flow_pair_t, ui::texture::flow_pair_t, ui::texture::flow_pair_t, false>
-ui::texture::begin_flow() const {
+flow::node_t<ui::texture::flow_pair_t, false> ui::texture::begin_flow() const {
     return impl_ptr<impl>()->begin_flow();
 }
 
