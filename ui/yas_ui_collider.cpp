@@ -4,7 +4,6 @@
 
 #include "yas_ui_collider.h"
 #include "yas_observing.h"
-#include "yas_property.h"
 #include "yas_to_bool.h"
 
 using namespace yas;
@@ -84,42 +83,43 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    property<ui::shape> _shape_property{{.value = nullptr}};
-    property<bool> _enabled_property{{.value = true}};
+    flow::property<ui::shape> _shape_property{ui::shape{nullptr}};
+    flow::property<bool> _enabled_property{true};
     subject_t _subject;
 
-    impl(ui::shape &&shape) : _shape_property({.value = std::move(shape)}) {
-        this->_property_observers.reserve(2);
+    impl(ui::shape &&shape) : _shape_property(std::move(shape)) {
+        this->_property_flows.reserve(2);
     }
 
     void dispatch_method(ui::collider::method const method) {
-        if (this->_property_observers.count(method)) {
+        if (this->_property_flows.count(method)) {
             return;
         }
 
         auto weak_collider = to_weak(cast<ui::collider>());
 
-        base observer = nullptr;
+        flow::observer flow = nullptr;
 
-        auto make_observer = [](auto const method, auto property, auto weak_collider) {
-            return property.subject().make_observer(property_method::did_change,
-                                                    [weak_collider, method](auto const &context) {
-                                                        if (auto node = weak_collider.lock()) {
-                                                            node.subject().notify(method, node);
-                                                        }
-                                                    });
+        auto make_flow = [](auto const method, auto property, auto weak_collider) {
+            return property.begin()
+                .perform([weak_collider, method](auto const &) {
+                    if (auto node = weak_collider.lock()) {
+                        node.subject().notify(method, node);
+                    }
+                })
+                .end();
         };
 
         switch (method) {
             case ui::collider::method::shape_changed:
-                observer = make_observer(method, this->_shape_property, weak_collider);
+                flow = make_flow(method, this->_shape_property, weak_collider);
                 break;
             case ui::collider::method::enabled_changed:
-                observer = make_observer(method, this->_enabled_property, weak_collider);
+                flow = make_flow(method, this->_enabled_property, weak_collider);
                 break;
         }
 
-        this->_property_observers.emplace(std::make_pair(method, std::move(observer)));
+        this->_property_flows.emplace(std::make_pair(method, std::move(flow)));
     }
 
     bool hit_test(ui::point const &loc) {
@@ -141,7 +141,7 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
-    std::unordered_map<ui::collider::method, base> _property_observers;
+    std::unordered_map<ui::collider::method, flow::observer> _property_flows;
 };
 
 ui::collider::collider() : base(std::make_shared<impl>(nullptr)) {

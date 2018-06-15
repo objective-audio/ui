@@ -440,13 +440,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    flow::node<flow_pair_t> begin_flow(std::vector<ui::node::method> const &methods) {
+    flow::node_t<flow_pair_t, false> begin_flow(std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
             if (this->_dispatch_flows.count(method) > 0) {
                 continue;
             }
 
-            base flow = nullptr;
+            flow::observer flow = nullptr;
 
             auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
                                                                    auto &property) mutable {
@@ -538,9 +538,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<base> _update_flows;
+    std::vector<flow::observer> _update_flows;
     std::unordered_map<ui::node::method, base> _dispatch_observers;
-    std::unordered_map<ui::node::method, base> _dispatch_flows;
+    std::unordered_map<ui::node::method, flow::observer> _dispatch_flows;
     flow::sender<flow_pair_t> _dispatch_sender;
     flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
 
@@ -804,15 +804,15 @@ ui::node::observer_t ui::node::dispatch_and_make_wild_card_observer(std::vector<
     return this->subject().make_wild_card_observer(handler);
 }
 
-flow::node<ui::node::flow_pair_t> ui::node::begin_flow(ui::node::method const &method) const {
+flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(ui::node::method const &method) const {
     return impl_ptr<impl>()->begin_flow({method});
 }
 
-flow::node<ui::node::flow_pair_t> ui::node::begin_flow(std::vector<ui::node::method> const &methods) const {
+flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(std::vector<ui::node::method> const &methods) const {
     return impl_ptr<impl>()->begin_flow(methods);
 }
 
-flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>> ui::node::begin_renderer_flow() const {
+flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::begin_renderer_flow() const {
     return impl_ptr<impl>()->_renderer_property.begin_value_flow().map([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;

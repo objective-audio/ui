@@ -10,7 +10,6 @@
 #include "yas_each_index.h"
 #include "yas_objc_macros.h"
 #include "yas_observing.h"
-#include "yas_property.h"
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"
@@ -103,8 +102,7 @@ struct ui::font_atlas::impl : base::impl {
             }
         });
 
-        this->_texture_changed_flow =
-            this->_texture_property.begin_value_flow().receive(this->_texture_changed_receiver).end();
+        this->_texture_changed_flow = this->_texture_property.begin().receive(this->_texture_changed_receiver).end();
 
         this->_texture_changed_sender.set_sync_handler([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
@@ -160,7 +158,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    property<ui::texture> _texture_property{{.value = nullptr}};
+    flow::property<ui::texture> _texture_property{ui::texture{nullptr}};
     std::vector<ui::word_info> _word_infos;
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<flow::observer> _element_flows;
@@ -292,11 +290,11 @@ ui::font_atlas::subject_t &ui::font_atlas::subject() {
     return impl_ptr<impl>()->_subject;
 }
 
-flow::node<ui::texture, ui::texture, ui::texture> ui::font_atlas::begin_texture_changed_flow() const {
+flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_changed_flow() const {
     return impl_ptr<impl>()->_texture_changed_sender.begin();
 }
 
-flow::node<ui::texture, ui::texture, ui::texture> ui::font_atlas::begin_texture_updated_flow() const {
+flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_updated_flow() const {
     return impl_ptr<impl>()->_texture_updated_sender.begin();
 }
 

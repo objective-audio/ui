@@ -4,7 +4,7 @@
 
 #include "yas_ui_blur.h"
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
-#include "yas_property.h"
+#include "yas_flow.h"
 #include "yas_ui_effect.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_texture.h"
@@ -12,14 +12,14 @@
 using namespace yas;
 
 struct ui::blur::impl : base::impl {
-    property<double> _sigma_property{{.value = 0.0}};
+    flow::property<double> _sigma_property{0.0};
     ui::effect _effect;
 
     void prepare(ui::blur &blur) {
         auto weak_blur = to_weak(blur);
 
         this->_sigma_flow =
-            this->_sigma_property.begin_value_flow()
+            this->_sigma_property.begin()
                 .filter([weak_blur](double const &) { return !!weak_blur; })
                 .perform([weak_blur](double const &) { weak_blur.lock().impl_ptr<impl>()->_update_effect_handler(); })
                 .sync();
