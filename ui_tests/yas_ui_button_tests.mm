@@ -81,8 +81,9 @@ using namespace yas;
 
     std::vector<ui::button::method> observed_methods;
 
-    auto observer = button.subject().make_wild_card_observer(
-        [&observed_methods](auto const &context) { observed_methods.push_back(context.key); });
+    auto flow = button.begin_context_flow()
+                    .perform([&observed_methods](auto const &context) { observed_methods.push_back(context.method); })
+                    .end();
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
