@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_collider.h"
-#include "yas_observing.h"
 #include "yas_to_bool.h"
 
 using namespace yas;
@@ -85,41 +84,8 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 struct ui::collider::impl : base::impl, renderable_collider::impl {
     flow::property<ui::shape> _shape_property{ui::shape{nullptr}};
     flow::property<bool> _enabled_property{true};
-    subject_t _subject;
 
     impl(ui::shape &&shape) : _shape_property(std::move(shape)) {
-        this->_property_flows.reserve(2);
-    }
-
-    void dispatch_method(ui::collider::method const method) {
-        if (this->_property_flows.count(method)) {
-            return;
-        }
-
-        auto weak_collider = to_weak(cast<ui::collider>());
-
-        flow::observer flow = nullptr;
-
-        auto make_flow = [](auto const method, auto property, auto weak_collider) {
-            return property.begin()
-                .perform([weak_collider, method](auto const &) {
-                    if (auto node = weak_collider.lock()) {
-                        node.subject().notify(method, node);
-                    }
-                })
-                .end();
-        };
-
-        switch (method) {
-            case ui::collider::method::shape_changed:
-                flow = make_flow(method, this->_shape_property, weak_collider);
-                break;
-            case ui::collider::method::enabled_changed:
-                flow = make_flow(method, this->_enabled_property, weak_collider);
-                break;
-        }
-
-        this->_property_flows.emplace(std::make_pair(method, std::move(flow)));
     }
 
     bool hit_test(ui::point const &loc) {
@@ -141,7 +107,6 @@ struct ui::collider::impl : base::impl, renderable_collider::impl {
 
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
-    std::unordered_map<ui::collider::method, flow::observer> _property_flows;
 };
 
 ui::collider::collider() : base(std::make_shared<impl>(nullptr)) {
@@ -175,12 +140,12 @@ bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
 }
 
-ui::collider::subject_t &ui::collider::subject() {
-    return impl_ptr<impl>()->_subject;
+flow::node_t<ui::shape, true> ui::collider::begin_shape_flow() const {
+    return impl_ptr<impl>()->_shape_property.begin();
 }
 
-void ui::collider::dispatch_method(ui::collider::method const method) {
-    impl_ptr<impl>()->dispatch_method(method);
+flow::node_t<bool, true> ui::collider::begin_enabled_flow() const {
+    return impl_ptr<impl>()->_enabled_property.begin();
 }
 
 flow::receiver<ui::shape> &ui::collider::shape_receiver() {

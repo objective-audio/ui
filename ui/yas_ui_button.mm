@@ -34,7 +34,7 @@ struct ui::button::impl : base::impl {
 
         this->_renderer_observer = node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
-            [event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
+            [event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_flows = std::vector<flow::observer>(),
              weak_button](auto const &context) mutable {
                 ui::node const &node = context.value;
 
@@ -48,12 +48,12 @@ struct ui::button::impl : base::impl {
                                      .end();
                     if (auto button = weak_button.lock()) {
                         leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
-                        collider_observer = button.impl_ptr<impl>()->_make_collider_observer();
+                        collider_flows = button.impl_ptr<impl>()->_make_collider_flows();
                     }
                 } else {
                     event_flow = nullptr;
                     leave_observer = nullptr;
-                    collider_observer = nullptr;
+                    collider_flows.clear();
                 }
             });
 
@@ -160,28 +160,37 @@ struct ui::button::impl : base::impl {
             });
     }
 
-    base _make_collider_observer() {
+    std::vector<flow::observer> _make_collider_flows() {
         auto &node = this->_rect_plane.node();
+        auto weak_node = to_weak(node);
 
-        return node.collider().subject().make_wild_card_observer([weak_node = to_weak(node)](auto const &context) {
-            if (auto node = weak_node.lock()) {
-                if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                    ui::collider::method const &method = context.key;
-                    switch (method) {
-                        case ui::collider::method::shape_changed: {
-                            if (!node.collider().shape()) {
-                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                            }
-                        } break;
-                        case ui::collider::method::enabled_changed: {
-                            if (!node.collider().is_enabled()) {
-                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                            }
-                        } break;
-                    }
-                }
-            }
-        });
+        auto shape_flow = node.collider()
+                              .begin_shape_flow()
+                              .perform([weak_node](ui::shape const &shape) {
+                                  if (auto node = weak_node.lock()) {
+                                      if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                                          if (!shape) {
+                                              node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                          }
+                                      }
+                                  }
+                              })
+                              .end();
+
+        auto enabled_flow = node.collider()
+                                .begin_enabled_flow()
+                                .perform([weak_node](bool const &enabled) {
+                                    if (auto node = weak_node.lock()) {
+                                        if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                                            if (!enabled) {
+                                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                            }
+                                        }
+                                    }
+                                })
+                                .end();
+
+        return std::vector<flow::observer>{std::move(shape_flow), std::move(enabled_flow)};
     }
 
     void _update_tracking(ui::event const &event) {

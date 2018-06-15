@@ -139,48 +139,29 @@ using namespace yas;
     XCTAssertFalse(collider.hit_test({.v = 0.0f}));
 }
 
-- (void)test_method_undispatched {
+- (void)test_begin_shape_flow {
     ui::collider collider;
-    ui::renderer renderer;
 
-    std::shared_ptr<ui::collider::method> called_method = nullptr;
+    ui::shape received{nullptr};
 
-    auto observer = collider.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
-        called_method = std::make_shared<ui::collider::method>(context.key);
-    });
+    auto flow = collider.begin_shape_flow().perform([&received](ui::shape const &shape) { received = shape; }).end();
 
-    collider.set_enabled(false);
-    XCTAssertFalse(called_method);
     collider.set_shape(ui::shape{ui::anywhere_shape{}});
-    XCTAssertFalse(called_method);
+
+    XCTAssertTrue(received);
+    XCTAssertTrue(received.type_info() == typeid(ui::shape::anywhere));
 }
 
-- (void)test_method_dispatched {
-    std::shared_ptr<ui::collider::method> called_method = nullptr;
+- (void)test_begin_enabled_flow {
+    ui::collider collider;
 
-    auto make_observer = [&called_method](ui::collider &collider) {
-        return collider.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
-            called_method = std::make_shared<ui::collider::method>(context.key);
-        });
-    };
+    bool received = true;
 
-    {
-        ui::collider collider;
-        collider.dispatch_method(ui::collider::method::shape_changed);
-        auto observer = make_observer(collider);
-        collider.set_shape(ui::shape{ui::anywhere_shape{}});
-        XCTAssertEqual(*called_method, ui::collider::method::shape_changed);
-    }
+    auto flow = collider.begin_enabled_flow().perform([&received](bool const &enabled) { received = enabled; }).end();
 
-    called_method = nullptr;
+    collider.set_enabled(false);
 
-    {
-        ui::collider collider;
-        collider.dispatch_method(ui::collider::method::enabled_changed);
-        auto observer = make_observer(collider);
-        collider.set_enabled(false);
-        XCTAssertEqual(*called_method, ui::collider::method::enabled_changed);
-    }
+    XCTAssertFalse(received);
 }
 
 - (void)test_shape_receiver {
