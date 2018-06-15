@@ -29,7 +29,6 @@ class button : public base {
     };
 
     struct context {
-        method const method;
         ui::button const &button;
         ui::touch_event const &touch;
     };
@@ -49,7 +48,8 @@ class button : public base {
 
     void cancel_tracking();
 
-    flow::node_t<context, false> begin_context_flow() const;
+    using flow_pair_t = std::pair<method, context>;
+    flow::node_t<flow_pair_t, false> begin_flow() const;
 
     ui::rect_plane &rect_plane();
 

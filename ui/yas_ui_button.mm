@@ -100,7 +100,7 @@ struct ui::button::impl : base::impl {
 
     ui::rect_plane _rect_plane;
     ui::layout_guide_rect _layout_guide_rect;
-    flow::sender<context> _context_sender;
+    flow::sender<flow_pair_t> _notify_sender;
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
@@ -204,8 +204,7 @@ struct ui::button::impl : base::impl {
                     if (!this->is_tracking()) {
                         if (detector.detect(touch_event.position(), node.collider())) {
                             this->set_tracking_event(event);
-                            this->_context_sender.send_value(
-                                {.method = method::began, .button = button, .touch = touch_event});
+                            this->_send_notify(method::began, event);
                         }
                     }
                     break;
@@ -216,8 +215,7 @@ struct ui::button::impl : base::impl {
                 case ui::event_phase::ended:
                     if (this->is_tracking(event)) {
                         this->set_tracking_event(nullptr);
-                        this->_context_sender.send_value(
-                            {.method = method::ended, .button = button, .touch = touch_event});
+                        this->_send_notify(method::ended, event);
                     }
                     break;
                 case ui::event_phase::canceled:
@@ -239,12 +237,12 @@ struct ui::button::impl : base::impl {
             auto button = cast<ui::button>();
             if (!is_event_tracking && is_detected) {
                 this->set_tracking_event(event);
-                this->_context_sender.send_value({.method = method::entered, .button = button, .touch = touch_event});
+                this->_send_notify(method::entered, event);
             } else if (is_event_tracking && !is_detected) {
                 this->set_tracking_event(nullptr);
-                this->_context_sender.send_value({.method = method::leaved, .button = button, .touch = touch_event});
+                this->_send_notify(method::leaved, event);
             } else if (is_event_tracking) {
-                this->_context_sender.send_value({.method = method::moved, .button = button, .touch = touch_event});
+                this->_send_notify(method::moved, event);
             }
         }
     }
@@ -252,9 +250,13 @@ struct ui::button::impl : base::impl {
     void _cancel_tracking(ui::event const &event) {
         if (this->is_tracking(event)) {
             this->set_tracking_event(nullptr);
-            this->_context_sender.send_value(
-                {.method = method::canceled, .button = cast<ui::button>(), .touch = event.get<ui::touch>()});
+            this->_send_notify(method::canceled, event);
         }
+    }
+
+    void _send_notify(method const method, ui::event const &event) {
+        this->_notify_sender.send_value(
+            std::make_pair(method, context{.button = cast<ui::button>(), .touch = event.get<ui::touch>()}));
     }
 
     ui::node::observer_t _renderer_observer = nullptr;
@@ -301,8 +303,8 @@ void ui::button::cancel_tracking() {
     impl_ptr<impl>()->cancel_tracking();
 }
 
-flow::node_t<ui::button::context, false> ui::button::begin_context_flow() const {
-    return impl_ptr<impl>()->_context_sender.begin();
+flow::node_t<ui::button::flow_pair_t, false> ui::button::begin_flow() const {
+    return impl_ptr<impl>()->_notify_sender.begin();
 }
 
 ui::rect_plane &ui::button::rect_plane() {

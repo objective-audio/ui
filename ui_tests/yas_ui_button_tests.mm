@@ -81,8 +81,8 @@ using namespace yas;
 
     std::vector<ui::button::method> observed_methods;
 
-    auto flow = button.begin_context_flow()
-                    .perform([&observed_methods](auto const &context) { observed_methods.push_back(context.method); })
+    auto flow = button.begin_flow()
+                    .perform([&observed_methods](auto const &pair) { observed_methods.push_back(pair.first); })
                     .end();
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
