@@ -124,7 +124,7 @@ struct ui::strings::impl : base::impl {
             if (!this->_texture_flow) {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
-                this->_texture_flow = font_atlas.begin_texture_changed_flow()
+                this->_texture_flow = font_atlas.begin_texture_flow()
                                           .filter([weak_strings](auto const &) { return !!weak_strings; })
                                           .receive(strings_impl->_texture_receiver)
                                           .merge(font_atlas.begin_texture_updated_flow())

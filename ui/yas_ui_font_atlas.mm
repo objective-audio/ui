@@ -40,7 +40,7 @@ struct ui::font_atlas::impl : base::impl {
     double _descent;
     double _leading;
     std::string _words;
-    flow::sender<ui::texture> _texture_changed_sender;
+    flow::sender<ui::texture, true> _texture_changed_sender;
     flow::sender<ui::texture> _texture_updated_sender;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
@@ -282,7 +282,7 @@ void ui::font_atlas::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_changed_flow() const {
+flow::node_t<ui::texture, true> ui::font_atlas::begin_texture_flow() const {
     return impl_ptr<impl>()->_texture_changed_sender.begin();
 }
 
