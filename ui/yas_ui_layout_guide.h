@@ -6,7 +6,6 @@
 
 #include "yas_base.h"
 #include "yas_flow.h"
-#include "yas_observing.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
