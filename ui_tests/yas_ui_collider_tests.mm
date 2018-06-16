@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import <sstream>
-#import "yas_observing.h"
 #import "yas_ui_collider.h"
 #import "yas_ui_renderer.h"
 
