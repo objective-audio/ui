@@ -50,6 +50,7 @@ class button : public base {
 
     using flow_pair_t = std::pair<method, context>;
     flow::node_t<flow_pair_t, false> begin_flow() const;
+    flow::node<context, flow_pair_t, flow_pair_t, false> begin_flow(method const) const;
 
     ui::rect_plane &rect_plane();
 

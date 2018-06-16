@@ -307,6 +307,14 @@ flow::node_t<ui::button::flow_pair_t, false> ui::button::begin_flow() const {
     return impl_ptr<impl>()->_notify_sender.begin();
 }
 
+flow::node<ui::button::context, ui::button::flow_pair_t, ui::button::flow_pair_t, false> ui::button::begin_flow(
+    method const method) const {
+    return impl_ptr<impl>()
+        ->_notify_sender.begin()
+        .filter([method](flow_pair_t const &pair) { return pair.first == method; })
+        .map([](flow_pair_t const &pair) { return pair.second; });
+}
+
 ui::rect_plane &ui::button::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
