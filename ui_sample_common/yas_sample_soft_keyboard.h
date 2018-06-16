@@ -10,9 +10,6 @@ namespace yas::sample {
 struct soft_keyboard : base {
     class impl;
 
-    using subject_t = subject<std::string, soft_keyboard>;
-    using observer_t = subject_t::observer_t;
-
     explicit soft_keyboard(ui::font_atlas atlas);
     soft_keyboard(std::nullptr_t);
 
@@ -20,6 +17,6 @@ struct soft_keyboard : base {
 
     ui::node &node();
 
-    subject_t &subject();
+    flow::node_t<std::string, false> begin_flow() const;
 };
 }  // namespace yas::sample
