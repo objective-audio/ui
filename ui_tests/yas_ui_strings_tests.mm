@@ -119,37 +119,72 @@ using namespace yas;
     XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
 }
 
-- (void)test_notity {
-    ui::font_atlas font_atlas{{.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}};
-
+- (void)test_begin_text_flow {
     ui::strings strings;
 
-    std::experimental::optional<ui::strings::method> notified_method;
+    strings.set_text("a");
 
-    auto observer = strings.subject().make_wild_card_observer(
-        [&notified_method](auto const &context) { notified_method = context.key; });
+    std::string notified;
 
-    strings.set_text("test_text");
+    auto flow = strings.begin_text_flow().perform([&notified](std::string const &text) { notified = text; }).sync();
 
-    XCTAssertEqual(*notified_method, ui::strings::method::text_changed);
+    XCTAssertEqual(notified, "a");
 
-    notified_method = nullopt;
+    strings.set_text("b");
+
+    XCTAssertEqual(notified, "b");
+}
+
+- (void)test_begin_font_atlas_flow {
+    ui::strings strings;
+
+    ui::font_atlas notified = nullptr;
+
+    auto flow = strings.begin_font_atlas_flow()
+                    .perform([&notified](ui::font_atlas const &font_atlas) { notified = font_atlas; })
+                    .sync();
+
+    XCTAssertFalse(notified);
+
+    ui::font_atlas font_atlas{{.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}};
 
     strings.set_font_atlas(font_atlas);
 
-    XCTAssertEqual(*notified_method, ui::strings::method::font_atlas_changed);
+    XCTAssertTrue(notified);
+    XCTAssertEqual(notified.font_name(), "HelveticaNeue");
+}
 
-    notified_method = nullopt;
+- (void)test_begin_line_height_flow {
+    ui::strings strings;
+
+    opt_t<float> notified = nullopt;
+
+    auto flow = strings.begin_line_height_flow()
+                    .perform([&notified](opt_t<float> const &line_height) { notified = line_height; })
+                    .sync();
+
+    XCTAssertFalse(notified);
 
     strings.set_line_height(1.0f);
 
-    XCTAssertEqual(*notified_method, ui::strings::method::line_height_changed);
+    XCTAssertTrue(notified);
+    XCTAssertEqual(*notified, 1.0f);
+}
 
-    notified_method = nullopt;
+- (void)test_begin_alignment_flow {
+    ui::strings strings;
+
+    ui::layout_alignment notified;
+
+    auto flow = strings.begin_alignment_flow()
+                    .perform([&notified](ui::layout_alignment const &alignment) { notified = alignment; })
+                    .sync();
+
+    XCTAssertEqual(notified, ui::layout_alignment::min);
 
     strings.set_alignment(ui::layout_alignment::max);
 
-    XCTAssertEqual(*notified_method, ui::strings::method::alignment_changed);
+    XCTAssertEqual(notified, ui::layout_alignment::max);
 }
 
 - (void)test_no_throw_without_atlas_or_texture {

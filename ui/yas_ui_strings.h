@@ -7,13 +7,6 @@
 #include "yas_ui_font_atlas.h"
 #include "yas_ui_layout_types.h"
 
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
-
 namespace yas::ui {
 class font_atlas;
 class rect_plane;
@@ -23,11 +16,6 @@ enum class layout_alignment;
 class strings : public base {
    public:
     class impl;
-
-    enum class method { text_changed, font_atlas_changed, line_height_changed, alignment_changed };
-
-    using subject_t = subject<method, strings>;
-    using observer_t = observer<method, strings>;
 
     struct args {
         std::size_t max_word_count = 16;
@@ -46,7 +34,7 @@ class strings : public base {
 
     void set_text(std::string);
     void set_font_atlas(ui::font_atlas);
-    void set_line_height(std::experimental::optional<float>);
+    void set_line_height(opt_t<float>);
     void set_alignment(ui::layout_alignment const);
 
     std::string const &text() const;
@@ -58,8 +46,10 @@ class strings : public base {
 
     ui::rect_plane &rect_plane();
 
-    subject_t &subject();
-
+    [[nodiscard]] flow::node_t<std::string, true> begin_text_flow() const;
+    [[nodiscard]] flow::node_t<ui::font_atlas, true> begin_font_atlas_flow() const;
+    [[nodiscard]] flow::node_t<opt_t<float>, true> begin_line_height_flow() const;
+    [[nodiscard]] flow::node_t<ui::layout_alignment, true> begin_alignment_flow() const;
     flow::receiver<std::string> &text_receiver();
 };
 }  // namespace yas::ui
