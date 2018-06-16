@@ -32,10 +32,6 @@ using namespace yas;
 
 struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
    public:
-    impl() {
-        this->_dispatch_observers.reserve(9);
-    }
-
     void prepare(ui::node &node) {
         auto weak_node = to_weak(node);
 
@@ -484,7 +480,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
     std::vector<flow::observer> _update_flows;
-    std::unordered_map<ui::node::method, base> _dispatch_observers;
     std::unordered_map<ui::node::method, flow::observer> _dispatch_flows;
     flow::sender<flow_pair_t> _dispatch_sender;
     flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
