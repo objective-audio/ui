@@ -343,10 +343,6 @@ ui::view_renderable &ui::renderer::view_renderable() {
     return this->_view_renderable;
 }
 
-yas::ui::renderer::subject_t &ui::renderer::subject() {
-    return impl_ptr<impl>()->_subject;
-}
-
 ui::event_manager &ui::renderer::event_manager() {
     return impl_ptr<impl>()->_event_manager;
 }

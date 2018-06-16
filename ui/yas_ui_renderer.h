@@ -63,8 +63,6 @@ class renderer : public base {
 
     ui::view_renderable &view_renderable();
 
-    subject_t &subject();
-
     ui::event_manager &event_manager();
 
     std::vector<ui::action> actions() const;
