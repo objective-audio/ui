@@ -485,6 +485,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                     flow = make_flow(method, this->_renderer_property);
                     break;
 
+                case ui::node::method::added_to_super:
+                case ui::node::method::removed_from_super:
+                    flow = this->_notify_sender.begin()
+                               .filter([method](node::method const &value) { return method == value; })
+                               .receive(this->_dispatch_receiver)
+                               .end();
+                    break;
                 default:
                     throw std::invalid_argument("invalid method");
                     break;
@@ -543,6 +550,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     std::unordered_map<ui::node::method, flow::observer> _dispatch_flows;
     flow::sender<flow_pair_t> _dispatch_sender;
     flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
+    flow::sender<ui::node::method> _notify_sender;
 
     node_updates_t _updates;
 
@@ -552,6 +560,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         sub_node_impl->_parent_property.set_value(cast<ui::node>());
         sub_node_impl->_set_renderer_recursively(this->_renderer_property.value().lock());
 
+        sub_node_impl->_notify_sender.send_value(method::added_to_super);
         sub_node_impl->_subject.notify(node::method::added_to_super, sub_node);
 
         this->_set_updated(ui::node_update_reason::children);
@@ -565,6 +574,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         erase_if(this->_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
+        sub_node_impl->_notify_sender.send_value(method::removed_from_super);
         sub_node_impl->_subject.notify(node::method::removed_from_super, sub_node);
 
         this->_set_updated(ui::node_update_reason::children);
