@@ -100,8 +100,7 @@ class node : public base {
     subject_t &subject();
     void dispatch_method(ui::node::method const);
     [[nodiscard]] observer_t dispatch_and_make_observer(method const &, observer_t::handler_f const &);
-    [[nodiscard]] observer_t dispatch_and_make_wild_card_observer(std::vector<method> const &,
-                                                                  observer_t::handler_f const &);
+
     using flow_pair_t = std::pair<method, node>;
     [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(method const &) const;
     [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(std::vector<method> const &) const;

@@ -33,8 +33,8 @@ struct ui::button::impl : base::impl {
 
         this->_renderer_observer = node.dispatch_and_make_observer(
             ui::node::method::renderer_changed,
-            [event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_flows = std::vector<flow::observer>(),
-             weak_button](auto const &context) mutable {
+            [event_flow = base{nullptr}, leave_observer = flow::observer{nullptr},
+             collider_flows = std::vector<flow::observer>(), weak_button](auto const &context) mutable {
                 ui::node const &node = context.value;
 
                 if (auto renderer = node.renderer()) {
@@ -46,7 +46,7 @@ struct ui::button::impl : base::impl {
                                      })
                                      .end();
                     if (auto button = weak_button.lock()) {
-                        leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
+                        leave_observer = button.impl_ptr<impl>()->_make_leave_flow();
                         collider_flows = button.impl_ptr<impl>()->_make_collider_flows();
                     }
                 } else {
@@ -122,16 +122,17 @@ struct ui::button::impl : base::impl {
         this->_rect_plane.data().set_rect_index(0, idx);
     }
 
-    base _make_leave_observer() {
+    flow::observer _make_leave_flow() {
         std::vector<ui::node::method> methods{ui::node::method::position_changed, ui::node::method::angle_changed,
                                               ui::node::method::scale_changed, ui::node::method::collider_changed,
                                               ui::node::method::enabled_changed};
 
-        return this->_rect_plane.node().dispatch_and_make_wild_card_observer(
-            methods, [weak_button = to_weak(cast<ui::button>())](auto const &context) {
+        return this->_rect_plane.node()
+            .begin_flow(methods)
+            .perform([weak_button = to_weak(cast<ui::button>())](auto const &pair) {
                 if (auto node = weak_button.lock()) {
                     if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                        ui::node::method const &method = context.key;
+                        ui::node::method const &method = pair.first;
                         switch (method) {
                             case ui::node::method::position_changed:
                             case ui::node::method::angle_changed:
@@ -139,13 +140,13 @@ struct ui::button::impl : base::impl {
                                 node.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
                             } break;
                             case ui::node::method::collider_changed: {
-                                ui::node const &node = context.value;
+                                ui::node const &node = pair.second;
                                 if (!node.collider()) {
                                     node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                                 }
                             } break;
                             case ui::node::method::enabled_changed: {
-                                ui::node const &node = context.value;
+                                ui::node const &node = pair.second;
                                 if (!node.is_enabled()) {
                                     node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                                 }
@@ -156,7 +157,8 @@ struct ui::button::impl : base::impl {
                         }
                     }
                 }
-            });
+            })
+            .end();
     }
 
     std::vector<flow::observer> _make_collider_flows() {

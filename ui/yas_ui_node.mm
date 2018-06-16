@@ -796,14 +796,6 @@ ui::node::observer_t ui::node::dispatch_and_make_observer(ui::node::method const
     return this->subject().make_observer(method, handler);
 }
 
-ui::node::observer_t ui::node::dispatch_and_make_wild_card_observer(std::vector<method> const &methods,
-                                                                    observer_t::handler_f const &handler) {
-    for (method const &method : methods) {
-        this->dispatch_method(method);
-    }
-    return this->subject().make_wild_card_observer(handler);
-}
-
 flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(ui::node::method const &method) const {
     return impl_ptr<impl>()->begin_flow({method});
 }
