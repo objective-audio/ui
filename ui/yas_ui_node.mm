@@ -5,7 +5,6 @@
 #include "yas_ui_color.h"
 #include "yas_ui_types.h"
 // workaround for equation
-#include "yas_observing.h"
 #include "yas_property.h"
 #include "yas_to_bool.h"
 #include "yas_ui_angle.h"
@@ -381,65 +380,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    void dispatch_method(ui::node::method const method) {
-        if (this->_dispatch_observers.count(method) > 0) {
-            return;
-        }
-
-        auto weak_node = to_weak(cast<ui::node>());
-
-        base observer = nullptr;
-
-        auto make_observer = [](auto const method, auto property, auto weak_node) {
-            return property.subject().make_observer(property_method::did_change,
-                                                    [weak_node, method](auto const &context) {
-                                                        if (auto node = weak_node.lock()) {
-                                                            node.subject().notify(method, node);
-                                                        }
-                                                    });
-        };
-
-        switch (method) {
-            case ui::node::method::position_changed:
-                observer = make_observer(method, this->_position_property, weak_node);
-                break;
-            case ui::node::method::angle_changed:
-                observer = make_observer(method, this->_angle_property, weak_node);
-                break;
-            case ui::node::method::scale_changed:
-                observer = make_observer(method, this->_scale_property, weak_node);
-                break;
-            case ui::node::method::color_changed:
-                observer = make_observer(method, this->_color_property, weak_node);
-                break;
-            case ui::node::method::alpha_changed:
-                observer = make_observer(method, this->_alpha_property, weak_node);
-                break;
-            case ui::node::method::enabled_changed:
-                observer = make_observer(method, this->_enabled_property, weak_node);
-                break;
-            case ui::node::method::mesh_changed:
-                observer = make_observer(method, this->_mesh_property, weak_node);
-                break;
-            case ui::node::method::collider_changed:
-                observer = make_observer(method, this->_collider_property, weak_node);
-                break;
-            case ui::node::method::parent_changed:
-                observer = make_observer(method, this->_parent_property, weak_node);
-                break;
-            case ui::node::method::renderer_changed:
-                observer = make_observer(method, this->_renderer_property, weak_node);
-                break;
-
-            default:
-                break;
-        }
-
-        if (observer) {
-            this->_dispatch_observers.emplace(std::make_pair(method, std::move(observer)));
-        }
-    }
-
     flow::node_t<flow_pair_t, false> begin_flow(std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
             if (this->_dispatch_flows.count(method) > 0) {
@@ -533,8 +473,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     property<ui::render_target> _render_target_property{{.value = nullptr}};
     property<bool> _enabled_property{{.value = true}};
 
-    node::subject_t _subject;
-
     flow::observer _x_observer = nullptr;
     flow::observer _y_observer = nullptr;
     flow::observer _position_observer = nullptr;
@@ -561,7 +499,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         sub_node_impl->_set_renderer_recursively(this->_renderer_property.value().lock());
 
         sub_node_impl->_notify_sender.send_value(method::added_to_super);
-        sub_node_impl->_subject.notify(node::method::added_to_super, sub_node);
 
         this->_set_updated(ui::node_update_reason::children);
     }
@@ -575,7 +512,6 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         erase_if(this->_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
         sub_node_impl->_notify_sender.send_value(method::removed_from_super);
-        sub_node_impl->_subject.notify(node::method::removed_from_super, sub_node);
 
         this->_set_updated(ui::node_update_reason::children);
     }
@@ -790,20 +726,6 @@ ui::renderable_node &ui::node::renderable() {
         this->_renderable = ui::renderable_node{impl_ptr<ui::renderable_node::impl>()};
     }
     return this->_renderable;
-}
-
-ui::node::subject_t &ui::node::subject() {
-    return impl_ptr<impl>()->_subject;
-}
-
-void ui::node::dispatch_method(ui::node::method const method) {
-    impl_ptr<impl>()->dispatch_method(method);
-}
-
-ui::node::observer_t ui::node::dispatch_and_make_observer(ui::node::method const &method,
-                                                          ui::node::observer_t::handler_f const &handler) {
-    this->dispatch_method(method);
-    return this->subject().make_observer(method, handler);
 }
 
 flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(ui::node::method const &method) const {
