@@ -130,14 +130,14 @@ struct ui::button::impl : base::impl {
         return this->_rect_plane.node()
             .begin_flow(methods)
             .perform([weak_button = to_weak(cast<ui::button>())](auto const &pair) {
-                if (auto node = weak_button.lock()) {
-                    if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                if (auto button = weak_button.lock()) {
+                    if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
                         ui::node::method const &method = pair.first;
                         switch (method) {
                             case ui::node::method::position_changed:
                             case ui::node::method::angle_changed:
                             case ui::node::method::scale_changed: {
-                                node.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
+                                button.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
                             } break;
                             case ui::node::method::collider_changed: {
                                 ui::node const &node = pair.second;
@@ -163,15 +163,15 @@ struct ui::button::impl : base::impl {
 
     std::vector<flow::observer> _make_collider_flows() {
         auto &node = this->_rect_plane.node();
-        auto weak_node = to_weak(node);
+        auto weak_button = to_weak(cast<ui::button>());
 
         auto shape_flow = node.collider()
                               .begin_shape_flow()
-                              .perform([weak_node](ui::shape const &shape) {
-                                  if (auto node = weak_node.lock()) {
-                                      if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                              .perform([weak_button](ui::shape const &shape) {
+                                  if (auto button = weak_button.lock()) {
+                                      if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
                                           if (!shape) {
-                                              node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                              button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                                           }
                                       }
                                   }
@@ -180,11 +180,11 @@ struct ui::button::impl : base::impl {
 
         auto enabled_flow = node.collider()
                                 .begin_enabled_flow()
-                                .perform([weak_node](bool const &enabled) {
-                                    if (auto node = weak_node.lock()) {
-                                        if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
+                                .perform([weak_button](bool const &enabled) {
+                                    if (auto button = weak_button.lock()) {
+                                        if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
                                             if (!enabled) {
-                                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                                button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                                             }
                                         }
                                     }
