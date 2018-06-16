@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import <sstream>
-#import "yas_observing.h"
 #import "yas_ui_event.h"
 
 using namespace yas;
@@ -320,19 +319,21 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = manager.subject().make_wild_card_observer([&called, self](auto const &context) {
-        auto const &method = context.key;
-        ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
-        auto const &value = event.get<ui::cursor>();
-        XCTAssertEqual(value.position().x, 0.25f);
-        XCTAssertEqual(value.position().y, 0.125f);
-        XCTAssertEqual(value.timestamp(), 101.0);
+                        auto const &value = event.get<ui::cursor>();
+                        XCTAssertEqual(value.position().x, 0.25f);
+                        XCTAssertEqual(value.position().y, 0.125f);
+                        XCTAssertEqual(value.timestamp(), 101.0);
 
-        called = true;
-    });
+                        called = true;
+                    })
+                    .end();
 
     manager.inputtable().input_cursor_event(ui::cursor_event{{0.25f, 0.125f}, 101.0});
 
@@ -344,20 +345,22 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = manager.subject().make_wild_card_observer([&called, self](auto const &context) {
-        auto const &method = context.key;
-        ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
-        auto const &value = event.get<ui::touch>();
-        XCTAssertEqual(value.identifier(), 100);
-        XCTAssertEqual(value.position().x, 256.0f);
-        XCTAssertEqual(value.position().y, 512.0f);
-        XCTAssertEqual(value.timestamp(), 201.0);
+                        auto const &value = event.get<ui::touch>();
+                        XCTAssertEqual(value.identifier(), 100);
+                        XCTAssertEqual(value.position().x, 256.0f);
+                        XCTAssertEqual(value.position().y, 512.0f);
+                        XCTAssertEqual(value.timestamp(), 201.0);
 
-        called = true;
-    });
+                        called = true;
+                    })
+                    .end();
 
     manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{100, {256.0f, 512.0f}, 201.0});
 
@@ -369,20 +372,22 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = manager.subject().make_wild_card_observer([&called, self](auto const &context) {
-        auto const &method = context.key;
-        ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-        XCTAssertEqual(method, ui::event_manager::method::key_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
-        auto const &value = event.get<ui::key>();
-        XCTAssertEqual(value.key_code(), 200);
-        XCTAssertEqual(value.characters(), "xyz");
-        XCTAssertEqual(value.raw_characters(), "uvw");
-        XCTAssertEqual(value.timestamp(), 301.0);
+                        auto const &value = event.get<ui::key>();
+                        XCTAssertEqual(value.key_code(), 200);
+                        XCTAssertEqual(value.characters(), "xyz");
+                        XCTAssertEqual(value.raw_characters(), "uvw");
+                        XCTAssertEqual(value.timestamp(), 301.0);
 
-        called = true;
-    });
+                        called = true;
+                    })
+                    .end();
 
     manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{200, "xyz", "uvw", 301.0});
 
@@ -395,22 +400,24 @@ using namespace yas;
     bool alt_called = false;
     bool func_called = false;
 
-    auto observer = manager.subject().make_wild_card_observer([&alt_called, &func_called, self](auto const &context) {
-        auto const &method = context.key;
-        ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&alt_called, &func_called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
 
-        auto const &value = event.get<ui::modifier>();
+                        auto const &value = event.get<ui::modifier>();
 
-        if (value.flag() == ui::modifier_flags::alternate) {
-            alt_called = true;
-        }
+                        if (value.flag() == ui::modifier_flags::alternate) {
+                            alt_called = true;
+                        }
 
-        if (value.flag() == ui::modifier_flags::function) {
-            func_called = true;
-        }
-    });
+                        if (value.flag() == ui::modifier_flags::function) {
+                            func_called = true;
+                        }
+                    })
+                    .end();
 
     manager.inputtable().input_modifier_event(
         ui::modifier_flags(ui::modifier_flags::alternate | ui::modifier_flags::function), 0.0);
@@ -425,19 +432,20 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer =
-        manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
-            auto const &method = context.key;
-            ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&began_called, &ended_called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
-            if (event.phase() == ui::event_phase::began) {
-                began_called = true;
-            } else if (event.phase() == ui::event_phase::ended) {
-                ended_called = true;
-            }
-        });
+                        if (event.phase() == ui::event_phase::began) {
+                            began_called = true;
+                        } else if (event.phase() == ui::event_phase::ended) {
+                            ended_called = true;
+                        }
+                    })
+                    .end();
 
     manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
@@ -473,21 +481,22 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer =
-        manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
-            auto const &method = context.key;
-            ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&began_called, &ended_called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-            XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
-            if (event.get<ui::touch>().identifier() == 1) {
-                if (event.phase() == ui::event_phase::began) {
-                    began_called = true;
-                } else if (event.phase() == ui::event_phase::ended) {
-                    ended_called = true;
-                }
-            }
-        });
+                        if (event.get<ui::touch>().identifier() == 1) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        }
+                    })
+                    .end();
 
     manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
@@ -533,21 +542,22 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer =
-        manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
-            auto const &method = context.key;
-            ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&began_called, &ended_called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-            XCTAssertEqual(method, ui::event_manager::method::key_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
-            if (event.get<ui::key>().key_code() == 1) {
-                if (event.phase() == ui::event_phase::began) {
-                    began_called = true;
-                } else if (event.phase() == ui::event_phase::ended) {
-                    ended_called = true;
-                }
-            }
-        });
+                        if (event.get<ui::key>().key_code() == 1) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        }
+                    })
+                    .end();
 
     manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
@@ -593,21 +603,22 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer =
-        manager.subject().make_wild_card_observer([&began_called, &ended_called, self](auto const &context) {
-            auto const &method = context.key;
-            ui::event const &event = context.value;
+    auto flow = manager.begin_flow()
+                    .perform([&began_called, &ended_called, self](auto const &context) {
+                        auto const &method = context.method;
+                        ui::event const &event = context.event;
 
-            XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
+                        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
 
-            if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
-                if (event.phase() == ui::event_phase::began) {
-                    began_called = true;
-                } else if (event.phase() == ui::event_phase::ended) {
-                    ended_called = true;
-                }
-            }
-        });
+                        if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        }
+                    })
+                    .end();
 
     manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 

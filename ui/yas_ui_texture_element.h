@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_observing.h"
+#include "yas_flow.h"
 #include "yas_ui_texture_protocol.h"
 #include "yas_ui_types.h"
 
@@ -15,11 +15,6 @@ class image;
 class texture_element : public base {
    public:
     class impl;
-
-    enum class method { tex_coords_changed };
-
-    using subject_t = subject<method, texture_element>;
-    using observer_t = subject_t::observer_t;
 
     texture_element(draw_pair_t &&);
     texture_element(std::nullptr_t);

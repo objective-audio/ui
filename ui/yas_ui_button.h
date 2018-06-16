@@ -6,14 +6,8 @@
 
 #include "yas_base.h"
 #include "yas_flagset.h"
+#include "yas_flow.h"
 #include "yas_ui_types.h"
-
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
 
 namespace yas::ui {
 class rect_plane;
@@ -39,9 +33,6 @@ class button : public base {
         ui::touch_event const &touch;
     };
 
-    using subject_t = subject<method, context>;
-    using observer_t = observer<method, context>;
-
     button(ui::region const &region);
     button(ui::region const &region, std::size_t const state_count);
     button(std::nullptr_t);
@@ -57,7 +48,9 @@ class button : public base {
 
     void cancel_tracking();
 
-    subject_t &subject();
+    using flow_pair_t = std::pair<method, context>;
+    [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow() const;
+    [[nodiscard]] flow::node<context, flow_pair_t, flow_pair_t, false> begin_flow(method const) const;
 
     ui::rect_plane &rect_plane();
 

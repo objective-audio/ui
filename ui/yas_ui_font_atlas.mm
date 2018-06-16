@@ -9,7 +9,6 @@
 #include "yas_cf_utils.h"
 #include "yas_each_index.h"
 #include "yas_objc_macros.h"
-#include "yas_observing.h"
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"
@@ -41,8 +40,7 @@ struct ui::font_atlas::impl : base::impl {
     double _descent;
     double _leading;
     std::string _words;
-    ui::font_atlas::subject_t _subject;
-    flow::sender<ui::texture> _texture_changed_sender;
+    flow::sender<ui::texture, true> _texture_changed_sender;
     flow::sender<ui::texture> _texture_updated_sender;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
@@ -69,7 +67,6 @@ struct ui::font_atlas::impl : base::impl {
         this->_texture_updated_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
             if (auto atlas = weak_atlas.lock()) {
                 atlas.impl_ptr<impl>()->_texture_updated_sender.send_value(texture);
-                atlas.impl_ptr<impl>()->_subject.notify(method::texture_updated, atlas);
             }
         });
 
@@ -98,7 +95,6 @@ struct ui::font_atlas::impl : base::impl {
                 }
 
                 atlas_impl->_texture_changed_sender.send_value(texture);
-                atlas_impl->_subject.notify(method::texture_changed, atlas);
             }
         });
 
@@ -286,11 +282,7 @@ void ui::font_atlas::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-ui::font_atlas::subject_t &ui::font_atlas::subject() {
-    return impl_ptr<impl>()->_subject;
-}
-
-flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_changed_flow() const {
+flow::node_t<ui::texture, true> ui::font_atlas::begin_texture_flow() const {
     return impl_ptr<impl>()->_texture_changed_sender.begin();
 }
 

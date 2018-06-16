@@ -7,20 +7,9 @@
 
 #include <string>
 #include "yas_base.h"
+#include "yas_flow.h"
 #include "yas_ui_collider_protocol.h"
 #include "yas_ui_types.h"
-
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
-
-namespace yas::flow {
-template <typename T>
-class receiver;
-}
 
 namespace yas::ui {
 struct anywhere_shape {
@@ -78,14 +67,6 @@ class collider : public base {
    public:
     class impl;
 
-    enum class method {
-        shape_changed,
-        enabled_changed,
-    };
-
-    using subject_t = subject<method, collider>;
-    using observer_t = observer<method, collider>;
-
     collider();
     explicit collider(ui::shape);
     collider(std::nullptr_t);
@@ -100,11 +81,11 @@ class collider : public base {
 
     bool hit_test(ui::point const &) const;
 
-    subject_t &subject();
-    void dispatch_method(ui::collider::method const);
+    [[nodiscard]] flow::node_t<ui::shape, true> begin_shape_flow() const;
+    [[nodiscard]] flow::node_t<bool, true> begin_enabled_flow() const;
 
-    flow::receiver<ui::shape> &shape_receiver();
-    flow::receiver<bool> &enabled_receiver();
+    [[nodiscard]] flow::receiver<ui::shape> &shape_receiver();
+    [[nodiscard]] flow::receiver<bool> &enabled_receiver();
 
     ui::renderable_collider &renderable();
 

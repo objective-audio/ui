@@ -6,6 +6,7 @@
 #include <limits>
 #include "yas_fast_each.h"
 #include "yas_flow_utils.h"
+#include "yas_stl_utils.h"
 
 using namespace yas;
 
@@ -103,7 +104,7 @@ struct sample::soft_keyboard::impl : base::impl {
     }
 
     ui::node _root_node;
-    sample::soft_keyboard::subject_t _subject;
+    flow::sender<std::string> _key_sender;
 
    private:
     std::vector<sample::soft_key> _soft_keys;
@@ -164,11 +165,10 @@ struct sample::soft_keyboard::impl : base::impl {
 
             flow::observer flow =
                 soft_key.button()
-                    .subject()
                     .begin_flow(ui::button::method::ended)
                     .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
                         if (auto keyboard = weak_keyboard.lock()) {
-                            keyboard.impl_ptr<impl>()->_subject.notify(key, keyboard);
+                            keyboard.impl_ptr<impl>()->_key_sender.send_value(key);
                         }
                     })
                     .end();
@@ -354,6 +354,6 @@ ui::node &sample::soft_keyboard::node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-sample::soft_keyboard::subject_t &sample::soft_keyboard::subject() {
-    return impl_ptr<impl>()->_subject;
+flow::node_t<std::string, false> sample::soft_keyboard::begin_flow() const {
+    return impl_ptr<impl>()->_key_sender.begin();
 }

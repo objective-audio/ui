@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import <sstream>
 #import "yas_objc_ptr.h"
 #import "yas_ui.h"
 #import "yas_ui_angle.h"
@@ -278,21 +279,18 @@ struct test_render_encoder : base {
     bool added_to_super_called = false;
     bool removed_from_super_called = false;
 
-    auto observer = sub_node.subject().make_wild_card_observer(
-        [&observer_called_count, &added_to_super_called, &removed_from_super_called](auto const &context) {
-            switch (context.key) {
-                case ui::node::method::added_to_super:
-                    added_to_super_called = true;
-                    break;
-                case ui::node::method::removed_from_super:
-                    removed_from_super_called = true;
-                    break;
-
-                default:
-                    break;
-            }
-            ++observer_called_count;
-        });
+    auto flow_added = sub_node.begin_flow(ui::node::method::added_to_super)
+                          .perform([&observer_called_count, &added_to_super_called](auto const &pair) {
+                              added_to_super_called = true;
+                              ++observer_called_count;
+                          })
+                          .end();
+    auto flow_removed = sub_node.begin_flow(ui::node::method::removed_from_super)
+                            .perform([&observer_called_count, &removed_from_super_called](auto const &pair) {
+                                removed_from_super_called = true;
+                                ++observer_called_count;
+                            })
+                            .end();
 
     parent_node.add_sub_node(sub_node);
 
@@ -303,175 +301,6 @@ struct test_render_encoder : base {
     XCTAssertTrue(removed_from_super_called);
 
     XCTAssertEqual(observer_called_count, 2);
-}
-
-- (void)test_method_undispatched {
-    ui::node node;
-    ui::renderer renderer;
-
-    std::shared_ptr<ui::node::method> called_method = nullptr;
-
-    auto observer = node.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
-        auto const &method = context.key;
-        if (method != ui::node::method::added_to_super && method != ui::node::method::removed_from_super) {
-            called_method = std::make_shared<ui::node::method>(context.key);
-        }
-    });
-
-    node.set_position({1.0f, 2.0f});
-    XCTAssertFalse(called_method);
-    node.set_angle({90.0f});
-    XCTAssertFalse(called_method);
-    node.set_scale({3.0f, 4.0f});
-    XCTAssertFalse(called_method);
-    node.set_color({1.0f, 2.0f, 3.0f});
-    XCTAssertFalse(called_method);
-    node.set_alpha(5.0f);
-    XCTAssertFalse(called_method);
-    node.set_enabled(false);
-    XCTAssertFalse(called_method);
-    node.set_mesh(ui::mesh{});
-    XCTAssertFalse(called_method);
-    node.set_collider(ui::collider{});
-    XCTAssertFalse(called_method);
-
-    ui::node parent;
-    parent.add_sub_node(node);
-    XCTAssertFalse(called_method);
-
-    node.renderable().set_renderer(renderer);
-    XCTAssertFalse(called_method);
-}
-
-- (void)test_dispatch_and_make_observer {
-    bool called = false;
-
-    ui::node node;
-
-    auto observer = node.dispatch_and_make_observer(ui::node::method::position_changed, [&called](auto const &context) {
-        if (context.key == ui::node::method::position_changed) {
-            called = true;
-        }
-    });
-
-    node.set_position({1.0f, 2.0f});
-
-    XCTAssertTrue(called);
-}
-
-- (void)test_method_dispatched {
-    std::shared_ptr<ui::node::method> called_method = nullptr;
-
-    auto make_observer = [&called_method](ui::node &node) {
-        return node.subject().make_wild_card_observer([&called_method](auto const &context) mutable {
-            auto const &method = context.key;
-            if (method != ui::node::method::added_to_super && method != ui::node::method::removed_from_super) {
-                called_method = std::make_shared<ui::node::method>(context.key);
-            }
-        });
-    };
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::position_changed);
-        auto observer = make_observer(node);
-        node.set_position({1.0f, 2.0f});
-        XCTAssertEqual(*called_method, ui::node::method::position_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::angle_changed);
-        auto observer = make_observer(node);
-        node.set_angle({90.0f});
-        XCTAssertEqual(*called_method, ui::node::method::angle_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::scale_changed);
-        auto observer = make_observer(node);
-        node.set_scale({3.0f, 4.0f});
-        XCTAssertEqual(*called_method, ui::node::method::scale_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::color_changed);
-        auto observer = make_observer(node);
-        node.set_color({1.0f, 2.0f, 3.0f});
-        XCTAssertEqual(*called_method, ui::node::method::color_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::alpha_changed);
-        auto observer = make_observer(node);
-        node.set_alpha(0.5f);
-        XCTAssertEqual(*called_method, ui::node::method::alpha_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::enabled_changed);
-        auto observer = make_observer(node);
-        node.set_enabled(false);
-        XCTAssertEqual(*called_method, ui::node::method::enabled_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::mesh_changed);
-        auto observer = make_observer(node);
-        node.set_mesh(ui::mesh{});
-        XCTAssertEqual(*called_method, ui::node::method::mesh_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node node;
-        node.dispatch_method(ui::node::method::collider_changed);
-        auto observer = make_observer(node);
-        node.set_collider(ui::collider{});
-        XCTAssertEqual(*called_method, ui::node::method::collider_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::node parent;
-        ui::node node;
-        node.dispatch_method(ui::node::method::parent_changed);
-        auto observer = make_observer(node);
-        parent.add_sub_node(node);
-        XCTAssertEqual(*called_method, ui::node::method::parent_changed);
-    }
-
-    called_method = nullptr;
-
-    {
-        ui::renderer renderer;
-        ui::node node;
-        node.dispatch_method(ui::node::method::renderer_changed);
-        auto observer = make_observer(node);
-        node.renderable().set_renderer(renderer);
-        XCTAssertEqual(*called_method, ui::node::method::renderer_changed);
-    }
-
-    called_method = nullptr;
 }
 
 - (void)test_begin_flow_with_method {

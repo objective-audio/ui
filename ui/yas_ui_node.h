@@ -6,7 +6,7 @@
 
 #include <vector>
 #include "yas_base.h"
-#include "yas_observing.h"
+#include "yas_flow.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
 
@@ -42,9 +42,6 @@ class node : public base {
         collider_changed,
         enabled_changed,
     };
-
-    using subject_t = subject<method, node>;
-    using observer_t = observer<method, node>;
 
     node();
     node(std::nullptr_t);
@@ -97,11 +94,6 @@ class node : public base {
     ui::metal_object &metal();
     ui::renderable_node &renderable();
 
-    subject_t &subject();
-    void dispatch_method(ui::node::method const);
-    [[nodiscard]] observer_t dispatch_and_make_observer(method const &, observer_t::handler_f const &);
-    [[nodiscard]] observer_t dispatch_and_make_wild_card_observer(std::vector<method> const &,
-                                                                  observer_t::handler_f const &);
     using flow_pair_t = std::pair<method, node>;
     [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(method const &) const;
     [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(std::vector<method> const &) const;

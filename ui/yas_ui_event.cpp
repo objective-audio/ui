@@ -4,7 +4,6 @@
 
 #include "yas_ui_event.h"
 #include <unordered_map>
-#include "yas_observing.h"
 #include "yas_ui_types.h"
 
 using namespace yas;
@@ -123,7 +122,6 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set<cursor>(std::move(value));
 
             this->_sender.send_value({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
-            this->_subject.notify(event_manager::method::cursor_changed, this->_cursor_event);
 
             if (phase == event_phase::ended) {
                 this->_cursor_event = nullptr;
@@ -149,7 +147,6 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             manageable_event.set<touch>(std::move(value));
 
             this->_sender.send_value({.method = event_manager::method::touch_changed, .event = event});
-            this->_subject.notify(event_manager::method::touch_changed, event);
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
                 this->_touch_events.erase(identifer);
@@ -174,7 +171,6 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             event.manageable().set<key>(value);
 
             this->_sender.send_value({.method = event_manager::method::key_changed, .event = event});
-            this->_subject.notify(event_manager::method::key_changed, event);
 
             if (phase == event_phase::ended || phase == event_phase::canceled) {
                 this->_key_events.erase(key_code);
@@ -197,7 +193,6 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
 
                     this->_sender.send_value(
                         {.method = event_manager::method::modifier_changed, .event = this->_modifier_events.at(flag)});
-                    this->_subject.notify(event_manager::method::modifier_changed, this->_modifier_events.at(flag));
                 }
             } else {
                 if (this->_modifier_events.count(flag) > 0) {
@@ -205,7 +200,6 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
                     event.manageable().set_phase(ui::event_phase::ended);
 
                     this->_sender.send_value({.method = event_manager::method::modifier_changed, .event = event});
-                    this->_subject.notify(event_manager::method::modifier_changed, event);
 
                     this->_modifier_events.erase(flag);
                 }
@@ -227,7 +221,6 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     std::unordered_map<uintptr_t, event> _touch_events;
     std::unordered_map<uint16_t, event> _key_events;
     std::unordered_map<uint32_t, event> _modifier_events;
-    yas::subject<ui::event_manager::method, ui::event> _subject;
 
     flow::receiver<context> _receiver = nullptr;
     flow::sender<context> _sender;
@@ -268,10 +261,6 @@ ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 }
 
 ui::event_manager::~event_manager() = default;
-
-subject<ui::event_manager::method, ui::event> &ui::event_manager::subject() {
-    return impl_ptr<impl>()->_subject;
-}
 
 flow::node<ui::event, ui::event_manager::context, ui::event_manager::context, false> ui::event_manager::begin_flow(
     method const &method) const {

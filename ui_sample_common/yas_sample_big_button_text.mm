@@ -18,14 +18,14 @@ struct sample::big_button_text::impl : base::impl {
     }
 
     void prepare(sample::big_button_text &text) {
-        this->_strings_observer = text.strings().subject().make_observer(
-            ui::strings::method::font_atlas_changed, [weak_text = to_weak(text)](auto const &context) {
-                if (auto text = weak_text.lock()) {
-                    text.impl_ptr<impl>()->_update_strings_position();
-                }
-            });
-
-        this->_update_strings_position();
+        this->_strings_flow = text.strings()
+                                  .begin_font_atlas_flow()
+                                  .perform([weak_text = to_weak(text)](ui::font_atlas const &) {
+                                      if (auto text = weak_text.lock()) {
+                                          text.impl_ptr<impl>()->_update_strings_position();
+                                      }
+                                  })
+                                  .sync();
     }
 
     void set_status(ui::button::method const status) {
@@ -34,7 +34,7 @@ struct sample::big_button_text::impl : base::impl {
 
    private:
     ui::button::method _status;
-    ui::strings::observer_t _strings_observer = nullptr;
+    flow::observer _strings_flow = nullptr;
 
     void _update_strings_position() {
         if (auto const &atlas = this->_strings.font_atlas()) {

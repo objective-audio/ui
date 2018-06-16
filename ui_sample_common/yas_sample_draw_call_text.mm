@@ -21,68 +21,70 @@ struct sample::draw_call_text::impl : base::impl {
     void prepare(sample::draw_call_text &text) {
         auto &node = this->_strings.rect_plane().node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed,
-            [weak_text = to_weak(text), left_layout = flow::observer{nullptr}, right_layout = flow::observer{nullptr},
-             bottom_layout = flow::observer{nullptr},
-             strings_observer = ui::strings::observer_t{nullptr}](auto const &context) mutable {
-                if (auto text = weak_text.lock()) {
-                    auto node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        auto &strings = text.strings();
-                        auto &strings_guide_rect = strings.frame_layout_guide_rect();
-                        auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
-                        left_layout = safe_area_guide_rect.left()
-                                          .begin_flow()
-                                          .map(flow::add(4.0f))
-                                          .receive(strings_guide_rect.right().receiver())
-                                          .sync();
+        this->_renderer_flow =
+            node.begin_renderer_flow()
+                .perform([weak_text = to_weak(text), left_layout = flow::observer{nullptr},
+                          right_layout = flow::observer{nullptr}, bottom_layout = flow::observer{nullptr},
+                          strings_flow = flow::observer{nullptr}](ui::renderer const &value) mutable {
+                    if (auto text = weak_text.lock()) {
+                        if (auto renderer = value) {
+                            auto &strings = text.strings();
+                            auto &strings_guide_rect = strings.frame_layout_guide_rect();
+                            auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
+                            left_layout = safe_area_guide_rect.left()
+                                              .begin_flow()
+                                              .map(flow::add(4.0f))
+                                              .receive(strings_guide_rect.right().receiver())
+                                              .sync();
 
-                        right_layout = safe_area_guide_rect.right()
-                                           .begin_flow()
-                                           .map(flow::add(-4.0f))
-                                           .receive(strings_guide_rect.right().receiver())
-                                           .sync();
+                            right_layout = safe_area_guide_rect.right()
+                                               .begin_flow()
+                                               .map(flow::add(-4.0f))
+                                               .receive(strings_guide_rect.right().receiver())
+                                               .sync();
 
-                        bottom_layout = safe_area_guide_rect.bottom()
-                                            .begin_flow()
-                                            .map(flow::add(4.0f))
-                                            .receive(strings_guide_rect.bottom().receiver())
-                                            .sync();
+                            bottom_layout = safe_area_guide_rect.bottom()
+                                                .begin_flow()
+                                                .map(flow::add(4.0f))
+                                                .receive(strings_guide_rect.bottom().receiver())
+                                                .sync();
 
-                        auto strings_handler = [top_layout = flow::observer{nullptr}](ui::strings &strings) mutable {
-                            float distance = 0.0f;
+                            auto strings_handler = [top_layout =
+                                                        flow::observer{nullptr}](ui::strings &strings) mutable {
+                                float distance = 0.0f;
 
-                            if (strings.font_atlas()) {
-                                auto const &font_atlas = strings.font_atlas();
-                                distance += font_atlas.ascent() + font_atlas.descent();
-                            }
-
-                            top_layout = strings.frame_layout_guide_rect()
-                                             .bottom()
-                                             .begin_flow()
-                                             .receive(strings.frame_layout_guide_rect().top().receiver())
-                                             .sync();
-                        };
-
-                        strings_handler(strings);
-
-                        strings_observer = strings.subject().make_observer(
-                            ui::strings::method::font_atlas_changed,
-                            [strings_handler = std::move(strings_handler),
-                             weak_strings = to_weak(strings)](auto const &context) mutable {
-                                if (auto strings = weak_strings.lock()) {
-                                    strings_handler(strings);
+                                if (strings.font_atlas()) {
+                                    auto const &font_atlas = strings.font_atlas();
+                                    distance += font_atlas.ascent() + font_atlas.descent();
                                 }
-                            });
-                    } else {
-                        left_layout = nullptr;
-                        right_layout = nullptr;
-                        bottom_layout = nullptr;
-                        strings_observer = nullptr;
+
+                                top_layout = strings.frame_layout_guide_rect()
+                                                 .bottom()
+                                                 .begin_flow()
+                                                 .receive(strings.frame_layout_guide_rect().top().receiver())
+                                                 .sync();
+                            };
+
+                            strings_handler(strings);
+
+                            strings_flow =
+                                strings.begin_font_atlas_flow()
+                                    .perform([strings_handler = std::move(strings_handler),
+                                              weak_strings = to_weak(strings)](ui::font_atlas const &) mutable {
+                                        if (auto strings = weak_strings.lock()) {
+                                            strings_handler(strings);
+                                        }
+                                    })
+                                    .end();
+                        } else {
+                            left_layout = nullptr;
+                            right_layout = nullptr;
+                            bottom_layout = nullptr;
+                            strings_flow = nullptr;
+                        }
                     }
-                }
-            });
+                })
+                .end();
 
         auto timer_handler = [weak_text = to_weak(text)]() {
             if (auto text = weak_text.lock()) {
@@ -108,7 +110,7 @@ struct sample::draw_call_text::impl : base::impl {
 
    private:
     timer _timer = nullptr;
-    ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer _renderer_flow = nullptr;
 };
 
 sample::draw_call_text::draw_call_text(ui::font_atlas font_atlas)

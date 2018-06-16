@@ -33,5 +33,3 @@
 #include "yas_ui_shared_types.h"
 #include "yas_ui_strings.h"
 #include "yas_ui_texture.h"
-
-#include "yas_observing.h"

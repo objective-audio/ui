@@ -17,21 +17,22 @@ struct sample::cursor::impl : base::impl {
     }
 
     void prepare(sample::cursor &cursor) {
-        this->_renderer_observer = node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed,
-            [weak_cursor = to_weak(cursor), event_observer = base{nullptr}](auto const &context) mutable {
-                if (auto cursor = weak_cursor.lock()) {
-                    auto impl = cursor.impl_ptr<sample::cursor::impl>();
-                    auto node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        event_observer = _make_event_observer(node, renderer);
-                        renderer.insert_action(_make_rotate_action(node));
-                    } else {
-                        event_observer = nullptr;
-                        renderer.erase_action(node);
-                    }
-                }
-            });
+        this->_renderer_flow = node.begin_renderer_flow()
+                                   .perform([weak_node = to_weak(this->node), weak_cursor = to_weak(cursor),
+                                             event_observer = base{nullptr}](ui::renderer const &value) mutable {
+                                       if (auto cursor = weak_cursor.lock()) {
+                                           auto impl = cursor.impl_ptr<sample::cursor::impl>();
+                                           auto node = weak_node.lock();
+                                           if (ui::renderer renderer = value) {
+                                               event_observer = _make_event_observer(node, renderer);
+                                               renderer.insert_action(_make_rotate_action(node));
+                                           } else {
+                                               event_observer = nullptr;
+                                               renderer.erase_action(node);
+                                           }
+                                       }
+                                   })
+                                   .end();
     }
 
    private:
@@ -51,7 +52,7 @@ struct sample::cursor::impl : base::impl {
 
         mesh_node.node().set_color({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
         mesh_node.node().set_alpha(0.0f);
-        node.add_sub_node(mesh_node.node());
+        this->node.add_sub_node(mesh_node.node());
     }
 
     static ui::action _make_rotate_action(ui::node &target) {
@@ -69,11 +70,10 @@ struct sample::cursor::impl : base::impl {
     }
 
     static base _make_event_observer(ui::node &node, ui::renderer &renderer) {
-        return renderer.event_manager().subject().make_observer(
-            ui::event_manager::method::cursor_changed,
-            [weak_node = to_weak(node), weak_action = weak<ui::action>{}](auto const &context) mutable {
+        return renderer.event_manager()
+            .begin_flow(ui::event_manager::method::cursor_changed)
+            .perform([weak_node = to_weak(node), weak_action = weak<ui::action>{}](ui::event const &event) mutable {
                 if (auto node = weak_node.lock()) {
-                    ui::event const &event = context.value;
                     auto const &value = event.get<ui::cursor>();
 
                     node.set_position(node.parent().convert_position(value.position()));
@@ -111,14 +111,14 @@ struct sample::cursor::impl : base::impl {
                                 default:
                                     break;
                             }
-                            break;
                         }
                     }
                 }
-            });
+            })
+            .end();
     }
 
-    ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer _renderer_flow = nullptr;
 };
 
 sample::cursor::cursor() : base(std::make_shared<impl>()) {

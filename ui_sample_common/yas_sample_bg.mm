@@ -25,26 +25,27 @@ struct sample::bg::impl : base::impl {
                                    })
                                    .end();
 
-        this->_renderer_observer = this->_rect_plane.node().dispatch_and_make_observer(
-            ui::node::method::renderer_changed,
-            [weak_bg, layout = flow::observer{nullptr}](auto const &context) mutable {
-                if (sample::bg bg = weak_bg.lock()) {
-                    auto impl = bg.impl_ptr<sample::bg::impl>();
-                    ui::node node = context.value;
-                    if (ui::renderer renderer = node.renderer()) {
-                        layout = renderer.safe_area_layout_guide_rect()
-                                     .begin_flow()
-                                     .receive(impl->_layout_guide_rect.receiver())
-                                     .sync();
-                    } else {
-                        layout = nullptr;
+        this->_renderer_flow =
+            this->_rect_plane.node()
+                .begin_renderer_flow()
+                .perform([weak_bg, layout = flow::observer{nullptr}](ui::renderer const &value) mutable {
+                    if (sample::bg bg = weak_bg.lock()) {
+                        auto impl = bg.impl_ptr<sample::bg::impl>();
+                        if (ui::renderer renderer = value) {
+                            layout = renderer.safe_area_layout_guide_rect()
+                                         .begin_flow()
+                                         .receive(impl->_layout_guide_rect.receiver())
+                                         .sync();
+                        } else {
+                            layout = nullptr;
+                        }
                     }
-                }
-            });
+                })
+                .end();
     }
 
    private:
-    ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer _renderer_flow = nullptr;
     flow::observer _rect_observer = nullptr;
 };
 

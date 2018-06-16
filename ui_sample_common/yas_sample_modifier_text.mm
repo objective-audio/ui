@@ -4,6 +4,7 @@
 
 #include "yas_sample_modifier_text.h"
 #include "yas_flow_utils.h"
+#include "yas_stl_utils.h"
 
 using namespace yas;
 
@@ -19,85 +20,89 @@ struct sample::modifier_text::impl : base::impl {
     void prepare(sample::modifier_text &text) {
         auto &node = this->_strings.rect_plane().node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed,
-            [weak_text = to_weak(text), event_observer = base{nullptr}, left_layout = flow::observer{nullptr},
-             right_layout = flow::observer{nullptr}, bottom_layout = flow::observer{nullptr},
-             strings_observer = ui::strings::observer_t{nullptr}](auto const &context) mutable {
-                if (auto text = weak_text.lock()) {
-                    auto node = context.value;
-                    if (auto renderer = node.renderer()) {
-                        event_observer = renderer.event_manager().subject().make_observer(
-                            ui::event_manager::method::modifier_changed,
-                            [weak_text, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
-                                ui::event const &event = context.value;
-                                if (auto text = weak_text.lock()) {
-                                    auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
+        this->_renderer_flow =
+            node.begin_renderer_flow()
+                .perform([weak_text = to_weak(text), event_observer = flow::observer{nullptr},
+                          left_layout = flow::observer{nullptr}, right_layout = flow::observer{nullptr},
+                          bottom_layout = flow::observer{nullptr},
+                          strings_flow = flow::observer{nullptr}](ui::renderer const &value) mutable {
+                    if (auto text = weak_text.lock()) {
+                        if (auto renderer = value) {
+                            event_observer = renderer.event_manager()
+                                                 .begin_flow(ui::event_manager::method::modifier_changed)
+                                                 .perform([weak_text, flags = std::unordered_set<ui::modifier_flags>{}](
+                                                              ui::event const &event) mutable {
+                                                     if (auto text = weak_text.lock()) {
+                                                         auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
-                                    text_impl->_update_text(event, flags);
+                                                         text_impl->_update_text(event, flags);
+                                                     }
+                                                 })
+                                                 .end();
+
+                            auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
+                            auto &strings = text_impl->_strings;
+                            auto &strings_guide_rect = strings.frame_layout_guide_rect();
+                            auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
+
+                            left_layout = safe_area_guide_rect.left()
+                                              .begin_flow()
+                                              .map(flow::add(4.0f))
+                                              .receive(strings_guide_rect.left().receiver())
+                                              .sync();
+
+                            right_layout = safe_area_guide_rect.right()
+                                               .begin_flow()
+                                               .map(flow::add(-4.0f))
+                                               .receive(strings_guide_rect.right().receiver())
+                                               .sync();
+
+                            bottom_layout = text_impl->_bottom_guide.begin_flow()
+                                                .map(flow::add(4.0f))
+                                                .receive(strings_guide_rect.bottom().receiver())
+                                                .sync();
+
+                            auto strings_handler = [top_layout =
+                                                        flow::observer{nullptr}](ui::strings &strings) mutable {
+                                float distance = 0.0f;
+
+                                if (auto const &font_atlas = strings.font_atlas()) {
+                                    distance += font_atlas.ascent() + font_atlas.descent();
                                 }
-                            });
 
-                        auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
-                        auto &strings = text_impl->_strings;
-                        auto &strings_guide_rect = strings.frame_layout_guide_rect();
-                        auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
+                                top_layout = strings.frame_layout_guide_rect()
+                                                 .bottom()
+                                                 .begin_flow()
+                                                 .map(flow::add(distance))
+                                                 .receive(strings.frame_layout_guide_rect().top().receiver())
+                                                 .sync();
+                            };
 
-                        left_layout = safe_area_guide_rect.left()
-                                          .begin_flow()
-                                          .map(flow::add(4.0f))
-                                          .receive(strings_guide_rect.left().receiver())
-                                          .sync();
+                            strings_handler(strings);
 
-                        right_layout = safe_area_guide_rect.right()
-                                           .begin_flow()
-                                           .map(flow::add(-4.0f))
-                                           .receive(strings_guide_rect.right().receiver())
-                                           .sync();
-
-                        bottom_layout = text_impl->_bottom_guide.begin_flow()
-                                            .map(flow::add(4.0f))
-                                            .receive(strings_guide_rect.bottom().receiver())
-                                            .sync();
-
-                        auto strings_handler = [top_layout = flow::observer{nullptr}](ui::strings &strings) mutable {
-                            float distance = 0.0f;
-
-                            if (auto const &font_atlas = strings.font_atlas()) {
-                                distance += font_atlas.ascent() + font_atlas.descent();
-                            }
-
-                            top_layout = strings.frame_layout_guide_rect()
-                                             .bottom()
-                                             .begin_flow()
-                                             .map(flow::add(distance))
-                                             .receive(strings.frame_layout_guide_rect().top().receiver())
-                                             .sync();
-                        };
-
-                        strings_handler(strings);
-
-                        strings_observer = strings.subject().make_observer(
-                            ui::strings::method::font_atlas_changed,
-                            [strings_handler = std::move(strings_handler),
-                             weak_strings = to_weak(strings)](auto const &context) mutable {
-                                if (auto strings = weak_strings.lock()) {
-                                    strings_handler(strings);
-                                }
-                            });
-                    } else {
-                        event_observer = nullptr;
-                        left_layout = nullptr;
-                        right_layout = nullptr;
-                        bottom_layout = nullptr;
-                        strings_observer = nullptr;
+                            strings_flow =
+                                strings.begin_font_atlas_flow()
+                                    .perform([strings_handler = std::move(strings_handler),
+                                              weak_strings = to_weak(strings)](ui::font_atlas const &value) mutable {
+                                        if (auto strings = weak_strings.lock()) {
+                                            strings_handler(strings);
+                                        }
+                                    })
+                                    .end();
+                        } else {
+                            event_observer = nullptr;
+                            left_layout = nullptr;
+                            right_layout = nullptr;
+                            bottom_layout = nullptr;
+                            strings_flow = nullptr;
+                        }
                     }
-                }
-            });
+                })
+                .end();
     }
 
    private:
-    ui::node::observer_t _renderer_observer = nullptr;
+    flow::observer _renderer_flow = nullptr;
 
     void _update_text(ui::event const &event, std::unordered_set<ui::modifier_flags> &flags) {
         auto flag = event.get<ui::modifier>().flag();

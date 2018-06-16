@@ -5,7 +5,6 @@
 #include "yas_ui_strings.h"
 #include <numeric>
 #include "yas_fast_each.h"
-#include "yas_observing.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
@@ -19,12 +18,11 @@ using namespace yas;
 struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
-    subject_t _subject;
     flow::receiver<std::string> _text_receiver = nullptr;
 
     flow::property<std::string> _text_property;
     flow::property<ui::font_atlas> _font_atlas_property;
-    flow::property<std::experimental::optional<float>> _line_height_property;
+    flow::property<opt_t<float>> _line_height_property;
 
     impl(args &&args)
         : _collection_layout(
@@ -47,11 +45,9 @@ struct ui::strings::impl : base::impl {
 
    private:
     std::size_t const _max_word_count = 0;
-    std::vector<base> _property_observers;
     flow::receiver<ui::texture> _texture_receiver = nullptr;
     flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
     flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
-    flow::receiver<method> _notify_receiver = nullptr;
     flow::observer _texture_flow = nullptr;
     std::vector<base> _property_flows;
 
@@ -74,12 +70,6 @@ struct ui::strings::impl : base::impl {
             }
         });
 
-        this->_notify_receiver = flow::receiver<method>([weak_strings](method const &method) {
-            if (auto strings = weak_strings.lock()) {
-                strings.subject().notify(method, strings);
-            }
-        });
-
         this->_text_receiver = flow::receiver<std::string>([weak_strings](std::string const &text) {
             if (auto strings = weak_strings.lock()) {
                 strings.set_text(text);
@@ -90,33 +80,19 @@ struct ui::strings::impl : base::impl {
     void _prepare_flows(weak<ui::strings> &weak_strings) {
         this->_property_flows.emplace_back(this->_font_atlas_property.begin()
                                                .receive(this->_update_texture_flow_receiver)
-                                               .to_null()
-                                               .receive(this->_update_layout_receiver)
-                                               .to_value(method::font_atlas_changed)
-                                               .receive(this->_notify_receiver)
+                                               .receive_null(this->_update_layout_receiver)
                                                .sync());
 
-        this->_property_flows.emplace_back(this->_text_property.begin()
-                                               .to_null()
-                                               .receive(this->_update_layout_receiver)
-                                               .to_value(method::text_changed)
-                                               .receive(this->_notify_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_text_property.begin().receive_null(this->_update_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_line_height_property.begin()
-                                               .to_null()
-                                               .receive(this->_update_layout_receiver)
-                                               .to_value(method::line_height_changed)
-                                               .receive(this->_notify_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(
+            this->_line_height_property.begin().receive_null(this->_update_layout_receiver).end());
 
         this->_property_flows.emplace_back(
             this->_collection_layout.begin_actual_cell_count_flow().to_null().receive(this->_update_layout_receiver));
 
-        this->_property_flows.emplace_back(this->_collection_layout.begin_alignment_flow()
-                                               .to_value(method::alignment_changed)
-                                               .receive(this->_notify_receiver)
-                                               .end());
+        this->_property_flows.emplace_back(this->_collection_layout.begin_alignment_flow().end());
     }
 
     void _update_texture_flow() {
@@ -124,7 +100,7 @@ struct ui::strings::impl : base::impl {
             if (!this->_texture_flow) {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
-                this->_texture_flow = font_atlas.begin_texture_changed_flow()
+                this->_texture_flow = font_atlas.begin_texture_flow()
                                           .filter([weak_strings](auto const &) { return !!weak_strings; })
                                           .receive(strings_impl->_texture_receiver)
                                           .merge(font_atlas.begin_texture_updated_flow())
@@ -292,8 +268,20 @@ ui::rect_plane &ui::strings::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
 
-ui::strings::subject_t &ui::strings::subject() {
-    return impl_ptr<impl>()->_subject;
+flow::node_t<std::string, true> ui::strings::begin_text_flow() const {
+    return impl_ptr<impl>()->_text_property.begin();
+}
+
+flow::node_t<ui::font_atlas, true> ui::strings::begin_font_atlas_flow() const {
+    return impl_ptr<impl>()->_font_atlas_property.begin();
+}
+
+flow::node_t<opt_t<float>, true> ui::strings::begin_line_height_flow() const {
+    return impl_ptr<impl>()->_line_height_property.begin();
+}
+
+flow::node_t<ui::layout_alignment, true> ui::strings::begin_alignment_flow() const {
+    return impl_ptr<impl>()->_collection_layout.begin_alignment_flow();
 }
 
 flow::receiver<std::string> &ui::strings::text_receiver() {

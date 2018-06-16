@@ -4,7 +4,6 @@
 
 #include "yas_ui_button.h"
 #include "yas_fast_each.h"
-#include "yas_observing.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_event.h"
@@ -32,30 +31,30 @@ struct ui::button::impl : base::impl {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
-        this->_renderer_observer = node.dispatch_and_make_observer(
-            ui::node::method::renderer_changed,
-            [event_flow = base{nullptr}, leave_observer = base{nullptr}, collider_observer = base{nullptr},
-             weak_button](auto const &context) mutable {
-                ui::node const &node = context.value;
-
-                if (auto renderer = node.renderer()) {
-                    event_flow = renderer.event_manager()
-                                     .begin_flow(ui::event_manager::method::touch_changed)
-                                     .filter([weak_button](ui::event const &) { return !!weak_button; })
-                                     .perform([weak_button](ui::event const &event) {
-                                         weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
-                                     })
-                                     .end();
-                    if (auto button = weak_button.lock()) {
-                        leave_observer = button.impl_ptr<impl>()->_make_leave_observer();
-                        collider_observer = button.impl_ptr<impl>()->_make_collider_observer();
-                    }
-                } else {
-                    event_flow = nullptr;
-                    leave_observer = nullptr;
-                    collider_observer = nullptr;
-                }
-            });
+        this->_renderer_flow = node.begin_renderer_flow()
+                                   .perform([event_flow = base{nullptr}, leave_observer = flow::observer{nullptr},
+                                             collider_flows = std::vector<flow::observer>(),
+                                             weak_button](ui::renderer const &value) mutable {
+                                       if (auto renderer = value) {
+                                           event_flow =
+                                               renderer.event_manager()
+                                                   .begin_flow(ui::event_manager::method::touch_changed)
+                                                   .filter([weak_button](ui::event const &) { return !!weak_button; })
+                                                   .perform([weak_button](ui::event const &event) {
+                                                       weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
+                                                   })
+                                                   .end();
+                                           if (auto button = weak_button.lock()) {
+                                               leave_observer = button.impl_ptr<impl>()->_make_leave_flow();
+                                               collider_flows = button.impl_ptr<impl>()->_make_collider_flows();
+                                           }
+                                       } else {
+                                           event_flow = nullptr;
+                                           leave_observer = nullptr;
+                                           collider_flows.clear();
+                                       }
+                                   })
+                                   .end();
 
         this->_rect_observer = this->_layout_guide_rect.begin_flow()
                                    .filter([weak_button](ui::region const &) { return !!weak_button; })
@@ -101,7 +100,7 @@ struct ui::button::impl : base::impl {
 
     ui::rect_plane _rect_plane;
     ui::layout_guide_rect _layout_guide_rect;
-    ui::button::subject_t _subject;
+    flow::sender<flow_pair_t> _notify_sender;
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
@@ -123,30 +122,31 @@ struct ui::button::impl : base::impl {
         this->_rect_plane.data().set_rect_index(0, idx);
     }
 
-    base _make_leave_observer() {
+    flow::observer _make_leave_flow() {
         std::vector<ui::node::method> methods{ui::node::method::position_changed, ui::node::method::angle_changed,
                                               ui::node::method::scale_changed, ui::node::method::collider_changed,
                                               ui::node::method::enabled_changed};
 
-        return this->_rect_plane.node().dispatch_and_make_wild_card_observer(
-            methods, [weak_button = to_weak(cast<ui::button>())](auto const &context) {
-                if (auto node = weak_button.lock()) {
-                    if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                        ui::node::method const &method = context.key;
+        return this->_rect_plane.node()
+            .begin_flow(methods)
+            .perform([weak_button = to_weak(cast<ui::button>())](auto const &pair) {
+                if (auto button = weak_button.lock()) {
+                    if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
+                        ui::node::method const &method = pair.first;
                         switch (method) {
                             case ui::node::method::position_changed:
                             case ui::node::method::angle_changed:
                             case ui::node::method::scale_changed: {
-                                node.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
+                                button.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
                             } break;
                             case ui::node::method::collider_changed: {
-                                ui::node const &node = context.value;
+                                ui::node const &node = pair.second;
                                 if (!node.collider()) {
                                     node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                                 }
                             } break;
                             case ui::node::method::enabled_changed: {
-                                ui::node const &node = context.value;
+                                ui::node const &node = pair.second;
                                 if (!node.is_enabled()) {
                                     node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
                                 }
@@ -157,31 +157,41 @@ struct ui::button::impl : base::impl {
                         }
                     }
                 }
-            });
+            })
+            .end();
     }
 
-    base _make_collider_observer() {
+    std::vector<flow::observer> _make_collider_flows() {
         auto &node = this->_rect_plane.node();
+        auto weak_button = to_weak(cast<ui::button>());
 
-        return node.collider().subject().make_wild_card_observer([weak_node = to_weak(node)](auto const &context) {
-            if (auto node = weak_node.lock()) {
-                if (auto const &tracking_event = node.impl_ptr<impl>()->_tracking_event) {
-                    ui::collider::method const &method = context.key;
-                    switch (method) {
-                        case ui::collider::method::shape_changed: {
-                            if (!node.collider().shape()) {
-                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                            }
-                        } break;
-                        case ui::collider::method::enabled_changed: {
-                            if (!node.collider().is_enabled()) {
-                                node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                            }
-                        } break;
-                    }
-                }
-            }
-        });
+        auto shape_flow = node.collider()
+                              .begin_shape_flow()
+                              .perform([weak_button](ui::shape const &shape) {
+                                  if (auto button = weak_button.lock()) {
+                                      if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
+                                          if (!shape) {
+                                              button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                          }
+                                      }
+                                  }
+                              })
+                              .end();
+
+        auto enabled_flow = node.collider()
+                                .begin_enabled_flow()
+                                .perform([weak_button](bool const &enabled) {
+                                    if (auto button = weak_button.lock()) {
+                                        if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
+                                            if (!enabled) {
+                                                button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
+                                            }
+                                        }
+                                    }
+                                })
+                                .end();
+
+        return std::vector<flow::observer>{std::move(shape_flow), std::move(enabled_flow)};
     }
 
     void _update_tracking(ui::event const &event) {
@@ -196,7 +206,7 @@ struct ui::button::impl : base::impl {
                     if (!this->is_tracking()) {
                         if (detector.detect(touch_event.position(), node.collider())) {
                             this->set_tracking_event(event);
-                            this->_subject.notify(ui::button::method::began, {.button = button, .touch = touch_event});
+                            this->_send_notify(method::began, event);
                         }
                     }
                     break;
@@ -207,7 +217,7 @@ struct ui::button::impl : base::impl {
                 case ui::event_phase::ended:
                     if (this->is_tracking(event)) {
                         this->set_tracking_event(nullptr);
-                        this->_subject.notify(ui::button::method::ended, {.button = button, .touch = touch_event});
+                        this->_send_notify(method::ended, event);
                     }
                     break;
                 case ui::event_phase::canceled:
@@ -229,12 +239,12 @@ struct ui::button::impl : base::impl {
             auto button = cast<ui::button>();
             if (!is_event_tracking && is_detected) {
                 this->set_tracking_event(event);
-                this->_subject.notify(ui::button::method::entered, {.button = button, .touch = touch_event});
+                this->_send_notify(method::entered, event);
             } else if (is_event_tracking && !is_detected) {
                 this->set_tracking_event(nullptr);
-                this->_subject.notify(ui::button::method::leaved, {.button = button, .touch = touch_event});
+                this->_send_notify(method::leaved, event);
             } else if (is_event_tracking) {
-                this->_subject.notify(ui::button::method::moved, {.button = button, .touch = touch_event});
+                this->_send_notify(method::moved, event);
             }
         }
     }
@@ -242,12 +252,16 @@ struct ui::button::impl : base::impl {
     void _cancel_tracking(ui::event const &event) {
         if (this->is_tracking(event)) {
             this->set_tracking_event(nullptr);
-            this->_subject.notify(ui::button::method::canceled,
-                                  {.button = cast<ui::button>(), .touch = event.get<ui::touch>()});
+            this->_send_notify(method::canceled, event);
         }
     }
 
-    ui::node::observer_t _renderer_observer = nullptr;
+    void _send_notify(method const method, ui::event const &event) {
+        this->_notify_sender.send_value(
+            std::make_pair(method, context{.button = cast<ui::button>(), .touch = event.get<ui::touch>()}));
+    }
+
+    flow::observer _renderer_flow = nullptr;
     ui::event _tracking_event = nullptr;
     flow::observer _rect_observer = nullptr;
 };
@@ -291,8 +305,16 @@ void ui::button::cancel_tracking() {
     impl_ptr<impl>()->cancel_tracking();
 }
 
-ui::button::subject_t &ui::button::subject() {
-    return impl_ptr<impl>()->_subject;
+flow::node_t<ui::button::flow_pair_t, false> ui::button::begin_flow() const {
+    return impl_ptr<impl>()->_notify_sender.begin();
+}
+
+flow::node<ui::button::context, ui::button::flow_pair_t, ui::button::flow_pair_t, false> ui::button::begin_flow(
+    method const method) const {
+    return impl_ptr<impl>()
+        ->_notify_sender.begin()
+        .filter([method](flow_pair_t const &pair) { return pair.first == method; })
+        .map([](flow_pair_t const &pair) { return pair.second; });
 }
 
 ui::rect_plane &ui::button::rect_plane() {

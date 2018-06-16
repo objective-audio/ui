@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_observing.h"
+#include "yas_flow.h"
 #include "yas_result.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
@@ -34,9 +34,6 @@ class texture : public base {
         size_updated,
     };
 
-    using subject_t = subject<method, ui::texture>;
-    using observer_t = subject_t::observer_t;
-
     explicit texture(args);
     texture(std::nullptr_t);
 
@@ -58,9 +55,8 @@ class texture : public base {
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;
 
-    subject_t &subject();
     using flow_pair_t = std::pair<method, texture>;
-    [[nodiscard]] flow::node<flow_pair_t, flow_pair_t, flow_pair_t, false> begin_flow() const;
+    [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow() const;
     [[nodiscard]] flow::node<texture, flow_pair_t, flow_pair_t, false> begin_flow(method const &) const;
     flow::receiver<double> &scale_factor_receiver();
 
