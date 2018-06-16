@@ -43,8 +43,6 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
     ui::metal_texture _metal_texture = nullptr;
 
-    subject_t _subject;
-
     impl(ui::uint_size &&point_size, double const scale_factor, uint32_t const draw_padding,
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
@@ -61,7 +59,6 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         this->_notify_receiver = flow::receiver<method>([weak_texture](method const &method) {
             if (auto texture = weak_texture.lock()) {
                 texture.impl_ptr<impl>()->_notify_sender.send_value(std::make_pair(method, texture));
-                texture.subject().notify(method, texture);
             }
         });
 
@@ -302,10 +299,6 @@ ui::metal_texture &ui::texture::metal_texture() {
 
 ui::metal_texture const &ui::texture::metal_texture() const {
     return impl_ptr<impl>()->_metal_texture;
-}
-
-ui::texture::subject_t &ui::texture::subject() {
-    return impl_ptr<impl>()->_subject;
 }
 
 flow::node_t<ui::texture::flow_pair_t, false> ui::texture::begin_flow() const {

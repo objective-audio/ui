@@ -47,34 +47,36 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void prepare(ui::render_target &target) {
         auto weak_target = to_weak(target);
 
-        this->_src_texture_observer = this->_src_texture.subject().make_observer(
-            ui::texture::method::metal_texture_changed, [weak_target](auto const &context) {
-                if (ui::render_target target = weak_target.lock()) {
-                    auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
-                    ui::texture const &texture = context.value;
+        this->_src_texture_flow =
+            this->_src_texture.begin_flow(ui::texture::method::metal_texture_changed)
+                .perform([weak_target](ui::texture const &texture) {
+                    if (ui::render_target target = weak_target.lock()) {
+                        auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
 
-                    if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
-                        auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
-                        auto colorDesc = *color_desc;
-                        colorDesc.texture = metal_texture.texture();
-                        colorDesc.loadAction = MTLLoadActionClear;
-                        colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+                        if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
+                            auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
+                            auto colorDesc = *color_desc;
+                            colorDesc.texture = metal_texture.texture();
+                            colorDesc.loadAction = MTLLoadActionClear;
+                            colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 
-                        [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-                    } else {
-                        [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                            [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+                        } else {
+                            [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                        }
                     }
-                }
-            });
+                })
+                .end();
 
-        this->_dst_texture_observer = this->_dst_texture.subject().make_observer(
-            ui::texture::method::size_updated, [weak_target](auto const &context) {
-                if (ui::render_target target = weak_target.lock()) {
-                    ui::texture const &dst_texture = context.value;
-                    target.impl_ptr<impl>()->_data.set_rect_tex_coords(
-                        ui::uint_region{.origin = ui::uint_point::zero(), .size = dst_texture.actual_size()}, 0);
-                }
-            });
+        this->_dst_texture_flow =
+            this->_dst_texture.begin_flow(ui::texture::method::size_updated)
+                .perform([weak_target](ui::texture const &texture) {
+                    if (ui::render_target target = weak_target.lock()) {
+                        target.impl_ptr<impl>()->_data.set_rect_tex_coords(
+                            ui::uint_region{.origin = ui::uint_point::zero(), .size = texture.actual_size()}, 0);
+                    }
+                })
+                .end();
 
         this->_update_flows.emplace_back(this->_effect_property.begin()
                                              .perform([weak_target](ui::effect const &) {
@@ -190,8 +192,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::mesh _mesh;
     ui::texture _src_texture;
     ui::texture _dst_texture;
-    ui::texture::observer_t _src_texture_observer = nullptr;
-    ui::texture::observer_t _dst_texture_observer = nullptr;
+    flow::observer _src_texture_flow = nullptr;
+    flow::observer _dst_texture_flow = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
     flow::observer _scale_flow = nullptr;
