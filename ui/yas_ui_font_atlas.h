@@ -7,22 +7,12 @@
 #include "yas_ui_texture.h"
 #include "yas_ui_types.h"
 
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
-
 namespace yas::ui {
 class font_atlas : public base {
    public:
     class impl;
 
     enum class method { texture_changed, texture_updated };
-
-    using subject_t = subject<method, font_atlas>;
-    using observer_t = observer<method, font_atlas>;
 
     struct args {
         std::string font_name;
@@ -49,7 +39,6 @@ class font_atlas : public base {
 
     void set_texture(ui::texture);
 
-    subject_t &subject();
     [[nodiscard]] flow::node_t<ui::texture, false> begin_texture_changed_flow() const;
     [[nodiscard]] flow::node_t<ui::texture, false> begin_texture_updated_flow() const;
 };
