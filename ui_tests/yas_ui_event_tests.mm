@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 #import <sstream>
-#import "yas_observing.h"
 #import "yas_ui_event.h"
 
 using namespace yas;

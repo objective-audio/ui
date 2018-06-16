@@ -9,7 +9,6 @@
 #import "yas_cf_utils.h"
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
-#import "yas_observing.h"
 #import "yas_ui_font_atlas.h"
 
 using namespace yas;
