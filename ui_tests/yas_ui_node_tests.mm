@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import <sstream>
 #import "yas_objc_ptr.h"
 #import "yas_ui.h"
 #import "yas_ui_angle.h"
