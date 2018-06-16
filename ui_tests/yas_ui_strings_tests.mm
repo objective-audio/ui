@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <iostream>
+#import "yas_observing.h"
 #import "yas_ui_collection_layout.h"
 #import "yas_ui_font_atlas.h"
 #import "yas_ui_layout_guide.h"

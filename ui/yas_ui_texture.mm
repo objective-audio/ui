@@ -5,6 +5,7 @@
 #include "yas_ui_texture.h"
 #include <map>
 #include "yas_objc_ptr.h"
+#include "yas_stl_utils.h"
 #include "yas_ui_image.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_metal_types.h"
