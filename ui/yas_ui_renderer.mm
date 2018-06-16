@@ -52,7 +52,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::uint_size _drawable_size = {.width = 0, .height = 0};
     double _scale_factor{0.0f};
     flow::property<double> _scale_factor_notify{0.0f};
-    flow::sender<bool> _scale_factor_wait;
     yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 
@@ -106,8 +105,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             throw "system not found.";
         }
 
-        this->_scale_factor_wait.send_value(true);
-
         auto const view_size = view.bounds.size;
         auto const update_view_size_result = this->_update_view_size(view_size, drawable_size);
         auto const update_scale_result = this->_update_scale_factor();
@@ -133,8 +130,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
                 this->_subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
             }
         }
-
-        this->_scale_factor_wait.send_value(false);
     }
 
     void view_safe_area_insets_did_change(yas_objc_view *const view) override {
