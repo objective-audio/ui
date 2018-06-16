@@ -81,11 +81,11 @@ class collider : public base {
 
     bool hit_test(ui::point const &) const;
 
-    flow::node_t<ui::shape, true> begin_shape_flow() const;
-    flow::node_t<bool, true> begin_enabled_flow() const;
+    [[nodiscard]] flow::node_t<ui::shape, true> begin_shape_flow() const;
+    [[nodiscard]] flow::node_t<bool, true> begin_enabled_flow() const;
 
-    flow::receiver<ui::shape> &shape_receiver();
-    flow::receiver<bool> &enabled_receiver();
+    [[nodiscard]] flow::receiver<ui::shape> &shape_receiver();
+    [[nodiscard]] flow::receiver<bool> &enabled_receiver();
 
     ui::renderable_collider &renderable();
 
