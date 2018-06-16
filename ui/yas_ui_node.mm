@@ -741,6 +741,48 @@ flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node:
     });
 }
 
+flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_parent_flow() const {
+    return impl_ptr<impl>()->_parent_property.begin_value_flow().map([](weak<ui::node> const &weak_node) {
+        if (auto node = weak_node.lock()) {
+            return node;
+        } else {
+            return ui::node{nullptr};
+        }
+    });
+}
+
+flow::node_t<ui::point, true> ui::node::begin_position_flow() const {
+    return impl_ptr<impl>()->_position_property.begin_value_flow();
+}
+
+flow::node_t<ui::angle, true> ui::node::begin_angle_flow() const {
+    return impl_ptr<impl>()->_angle_property.begin_value_flow();
+}
+
+flow::node_t<ui::size, true> ui::node::begin_scale_flow() const {
+    return impl_ptr<impl>()->_scale_property.begin_value_flow();
+}
+
+flow::node_t<ui::color, true> ui::node::begin_color_flow() const {
+    return impl_ptr<impl>()->_color_property.begin_value_flow();
+}
+
+flow::node_t<float, true> ui::node::begin_alpha_flow() const {
+    return impl_ptr<impl>()->_alpha_property.begin_value_flow();
+}
+
+flow::node_t<ui::mesh, true> ui::node::begin_mesh_flow() const {
+    return impl_ptr<impl>()->_mesh_property.begin_value_flow();
+}
+
+flow::node_t<ui::collider, true> ui::node::begin_collider_flow() const {
+    return impl_ptr<impl>()->_collider_property.begin_value_flow();
+}
+
+flow::node_t<bool, true> ui::node::begin_enabled_flow() const {
+    return impl_ptr<impl>()->_enabled_property.begin_value_flow();
+}
+
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }

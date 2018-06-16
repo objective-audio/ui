@@ -97,7 +97,17 @@ class node : public base {
     using flow_pair_t = std::pair<method, node>;
     [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(method const &) const;
     [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(std::vector<method> const &) const;
+
     [[nodiscard]] flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> begin_renderer_flow() const;
+    [[nodiscard]] flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> begin_parent_flow() const;
+    [[nodiscard]] flow::node_t<ui::point, true> begin_position_flow() const;
+    [[nodiscard]] flow::node_t<ui::angle, true> begin_angle_flow() const;
+    [[nodiscard]] flow::node_t<ui::size, true> begin_scale_flow() const;
+    [[nodiscard]] flow::node_t<ui::color, true> begin_color_flow() const;
+    [[nodiscard]] flow::node_t<float, true> begin_alpha_flow() const;
+    [[nodiscard]] flow::node_t<ui::mesh, true> begin_mesh_flow() const;
+    [[nodiscard]] flow::node_t<ui::collider, true> begin_collider_flow() const;
+    [[nodiscard]] flow::node_t<bool, true> begin_enabled_flow() const;
 
     ui::point convert_position(ui::point const &) const;
 
