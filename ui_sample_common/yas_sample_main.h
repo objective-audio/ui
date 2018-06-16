@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "yas_flow.h"
 #include "yas_objc_ptr.h"
 #include "yas_sample_bg.h"
 #include "yas_sample_big_button.h"
@@ -44,9 +45,8 @@ struct main {
 
     ui::batch _batch;
 
-    ui::button::observer_t _button_observer = nullptr;
-    ui::renderer::observer_t _scale_observer = nullptr;
-    sample::soft_keyboard::observer_t _keyboard_observer = nullptr;
+    flow::observer _button_flow = nullptr;
+    flow::observer _keyboard_flow = nullptr;
 
     ui::node _render_target_node;
     ui::blur _blur;

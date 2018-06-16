@@ -31,19 +31,22 @@ void sample::main::setup() {
     this->_big_button_text.strings().frame_layout_guide_rect().set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
-    this->_button_observer = this->_big_button.button().subject().make_wild_card_observer(
-        [weak_text = to_weak(this->_big_button_text)](auto const &context) {
-            if (auto text = weak_text.lock()) {
-                text.set_status(context.key);
-            }
-        });
+    this->_button_flow = this->_big_button.button()
+                             .begin_flow()
+                             .perform([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
+                                 if (auto text = weak_text.lock()) {
+                                     text.set_status(pair.first);
+                                 }
+                             })
+                             .end();
 
-    this->_keyboard_observer = this->_soft_keyboard.subject().make_wild_card_observer(
-        [weak_text = to_weak(this->_inputted_text)](auto const &context) {
-            if (auto text = weak_text.lock()) {
-                text.append_text(context.key);
-            }
-        });
+    this->_keyboard_flow = this->_soft_keyboard.begin_flow()
+                               .perform([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
+                                   if (auto text = weak_text.lock()) {
+                                       text.append_text(key);
+                                   }
+                               })
+                               .end();
 
     auto button_pos_action = ui::make_action({.target = this->_big_button.button().rect_plane().node(),
                                               .begin_position = {0.0f, 0.0f},
