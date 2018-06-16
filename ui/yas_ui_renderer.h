@@ -11,13 +11,6 @@
 #include "yas_flow.h"
 #include "yas_ui_renderer_protocol.h"
 
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
-
 namespace yas::ui {
 class view_renderable;
 class event_manager;
@@ -39,9 +32,6 @@ class renderer : public base {
         scale_factor_changed,
         safe_area_insets_changed,
     };
-
-    using subject_t = subject<ui::renderer::method, ui::renderer>;
-    using observer_t = observer<ui::renderer::method, ui::renderer>;
 
     renderer();
     explicit renderer(ui::metal_system);

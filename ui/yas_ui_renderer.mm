@@ -8,7 +8,6 @@
 #include "yas_each_index.h"
 #include "yas_objc_cast.h"
 #include "yas_objc_ptr.h"
-#include "yas_observing.h"
 #include "yas_to_bool.h"
 #include "yas_ui_action.h"
 #include "yas_ui_detector.h"
@@ -54,8 +53,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     flow::property<double> _scale_factor_notify{0.0f};
     yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
-
-    yas::ui::renderer::subject_t _subject;
 
     ui::node _root_node;
     ui::parallel_action _action;
@@ -119,15 +116,8 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
             this->_update_layout_guide_rect();
             this->_update_safe_area_layout_guide_rect();
 
-            this->_subject.notify(renderer::method::view_size_changed, cast<ui::renderer>());
-
             if (to_bool(update_scale_result)) {
                 this->_scale_factor_notify.set_value(this->_scale_factor);
-                this->_subject.notify(renderer::method::scale_factor_changed, cast<ui::renderer>());
-            }
-
-            if (to_bool(update_safe_area_result)) {
-                this->_subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
             }
         }
     }
@@ -146,8 +136,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
 
         if (to_bool(update_result)) {
             this->_update_safe_area_layout_guide_rect();
-
-            this->_subject.notify(renderer::method::safe_area_insets_changed, cast<ui::renderer>());
         }
     }
 
@@ -174,7 +162,6 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         }
 
         this->_will_render_sender.send_value(nullptr);
-        this->_subject.notify(renderer::method::will_render, cast<ui::renderer>());
 
         if (to_bool(pre_render())) {
             if (auto renderer = cast<ui::renderer>()) {
