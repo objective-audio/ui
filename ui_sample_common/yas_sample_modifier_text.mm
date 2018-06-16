@@ -22,24 +22,23 @@ struct sample::modifier_text::impl : base::impl {
 
         this->_renderer_flow =
             node.begin_renderer_flow()
-                .perform([weak_text = to_weak(text), event_observer = base{nullptr},
+                .perform([weak_text = to_weak(text), event_observer = flow::observer{nullptr},
                           left_layout = flow::observer{nullptr}, right_layout = flow::observer{nullptr},
                           bottom_layout = flow::observer{nullptr},
                           strings_flow = flow::observer{nullptr}](ui::renderer const &value) mutable {
                     if (auto text = weak_text.lock()) {
-                        auto node = context.value;
-                        if (auto renderer = node.renderer()) {
-                            event_observer = renderer.event_manager().subject().make_observer(
-                                ui::event_manager::method::modifier_changed,
-                                [weak_text,
-                                 flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
-                                    ui::event const &event = context.value;
-                                    if (auto text = weak_text.lock()) {
-                                        auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
+                        if (auto renderer = value) {
+                            event_observer = renderer.event_manager()
+                                                 .begin_flow(ui::event_manager::method::modifier_changed)
+                                                 .perform([weak_text, flags = std::unordered_set<ui::modifier_flags>{}](
+                                                              ui::event const &event) mutable {
+                                                     if (auto text = weak_text.lock()) {
+                                                         auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
 
-                                        text_impl->_update_text(event, flags);
-                                    }
-                                });
+                                                         text_impl->_update_text(event, flags);
+                                                     }
+                                                 })
+                                                 .end();
 
                             auto text_impl = text.impl_ptr<sample::modifier_text::impl>();
                             auto &strings = text_impl->_strings;
