@@ -3,7 +3,7 @@
 //
 
 #include "yas_ui_node.h"
-#include "yas_property.h"
+#include "yas_stl_utils.h"
 #include "yas_to_bool.h"
 #include "yas_ui_angle.h"
 #include "yas_ui_batch.h"
@@ -36,25 +36,25 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // enabled
 
-        auto enabled_flow = this->_enabled_property.begin_value_flow().to_value(ui::node_update_reason::enabled);
+        auto enabled_flow = this->_enabled_property.begin().to_value(ui::node_update_reason::enabled);
 
         // geometry
 
-        auto pos_flow = this->_position_property.begin_value_flow().to_value(ui::node_update_reason::geometry);
-        auto angle_flow = this->_angle_property.begin_value_flow().to_value(ui::node_update_reason::geometry);
-        auto scale_flow = this->_scale_property.begin_value_flow().to_value(ui::node_update_reason::geometry);
+        auto pos_flow = this->_position_property.begin().to_value(ui::node_update_reason::geometry);
+        auto angle_flow = this->_angle_property.begin().to_value(ui::node_update_reason::geometry);
+        auto scale_flow = this->_scale_property.begin().to_value(ui::node_update_reason::geometry);
 
         // mesh and mesh_color
 
         auto mesh_flow =
-            this->_mesh_property.begin_value_flow()
+            this->_mesh_property.begin()
                 .filter([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .to_value(ui::node_update_reason::mesh)
                 .normalize();
 
-        auto color_flow = this->_color_property.begin_value_flow().to_null();
-        auto alpha_flow = this->_alpha_property.begin_value_flow().to_null();
+        auto color_flow = this->_color_property.begin().to_null();
+        auto alpha_flow = this->_alpha_property.begin().to_null();
 
         auto mesh_color_flow =
             color_flow.merge(alpha_flow)
@@ -64,16 +64,15 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // collider
 
-        auto collider_flow = this->_collider_property.begin_value_flow().to_value(ui::node_update_reason::collider);
+        auto collider_flow = this->_collider_property.begin().to_value(ui::node_update_reason::collider);
 
         // batch
 
-        auto batch_flow = this->_batch_property.begin_value_flow().to_value(ui::node_update_reason::batch);
+        auto batch_flow = this->_batch_property.begin().to_value(ui::node_update_reason::batch);
 
         // render_target
 
-        auto render_target_flow =
-            this->_render_target_property.begin_value_flow().to_value(ui::node_update_reason::render_target);
+        auto render_target_flow = this->_render_target_property.begin().to_value(ui::node_update_reason::render_target);
 
         auto updates_flow = enabled_flow.merge(pos_flow)
                                 .merge(angle_flow)
@@ -415,19 +414,19 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return {loc4.x, loc4.y};
     }
 
-    property<weak<ui::node>> _parent_property{{.value = ui::node{nullptr}}};
-    property<weak<ui::renderer>> _renderer_property{{.value = ui::renderer{nullptr}}};
+    flow::property<weak<ui::node>> _parent_property{ui::node{nullptr}};
+    flow::property<weak<ui::renderer>> _renderer_property{ui::renderer{nullptr}};
 
-    property<ui::point> _position_property{{.value = 0.0f}};
-    property<ui::angle> _angle_property{{.value = 0.0f}};
-    property<ui::size> _scale_property{{.value = {.v = 1.0f}}};
-    property<ui::color> _color_property{{.value = {.v = 1.0f}}};
-    property<float> _alpha_property{{.value = 1.0f}};
-    property<ui::mesh> _mesh_property{{.value = nullptr}};
-    property<ui::collider> _collider_property{{.value = nullptr}};
-    property<ui::batch> _batch_property{{.value = nullptr}};
-    property<ui::render_target> _render_target_property{{.value = nullptr}};
-    property<bool> _enabled_property{{.value = true}};
+    flow::property<ui::point> _position_property{{.v = 0.0f}};
+    flow::property<ui::angle> _angle_property{{0.0f}};
+    flow::property<ui::size> _scale_property{{.v = 1.0f}};
+    flow::property<ui::color> _color_property{{.v = 1.0f}};
+    flow::property<float> _alpha_property{1.0f};
+    flow::property<ui::mesh> _mesh_property{ui::mesh{nullptr}};
+    flow::property<ui::collider> _collider_property{ui::collider{nullptr}};
+    flow::property<ui::batch> _batch_property{ui::batch{nullptr}};
+    flow::property<ui::render_target> _render_target_property{ui::render_target{nullptr}};
+    flow::property<bool> _enabled_property{true};
 
     flow::observer _x_observer = nullptr;
     flow::observer _y_observer = nullptr;
@@ -692,7 +691,7 @@ flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(std::vector<ui::
 }
 
 flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::begin_renderer_flow() const {
-    return impl_ptr<impl>()->_renderer_property.begin_value_flow().map([](weak<ui::renderer> const &weak_renderer) {
+    return impl_ptr<impl>()->_renderer_property.begin().map([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
         } else {
@@ -702,7 +701,7 @@ flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node:
 }
 
 flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_parent_flow() const {
-    return impl_ptr<impl>()->_parent_property.begin_value_flow().map([](weak<ui::node> const &weak_node) {
+    return impl_ptr<impl>()->_parent_property.begin().map([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;
         } else {
@@ -712,35 +711,35 @@ flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_paren
 }
 
 flow::node_t<ui::point, true> ui::node::begin_position_flow() const {
-    return impl_ptr<impl>()->_position_property.begin_value_flow();
+    return impl_ptr<impl>()->_position_property.begin();
 }
 
 flow::node_t<ui::angle, true> ui::node::begin_angle_flow() const {
-    return impl_ptr<impl>()->_angle_property.begin_value_flow();
+    return impl_ptr<impl>()->_angle_property.begin();
 }
 
 flow::node_t<ui::size, true> ui::node::begin_scale_flow() const {
-    return impl_ptr<impl>()->_scale_property.begin_value_flow();
+    return impl_ptr<impl>()->_scale_property.begin();
 }
 
 flow::node_t<ui::color, true> ui::node::begin_color_flow() const {
-    return impl_ptr<impl>()->_color_property.begin_value_flow();
+    return impl_ptr<impl>()->_color_property.begin();
 }
 
 flow::node_t<float, true> ui::node::begin_alpha_flow() const {
-    return impl_ptr<impl>()->_alpha_property.begin_value_flow();
+    return impl_ptr<impl>()->_alpha_property.begin();
 }
 
 flow::node_t<ui::mesh, true> ui::node::begin_mesh_flow() const {
-    return impl_ptr<impl>()->_mesh_property.begin_value_flow();
+    return impl_ptr<impl>()->_mesh_property.begin();
 }
 
 flow::node_t<ui::collider, true> ui::node::begin_collider_flow() const {
-    return impl_ptr<impl>()->_collider_property.begin_value_flow();
+    return impl_ptr<impl>()->_collider_property.begin();
 }
 
 flow::node_t<bool, true> ui::node::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled_property.begin_value_flow();
+    return impl_ptr<impl>()->_enabled_property.begin();
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {
