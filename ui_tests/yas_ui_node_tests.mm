@@ -303,48 +303,28 @@ struct test_render_encoder : base {
     XCTAssertEqual(observer_called_count, 2);
 }
 
-- (void)test_begin_flow_with_method {
-    {
-        opt_t<ui::node::method> called;
-
-        ui::node node;
-
-        auto flow = node.begin_flow(ui::node::method::position_changed)
-                        .perform([&called](auto const &pair) { called = pair.first; })
-                        .end();
-
-        node.set_position({1.0f, 2.0f});
-
-        XCTAssertEqual(*called, ui::node::method::position_changed);
-    }
-}
-
 - (void)test_begin_flow_with_methods {
     opt_t<ui::node::method> called;
 
     ui::node node;
 
-    auto flow = node.begin_flow({ui::node::method::position_changed, ui::node::method::angle_changed})
+    auto flow = node.begin_flow({ui::node::method::added_to_super, ui::node::method::removed_from_super})
                     .perform([&called](auto const &pair) { called = pair.first; })
                     .end();
 
-    node.set_position({1.0f, 2.0f});
+    ui::node super_node;
+
+    super_node.add_sub_node(node);
 
     XCTAssertTrue(called);
-    XCTAssertEqual(*called, ui::node::method::position_changed);
+    XCTAssertEqual(*called, ui::node::method::added_to_super);
 
     called = nullopt;
 
-    node.set_angle({90.0f});
+    node.remove_from_super_node();
 
     XCTAssertTrue(called);
-    XCTAssertEqual(*called, ui::node::method::angle_changed);
-
-    called = nullopt;
-
-    node.set_alpha(0.5f);
-
-    XCTAssertFalse(called);
+    XCTAssertEqual(*called, ui::node::method::removed_from_super);
 }
 
 - (void)test_begin_renderer_flow {
@@ -639,16 +619,6 @@ struct test_render_encoder : base {
 - (void)test_node_method_to_string {
     XCTAssertEqual(to_string(ui::node::method::added_to_super), "added_to_super");
     XCTAssertEqual(to_string(ui::node::method::removed_from_super), "removed_from_super");
-    XCTAssertEqual(to_string(ui::node::method::parent_changed), "parent_changed");
-    XCTAssertEqual(to_string(ui::node::method::renderer_changed), "renderer_changed");
-    XCTAssertEqual(to_string(ui::node::method::position_changed), "position_changed");
-    XCTAssertEqual(to_string(ui::node::method::angle_changed), "angle_changed");
-    XCTAssertEqual(to_string(ui::node::method::scale_changed), "scale_changed");
-    XCTAssertEqual(to_string(ui::node::method::color_changed), "color_changed");
-    XCTAssertEqual(to_string(ui::node::method::alpha_changed), "alpha_changed");
-    XCTAssertEqual(to_string(ui::node::method::mesh_changed), "mesh_changed");
-    XCTAssertEqual(to_string(ui::node::method::collider_changed), "collider_changed");
-    XCTAssertEqual(to_string(ui::node::method::enabled_changed), "enabled_changed");
 }
 
 - (void)test_node_update_reason_to_string {
@@ -662,11 +632,7 @@ struct test_render_encoder : base {
 }
 
 - (void)test_node_method_ostream {
-    auto const methods = {
-        ui::node::method::added_to_super,   ui::node::method::removed_from_super, ui::node::method::parent_changed,
-        ui::node::method::renderer_changed, ui::node::method::position_changed,   ui::node::method::angle_changed,
-        ui::node::method::scale_changed,    ui::node::method::color_changed,      ui::node::method::alpha_changed,
-        ui::node::method::mesh_changed,     ui::node::method::collider_changed,   ui::node::method::enabled_changed};
+    auto const methods = {ui::node::method::added_to_super, ui::node::method::removed_from_super};
 
     for (auto const &method : methods) {
         std::ostringstream stream;

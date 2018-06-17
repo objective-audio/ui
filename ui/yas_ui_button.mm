@@ -4,6 +4,7 @@
 
 #include "yas_ui_button.h"
 #include "yas_fast_each.h"
+#include "yas_ui_angle.h"
 #include "yas_ui_collider.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_event.h"
@@ -31,8 +32,22 @@ struct ui::button::impl : base::impl {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
+        this->_leave_or_enter_or_move_tracking_receiver = flow::receiver<>{[weak_button] {
+            if (auto button = weak_button.lock()) {
+                auto button_impl = button.impl_ptr<impl>();
+                button_impl->_leave_or_enter_or_move_tracking(button_impl->_tracking_event);
+            }
+        }};
+
+        this->_cancel_tracking_receiver = flow::receiver<>{[weak_button]() {
+            if (auto button = weak_button.lock()) {
+                auto button_impl = button.impl_ptr<impl>();
+                button_impl->_cancel_tracking(button_impl->_tracking_event);
+            }
+        }};
+
         this->_renderer_flow = node.begin_renderer_flow()
-                                   .perform([event_flow = base{nullptr}, leave_observer = flow::observer{nullptr},
+                                   .perform([event_flow = base{nullptr}, leave_flows = std::vector<flow::observer>(),
                                              collider_flows = std::vector<flow::observer>(),
                                              weak_button](ui::renderer const &value) mutable {
                                        if (auto renderer = value) {
@@ -45,12 +60,13 @@ struct ui::button::impl : base::impl {
                                                    })
                                                    .end();
                                            if (auto button = weak_button.lock()) {
-                                               leave_observer = button.impl_ptr<impl>()->_make_leave_flow();
-                                               collider_flows = button.impl_ptr<impl>()->_make_collider_flows();
+                                               auto button_impl = button.impl_ptr<impl>();
+                                               leave_flows = button_impl->_make_leave_flows();
+                                               collider_flows = button_impl->_make_collider_flows();
                                            }
                                        } else {
                                            event_flow = nullptr;
-                                           leave_observer = nullptr;
+                                           leave_flows.clear();
                                            collider_flows.clear();
                                        }
                                    })
@@ -122,43 +138,27 @@ struct ui::button::impl : base::impl {
         this->_rect_plane.data().set_rect_index(0, idx);
     }
 
-    flow::observer _make_leave_flow() {
-        std::vector<ui::node::method> methods{ui::node::method::position_changed, ui::node::method::angle_changed,
-                                              ui::node::method::scale_changed, ui::node::method::collider_changed,
-                                              ui::node::method::enabled_changed};
+    std::vector<flow::observer> _make_leave_flows() {
+        ui::node &node = this->_rect_plane.node();
+        auto weak_node = to_weak(node);
+        auto weak_button = to_weak(cast<ui::button>());
 
-        return this->_rect_plane.node()
-            .begin_flow(methods)
-            .perform([weak_button = to_weak(cast<ui::button>())](auto const &pair) {
-                if (auto button = weak_button.lock()) {
-                    if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
-                        ui::node::method const &method = pair.first;
-                        switch (method) {
-                            case ui::node::method::position_changed:
-                            case ui::node::method::angle_changed:
-                            case ui::node::method::scale_changed: {
-                                button.impl_ptr<impl>()->_leave_or_enter_or_move_tracking(tracking_event);
-                            } break;
-                            case ui::node::method::collider_changed: {
-                                ui::node const &node = pair.second;
-                                if (!node.collider()) {
-                                    node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                                }
-                            } break;
-                            case ui::node::method::enabled_changed: {
-                                ui::node const &node = pair.second;
-                                if (!node.is_enabled()) {
-                                    node.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                                }
-                            } break;
+        std::vector<flow::observer> flows;
+        flows.emplace_back(
+            node.begin_position_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        flows.emplace_back(node.begin_angle_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        flows.emplace_back(node.begin_scale_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
 
-                            default:
-                                break;
-                        }
-                    }
-                }
-            })
-            .end();
+        flows.emplace_back(node.begin_collider_flow()
+                               .filter([](ui::collider const &value) { return !value; })
+                               .receive_null(this->_cancel_tracking_receiver)
+                               .end());
+        flows.emplace_back(node.begin_enabled_flow()
+                               .filter([](bool const &value) { return !value; })
+                               .receive_null(this->_cancel_tracking_receiver)
+                               .end());
+
+        return flows;
     }
 
     std::vector<flow::observer> _make_collider_flows() {
@@ -264,6 +264,8 @@ struct ui::button::impl : base::impl {
     flow::observer _renderer_flow = nullptr;
     ui::event _tracking_event = nullptr;
     flow::observer _rect_observer = nullptr;
+    flow::receiver<> _leave_or_enter_or_move_tracking_receiver = nullptr;
+    flow::receiver<> _cancel_tracking_receiver = nullptr;
 };
 
 #pragma mark - ui::button

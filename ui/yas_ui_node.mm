@@ -2,12 +2,12 @@
 //  yas_ui_node.mm
 //
 
+#include "yas_ui_angle.h"
 #include "yas_ui_color.h"
 #include "yas_ui_types.h"
 // workaround for equation
 #include "yas_property.h"
 #include "yas_to_bool.h"
-#include "yas_ui_angle.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_collider.h"
@@ -384,52 +384,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
             flow::observer flow = nullptr;
 
-            auto make_flow = [receiver = this->_dispatch_receiver](ui::node::method const &method,
-                                                                   auto &property) mutable {
-                return property.begin_value_flow().to_value(method).receive(receiver).end();
-            };
-
             switch (method) {
-                case ui::node::method::position_changed:
-                    flow = make_flow(method, this->_position_property);
-                    break;
-                case ui::node::method::angle_changed:
-                    flow = make_flow(method, this->_angle_property);
-                    break;
-                case ui::node::method::scale_changed:
-                    flow = make_flow(method, this->_scale_property);
-                    break;
-                case ui::node::method::color_changed:
-                    flow = make_flow(method, this->_color_property);
-                    break;
-                case ui::node::method::alpha_changed:
-                    flow = make_flow(method, this->_alpha_property);
-                    break;
-                case ui::node::method::enabled_changed:
-                    flow = make_flow(method, this->_enabled_property);
-                    break;
-                case ui::node::method::mesh_changed:
-                    flow = make_flow(method, this->_mesh_property);
-                    break;
-                case ui::node::method::collider_changed:
-                    flow = make_flow(method, this->_collider_property);
-                    break;
-                case ui::node::method::parent_changed:
-                    flow = make_flow(method, this->_parent_property);
-                    break;
-                case ui::node::method::renderer_changed:
-                    flow = make_flow(method, this->_renderer_property);
-                    break;
-
                 case ui::node::method::added_to_super:
                 case ui::node::method::removed_from_super:
                     flow = this->_notify_sender.begin()
                                .filter([method](node::method const &value) { return method == value; })
                                .receive(this->_dispatch_receiver)
                                .end();
-                    break;
-                default:
-                    throw std::invalid_argument("invalid method");
                     break;
             }
 
@@ -836,26 +797,6 @@ std::string yas::to_string(ui::node::method const &method) {
             return "added_to_super";
         case ui::node::method::removed_from_super:
             return "removed_from_super";
-        case ui::node::method::parent_changed:
-            return "parent_changed";
-        case ui::node::method::renderer_changed:
-            return "renderer_changed";
-        case ui::node::method::position_changed:
-            return "position_changed";
-        case ui::node::method::angle_changed:
-            return "angle_changed";
-        case ui::node::method::scale_changed:
-            return "scale_changed";
-        case ui::node::method::color_changed:
-            return "color_changed";
-        case ui::node::method::alpha_changed:
-            return "alpha_changed";
-        case ui::node::method::mesh_changed:
-            return "mesh_changed";
-        case ui::node::method::collider_changed:
-            return "collider_changed";
-        case ui::node::method::enabled_changed:
-            return "enabled_changed";
     }
 }
 

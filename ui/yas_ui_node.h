@@ -30,17 +30,6 @@ class node : public base {
     enum class method {
         added_to_super,
         removed_from_super,
-
-        parent_changed,
-        renderer_changed,
-        position_changed,
-        angle_changed,
-        scale_changed,
-        color_changed,
-        alpha_changed,
-        mesh_changed,
-        collider_changed,
-        enabled_changed,
     };
 
     node();
