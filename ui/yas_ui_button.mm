@@ -116,7 +116,7 @@ struct ui::button::impl : base::impl {
 
     ui::rect_plane _rect_plane;
     ui::layout_guide_rect _layout_guide_rect;
-    flow::sender<flow_pair_t> _notify_sender;
+    flow::notifier<flow_pair_t> _notify_sender;
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
@@ -257,7 +257,7 @@ struct ui::button::impl : base::impl {
     }
 
     void _send_notify(method const method, ui::event const &event) {
-        this->_notify_sender.send_value(
+        this->_notify_sender.notify(
             std::make_pair(method, context{.button = cast<ui::button>(), .touch = event.get<ui::touch>()}));
     }
 
@@ -308,13 +308,13 @@ void ui::button::cancel_tracking() {
 }
 
 flow::node_t<ui::button::flow_pair_t, false> ui::button::begin_flow() const {
-    return impl_ptr<impl>()->_notify_sender.begin();
+    return impl_ptr<impl>()->_notify_sender.begin_flow();
 }
 
 flow::node<ui::button::context, ui::button::flow_pair_t, ui::button::flow_pair_t, false> ui::button::begin_flow(
     method const method) const {
     return impl_ptr<impl>()
-        ->_notify_sender.begin()
+        ->_notify_sender.begin_flow()
         .filter([method](flow_pair_t const &pair) { return pair.first == method; })
         .map([](flow_pair_t const &pair) { return pair.second; });
 }
