@@ -35,14 +35,18 @@ struct ui::button::impl : base::impl {
         this->_leave_or_enter_or_move_tracking_receiver = flow::receiver<>{[weak_button] {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
-                button_impl->_leave_or_enter_or_move_tracking(button_impl->_tracking_event);
+                if (auto tracking_event = button_impl->_tracking_event) {
+                    button_impl->_leave_or_enter_or_move_tracking(tracking_event);
+                }
             }
         }};
 
         this->_cancel_tracking_receiver = flow::receiver<>{[weak_button]() {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
-                button_impl->_cancel_tracking(button_impl->_tracking_event);
+                if (auto tracking_event = button_impl->_tracking_event) {
+                    button_impl->_cancel_tracking(tracking_event);
+                }
             }
         }};
 
@@ -167,28 +171,14 @@ struct ui::button::impl : base::impl {
 
         auto shape_flow = node.collider()
                               .begin_shape_flow()
-                              .perform([weak_button](ui::shape const &shape) {
-                                  if (auto button = weak_button.lock()) {
-                                      if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
-                                          if (!shape) {
-                                              button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                                          }
-                                      }
-                                  }
-                              })
+                              .filter([](ui::shape const &shape) { return !shape; })
+                              .receive_null(this->_cancel_tracking_receiver)
                               .end();
 
         auto enabled_flow = node.collider()
                                 .begin_enabled_flow()
-                                .perform([weak_button](bool const &enabled) {
-                                    if (auto button = weak_button.lock()) {
-                                        if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
-                                            if (!enabled) {
-                                                button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                                            }
-                                        }
-                                    }
-                                })
+                                .filter([](bool const &enabled) { return !enabled; })
+                                .receive_null(this->_cancel_tracking_receiver)
                                 .end();
 
         return std::vector<flow::observer>{std::move(shape_flow), std::move(enabled_flow)};
