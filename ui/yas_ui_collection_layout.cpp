@@ -123,30 +123,31 @@ struct ui::collection_layout::impl : base::impl {
                 .end();
 
         this->_property_flows.emplace_back(
-            this->_row_spacing_property.begin().receive_null(this->_layout_receiver).end());
+            this->_row_spacing_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_col_spacing_property.begin().receive_null(this->_layout_receiver).end());
+            this->_col_spacing_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_alignment_property.begin().receive_null(this->_layout_receiver).end());
+            this->_alignment_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_direction_property.begin().receive_null(this->_layout_receiver).end());
+            this->_direction_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_row_order_property.begin().receive_null(this->_layout_receiver).end());
+            this->_row_order_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_col_order_property.begin().receive_null(this->_layout_receiver).end());
+            this->_col_order_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_preferred_cell_count_property.begin().receive_null(this->_layout_receiver).end());
+            this->_preferred_cell_count_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_default_cell_size_property.begin().receive_null(this->_layout_receiver).end());
+            this->_default_cell_size_property.begin_flow().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_lines_property.begin().receive_null(this->_layout_receiver).end());
+        this->_property_flows.emplace_back(
+            this->_lines_property.begin_flow().receive_null(this->_layout_receiver).end());
 
         this->_update_layout();
     }
@@ -533,41 +534,41 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
 }
 
 flow::node_t<std::size_t, true> ui::collection_layout::begin_preferred_cell_count_flow() const {
-    return impl_ptr<impl>()->_preferred_cell_count_property.begin();
+    return impl_ptr<impl>()->_preferred_cell_count_property.begin_flow();
 }
 
 flow::node_t<std::size_t, true> ui::collection_layout::begin_actual_cell_count_flow() const {
-    return impl_ptr<impl>()->_actual_cell_count_property.begin();
+    return impl_ptr<impl>()->_actual_cell_count_property.begin_flow();
 }
 
 flow::node_t<ui::size, true> ui::collection_layout::begin_default_cell_size_flow() const {
-    return impl_ptr<impl>()->_default_cell_size_property.begin();
+    return impl_ptr<impl>()->_default_cell_size_property.begin_flow();
 }
 
 flow::node_t<std::vector<ui::collection_layout::line>, true> ui::collection_layout::begin_lines_flow() const {
-    return impl_ptr<impl>()->_lines_property.begin();
+    return impl_ptr<impl>()->_lines_property.begin_flow();
 }
 
 flow::node_t<float, true> ui::collection_layout::begin_row_spacing_flow() const {
-    return impl_ptr<impl>()->_row_spacing_property.begin();
+    return impl_ptr<impl>()->_row_spacing_property.begin_flow();
 }
 
 flow::node_t<float, true> ui::collection_layout::begin_col_spacing_flow() const {
-    return impl_ptr<impl>()->_col_spacing_property.begin();
+    return impl_ptr<impl>()->_col_spacing_property.begin_flow();
 }
 
 flow::node_t<ui::layout_alignment, true> ui::collection_layout::begin_alignment_flow() const {
-    return impl_ptr<impl>()->_alignment_property.begin();
+    return impl_ptr<impl>()->_alignment_property.begin_flow();
 }
 
 flow::node_t<ui::layout_direction, true> ui::collection_layout::begin_direction_flow() const {
-    return impl_ptr<impl>()->_direction_property.begin();
+    return impl_ptr<impl>()->_direction_property.begin_flow();
 }
 
 flow::node_t<ui::layout_order, true> ui::collection_layout::begin_row_order_flow() const {
-    return impl_ptr<impl>()->_row_order_property.begin();
+    return impl_ptr<impl>()->_row_order_property.begin_flow();
 }
 
 flow::node_t<ui::layout_order, true> ui::collection_layout::begin_col_order_flow() const {
-    return impl_ptr<impl>()->_col_order_property.begin();
+    return impl_ptr<impl>()->_col_order_property.begin_flow();
 }

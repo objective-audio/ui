@@ -37,5 +37,5 @@ ui::uint_region const &ui::texture_element::tex_coords() const {
 }
 
 flow::node_t<ui::uint_region, true> ui::texture_element::begin_tex_coords_flow() const {
-    return impl_ptr<impl>()->_tex_coords.begin();
+    return impl_ptr<impl>()->_tex_coords.begin_flow();
 }

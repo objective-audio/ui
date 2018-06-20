@@ -141,11 +141,11 @@ bool ui::collider::hit_test(ui::point const &pos) const {
 }
 
 flow::node_t<ui::shape, true> ui::collider::begin_shape_flow() const {
-    return impl_ptr<impl>()->_shape_property.begin();
+    return impl_ptr<impl>()->_shape_property.begin_flow();
 }
 
 flow::node_t<bool, true> ui::collider::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled_property.begin();
+    return impl_ptr<impl>()->_enabled_property.begin_flow();
 }
 
 flow::receiver<ui::shape> &ui::collider::shape_receiver() {

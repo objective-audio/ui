@@ -59,12 +59,12 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
         this->_notify_receiver = flow::receiver<method>([weak_texture](method const &method) {
             if (auto texture = weak_texture.lock()) {
-                texture.impl_ptr<impl>()->_notify_sender.send_value(std::make_pair(method, texture));
+                texture.impl_ptr<impl>()->_notify_sender.notify(std::make_pair(method, texture));
             }
         });
 
-        auto point_size_flow = this->_point_size_property.begin().to_null();
-        auto scale_factor_flow = this->_scale_factor_property.begin().to_null();
+        auto point_size_flow = this->_point_size_property.begin_flow().to_null();
+        auto scale_factor_flow = this->_scale_factor_property.begin_flow().to_null();
 
         this->_properties_flow = point_size_flow.merge(scale_factor_flow)
                                      .filter([weak_texture](auto const &) { return !!weak_texture; })
@@ -128,7 +128,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     flow::node<flow_pair_t, flow_pair_t, flow_pair_t, false> begin_flow() {
-        return this->_notify_sender.begin();
+        return this->_notify_sender.begin_flow();
     }
 
    private:
@@ -139,7 +139,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     std::vector<texture_element> _texture_elements;
     flow::observer _scale_flow = nullptr;
     flow::observer _properties_flow = nullptr;
-    flow::sender<flow_pair_t> _notify_sender;
+    flow::notifier<flow_pair_t> _notify_sender;
     flow::receiver<method> _notify_receiver = nullptr;
 
     draw_image_result _reserve_image_size(image const &image) {

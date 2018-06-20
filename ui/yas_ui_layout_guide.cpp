@@ -27,11 +27,11 @@ struct ui::layout_guide::impl : base::impl {
     }
 
     void push_notify_waiting() {
-        this->_wait_sender.send_value(true);
+        this->_wait_sender.notify(true);
     }
 
     void pop_notify_waiting() {
-        this->_wait_sender.send_value(false);
+        this->_wait_sender.notify(false);
     }
 
     flow_t begin_flow() {
@@ -39,9 +39,9 @@ struct ui::layout_guide::impl : base::impl {
 
         auto old_cache = std::make_shared<opt_t<float>>();
 
-        return this->_value.begin()
+        return this->_value.begin_flow()
             .filter([weak_guide](float const &) { return !!weak_guide; })
-            .pair(this->_wait_sender.begin().filter([count = int32_t(0)](bool const &is_wait) mutable {
+            .pair(this->_wait_sender.begin_flow().filter([count = int32_t(0)](bool const &is_wait) mutable {
                 if (is_wait) {
                     ++count;
                     return (count == 1);
@@ -97,7 +97,7 @@ struct ui::layout_guide::impl : base::impl {
     }
 
    private:
-    flow::sender<bool> _wait_sender;
+    flow::notifier<bool> _wait_sender;
 };
 
 #pragma mark - ui::layout_guide

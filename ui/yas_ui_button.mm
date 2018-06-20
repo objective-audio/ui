@@ -35,14 +35,18 @@ struct ui::button::impl : base::impl {
         this->_leave_or_enter_or_move_tracking_receiver = flow::receiver<>{[weak_button] {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
-                button_impl->_leave_or_enter_or_move_tracking(button_impl->_tracking_event);
+                if (auto tracking_event = button_impl->_tracking_event) {
+                    button_impl->_leave_or_enter_or_move_tracking(tracking_event);
+                }
             }
         }};
 
         this->_cancel_tracking_receiver = flow::receiver<>{[weak_button]() {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
-                button_impl->_cancel_tracking(button_impl->_tracking_event);
+                if (auto tracking_event = button_impl->_tracking_event) {
+                    button_impl->_cancel_tracking(tracking_event);
+                }
             }
         }};
 
@@ -116,7 +120,7 @@ struct ui::button::impl : base::impl {
 
     ui::rect_plane _rect_plane;
     ui::layout_guide_rect _layout_guide_rect;
-    flow::sender<flow_pair_t> _notify_sender;
+    flow::notifier<flow_pair_t> _notify_sender;
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
@@ -167,28 +171,14 @@ struct ui::button::impl : base::impl {
 
         auto shape_flow = node.collider()
                               .begin_shape_flow()
-                              .perform([weak_button](ui::shape const &shape) {
-                                  if (auto button = weak_button.lock()) {
-                                      if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
-                                          if (!shape) {
-                                              button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                                          }
-                                      }
-                                  }
-                              })
+                              .filter([](ui::shape const &shape) { return !shape; })
+                              .receive_null(this->_cancel_tracking_receiver)
                               .end();
 
         auto enabled_flow = node.collider()
                                 .begin_enabled_flow()
-                                .perform([weak_button](bool const &enabled) {
-                                    if (auto button = weak_button.lock()) {
-                                        if (auto const &tracking_event = button.impl_ptr<impl>()->_tracking_event) {
-                                            if (!enabled) {
-                                                button.impl_ptr<impl>()->_cancel_tracking(tracking_event);
-                                            }
-                                        }
-                                    }
-                                })
+                                .filter([](bool const &enabled) { return !enabled; })
+                                .receive_null(this->_cancel_tracking_receiver)
                                 .end();
 
         return std::vector<flow::observer>{std::move(shape_flow), std::move(enabled_flow)};
@@ -257,7 +247,7 @@ struct ui::button::impl : base::impl {
     }
 
     void _send_notify(method const method, ui::event const &event) {
-        this->_notify_sender.send_value(
+        this->_notify_sender.notify(
             std::make_pair(method, context{.button = cast<ui::button>(), .touch = event.get<ui::touch>()}));
     }
 
@@ -308,13 +298,13 @@ void ui::button::cancel_tracking() {
 }
 
 flow::node_t<ui::button::flow_pair_t, false> ui::button::begin_flow() const {
-    return impl_ptr<impl>()->_notify_sender.begin();
+    return impl_ptr<impl>()->_notify_sender.begin_flow();
 }
 
 flow::node<ui::button::context, ui::button::flow_pair_t, ui::button::flow_pair_t, false> ui::button::begin_flow(
     method const method) const {
     return impl_ptr<impl>()
-        ->_notify_sender.begin()
+        ->_notify_sender.begin_flow()
         .filter([method](flow_pair_t const &pair) { return pair.first == method; })
         .map([](flow_pair_t const &pair) { return pair.second; });
 }
