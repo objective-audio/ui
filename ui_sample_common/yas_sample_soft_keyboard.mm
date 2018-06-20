@@ -104,7 +104,7 @@ struct sample::soft_keyboard::impl : base::impl {
     }
 
     ui::node _root_node;
-    flow::sender<std::string> _key_sender;
+    flow::notifier<std::string> _key_sender;
 
    private:
     std::vector<sample::soft_key> _soft_keys;
@@ -168,7 +168,7 @@ struct sample::soft_keyboard::impl : base::impl {
                     .begin_flow(ui::button::method::ended)
                     .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
                         if (auto keyboard = weak_keyboard.lock()) {
-                            keyboard.impl_ptr<impl>()->_key_sender.send_value(key);
+                            keyboard.impl_ptr<impl>()->_key_sender.notify(key);
                         }
                     })
                     .end();
@@ -355,5 +355,5 @@ ui::node &sample::soft_keyboard::node() {
 }
 
 flow::node_t<std::string, false> sample::soft_keyboard::begin_flow() const {
-    return impl_ptr<impl>()->_key_sender.begin();
+    return impl_ptr<impl>()->_key_sender.begin_flow();
 }

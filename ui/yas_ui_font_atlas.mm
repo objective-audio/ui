@@ -40,8 +40,8 @@ struct ui::font_atlas::impl : base::impl {
     double _descent;
     double _leading;
     std::string _words;
-    flow::sender<ui::texture, true> _texture_changed_sender;
-    flow::sender<ui::texture> _texture_updated_sender;
+    flow::fetcher<ui::texture> _texture_changed_fetcher = nullptr;
+    flow::notifier<ui::texture> _texture_updated_sender;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
         : _ct_font_ref(make_cf_ref(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
@@ -66,11 +66,11 @@ struct ui::font_atlas::impl : base::impl {
 
         this->_texture_updated_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
             if (auto atlas = weak_atlas.lock()) {
-                atlas.impl_ptr<impl>()->_texture_updated_sender.send_value(texture);
+                atlas.impl_ptr<impl>()->_texture_updated_sender.notify(texture);
             }
         });
 
-        this->_texture_setter_flow = this->_texture_setter.begin()
+        this->_texture_setter_flow = this->_texture_setter.begin_flow()
                                          .filter([weak_atlas](ui::texture const &texture) {
                                              if (auto atlas = weak_atlas.lock()) {
                                                  return !is_same(atlas.texture(), texture);
@@ -94,13 +94,14 @@ struct ui::font_atlas::impl : base::impl {
                     atlas_impl->_texture_flow = nullptr;
                 }
 
-                atlas_impl->_texture_changed_sender.send_value(texture);
+                atlas_impl->_texture_changed_fetcher.fetch();
             }
         });
 
-        this->_texture_changed_flow = this->_texture_property.begin().receive(this->_texture_changed_receiver).end();
+        this->_texture_changed_flow =
+            this->_texture_property.begin_flow().receive(this->_texture_changed_receiver).end();
 
-        this->_texture_changed_sender.set_sync_handler([weak_atlas]() {
+        this->_texture_changed_fetcher = flow::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
                 return opt_t<ui::texture>{atlas.texture()};
             } else {
@@ -114,7 +115,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     void set_texture(ui::texture &&texture) {
-        this->_texture_setter.send_value(texture);
+        this->_texture_setter.notify(texture);
     }
 
     ui::vertex2d_rect_t const &rect(std::string const &word) {
@@ -160,7 +161,7 @@ struct ui::font_atlas::impl : base::impl {
     std::vector<flow::observer> _element_flows;
     flow::receiver<ui::texture> _texture_updated_receiver = nullptr;
     flow::observer _texture_flow = nullptr;
-    flow::sender<ui::texture> _texture_setter;
+    flow::notifier<ui::texture> _texture_setter;
     flow::observer _texture_setter_flow = nullptr;
     flow::observer _texture_changed_flow = nullptr;
     flow::receiver<ui::texture> _texture_changed_receiver = nullptr;
@@ -283,11 +284,11 @@ void ui::font_atlas::set_texture(ui::texture texture) {
 }
 
 flow::node_t<ui::texture, true> ui::font_atlas::begin_texture_flow() const {
-    return impl_ptr<impl>()->_texture_changed_sender.begin();
+    return impl_ptr<impl>()->_texture_changed_fetcher.begin_flow();
 }
 
 flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_updated_flow() const {
-    return impl_ptr<impl>()->_texture_updated_sender.begin();
+    return impl_ptr<impl>()->_texture_updated_sender.begin_flow();
 }
 
 #pragma mark -

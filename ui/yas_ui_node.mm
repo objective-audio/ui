@@ -36,25 +36,25 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // enabled
 
-        auto enabled_flow = this->_enabled_property.begin().to_value(ui::node_update_reason::enabled);
+        auto enabled_flow = this->_enabled_property.begin_flow().to_value(ui::node_update_reason::enabled);
 
         // geometry
 
-        auto pos_flow = this->_position_property.begin().to_value(ui::node_update_reason::geometry);
-        auto angle_flow = this->_angle_property.begin().to_value(ui::node_update_reason::geometry);
-        auto scale_flow = this->_scale_property.begin().to_value(ui::node_update_reason::geometry);
+        auto pos_flow = this->_position_property.begin_flow().to_value(ui::node_update_reason::geometry);
+        auto angle_flow = this->_angle_property.begin_flow().to_value(ui::node_update_reason::geometry);
+        auto scale_flow = this->_scale_property.begin_flow().to_value(ui::node_update_reason::geometry);
 
         // mesh and mesh_color
 
         auto mesh_flow =
-            this->_mesh_property.begin()
+            this->_mesh_property.begin_flow()
                 .filter([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .to_value(ui::node_update_reason::mesh)
                 .normalize();
 
-        auto color_flow = this->_color_property.begin().to_null();
-        auto alpha_flow = this->_alpha_property.begin().to_null();
+        auto color_flow = this->_color_property.begin_flow().to_null();
+        auto alpha_flow = this->_alpha_property.begin_flow().to_null();
 
         auto mesh_color_flow =
             color_flow.merge(alpha_flow)
@@ -64,15 +64,16 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // collider
 
-        auto collider_flow = this->_collider_property.begin().to_value(ui::node_update_reason::collider);
+        auto collider_flow = this->_collider_property.begin_flow().to_value(ui::node_update_reason::collider);
 
         // batch
 
-        auto batch_flow = this->_batch_property.begin().to_value(ui::node_update_reason::batch);
+        auto batch_flow = this->_batch_property.begin_flow().to_value(ui::node_update_reason::batch);
 
         // render_target
 
-        auto render_target_flow = this->_render_target_property.begin().to_value(ui::node_update_reason::render_target);
+        auto render_target_flow =
+            this->_render_target_property.begin_flow().to_value(ui::node_update_reason::render_target);
 
         auto updates_flow = enabled_flow.merge(pos_flow)
                                 .merge(angle_flow)
@@ -94,7 +95,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         this->_dispatch_receiver = flow::receiver<ui::node::method>([weak_node](ui::node::method const &method) {
             if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_dispatch_sender.send_value(std::make_pair(method, node));
+                node.impl_ptr<impl>()->_dispatch_sender.notify(std::make_pair(method, node));
             }
         });
     }
@@ -385,7 +386,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             switch (method) {
                 case ui::node::method::added_to_super:
                 case ui::node::method::removed_from_super:
-                    flow = this->_notify_sender.begin()
+                    flow = this->_notify_sender.begin_flow()
                                .filter([method](node::method const &value) { return method == value; })
                                .receive(this->_dispatch_receiver)
                                .end();
@@ -395,7 +396,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             this->_dispatch_flows.emplace(method, std::move(flow));
         }
 
-        return this->_dispatch_sender.begin().filter(
+        return this->_dispatch_sender.begin_flow().filter(
             [methods](flow_pair_t const &pair) { return contains(methods, pair.first); });
     }
 
@@ -440,9 +441,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     std::vector<flow::observer> _update_flows;
     std::unordered_map<ui::node::method, flow::observer> _dispatch_flows;
-    flow::sender<flow_pair_t> _dispatch_sender;
+    flow::notifier<flow_pair_t> _dispatch_sender;
     flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
-    flow::sender<ui::node::method> _notify_sender;
+    flow::notifier<ui::node::method> _notify_sender;
 
     node_updates_t _updates;
 
@@ -452,7 +453,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         sub_node_impl->_parent_property.set_value(cast<ui::node>());
         sub_node_impl->_set_renderer_recursively(this->_renderer_property.value().lock());
 
-        sub_node_impl->_notify_sender.send_value(method::added_to_super);
+        sub_node_impl->_notify_sender.notify(method::added_to_super);
 
         this->_set_updated(ui::node_update_reason::children);
     }
@@ -465,7 +466,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         erase_if(this->_children, [&sub_node](ui::node const &node) { return node == sub_node; });
 
-        sub_node_impl->_notify_sender.send_value(method::removed_from_super);
+        sub_node_impl->_notify_sender.notify(method::removed_from_super);
 
         this->_set_updated(ui::node_update_reason::children);
     }
@@ -691,7 +692,7 @@ flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(std::vector<ui::
 }
 
 flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::begin_renderer_flow() const {
-    return impl_ptr<impl>()->_renderer_property.begin().map([](weak<ui::renderer> const &weak_renderer) {
+    return impl_ptr<impl>()->_renderer_property.begin_flow().map([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
         } else {
@@ -701,7 +702,7 @@ flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node:
 }
 
 flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_parent_flow() const {
-    return impl_ptr<impl>()->_parent_property.begin().map([](weak<ui::node> const &weak_node) {
+    return impl_ptr<impl>()->_parent_property.begin_flow().map([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;
         } else {
@@ -711,35 +712,35 @@ flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_paren
 }
 
 flow::node_t<ui::point, true> ui::node::begin_position_flow() const {
-    return impl_ptr<impl>()->_position_property.begin();
+    return impl_ptr<impl>()->_position_property.begin_flow();
 }
 
 flow::node_t<ui::angle, true> ui::node::begin_angle_flow() const {
-    return impl_ptr<impl>()->_angle_property.begin();
+    return impl_ptr<impl>()->_angle_property.begin_flow();
 }
 
 flow::node_t<ui::size, true> ui::node::begin_scale_flow() const {
-    return impl_ptr<impl>()->_scale_property.begin();
+    return impl_ptr<impl>()->_scale_property.begin_flow();
 }
 
 flow::node_t<ui::color, true> ui::node::begin_color_flow() const {
-    return impl_ptr<impl>()->_color_property.begin();
+    return impl_ptr<impl>()->_color_property.begin_flow();
 }
 
 flow::node_t<float, true> ui::node::begin_alpha_flow() const {
-    return impl_ptr<impl>()->_alpha_property.begin();
+    return impl_ptr<impl>()->_alpha_property.begin_flow();
 }
 
 flow::node_t<ui::mesh, true> ui::node::begin_mesh_flow() const {
-    return impl_ptr<impl>()->_mesh_property.begin();
+    return impl_ptr<impl>()->_mesh_property.begin_flow();
 }
 
 flow::node_t<ui::collider, true> ui::node::begin_collider_flow() const {
-    return impl_ptr<impl>()->_collider_property.begin();
+    return impl_ptr<impl>()->_collider_property.begin_flow();
 }
 
 flow::node_t<bool, true> ui::node::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled_property.begin();
+    return impl_ptr<impl>()->_enabled_property.begin_flow();
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {

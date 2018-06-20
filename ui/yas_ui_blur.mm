@@ -19,7 +19,7 @@ struct ui::blur::impl : base::impl {
         auto weak_blur = to_weak(blur);
 
         this->_sigma_flow =
-            this->_sigma_property.begin()
+            this->_sigma_property.begin_flow()
                 .filter([weak_blur](double const &) { return !!weak_blur; })
                 .perform([weak_blur](double const &) { weak_blur.lock().impl_ptr<impl>()->_update_effect_handler(); })
                 .sync();

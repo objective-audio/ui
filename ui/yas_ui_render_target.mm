@@ -36,7 +36,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
 
         this->_effect_property.set_value(ui::effect::make_through_effect());
         this->_effect_flow =
-            this->_effect_setter.begin()
+            this->_effect_setter.begin_flow()
                 .map([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
                 .receive(this->_effect_property.receiver())
                 .end();
@@ -78,7 +78,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 })
                 .end();
 
-        this->_update_flows.emplace_back(this->_effect_property.begin()
+        this->_update_flows.emplace_back(this->_effect_property.begin_flow()
                                              .perform([weak_target](ui::effect const &) {
                                                  if (auto target = weak_target.lock()) {
                                                      target.impl_ptr<impl>()->_set_updated(
@@ -88,7 +88,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                                              })
                                              .end());
 
-        this->_update_flows.emplace_back(this->_scale_factor_property.begin()
+        this->_update_flows.emplace_back(this->_scale_factor_property.begin_flow()
                                              .perform([weak_target](double const &scale_factor) {
                                                  if (auto target = weak_target.lock()) {
                                                      auto imp = target.impl_ptr<impl>();
@@ -184,7 +184,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
 
     ui::layout_guide_rect _layout_guide_rect;
     flow::property<ui::effect> _effect_property{ui::effect{nullptr}};
-    flow::sender<ui::effect> _effect_setter;
+    flow::notifier<ui::effect> _effect_setter;
     flow::property<double> _scale_factor_property{1.0};
 
    private:
@@ -252,7 +252,7 @@ double ui::render_target::scale_factor() const {
 }
 
 void ui::render_target::set_effect(ui::effect effect) {
-    impl_ptr<impl>()->_effect_setter.send_value(effect);
+    impl_ptr<impl>()->_effect_setter.notify(effect);
 }
 
 ui::effect const &ui::render_target::effect() const {

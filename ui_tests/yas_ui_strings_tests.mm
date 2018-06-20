@@ -202,13 +202,13 @@ using namespace yas;
 - (void)test_text_receiver {
     ui::strings strings;
 
-    flow::sender<std::string> sender;
+    flow::notifier<std::string> sender;
 
-    auto flow = sender.begin().receive(strings.text_receiver()).end();
+    auto flow = sender.begin_flow().receive(strings.text_receiver()).end();
 
     XCTAssertEqual(strings.text(), "");
 
-    sender.send_value("test_text");
+    sender.notify("test_text");
 
     XCTAssertEqual(strings.text(), "test_text");
 }
