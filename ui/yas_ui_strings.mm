@@ -106,7 +106,7 @@ struct ui::strings::impl : base::impl {
                                           .merge(font_atlas.begin_texture_updated_flow())
                                           .to_null()
                                           .receive(strings_impl->_update_layout_receiver)
-                                          .end();
+                                          .sync();
             }
         } else {
             this->_rect_plane.node().mesh().set_texture(nullptr);
