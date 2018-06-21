@@ -116,7 +116,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void remove_from_super_node() {
-        if (auto parent = this->_parent_property.value().lock()) {
+        if (auto parent = this->_parent.value().lock()) {
             parent.impl_ptr<impl>()->_remove_sub_node(cast<ui::node>());
         }
     }
@@ -292,11 +292,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     ui::renderer renderer() override {
-        return this->_renderer_property.value().lock();
+        return this->_renderer.value().lock();
     }
 
     void set_renderer(ui::renderer &&renderer) override {
-        this->_renderer_property.set_value(renderer);
+        this->_renderer.set_value(renderer);
     }
 
     void fetch_updates(ui::tree_updates &tree_updates) override {
@@ -414,8 +414,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return {loc4.x, loc4.y};
     }
 
-    flow::property<weak<ui::node>> _parent_property{ui::node{nullptr}};
-    flow::property<weak<ui::renderer>> _renderer_property{ui::renderer{nullptr}};
+    flow::property<weak<ui::node>> _parent{ui::node{nullptr}};
+    flow::property<weak<ui::renderer>> _renderer{ui::renderer{nullptr}};
 
     flow::property<ui::point> _position{{.v = 0.0f}};
     flow::property<ui::angle> _angle{{0.0f}};
@@ -449,8 +449,8 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     void _add_sub_node(ui::node &sub_node) {
         auto sub_node_impl = sub_node.impl_ptr<impl>();
 
-        sub_node_impl->_parent_property.set_value(cast<ui::node>());
-        sub_node_impl->_set_renderer_recursively(this->_renderer_property.value().lock());
+        sub_node_impl->_parent.set_value(cast<ui::node>());
+        sub_node_impl->_set_renderer_recursively(this->_renderer.value().lock());
 
         sub_node_impl->_notify_sender.notify(method::added_to_super);
 
@@ -460,7 +460,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     void _remove_sub_node(ui::node const &sub_node) {
         auto sub_node_impl = sub_node.impl_ptr<impl>();
 
-        sub_node_impl->_parent_property.set_value(ui::node{nullptr});
+        sub_node_impl->_parent.set_value(ui::node{nullptr});
         sub_node_impl->_set_renderer_recursively(ui::renderer{nullptr});
 
         erase_if(this->_children, [&sub_node](ui::node const &node) { return node == sub_node; });
@@ -471,7 +471,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void _set_renderer_recursively(ui::renderer const &renderer) {
-        this->_renderer_property.set_value(renderer);
+        this->_renderer.set_value(renderer);
 
         for (auto &sub_node : this->_children) {
             sub_node.impl_ptr<impl>()->_set_renderer_recursively(renderer);
@@ -501,7 +501,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void _update_matrix() {
-        if (auto locked_parent = this->_parent_property.value().lock()) {
+        if (auto locked_parent = this->_parent.value().lock()) {
             this->_matrix = locked_parent.matrix();
         } else {
             if (auto locked_renderer = this->renderer()) {
@@ -661,7 +661,7 @@ std::vector<ui::node> &ui::node::children() {
 }
 
 ui::node ui::node::parent() const {
-    return impl_ptr<impl>()->_parent_property.value().lock();
+    return impl_ptr<impl>()->_parent.value().lock();
 }
 
 ui::renderer ui::node::renderer() const {
@@ -691,7 +691,7 @@ flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(std::vector<ui::
 }
 
 flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::begin_renderer_flow() const {
-    return impl_ptr<impl>()->_renderer_property.begin_flow().map([](weak<ui::renderer> const &weak_renderer) {
+    return impl_ptr<impl>()->_renderer.begin_flow().map([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
         } else {
@@ -701,7 +701,7 @@ flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node:
 }
 
 flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_parent_flow() const {
-    return impl_ptr<impl>()->_parent_property.begin_flow().map([](weak<ui::node> const &weak_node) {
+    return impl_ptr<impl>()->_parent.begin_flow().map([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;
         } else {
