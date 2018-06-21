@@ -35,8 +35,8 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl, metal_object::impl {
-    flow::property<ui::uint_size> _point_size_property;
-    flow::property<double> _scale_factor_property;
+    flow::property<ui::uint_size> _point_size;
+    flow::property<double> _scale_factor;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -48,8 +48,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
          ui::texture_usages_t const usages, ui::pixel_format const format)
         : _draw_actual_padding(draw_padding * scale_factor),
           _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
-          _point_size_property(std::move(point_size)),
-          _scale_factor_property(std::move(scale_factor)),
+          _point_size(std::move(point_size)),
+          _scale_factor(std::move(scale_factor)),
           _usages(usages),
           _pixel_format(format) {
     }
@@ -63,8 +63,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
             }
         });
 
-        auto point_size_flow = this->_point_size_property.begin_flow().to_null();
-        auto scale_factor_flow = this->_scale_factor_property.begin_flow().to_null();
+        auto point_size_flow = this->_point_size.begin_flow().to_null();
+        auto scale_factor_flow = this->_scale_factor.begin_flow().to_null();
 
         this->_properties_flow = point_size_flow.merge(scale_factor_flow)
                                      .filter([weak_texture](auto const &) { return !!weak_texture; })
@@ -101,8 +101,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     ui::uint_size actual_size() {
-        ui::uint_size const &point_size = this->_point_size_property.value();
-        double const &scale_factor = this->_scale_factor_property.value();
+        ui::uint_size const &point_size = this->_point_size.value();
+        double const &scale_factor = this->_scale_factor.value();
         return {static_cast<uint32_t>(point_size.width * scale_factor),
                 static_cast<uint32_t>(point_size.height * scale_factor)};
     }
@@ -228,7 +228,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         auto const &point_size = pair.first;
         auto const &draw_handler = pair.second;
 
-        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor_property.value()}};
+        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor.value()}};
 
         if (auto reserve_result = this->_reserve_image_size(image)) {
             if (draw_handler) {
@@ -259,7 +259,7 @@ bool ui::texture::operator!=(texture const &rhs) const {
 }
 
 ui::uint_size ui::texture::point_size() const {
-    return impl_ptr<impl>()->_point_size_property.value();
+    return impl_ptr<impl>()->_point_size.value();
 }
 
 ui::uint_size ui::texture::actual_size() const {
@@ -267,7 +267,7 @@ ui::uint_size ui::texture::actual_size() const {
 }
 
 double ui::texture::scale_factor() const {
-    return impl_ptr<impl>()->_scale_factor_property.value();
+    return impl_ptr<impl>()->_scale_factor.value();
 }
 
 uint32_t ui::texture::depth() const {
@@ -279,11 +279,11 @@ bool ui::texture::has_alpha() const {
 }
 
 void ui::texture::set_point_size(ui::uint_size size) {
-    impl_ptr<impl>()->_point_size_property.set_value(std::move(size));
+    impl_ptr<impl>()->_point_size.set_value(std::move(size));
 }
 
 void ui::texture::set_scale_factor(double const scale_factor) {
-    impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
+    impl_ptr<impl>()->_scale_factor.set_value(scale_factor);
 }
 
 ui::texture_element const &ui::texture::add_draw_handler(ui::uint_size size, ui::draw_handler_f handler) {
@@ -315,7 +315,7 @@ flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t, fals
 }
 
 flow::receiver<double> &ui::texture::scale_factor_receiver() {
-    return impl_ptr<impl>()->_scale_factor_property.receiver();
+    return impl_ptr<impl>()->_scale_factor.receiver();
 }
 
 ui::metal_object &ui::texture::metal() {
