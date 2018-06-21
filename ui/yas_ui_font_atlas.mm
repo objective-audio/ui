@@ -98,8 +98,7 @@ struct ui::font_atlas::impl : base::impl {
             }
         });
 
-        this->_texture_changed_flow =
-            this->_texture.begin_flow().receive(this->_texture_changed_receiver).end();
+        this->_texture_changed_flow = this->_texture.begin_flow().receive(this->_texture_changed_receiver).end();
 
         this->_texture_changed_fetcher = flow::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
