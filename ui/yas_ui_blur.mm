@@ -12,14 +12,14 @@
 using namespace yas;
 
 struct ui::blur::impl : base::impl {
-    flow::property<double> _sigma_property{0.0};
+    flow::property<double> _sigma{0.0};
     ui::effect _effect;
 
     void prepare(ui::blur &blur) {
         auto weak_blur = to_weak(blur);
 
         this->_sigma_flow =
-            this->_sigma_property.begin_flow()
+            this->_sigma.begin_flow()
                 .filter([weak_blur](double const &) { return !!weak_blur; })
                 .perform([weak_blur](double const &) { weak_blur.lock().impl_ptr<impl>()->_update_effect_handler(); })
                 .sync();
@@ -29,7 +29,7 @@ struct ui::blur::impl : base::impl {
     flow::observer _sigma_flow = nullptr;
 
     void _update_effect_handler() {
-        double const sigma = this->_sigma_property.value();
+        double const sigma = this->_sigma.value();
 
         if (sigma > 0.0) {
             this->_effect.set_metal_handler(
@@ -63,11 +63,11 @@ ui::blur::blur(std::nullptr_t) : base(nullptr) {
 }
 
 void ui::blur::set_sigma(double const sigma) {
-    impl_ptr<impl>()->_sigma_property.set_value(sigma);
+    impl_ptr<impl>()->_sigma.set_value(sigma);
 }
 
 double ui::blur::sigma() const {
-    return impl_ptr<impl>()->_sigma_property.value();
+    return impl_ptr<impl>()->_sigma.value();
 }
 
 ui::effect &ui::blur::effect() {
