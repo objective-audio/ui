@@ -77,7 +77,7 @@ struct ui::font_atlas::impl : base::impl {
                                              }
                                              return false;
                                          })
-                                         .receive(this->_texture_property.receiver())
+                                         .receive(this->_texture.receiver())
                                          .end();
 
         this->_texture_changed_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
@@ -98,8 +98,7 @@ struct ui::font_atlas::impl : base::impl {
             }
         });
 
-        this->_texture_changed_flow =
-            this->_texture_property.begin_flow().receive(this->_texture_changed_receiver).end();
+        this->_texture_changed_flow = this->_texture.begin_flow().receive(this->_texture_changed_receiver).end();
 
         this->_texture_changed_fetcher = flow::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
@@ -111,7 +110,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     ui::texture &texture() {
-        return this->_texture_property.value();
+        return this->_texture.value();
     }
 
     void set_texture(ui::texture &&texture) {
@@ -155,7 +154,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    flow::property<ui::texture> _texture_property{ui::texture{nullptr}};
+    flow::property<ui::texture> _texture{ui::texture{nullptr}};
     std::vector<ui::word_info> _word_infos;
     flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<flow::observer> _element_flows;

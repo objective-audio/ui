@@ -34,11 +34,11 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_mesh.set_mesh_data(this->_data.dynamic_mesh_data());
         this->_mesh.set_texture(this->_dst_texture);
 
-        this->_effect_property.set_value(ui::effect::make_through_effect());
+        this->_effect.set_value(ui::effect::make_through_effect());
         this->_effect_flow =
             this->_effect_setter.begin_flow()
                 .map([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
-                .receive(this->_effect_property.receiver())
+                .receive(this->_effect.receiver())
                 .end();
 
         this->_set_textures_to_effect();
@@ -78,7 +78,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 })
                 .end();
 
-        this->_update_flows.emplace_back(this->_effect_property.begin_flow()
+        this->_update_flows.emplace_back(this->_effect.begin_flow()
                                              .perform([weak_target](ui::effect const &) {
                                                  if (auto target = weak_target.lock()) {
                                                      target.impl_ptr<impl>()->_set_updated(
@@ -88,7 +88,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                                              })
                                              .end());
 
-        this->_update_flows.emplace_back(this->_scale_factor_property.begin_flow()
+        this->_update_flows.emplace_back(this->_scale_factor.begin_flow()
                                              .perform([weak_target](double const &scale_factor) {
                                                  if (auto target = weak_target.lock()) {
                                                      auto imp = target.impl_ptr<impl>();
@@ -142,7 +142,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::effect &effect() override {
-        return this->_effect_property.value();
+        return this->_effect.value();
     }
 
     render_target_updates_t &updates() override {
@@ -152,7 +152,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void clear_updates() override {
         this->_updates.flags.reset();
         this->_mesh.renderable().clear_updates();
-        if (auto &effect = this->_effect_property.value()) {
+        if (auto &effect = this->_effect.value()) {
             effect.renderable().clear_updates();
         }
     }
@@ -183,9 +183,9 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::layout_guide_rect _layout_guide_rect;
-    flow::property<ui::effect> _effect_property{ui::effect{nullptr}};
+    flow::property<ui::effect> _effect{ui::effect{nullptr}};
     flow::notifier<ui::effect> _effect_setter;
-    flow::property<double> _scale_factor_property{1.0};
+    flow::property<double> _scale_factor{1.0};
 
    private:
     ui::rect_plane_data _data{1};
@@ -211,7 +211,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     void _set_textures_to_effect() {
-        if (auto &effect = this->_effect_property.value()) {
+        if (auto &effect = this->_effect.value()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
         }
     }
@@ -244,11 +244,11 @@ ui::layout_guide_rect &ui::render_target::layout_guide_rect() {
 }
 
 void ui::render_target::set_scale_factor(double const scale_factor) {
-    impl_ptr<impl>()->_scale_factor_property.set_value(scale_factor);
+    impl_ptr<impl>()->_scale_factor.set_value(scale_factor);
 }
 
 double ui::render_target::scale_factor() const {
-    return impl_ptr<impl>()->_scale_factor_property.value();
+    return impl_ptr<impl>()->_scale_factor.value();
 }
 
 void ui::render_target::set_effect(ui::effect effect) {
@@ -256,11 +256,11 @@ void ui::render_target::set_effect(ui::effect effect) {
 }
 
 ui::effect const &ui::render_target::effect() const {
-    return impl_ptr<impl>()->_effect_property.value();
+    return impl_ptr<impl>()->_effect.value();
 }
 
 flow::receiver<double> &ui::render_target::scale_factor_receiver() {
-    return impl_ptr<impl>()->_scale_factor_property.receiver();
+    return impl_ptr<impl>()->_scale_factor.receiver();
 }
 
 ui::renderable_render_target &ui::render_target::renderable() {

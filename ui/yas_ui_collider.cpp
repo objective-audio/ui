@@ -82,15 +82,15 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    flow::property<ui::shape> _shape_property{ui::shape{nullptr}};
-    flow::property<bool> _enabled_property{true};
+    flow::property<ui::shape> _shape{ui::shape{nullptr}};
+    flow::property<bool> _enabled{true};
 
-    impl(ui::shape &&shape) : _shape_property(std::move(shape)) {
+    impl(ui::shape &&shape) : _shape(std::move(shape)) {
     }
 
     bool hit_test(ui::point const &loc) {
-        auto const &shape = this->_shape_property.value();
-        if (shape && this->_enabled_property.value()) {
+        auto const &shape = this->_shape.value();
+        if (shape && this->_enabled.value()) {
             auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
             return shape.hit_test({pos.x, pos.y});
         }
@@ -121,19 +121,19 @@ ui::collider::collider(std::nullptr_t) : base(nullptr) {
 ui::collider::~collider() = default;
 
 void ui::collider::set_shape(ui::shape shape) {
-    impl_ptr<impl>()->_shape_property.set_value(std::move(shape));
+    impl_ptr<impl>()->_shape.set_value(std::move(shape));
 }
 
 ui::shape const &ui::collider::shape() const {
-    return impl_ptr<impl>()->_shape_property.value();
+    return impl_ptr<impl>()->_shape.value();
 }
 
 void ui::collider::set_enabled(bool const enabled) {
-    impl_ptr<impl>()->_enabled_property.set_value(enabled);
+    impl_ptr<impl>()->_enabled.set_value(enabled);
 }
 
 bool ui::collider::is_enabled() const {
-    return impl_ptr<impl>()->_enabled_property.value();
+    return impl_ptr<impl>()->_enabled.value();
 }
 
 bool ui::collider::hit_test(ui::point const &pos) const {
@@ -141,19 +141,19 @@ bool ui::collider::hit_test(ui::point const &pos) const {
 }
 
 flow::node_t<ui::shape, true> ui::collider::begin_shape_flow() const {
-    return impl_ptr<impl>()->_shape_property.begin_flow();
+    return impl_ptr<impl>()->_shape.begin_flow();
 }
 
 flow::node_t<bool, true> ui::collider::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled_property.begin_flow();
+    return impl_ptr<impl>()->_enabled.begin_flow();
 }
 
 flow::receiver<ui::shape> &ui::collider::shape_receiver() {
-    return impl_ptr<impl>()->_shape_property.receiver();
+    return impl_ptr<impl>()->_shape.receiver();
 }
 
 flow::receiver<bool> &ui::collider::enabled_receiver() {
-    return impl_ptr<impl>()->_enabled_property.receiver();
+    return impl_ptr<impl>()->_enabled.receiver();
 }
 
 ui::renderable_collider &ui::collider::renderable() {

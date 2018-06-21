@@ -20,17 +20,17 @@ struct ui::strings::impl : base::impl {
     ui::rect_plane _rect_plane;
     flow::receiver<std::string> _text_receiver = nullptr;
 
-    flow::property<std::string> _text_property;
-    flow::property<ui::font_atlas> _font_atlas_property;
-    flow::property<opt_t<float>> _line_height_property;
+    flow::property<std::string> _text;
+    flow::property<ui::font_atlas> _font_atlas;
+    flow::property<opt_t<float>> _line_height;
 
     impl(args &&args)
         : _collection_layout(
               {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending}),
           _rect_plane(args.max_word_count),
-          _text_property(std::move(args.text)),
-          _font_atlas_property(std::move(args.font_atlas)),
-          _line_height_property(args.line_height),
+          _text(std::move(args.text)),
+          _font_atlas(std::move(args.font_atlas)),
+          _line_height(args.line_height),
           _max_word_count(args.max_word_count) {
     }
 
@@ -78,16 +78,15 @@ struct ui::strings::impl : base::impl {
     }
 
     void _prepare_flows(weak<ui::strings> &weak_strings) {
-        this->_property_flows.emplace_back(this->_font_atlas_property.begin_flow()
+        this->_property_flows.emplace_back(this->_font_atlas.begin_flow()
                                                .receive(this->_update_texture_flow_receiver)
                                                .receive_null(this->_update_layout_receiver)
                                                .sync());
 
-        this->_property_flows.emplace_back(
-            this->_text_property.begin_flow().receive_null(this->_update_layout_receiver).end());
+        this->_property_flows.emplace_back(this->_text.begin_flow().receive_null(this->_update_layout_receiver).end());
 
         this->_property_flows.emplace_back(
-            this->_line_height_property.begin_flow().receive_null(this->_update_layout_receiver).end());
+            this->_line_height.begin_flow().receive_null(this->_update_layout_receiver).end());
 
         this->_property_flows.emplace_back(
             this->_collection_layout.begin_actual_cell_count_flow().to_null().receive(this->_update_layout_receiver));
@@ -96,7 +95,7 @@ struct ui::strings::impl : base::impl {
     }
 
     void _update_texture_flow() {
-        if (auto &font_atlas = _font_atlas_property.value()) {
+        if (auto &font_atlas = _font_atlas.value()) {
             if (!this->_texture_flow) {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
@@ -117,14 +116,14 @@ struct ui::strings::impl : base::impl {
     void _update_layout() {
         this->_cell_rect_observers.clear();
 
-        auto const &font_atlas = this->_font_atlas_property.value();
+        auto const &font_atlas = this->_font_atlas.value();
         if (!font_atlas || !font_atlas.texture() || !font_atlas.texture().metal_texture()) {
             this->_collection_layout.set_preferred_cell_count(0);
             this->_rect_plane.data().set_rect_count(0);
             return;
         }
 
-        auto const &src_text = this->_text_property.value();
+        auto const &src_text = this->_text.value();
         auto const word_count = font_atlas ? std::min(src_text.size(), this->_max_word_count) : 0;
         std::string eliminated_text;
         eliminated_text.reserve(word_count);
@@ -200,11 +199,11 @@ struct ui::strings::impl : base::impl {
     }
 
     float _cell_height() {
-        auto const &line_height = this->_line_height_property.value();
+        auto const &line_height = this->_line_height.value();
         if (line_height) {
             return *line_height;
         } else {
-            if (auto const &font_atlas = this->_font_atlas_property.value()) {
+            if (auto const &font_atlas = this->_font_atlas.value()) {
                 return font_atlas.ascent() + font_atlas.descent() + font_atlas.leading();
             } else {
                 return 0.0f;
@@ -229,15 +228,15 @@ ui::strings::strings(std::nullptr_t) : base(nullptr) {
 ui::strings::~strings() = default;
 
 void ui::strings::set_text(std::string text) {
-    impl_ptr<impl>()->_text_property.set_value(std::move(text));
+    impl_ptr<impl>()->_text.set_value(std::move(text));
 }
 
 void ui::strings::set_font_atlas(ui::font_atlas atlas) {
-    impl_ptr<impl>()->_font_atlas_property.set_value(std::move(atlas));
+    impl_ptr<impl>()->_font_atlas.set_value(std::move(atlas));
 }
 
 void ui::strings::set_line_height(std::experimental::optional<float> line_height) {
-    impl_ptr<impl>()->_line_height_property.set_value(std::move(line_height));
+    impl_ptr<impl>()->_line_height.set_value(std::move(line_height));
 }
 
 void ui::strings::set_alignment(ui::layout_alignment const alignment) {
@@ -245,15 +244,15 @@ void ui::strings::set_alignment(ui::layout_alignment const alignment) {
 }
 
 std::string const &ui::strings::text() const {
-    return impl_ptr<impl>()->_text_property.value();
+    return impl_ptr<impl>()->_text.value();
 }
 
 ui::font_atlas const &ui::strings::font_atlas() const {
-    return impl_ptr<impl>()->_font_atlas_property.value();
+    return impl_ptr<impl>()->_font_atlas.value();
 }
 
 std::experimental::optional<float> const &ui::strings::line_height() const {
-    return impl_ptr<impl>()->_line_height_property.value();
+    return impl_ptr<impl>()->_line_height.value();
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {
@@ -269,15 +268,15 @@ ui::rect_plane &ui::strings::rect_plane() {
 }
 
 flow::node_t<std::string, true> ui::strings::begin_text_flow() const {
-    return impl_ptr<impl>()->_text_property.begin_flow();
+    return impl_ptr<impl>()->_text.begin_flow();
 }
 
 flow::node_t<ui::font_atlas, true> ui::strings::begin_font_atlas_flow() const {
-    return impl_ptr<impl>()->_font_atlas_property.begin_flow();
+    return impl_ptr<impl>()->_font_atlas.begin_flow();
 }
 
 flow::node_t<opt_t<float>, true> ui::strings::begin_line_height_flow() const {
-    return impl_ptr<impl>()->_line_height_property.begin_flow();
+    return impl_ptr<impl>()->_line_height.begin_flow();
 }
 
 flow::node_t<ui::layout_alignment, true> ui::strings::begin_alignment_flow() const {
