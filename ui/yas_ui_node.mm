@@ -36,25 +36,25 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // enabled
 
-        auto enabled_flow = this->_enabled_property.begin_flow().to_value(ui::node_update_reason::enabled);
+        auto enabled_flow = this->_enabled.begin_flow().to_value(ui::node_update_reason::enabled);
 
         // geometry
 
-        auto pos_flow = this->_position_property.begin_flow().to_value(ui::node_update_reason::geometry);
-        auto angle_flow = this->_angle_property.begin_flow().to_value(ui::node_update_reason::geometry);
-        auto scale_flow = this->_scale_property.begin_flow().to_value(ui::node_update_reason::geometry);
+        auto pos_flow = this->_position.begin_flow().to_value(ui::node_update_reason::geometry);
+        auto angle_flow = this->_angle.begin_flow().to_value(ui::node_update_reason::geometry);
+        auto scale_flow = this->_scale.begin_flow().to_value(ui::node_update_reason::geometry);
 
         // mesh and mesh_color
 
         auto mesh_flow =
-            this->_mesh_property.begin_flow()
+            this->_mesh.begin_flow()
                 .filter([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .to_value(ui::node_update_reason::mesh)
                 .normalize();
 
-        auto color_flow = this->_color_property.begin_flow().to_null();
-        auto alpha_flow = this->_alpha_property.begin_flow().to_null();
+        auto color_flow = this->_color.begin_flow().to_null();
+        auto alpha_flow = this->_alpha.begin_flow().to_null();
 
         auto mesh_color_flow =
             color_flow.merge(alpha_flow)
@@ -64,16 +64,15 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // collider
 
-        auto collider_flow = this->_collider_property.begin_flow().to_value(ui::node_update_reason::collider);
+        auto collider_flow = this->_collider.begin_flow().to_value(ui::node_update_reason::collider);
 
         // batch
 
-        auto batch_flow = this->_batch_property.begin_flow().to_value(ui::node_update_reason::batch);
+        auto batch_flow = this->_batch.begin_flow().to_value(ui::node_update_reason::batch);
 
         // render_target
 
-        auto render_target_flow =
-            this->_render_target_property.begin_flow().to_value(ui::node_update_reason::render_target);
+        auto render_target_flow = this->_render_target.begin_flow().to_value(ui::node_update_reason::render_target);
 
         auto updates_flow = enabled_flow.merge(pos_flow)
                                 .merge(angle_flow)
@@ -127,21 +126,21 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             batch.renderable().clear_render_meshes();
         }
 
-        if (auto &old_batch = _batch_property.value()) {
+        if (auto &old_batch = _batch.value()) {
             old_batch.renderable().clear_render_meshes();
         }
 
-        this->_batch_property.set_value(std::move(batch));
+        this->_batch.set_value(std::move(batch));
     }
 
     void build_render_info(ui::render_info &render_info) override {
-        if (this->_enabled_property.value()) {
+        if (this->_enabled.value()) {
             this->_update_local_matrix();
 
             this->_matrix = render_info.matrix * this->_local_matrix;
             auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
-            if (auto &collider = this->_collider_property.value()) {
+            if (auto &collider = this->_collider.value()) {
                 collider.renderable().set_matrix(this->_matrix);
 
                 if (auto &detector = render_info.detector) {
@@ -153,19 +152,19 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             }
 
             if (auto &render_encodable = render_info.render_encodable) {
-                if (auto &mesh = this->_mesh_property.value()) {
+                if (auto &mesh = this->_mesh.value()) {
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_encodable.append_mesh(mesh);
                 }
 
-                if (auto &render_target = this->_render_target_property.value()) {
+                if (auto &render_target = this->_render_target.value()) {
                     auto &mesh = render_target.renderable().mesh();
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_encodable.append_mesh(mesh);
                 }
             }
 
-            if (auto &render_target = this->_render_target_property.value()) {
+            if (auto &render_target = this->_render_target.value()) {
                 bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
 
                 if (!needs_render) {
@@ -213,7 +212,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                         stackable.pop_encode_info();
                     }
                 }
-            } else if (auto &batch = _batch_property.value()) {
+            } else if (auto &batch = _batch.value()) {
                 ui::tree_updates tree_updates;
 
                 for (auto &sub_node : this->_children) {
@@ -255,13 +254,13 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        if (auto &mesh = this->_mesh_property.value()) {
+        if (auto &mesh = this->_mesh.value()) {
             if (auto ul = unless(mesh.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
-        if (auto &render_target = this->_render_target_property.value()) {
+        if (auto &render_target = this->_render_target.value()) {
             if (auto ul = unless(render_target.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
@@ -277,7 +276,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             }
         }
 
-        if (auto &batch = this->_batch_property.value()) {
+        if (auto &batch = this->_batch.value()) {
             if (auto ul = unless(batch.metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
@@ -301,10 +300,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void fetch_updates(ui::tree_updates &tree_updates) override {
-        if (this->_enabled_property.value()) {
+        if (this->_enabled.value()) {
             tree_updates.node_updates.flags |= this->_updates.flags;
 
-            if (auto &mesh = this->_mesh_property.value()) {
+            if (auto &mesh = this->_mesh.value()) {
                 tree_updates.mesh_updates.flags |= mesh.renderable().updates().flags;
 
                 if (auto &mesh_data = mesh.mesh_data()) {
@@ -312,7 +311,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 }
             }
 
-            if (auto &render_target = this->_render_target_property.value()) {
+            if (auto &render_target = this->_render_target.value()) {
                 tree_updates.render_target_updates.flags |= render_target.renderable().updates().flags;
 
                 auto &renderable = render_target.renderable();
@@ -338,7 +337,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     bool is_rendering_color_exists() override {
-        if (!this->_enabled_property.value()) {
+        if (!this->_enabled.value()) {
             return false;
         }
 
@@ -348,7 +347,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             }
         }
 
-        if (auto &mesh = this->_mesh_property.value()) {
+        if (auto &mesh = this->_mesh.value()) {
             return mesh.renderable().is_rendering_color_exists();
         }
 
@@ -356,14 +355,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void clear_updates() override {
-        if (this->_enabled_property.value()) {
+        if (this->_enabled.value()) {
             this->_updates.flags.reset();
 
-            if (auto &mesh = this->_mesh_property.value()) {
+            if (auto &mesh = this->_mesh.value()) {
                 mesh.renderable().clear_updates();
             }
 
-            if (auto &render_target = this->_render_target_property.value()) {
+            if (auto &render_target = this->_render_target.value()) {
                 render_target.renderable().clear_updates();
             }
 
@@ -418,16 +417,16 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     flow::property<weak<ui::node>> _parent_property{ui::node{nullptr}};
     flow::property<weak<ui::renderer>> _renderer_property{ui::renderer{nullptr}};
 
-    flow::property<ui::point> _position_property{{.v = 0.0f}};
-    flow::property<ui::angle> _angle_property{{0.0f}};
-    flow::property<ui::size> _scale_property{{.v = 1.0f}};
-    flow::property<ui::color> _color_property{{.v = 1.0f}};
-    flow::property<float> _alpha_property{1.0f};
-    flow::property<ui::mesh> _mesh_property{ui::mesh{nullptr}};
-    flow::property<ui::collider> _collider_property{ui::collider{nullptr}};
-    flow::property<ui::batch> _batch_property{ui::batch{nullptr}};
-    flow::property<ui::render_target> _render_target_property{ui::render_target{nullptr}};
-    flow::property<bool> _enabled_property{true};
+    flow::property<ui::point> _position{{.v = 0.0f}};
+    flow::property<ui::angle> _angle{{0.0f}};
+    flow::property<ui::size> _scale{{.v = 1.0f}};
+    flow::property<ui::color> _color{{.v = 1.0f}};
+    flow::property<float> _alpha{1.0f};
+    flow::property<ui::mesh> _mesh{ui::mesh{nullptr}};
+    flow::property<ui::collider> _collider{ui::collider{nullptr}};
+    flow::property<ui::batch> _batch{ui::batch{nullptr}};
+    flow::property<ui::render_target> _render_target{ui::render_target{nullptr}};
+    flow::property<bool> _enabled{true};
 
     flow::observer _x_observer = nullptr;
     flow::observer _y_observer = nullptr;
@@ -480,9 +479,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     }
 
     void _update_mesh_color() {
-        if (auto &mesh = this->_mesh_property.value()) {
-            auto const &color = this->_color_property.value();
-            auto const &alpha = this->_alpha_property.value();
+        if (auto &mesh = this->_mesh.value()) {
+            auto const &color = this->_color.value();
+            auto const &alpha = this->_alpha.value();
             mesh.set_color({color.red, color.green, color.blue, alpha});
         }
     }
@@ -493,9 +492,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
     void _update_local_matrix() {
         if (this->_updates.test(ui::node_update_reason::geometry)) {
-            auto const &position = this->_position_property.value();
-            auto const &angle = this->_angle_property.value();
-            auto const &scale = this->_scale_property.value();
+            auto const &position = this->_position.value();
+            auto const &angle = this->_angle.value();
+            auto const &scale = this->_scale.value();
             this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle.degrees) *
                                   matrix::scale(scale.width, scale.height);
         }
@@ -538,27 +537,27 @@ bool ui::node::operator!=(ui::node const &rhs) const {
 }
 
 ui::point ui::node::position() const {
-    return impl_ptr<impl>()->_position_property.value();
+    return impl_ptr<impl>()->_position.value();
 }
 
 ui::angle ui::node::angle() const {
-    return impl_ptr<impl>()->_angle_property.value();
+    return impl_ptr<impl>()->_angle.value();
 }
 
 ui::size ui::node::scale() const {
-    return impl_ptr<impl>()->_scale_property.value();
+    return impl_ptr<impl>()->_scale.value();
 }
 
 ui::color ui::node::color() const {
-    return impl_ptr<impl>()->_color_property.value();
+    return impl_ptr<impl>()->_color.value();
 }
 
 float ui::node::alpha() const {
-    return impl_ptr<impl>()->_alpha_property.value();
+    return impl_ptr<impl>()->_alpha.value();
 }
 
 bool ui::node::is_enabled() const {
-    return impl_ptr<impl>()->_enabled_property.value();
+    return impl_ptr<impl>()->_enabled.value();
 }
 
 simd::float4x4 const &ui::node::matrix() const {
@@ -570,63 +569,63 @@ simd::float4x4 const &ui::node::local_matrix() const {
 }
 
 ui::mesh const &ui::node::mesh() const {
-    return impl_ptr<impl>()->_mesh_property.value();
+    return impl_ptr<impl>()->_mesh.value();
 }
 
 ui::mesh &ui::node::mesh() {
-    return impl_ptr<impl>()->_mesh_property.value();
+    return impl_ptr<impl>()->_mesh.value();
 }
 
 ui::collider const &ui::node::collider() const {
-    return impl_ptr<impl>()->_collider_property.value();
+    return impl_ptr<impl>()->_collider.value();
 }
 
 ui::collider &ui::node::collider() {
-    return impl_ptr<impl>()->_collider_property.value();
+    return impl_ptr<impl>()->_collider.value();
 }
 
 ui::batch const &ui::node::batch() const {
-    return impl_ptr<impl>()->_batch_property.value();
+    return impl_ptr<impl>()->_batch.value();
 }
 
 ui::batch &ui::node::batch() {
-    return impl_ptr<impl>()->_batch_property.value();
+    return impl_ptr<impl>()->_batch.value();
 }
 
 ui::render_target const &ui::node::render_target() const {
-    return impl_ptr<impl>()->_render_target_property.value();
+    return impl_ptr<impl>()->_render_target.value();
 }
 
 ui::render_target &ui::node::render_target() {
-    return impl_ptr<impl>()->_render_target_property.value();
+    return impl_ptr<impl>()->_render_target.value();
 }
 
 void ui::node::set_position(ui::point point) {
-    impl_ptr<impl>()->_position_property.set_value(std::move(point));
+    impl_ptr<impl>()->_position.set_value(std::move(point));
 }
 
 void ui::node::set_angle(ui::angle angle) {
-    impl_ptr<impl>()->_angle_property.set_value(std::move(angle));
+    impl_ptr<impl>()->_angle.set_value(std::move(angle));
 }
 
 void ui::node::set_scale(ui::size scale) {
-    impl_ptr<impl>()->_scale_property.set_value(std::move(scale));
+    impl_ptr<impl>()->_scale.set_value(std::move(scale));
 }
 
 void ui::node::set_color(ui::color color) {
-    impl_ptr<impl>()->_color_property.set_value(std::move(color));
+    impl_ptr<impl>()->_color.set_value(std::move(color));
 }
 
 void ui::node::set_alpha(float const alpha) {
-    impl_ptr<impl>()->_alpha_property.set_value(alpha);
+    impl_ptr<impl>()->_alpha.set_value(alpha);
 }
 
 void ui::node::set_mesh(ui::mesh mesh) {
-    impl_ptr<impl>()->_mesh_property.set_value(std::move(mesh));
+    impl_ptr<impl>()->_mesh.set_value(std::move(mesh));
 }
 
 void ui::node::set_collider(ui::collider collider) {
-    impl_ptr<impl>()->_collider_property.set_value(std::move(collider));
+    impl_ptr<impl>()->_collider.set_value(std::move(collider));
 }
 
 void ui::node::set_batch(ui::batch batch) {
@@ -634,11 +633,11 @@ void ui::node::set_batch(ui::batch batch) {
 }
 
 void ui::node::set_render_target(ui::render_target render_target) {
-    impl_ptr<impl>()->_render_target_property.set_value(std::move(render_target));
+    impl_ptr<impl>()->_render_target.set_value(std::move(render_target));
 }
 
 void ui::node::set_enabled(bool const enabled) {
-    impl_ptr<impl>()->_enabled_property.set_value(enabled);
+    impl_ptr<impl>()->_enabled.set_value(enabled);
 }
 
 void ui::node::add_sub_node(ui::node sub_node) {
@@ -712,35 +711,35 @@ flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_paren
 }
 
 flow::node_t<ui::point, true> ui::node::begin_position_flow() const {
-    return impl_ptr<impl>()->_position_property.begin_flow();
+    return impl_ptr<impl>()->_position.begin_flow();
 }
 
 flow::node_t<ui::angle, true> ui::node::begin_angle_flow() const {
-    return impl_ptr<impl>()->_angle_property.begin_flow();
+    return impl_ptr<impl>()->_angle.begin_flow();
 }
 
 flow::node_t<ui::size, true> ui::node::begin_scale_flow() const {
-    return impl_ptr<impl>()->_scale_property.begin_flow();
+    return impl_ptr<impl>()->_scale.begin_flow();
 }
 
 flow::node_t<ui::color, true> ui::node::begin_color_flow() const {
-    return impl_ptr<impl>()->_color_property.begin_flow();
+    return impl_ptr<impl>()->_color.begin_flow();
 }
 
 flow::node_t<float, true> ui::node::begin_alpha_flow() const {
-    return impl_ptr<impl>()->_alpha_property.begin_flow();
+    return impl_ptr<impl>()->_alpha.begin_flow();
 }
 
 flow::node_t<ui::mesh, true> ui::node::begin_mesh_flow() const {
-    return impl_ptr<impl>()->_mesh_property.begin_flow();
+    return impl_ptr<impl>()->_mesh.begin_flow();
 }
 
 flow::node_t<ui::collider, true> ui::node::begin_collider_flow() const {
-    return impl_ptr<impl>()->_collider_property.begin_flow();
+    return impl_ptr<impl>()->_collider.begin_flow();
 }
 
 flow::node_t<bool, true> ui::node::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled_property.begin_flow();
+    return impl_ptr<impl>()->_enabled.begin_flow();
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {
@@ -749,7 +748,7 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     auto imp = impl_ptr<impl>();
-    auto &position = imp->_position_property;
+    auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
     imp->_x_observer = guide.begin_flow()
@@ -765,7 +764,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
 
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     auto imp = impl_ptr<impl>();
-    auto &position = imp->_position_property;
+    auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
     imp->_y_observer = guide.begin_flow()
@@ -781,7 +780,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
 
 void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point) {
     auto imp = impl_ptr<impl>();
-    auto &position = imp->_position_property;
+    auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
     imp->_position_observer = guide_point.begin_flow().receive(position.receiver()).sync();
