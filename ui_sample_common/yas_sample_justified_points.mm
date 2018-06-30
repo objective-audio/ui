@@ -84,7 +84,7 @@ struct sample::justified_points::impl : base::impl {
     std::vector<flow::observer> _guide_observers;
 
     void _setup_colors() {
-        this->_rect_plane.node().mesh().set_use_mesh_color(true);
+        this->_rect_plane.node().mesh().value().set_use_mesh_color(true);
 
         auto &rect_plane_data = this->_rect_plane.data();
 

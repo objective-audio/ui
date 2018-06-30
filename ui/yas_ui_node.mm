@@ -536,28 +536,52 @@ bool ui::node::operator!=(ui::node const &rhs) const {
     return base::operator!=(rhs);
 }
 
-ui::point ui::node::position() const {
-    return impl_ptr<impl>()->_position.value();
+flow::property<ui::point> const &ui::node::position() const {
+    return impl_ptr<impl>()->_position;
 }
 
-ui::angle ui::node::angle() const {
-    return impl_ptr<impl>()->_angle.value();
+flow::property<ui::point> &ui::node::position() {
+    return impl_ptr<impl>()->_position;
 }
 
-ui::size ui::node::scale() const {
-    return impl_ptr<impl>()->_scale.value();
+flow::property<ui::angle> const &ui::node::angle() const {
+    return impl_ptr<impl>()->_angle;
 }
 
-ui::color ui::node::color() const {
-    return impl_ptr<impl>()->_color.value();
+flow::property<ui::angle> &ui::node::angle() {
+    return impl_ptr<impl>()->_angle;
 }
 
-float ui::node::alpha() const {
-    return impl_ptr<impl>()->_alpha.value();
+flow::property<ui::size> const &ui::node::scale() const {
+    return impl_ptr<impl>()->_scale;
 }
 
-bool ui::node::is_enabled() const {
-    return impl_ptr<impl>()->_enabled.value();
+flow::property<ui::size> &ui::node::scale() {
+    return impl_ptr<impl>()->_scale;
+}
+
+flow::property<ui::color> const &ui::node::color() const {
+    return impl_ptr<impl>()->_color;
+}
+
+flow::property<ui::color> &ui::node::color() {
+    return impl_ptr<impl>()->_color;
+}
+
+flow::property<float> const &ui::node::alpha() const {
+    return impl_ptr<impl>()->_alpha;
+}
+
+flow::property<float> &ui::node::alpha() {
+    return impl_ptr<impl>()->_alpha;
+}
+
+flow::property<bool> const &ui::node::is_enabled() const {
+    return impl_ptr<impl>()->_enabled;
+}
+
+flow::property<bool> &ui::node::is_enabled() {
+    return impl_ptr<impl>()->_enabled;
 }
 
 simd::float4x4 const &ui::node::matrix() const {
@@ -568,76 +592,36 @@ simd::float4x4 const &ui::node::local_matrix() const {
     return impl_ptr<impl>()->local_matrix();
 }
 
-ui::mesh const &ui::node::mesh() const {
-    return impl_ptr<impl>()->_mesh.value();
+flow::property<ui::mesh> const &ui::node::mesh() const {
+    return impl_ptr<impl>()->_mesh;
 }
 
-ui::mesh &ui::node::mesh() {
-    return impl_ptr<impl>()->_mesh.value();
+flow::property<ui::mesh> &ui::node::mesh() {
+    return impl_ptr<impl>()->_mesh;
 }
 
-ui::collider const &ui::node::collider() const {
-    return impl_ptr<impl>()->_collider.value();
+flow::property<ui::collider> const &ui::node::collider() const {
+    return impl_ptr<impl>()->_collider;
 }
 
-ui::collider &ui::node::collider() {
-    return impl_ptr<impl>()->_collider.value();
+flow::property<ui::collider> &ui::node::collider() {
+    return impl_ptr<impl>()->_collider;
 }
 
-ui::batch const &ui::node::batch() const {
-    return impl_ptr<impl>()->_batch.value();
+flow::property<ui::batch> const &ui::node::batch() const {
+    return impl_ptr<impl>()->_batch;
 }
 
-ui::batch &ui::node::batch() {
-    return impl_ptr<impl>()->_batch.value();
+flow::property<ui::batch> &ui::node::batch() {
+    return impl_ptr<impl>()->_batch;
 }
 
-ui::render_target const &ui::node::render_target() const {
-    return impl_ptr<impl>()->_render_target.value();
+flow::property<ui::render_target> const &ui::node::render_target() const {
+    return impl_ptr<impl>()->_render_target;
 }
 
-ui::render_target &ui::node::render_target() {
-    return impl_ptr<impl>()->_render_target.value();
-}
-
-void ui::node::set_position(ui::point point) {
-    impl_ptr<impl>()->_position.set_value(std::move(point));
-}
-
-void ui::node::set_angle(ui::angle angle) {
-    impl_ptr<impl>()->_angle.set_value(std::move(angle));
-}
-
-void ui::node::set_scale(ui::size scale) {
-    impl_ptr<impl>()->_scale.set_value(std::move(scale));
-}
-
-void ui::node::set_color(ui::color color) {
-    impl_ptr<impl>()->_color.set_value(std::move(color));
-}
-
-void ui::node::set_alpha(float const alpha) {
-    impl_ptr<impl>()->_alpha.set_value(alpha);
-}
-
-void ui::node::set_mesh(ui::mesh mesh) {
-    impl_ptr<impl>()->_mesh.set_value(std::move(mesh));
-}
-
-void ui::node::set_collider(ui::collider collider) {
-    impl_ptr<impl>()->_collider.set_value(std::move(collider));
-}
-
-void ui::node::set_batch(ui::batch batch) {
-    impl_ptr<impl>()->set_batch(std::move(batch));
-}
-
-void ui::node::set_render_target(ui::render_target render_target) {
-    impl_ptr<impl>()->_render_target.set_value(std::move(render_target));
-}
-
-void ui::node::set_enabled(bool const enabled) {
-    impl_ptr<impl>()->_enabled.set_value(enabled);
+flow::property<ui::render_target> &ui::node::render_target() {
+    return impl_ptr<impl>()->_render_target;
 }
 
 void ui::node::add_sub_node(ui::node sub_node) {
@@ -710,38 +694,6 @@ flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_paren
     });
 }
 
-flow::node_t<ui::point, true> ui::node::begin_position_flow() const {
-    return impl_ptr<impl>()->_position.begin_flow();
-}
-
-flow::node_t<ui::angle, true> ui::node::begin_angle_flow() const {
-    return impl_ptr<impl>()->_angle.begin_flow();
-}
-
-flow::node_t<ui::size, true> ui::node::begin_scale_flow() const {
-    return impl_ptr<impl>()->_scale.begin_flow();
-}
-
-flow::node_t<ui::color, true> ui::node::begin_color_flow() const {
-    return impl_ptr<impl>()->_color.begin_flow();
-}
-
-flow::node_t<float, true> ui::node::begin_alpha_flow() const {
-    return impl_ptr<impl>()->_alpha.begin_flow();
-}
-
-flow::node_t<ui::mesh, true> ui::node::begin_mesh_flow() const {
-    return impl_ptr<impl>()->_mesh.begin_flow();
-}
-
-flow::node_t<ui::collider, true> ui::node::begin_collider_flow() const {
-    return impl_ptr<impl>()->_collider.begin_flow();
-}
-
-flow::node_t<bool, true> ui::node::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled.begin_flow();
-}
-
 ui::point ui::node::convert_position(ui::point const &loc) const {
     return impl_ptr<impl>()->convert_position(loc);
 }
@@ -754,7 +706,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     imp->_x_observer = guide.begin_flow()
                            .filter([weak_node](float const &) { return !!weak_node; })
                            .map([weak_node](float const &x) {
-                               return ui::point{x, weak_node.lock().position().y};
+                               return ui::point{x, weak_node.lock().position().value().y};
                            })
                            .receive(position.receiver())
                            .sync();
@@ -770,7 +722,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     imp->_y_observer = guide.begin_flow()
                            .filter([weak_node](float const &) { return !!weak_node; })
                            .map([weak_node](float const &y) {
-                               return ui::point{weak_node.lock().position().x, y};
+                               return ui::point{weak_node.lock().position().value().x, y};
                            })
                            .receive(position.receiver())
                            .sync();

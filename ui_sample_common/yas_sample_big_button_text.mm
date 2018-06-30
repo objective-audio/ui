@@ -14,7 +14,7 @@ struct sample::big_button_text::impl : base::impl {
                     .alignment = ui::layout_alignment::mid,
                     .font_atlas = std::move(font_atlas),
                     .max_word_count = 32}) {
-        this->_strings.rect_plane().node().set_alpha(0.5f);
+        this->_strings.rect_plane().node().alpha().set_value(0.5f);
     }
 
     void prepare(sample::big_button_text &text) {
@@ -39,7 +39,7 @@ struct sample::big_button_text::impl : base::impl {
     void _update_strings_position() {
         if (auto const &atlas = this->_strings.font_atlas()) {
             float const offset_y = (atlas.ascent() + atlas.descent()) * 0.5f;
-            this->_strings.rect_plane().node().set_position(ui::point{0.0f, offset_y});
+            this->_strings.rect_plane().node().position().set_value(ui::point{0.0f, offset_y});
         }
     }
 };

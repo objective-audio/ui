@@ -50,8 +50,8 @@ struct sample::cursor::impl : base::impl {
             mesh_node.data().set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
         }
 
-        mesh_node.node().set_color({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
-        mesh_node.node().set_alpha(0.0f);
+        mesh_node.node().color().set_value({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
+        mesh_node.node().alpha().set_value(0.0f);
         this->node.add_sub_node(mesh_node.node());
     }
 
@@ -76,13 +76,13 @@ struct sample::cursor::impl : base::impl {
                 if (auto node = weak_node.lock()) {
                     auto const &value = event.get<ui::cursor>();
 
-                    node.set_position(node.parent().convert_position(value.position()));
+                    node.position().set_value(node.parent().convert_position(value.position()));
 
                     if (auto renderer = node.renderer()) {
                         for (auto child_node : node.children()) {
                             auto make_fade_action = [](ui::node &node, float const alpha) {
                                 return ui::make_action({.target = node,
-                                                        .begin_alpha = node.alpha(),
+                                                        .begin_alpha = node.alpha().value(),
                                                         .end_alpha = alpha,
                                                         .continuous_action = {.duration = 0.5}});
                             };
