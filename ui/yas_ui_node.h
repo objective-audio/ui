@@ -40,35 +40,30 @@ class node : public base {
     bool operator==(node const &) const;
     bool operator!=(node const &) const;
 
-    ui::point position() const;
-    ui::angle angle() const;
-    ui::size scale() const;
-    ui::color color() const;
-    float alpha() const;
-    bool is_enabled() const;
+    flow::property<ui::point> const &position() const;
+    flow::property<ui::point> &position();
+    flow::property<ui::angle> const &angle() const;
+    flow::property<ui::angle> &angle();
+    flow::property<ui::size> const &scale() const;
+    flow::property<ui::size> &scale();
+    flow::property<ui::color> const &color() const;
+    flow::property<ui::color> &color();
+    flow::property<float> const &alpha() const;
+    flow::property<float> &alpha();
+    flow::property<bool> const &is_enabled() const;
+    flow::property<bool> &is_enabled();
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
-    ui::mesh const &mesh() const;
-    ui::mesh &mesh();
-    ui::collider const &collider() const;
-    ui::collider &collider();
-    ui::batch const &batch() const;
-    ui::batch &batch();
-    ui::render_target const &render_target() const;
-    ui::render_target &render_target();
-
-    void set_position(ui::point);
-    void set_angle(ui::angle);
-    void set_scale(ui::size);
-    void set_color(ui::color);
-    void set_alpha(float const);
-    void set_mesh(ui::mesh);
-    void set_collider(ui::collider);
-    void set_enabled(bool const);
-    void set_batch(ui::batch);
-    void set_render_target(ui::render_target);
+    flow::property<ui::mesh> const &mesh() const;
+    flow::property<ui::mesh> &mesh();
+    flow::property<ui::collider> const &collider() const;
+    flow::property<ui::collider> &collider();
+    flow::property<ui::batch> const &batch() const;
+    flow::property<ui::batch> &batch();
+    flow::property<ui::render_target> const &render_target() const;
+    flow::property<ui::render_target> &render_target();
 
     void add_sub_node(ui::node);
     void add_sub_node(ui::node, std::size_t const);
@@ -89,14 +84,6 @@ class node : public base {
 
     [[nodiscard]] flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> begin_renderer_flow() const;
     [[nodiscard]] flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> begin_parent_flow() const;
-    [[nodiscard]] flow::node_t<ui::point, true> begin_position_flow() const;
-    [[nodiscard]] flow::node_t<ui::angle, true> begin_angle_flow() const;
-    [[nodiscard]] flow::node_t<ui::size, true> begin_scale_flow() const;
-    [[nodiscard]] flow::node_t<ui::color, true> begin_color_flow() const;
-    [[nodiscard]] flow::node_t<float, true> begin_alpha_flow() const;
-    [[nodiscard]] flow::node_t<ui::mesh, true> begin_mesh_flow() const;
-    [[nodiscard]] flow::node_t<ui::collider, true> begin_collider_flow() const;
-    [[nodiscard]] flow::node_t<bool, true> begin_enabled_flow() const;
 
     ui::point convert_position(ui::point const &) const;
 

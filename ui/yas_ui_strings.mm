@@ -54,7 +54,7 @@ struct ui::strings::impl : base::impl {
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
         this->_texture_receiver = flow::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
             if (auto strings = weak_strings.lock()) {
-                strings.rect_plane().node().mesh().set_texture(texture);
+                strings.rect_plane().node().mesh().value().set_texture(texture);
             }
         });
 
@@ -108,7 +108,7 @@ struct ui::strings::impl : base::impl {
                                           .sync();
             }
         } else {
-            this->_rect_plane.node().mesh().set_texture(nullptr);
+            this->_rect_plane.node().mesh().value().set_texture(nullptr);
             this->_texture_flow = nullptr;
         }
     }

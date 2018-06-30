@@ -90,7 +90,7 @@ struct sample::touch_holder::impl : base::impl {
 
         for (auto &touch_object : this->_objects) {
             if (auto &node = touch_object.second.node) {
-                node.mesh().set_texture(this->_texture);
+                node.mesh().value().set_texture(this->_texture);
             }
         }
     }
@@ -103,9 +103,9 @@ struct sample::touch_holder::impl : base::impl {
         ui::mesh mesh;
         mesh.set_mesh_data(this->_rect_plane_data.dynamic_mesh_data());
         mesh.set_texture(this->_texture);
-        node.set_mesh(mesh);
-        node.set_scale({.v = 0.0f});
-        node.set_alpha(0.0f);
+        node.mesh().set_value(mesh);
+        node.scale().set_value({.v = 0.0f});
+        node.alpha().set_value(0.0f);
 
         root_node.add_sub_node(node);
 
@@ -138,7 +138,7 @@ struct sample::touch_holder::impl : base::impl {
         if (this->_objects.count(identifier)) {
             auto &touch_object = this->_objects.at(identifier);
             auto &node = touch_object.node;
-            node.set_position(node.parent().convert_position(position));
+            node.position().set_value(node.parent().convert_position(position));
         }
     }
 
@@ -155,14 +155,14 @@ struct sample::touch_holder::impl : base::impl {
             auto const &node = touch_object.node;
 
             auto scale_action = ui::make_action({.target = node,
-                                                 .begin_scale = touch_object.node.scale(),
+                                                 .begin_scale = touch_object.node.scale().value(),
                                                  .end_scale = {.v = 300.0f},
                                                  .continuous_action = {.duration = 0.3}});
             scale_action.set_value_transformer(ui::ease_out_sine_transformer());
             scale_action.set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
 
             auto alpha_action = ui::make_action({.target = node,
-                                                 .begin_alpha = node.alpha(),
+                                                 .begin_alpha = node.alpha().value(),
                                                  .end_alpha = 0.0f,
                                                  .continuous_action = {.duration = 0.3}});
             alpha_action.set_value_transformer(

@@ -233,7 +233,7 @@ ui::rect_plane::rect_plane(ui::rect_plane_data rect_plane_data)
     : base(std::make_shared<impl>(std::move(rect_plane_data))) {
     ui::mesh mesh;
     mesh.set_mesh_data(this->data().dynamic_mesh_data());
-    this->node().set_mesh(std::move(mesh));
+    this->node().mesh().set_value(std::move(mesh));
 }
 
 ui::rect_plane::rect_plane(std::size_t const rect_count) : rect_plane(rect_count, rect_count) {

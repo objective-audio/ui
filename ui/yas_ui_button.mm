@@ -22,7 +22,7 @@ using namespace yas;
 struct ui::button::impl : base::impl {
     impl(ui::region const &region, std::size_t const state_count)
         : _rect_plane(state_count * 2, 1), _layout_guide_rect(region), _state_count(state_count) {
-        this->_rect_plane.node().set_collider(ui::collider{});
+        this->_rect_plane.node().collider().set_value(ui::collider{});
 
         this->_update_rect_positions(this->_layout_guide_rect.region(), state_count);
         this->_update_rect_index();
@@ -85,7 +85,7 @@ struct ui::button::impl : base::impl {
     }
 
     ui::texture &texture() {
-        return this->_rect_plane.node().mesh().texture();
+        return this->_rect_plane.node().mesh().value().texture();
     }
 
     void set_state_idx(std::size_t const idx) {
@@ -131,9 +131,9 @@ struct ui::button::impl : base::impl {
             this->_rect_plane.data().set_rect_position(region, yas_each_index(each));
         }
 
-        ui::collider &collider = this->_rect_plane.node().collider();
+        ui::collider &collider = this->_rect_plane.node().collider().value();
         if (!collider.shape() || (collider.shape().type_info() == typeid(ui::shape::rect))) {
-            this->_rect_plane.node().collider().set_shape(ui::shape{{.rect = region}});
+            collider.set_shape(ui::shape{{.rect = region}});
         }
     }
 
@@ -149,15 +149,19 @@ struct ui::button::impl : base::impl {
 
         std::vector<flow::observer> flows;
         flows.emplace_back(
-            node.begin_position_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
-        flows.emplace_back(node.begin_angle_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
-        flows.emplace_back(node.begin_scale_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+            node.position().begin_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        flows.emplace_back(
+            node.angle().begin_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        flows.emplace_back(
+            node.scale().begin_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
 
-        flows.emplace_back(node.begin_collider_flow()
+        flows.emplace_back(node.collider()
+                               .begin_flow()
                                .filter([](ui::collider const &value) { return !value; })
                                .receive_null(this->_cancel_tracking_receiver)
                                .end());
-        flows.emplace_back(node.begin_enabled_flow()
+        flows.emplace_back(node.is_enabled()
+                               .begin_flow()
                                .filter([](bool const &value) { return !value; })
                                .receive_null(this->_cancel_tracking_receiver)
                                .end());
@@ -170,12 +174,14 @@ struct ui::button::impl : base::impl {
         auto weak_button = to_weak(cast<ui::button>());
 
         auto shape_flow = node.collider()
+                              .value()
                               .begin_shape_flow()
                               .filter([](ui::shape const &shape) { return !shape; })
                               .receive_null(this->_cancel_tracking_receiver)
                               .end();
 
         auto enabled_flow = node.collider()
+                                .value()
                                 .begin_enabled_flow()
                                 .filter([](bool const &enabled) { return !enabled; })
                                 .receive_null(this->_cancel_tracking_receiver)
@@ -194,7 +200,7 @@ struct ui::button::impl : base::impl {
             switch (event.phase()) {
                 case ui::event_phase::began:
                     if (!this->is_tracking()) {
-                        if (detector.detect(touch_event.position(), node.collider())) {
+                        if (detector.detect(touch_event.position(), node.collider().value())) {
                             this->set_tracking_event(event);
                             this->_send_notify(method::began, event);
                         }
@@ -225,7 +231,7 @@ struct ui::button::impl : base::impl {
             auto const &detector = renderer.detector();
             auto const &touch_event = event.get<ui::touch>();
             bool const is_event_tracking = this->is_tracking(event);
-            bool is_detected = detector.detect(touch_event.position(), node.collider());
+            bool is_detected = detector.detect(touch_event.position(), node.collider().value());
             auto button = cast<ui::button>();
             if (!is_event_tracking && is_detected) {
                 this->set_tracking_event(event);
@@ -274,7 +280,7 @@ ui::button::button(std::nullptr_t) : base(nullptr) {
 ui::button::~button() = default;
 
 void ui::button::set_texture(ui::texture texture) {
-    this->rect_plane().node().mesh().set_texture(std::move(texture));
+    this->rect_plane().node().mesh().value().set_texture(std::move(texture));
 }
 
 ui::texture const &ui::button::texture() const {

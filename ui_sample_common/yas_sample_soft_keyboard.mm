@@ -15,7 +15,7 @@ struct soft_key : base {
     struct impl : base::impl {
         impl(std::string &&key, float const width, ui::font_atlas &&atlas)
             : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
-            this->_button.rect_plane().node().mesh().set_use_mesh_color(true);
+            this->_button.rect_plane().node().mesh().value().set_use_mesh_color(true);
             this->_button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
             this->_button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
@@ -55,7 +55,7 @@ struct soft_key : base {
         auto &strings_node = impl_ptr<impl>()->_strings.rect_plane().node();
         auto renderer = button_node.renderer();
 
-        button_node.collider().set_enabled(enabled);
+        button_node.collider().value().set_enabled(enabled);
 
         float const alpha = enabled ? 1.0f : 0.0f;
 
@@ -63,13 +63,13 @@ struct soft_key : base {
         renderer.erase_action(strings_node);
 
         if (animated) {
-            renderer.insert_action(
-                ui::make_action({.target = button_node, .begin_alpha = button_node.alpha(), .end_alpha = alpha}));
-            renderer.insert_action(
-                ui::make_action({.target = strings_node, .begin_alpha = strings_node.alpha(), .end_alpha = alpha}));
+            renderer.insert_action(ui::make_action(
+                {.target = button_node, .begin_alpha = button_node.alpha().value(), .end_alpha = alpha}));
+            renderer.insert_action(ui::make_action(
+                {.target = strings_node, .begin_alpha = strings_node.alpha().value(), .end_alpha = alpha}));
         } else {
-            button_node.set_alpha(alpha);
-            strings_node.set_alpha(alpha);
+            button_node.alpha().set_value(alpha);
+            strings_node.alpha().set_value(alpha);
         }
     }
 };
@@ -247,7 +247,7 @@ struct sample::soft_keyboard::impl : base::impl {
         guide_pairs.reserve(key_count * 4);
 
         auto handler = [](sample::soft_key &soft_key, ui::region const &region) {
-            soft_key.button().rect_plane().node().set_position({region.origin.x, region.origin.y});
+            soft_key.button().rect_plane().node().position().set_value({region.origin.x, region.origin.y});
             soft_key.button().layout_guide_rect().set_region({.size = region.size});
         };
 

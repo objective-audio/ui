@@ -12,7 +12,7 @@ using namespace yas;
 
 struct sample::big_button::impl : base::impl {
     impl() {
-        this->_button.rect_plane().node().set_collider(
+        this->_button.rect_plane().node().collider().set_value(
             ui::collider{ui::shape{ui::circle_shape{.radius = this->_radius}}});
     }
 
@@ -20,8 +20,7 @@ struct sample::big_button::impl : base::impl {
         auto &data = this->_button.rect_plane().data();
         data.clear_flows();
 
-        auto &mesh = this->_button.rect_plane().node().mesh();
-        mesh.set_texture(texture);
+        this->_button.rect_plane().node().mesh().value().set_texture(texture);
 
         if (!texture) {
             return;

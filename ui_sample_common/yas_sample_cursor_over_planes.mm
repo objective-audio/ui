@@ -44,14 +44,14 @@ struct sample::cursor_over_planes::impl : base::impl {
             plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
             auto &node = plane.node();
-            node.set_position({100.0f, 0.0f});
-            node.set_scale({10.0f, 30.0f});
-            node.set_color({.v = 0.3f});
-            node.set_collider(ui::collider{ui::shape{ui::rect_shape{}}});
+            node.position().set_value({100.0f, 0.0f});
+            node.scale().set_value({10.0f, 30.0f});
+            node.color().set_value({.v = 0.3f});
+            node.collider().set_value(ui::collider{ui::shape{ui::rect_shape{}}});
 
             ui::node handle_node;
             handle_node.add_sub_node(node);
-            handle_node.set_angle({360.0f / count * idx});
+            handle_node.angle().set_value({360.0f / count * idx});
 
             root_node.add_sub_node(handle_node);
 
@@ -74,11 +74,12 @@ struct sample::cursor_over_planes::impl : base::impl {
 
                         if (auto node = weak_node.lock()) {
                             if (auto renderer = node.renderer()) {
-                                auto is_detected = renderer.detector().detect(cursor_event.position(), node.collider());
+                                auto is_detected =
+                                    renderer.detector().detect(cursor_event.position(), node.collider().value());
 
                                 auto make_color_action = [](ui::node &node, ui::color const &color) {
                                     return ui::make_action(
-                                        {.target = node, .begin_color = node.color(), .end_color = color});
+                                        {.target = node, .begin_color = node.color().value(), .end_color = color});
                                 };
 
                                 if (is_detected && !*prev_detected) {

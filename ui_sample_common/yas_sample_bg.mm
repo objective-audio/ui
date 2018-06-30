@@ -12,7 +12,7 @@ struct sample::bg::impl : base::impl {
 
     impl() {
         auto &node = this->_rect_plane.node();
-        node.set_color({.v = 0.75f});
+        node.color().set_value({.v = 0.75f});
     }
 
     void prepare(sample::bg &bg) {
