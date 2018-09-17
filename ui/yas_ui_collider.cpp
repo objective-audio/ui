@@ -82,8 +82,8 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    flow::property<ui::shape> _shape{ui::shape{nullptr}};
-    flow::property<bool> _enabled{true};
+    chaining::holder<ui::shape> _shape{ui::shape{nullptr}};
+    chaining::holder<bool> _enabled{true};
 
     impl(ui::shape &&shape) : _shape(std::move(shape)) {
     }
@@ -140,19 +140,19 @@ bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
 }
 
-flow::node_t<ui::shape, true> ui::collider::begin_shape_flow() const {
-    return impl_ptr<impl>()->_shape.begin_flow();
+chaining::chain<ui::shape, ui::shape, ui::shape, true> ui::collider::chain_shape() const {
+    return impl_ptr<impl>()->_shape.chain();
 }
 
-flow::node_t<bool, true> ui::collider::begin_enabled_flow() const {
-    return impl_ptr<impl>()->_enabled.begin_flow();
+chaining::chain<bool, bool, bool, true> ui::collider::chain_enabled() const {
+    return impl_ptr<impl>()->_enabled.chain();
 }
 
-flow::receiver<ui::shape> &ui::collider::shape_receiver() {
+chaining::receiver<ui::shape> &ui::collider::shape_receiver() {
     return impl_ptr<impl>()->_shape.receiver();
 }
 
-flow::receiver<bool> &ui::collider::enabled_receiver() {
+chaining::receiver<bool> &ui::collider::enabled_receiver() {
     return impl_ptr<impl>()->_enabled.receiver();
 }
 

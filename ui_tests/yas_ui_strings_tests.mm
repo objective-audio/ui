@@ -118,14 +118,14 @@ using namespace yas;
     XCTAssertEqual(strings.rect_plane().data().rect_count(), 9);
 }
 
-- (void)test_begin_text_flow {
+- (void)test_chain_text {
     ui::strings strings;
 
     strings.set_text("a");
 
     std::string notified;
 
-    auto flow = strings.begin_text_flow().perform([&notified](std::string const &text) { notified = text; }).sync();
+    auto observer = strings.chain_text().perform([&notified](std::string const &text) { notified = text; }).sync();
 
     XCTAssertEqual(notified, "a");
 
@@ -134,14 +134,14 @@ using namespace yas;
     XCTAssertEqual(notified, "b");
 }
 
-- (void)test_begin_font_atlas_flow {
+- (void)test_chain_font_atlas {
     ui::strings strings;
 
     ui::font_atlas notified = nullptr;
 
-    auto flow = strings.begin_font_atlas_flow()
-                    .perform([&notified](ui::font_atlas const &font_atlas) { notified = font_atlas; })
-                    .sync();
+    auto observer = strings.chain_font_atlas()
+                        .perform([&notified](ui::font_atlas const &font_atlas) { notified = font_atlas; })
+                        .sync();
 
     XCTAssertFalse(notified);
 
@@ -153,14 +153,14 @@ using namespace yas;
     XCTAssertEqual(notified.font_name(), "HelveticaNeue");
 }
 
-- (void)test_begin_line_height_flow {
+- (void)test_chain_line_height {
     ui::strings strings;
 
     opt_t<float> notified = nullopt;
 
-    auto flow = strings.begin_line_height_flow()
-                    .perform([&notified](opt_t<float> const &line_height) { notified = line_height; })
-                    .sync();
+    auto observer = strings.chain_line_height()
+                        .perform([&notified](opt_t<float> const &line_height) { notified = line_height; })
+                        .sync();
 
     XCTAssertFalse(notified);
 
@@ -170,14 +170,14 @@ using namespace yas;
     XCTAssertEqual(*notified, 1.0f);
 }
 
-- (void)test_begin_alignment_flow {
+- (void)test_chain_alignment {
     ui::strings strings;
 
     ui::layout_alignment notified;
 
-    auto flow = strings.begin_alignment_flow()
-                    .perform([&notified](ui::layout_alignment const &alignment) { notified = alignment; })
-                    .sync();
+    auto observer = strings.chain_alignment()
+                        .perform([&notified](ui::layout_alignment const &alignment) { notified = alignment; })
+                        .sync();
 
     XCTAssertEqual(notified, ui::layout_alignment::min);
 
@@ -202,9 +202,9 @@ using namespace yas;
 - (void)test_text_receiver {
     ui::strings strings;
 
-    flow::notifier<std::string> sender;
+    chaining::notifier<std::string> sender;
 
-    auto flow = sender.begin_flow().receive(strings.text_receiver()).end();
+    auto observer = sender.chain().receive(strings.text_receiver()).end();
 
     XCTAssertEqual(strings.text(), "");
 

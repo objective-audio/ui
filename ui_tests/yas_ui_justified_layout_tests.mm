@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_flow_utils.h"
+#import "yas_ui_chaining_utils.h"
 #import "yas_ui_layout_guide.h"
 
 using namespace yas;
@@ -64,18 +64,15 @@ using namespace yas;
     XCTAssertEqual(justified.at(3), 6.0f);
 }
 
-- (void)test_flow {
+- (void)test_chain {
     ui::layout_guide first_src_guide{1.0f};
     ui::layout_guide second_src_guide{2.0f};
     ui::layout_guide first_dst_guide;
     ui::layout_guide second_dst_guide;
-    std::array<flow::receiver<float>, 2> receivers{first_dst_guide.receiver(), second_dst_guide.receiver()};
+    std::array<chaining::receiver<float>, 2> receivers{first_dst_guide.receiver(), second_dst_guide.receiver()};
 
-    auto layout = first_src_guide.begin_flow()
-                      .combine(second_src_guide.begin_flow())
-                      .map(ui::justify<1>())
-                      .receive(receivers)
-                      .sync();
+    auto layout =
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<1>()).receive(receivers).sync();
 
     XCTAssertTrue(layout);
 
@@ -83,15 +80,15 @@ using namespace yas;
     XCTAssertEqual(second_dst_guide.value(), 2.0f);
 }
 
-- (void)test_flow_value_changed_one_dst {
+- (void)test_chain_value_changed_one_dst {
     ui::layout_guide first_src_guide{0.0f};
     ui::layout_guide second_src_guide{0.0f};
     ui::layout_guide dst_guide{100.0f};
 
-    auto layout = first_src_guide.begin_flow()
-                      .combine(second_src_guide.begin_flow())
-                      .map(ui::justify<2>())
-                      .map([](std::array<float, 3> const &values) { return values[1]; })
+    auto layout = first_src_guide.chain()
+                      .combine(second_src_guide.chain())
+                      .to(ui::justify<2>())
+                      .to([](std::array<float, 3> const &values) { return values[1]; })
                       .receive(dst_guide.receiver())
                       .sync();
 
@@ -111,64 +108,55 @@ using namespace yas;
     XCTAssertEqual(dst_guide.value(), 1.0f);
 }
 
-- (void)test_flow_many_dst {
+- (void)test_chain_many_dst {
     ui::layout_guide first_src_guide{-1.0f};
     ui::layout_guide second_src_guide{3.0f};
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::array<flow::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                   dst_guide_2.receiver()};
+    std::array<chaining::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                       dst_guide_2.receiver()};
 
-    auto layout = first_src_guide.begin_flow()
-                      .combine(second_src_guide.begin_flow())
-                      .map(ui::justify<2>())
-                      .receive(receivers)
-                      .sync();
+    auto layout =
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>()).receive(receivers).sync();
 
     XCTAssertEqual(dst_guide_0.value(), -1.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
     XCTAssertEqual(dst_guide_2.value(), 3.0f);
 }
 
-- (void)test_flow_with_array_receivers {
+- (void)test_chain_with_array_receivers {
     ui::layout_guide first_src_guide{0.0f};
     ui::layout_guide second_src_guide{3.0f};
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::array<flow::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                   dst_guide_2.receiver()};
+    std::array<chaining::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                       dst_guide_2.receiver()};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
-    auto flow = first_src_guide.begin_flow()
-                    .combine(second_src_guide.begin_flow())
-                    .map(ui::justify<2>(array))
-                    .receive(receivers)
-                    .sync();
+    auto observer =
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).receive(receivers).sync();
 
     XCTAssertEqual(dst_guide_0.value(), 0.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
     XCTAssertEqual(dst_guide_2.value(), 3.0f);
 }
 
-- (void)test_flow_with_vector_receivers {
+- (void)test_chain_with_vector_receivers {
     ui::layout_guide first_src_guide{0.0f};
     ui::layout_guide second_src_guide{3.0f};
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::vector<flow::receiver<float>> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                 dst_guide_2.receiver()};
+    std::vector<chaining::receiver<float>> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                     dst_guide_2.receiver()};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
-    auto flow = first_src_guide.begin_flow()
-                    .combine(second_src_guide.begin_flow())
-                    .map(ui::justify<2>(array))
-                    .receive(receivers)
-                    .sync();
+    auto observer =
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).receive(receivers).sync();
 
     XCTAssertEqual(dst_guide_0.value(), 0.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
@@ -180,11 +168,11 @@ using namespace yas;
     ui::layout_guide second_src_guide{2.0f};
     ui::layout_guide dst_guide;
 
-    auto flow = first_src_guide.begin_flow()
-                    .combine(second_src_guide.begin_flow())
-                    .map(ui::justify())
-                    .receive(dst_guide.receiver())
-                    .sync();
+    auto observer = first_src_guide.chain()
+                        .combine(second_src_guide.chain())
+                        .to(ui::justify())
+                        .receive(dst_guide.receiver())
+                        .sync();
 
     XCTAssertEqual(dst_guide.value(), 1.0f);
 }

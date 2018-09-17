@@ -26,22 +26,22 @@ struct sample::justified_points::impl : base::impl {
     void prepare(sample::justified_points &points) {
         auto &node = this->_rect_plane.node();
 
-        this->_renderer_flow =
-            node.begin_renderer_flow()
-                .perform([weak_points = to_weak(points), x_layout = flow::observer{nullptr},
-                          y_layout = flow::observer{nullptr}](ui::renderer const &renderer) mutable {
+        this->_renderer_observer =
+            node.chain_renderer()
+                .perform([weak_points = to_weak(points), x_layout = chaining::any_observer{nullptr},
+                          y_layout = chaining::any_observer{nullptr}](ui::renderer const &renderer) mutable {
                     if (auto points = weak_points.lock()) {
                         if (renderer) {
-                            std::vector<flow::receiver<float>> x_receivers;
+                            std::vector<chaining::receiver<float>> x_receivers;
                             for (auto &guide : points.impl_ptr<impl>()->_x_layout_guides) {
                                 x_receivers.push_back(guide.receiver());
                             }
 
                             x_layout = renderer.view_layout_guide_rect()
                                            .left()
-                                           .begin_flow()
-                                           .combine(renderer.view_layout_guide_rect().right().begin_flow())
-                                           .map(ui::justify<sample::x_point_count - 1>())
+                                           .chain()
+                                           .combine(renderer.view_layout_guide_rect().right().chain())
+                                           .to(ui::justify<sample::x_point_count - 1>())
                                            .receive(x_receivers)
                                            .sync();
 
@@ -57,16 +57,16 @@ struct sample::justified_points::impl : base::impl {
                                 }
                             }
 
-                            std::vector<flow::receiver<float>> y_receivers;
+                            std::vector<chaining::receiver<float>> y_receivers;
                             for (auto &guide : points.impl_ptr<impl>()->_y_layout_guides) {
                                 y_receivers.push_back(guide.receiver());
                             }
 
                             y_layout = renderer.view_layout_guide_rect()
                                            .bottom()
-                                           .begin_flow()
-                                           .combine(renderer.view_layout_guide_rect().top().begin_flow())
-                                           .map(ui::justify<sample::y_point_count - 1>(y_ratios))
+                                           .chain()
+                                           .combine(renderer.view_layout_guide_rect().top().chain())
+                                           .to(ui::justify<sample::y_point_count - 1>(y_ratios))
                                            .perform([](std::array<float, sample::y_point_count> const &value) {})
                                            .receive(y_receivers)
                                            .sync();
@@ -80,8 +80,8 @@ struct sample::justified_points::impl : base::impl {
     }
 
    private:
-    flow::observer _renderer_flow = nullptr;
-    std::vector<flow::observer> _guide_observers;
+    chaining::any_observer _renderer_observer = nullptr;
+    std::vector<chaining::any_observer> _guide_observers;
 
     void _setup_colors() {
         this->_rect_plane.node().mesh().value().set_use_mesh_color(true);
@@ -106,8 +106,8 @@ struct sample::justified_points::impl : base::impl {
         while (yas_each_next(x_each)) {
             auto const &idx = yas_each_index(x_each);
             this->_guide_observers.emplace_back(this->_x_layout_guides.at(idx)
-                                                    .begin_flow()
-                                                    .filter([weak_plane](float const &) { return !!weak_plane; })
+                                                    .chain()
+                                                    .guard([weak_plane](float const &) { return !!weak_plane; })
                                                     .perform([weak_plane, idx](float const &value) {
                                                         weak_plane.lock().data().set_rect_position(
                                                             {.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}},
@@ -120,8 +120,8 @@ struct sample::justified_points::impl : base::impl {
         while (yas_each_next(y_each)) {
             auto const &idx = yas_each_index(y_each);
             this->_guide_observers.emplace_back(this->_y_layout_guides.at(idx)
-                                                    .begin_flow()
-                                                    .filter([weak_plane](float const &) { return !!weak_plane; })
+                                                    .chain()
+                                                    .guard([weak_plane](float const &) { return !!weak_plane; })
                                                     .perform([weak_plane, idx](float const &value) {
                                                         weak_plane.lock().data().set_rect_position(
                                                             {.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},

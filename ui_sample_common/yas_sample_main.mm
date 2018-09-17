@@ -31,22 +31,22 @@ void sample::main::setup() {
     this->_big_button_text.strings().frame_layout_guide_rect().set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
-    this->_button_flow = this->_big_button.button()
-                             .begin_flow()
-                             .perform([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
-                                 if (auto text = weak_text.lock()) {
-                                     text.set_status(pair.first);
-                                 }
-                             })
-                             .end();
+    this->_button_observer = this->_big_button.button()
+                                 .chain()
+                                 .perform([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
+                                     if (auto text = weak_text.lock()) {
+                                         text.set_status(pair.first);
+                                     }
+                                 })
+                                 .end();
 
-    this->_keyboard_flow = this->_soft_keyboard.begin_flow()
-                               .perform([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
-                                   if (auto text = weak_text.lock()) {
-                                       text.append_text(key);
-                                   }
-                               })
-                               .end();
+    this->_keyboard_observer = this->_soft_keyboard.chain()
+                                   .perform([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
+                                       if (auto text = weak_text.lock()) {
+                                           text.append_text(key);
+                                       }
+                                   })
+                                   .end();
 
     auto button_pos_action = ui::make_action({.target = this->_big_button.button().rect_plane().node(),
                                               .begin_position = {0.0f, 0.0f},
@@ -77,7 +77,7 @@ void sample::main::setup() {
 
     auto &view_guide = this->renderer.view_layout_guide_rect();
     auto &target_guide = render_target.layout_guide_rect();
-    this->_render_target_layout = view_guide.begin_flow().receive(target_guide.receiver()).sync();
+    this->_render_target_layout = view_guide.chain().receive(target_guide.receiver()).sync();
 
     this->_render_target_node.render_target().set_value(render_target);
     root_node.add_sub_node(this->_render_target_node, 1);

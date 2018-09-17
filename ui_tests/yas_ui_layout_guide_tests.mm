@@ -53,7 +53,7 @@ using namespace yas;
     auto clear_values = [&notified_new_value]() { notified_new_value = 0.0f; };
 
     auto observer =
-        guide.begin_flow().perform([&notified_new_value](float const &value) { notified_new_value = value; }).end();
+        guide.chain().perform([&notified_new_value](float const &value) { notified_new_value = value; }).end();
 
     guide.set_value(1.0f);
 
@@ -92,7 +92,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto flow = guide.begin_flow().perform([&called](auto const &) { called = true; }).end();
+    auto observer = guide.chain().perform([&called](auto const &) { called = true; }).end();
 
     guide.push_notify_waiting();
 
@@ -142,19 +142,19 @@ using namespace yas;
     XCTAssertTrue(point.point() == (ui::point{1.0f, -1.0f}));
 }
 
-- (void)test_point_flow {
+- (void)test_chain_point {
     ui::layout_guide_point guide_point;
 
     ui::point notified;
 
-    auto flow = guide_point.begin_flow().perform([&notified](ui::point const &point) { notified = point; }).end();
+    auto observer = guide_point.chain().perform([&notified](ui::point const &point) { notified = point; }).end();
 
     guide_point.set_point({1.0f, 2.0f});
 
     XCTAssertEqual(notified.x, 1.0f);
     XCTAssertEqual(notified.y, 2.0f);
 
-    guide_point.receiver().flowable().receive_value({3.0f, 4.0f});
+    guide_point.receiver().receivable().receive_value({3.0f, 4.0f});
 
     XCTAssertEqual(notified.x, 3.0f);
     XCTAssertEqual(notified.y, 4.0f);
@@ -174,12 +174,12 @@ using namespace yas;
         notified_point.x = notified_point.y = 0.0f;
     };
 
-    auto x_observer = point.x().begin_flow().perform([&notified_x](float const &value) { notified_x = value; }).end();
+    auto x_observer = point.x().chain().perform([&notified_x](float const &value) { notified_x = value; }).end();
 
-    auto y_observer = point.y().begin_flow().perform([&notified_y](float const &value) { notified_y = value; }).end();
+    auto y_observer = point.y().chain().perform([&notified_y](float const &value) { notified_y = value; }).end();
 
     auto point_observer =
-        point.begin_flow().perform([&notified_point](ui::point const &point) { notified_point = point; }).end();
+        point.chain().perform([&notified_point](ui::point const &point) { notified_point = point; }).end();
 
     point.set_point({1.0f, 2.0f});
 
@@ -277,19 +277,19 @@ using namespace yas;
     XCTAssertTrue(range.range() == (ui::range{1.0f, 2.0f}));
 }
 
-- (void)test_range_flow {
+- (void)test_chain_range {
     ui::layout_guide_range guide_range;
 
     ui::range notified;
 
-    auto flow = guide_range.begin_flow().perform([&notified](ui::range const &range) { notified = range; }).end();
+    auto observer = guide_range.chain().perform([&notified](ui::range const &range) { notified = range; }).end();
 
     guide_range.set_range({1.0f, 2.0f});
 
     XCTAssertEqual(notified.location, 1.0f);
     XCTAssertEqual(notified.length, 2.0f);
 
-    guide_range.receiver().flowable().receive_value({3.0f, 4.0f});
+    guide_range.receiver().receivable().receive_value({3.0f, 4.0f});
 
     XCTAssertEqual(notified.location, 3.0f);
     XCTAssertEqual(notified.length, 4.0f);
@@ -322,22 +322,22 @@ using namespace yas;
 
     auto min_observer =
         range.min()
-            .begin_flow()
+            .chain()
             .perform([&notified_new_min = notified_new_edge.min](float const &value) { notified_new_min = value; })
             .end();
     auto max_observer =
         range.max()
-            .begin_flow()
+            .chain()
             .perform([&notified_new_max = notified_new_edge.max](float const &value) { notified_new_max = value; })
             .end();
     auto length_observer = range.length()
-                               .begin_flow()
+                               .chain()
                                .perform([&notified_new_length = notified_new_edge.length](float const &value) {
                                    notified_new_length = value;
                                })
                                .end();
 
-    auto flow = range.begin_flow().perform([&notified_range](ui::range const &range) { notified_range = range; }).end();
+    auto observer = range.chain().perform([&notified_range](ui::range const &range) { notified_range = range; }).end();
 
     range.set_range({1.0f, 2.0f});
 
@@ -513,12 +513,12 @@ using namespace yas;
     XCTAssertEqual(rect.height().value(), 4.0f);
 }
 
-- (void)test_rect_flow {
+- (void)test_chain_rect {
     ui::layout_guide_rect guide_rect;
 
     ui::region notified;
 
-    auto flow = guide_rect.begin_flow().perform([&notified](ui::region const &region) { notified = region; }).end();
+    auto observer = guide_rect.chain().perform([&notified](ui::region const &region) { notified = region; }).end();
 
     guide_rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
@@ -527,7 +527,7 @@ using namespace yas;
     XCTAssertEqual(notified.size.width, 3.0f);
     XCTAssertEqual(notified.size.height, 4.0f);
 
-    guide_rect.receiver().flowable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
+    guide_rect.receiver().receivable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
 
     XCTAssertEqual(notified.origin.x, 5.0f);
     XCTAssertEqual(notified.origin.y, 6.0f);
@@ -565,40 +565,40 @@ using namespace yas;
 
     auto left_observer =
         rect.left()
-            .begin_flow()
+            .chain()
             .perform([&notified_new_left = notified_new_edge.left](float const &value) { notified_new_left = value; })
             .end();
     auto right_observer = rect.right()
-                              .begin_flow()
+                              .chain()
                               .perform([&notified_new_right = notified_new_edge.right](float const &value) {
                                   notified_new_right = value;
                               })
                               .end();
     auto bottom_observer = rect.bottom()
-                               .begin_flow()
+                               .chain()
                                .perform([&notified_new_bottom = notified_new_edge.bottom](float const &value) {
                                    notified_new_bottom = value;
                                })
                                .end();
     auto top_observer =
         rect.top()
-            .begin_flow()
+            .chain()
             .perform([&notified_new_top = notified_new_edge.top](float const &value) { notified_new_top = value; })
             .end();
     auto width_observer = rect.width()
-                              .begin_flow()
+                              .chain()
                               .perform([&notified_new_width = notified_new_edge.width](float const &value) {
                                   notified_new_width = value;
                               })
                               .end();
     auto height_observer = rect.height()
-                               .begin_flow()
+                               .chain()
                                .perform([&notified_new_height = notified_new_edge.height](float const &value) {
                                    notified_new_height = value;
                                })
                                .end();
     auto region_observer =
-        rect.begin_flow().perform([&notified_region](ui::region const &value) { notified_region = value; }).end();
+        rect.chain().perform([&notified_region](ui::region const &value) { notified_region = value; }).end();
 
     rect.set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 

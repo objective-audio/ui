@@ -35,9 +35,9 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_mesh.set_texture(this->_dst_texture);
 
         this->_effect.set_value(ui::effect::make_through_effect());
-        this->_effect_flow =
-            this->_effect_setter.begin_flow()
-                .map([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
+        this->_effect_observer =
+            this->_effect_setter.chain()
+                .to([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
                 .receive(this->_effect.receiver())
                 .end();
 
@@ -47,8 +47,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void prepare(ui::render_target &target) {
         auto weak_target = to_weak(target);
 
-        this->_src_texture_flow =
-            this->_src_texture.begin_flow(ui::texture::method::metal_texture_changed)
+        this->_src_texture_observer =
+            this->_src_texture.chain(ui::texture::method::metal_texture_changed)
                 .perform([weak_target](ui::texture const &texture) {
                     if (ui::render_target target = weak_target.lock()) {
                         auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
@@ -68,8 +68,8 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 })
                 .end();
 
-        this->_dst_texture_flow =
-            this->_dst_texture.begin_flow(ui::texture::method::size_updated)
+        this->_dst_texture_observer =
+            this->_dst_texture.chain(ui::texture::method::size_updated)
                 .perform([weak_target](ui::texture const &texture) {
                     if (ui::render_target target = weak_target.lock()) {
                         target.impl_ptr<impl>()->_data.set_rect_tex_coords(
@@ -78,47 +78,47 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                 })
                 .end();
 
-        this->_update_flows.emplace_back(this->_effect.begin_flow()
-                                             .perform([weak_target](ui::effect const &) {
-                                                 if (auto target = weak_target.lock()) {
-                                                     target.impl_ptr<impl>()->_set_updated(
-                                                         render_target_update_reason::effect);
-                                                     target.impl_ptr<impl>()->_set_textures_to_effect();
-                                                 }
-                                             })
-                                             .end());
+        this->_update_observers.emplace_back(this->_effect.chain()
+                                                 .perform([weak_target](ui::effect const &) {
+                                                     if (auto target = weak_target.lock()) {
+                                                         target.impl_ptr<impl>()->_set_updated(
+                                                             render_target_update_reason::effect);
+                                                         target.impl_ptr<impl>()->_set_textures_to_effect();
+                                                     }
+                                                 })
+                                                 .end());
 
-        this->_update_flows.emplace_back(this->_scale_factor.begin_flow()
-                                             .perform([weak_target](double const &scale_factor) {
-                                                 if (auto target = weak_target.lock()) {
-                                                     auto imp = target.impl_ptr<impl>();
-                                                     imp->_src_texture.set_scale_factor(scale_factor);
-                                                     imp->_dst_texture.set_scale_factor(scale_factor);
-                                                     target.impl_ptr<impl>()->_set_updated(
-                                                         render_target_update_reason::scale_factor);
-                                                 }
-                                             })
-                                             .end());
+        this->_update_observers.emplace_back(this->_scale_factor.chain()
+                                                 .perform([weak_target](double const &scale_factor) {
+                                                     if (auto target = weak_target.lock()) {
+                                                         auto imp = target.impl_ptr<impl>();
+                                                         imp->_src_texture.set_scale_factor(scale_factor);
+                                                         imp->_dst_texture.set_scale_factor(scale_factor);
+                                                         target.impl_ptr<impl>()->_set_updated(
+                                                             render_target_update_reason::scale_factor);
+                                                     }
+                                                 })
+                                                 .end());
 
-        this->_rect_flow = this->_layout_guide_rect.begin_flow()
-                               .filter([weak_target](ui::region const &) { return !!weak_target; })
-                               .perform([weak_target](ui::region const &region) {
-                                   auto imp = weak_target.lock().impl_ptr<impl>();
+        this->_rect_observer = this->_layout_guide_rect.chain()
+                                   .guard([weak_target](ui::region const &) { return !!weak_target; })
+                                   .perform([weak_target](ui::region const &region) {
+                                       auto imp = weak_target.lock().impl_ptr<impl>();
 
-                                   ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                                                      .height = static_cast<uint32_t>(region.size.height)};
+                                       ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                                                          .height = static_cast<uint32_t>(region.size.height)};
 
-                                   imp->_src_texture.set_point_size(size);
-                                   imp->_dst_texture.set_point_size(size);
+                                       imp->_src_texture.set_point_size(size);
+                                       imp->_dst_texture.set_point_size(size);
 
-                                   imp->_projection_matrix = ui::matrix::ortho(
-                                       region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+                                       imp->_projection_matrix = ui::matrix::ortho(
+                                           region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-                                   imp->_data.set_rect_position(region, 0);
+                                       imp->_data.set_rect_position(region, 0);
 
-                                   imp->_set_updated(render_target_update_reason::region);
-                               })
-                               .end();
+                                       imp->_set_updated(render_target_update_reason::region);
+                                   })
+                                   .end();
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
@@ -179,26 +179,26 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     void sync_scale_from_renderer(ui::renderer const &renderer, ui::render_target &target) {
-        this->_scale_flow = renderer.begin_scale_factor_flow().receive(target.scale_factor_receiver()).sync();
+        this->_scale_observer = renderer.chain_scale_factor().receive(target.scale_factor_receiver()).sync();
     }
 
     ui::layout_guide_rect _layout_guide_rect;
-    flow::property<ui::effect> _effect{ui::effect{nullptr}};
-    flow::notifier<ui::effect> _effect_setter;
-    flow::property<double> _scale_factor{1.0};
+    chaining::holder<ui::effect> _effect{ui::effect{nullptr}};
+    chaining::notifier<ui::effect> _effect_setter;
+    chaining::holder<double> _scale_factor{1.0};
 
    private:
     ui::rect_plane_data _data{1};
     ui::mesh _mesh;
     ui::texture _src_texture;
     ui::texture _dst_texture;
-    flow::observer _src_texture_flow = nullptr;
-    flow::observer _dst_texture_flow = nullptr;
+    chaining::any_observer _src_texture_observer = nullptr;
+    chaining::any_observer _dst_texture_observer = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    flow::observer _scale_flow = nullptr;
-    flow::observer _rect_flow = nullptr;
-    flow::observer _effect_flow = nullptr;
+    chaining::any_observer _scale_observer = nullptr;
+    chaining::any_observer _rect_observer = nullptr;
+    chaining::any_observer _effect_observer = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);
@@ -229,7 +229,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::metal_system _metal_system = nullptr;
 
     render_target_updates_t _updates;
-    std::vector<flow::observer> _update_flows;
+    std::vector<chaining::any_observer> _update_observers;
 };
 
 ui::render_target::render_target() : base(std::make_shared<impl>()) {
@@ -259,7 +259,7 @@ ui::effect const &ui::render_target::effect() const {
     return impl_ptr<impl>()->_effect.value();
 }
 
-flow::receiver<double> &ui::render_target::scale_factor_receiver() {
+chaining::receiver<double> &ui::render_target::scale_factor_receiver() {
     return impl_ptr<impl>()->_scale_factor.receiver();
 }
 

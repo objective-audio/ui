@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_texture_protocol.h"
 #include "yas_ui_types.h"
 
@@ -24,6 +24,6 @@ class texture_element : public base {
     void set_tex_coords(ui::uint_region const &);
     ui::uint_region const &tex_coords() const;
 
-    [[nodiscard]] flow::node_t<uint_region, true> begin_tex_coords_flow() const;
+    [[nodiscard]] chaining::chain<uint_region, uint_region, uint_region, true> chain_tex_coords() const;
 };
 }  // namespace yas::ui

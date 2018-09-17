@@ -58,7 +58,7 @@ using namespace yas;
     XCTAssertFalse(atlas);
 }
 
-- (void)test_texture_flow {
+- (void)test_chain_texture {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -69,9 +69,9 @@ using namespace yas;
 
     ui::texture observed_texture = nullptr;
 
-    auto flow = font_atlas.begin_texture_flow()
-                    .perform([&observed_texture](ui::texture const &texture) { observed_texture = texture; })
-                    .end();
+    auto observer = font_atlas.chain_texture()
+                        .perform([&observed_texture](ui::texture const &texture) { observed_texture = texture; })
+                        .end();
 
     ui::metal_system metal_system{device.object()};
 

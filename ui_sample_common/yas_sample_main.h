@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_objc_ptr.h"
 #include "yas_sample_bg.h"
 #include "yas_sample_big_button.h"
@@ -45,12 +45,12 @@ struct main {
 
     ui::batch _batch;
 
-    flow::observer _button_flow = nullptr;
-    flow::observer _keyboard_flow = nullptr;
+    chaining::any_observer _button_observer = nullptr;
+    chaining::any_observer _keyboard_observer = nullptr;
 
     ui::node _render_target_node;
     ui::blur _blur;
     ui::rect_plane _plane_on_target{1};
-    flow::observer _render_target_layout = nullptr;
+    chaining::any_observer _render_target_layout = nullptr;
 };
 }  // namespace yas::sample

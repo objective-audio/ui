@@ -21,28 +21,28 @@ struct sample::touch_holder::impl : base::impl {
     }
 
     void prepare(sample::touch_holder &holder) {
-        this->_renderer_flow = root_node.begin_renderer_flow()
-                                   .perform([weak_touch_holder = to_weak(holder),
-                                             event_flow = flow::observer{nullptr}](ui::renderer const &value) mutable {
-                                       if (auto renderer = value) {
-                                           event_flow =
-                                               renderer.event_manager()
-                                                   .begin_flow(ui::event_manager::method::touch_changed)
-                                                   .perform([weak_touch_holder](ui::event const &event) {
-                                                       if (auto touch_holder = weak_touch_holder.lock()) {
-                                                           touch_holder.impl_ptr<impl>()->update_touch_node(event);
-                                                       }
-                                                   })
-                                                   .end();
-                                       } else {
-                                           event_flow = nullptr;
-                                       }
-                                   })
-                                   .end();
+        this->_renderer_observer =
+            root_node.chain_renderer()
+                .perform([weak_touch_holder = to_weak(holder),
+                          event_observer = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
+                    if (auto renderer = value) {
+                        event_observer = renderer.event_manager()
+                                             .chain(ui::event_manager::method::touch_changed)
+                                             .perform([weak_touch_holder](ui::event const &event) {
+                                                 if (auto touch_holder = weak_touch_holder.lock()) {
+                                                     touch_holder.impl_ptr<impl>()->update_touch_node(event);
+                                                 }
+                                             })
+                                             .end();
+                    } else {
+                        event_observer = nullptr;
+                    }
+                })
+                .end();
     }
 
     void set_texture(ui::texture &&texture) {
-        this->_rect_plane_data.clear_flows();
+        this->_rect_plane_data.clear_observers();
 
         this->_set_texture(std::move(texture));
 
@@ -179,7 +179,7 @@ struct sample::touch_holder::impl : base::impl {
     std::unordered_map<uintptr_t, touch_object> _objects;
     ui::texture _texture = nullptr;
     ui::rect_plane_data _rect_plane_data{1};
-    flow::observer _renderer_flow = nullptr;
+    chaining::any_observer _renderer_observer = nullptr;
 };
 
 sample::touch_holder::touch_holder() : base(std::make_shared<impl>()) {

@@ -15,15 +15,15 @@ using namespace yas;
 
 struct ui::rect_plane_data::impl : base::impl {
     ui::dynamic_mesh_data _dynamic_mesh_data;
-    std::vector<flow::observer> _element_flows;
-    flow::receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
+    std::vector<chaining::any_observer> _element_observers;
+    chaining::receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
 
     impl(ui::dynamic_mesh_data &&data) : _dynamic_mesh_data(std::move(data)) {
     }
 
     void prepare(ui::rect_plane_data &data) {
         this->_rect_tex_coords_receiver =
-            flow::receiver<std::pair<ui::uint_region, std::size_t>>([weak_data = to_weak(data)](auto const &pair) {
+            chaining::receiver<std::pair<ui::uint_region, std::size_t>>([weak_data = to_weak(data)](auto const &pair) {
                 if (auto data = weak_data.lock()) {
                     data.set_rect_tex_coords(pair.first, pair.second);
                 }
@@ -32,14 +32,14 @@ struct ui::rect_plane_data::impl : base::impl {
 
     void observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element &element, std::size_t const rect_idx,
                                  tex_coords_transform_f &&transformer) {
-        auto flow = element.begin_tex_coords_flow();
+        auto chain = element.chain_tex_coords();
 
         if (transformer) {
-            flow = flow.map(std::move(transformer));
+            chain = chain.to(std::move(transformer));
         }
 
-        this->_element_flows.emplace_back(
-            flow.map([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
+        this->_element_observers.emplace_back(
+            chain.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
                 .receive(this->_rect_tex_coords_receiver)
                 .sync());
     }
@@ -205,15 +205,15 @@ void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element &element, 
     impl_ptr<impl>()->observe_rect_tex_coords(*this, element, rect_idx, std::move(transformer));
 }
 
-void ui::rect_plane_data::clear_flows() {
-    impl_ptr<impl>()->_element_flows.clear();
+void ui::rect_plane_data::clear_observers() {
+    impl_ptr<impl>()->_element_observers.clear();
 }
 
 ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return impl_ptr<impl>()->_dynamic_mesh_data;
 }
 
-flow::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
+chaining::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
     return impl_ptr<impl>()->_rect_tex_coords_receiver;
 }
 

@@ -8,7 +8,7 @@
 #include <simd/simd.h>
 #include <vector>
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_renderer_protocol.h"
 
 namespace yas::ui {
@@ -68,8 +68,8 @@ class renderer : public base {
     ui::layout_guide_rect const &safe_area_layout_guide_rect() const;
     ui::layout_guide_rect &safe_area_layout_guide_rect();
 
-    [[nodiscard]] flow::node_t<std::nullptr_t, false> begin_will_render_flow() const;
-    [[nodiscard]] flow::node_t<double, true> begin_scale_factor_flow() const;
+    [[nodiscard]] chaining::chain<std::nullptr_t, std::nullptr_t, std::nullptr_t, false> chain_will_render() const;
+    [[nodiscard]] chaining::chain<double, double, double, true> chain_scale_factor() const;
 
    private:
     ui::view_renderable _view_renderable = nullptr;

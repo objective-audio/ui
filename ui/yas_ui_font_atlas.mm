@@ -40,8 +40,8 @@ struct ui::font_atlas::impl : base::impl {
     double _descent;
     double _leading;
     std::string _words;
-    flow::fetcher<ui::texture> _texture_changed_fetcher = nullptr;
-    flow::notifier<ui::texture> _texture_updated_sender;
+    chaining::fetcher<ui::texture> _texture_changed_fetcher = nullptr;
+    chaining::notifier<ui::texture> _texture_updated_sender;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
         : _ct_font_ref(make_cf_ref(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
@@ -58,49 +58,49 @@ struct ui::font_atlas::impl : base::impl {
         auto weak_atlas = to_weak(atlas);
 
         this->_word_tex_coords_receiver =
-            flow::receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
+            chaining::receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
                 if (auto atlas = weak_atlas.lock()) {
                     atlas.impl_ptr<impl>()->_word_infos.at(pair.second).rect.set_tex_coord(pair.first);
                 }
             });
 
-        this->_texture_updated_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+        this->_texture_updated_receiver = chaining::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
             if (auto atlas = weak_atlas.lock()) {
                 atlas.impl_ptr<impl>()->_texture_updated_sender.notify(texture);
             }
         });
 
-        this->_texture_setter_flow = this->_texture_setter.begin_flow()
-                                         .filter([weak_atlas](ui::texture const &texture) {
-                                             if (auto atlas = weak_atlas.lock()) {
-                                                 return !is_same(atlas.texture(), texture);
-                                             }
-                                             return false;
-                                         })
-                                         .receive(this->_texture.receiver())
-                                         .end();
+        this->_texture_setter_observer = this->_texture_setter.chain()
+                                             .guard([weak_atlas](ui::texture const &texture) {
+                                                 if (auto atlas = weak_atlas.lock()) {
+                                                     return !is_same(atlas.texture(), texture);
+                                                 }
+                                                 return false;
+                                             })
+                                             .receive(this->_texture.receiver())
+                                             .end();
 
-        this->_texture_changed_receiver = flow::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+        this->_texture_changed_receiver = chaining::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
             if (auto atlas = weak_atlas.lock()) {
                 auto atlas_impl = atlas.impl_ptr<impl>();
 
                 atlas_impl->_update_word_infos();
 
                 if (texture) {
-                    atlas_impl->_texture_flow = texture.begin_flow(texture::method::metal_texture_changed)
-                                                    .receive(atlas_impl->_texture_updated_receiver)
-                                                    .end();
+                    atlas_impl->_texture_observer = texture.chain(texture::method::metal_texture_changed)
+                                                        .receive(atlas_impl->_texture_updated_receiver)
+                                                        .end();
                 } else {
-                    atlas_impl->_texture_flow = nullptr;
+                    atlas_impl->_texture_observer = nullptr;
                 }
 
-                atlas_impl->_texture_changed_fetcher.fetch();
+                atlas_impl->_texture_changed_fetcher.broadcast();
             }
         });
 
-        this->_texture_changed_flow = this->_texture.begin_flow().receive(this->_texture_changed_receiver).end();
+        this->_texture_changed_observer = this->_texture.chain().receive(this->_texture_changed_receiver).end();
 
-        this->_texture_changed_fetcher = flow::fetcher<ui::texture>([weak_atlas]() {
+        this->_texture_changed_fetcher = chaining::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
                 return opt_t<ui::texture>{atlas.texture()};
             } else {
@@ -154,19 +154,19 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    flow::property<ui::texture> _texture{ui::texture{nullptr}};
+    chaining::holder<ui::texture> _texture{ui::texture{nullptr}};
     std::vector<ui::word_info> _word_infos;
-    flow::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
-    std::vector<flow::observer> _element_flows;
-    flow::receiver<ui::texture> _texture_updated_receiver = nullptr;
-    flow::observer _texture_flow = nullptr;
-    flow::notifier<ui::texture> _texture_setter;
-    flow::observer _texture_setter_flow = nullptr;
-    flow::observer _texture_changed_flow = nullptr;
-    flow::receiver<ui::texture> _texture_changed_receiver = nullptr;
+    chaining::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
+    std::vector<chaining::any_observer> _element_observers;
+    chaining::receiver<ui::texture> _texture_updated_receiver = nullptr;
+    chaining::any_observer _texture_observer = nullptr;
+    chaining::notifier<ui::texture> _texture_setter;
+    chaining::any_observer _texture_setter_observer = nullptr;
+    chaining::any_observer _texture_changed_observer = nullptr;
+    chaining::receiver<ui::texture> _texture_changed_receiver = nullptr;
 
     void _update_word_infos() {
-        this->_element_flows.clear();
+        this->_element_observers.clear();
 
         auto &texture = this->texture();
 
@@ -219,9 +219,9 @@ struct ui::font_atlas::impl : base::impl {
                     CGContextRestoreGState(ctx);
                 });
 
-            this->_element_flows.emplace_back(
-                texture_element.begin_tex_coords_flow()
-                    .map([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
+            this->_element_observers.emplace_back(
+                texture_element.chain_tex_coords()
+                    .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
                     .receive(this->_word_tex_coords_receiver)
                     .sync());
 
@@ -282,12 +282,12 @@ void ui::font_atlas::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-flow::node_t<ui::texture, true> ui::font_atlas::begin_texture_flow() const {
-    return impl_ptr<impl>()->_texture_changed_fetcher.begin_flow();
+chaining::chain<ui::texture, ui::texture, ui::texture, true> ui::font_atlas::chain_texture() const {
+    return impl_ptr<impl>()->_texture_changed_fetcher.chain();
 }
 
-flow::node_t<ui::texture, false> ui::font_atlas::begin_texture_updated_flow() const {
-    return impl_ptr<impl>()->_texture_updated_sender.begin_flow();
+chaining::chain<ui::texture, ui::texture, ui::texture, false> ui::font_atlas::chain_texture_updated() const {
+    return impl_ptr<impl>()->_texture_updated_sender.chain();
 }
 
 #pragma mark -

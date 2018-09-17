@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
@@ -25,10 +25,10 @@ class layout_guide : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<float, std::pair<opt_t<float>, bool>, float, true>;
+    using chain_t = chaining::chain<float, std::pair<opt_t<float>, bool>, float, true>;
 
-    flow_t begin_flow() const;
-    flow::receiver<float> &receiver();
+    chain_t chain() const;
+    chaining::receiver<float> &receiver();
 };
 
 class layout_guide_point : public base {
@@ -52,10 +52,10 @@ class layout_guide_point : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<ui::point, std::pair<opt_t<float>, opt_t<float>>, float, true>;
+    using chain_t = chaining::chain<ui::point, std::pair<opt_t<float>, opt_t<float>>, float, true>;
 
-    flow_t begin_flow() const;
-    flow::receiver<ui::point> &receiver();
+    chain_t chain() const;
+    chaining::receiver<ui::point> &receiver();
 };
 
 class layout_guide_range : public base {
@@ -80,10 +80,10 @@ class layout_guide_range : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<ui::range, std::pair<opt_t<float>, opt_t<float>>, float, true>;
+    using chain_t = chaining::chain<ui::range, std::pair<opt_t<float>, opt_t<float>>, float, true>;
 
-    flow_t begin_flow() const;
-    flow::receiver<ui::range> &receiver();
+    chain_t chain() const;
+    chaining::receiver<ui::range> &receiver();
 };
 
 class layout_guide_rect : public base {
@@ -128,10 +128,10 @@ class layout_guide_rect : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using flow_t = flow::node<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float, true>;
+    using chain_t = chaining::chain<ui::region, std::pair<opt_t<ui::range>, opt_t<ui::range>>, float, true>;
 
-    flow_t begin_flow() const;
-    flow::receiver<ui::region> &receiver();
+    chain_t chain() const;
+    chaining::receiver<ui::region> &receiver();
 };
 
 struct layout_guide_pair {

@@ -287,18 +287,18 @@ struct test_render_encoder : base {
     bool added_to_super_called = false;
     bool removed_from_super_called = false;
 
-    auto flow_added = sub_node.begin_flow(ui::node::method::added_to_super)
-                          .perform([&observer_called_count, &added_to_super_called](auto const &pair) {
-                              added_to_super_called = true;
-                              ++observer_called_count;
-                          })
-                          .end();
-    auto flow_removed = sub_node.begin_flow(ui::node::method::removed_from_super)
-                            .perform([&observer_called_count, &removed_from_super_called](auto const &pair) {
-                                removed_from_super_called = true;
-                                ++observer_called_count;
-                            })
-                            .end();
+    auto added_observer = sub_node.chain(ui::node::method::added_to_super)
+                              .perform([&observer_called_count, &added_to_super_called](auto const &pair) {
+                                  added_to_super_called = true;
+                                  ++observer_called_count;
+                              })
+                              .end();
+    auto remove_observer = sub_node.chain(ui::node::method::removed_from_super)
+                               .perform([&observer_called_count, &removed_from_super_called](auto const &pair) {
+                                   removed_from_super_called = true;
+                                   ++observer_called_count;
+                               })
+                               .end();
 
     parent_node.add_sub_node(sub_node);
 
@@ -311,14 +311,14 @@ struct test_render_encoder : base {
     XCTAssertEqual(observer_called_count, 2);
 }
 
-- (void)test_begin_flow_with_methods {
+- (void)test_chain_with_methods {
     opt_t<ui::node::method> called;
 
     ui::node node;
 
-    auto flow = node.begin_flow({ui::node::method::added_to_super, ui::node::method::removed_from_super})
-                    .perform([&called](auto const &pair) { called = pair.first; })
-                    .end();
+    auto observer = node.chain({ui::node::method::added_to_super, ui::node::method::removed_from_super})
+                        .perform([&called](auto const &pair) { called = pair.first; })
+                        .end();
 
     ui::node super_node;
 
@@ -335,13 +335,13 @@ struct test_render_encoder : base {
     XCTAssertEqual(*called, ui::node::method::removed_from_super);
 }
 
-- (void)test_begin_renderer_flow {
+- (void)test_chain_renderer {
     ui::renderer notified{nullptr};
 
     ui::node node;
 
-    auto flow =
-        node.begin_renderer_flow().perform([&notified](ui::renderer const &renderer) { notified = renderer; }).end();
+    auto observer =
+        node.chain_renderer().perform([&notified](ui::renderer const &renderer) { notified = renderer; }).end();
 
     ui::renderer renderer;
 

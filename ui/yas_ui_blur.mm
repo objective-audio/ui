@@ -4,7 +4,7 @@
 
 #include "yas_ui_blur.h"
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_effect.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_texture.h"
@@ -12,21 +12,21 @@
 using namespace yas;
 
 struct ui::blur::impl : base::impl {
-    flow::property<double> _sigma{0.0};
+    chaining::holder<double> _sigma{0.0};
     ui::effect _effect;
 
     void prepare(ui::blur &blur) {
         auto weak_blur = to_weak(blur);
 
-        this->_sigma_flow =
-            this->_sigma.begin_flow()
-                .filter([weak_blur](double const &) { return !!weak_blur; })
+        this->_sigma_observer =
+            this->_sigma.chain()
+                .guard([weak_blur](double const &) { return !!weak_blur; })
                 .perform([weak_blur](double const &) { weak_blur.lock().impl_ptr<impl>()->_update_effect_handler(); })
                 .sync();
     }
 
    private:
-    flow::observer _sigma_flow = nullptr;
+    chaining::any_observer _sigma_observer = nullptr;
 
     void _update_effect_handler() {
         double const sigma = this->_sigma.value();
