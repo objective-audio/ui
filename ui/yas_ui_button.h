@@ -5,8 +5,8 @@
 #pragma once
 
 #include "yas_base.h"
+#include "yas_chaining.h"
 #include "yas_flagset.h"
-#include "yas_flow.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
@@ -48,9 +48,9 @@ class button : public base {
 
     void cancel_tracking();
 
-    using flow_pair_t = std::pair<method, context>;
-    [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow() const;
-    [[nodiscard]] flow::node<context, flow_pair_t, flow_pair_t, false> begin_flow(method const) const;
+    using chain_pair_t = std::pair<method, context>;
+    [[nodiscard]] chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain() const;
+    [[nodiscard]] chaining::chain<context, chain_pair_t, chain_pair_t, false> chain(method const) const;
 
     ui::rect_plane &rect_plane();
 

@@ -6,7 +6,7 @@
 
 #include <vector>
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_result.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
@@ -79,15 +79,17 @@ class collection_layout : public base {
     ui::layout_guide_rect &frame_layout_guide_rect();
     std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
 
-    [[nodiscard]] flow::node_t<std::size_t, true> begin_preferred_cell_count_flow() const;
-    [[nodiscard]] flow::node_t<std::size_t, true> begin_actual_cell_count_flow() const;
-    [[nodiscard]] flow::node_t<ui::size, true> begin_default_cell_size_flow() const;
-    [[nodiscard]] flow::node_t<std::vector<line>, true> begin_lines_flow() const;
-    [[nodiscard]] flow::node_t<float, true> begin_row_spacing_flow() const;
-    [[nodiscard]] flow::node_t<float, true> begin_col_spacing_flow() const;
-    [[nodiscard]] flow::node_t<ui::layout_alignment, true> begin_alignment_flow() const;
-    [[nodiscard]] flow::node_t<ui::layout_direction, true> begin_direction_flow() const;
-    [[nodiscard]] flow::node_t<ui::layout_order, true> begin_row_order_flow() const;
-    [[nodiscard]] flow::node_t<ui::layout_order, true> begin_col_order_flow() const;
+    [[nodiscard]] chaining::chain<std::size_t, std::size_t, std::size_t, true> chain_preferred_cell_count() const;
+    [[nodiscard]] chaining::chain<std::size_t, std::size_t, std::size_t, true> chain_actual_cell_count() const;
+    [[nodiscard]] chaining::chain<ui::size, ui::size, ui::size, true> chain_default_cell_size() const;
+    [[nodiscard]] chaining::chain<std::vector<line>, std::vector<line>, std::vector<line>, true> chain_lines() const;
+    [[nodiscard]] chaining::chain<float, float, float, true> chain_row_spacing() const;
+    [[nodiscard]] chaining::chain<float, float, float, true> chain_col_spacing() const;
+    [[nodiscard]] chaining::chain<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment, true>
+    chain_alignment() const;
+    [[nodiscard]] chaining::chain<ui::layout_direction, ui::layout_direction, ui::layout_direction, true>
+    chain_direction() const;
+    [[nodiscard]] chaining::chain<ui::layout_order, ui::layout_order, ui::layout_order, true> chain_row_order() const;
+    [[nodiscard]] chaining::chain<ui::layout_order, ui::layout_order, ui::layout_order, true> chain_col_order() const;
 };
 }  // namespace yas::ui

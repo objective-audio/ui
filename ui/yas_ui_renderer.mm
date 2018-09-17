@@ -50,7 +50,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::uint_size _view_size = {.width = 0, .height = 0};
     ui::uint_size _drawable_size = {.width = 0, .height = 0};
     double _scale_factor{0.0f};
-    flow::property<double> _scale_factor_notify{0.0f};
+    chaining::holder<double> _scale_factor_notify{0.0f};
     yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 
@@ -61,7 +61,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::layout_guide_rect _view_layout_guide_rect;
     ui::layout_guide_rect _safe_area_layout_guide_rect;
 
-    flow::notifier<std::nullptr_t> _will_render_notifier;
+    chaining::notifier<std::nullptr_t> _will_render_notifier;
 
     impl() {
     }
@@ -374,12 +374,12 @@ ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
     return impl_ptr<impl>()->_safe_area_layout_guide_rect;
 }
 
-flow::node_t<std::nullptr_t, false> ui::renderer::begin_will_render_flow() const {
-    return impl_ptr<impl>()->_will_render_notifier.begin_flow();
+chaining::chain<std::nullptr_t, std::nullptr_t, std::nullptr_t, false> ui::renderer::chain_will_render() const {
+    return impl_ptr<impl>()->_will_render_notifier.chain();
 }
 
-flow::node_t<double, true> ui::renderer::begin_scale_factor_flow() const {
-    return impl_ptr<impl>()->_scale_factor_notify.begin_flow();
+chaining::chain<double, double, double, true> ui::renderer::chain_scale_factor() const {
+    return impl_ptr<impl>()->_scale_factor_notify.chain();
 }
 
 #pragma mark -

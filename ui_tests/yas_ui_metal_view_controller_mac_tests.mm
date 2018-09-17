@@ -91,13 +91,13 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"view_size_changed"];
 
-    auto flow = renderer.view_layout_guide_rect()
-                    .begin_flow()
-                    .perform([&expectation](ui::region const &) {
-                        [expectation fulfill];
-                        expectation = nil;
-                    })
-                    .end();
+    auto observer = renderer.view_layout_guide_rect()
+                        .chain()
+                        .perform([&expectation](ui::region const &) {
+                            [expectation fulfill];
+                            expectation = nil;
+                        })
+                        .end();
 
     [viewController.view.window setFrame:CGRectMake(0, 0, 32, 32) display:YES];
 

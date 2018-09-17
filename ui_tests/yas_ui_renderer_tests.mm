@@ -144,7 +144,7 @@ using namespace yas;
     }
 }
 
-- (void)test_begin_scale_factor_flow {
+- (void)test_chain_scale_factor {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -158,8 +158,8 @@ using namespace yas;
 
     double notified = 0.0f;
 
-    auto flow =
-        renderer.begin_scale_factor_flow().perform([&notified](double const &value) { notified = value; }).sync();
+    auto observer =
+        renderer.chain_scale_factor().perform([&notified](double const &value) { notified = value; }).sync();
 
     XCTAssertEqual(notified, 0.0f);
 

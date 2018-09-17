@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_result.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
@@ -55,10 +55,10 @@ class texture : public base {
     ui::metal_texture &metal_texture();
     ui::metal_texture const &metal_texture() const;
 
-    using flow_pair_t = std::pair<method, texture>;
-    [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow() const;
-    [[nodiscard]] flow::node<texture, flow_pair_t, flow_pair_t, false> begin_flow(method const &) const;
-    flow::receiver<double> &scale_factor_receiver();
+    using chain_pair_t = std::pair<method, texture>;
+    [[nodiscard]] chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain() const;
+    [[nodiscard]] chaining::chain<texture, chain_pair_t, chain_pair_t, false> chain(method const &) const;
+    chaining::receiver<double> &scale_factor_receiver();
 
     ui::metal_object &metal();
 

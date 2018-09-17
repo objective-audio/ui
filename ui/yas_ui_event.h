@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_event_protocol.h"
 
 namespace yas {
@@ -72,8 +72,8 @@ class event_manager : public base {
 
     virtual ~event_manager() final;
 
-    [[nodiscard]] flow::node<event, context, context, false> begin_flow(method const &) const;
-    [[nodiscard]] flow::node<context, context, context, false> begin_flow() const;
+    [[nodiscard]] chaining::chain<event, context, context, false> chain(method const &) const;
+    [[nodiscard]] chaining::chain<context, context, context, false> chain() const;
 
     ui::event_inputtable &inputtable();
 

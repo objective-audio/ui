@@ -132,7 +132,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto flow = element.begin_tex_coords_flow().perform([&called](auto const &) { called = true; }).end();
+    auto observer = element.chain_tex_coords().perform([&called](auto const &) { called = true; }).end();
 
     XCTAssertFalse(called);
 
@@ -201,7 +201,7 @@ using namespace yas;
     }
 }
 
-- (void)test_begin_flow {
+- (void)test_chain {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -214,7 +214,7 @@ using namespace yas;
 
     opt_t<ui::texture::method> received;
 
-    auto flow = texture.begin_flow().perform([&received](auto const &pair) { received = pair.first; }).end();
+    auto observer = texture.chain().perform([&received](auto const &pair) { received = pair.first; }).end();
 
     texture.set_point_size({16, 16});
 
@@ -229,7 +229,7 @@ using namespace yas;
     XCTAssertEqual(*received, ui::texture::method::metal_texture_changed);
 }
 
-- (void)test_begin_flow_with_method {
+- (void)test_chain_with_method {
     auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -242,8 +242,8 @@ using namespace yas;
 
     bool called = false;
 
-    auto flow =
-        texture.begin_flow(ui::texture::method::size_updated).perform([&called](auto const &) { called = true; }).end();
+    auto observer =
+        texture.chain(ui::texture::method::size_updated).perform([&called](auto const &) { called = true; }).end();
 
     texture.set_point_size({16, 16});
 

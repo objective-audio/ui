@@ -125,14 +125,14 @@ using namespace yas;
     XCTAssertEqual(layout.actual_cell_count(), 2);
 }
 
-- (void)test_actual_cell_count_flow {
+- (void)test_chain_actual_cell_count {
     ui::collection_layout layout{{.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1}};
 
     std::size_t notified_count = 0;
 
-    auto flow = layout.begin_actual_cell_count_flow()
-                    .perform([&notified_count](auto const &count) { notified_count = count; })
-                    .end();
+    auto observer = layout.chain_actual_cell_count()
+                        .perform([&notified_count](auto const &count) { notified_count = count; })
+                        .end();
 
     layout.set_preferred_cell_count(5);
 
@@ -701,14 +701,14 @@ using namespace yas;
     XCTAssertTrue(line1a != line3);
 }
 
-- (void)test_preferred_cell_count_flow {
+- (void)test_chain_preferred_cell_count {
     ui::collection_layout layout;
 
     opt_t<std::size_t> notified_count;
 
-    auto flow = layout.begin_preferred_cell_count_flow()
-                    .perform([&notified_count](auto const &count) { notified_count = count; })
-                    .end();
+    auto observer = layout.chain_preferred_cell_count()
+                        .perform([&notified_count](auto const &count) { notified_count = count; })
+                        .end();
 
     layout.set_preferred_cell_count(10);
 
@@ -716,12 +716,12 @@ using namespace yas;
     XCTAssertEqual(*notified_count, 10);
 }
 
-- (void)test_alignment_flow {
+- (void)test_chain_alignment {
     ui::collection_layout layout;
 
     opt_t<ui::layout_alignment> notified;
 
-    auto flow = layout.begin_alignment_flow().perform([&notified](auto const &aligment) { notified = aligment; }).end();
+    auto observer = layout.chain_alignment().perform([&notified](auto const &aligment) { notified = aligment; }).end();
 
     layout.set_alignment(ui::layout_alignment::max);
 
@@ -729,12 +729,12 @@ using namespace yas;
     XCTAssertEqual(*notified, ui::layout_alignment::max);
 }
 
-- (void)test_lines_flow {
+- (void)test_chain_lines {
     ui::collection_layout layout;
 
     opt_t<std::vector<ui::collection_layout::line>> notified;
 
-    auto flow = layout.begin_lines_flow().perform([&notified](auto const &lines) { notified = lines; }).end();
+    auto observer = layout.chain_lines().perform([&notified](auto const &lines) { notified = lines; }).end();
 
     layout.set_lines({{}});
 
@@ -742,12 +742,12 @@ using namespace yas;
     XCTAssertEqual(notified->size(), 1);
 }
 
-- (void)test_default_cell_size_flow {
+- (void)test_chain_default_cell_size {
     ui::collection_layout layout;
 
     opt_t<ui::size> notified;
 
-    auto flow = layout.begin_default_cell_size_flow().perform([&notified](auto const &size) { notified = size; }).end();
+    auto observer = layout.chain_default_cell_size().perform([&notified](auto const &size) { notified = size; }).end();
 
     layout.set_default_cell_size({1.0f, 2.0f});
 
@@ -756,12 +756,12 @@ using namespace yas;
     XCTAssertEqual(notified->height, 2.0f);
 }
 
-- (void)test_row_order_flow {
+- (void)test_chain_row_order {
     ui::collection_layout layout;
 
     opt_t<ui::layout_order> notified;
 
-    auto flow = layout.begin_row_order_flow().perform([&notified](auto const &order) { notified = order; }).end();
+    auto observer = layout.chain_row_order().perform([&notified](auto const &order) { notified = order; }).end();
 
     layout.set_row_order(ui::layout_order::descending);
 
@@ -769,12 +769,12 @@ using namespace yas;
     XCTAssertEqual(*notified, ui::layout_order::descending);
 }
 
-- (void)test_col_order_flow {
+- (void)test_chain_col_order {
     ui::collection_layout layout;
 
     opt_t<ui::layout_order> notified;
 
-    auto flow = layout.begin_col_order_flow().perform([&notified](auto const &order) { notified = order; }).end();
+    auto observer = layout.chain_col_order().perform([&notified](auto const &order) { notified = order; }).end();
 
     layout.set_col_order(ui::layout_order::descending);
 
@@ -782,13 +782,13 @@ using namespace yas;
     XCTAssertEqual(*notified, ui::layout_order::descending);
 }
 
-- (void)test_direction_flow {
+- (void)test_chain_direction {
     ui::collection_layout layout;
 
     opt_t<ui::layout_direction> notified;
 
-    auto flow =
-        layout.begin_direction_flow().perform([&notified](auto const &direction) { notified = direction; }).end();
+    auto observer =
+        layout.chain_direction().perform([&notified](auto const &direction) { notified = direction; }).end();
 
     layout.set_direction(ui::layout_direction::horizontal);
 
@@ -796,12 +796,12 @@ using namespace yas;
     XCTAssertEqual(*notified, ui::layout_direction::horizontal);
 }
 
-- (void)test_row_spacing_flow {
+- (void)test_chain_row_spacing {
     ui::collection_layout layout;
 
     opt_t<float> notified;
 
-    auto flow = layout.begin_row_spacing_flow().perform([&notified](auto const &spacing) { notified = spacing; }).end();
+    auto observer = layout.chain_row_spacing().perform([&notified](auto const &spacing) { notified = spacing; }).end();
 
     layout.set_row_spacing(11.0f);
 
@@ -809,12 +809,12 @@ using namespace yas;
     XCTAssertEqual(*notified, 11.0f);
 }
 
-- (void)test_col_spacing_flow {
+- (void)test_chain_col_spacing {
     ui::collection_layout layout;
 
     opt_t<float> notified;
 
-    auto flow = layout.begin_col_spacing_flow().perform([&notified](auto const &spacing) { notified = spacing; }).end();
+    auto observer = layout.chain_col_spacing().perform([&notified](auto const &spacing) { notified = spacing; }).end();
 
     layout.set_col_spacing(11.0f);
 

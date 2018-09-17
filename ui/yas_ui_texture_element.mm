@@ -10,7 +10,7 @@ using namespace yas;
 
 struct ui::texture_element::impl : base::impl {
     draw_pair_t const _draw_pair;
-    flow::property<ui::uint_region> _tex_coords{ui::uint_region::zero()};
+    chaining::holder<ui::uint_region> _tex_coords{ui::uint_region::zero()};
 
     impl(draw_pair_t &&pair) : _draw_pair(std::move(pair)) {
     }
@@ -36,6 +36,6 @@ ui::uint_region const &ui::texture_element::tex_coords() const {
     return impl_ptr<impl>()->_tex_coords.value();
 }
 
-flow::node_t<ui::uint_region, true> ui::texture_element::begin_tex_coords_flow() const {
-    return impl_ptr<impl>()->_tex_coords.begin_flow();
+chaining::chain<ui::uint_region, ui::uint_region, ui::uint_region, true> ui::texture_element::chain_tex_coords() const {
+    return impl_ptr<impl>()->_tex_coords.chain();
 }

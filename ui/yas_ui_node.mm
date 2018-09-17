@@ -36,63 +36,63 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // enabled
 
-        auto enabled_flow = this->_enabled.begin_flow().to_value(ui::node_update_reason::enabled);
+        auto enabled_observer = this->_enabled.chain().to_value(ui::node_update_reason::enabled);
 
         // geometry
 
-        auto pos_flow = this->_position.begin_flow().to_value(ui::node_update_reason::geometry);
-        auto angle_flow = this->_angle.begin_flow().to_value(ui::node_update_reason::geometry);
-        auto scale_flow = this->_scale.begin_flow().to_value(ui::node_update_reason::geometry);
+        auto pos_observer = this->_position.chain().to_value(ui::node_update_reason::geometry);
+        auto angle_observer = this->_angle.chain().to_value(ui::node_update_reason::geometry);
+        auto scale_observer = this->_scale.chain().to_value(ui::node_update_reason::geometry);
 
         // mesh and mesh_color
 
-        auto mesh_flow =
-            this->_mesh.begin_flow()
-                .filter([weak_node](auto const &) { return !!weak_node; })
+        auto mesh_observer =
+            this->_mesh.chain()
+                .guard([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .to_value(ui::node_update_reason::mesh)
                 .normalize();
 
-        auto color_flow = this->_color.begin_flow().to_null();
-        auto alpha_flow = this->_alpha.begin_flow().to_null();
+        auto color_observer = this->_color.chain().to_null();
+        auto alpha_observer = this->_alpha.chain().to_null();
 
-        auto mesh_color_flow =
-            color_flow.merge(alpha_flow)
-                .filter([weak_node](auto const &) { return !!weak_node; })
+        auto mesh_color_observer =
+            color_observer.merge(alpha_observer)
+                .guard([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .end();
 
         // collider
 
-        auto collider_flow = this->_collider.begin_flow().to_value(ui::node_update_reason::collider);
+        auto collider_observer = this->_collider.chain().to_value(ui::node_update_reason::collider);
 
         // batch
 
-        auto batch_flow = this->_batch.begin_flow().to_value(ui::node_update_reason::batch);
+        auto batch_observer = this->_batch.chain().to_value(ui::node_update_reason::batch);
 
         // render_target
 
-        auto render_target_flow = this->_render_target.begin_flow().to_value(ui::node_update_reason::render_target);
+        auto render_target_observer = this->_render_target.chain().to_value(ui::node_update_reason::render_target);
 
-        auto updates_flow = enabled_flow.merge(pos_flow)
-                                .merge(angle_flow)
-                                .merge(scale_flow)
-                                .merge(mesh_flow)
-                                .merge(collider_flow)
-                                .merge(batch_flow)
-                                .merge(render_target_flow)
-                                .perform([weak_node](ui::node_update_reason const &reason) {
-                                    weak_node.lock().impl_ptr<impl>()->_set_updated(reason);
-                                })
-                                .end();
+        auto updates_observer = enabled_observer.merge(pos_observer)
+                                    .merge(angle_observer)
+                                    .merge(scale_observer)
+                                    .merge(mesh_observer)
+                                    .merge(collider_observer)
+                                    .merge(batch_observer)
+                                    .merge(render_target_observer)
+                                    .perform([weak_node](ui::node_update_reason const &reason) {
+                                        weak_node.lock().impl_ptr<impl>()->_set_updated(reason);
+                                    })
+                                    .end();
 
-        this->_update_flows.reserve(2);
-        this->_update_flows.emplace_back(std::move(mesh_color_flow));
-        this->_update_flows.emplace_back(std::move(updates_flow));
+        this->_update_observers.reserve(2);
+        this->_update_observers.emplace_back(std::move(mesh_color_observer));
+        this->_update_observers.emplace_back(std::move(updates_observer));
 
         // dispatch
 
-        this->_dispatch_receiver = flow::receiver<ui::node::method>([weak_node](ui::node::method const &method) {
+        this->_dispatch_receiver = chaining::receiver<ui::node::method>([weak_node](ui::node::method const &method) {
             if (auto node = weak_node.lock()) {
                 node.impl_ptr<impl>()->_dispatch_sender.notify(std::make_pair(method, node));
             }
@@ -374,29 +374,30 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    flow::node_t<flow_pair_t, false> begin_flow(std::vector<ui::node::method> const &methods) {
+    chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain(
+        std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
-            if (this->_dispatch_flows.count(method) > 0) {
+            if (this->_dispatch_observers.count(method) > 0) {
                 continue;
             }
 
-            flow::observer flow = nullptr;
+            chaining::any_observer observer = nullptr;
 
             switch (method) {
                 case ui::node::method::added_to_super:
                 case ui::node::method::removed_from_super:
-                    flow = this->_notify_sender.begin_flow()
-                               .filter([method](node::method const &value) { return method == value; })
-                               .receive(this->_dispatch_receiver)
-                               .end();
+                    observer = this->_notify_sender.chain()
+                                   .guard([method](node::method const &value) { return method == value; })
+                                   .receive(this->_dispatch_receiver)
+                                   .end();
                     break;
             }
 
-            this->_dispatch_flows.emplace(method, std::move(flow));
+            this->_dispatch_observers.emplace(method, std::move(observer));
         }
 
-        return this->_dispatch_sender.begin_flow().filter(
-            [methods](flow_pair_t const &pair) { return contains(methods, pair.first); });
+        return this->_dispatch_sender.chain().guard(
+            [methods](chain_pair_t const &pair) { return contains(methods, pair.first); });
     }
 
     simd::float4x4 &local_matrix() {
@@ -414,23 +415,23 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         return {loc4.x, loc4.y};
     }
 
-    flow::property<weak<ui::node>> _parent{ui::node{nullptr}};
-    flow::property<weak<ui::renderer>> _renderer{ui::renderer{nullptr}};
+    chaining::holder<weak<ui::node>> _parent{ui::node{nullptr}};
+    chaining::holder<weak<ui::renderer>> _renderer{ui::renderer{nullptr}};
 
-    flow::property<ui::point> _position{{.v = 0.0f}};
-    flow::property<ui::angle> _angle{{0.0f}};
-    flow::property<ui::size> _scale{{.v = 1.0f}};
-    flow::property<ui::color> _color{{.v = 1.0f}};
-    flow::property<float> _alpha{1.0f};
-    flow::property<ui::mesh> _mesh{ui::mesh{nullptr}};
-    flow::property<ui::collider> _collider{ui::collider{nullptr}};
-    flow::property<ui::batch> _batch{ui::batch{nullptr}};
-    flow::property<ui::render_target> _render_target{ui::render_target{nullptr}};
-    flow::property<bool> _enabled{true};
+    chaining::holder<ui::point> _position{{.v = 0.0f}};
+    chaining::holder<ui::angle> _angle{{0.0f}};
+    chaining::holder<ui::size> _scale{{.v = 1.0f}};
+    chaining::holder<ui::color> _color{{.v = 1.0f}};
+    chaining::holder<float> _alpha{1.0f};
+    chaining::holder<ui::mesh> _mesh{ui::mesh{nullptr}};
+    chaining::holder<ui::collider> _collider{ui::collider{nullptr}};
+    chaining::holder<ui::batch> _batch{ui::batch{nullptr}};
+    chaining::holder<ui::render_target> _render_target{ui::render_target{nullptr}};
+    chaining::holder<bool> _enabled{true};
 
-    flow::observer _x_observer = nullptr;
-    flow::observer _y_observer = nullptr;
-    flow::observer _position_observer = nullptr;
+    chaining::any_observer _x_observer = nullptr;
+    chaining::any_observer _y_observer = nullptr;
+    chaining::any_observer _position_observer = nullptr;
 
    private:
     std::vector<ui::node> _children;
@@ -438,11 +439,11 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<flow::observer> _update_flows;
-    std::unordered_map<ui::node::method, flow::observer> _dispatch_flows;
-    flow::notifier<flow_pair_t> _dispatch_sender;
-    flow::receiver<ui::node::method> _dispatch_receiver = nullptr;
-    flow::notifier<ui::node::method> _notify_sender;
+    std::vector<chaining::any_observer> _update_observers;
+    std::unordered_map<ui::node::method, chaining::any_observer> _dispatch_observers;
+    chaining::notifier<chain_pair_t> _dispatch_sender;
+    chaining::receiver<ui::node::method> _dispatch_receiver = nullptr;
+    chaining::notifier<ui::node::method> _notify_sender;
 
     node_updates_t _updates;
 
@@ -536,51 +537,51 @@ bool ui::node::operator!=(ui::node const &rhs) const {
     return base::operator!=(rhs);
 }
 
-flow::property<ui::point> const &ui::node::position() const {
+chaining::holder<ui::point> const &ui::node::position() const {
     return impl_ptr<impl>()->_position;
 }
 
-flow::property<ui::point> &ui::node::position() {
+chaining::holder<ui::point> &ui::node::position() {
     return impl_ptr<impl>()->_position;
 }
 
-flow::property<ui::angle> const &ui::node::angle() const {
+chaining::holder<ui::angle> const &ui::node::angle() const {
     return impl_ptr<impl>()->_angle;
 }
 
-flow::property<ui::angle> &ui::node::angle() {
+chaining::holder<ui::angle> &ui::node::angle() {
     return impl_ptr<impl>()->_angle;
 }
 
-flow::property<ui::size> const &ui::node::scale() const {
+chaining::holder<ui::size> const &ui::node::scale() const {
     return impl_ptr<impl>()->_scale;
 }
 
-flow::property<ui::size> &ui::node::scale() {
+chaining::holder<ui::size> &ui::node::scale() {
     return impl_ptr<impl>()->_scale;
 }
 
-flow::property<ui::color> const &ui::node::color() const {
+chaining::holder<ui::color> const &ui::node::color() const {
     return impl_ptr<impl>()->_color;
 }
 
-flow::property<ui::color> &ui::node::color() {
+chaining::holder<ui::color> &ui::node::color() {
     return impl_ptr<impl>()->_color;
 }
 
-flow::property<float> const &ui::node::alpha() const {
+chaining::holder<float> const &ui::node::alpha() const {
     return impl_ptr<impl>()->_alpha;
 }
 
-flow::property<float> &ui::node::alpha() {
+chaining::holder<float> &ui::node::alpha() {
     return impl_ptr<impl>()->_alpha;
 }
 
-flow::property<bool> const &ui::node::is_enabled() const {
+chaining::holder<bool> const &ui::node::is_enabled() const {
     return impl_ptr<impl>()->_enabled;
 }
 
-flow::property<bool> &ui::node::is_enabled() {
+chaining::holder<bool> &ui::node::is_enabled() {
     return impl_ptr<impl>()->_enabled;
 }
 
@@ -592,35 +593,35 @@ simd::float4x4 const &ui::node::local_matrix() const {
     return impl_ptr<impl>()->local_matrix();
 }
 
-flow::property<ui::mesh> const &ui::node::mesh() const {
+chaining::holder<ui::mesh> const &ui::node::mesh() const {
     return impl_ptr<impl>()->_mesh;
 }
 
-flow::property<ui::mesh> &ui::node::mesh() {
+chaining::holder<ui::mesh> &ui::node::mesh() {
     return impl_ptr<impl>()->_mesh;
 }
 
-flow::property<ui::collider> const &ui::node::collider() const {
+chaining::holder<ui::collider> const &ui::node::collider() const {
     return impl_ptr<impl>()->_collider;
 }
 
-flow::property<ui::collider> &ui::node::collider() {
+chaining::holder<ui::collider> &ui::node::collider() {
     return impl_ptr<impl>()->_collider;
 }
 
-flow::property<ui::batch> const &ui::node::batch() const {
+chaining::holder<ui::batch> const &ui::node::batch() const {
     return impl_ptr<impl>()->_batch;
 }
 
-flow::property<ui::batch> &ui::node::batch() {
+chaining::holder<ui::batch> &ui::node::batch() {
     return impl_ptr<impl>()->_batch;
 }
 
-flow::property<ui::render_target> const &ui::node::render_target() const {
+chaining::holder<ui::render_target> const &ui::node::render_target() const {
     return impl_ptr<impl>()->_render_target;
 }
 
-flow::property<ui::render_target> &ui::node::render_target() {
+chaining::holder<ui::render_target> &ui::node::render_target() {
     return impl_ptr<impl>()->_render_target;
 }
 
@@ -666,16 +667,18 @@ ui::renderable_node &ui::node::renderable() {
     return this->_renderable;
 }
 
-flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(ui::node::method const &method) const {
-    return impl_ptr<impl>()->begin_flow({method});
+chaining::chain<ui::node::chain_pair_t, ui::node::chain_pair_t, ui::node::chain_pair_t, false> ui::node::chain(
+    ui::node::method const &method) const {
+    return impl_ptr<impl>()->chain({method});
 }
 
-flow::node_t<ui::node::flow_pair_t, false> ui::node::begin_flow(std::vector<ui::node::method> const &methods) const {
-    return impl_ptr<impl>()->begin_flow(methods);
+chaining::chain<ui::node::chain_pair_t, ui::node::chain_pair_t, ui::node::chain_pair_t, false> ui::node::chain(
+    std::vector<ui::node::method> const &methods) const {
+    return impl_ptr<impl>()->chain(methods);
 }
 
-flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::begin_renderer_flow() const {
-    return impl_ptr<impl>()->_renderer.begin_flow().map([](weak<ui::renderer> const &weak_renderer) {
+chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::chain_renderer() const {
+    return impl_ptr<impl>()->_renderer.chain().to([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
         } else {
@@ -684,8 +687,8 @@ flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node:
     });
 }
 
-flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::begin_parent_flow() const {
-    return impl_ptr<impl>()->_parent.begin_flow().map([](weak<ui::node> const &weak_node) {
+chaining::chain<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::chain_parent() const {
+    return impl_ptr<impl>()->_parent.chain().to([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;
         } else {
@@ -703,9 +706,9 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
-    imp->_x_observer = guide.begin_flow()
-                           .filter([weak_node](float const &) { return !!weak_node; })
-                           .map([weak_node](float const &x) {
+    imp->_x_observer = guide.chain()
+                           .guard([weak_node](float const &) { return !!weak_node; })
+                           .to([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().value().y};
                            })
                            .receive(position.receiver())
@@ -719,9 +722,9 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
-    imp->_y_observer = guide.begin_flow()
-                           .filter([weak_node](float const &) { return !!weak_node; })
-                           .map([weak_node](float const &y) {
+    imp->_y_observer = guide.chain()
+                           .guard([weak_node](float const &) { return !!weak_node; })
+                           .to([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().value().x, y};
                            })
                            .receive(position.receiver())
@@ -735,7 +738,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
     auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
-    imp->_position_observer = guide_point.begin_flow().receive(position.receiver()).sync();
+    imp->_position_observer = guide_point.chain().receive(position.receiver()).sync();
 
     imp->_x_observer = nullptr;
     imp->_y_observer = nullptr;

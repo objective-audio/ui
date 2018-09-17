@@ -138,12 +138,12 @@ using namespace yas;
     XCTAssertFalse(collider.hit_test({.v = 0.0f}));
 }
 
-- (void)test_begin_shape_flow {
+- (void)test_chain_shape {
     ui::collider collider;
 
     ui::shape received{nullptr};
 
-    auto flow = collider.begin_shape_flow().perform([&received](ui::shape const &shape) { received = shape; }).end();
+    auto observer = collider.chain_shape().perform([&received](ui::shape const &shape) { received = shape; }).end();
 
     collider.set_shape(ui::shape{ui::anywhere_shape{}});
 
@@ -151,12 +151,12 @@ using namespace yas;
     XCTAssertTrue(received.type_info() == typeid(ui::shape::anywhere));
 }
 
-- (void)test_begin_enabled_flow {
+- (void)test_chain_enabled {
     ui::collider collider;
 
     bool received = true;
 
-    auto flow = collider.begin_enabled_flow().perform([&received](bool const &enabled) { received = enabled; }).end();
+    auto observer = collider.chain_enabled().perform([&received](bool const &enabled) { received = enabled; }).end();
 
     collider.set_enabled(false);
 
@@ -166,8 +166,8 @@ using namespace yas;
 - (void)test_shape_receiver {
     ui::collider collider;
 
-    flow::notifier<ui::shape> sender;
-    auto flow = sender.begin_flow().receive(collider.shape_receiver()).end();
+    chaining::notifier<ui::shape> sender;
+    auto observer = sender.chain().receive(collider.shape_receiver()).end();
 
     XCTAssertFalse(collider.shape());
 
@@ -180,8 +180,8 @@ using namespace yas;
 - (void)test_enabled_receiver {
     ui::collider collider;
 
-    flow::notifier<bool> sender;
-    auto flow = sender.begin_flow().receive(collider.enabled_receiver()).end();
+    chaining::notifier<bool> sender;
+    auto observer = sender.chain().receive(collider.enabled_receiver()).end();
 
     XCTAssertTrue(collider.is_enabled());
 

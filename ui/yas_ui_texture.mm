@@ -35,8 +35,8 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl, metal_object::impl {
-    flow::property<ui::uint_size> _point_size;
-    flow::property<double> _scale_factor;
+    chaining::holder<ui::uint_size> _point_size;
+    chaining::holder<double> _scale_factor;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -57,26 +57,26 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     void prepare(ui::texture &texture) {
         auto weak_texture = to_weak(texture);
 
-        this->_notify_receiver = flow::receiver<method>([weak_texture](method const &method) {
+        this->_notify_receiver = chaining::receiver<method>([weak_texture](method const &method) {
             if (auto texture = weak_texture.lock()) {
                 texture.impl_ptr<impl>()->_notify_sender.notify(std::make_pair(method, texture));
             }
         });
 
-        auto point_size_flow = this->_point_size.begin_flow().to_null();
-        auto scale_factor_flow = this->_scale_factor.begin_flow().to_null();
+        auto point_size_chain = this->_point_size.chain().to_null();
+        auto scale_factor_chain = this->_scale_factor.chain().to_null();
 
-        this->_properties_flow = point_size_flow.merge(scale_factor_flow)
-                                     .filter([weak_texture](auto const &) { return !!weak_texture; })
-                                     .perform([weak_texture](auto const &) {
-                                         auto texture_impl = weak_texture.lock().impl_ptr<impl>();
-                                         texture_impl->_metal_texture = nullptr;
-                                         texture_impl->_draw_actual_pos = {texture_impl->_draw_actual_padding,
-                                                                           texture_impl->_draw_actual_padding};
-                                     })
-                                     .to_value(method::size_updated)
-                                     .receive(this->_notify_receiver)
-                                     .end();
+        this->_properties_observer = point_size_chain.merge(scale_factor_chain)
+                                         .guard([weak_texture](auto const &) { return !!weak_texture; })
+                                         .perform([weak_texture](auto const &) {
+                                             auto texture_impl = weak_texture.lock().impl_ptr<impl>();
+                                             texture_impl->_metal_texture = nullptr;
+                                             texture_impl->_draw_actual_pos = {texture_impl->_draw_actual_padding,
+                                                                               texture_impl->_draw_actual_padding};
+                                         })
+                                         .to_value(method::size_updated)
+                                         .receive(this->_notify_receiver)
+                                         .end();
     }
 
     ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) {
@@ -94,7 +94,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
             this->_add_images_to_metal_texture();
 
-            this->_notify_receiver.flowable().receive_value(method::metal_texture_changed);
+            this->_notify_receiver.receivable().receive_value(method::metal_texture_changed);
         }
 
         return ui::setup_metal_result{nullptr};
@@ -124,11 +124,11 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     void sync_scale_from_renderer(ui::renderer const &renderer, ui::texture &texture) {
-        this->_scale_flow = renderer.begin_scale_factor_flow().receive(texture.scale_factor_receiver()).sync();
+        this->_scale_observer = renderer.chain_scale_factor().receive(texture.scale_factor_receiver()).sync();
     }
 
-    flow::node<flow_pair_t, flow_pair_t, flow_pair_t, false> begin_flow() {
-        return this->_notify_sender.begin_flow();
+    chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain() {
+        return this->_notify_sender.chain();
     }
 
    private:
@@ -137,10 +137,10 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element> _texture_elements;
-    flow::observer _scale_flow = nullptr;
-    flow::observer _properties_flow = nullptr;
-    flow::notifier<flow_pair_t> _notify_sender;
-    flow::receiver<method> _notify_receiver = nullptr;
+    chaining::any_observer _scale_observer = nullptr;
+    chaining::any_observer _properties_observer = nullptr;
+    chaining::notifier<chain_pair_t> _notify_sender;
+    chaining::receiver<method> _notify_receiver = nullptr;
 
     draw_image_result _reserve_image_size(image const &image) {
         if (!image) {
@@ -302,19 +302,20 @@ ui::metal_texture const &ui::texture::metal_texture() const {
     return impl_ptr<impl>()->_metal_texture;
 }
 
-flow::node_t<ui::texture::flow_pair_t, false> ui::texture::begin_flow() const {
-    return impl_ptr<impl>()->begin_flow();
+chaining::chain<ui::texture::chain_pair_t, ui::texture::chain_pair_t, ui::texture::chain_pair_t, false>
+ui::texture::chain() const {
+    return impl_ptr<impl>()->chain();
 }
 
-flow::node<ui::texture, ui::texture::flow_pair_t, ui::texture::flow_pair_t, false> ui::texture::begin_flow(
+chaining::chain<ui::texture, ui::texture::chain_pair_t, ui::texture::chain_pair_t, false> ui::texture::chain(
     method const &method) const {
     return impl_ptr<impl>()
-        ->begin_flow()
-        .filter([method](flow_pair_t const &pair) { return pair.first == method; })
-        .map([](flow_pair_t const &pair) { return pair.second; });
+        ->chain()
+        .guard([method](chain_pair_t const &pair) { return pair.first == method; })
+        .to([](chain_pair_t const &pair) { return pair.second; });
 }
 
-flow::receiver<double> &ui::texture::scale_factor_receiver() {
+chaining::receiver<double> &ui::texture::scale_factor_receiver() {
     return impl_ptr<impl>()->_scale_factor.receiver();
 }
 

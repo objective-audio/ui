@@ -18,7 +18,7 @@ struct sample::big_button::impl : base::impl {
 
     void set_texture(ui::texture &&texture) {
         auto &data = this->_button.rect_plane().data();
-        data.clear_flows();
+        data.clear_observers();
 
         this->_button.rect_plane().node().mesh().value().set_texture(texture);
 

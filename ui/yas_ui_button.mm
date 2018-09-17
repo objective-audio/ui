@@ -32,7 +32,7 @@ struct ui::button::impl : base::impl {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
-        this->_leave_or_enter_or_move_tracking_receiver = flow::receiver<>{[weak_button] {
+        this->_leave_or_enter_or_move_tracking_receiver = chaining::receiver<>{[weak_button] {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
                 if (auto tracking_event = button_impl->_tracking_event) {
@@ -41,7 +41,7 @@ struct ui::button::impl : base::impl {
             }
         }};
 
-        this->_cancel_tracking_receiver = flow::receiver<>{[weak_button]() {
+        this->_cancel_tracking_receiver = chaining::receiver<>{[weak_button]() {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
                 if (auto tracking_event = button_impl->_tracking_event) {
@@ -50,34 +50,34 @@ struct ui::button::impl : base::impl {
             }
         }};
 
-        this->_renderer_flow = node.begin_renderer_flow()
-                                   .perform([event_flow = base{nullptr}, leave_flows = std::vector<flow::observer>(),
-                                             collider_flows = std::vector<flow::observer>(),
-                                             weak_button](ui::renderer const &value) mutable {
-                                       if (auto renderer = value) {
-                                           event_flow =
-                                               renderer.event_manager()
-                                                   .begin_flow(ui::event_manager::method::touch_changed)
-                                                   .filter([weak_button](ui::event const &) { return !!weak_button; })
-                                                   .perform([weak_button](ui::event const &event) {
-                                                       weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
-                                                   })
-                                                   .end();
-                                           if (auto button = weak_button.lock()) {
-                                               auto button_impl = button.impl_ptr<impl>();
-                                               leave_flows = button_impl->_make_leave_flows();
-                                               collider_flows = button_impl->_make_collider_flows();
-                                           }
-                                       } else {
-                                           event_flow = nullptr;
-                                           leave_flows.clear();
-                                           collider_flows.clear();
-                                       }
-                                   })
-                                   .end();
+        this->_renderer_observer =
+            node.chain_renderer()
+                .perform([event_observer = base{nullptr}, leave_observers = std::vector<chaining::any_observer>(),
+                          collider_observers = std::vector<chaining::any_observer>(),
+                          weak_button](ui::renderer const &value) mutable {
+                    if (auto renderer = value) {
+                        event_observer = renderer.event_manager()
+                                             .chain(ui::event_manager::method::touch_changed)
+                                             .guard([weak_button](ui::event const &) { return !!weak_button; })
+                                             .perform([weak_button](ui::event const &event) {
+                                                 weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
+                                             })
+                                             .end();
+                        if (auto button = weak_button.lock()) {
+                            auto button_impl = button.impl_ptr<impl>();
+                            leave_observers = button_impl->_make_leave_chains();
+                            collider_observers = button_impl->_make_collider_chains();
+                        }
+                    } else {
+                        event_observer = nullptr;
+                        leave_observers.clear();
+                        collider_observers.clear();
+                    }
+                })
+                .end();
 
-        this->_rect_observer = this->_layout_guide_rect.begin_flow()
-                                   .filter([weak_button](ui::region const &) { return !!weak_button; })
+        this->_rect_observer = this->_layout_guide_rect.chain()
+                                   .guard([weak_button](ui::region const &) { return !!weak_button; })
                                    .perform([weak_button, state_count = this->_state_count](ui::region const &value) {
                                        weak_button.lock().impl_ptr<impl>()->_update_rect_positions(value, state_count);
                                    })
@@ -120,7 +120,7 @@ struct ui::button::impl : base::impl {
 
     ui::rect_plane _rect_plane;
     ui::layout_guide_rect _layout_guide_rect;
-    flow::notifier<flow_pair_t> _notify_sender;
+    chaining::notifier<chain_pair_t> _notify_sender;
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
@@ -142,52 +142,52 @@ struct ui::button::impl : base::impl {
         this->_rect_plane.data().set_rect_index(0, idx);
     }
 
-    std::vector<flow::observer> _make_leave_flows() {
+    std::vector<chaining::any_observer> _make_leave_chains() {
         ui::node &node = this->_rect_plane.node();
         auto weak_node = to_weak(node);
         auto weak_button = to_weak(cast<ui::button>());
 
-        std::vector<flow::observer> flows;
-        flows.emplace_back(
-            node.position().begin_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
-        flows.emplace_back(
-            node.angle().begin_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
-        flows.emplace_back(
-            node.scale().begin_flow().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        std::vector<chaining::any_observer> observers;
+        observers.emplace_back(
+            node.position().chain().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        observers.emplace_back(
+            node.angle().chain().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+        observers.emplace_back(
+            node.scale().chain().receive_null(this->_leave_or_enter_or_move_tracking_receiver).end());
 
-        flows.emplace_back(node.collider()
-                               .begin_flow()
-                               .filter([](ui::collider const &value) { return !value; })
-                               .receive_null(this->_cancel_tracking_receiver)
-                               .end());
-        flows.emplace_back(node.is_enabled()
-                               .begin_flow()
-                               .filter([](bool const &value) { return !value; })
-                               .receive_null(this->_cancel_tracking_receiver)
-                               .end());
+        observers.emplace_back(node.collider()
+                                   .chain()
+                                   .guard([](ui::collider const &value) { return !value; })
+                                   .receive_null(this->_cancel_tracking_receiver)
+                                   .end());
+        observers.emplace_back(node.is_enabled()
+                                   .chain()
+                                   .guard([](bool const &value) { return !value; })
+                                   .receive_null(this->_cancel_tracking_receiver)
+                                   .end());
 
-        return flows;
+        return observers;
     }
 
-    std::vector<flow::observer> _make_collider_flows() {
+    std::vector<chaining::any_observer> _make_collider_chains() {
         auto &node = this->_rect_plane.node();
         auto weak_button = to_weak(cast<ui::button>());
 
-        auto shape_flow = node.collider()
-                              .value()
-                              .begin_shape_flow()
-                              .filter([](ui::shape const &shape) { return !shape; })
-                              .receive_null(this->_cancel_tracking_receiver)
-                              .end();
+        auto shape_observer = node.collider()
+                                  .value()
+                                  .chain_shape()
+                                  .guard([](ui::shape const &shape) { return !shape; })
+                                  .receive_null(this->_cancel_tracking_receiver)
+                                  .end();
 
-        auto enabled_flow = node.collider()
-                                .value()
-                                .begin_enabled_flow()
-                                .filter([](bool const &enabled) { return !enabled; })
-                                .receive_null(this->_cancel_tracking_receiver)
-                                .end();
+        auto enabled_observer = node.collider()
+                                    .value()
+                                    .chain_enabled()
+                                    .guard([](bool const &enabled) { return !enabled; })
+                                    .receive_null(this->_cancel_tracking_receiver)
+                                    .end();
 
-        return std::vector<flow::observer>{std::move(shape_flow), std::move(enabled_flow)};
+        return std::vector<chaining::any_observer>{std::move(shape_observer), std::move(enabled_observer)};
     }
 
     void _update_tracking(ui::event const &event) {
@@ -257,11 +257,11 @@ struct ui::button::impl : base::impl {
             std::make_pair(method, context{.button = cast<ui::button>(), .touch = event.get<ui::touch>()}));
     }
 
-    flow::observer _renderer_flow = nullptr;
+    chaining::any_observer _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
-    flow::observer _rect_observer = nullptr;
-    flow::receiver<> _leave_or_enter_or_move_tracking_receiver = nullptr;
-    flow::receiver<> _cancel_tracking_receiver = nullptr;
+    chaining::any_observer _rect_observer = nullptr;
+    chaining::receiver<> _leave_or_enter_or_move_tracking_receiver = nullptr;
+    chaining::receiver<> _cancel_tracking_receiver = nullptr;
 };
 
 #pragma mark - ui::button
@@ -303,16 +303,17 @@ void ui::button::cancel_tracking() {
     impl_ptr<impl>()->cancel_tracking();
 }
 
-flow::node_t<ui::button::flow_pair_t, false> ui::button::begin_flow() const {
-    return impl_ptr<impl>()->_notify_sender.begin_flow();
+chaining::chain<ui::button::chain_pair_t, ui::button::chain_pair_t, ui::button::chain_pair_t, false> ui::button::chain()
+    const {
+    return impl_ptr<impl>()->_notify_sender.chain();
 }
 
-flow::node<ui::button::context, ui::button::flow_pair_t, ui::button::flow_pair_t, false> ui::button::begin_flow(
+chaining::chain<ui::button::context, ui::button::chain_pair_t, ui::button::chain_pair_t, false> ui::button::chain(
     method const method) const {
     return impl_ptr<impl>()
-        ->_notify_sender.begin_flow()
-        .filter([method](flow_pair_t const &pair) { return pair.first == method; })
-        .map([](flow_pair_t const &pair) { return pair.second; });
+        ->_notify_sender.chain()
+        .guard([method](chain_pair_t const &pair) { return pair.first == method; })
+        .to([](chain_pair_t const &pair) { return pair.second; });
 }
 
 ui::rect_plane &ui::button::rect_plane() {

@@ -3,7 +3,7 @@
 //
 
 #include "yas_sample_inputted_text.h"
-#include "yas_flow_utils.h"
+#include "yas_chaining_utils.h"
 
 using namespace yas;
 
@@ -18,17 +18,17 @@ struct sample::inputted_text::impl : base::impl {
     void prepare(sample::inputted_text &text) {
         auto &node = this->_strings.rect_plane().node();
 
-        this->_renderer_flow =
-            node.begin_renderer_flow()
+        this->_renderer_observer =
+            node.chain_renderer()
                 .perform([weak_text = to_weak(text), event_observer = base{nullptr},
-                          layout = flow::observer{nullptr}](ui::renderer const &value) mutable {
+                          layout = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
                     if (auto text = weak_text.lock()) {
                         if (auto renderer = value) {
                             auto text_impl = text.impl_ptr<inputted_text::impl>();
                             auto &strings_frame_guide_rect = text_impl->_strings.frame_layout_guide_rect();
 
                             event_observer = renderer.event_manager()
-                                                 .begin_flow(ui::event_manager::method::key_changed)
+                                                 .chain(ui::event_manager::method::key_changed)
                                                  .perform([weak_text](ui::event const &event) {
                                                      if (auto text = weak_text.lock()) {
                                                          text.impl_ptr<inputted_text::impl>()->update_text(event);
@@ -37,8 +37,8 @@ struct sample::inputted_text::impl : base::impl {
                                                  .end();
 
                             layout = renderer.safe_area_layout_guide_rect()
-                                         .begin_flow()
-                                         .map(flow::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
+                                         .chain()
+                                         .to(chaining::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
                                          .receive(strings_frame_guide_rect.receiver())
                                          .sync();
                         } else {
@@ -72,7 +72,7 @@ struct sample::inputted_text::impl : base::impl {
     }
 
    private:
-    flow::observer _renderer_flow = nullptr;
+    chaining::any_observer _renderer_observer = nullptr;
     ui::layout_guide_point _layout_guide_point;
 };
 

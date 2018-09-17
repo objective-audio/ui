@@ -319,21 +319,21 @@ using namespace yas;
 
     bool called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
-                        auto const &value = event.get<ui::cursor>();
-                        XCTAssertEqual(value.position().x, 0.25f);
-                        XCTAssertEqual(value.position().y, 0.125f);
-                        XCTAssertEqual(value.timestamp(), 101.0);
+                            auto const &value = event.get<ui::cursor>();
+                            XCTAssertEqual(value.position().x, 0.25f);
+                            XCTAssertEqual(value.position().y, 0.125f);
+                            XCTAssertEqual(value.timestamp(), 101.0);
 
-                        called = true;
-                    })
-                    .end();
+                            called = true;
+                        })
+                        .end();
 
     manager.inputtable().input_cursor_event(ui::cursor_event{{0.25f, 0.125f}, 101.0});
 
@@ -345,22 +345,22 @@ using namespace yas;
 
     bool called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
-                        auto const &value = event.get<ui::touch>();
-                        XCTAssertEqual(value.identifier(), 100);
-                        XCTAssertEqual(value.position().x, 256.0f);
-                        XCTAssertEqual(value.position().y, 512.0f);
-                        XCTAssertEqual(value.timestamp(), 201.0);
+                            auto const &value = event.get<ui::touch>();
+                            XCTAssertEqual(value.identifier(), 100);
+                            XCTAssertEqual(value.position().x, 256.0f);
+                            XCTAssertEqual(value.position().y, 512.0f);
+                            XCTAssertEqual(value.timestamp(), 201.0);
 
-                        called = true;
-                    })
-                    .end();
+                            called = true;
+                        })
+                        .end();
 
     manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{100, {256.0f, 512.0f}, 201.0});
 
@@ -372,22 +372,22 @@ using namespace yas;
 
     bool called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::key_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
-                        auto const &value = event.get<ui::key>();
-                        XCTAssertEqual(value.key_code(), 200);
-                        XCTAssertEqual(value.characters(), "xyz");
-                        XCTAssertEqual(value.raw_characters(), "uvw");
-                        XCTAssertEqual(value.timestamp(), 301.0);
+                            auto const &value = event.get<ui::key>();
+                            XCTAssertEqual(value.key_code(), 200);
+                            XCTAssertEqual(value.characters(), "xyz");
+                            XCTAssertEqual(value.raw_characters(), "uvw");
+                            XCTAssertEqual(value.timestamp(), 301.0);
 
-                        called = true;
-                    })
-                    .end();
+                            called = true;
+                        })
+                        .end();
 
     manager.inputtable().input_key_event(ui::event_phase::began, ui::key_event{200, "xyz", "uvw", 301.0});
 
@@ -400,24 +400,24 @@ using namespace yas;
     bool alt_called = false;
     bool func_called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&alt_called, &func_called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&alt_called, &func_called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
 
-                        auto const &value = event.get<ui::modifier>();
+                            auto const &value = event.get<ui::modifier>();
 
-                        if (value.flag() == ui::modifier_flags::alternate) {
-                            alt_called = true;
-                        }
+                            if (value.flag() == ui::modifier_flags::alternate) {
+                                alt_called = true;
+                            }
 
-                        if (value.flag() == ui::modifier_flags::function) {
-                            func_called = true;
-                        }
-                    })
-                    .end();
+                            if (value.flag() == ui::modifier_flags::function) {
+                                func_called = true;
+                            }
+                        })
+                        .end();
 
     manager.inputtable().input_modifier_event(
         ui::modifier_flags(ui::modifier_flags::alternate | ui::modifier_flags::function), 0.0);
@@ -432,20 +432,20 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&began_called, &ended_called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&began_called, &ended_called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
-                        if (event.phase() == ui::event_phase::began) {
-                            began_called = true;
-                        } else if (event.phase() == ui::event_phase::ended) {
-                            ended_called = true;
-                        }
-                    })
-                    .end();
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        })
+                        .end();
 
     manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
@@ -481,22 +481,22 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&began_called, &ended_called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&began_called, &ended_called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
-                        if (event.get<ui::touch>().identifier() == 1) {
-                            if (event.phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event.phase() == ui::event_phase::ended) {
-                                ended_called = true;
+                            if (event.get<ui::touch>().identifier() == 1) {
+                                if (event.phase() == ui::event_phase::began) {
+                                    began_called = true;
+                                } else if (event.phase() == ui::event_phase::ended) {
+                                    ended_called = true;
+                                }
                             }
-                        }
-                    })
-                    .end();
+                        })
+                        .end();
 
     manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
@@ -542,22 +542,22 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&began_called, &ended_called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&began_called, &ended_called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::key_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
-                        if (event.get<ui::key>().key_code() == 1) {
-                            if (event.phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event.phase() == ui::event_phase::ended) {
-                                ended_called = true;
+                            if (event.get<ui::key>().key_code() == 1) {
+                                if (event.phase() == ui::event_phase::began) {
+                                    began_called = true;
+                                } else if (event.phase() == ui::event_phase::ended) {
+                                    ended_called = true;
+                                }
                             }
-                        }
-                    })
-                    .end();
+                        })
+                        .end();
 
     manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
@@ -603,22 +603,22 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow()
-                    .perform([&began_called, &ended_called, self](auto const &context) {
-                        auto const &method = context.method;
-                        ui::event const &event = context.event;
+    auto observer = manager.chain()
+                        .perform([&began_called, &ended_called, self](auto const &context) {
+                            auto const &method = context.method;
+                            ui::event const &event = context.event;
 
-                        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
+                            XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
 
-                        if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
-                            if (event.phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event.phase() == ui::event_phase::ended) {
-                                ended_called = true;
+                            if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
+                                if (event.phase() == ui::event_phase::began) {
+                                    began_called = true;
+                                } else if (event.phase() == ui::event_phase::ended) {
+                                    ended_called = true;
+                                }
                             }
-                        }
-                    })
-                    .end();
+                        })
+                        .end();
 
     manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 
@@ -671,21 +671,21 @@ using namespace yas;
     ended_called = false;
 }
 
-- (void)test_flow_input_cursor_events {
+- (void)test_chain_input_cursor_events {
     ui::event_manager manager;
 
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow(ui::event_manager::method::cursor_changed)
-                    .perform([&began_called, &ended_called, self](ui::event const &event) {
-                        if (event.phase() == ui::event_phase::began) {
-                            began_called = true;
-                        } else if (event.phase() == ui::event_phase::ended) {
-                            ended_called = true;
-                        }
-                    })
-                    .end();
+    auto observer = manager.chain(ui::event_manager::method::cursor_changed)
+                        .perform([&began_called, &ended_called, self](ui::event const &event) {
+                            if (event.phase() == ui::event_phase::began) {
+                                began_called = true;
+                            } else if (event.phase() == ui::event_phase::ended) {
+                                ended_called = true;
+                            }
+                        })
+                        .end();
 
     manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
@@ -715,23 +715,23 @@ using namespace yas;
     XCTAssertFalse(ended_called);
 }
 
-- (void)test_flow_input_touch_events {
+- (void)test_chain_input_touch_events {
     ui::event_manager manager;
 
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow(ui::event_manager::method::touch_changed)
-                    .perform([&began_called, &ended_called, self](ui::event const &event) {
-                        if (event.get<ui::touch>().identifier() == 1) {
-                            if (event.phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event.phase() == ui::event_phase::ended) {
-                                ended_called = true;
+    auto observer = manager.chain(ui::event_manager::method::touch_changed)
+                        .perform([&began_called, &ended_called, self](ui::event const &event) {
+                            if (event.get<ui::touch>().identifier() == 1) {
+                                if (event.phase() == ui::event_phase::began) {
+                                    began_called = true;
+                                } else if (event.phase() == ui::event_phase::ended) {
+                                    ended_called = true;
+                                }
                             }
-                        }
-                    })
-                    .end();
+                        })
+                        .end();
 
     manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{1, {.v = 0.0f}, 0.0});
 
@@ -771,23 +771,23 @@ using namespace yas;
     XCTAssertFalse(ended_called);
 }
 
-- (void)test_flow_input_key_events {
+- (void)test_chain_input_key_events {
     ui::event_manager manager;
 
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow(ui::event_manager::method::key_changed)
-                    .perform([&began_called, &ended_called, self](ui::event const &event) {
-                        if (event.get<ui::key>().key_code() == 1) {
-                            if (event.phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event.phase() == ui::event_phase::ended) {
-                                ended_called = true;
+    auto observer = manager.chain(ui::event_manager::method::key_changed)
+                        .perform([&began_called, &ended_called, self](ui::event const &event) {
+                            if (event.get<ui::key>().key_code() == 1) {
+                                if (event.phase() == ui::event_phase::began) {
+                                    began_called = true;
+                                } else if (event.phase() == ui::event_phase::ended) {
+                                    ended_called = true;
+                                }
                             }
-                        }
-                    })
-                    .end();
+                        })
+                        .end();
 
     manager.inputtable().input_key_event(ui::event_phase::ended, ui::key_event{1, "", "", 0.0});
 
@@ -827,23 +827,23 @@ using namespace yas;
     XCTAssertFalse(ended_called);
 }
 
-- (void)test_flow_input_modifier_events {
+- (void)test_chain_input_modifier_events {
     ui::event_manager manager;
 
     bool began_called = false;
     bool ended_called = false;
 
-    auto flow = manager.begin_flow(ui::event_manager::method::modifier_changed)
-                    .perform([&began_called, &ended_called, self](ui::event const &event) {
-                        if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
-                            if (event.phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event.phase() == ui::event_phase::ended) {
-                                ended_called = true;
+    auto observer = manager.chain(ui::event_manager::method::modifier_changed)
+                        .perform([&began_called, &ended_called, self](ui::event const &event) {
+                            if (event.get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
+                                if (event.phase() == ui::event_phase::began) {
+                                    began_called = true;
+                                } else if (event.phase() == ui::event_phase::ended) {
+                                    ended_called = true;
+                                }
                             }
-                        }
-                    })
-                    .end();
+                        })
+                        .end();
 
     manager.inputtable().input_modifier_event(ui::modifier_flags(0), 0.0);
 
@@ -896,7 +896,7 @@ using namespace yas;
     ended_called = false;
 }
 
-- (void)test_flow {
+- (void)test_chain {
     ui::event_manager manager;
     std::vector<ui::event_manager::method> called_methods;
     std::vector<ui::event> called_events;
@@ -906,12 +906,12 @@ using namespace yas;
         called_events.clear();
     };
 
-    auto flow = manager.begin_flow()
-                    .perform([&called_methods, &called_events](auto const &context) {
-                        called_methods.push_back(context.method);
-                        called_events.push_back(context.event);
-                    })
-                    .end();
+    auto observer = manager.chain()
+                        .perform([&called_methods, &called_events](auto const &context) {
+                            called_methods.push_back(context.method);
+                            called_events.push_back(context.event);
+                        })
+                        .end();
 
     manager.inputtable().input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});
 

@@ -3,7 +3,7 @@
 //
 
 #include "yas_sample_modifier_text.h"
-#include "yas_flow_utils.h"
+#include "yas_chaining_utils.h"
 #include "yas_stl_utils.h"
 
 using namespace yas;
@@ -20,16 +20,16 @@ struct sample::modifier_text::impl : base::impl {
     void prepare(sample::modifier_text &text) {
         auto &node = this->_strings.rect_plane().node();
 
-        this->_renderer_flow =
-            node.begin_renderer_flow()
-                .perform([weak_text = to_weak(text), event_observer = flow::observer{nullptr},
-                          left_layout = flow::observer{nullptr}, right_layout = flow::observer{nullptr},
-                          bottom_layout = flow::observer{nullptr},
-                          strings_flow = flow::observer{nullptr}](ui::renderer const &value) mutable {
+        this->_renderer_observer =
+            node.chain_renderer()
+                .perform([weak_text = to_weak(text), event_observer = chaining::any_observer{nullptr},
+                          left_layout = chaining::any_observer{nullptr}, right_layout = chaining::any_observer{nullptr},
+                          bottom_layout = chaining::any_observer{nullptr},
+                          strings_observer = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
                     if (auto text = weak_text.lock()) {
                         if (auto renderer = value) {
                             event_observer = renderer.event_manager()
-                                                 .begin_flow(ui::event_manager::method::modifier_changed)
+                                                 .chain(ui::event_manager::method::modifier_changed)
                                                  .perform([weak_text, flags = std::unordered_set<ui::modifier_flags>{}](
                                                               ui::event const &event) mutable {
                                                      if (auto text = weak_text.lock()) {
@@ -46,24 +46,24 @@ struct sample::modifier_text::impl : base::impl {
                             auto const &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
 
                             left_layout = safe_area_guide_rect.left()
-                                              .begin_flow()
-                                              .map(flow::add(4.0f))
+                                              .chain()
+                                              .to(chaining::add(4.0f))
                                               .receive(strings_guide_rect.left().receiver())
                                               .sync();
 
                             right_layout = safe_area_guide_rect.right()
-                                               .begin_flow()
-                                               .map(flow::add(-4.0f))
+                                               .chain()
+                                               .to(chaining::add(-4.0f))
                                                .receive(strings_guide_rect.right().receiver())
                                                .sync();
 
-                            bottom_layout = text_impl->_bottom_guide.begin_flow()
-                                                .map(flow::add(4.0f))
+                            bottom_layout = text_impl->_bottom_guide.chain()
+                                                .to(chaining::add(4.0f))
                                                 .receive(strings_guide_rect.bottom().receiver())
                                                 .sync();
 
                             auto strings_handler = [top_layout =
-                                                        flow::observer{nullptr}](ui::strings &strings) mutable {
+                                                        chaining::any_observer{nullptr}](ui::strings &strings) mutable {
                                 float distance = 0.0f;
 
                                 if (auto const &font_atlas = strings.font_atlas()) {
@@ -72,16 +72,16 @@ struct sample::modifier_text::impl : base::impl {
 
                                 top_layout = strings.frame_layout_guide_rect()
                                                  .bottom()
-                                                 .begin_flow()
-                                                 .map(flow::add(distance))
+                                                 .chain()
+                                                 .to(chaining::add(distance))
                                                  .receive(strings.frame_layout_guide_rect().top().receiver())
                                                  .sync();
                             };
 
                             strings_handler(strings);
 
-                            strings_flow =
-                                strings.begin_font_atlas_flow()
+                            strings_observer =
+                                strings.chain_font_atlas()
                                     .perform([strings_handler = std::move(strings_handler),
                                               weak_strings = to_weak(strings)](ui::font_atlas const &value) mutable {
                                         if (auto strings = weak_strings.lock()) {
@@ -94,7 +94,7 @@ struct sample::modifier_text::impl : base::impl {
                             left_layout = nullptr;
                             right_layout = nullptr;
                             bottom_layout = nullptr;
-                            strings_flow = nullptr;
+                            strings_observer = nullptr;
                         }
                     }
                 })
@@ -102,7 +102,7 @@ struct sample::modifier_text::impl : base::impl {
     }
 
    private:
-    flow::observer _renderer_flow = nullptr;
+    chaining::any_observer _renderer_observer = nullptr;
 
     void _update_text(ui::event const &event, std::unordered_set<ui::modifier_flags> &flags) {
         auto flag = event.get<ui::modifier>().flag();

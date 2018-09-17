@@ -46,10 +46,11 @@ class strings : public base {
 
     ui::rect_plane &rect_plane();
 
-    [[nodiscard]] flow::node_t<std::string, true> begin_text_flow() const;
-    [[nodiscard]] flow::node_t<ui::font_atlas, true> begin_font_atlas_flow() const;
-    [[nodiscard]] flow::node_t<opt_t<float>, true> begin_line_height_flow() const;
-    [[nodiscard]] flow::node_t<ui::layout_alignment, true> begin_alignment_flow() const;
-    flow::receiver<std::string> &text_receiver();
+    [[nodiscard]] chaining::chain<std::string, std::string, std::string, true> chain_text() const;
+    [[nodiscard]] chaining::chain<ui::font_atlas, ui::font_atlas, ui::font_atlas, true> chain_font_atlas() const;
+    [[nodiscard]] chaining::chain<opt_t<float>, opt_t<float>, opt_t<float>, true> chain_line_height() const;
+    [[nodiscard]] chaining::chain<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment, true>
+    chain_alignment() const;
+    chaining::receiver<std::string> &text_receiver();
 };
 }  // namespace yas::ui

@@ -207,14 +207,14 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
         }
     }
 
-    flow::node<event, context, context, false> begin_flow(method const &method) {
-        return this->_notifier.begin_flow()
-            .filter([method](context const &context) { return context.method == method; })
-            .map([](ui::event_manager::context const &context) { return context.event; });
+    chaining::chain<event, context, context, false> chain(method const &method) {
+        return this->_notifier.chain()
+            .guard([method](context const &context) { return context.method == method; })
+            .to([](ui::event_manager::context const &context) { return context.event; });
     }
 
-    flow::node<context, context, context, false> begin_flow() {
-        return this->_notifier.begin_flow();
+    chaining::chain<context, context, context, false> chain() {
+        return this->_notifier.chain();
     }
 
     event _cursor_event{nullptr};
@@ -222,8 +222,8 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     std::unordered_map<uint16_t, event> _key_events;
     std::unordered_map<uint32_t, event> _modifier_events;
 
-    flow::receiver<context> _receiver = nullptr;
-    flow::notifier<context> _notifier;
+    chaining::receiver<context> _receiver = nullptr;
+    chaining::notifier<context> _notifier;
 };
 
 #pragma mark - manageable_event
@@ -262,14 +262,14 @@ ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 
 ui::event_manager::~event_manager() = default;
 
-flow::node<ui::event, ui::event_manager::context, ui::event_manager::context, false> ui::event_manager::begin_flow(
+chaining::chain<ui::event, ui::event_manager::context, ui::event_manager::context, false> ui::event_manager::chain(
     method const &method) const {
-    return impl_ptr<impl>()->begin_flow(method);
+    return impl_ptr<impl>()->chain(method);
 }
 
-flow::node<ui::event_manager::context, ui::event_manager::context, ui::event_manager::context, false>
-ui::event_manager::begin_flow() const {
-    return impl_ptr<impl>()->begin_flow();
+chaining::chain<ui::event_manager::context, ui::event_manager::context, ui::event_manager::context, false>
+ui::event_manager::chain() const {
+    return impl_ptr<impl>()->chain();
 }
 
 ui::event_inputtable &ui::event_manager::inputtable() {

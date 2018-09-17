@@ -6,7 +6,7 @@
 
 #include <vector>
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
 
@@ -40,30 +40,30 @@ class node : public base {
     bool operator==(node const &) const;
     bool operator!=(node const &) const;
 
-    flow::property<ui::point> const &position() const;
-    flow::property<ui::point> &position();
-    flow::property<ui::angle> const &angle() const;
-    flow::property<ui::angle> &angle();
-    flow::property<ui::size> const &scale() const;
-    flow::property<ui::size> &scale();
-    flow::property<ui::color> const &color() const;
-    flow::property<ui::color> &color();
-    flow::property<float> const &alpha() const;
-    flow::property<float> &alpha();
-    flow::property<bool> const &is_enabled() const;
-    flow::property<bool> &is_enabled();
+    chaining::holder<ui::point> const &position() const;
+    chaining::holder<ui::point> &position();
+    chaining::holder<ui::angle> const &angle() const;
+    chaining::holder<ui::angle> &angle();
+    chaining::holder<ui::size> const &scale() const;
+    chaining::holder<ui::size> &scale();
+    chaining::holder<ui::color> const &color() const;
+    chaining::holder<ui::color> &color();
+    chaining::holder<float> const &alpha() const;
+    chaining::holder<float> &alpha();
+    chaining::holder<bool> const &is_enabled() const;
+    chaining::holder<bool> &is_enabled();
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
-    flow::property<ui::mesh> const &mesh() const;
-    flow::property<ui::mesh> &mesh();
-    flow::property<ui::collider> const &collider() const;
-    flow::property<ui::collider> &collider();
-    flow::property<ui::batch> const &batch() const;
-    flow::property<ui::batch> &batch();
-    flow::property<ui::render_target> const &render_target() const;
-    flow::property<ui::render_target> &render_target();
+    chaining::holder<ui::mesh> const &mesh() const;
+    chaining::holder<ui::mesh> &mesh();
+    chaining::holder<ui::collider> const &collider() const;
+    chaining::holder<ui::collider> &collider();
+    chaining::holder<ui::batch> const &batch() const;
+    chaining::holder<ui::batch> &batch();
+    chaining::holder<ui::render_target> const &render_target() const;
+    chaining::holder<ui::render_target> &render_target();
 
     void add_sub_node(ui::node);
     void add_sub_node(ui::node, std::size_t const);
@@ -78,12 +78,13 @@ class node : public base {
     ui::metal_object &metal();
     ui::renderable_node &renderable();
 
-    using flow_pair_t = std::pair<method, node>;
-    [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(method const &) const;
-    [[nodiscard]] flow::node_t<flow_pair_t, false> begin_flow(std::vector<method> const &) const;
+    using chain_pair_t = std::pair<method, node>;
+    [[nodiscard]] chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain(method const &) const;
+    [[nodiscard]] chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain(
+        std::vector<method> const &) const;
 
-    [[nodiscard]] flow::node<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> begin_renderer_flow() const;
-    [[nodiscard]] flow::node<ui::node, weak<ui::node>, weak<ui::node>, true> begin_parent_flow() const;
+    [[nodiscard]] chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> chain_renderer() const;
+    [[nodiscard]] chaining::chain<ui::node, weak<ui::node>, weak<ui::node>, true> chain_parent() const;
 
     ui::point convert_position(ui::point const &) const;
 

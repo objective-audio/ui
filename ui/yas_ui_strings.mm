@@ -18,11 +18,11 @@ using namespace yas;
 struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
-    flow::receiver<std::string> _text_receiver = nullptr;
+    chaining::receiver<std::string> _text_receiver = nullptr;
 
-    flow::property<std::string> _text;
-    flow::property<ui::font_atlas> _font_atlas;
-    flow::property<opt_t<float>> _line_height;
+    chaining::holder<std::string> _text;
+    chaining::holder<ui::font_atlas> _font_atlas;
+    chaining::holder<opt_t<float>> _line_height;
 
     impl(args &&args)
         : _collection_layout(
@@ -38,78 +38,78 @@ struct ui::strings::impl : base::impl {
         auto weak_strings = to_weak(strings);
 
         this->_prepare_receivers(weak_strings);
-        this->_prepare_flows(weak_strings);
+        this->_prepare_chains(weak_strings);
 
         this->_update_layout();
     }
 
    private:
     std::size_t const _max_word_count = 0;
-    flow::receiver<ui::texture> _texture_receiver = nullptr;
-    flow::receiver<ui::font_atlas> _update_texture_flow_receiver = nullptr;
-    flow::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
-    flow::observer _texture_flow = nullptr;
-    std::vector<base> _property_flows;
+    chaining::receiver<ui::texture> _texture_receiver = nullptr;
+    chaining::receiver<ui::font_atlas> _update_texture_receiver = nullptr;
+    chaining::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
+    chaining::any_observer _texture_observer = nullptr;
+    std::vector<chaining::any_observer> _property_observers;
 
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
-        this->_texture_receiver = flow::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
+        this->_texture_receiver = chaining::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
             if (auto strings = weak_strings.lock()) {
                 strings.rect_plane().node().mesh().value().set_texture(texture);
             }
         });
 
-        this->_update_texture_flow_receiver = flow::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
+        this->_update_texture_receiver = chaining::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
             if (auto strings = weak_strings.lock()) {
-                strings.impl_ptr<impl>()->_update_texture_flow();
+                strings.impl_ptr<impl>()->_update_texture_chaining();
             }
         });
 
-        this->_update_layout_receiver = flow::receiver<std::nullptr_t>([weak_strings](auto const &) {
+        this->_update_layout_receiver = chaining::receiver<std::nullptr_t>([weak_strings](auto const &) {
             if (auto strings = weak_strings.lock()) {
                 strings.impl_ptr<impl>()->_update_layout();
             }
         });
 
-        this->_text_receiver = flow::receiver<std::string>([weak_strings](std::string const &text) {
+        this->_text_receiver = chaining::receiver<std::string>([weak_strings](std::string const &text) {
             if (auto strings = weak_strings.lock()) {
                 strings.set_text(text);
             }
         });
     }
 
-    void _prepare_flows(weak<ui::strings> &weak_strings) {
-        this->_property_flows.emplace_back(this->_font_atlas.begin_flow()
-                                               .receive(this->_update_texture_flow_receiver)
-                                               .receive_null(this->_update_layout_receiver)
-                                               .sync());
+    void _prepare_chains(weak<ui::strings> &weak_strings) {
+        this->_property_observers.emplace_back(this->_font_atlas.chain()
+                                                   .receive(this->_update_texture_receiver)
+                                                   .receive_null(this->_update_layout_receiver)
+                                                   .sync());
 
-        this->_property_flows.emplace_back(this->_text.begin_flow().receive_null(this->_update_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_text.chain().receive_null(this->_update_layout_receiver).end());
 
-        this->_property_flows.emplace_back(
-            this->_line_height.begin_flow().receive_null(this->_update_layout_receiver).end());
+        this->_property_observers.emplace_back(
+            this->_line_height.chain().receive_null(this->_update_layout_receiver).end());
 
-        this->_property_flows.emplace_back(
-            this->_collection_layout.begin_actual_cell_count_flow().to_null().receive(this->_update_layout_receiver));
+        this->_property_observers.emplace_back(
+            this->_collection_layout.chain_actual_cell_count().to_null().receive(this->_update_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_collection_layout.begin_alignment_flow().end());
+        this->_property_observers.emplace_back(this->_collection_layout.chain_alignment().end());
     }
 
-    void _update_texture_flow() {
+    void _update_texture_chaining() {
         if (auto &font_atlas = _font_atlas.value()) {
-            if (!this->_texture_flow) {
+            if (!this->_texture_observer) {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
-                this->_texture_flow = font_atlas.begin_texture_flow()
-                                          .filter([weak_strings](auto const &) { return !!weak_strings; })
-                                          .receive(strings_impl->_texture_receiver)
-                                          .merge(font_atlas.begin_texture_updated_flow())
-                                          .to_null()
-                                          .receive(strings_impl->_update_layout_receiver)
-                                          .sync();
+                this->_texture_observer = font_atlas.chain_texture()
+                                              .guard([weak_strings](auto const &) { return !!weak_strings; })
+                                              .receive(strings_impl->_texture_receiver)
+                                              .merge(font_atlas.chain_texture_updated())
+                                              .to_null()
+                                              .receive(strings_impl->_update_layout_receiver)
+                                              .sync();
             }
         } else {
             this->_rect_plane.node().mesh().value().set_texture(nullptr);
-            this->_texture_flow = nullptr;
+            this->_texture_observer = nullptr;
         }
     }
 
@@ -186,8 +186,8 @@ struct ui::strings::impl : base::impl {
             auto weak_strings = to_weak(strings);
 
             this->_cell_rect_observers.emplace_back(
-                cell_rect.begin_flow()
-                    .filter([weak_strings](ui::region const &) { return !!weak_strings; })
+                cell_rect.chain()
+                    .guard([weak_strings](ui::region const &) { return !!weak_strings; })
                     .perform([idx, word, weak_strings, handler](ui::region const &value) {
                         auto strings = weak_strings.lock();
                         handler(strings, idx, word, value);
@@ -212,7 +212,7 @@ struct ui::strings::impl : base::impl {
     }
 
    private:
-    std::vector<flow::observer> _cell_rect_observers;
+    std::vector<chaining::any_observer> _cell_rect_observers;
 };
 
 ui::strings::strings() : strings(args{}) {
@@ -267,22 +267,23 @@ ui::rect_plane &ui::strings::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
 
-flow::node_t<std::string, true> ui::strings::begin_text_flow() const {
-    return impl_ptr<impl>()->_text.begin_flow();
+chaining::chain<std::string, std::string, std::string, true> ui::strings::chain_text() const {
+    return impl_ptr<impl>()->_text.chain();
 }
 
-flow::node_t<ui::font_atlas, true> ui::strings::begin_font_atlas_flow() const {
-    return impl_ptr<impl>()->_font_atlas.begin_flow();
+chaining::chain<ui::font_atlas, ui::font_atlas, ui::font_atlas, true> ui::strings::chain_font_atlas() const {
+    return impl_ptr<impl>()->_font_atlas.chain();
 }
 
-flow::node_t<opt_t<float>, true> ui::strings::begin_line_height_flow() const {
-    return impl_ptr<impl>()->_line_height.begin_flow();
+chaining::chain<opt_t<float>, opt_t<float>, opt_t<float>, true> ui::strings::chain_line_height() const {
+    return impl_ptr<impl>()->_line_height.chain();
 }
 
-flow::node_t<ui::layout_alignment, true> ui::strings::begin_alignment_flow() const {
-    return impl_ptr<impl>()->_collection_layout.begin_alignment_flow();
+chaining::chain<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment, true> ui::strings::chain_alignment()
+    const {
+    return impl_ptr<impl>()->_collection_layout.chain_alignment();
 }
 
-flow::receiver<std::string> &ui::strings::text_receiver() {
+chaining::receiver<std::string> &ui::strings::text_receiver() {
     return impl_ptr<impl>()->_text_receiver;
 }

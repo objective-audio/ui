@@ -7,7 +7,7 @@
 
 #include <string>
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_collider_protocol.h"
 #include "yas_ui_types.h"
 
@@ -81,11 +81,11 @@ class collider : public base {
 
     bool hit_test(ui::point const &) const;
 
-    [[nodiscard]] flow::node_t<ui::shape, true> begin_shape_flow() const;
-    [[nodiscard]] flow::node_t<bool, true> begin_enabled_flow() const;
+    [[nodiscard]] chaining::chain<ui::shape, ui::shape, ui::shape, true> chain_shape() const;
+    [[nodiscard]] chaining::chain<bool, bool, bool, true> chain_enabled() const;
 
-    [[nodiscard]] flow::receiver<ui::shape> &shape_receiver();
-    [[nodiscard]] flow::receiver<bool> &enabled_receiver();
+    [[nodiscard]] chaining::receiver<ui::shape> &shape_receiver();
+    [[nodiscard]] chaining::receiver<bool> &enabled_receiver();
 
     ui::renderable_collider &renderable();
 

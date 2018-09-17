@@ -51,8 +51,8 @@ struct ui::layout_animator::impl : base::impl {
             auto weak_interporator = to_weak(interporator);
             auto weak_dst_guide = to_weak(dst_guide);
 
-            auto observer = src_guide.begin_flow()
-                                .filter([weak_interporator, weak_dst_guide](float const &) {
+            auto observer = src_guide.chain()
+                                .guard([weak_interporator, weak_dst_guide](float const &) {
                                     return weak_interporator && weak_dst_guide;
                                 })
                                 .perform([weak_interporator, weak_dst_guide](float const &value) {
@@ -79,7 +79,7 @@ struct ui::layout_animator::impl : base::impl {
     }
 
    private:
-    std::vector<flow::observer> _observers;
+    std::vector<chaining::any_observer> _observers;
 };
 
 ui::layout_animator::layout_animator(args args) : base(std::make_shared<impl>(std::move(args))) {

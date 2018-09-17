@@ -10,8 +10,8 @@ using namespace yas;
 #pragma mark - ui::layout_guide::impl
 
 struct ui::layout_guide::impl : base::impl {
-    flow::property<float> _value;
-    flow::receiver<float> _receiver = nullptr;
+    chaining::holder<float> _value;
+    chaining::receiver<float> _receiver = nullptr;
 
     impl(float const value) : _value(value) {
     }
@@ -19,7 +19,7 @@ struct ui::layout_guide::impl : base::impl {
     void prepare(layout_guide &guide) {
         auto weak_guide = to_weak(cast<layout_guide>());
 
-        this->_receiver = flow::receiver<float>([weak_guide](float const &value) {
+        this->_receiver = chaining::receiver<float>([weak_guide](float const &value) {
             if (auto guide = weak_guide.lock()) {
                 guide.set_value(value);
             }
@@ -34,14 +34,14 @@ struct ui::layout_guide::impl : base::impl {
         this->_wait_sender.notify(false);
     }
 
-    flow_t begin_flow() {
+    chain_t chain() {
         auto weak_guide = to_weak(cast<layout_guide>());
 
         auto old_cache = std::make_shared<opt_t<float>>();
 
-        return this->_value.begin_flow()
-            .filter([weak_guide](float const &) { return !!weak_guide; })
-            .pair(this->_wait_sender.begin_flow().filter([count = int32_t(0)](bool const &is_wait) mutable {
+        return this->_value.chain()
+            .guard([weak_guide](float const &) { return !!weak_guide; })
+            .pair(this->_wait_sender.chain().guard([count = int32_t(0)](bool const &is_wait) mutable {
                 if (is_wait) {
                     ++count;
                     return (count == 1);
@@ -53,8 +53,8 @@ struct ui::layout_guide::impl : base::impl {
                     return (count == 0);
                 }
             }))
-            .map([cache = opt_t<float>(), old_cache, is_wait = false,
-                  weak_guide](std::pair<opt_t<float>, opt_t<bool>> const &pair) mutable {
+            .to([cache = opt_t<float>(), old_cache, is_wait = false,
+                 weak_guide](std::pair<opt_t<float>, opt_t<bool>> const &pair) mutable {
                 bool is_continue = false;
 
                 if (pair.first) {
@@ -83,8 +83,8 @@ struct ui::layout_guide::impl : base::impl {
 
                 return std::make_pair(cache, is_continue);
             })
-            .filter([](auto const &pair) { return pair.second; })
-            .filter([weak_guide, old_cache](auto const &pair) {
+            .guard([](auto const &pair) { return pair.second; })
+            .guard([weak_guide, old_cache](auto const &pair) {
                 auto guide_impl = weak_guide.lock().impl_ptr<ui::layout_guide::impl>();
                 if (!*old_cache) {
                     return true;
@@ -93,11 +93,11 @@ struct ui::layout_guide::impl : base::impl {
                 *old_cache = nullopt;
                 return old_value != *pair.first;
             })
-            .map([](std::pair<opt_t<float>, bool> const &pair) { return *pair.first; });
+            .to([](std::pair<opt_t<float>, bool> const &pair) { return *pair.first; });
     }
 
    private:
-    flow::notifier<bool> _wait_sender;
+    chaining::notifier<bool> _wait_sender;
 };
 
 #pragma mark - ui::layout_guide
@@ -130,11 +130,11 @@ void ui::layout_guide::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide::flow_t ui::layout_guide::begin_flow() const {
-    return impl_ptr<impl>()->begin_flow();
+ui::layout_guide::chain_t ui::layout_guide::chain() const {
+    return impl_ptr<impl>()->chain();
 }
 
-flow::receiver<float> &ui::layout_guide::receiver() {
+chaining::receiver<float> &ui::layout_guide::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 
@@ -144,7 +144,7 @@ struct ui::layout_guide_point::impl : base::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
-    flow::receiver<ui::point> _receiver = nullptr;
+    chaining::receiver<ui::point> _receiver = nullptr;
 
     impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
     }
@@ -152,7 +152,7 @@ struct ui::layout_guide_point::impl : base::impl {
     void prepare(ui::layout_guide_point &guide_point) {
         auto weak_guide_point = to_weak(guide_point);
 
-        this->_receiver = flow::receiver<ui::point>([weak_guide_point](ui::point const &point) {
+        this->_receiver = chaining::receiver<ui::point>([weak_guide_point](ui::point const &point) {
             if (auto guide_point = weak_guide_point.lock()) {
                 guide_point.set_point(point);
             }
@@ -182,12 +182,12 @@ struct ui::layout_guide_point::impl : base::impl {
         this->_y_guide.pop_notify_waiting();
     }
 
-    flow_t begin_flow() {
+    chain_t chain() {
         auto cache = this->point();
 
-        return this->_x_guide.begin_flow()
-            .pair(this->_y_guide.begin_flow())
-            .map([cache](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
+        return this->_x_guide.chain()
+            .pair(this->_y_guide.chain())
+            .to([cache](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
                 if (pair.first) {
                     cache.x = *pair.first;
                 }
@@ -245,11 +245,11 @@ void ui::layout_guide_point::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide_point::flow_t ui::layout_guide_point::begin_flow() const {
-    return impl_ptr<impl>()->begin_flow();
+ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
+    return impl_ptr<impl>()->chain();
 }
 
-flow::receiver<ui::point> &ui::layout_guide_point::receiver() {
+chaining::receiver<ui::point> &ui::layout_guide_point::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 
@@ -259,10 +259,10 @@ struct ui::layout_guide_range::impl : base::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
     layout_guide _length_guide;
-    flow::observer _min_observer = nullptr;
-    flow::observer _max_observer = nullptr;
+    chaining::any_observer _min_observer = nullptr;
+    chaining::any_observer _max_observer = nullptr;
 
-    flow::receiver<ui::range> _receiver = nullptr;
+    chaining::receiver<ui::range> _receiver = nullptr;
 
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
@@ -270,19 +270,19 @@ struct ui::layout_guide_range::impl : base::impl {
     void prepare(ui::layout_guide_range &range) {
         auto weak_range = to_weak(range);
 
-        this->_min_observer = this->_min_guide.begin_flow()
-                                  .filter([weak_range](float const &) { return !!weak_range; })
-                                  .map([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
+        this->_min_observer = this->_min_guide.chain()
+                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .to([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
                                   .receive(this->_length_guide.receiver())
                                   .end();
 
-        this->_max_observer = this->_max_guide.begin_flow()
-                                  .filter([weak_range](float const &) { return !!weak_range; })
-                                  .map([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
+        this->_max_observer = this->_max_guide.chain()
+                                  .guard([weak_range](float const &) { return !!weak_range; })
+                                  .to([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
                                   .receive(this->_length_guide.receiver())
                                   .end();
 
-        this->_receiver = flow::receiver<ui::range>{[weak_range](ui::range const &range) {
+        this->_receiver = chaining::receiver<ui::range>{[weak_range](ui::range const &range) {
             if (auto guide_range = weak_range.lock()) {
                 guide_range.set_range(range);
             }
@@ -317,13 +317,13 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_length_guide.pop_notify_waiting();
     }
 
-    flow_t begin_flow() {
+    chain_t chain() {
         ui::range const range = this->range();
 
-        return this->_min_guide.begin_flow()
-            .pair(this->_max_guide.begin_flow())
-            .map([min_cache = range.min(),
-                  max_cache = range.max()](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
+        return this->_min_guide.chain()
+            .pair(this->_max_guide.chain())
+            .to([min_cache = range.min(),
+                 max_cache = range.max()](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
                 if (pair.first) {
                     min_cache = *pair.first;
                 }
@@ -385,11 +385,11 @@ void ui::layout_guide_range::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide_range::flow_t ui::layout_guide_range::begin_flow() const {
-    return impl_ptr<impl>()->begin_flow();
+ui::layout_guide_range::chain_t ui::layout_guide_range::chain() const {
+    return impl_ptr<impl>()->chain();
 }
 
-flow::receiver<ui::range> &ui::layout_guide_range::receiver() {
+chaining::receiver<ui::range> &ui::layout_guide_range::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 
@@ -399,7 +399,7 @@ struct ui::layout_guide_rect::impl : base::impl {
     layout_guide_range _vertical_range;
     layout_guide_range _horizontal_range;
 
-    flow::receiver<ui::region> _receiver = nullptr;
+    chaining::receiver<ui::region> _receiver = nullptr;
 
     impl(ranges_args &&args)
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
@@ -407,7 +407,7 @@ struct ui::layout_guide_rect::impl : base::impl {
 
     void prepare(ui::layout_guide_rect &guide_rect) {
         auto weak_guide_rect = to_weak(guide_rect);
-        this->_receiver = flow::receiver<ui::region>{[weak_guide_rect](ui::region const &region) {
+        this->_receiver = chaining::receiver<ui::region>{[weak_guide_rect](ui::region const &region) {
             if (auto guide_rect = weak_guide_rect.lock()) {
                 guide_rect.set_region(region);
             }
@@ -454,13 +454,13 @@ struct ui::layout_guide_rect::impl : base::impl {
         this->_horizontal_range.pop_notify_waiting();
     }
 
-    flow_t begin_flow() {
+    chain_t chain() {
         ui::region const region = this->region();
 
-        return this->_vertical_range.begin_flow()
-            .pair(this->_horizontal_range.begin_flow())
-            .map([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
-                     std::pair<opt_t<ui::range>, opt_t<ui::range>> const &pair) mutable {
+        return this->_vertical_range.chain()
+            .pair(this->_horizontal_range.chain())
+            .to([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
+                    std::pair<opt_t<ui::range>, opt_t<ui::range>> const &pair) mutable {
                 if (pair.first) {
                     v_cache = *pair.first;
                 }
@@ -575,11 +575,11 @@ void ui::layout_guide_rect::pop_notify_waiting() {
     impl_ptr<impl>()->pop_notify_waiting();
 }
 
-ui::layout_guide_rect::flow_t ui::layout_guide_rect::begin_flow() const {
-    return impl_ptr<impl>()->begin_flow();
+ui::layout_guide_rect::chain_t ui::layout_guide_rect::chain() const {
+    return impl_ptr<impl>()->chain();
 }
 
-flow::receiver<ui::region> &ui::layout_guide_rect::receiver() {
+chaining::receiver<ui::region> &ui::layout_guide_rect::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 

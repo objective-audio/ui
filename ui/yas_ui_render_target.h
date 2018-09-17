@@ -5,7 +5,7 @@
 #pragma once
 
 #include "yas_base.h"
-#include "yas_flow.h"
+#include "yas_chaining.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_render_target_protocol.h"
@@ -31,7 +31,7 @@ class render_target : public base {
     void set_effect(ui::effect);
     ui::effect const &effect() const;
 
-    flow::receiver<double> &scale_factor_receiver();
+    chaining::receiver<double> &scale_factor_receiver();
 
     ui::renderable_render_target &renderable();
     ui::metal_object &metal();

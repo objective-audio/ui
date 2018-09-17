@@ -46,11 +46,11 @@ class rect_plane_data : public base {
 
     void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx);
     void observe_rect_tex_coords(ui::texture_element &, std::size_t const rect_idx, tex_coords_transform_f);
-    void clear_flows();
+    void clear_observers();
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
 
-    flow::receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
+    chaining::receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
 };
 
 class rect_plane : public base {

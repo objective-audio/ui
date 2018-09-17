@@ -4,8 +4,8 @@
 
 #include "yas_sample_soft_keyboard.h"
 #include <limits>
+#include "yas_chaining_utils.h"
 #include "yas_fast_each.h"
-#include "yas_flow_utils.h"
 #include "yas_stl_utils.h"
 
 using namespace yas;
@@ -82,17 +82,17 @@ struct sample::soft_keyboard::impl : base::impl {
     void prepare(sample::soft_keyboard &keyboard) {
         auto weak_keyboard = to_weak(keyboard);
 
-        this->_renderer_flow = this->_root_node.begin_renderer_flow()
-                                   .filter([weak_keyboard](auto const &) { return !!weak_keyboard; })
-                                   .perform([weak_keyboard](ui::renderer const &renderer) {
-                                       auto keyboard_impl = weak_keyboard.lock().impl_ptr<impl>();
-                                       if (renderer) {
-                                           keyboard_impl->_setup_soft_keys_if_needed();
-                                       } else {
-                                           keyboard_impl->_dispose_soft_keys();
-                                       }
-                                   })
-                                   .sync();
+        this->_renderer_observer = this->_root_node.chain_renderer()
+                                       .guard([weak_keyboard](auto const &) { return !!weak_keyboard; })
+                                       .perform([weak_keyboard](ui::renderer const &renderer) {
+                                           auto keyboard_impl = weak_keyboard.lock().impl_ptr<impl>();
+                                           if (renderer) {
+                                               keyboard_impl->_setup_soft_keys_if_needed();
+                                           } else {
+                                               keyboard_impl->_dispose_soft_keys();
+                                           }
+                                       })
+                                       .sync();
     }
 
     void set_font_atlas(ui::font_atlas &&atlas) {
@@ -104,27 +104,27 @@ struct sample::soft_keyboard::impl : base::impl {
     }
 
     ui::node _root_node;
-    flow::notifier<std::string> _key_sender;
+    chaining::notifier<std::string> _key_sender;
 
    private:
     std::vector<sample::soft_key> _soft_keys;
     ui::font_atlas _font_atlas = nullptr;
 
     ui::collection_layout _collection_layout = nullptr;
-    std::vector<flow::observer> _frame_layouts;
+    std::vector<chaining::any_observer> _frame_layouts;
 
-    std::vector<flow::observer> _soft_key_flows;
-    flow::observer _renderer_flow = nullptr;
-    flow::observer _actual_cell_count_flow = nullptr;
+    std::vector<chaining::any_observer> _soft_key_observers;
+    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer _actual_cell_count_observer = nullptr;
     ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
-    std::vector<std::vector<flow::observer>> _fixed_cell_layouts;
-    std::vector<flow::observer> _dst_rect_flows;
+    std::vector<std::vector<chaining::any_observer>> _fixed_cell_layouts;
+    std::vector<chaining::any_observer> _dst_rect_observers;
 
     void _setup_soft_keys_if_needed() {
-        if (this->_soft_keys.size() > 0 && this->_soft_key_flows.size() > 0 && this->_collection_layout &&
-            this->_frame_layouts.size() > 0 && this->_actual_cell_count_flow) {
+        if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
+            this->_frame_layouts.size() > 0 && this->_actual_cell_count_observer) {
             return;
         }
 
@@ -150,7 +150,7 @@ struct sample::soft_keyboard::impl : base::impl {
         }
 
         this->_soft_keys.reserve(key_count);
-        this->_soft_key_flows.reserve(key_count);
+        this->_soft_key_observers.reserve(key_count);
 
         this->_collection_layout =
             ui::collection_layout{{.frame = {.size = {width, 0.0f}},
@@ -163,9 +163,9 @@ struct sample::soft_keyboard::impl : base::impl {
         for (auto const &key : keys) {
             sample::soft_key soft_key{key, key_width, this->_font_atlas};
 
-            flow::observer flow =
+            chaining::any_observer observer =
                 soft_key.button()
-                    .begin_flow(ui::button::method::ended)
+                    .chain(ui::button::method::ended)
                     .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
                         if (auto keyboard = weak_keyboard.lock()) {
                             keyboard.impl_ptr<impl>()->_key_sender.notify(key);
@@ -173,7 +173,7 @@ struct sample::soft_keyboard::impl : base::impl {
                     })
                     .end();
 
-            this->_soft_key_flows.emplace_back(std::move(flow));
+            this->_soft_key_observers.emplace_back(std::move(observer));
 
             auto &node = soft_key.button().rect_plane().node();
 
@@ -181,8 +181,8 @@ struct sample::soft_keyboard::impl : base::impl {
             this->_soft_keys.emplace_back(std::move(soft_key));
         }
 
-        this->_actual_cell_count_flow =
-            this->_collection_layout.begin_actual_cell_count_flow()
+        this->_actual_cell_count_observer =
+            this->_collection_layout.chain_actual_cell_count()
                 .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &) {
                     if (auto keyboard = weak_keyboard.lock()) {
                         keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
@@ -200,18 +200,18 @@ struct sample::soft_keyboard::impl : base::impl {
         auto &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
 
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.left().begin_flow().receive(frame_guide_rect.left().receiver()).sync());
+            safe_area_guide_rect.left().chain().receive(frame_guide_rect.left().receiver()).sync());
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.bottom().begin_flow().receive(frame_guide_rect.bottom().receiver()).sync());
+            safe_area_guide_rect.bottom().chain().receive(frame_guide_rect.bottom().receiver()).sync());
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.top().begin_flow().receive(frame_guide_rect.top().receiver()).sync());
+            safe_area_guide_rect.top().chain().receive(frame_guide_rect.top().receiver()).sync());
 
         ui::layout_guide max_right_guide;
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.left().begin_flow().map(flow::add(width)).receive(max_right_guide.receiver()).sync());
-        this->_frame_layouts.emplace_back(max_right_guide.begin_flow()
-                                              .combine(safe_area_guide_rect.right().begin_flow())
-                                              .map(flow::min<float>())
+            safe_area_guide_rect.left().chain().to(chaining::add(width)).receive(max_right_guide.receiver()).sync());
+        this->_frame_layouts.emplace_back(max_right_guide.chain()
+                                              .combine(safe_area_guide_rect.right().chain())
+                                              .to(chaining::min<float>())
                                               .receive(frame_guide_rect.right().receiver())
                                               .sync());
 
@@ -222,14 +222,14 @@ struct sample::soft_keyboard::impl : base::impl {
 
     void _dispose_soft_keys() {
         this->_soft_keys.clear();
-        this->_soft_key_flows.clear();
+        this->_soft_key_observers.clear();
         this->_frame_layouts.clear();
         this->_collection_layout = nullptr;
-        this->_actual_cell_count_flow = nullptr;
+        this->_actual_cell_count_observer = nullptr;
         this->_src_cell_guide_rects.clear();
         this->_dst_cell_guide_rects.clear();
         this->_cell_interporator = nullptr;
-        this->_dst_rect_flows.clear();
+        this->_dst_rect_observers.clear();
     }
 
     void _setup_soft_keys_layout() {
@@ -259,9 +259,9 @@ struct sample::soft_keyboard::impl : base::impl {
 
             auto weak_soft_key = to_weak(soft_key);
 
-            this->_dst_rect_flows.emplace_back(
-                dst_guide_rect.begin_flow()
-                    .filter([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
+            this->_dst_rect_observers.emplace_back(
+                dst_guide_rect.chain()
+                    .guard([weak_soft_key](ui::region const &) { return !!weak_soft_key; })
                     .perform([weak_soft_key, handler](ui::region const &value) {
                         auto soft_key = weak_soft_key.lock();
                         handler(soft_key, value);
@@ -298,17 +298,16 @@ struct sample::soft_keyboard::impl : base::impl {
                     auto &src_guide_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
                     auto &dst_guide_rect = this->_src_cell_guide_rects.at(idx);
 
-                    std::vector<flow::observer> layouts;
+                    std::vector<chaining::any_observer> layouts;
                     layouts.reserve(4);
 
                     layouts.emplace_back(
-                        src_guide_rect.left().begin_flow().receive(dst_guide_rect.left().receiver()).sync());
+                        src_guide_rect.left().chain().receive(dst_guide_rect.left().receiver()).sync());
                     layouts.emplace_back(
-                        src_guide_rect.bottom().begin_flow().receive(dst_guide_rect.bottom().receiver()).sync());
+                        src_guide_rect.bottom().chain().receive(dst_guide_rect.bottom().receiver()).sync());
                     layouts.emplace_back(
-                        src_guide_rect.right().begin_flow().receive(dst_guide_rect.right().receiver()).sync());
-                    layouts.emplace_back(
-                        src_guide_rect.top().begin_flow().receive(dst_guide_rect.top().receiver()).sync());
+                        src_guide_rect.right().chain().receive(dst_guide_rect.right().receiver()).sync());
+                    layouts.emplace_back(src_guide_rect.top().chain().receive(dst_guide_rect.top().receiver()).sync());
 
                     this->_fixed_cell_layouts.emplace_back(std::move(layouts));
                 }
@@ -354,6 +353,6 @@ ui::node &sample::soft_keyboard::node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-flow::node_t<std::string, false> sample::soft_keyboard::begin_flow() const {
-    return impl_ptr<impl>()->_key_sender.begin_flow();
+chaining::chain<std::string, std::string, std::string, false> sample::soft_keyboard::chain() const {
+    return impl_ptr<impl>()->_key_sender.chain();
 }

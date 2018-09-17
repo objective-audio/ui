@@ -17,6 +17,6 @@ struct soft_keyboard : base {
 
     ui::node &node();
 
-    flow::node_t<std::string, false> begin_flow() const;
+    chaining::chain<std::string, std::string, std::string, false> chain() const;
 };
 }  // namespace yas::sample

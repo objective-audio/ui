@@ -3,9 +3,9 @@
 //
 
 #include "yas_ui_collection_layout.h"
+#include "yas_chaining_utils.h"
 #include "yas_delaying_caller.h"
 #include "yas_fast_each.h"
-#include "yas_flow_utils.h"
 #include "yas_ui_layout_guide.h"
 
 using namespace yas;
@@ -46,27 +46,27 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t cell_idx;
     };
 
-    flow::property<float> _row_spacing;
-    flow::property<float> _col_spacing;
-    flow::property<ui::layout_alignment> _alignment;
-    flow::property<ui::layout_direction> _direction;
-    flow::property<ui::layout_order> _row_order;
-    flow::property<ui::layout_order> _col_order;
-    flow::property<std::size_t> _preferred_cell_count;
-    flow::property<std::size_t> _actual_cell_count{std::size_t(0)};
-    flow::property<ui::size> _default_cell_size;
-    flow::property<std::vector<ui::collection_layout::line>> _lines;
+    chaining::holder<float> _row_spacing;
+    chaining::holder<float> _col_spacing;
+    chaining::holder<ui::layout_alignment> _alignment;
+    chaining::holder<ui::layout_direction> _direction;
+    chaining::holder<ui::layout_order> _row_order;
+    chaining::holder<ui::layout_order> _col_order;
+    chaining::holder<std::size_t> _preferred_cell_count;
+    chaining::holder<std::size_t> _actual_cell_count{std::size_t(0)};
+    chaining::holder<ui::size> _default_cell_size;
+    chaining::holder<std::vector<ui::collection_layout::line>> _lines;
 
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    flow::observer _left_border_flow;
-    flow::observer _right_border_flow;
-    flow::observer _bottom_border_flow;
-    flow::observer _top_border_flow;
+    chaining::any_observer _left_border_observer;
+    chaining::any_observer _right_border_observer;
+    chaining::any_observer _bottom_border_observer;
+    chaining::any_observer _top_border_observer;
     ui::layout_borders const _borders;
-    flow::observer _border_flow = nullptr;
-    flow::receiver<> _layout_receiver = nullptr;
+    chaining::any_observer _border_observer = nullptr;
+    chaining::receiver<> _layout_receiver = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -79,26 +79,26 @@ struct ui::collection_layout::impl : base::impl {
           _direction(args.direction),
           _row_order(args.row_order),
           _col_order(args.col_order),
-          _left_border_flow(_frame_guide_rect.left()
-                                .begin_flow()
-                                .map(flow::add(args.borders.left))
-                                .receive(_border_guide_rect.left().receiver())
-                                .sync()),
-          _right_border_flow(_frame_guide_rect.right()
-                                 .begin_flow()
-                                 .map(flow::add(-args.borders.right))
-                                 .receive(_border_guide_rect.right().receiver())
-                                 .sync()),
-          _bottom_border_flow(_frame_guide_rect.bottom()
-                                  .begin_flow()
-                                  .map(flow::add(args.borders.bottom))
-                                  .receive(_border_guide_rect.bottom().receiver())
-                                  .sync()),
-          _top_border_flow(_frame_guide_rect.top()
-                               .begin_flow()
-                               .map(flow::add(-args.borders.top))
-                               .receive(_border_guide_rect.top().receiver())
-                               .sync()),
+          _left_border_observer(_frame_guide_rect.left()
+                                    .chain()
+                                    .to(chaining::add(args.borders.left))
+                                    .receive(_border_guide_rect.left().receiver())
+                                    .sync()),
+          _right_border_observer(_frame_guide_rect.right()
+                                     .chain()
+                                     .to(chaining::add(-args.borders.right))
+                                     .receive(_border_guide_rect.right().receiver())
+                                     .sync()),
+          _bottom_border_observer(_frame_guide_rect.bottom()
+                                      .chain()
+                                      .to(chaining::add(args.borders.bottom))
+                                      .receive(_border_guide_rect.bottom().receiver())
+                                      .sync()),
+          _top_border_observer(_frame_guide_rect.top()
+                                   .chain()
+                                   .to(chaining::add(-args.borders.top))
+                                   .receive(_border_guide_rect.top().receiver())
+                                   .sync()),
 
           _borders(std::move(args.borders)) {
         if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
@@ -109,38 +109,38 @@ struct ui::collection_layout::impl : base::impl {
     void prepare(ui::collection_layout &layout) {
         auto weak_layout = to_weak(layout);
 
-        this->_layout_receiver = flow::receiver<>{[weak_layout]() {
+        this->_layout_receiver = chaining::receiver<>{[weak_layout]() {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();
             }
         }};
 
-        this->_border_flow =
-            this->_border_guide_rect.begin_flow()
-                .filter([weak_layout](ui::region const &) { return !!weak_layout; })
+        this->_border_observer =
+            this->_border_guide_rect.chain()
+                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
                 .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
                 .end();
 
-        this->_property_flows.emplace_back(this->_row_spacing.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_row_spacing.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_col_spacing.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_col_spacing.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_alignment.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_alignment.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_direction.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_direction.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_row_order.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_row_order.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_col_order.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_col_order.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(
-            this->_preferred_cell_count.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(
+            this->_preferred_cell_count.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(
-            this->_default_cell_size.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(
+            this->_default_cell_size.chain().receive_null(this->_layout_receiver).end());
 
-        this->_property_flows.emplace_back(this->_lines.begin_flow().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_lines.chain().receive_null(this->_layout_receiver).end());
 
         this->_update_layout();
     }
@@ -166,7 +166,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
    private:
-    std::vector<base> _property_flows;
+    std::vector<base> _property_observers;
 
     void _update_layout() {
         auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());
@@ -526,42 +526,48 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
     return impl_ptr<impl>()->_cell_guide_rects;
 }
 
-flow::node_t<std::size_t, true> ui::collection_layout::begin_preferred_cell_count_flow() const {
-    return impl_ptr<impl>()->_preferred_cell_count.begin_flow();
+chaining::chain<std::size_t, std::size_t, std::size_t, true> ui::collection_layout::chain_preferred_cell_count() const {
+    return impl_ptr<impl>()->_preferred_cell_count.chain();
 }
 
-flow::node_t<std::size_t, true> ui::collection_layout::begin_actual_cell_count_flow() const {
-    return impl_ptr<impl>()->_actual_cell_count.begin_flow();
+chaining::chain<std::size_t, std::size_t, std::size_t, true> ui::collection_layout::chain_actual_cell_count() const {
+    return impl_ptr<impl>()->_actual_cell_count.chain();
 }
 
-flow::node_t<ui::size, true> ui::collection_layout::begin_default_cell_size_flow() const {
-    return impl_ptr<impl>()->_default_cell_size.begin_flow();
+chaining::chain<ui::size, ui::size, ui::size, true> ui::collection_layout::chain_default_cell_size() const {
+    return impl_ptr<impl>()->_default_cell_size.chain();
 }
 
-flow::node_t<std::vector<ui::collection_layout::line>, true> ui::collection_layout::begin_lines_flow() const {
-    return impl_ptr<impl>()->_lines.begin_flow();
+chaining::chain<std::vector<ui::collection_layout::line>, std::vector<ui::collection_layout::line>,
+                std::vector<ui::collection_layout::line>, true>
+ui::collection_layout::chain_lines() const {
+    return impl_ptr<impl>()->_lines.chain();
 }
 
-flow::node_t<float, true> ui::collection_layout::begin_row_spacing_flow() const {
-    return impl_ptr<impl>()->_row_spacing.begin_flow();
+chaining::chain<float, float, float, true> ui::collection_layout::chain_row_spacing() const {
+    return impl_ptr<impl>()->_row_spacing.chain();
 }
 
-flow::node_t<float, true> ui::collection_layout::begin_col_spacing_flow() const {
-    return impl_ptr<impl>()->_col_spacing.begin_flow();
+chaining::chain<float, float, float, true> ui::collection_layout::chain_col_spacing() const {
+    return impl_ptr<impl>()->_col_spacing.chain();
 }
 
-flow::node_t<ui::layout_alignment, true> ui::collection_layout::begin_alignment_flow() const {
-    return impl_ptr<impl>()->_alignment.begin_flow();
+chaining::chain<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment, true>
+ui::collection_layout::chain_alignment() const {
+    return impl_ptr<impl>()->_alignment.chain();
 }
 
-flow::node_t<ui::layout_direction, true> ui::collection_layout::begin_direction_flow() const {
-    return impl_ptr<impl>()->_direction.begin_flow();
+chaining::chain<ui::layout_direction, ui::layout_direction, ui::layout_direction, true>
+ui::collection_layout::chain_direction() const {
+    return impl_ptr<impl>()->_direction.chain();
 }
 
-flow::node_t<ui::layout_order, true> ui::collection_layout::begin_row_order_flow() const {
-    return impl_ptr<impl>()->_row_order.begin_flow();
+chaining::chain<ui::layout_order, ui::layout_order, ui::layout_order, true> ui::collection_layout::chain_row_order()
+    const {
+    return impl_ptr<impl>()->_row_order.chain();
 }
 
-flow::node_t<ui::layout_order, true> ui::collection_layout::begin_col_order_flow() const {
-    return impl_ptr<impl>()->_col_order.begin_flow();
+chaining::chain<ui::layout_order, ui::layout_order, ui::layout_order, true> ui::collection_layout::chain_col_order()
+    const {
+    return impl_ptr<impl>()->_col_order.chain();
 }

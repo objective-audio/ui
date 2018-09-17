@@ -16,10 +16,10 @@ struct sample::cursor_over_planes::impl : base::impl {
     }
 
     void prepare(sample::cursor_over_planes &planes) {
-        this->_renderer_flow =
-            root_node.begin_renderer_flow()
+        this->_renderer_observer =
+            root_node.chain_renderer()
                 .perform([weak_touch_holder = to_weak(planes),
-                          event_observers = std::vector<flow::observer>{}](ui::renderer const &value) mutable {
+                          event_observers = std::vector<chaining::any_observer>{}](ui::renderer const &value) mutable {
                     if (auto touch_holder = weak_touch_holder.lock()) {
                         auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
                         if (auto renderer = value) {
@@ -59,15 +59,15 @@ struct sample::cursor_over_planes::impl : base::impl {
         }
     }
 
-    static std::vector<flow::observer> _make_event_observers(std::vector<ui::node> const &nodes,
-                                                             ui::renderer &renderer) {
-        std::vector<flow::observer> event_observers;
+    static std::vector<chaining::any_observer> _make_event_observers(std::vector<ui::node> const &nodes,
+                                                                     ui::renderer &renderer) {
+        std::vector<chaining::any_observer> event_observers;
         event_observers.reserve(nodes.size());
 
         for (auto &node : nodes) {
             event_observers.emplace_back(
                 renderer.event_manager()
-                    .begin_flow(ui::event_manager::method::cursor_changed)
+                    .chain(ui::event_manager::method::cursor_changed)
                     .perform([weak_node = to_weak(node),
                               prev_detected = std::make_shared<bool>(false)](ui::event const &event) {
                         auto cursor_event = event.get<ui::cursor>();
@@ -101,7 +101,7 @@ struct sample::cursor_over_planes::impl : base::impl {
     }
 
     std::vector<ui::node> _nodes;
-    flow::observer _renderer_flow = nullptr;
+    chaining::any_observer _renderer_observer = nullptr;
 };
 
 sample::cursor_over_planes::cursor_over_planes() : base(std::make_shared<impl>()) {
