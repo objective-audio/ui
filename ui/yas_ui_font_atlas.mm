@@ -282,11 +282,11 @@ void ui::font_atlas::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-chaining::chain<ui::texture, ui::texture, ui::texture, true> ui::font_atlas::chain_texture() const {
+chaining::chain_syncable_t<ui::texture> ui::font_atlas::chain_texture() const {
     return impl_ptr<impl>()->_texture_changed_fetcher.chain();
 }
 
-chaining::chain<ui::texture, ui::texture, ui::texture, false> ui::font_atlas::chain_texture_updated() const {
+chaining::chain_unsyncable_t<ui::texture> ui::font_atlas::chain_texture_updated() const {
     return impl_ptr<impl>()->_texture_updated_sender.chain();
 }
 

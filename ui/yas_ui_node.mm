@@ -374,8 +374,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain(
-        std::vector<ui::node::method> const &methods) {
+    chaining::chain_unsyncable_t<chain_pair_t> chain(std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
             if (this->_dispatch_observers.count(method) > 0) {
                 continue;
@@ -667,12 +666,11 @@ ui::renderable_node &ui::node::renderable() {
     return this->_renderable;
 }
 
-chaining::chain<ui::node::chain_pair_t, ui::node::chain_pair_t, ui::node::chain_pair_t, false> ui::node::chain(
-    ui::node::method const &method) const {
+chaining::chain_unsyncable_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
     return impl_ptr<impl>()->chain({method});
 }
 
-chaining::chain<ui::node::chain_pair_t, ui::node::chain_pair_t, ui::node::chain_pair_t, false> ui::node::chain(
+chaining::chain_unsyncable_t<ui::node::chain_pair_t> ui::node::chain(
     std::vector<ui::node::method> const &methods) const {
     return impl_ptr<impl>()->chain(methods);
 }

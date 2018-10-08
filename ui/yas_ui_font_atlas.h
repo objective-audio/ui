@@ -39,8 +39,8 @@ class font_atlas : public base {
 
     void set_texture(ui::texture);
 
-    [[nodiscard]] chaining::chain<ui::texture, ui::texture, ui::texture, true> chain_texture() const;
-    [[nodiscard]] chaining::chain<ui::texture, ui::texture, ui::texture, false> chain_texture_updated() const;
+    [[nodiscard]] chaining::chain_syncable_t<ui::texture> chain_texture() const;
+    [[nodiscard]] chaining::chain_unsyncable_t<ui::texture> chain_texture_updated() const;
 };
 }  // namespace yas::ui
 

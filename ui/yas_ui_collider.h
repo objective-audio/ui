@@ -81,8 +81,8 @@ class collider : public base {
 
     bool hit_test(ui::point const &) const;
 
-    [[nodiscard]] chaining::chain<ui::shape, ui::shape, ui::shape, true> chain_shape() const;
-    [[nodiscard]] chaining::chain<bool, bool, bool, true> chain_enabled() const;
+    [[nodiscard]] chaining::chain_syncable_t<ui::shape> chain_shape() const;
+    [[nodiscard]] chaining::chain_syncable_t<bool> chain_enabled() const;
 
     [[nodiscard]] chaining::receiver<ui::shape> &shape_receiver();
     [[nodiscard]] chaining::receiver<bool> &enabled_receiver();

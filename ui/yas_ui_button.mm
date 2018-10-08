@@ -303,7 +303,7 @@ void ui::button::cancel_tracking() {
     impl_ptr<impl>()->cancel_tracking();
 }
 
-chaining::chain<ui::button::chain_pair_t, ui::button::chain_pair_t, ui::button::chain_pair_t, false> ui::button::chain()
+chaining::chain_unsyncable_t<ui::button::chain_pair_t> ui::button::chain()
     const {
     return impl_ptr<impl>()->_notify_sender.chain();
 }

@@ -374,11 +374,11 @@ ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
     return impl_ptr<impl>()->_safe_area_layout_guide_rect;
 }
 
-chaining::chain<std::nullptr_t, std::nullptr_t, std::nullptr_t, false> ui::renderer::chain_will_render() const {
+chaining::chain_unsyncable_t<std::nullptr_t> ui::renderer::chain_will_render() const {
     return impl_ptr<impl>()->_will_render_notifier.chain();
 }
 
-chaining::chain<double, double, double, true> ui::renderer::chain_scale_factor() const {
+chaining::chain_syncable_t<double> ui::renderer::chain_scale_factor() const {
     return impl_ptr<impl>()->_scale_factor_notify.chain();
 }
 

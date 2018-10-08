@@ -213,7 +213,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
             .to([](ui::event_manager::context const &context) { return context.event; });
     }
 
-    chaining::chain<context, context, context, false> chain() {
+    chaining::chain_unsyncable_t<context> chain() {
         return this->_notifier.chain();
     }
 
@@ -267,8 +267,7 @@ chaining::chain<ui::event, ui::event_manager::context, ui::event_manager::contex
     return impl_ptr<impl>()->chain(method);
 }
 
-chaining::chain<ui::event_manager::context, ui::event_manager::context, ui::event_manager::context, false>
-ui::event_manager::chain() const {
+chaining::chain_unsyncable_t<ui::event_manager::context> ui::event_manager::chain() const {
     return impl_ptr<impl>()->chain();
 }
 

@@ -56,7 +56,7 @@ class texture : public base {
     ui::metal_texture const &metal_texture() const;
 
     using chain_pair_t = std::pair<method, texture>;
-    [[nodiscard]] chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain() const;
+    [[nodiscard]] chaining::chain_unsyncable_t<chain_pair_t> chain() const;
     [[nodiscard]] chaining::chain<texture, chain_pair_t, chain_pair_t, false> chain(method const &) const;
     chaining::receiver<double> &scale_factor_receiver();
 
