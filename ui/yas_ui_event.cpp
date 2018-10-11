@@ -207,7 +207,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
         }
     }
 
-    chaining::chain<event, context, context, false> chain(method const &method) {
+    chaining::chain_relayed_unsync_t<event, context> chain(method const &method) {
         return this->_notifier.chain()
             .guard([method](context const &context) { return context.method == method; })
             .to([](ui::event_manager::context const &context) { return context.event; });
@@ -262,7 +262,7 @@ ui::event_manager::event_manager(std::nullptr_t) : base(nullptr) {
 
 ui::event_manager::~event_manager() = default;
 
-chaining::chain<ui::event, ui::event_manager::context, ui::event_manager::context, false> ui::event_manager::chain(
+chaining::chain_relayed_unsync_t<ui::event, ui::event_manager::context> ui::event_manager::chain(
     method const &method) const {
     return impl_ptr<impl>()->chain(method);
 }

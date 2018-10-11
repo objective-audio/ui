@@ -82,8 +82,8 @@ class node : public base {
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(std::vector<method> const &) const;
 
-    [[nodiscard]] chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> chain_renderer() const;
-    [[nodiscard]] chaining::chain<ui::node, weak<ui::node>, weak<ui::node>, true> chain_parent() const;
+    [[nodiscard]] chaining::chain_relayed_sync_t<ui::renderer, weak<ui::renderer>> chain_renderer() const;
+    [[nodiscard]] chaining::chain_relayed_sync_t<ui::node, weak<ui::node>> chain_parent() const;
 
     ui::point convert_position(ui::point const &) const;
 

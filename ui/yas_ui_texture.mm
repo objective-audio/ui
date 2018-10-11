@@ -306,7 +306,7 @@ chaining::chain_unsync_t<ui::texture::chain_pair_t> ui::texture::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::chain<ui::texture, ui::texture::chain_pair_t, ui::texture::chain_pair_t, false> ui::texture::chain(
+chaining::chain_relayed_unsync_t<ui::texture, ui::texture::chain_pair_t> ui::texture::chain(
     method const &method) const {
     return impl_ptr<impl>()
         ->chain()

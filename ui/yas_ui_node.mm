@@ -674,7 +674,7 @@ chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui:
     return impl_ptr<impl>()->chain(methods);
 }
 
-chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::chain_renderer() const {
+chaining::chain_relayed_sync_t<ui::renderer, weak<ui::renderer>> ui::node::chain_renderer() const {
     return impl_ptr<impl>()->_renderer.chain().to([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
@@ -684,7 +684,7 @@ chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::
     });
 }
 
-chaining::chain<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::chain_parent() const {
+chaining::chain_relayed_sync_t<ui::node, weak<ui::node>> ui::node::chain_parent() const {
     return impl_ptr<impl>()->_parent.chain().to([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;
