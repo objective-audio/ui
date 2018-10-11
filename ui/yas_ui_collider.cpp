@@ -140,11 +140,11 @@ bool ui::collider::hit_test(ui::point const &pos) const {
     return impl_ptr<impl>()->hit_test(pos);
 }
 
-chaining::chain_syncable_t<ui::shape> ui::collider::chain_shape() const {
+chaining::chain_sync_t<ui::shape> ui::collider::chain_shape() const {
     return impl_ptr<impl>()->_shape.chain();
 }
 
-chaining::chain_syncable_t<bool> ui::collider::chain_enabled() const {
+chaining::chain_sync_t<bool> ui::collider::chain_enabled() const {
     return impl_ptr<impl>()->_enabled.chain();
 }
 

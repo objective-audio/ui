@@ -127,7 +127,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         this->_scale_observer = renderer.chain_scale_factor().receive(texture.scale_factor_receiver()).sync();
     }
 
-    chaining::chain_unsyncable_t<chain_pair_t> chain() {
+    chaining::chain_unsync_t<chain_pair_t> chain() {
         return this->_notify_sender.chain();
     }
 
@@ -302,7 +302,7 @@ ui::metal_texture const &ui::texture::metal_texture() const {
     return impl_ptr<impl>()->_metal_texture;
 }
 
-chaining::chain_unsyncable_t<ui::texture::chain_pair_t> ui::texture::chain() const {
+chaining::chain_unsync_t<ui::texture::chain_pair_t> ui::texture::chain() const {
     return impl_ptr<impl>()->chain();
 }
 

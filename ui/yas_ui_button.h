@@ -49,7 +49,7 @@ class button : public base {
     void cancel_tracking();
 
     using chain_pair_t = std::pair<method, context>;
-    [[nodiscard]] chaining::chain_unsyncable_t<chain_pair_t> chain() const;
+    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain() const;
     [[nodiscard]] chaining::chain<context, chain_pair_t, chain_pair_t, false> chain(method const) const;
 
     ui::rect_plane &rect_plane();

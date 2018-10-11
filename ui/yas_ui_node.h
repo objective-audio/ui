@@ -79,8 +79,8 @@ class node : public base {
     ui::renderable_node &renderable();
 
     using chain_pair_t = std::pair<method, node>;
-    [[nodiscard]] chaining::chain_unsyncable_t<chain_pair_t> chain(method const &) const;
-    [[nodiscard]] chaining::chain_unsyncable_t<chain_pair_t> chain(std::vector<method> const &) const;
+    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
+    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(std::vector<method> const &) const;
 
     [[nodiscard]] chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> chain_renderer() const;
     [[nodiscard]] chaining::chain<ui::node, weak<ui::node>, weak<ui::node>, true> chain_parent() const;

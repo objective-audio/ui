@@ -24,6 +24,6 @@ class texture_element : public base {
     void set_tex_coords(ui::uint_region const &);
     ui::uint_region const &tex_coords() const;
 
-    [[nodiscard]] chaining::chain_syncable_t<uint_region> chain_tex_coords() const;
+    [[nodiscard]] chaining::chain_sync_t<uint_region> chain_tex_coords() const;
 };
 }  // namespace yas::ui

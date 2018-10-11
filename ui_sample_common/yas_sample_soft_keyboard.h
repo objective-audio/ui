@@ -17,6 +17,6 @@ struct soft_keyboard : base {
 
     ui::node &node();
 
-    chaining::chain_unsyncable_t<std::string> chain() const;
+    chaining::chain_unsync_t<std::string> chain() const;
 };
 }  // namespace yas::sample

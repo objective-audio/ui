@@ -526,42 +526,42 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
     return impl_ptr<impl>()->_cell_guide_rects;
 }
 
-chaining::chain_syncable_t<std::size_t> ui::collection_layout::chain_preferred_cell_count() const {
+chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_preferred_cell_count() const {
     return impl_ptr<impl>()->_preferred_cell_count.chain();
 }
 
-chaining::chain_syncable_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
+chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
     return impl_ptr<impl>()->_actual_cell_count.chain();
 }
 
-chaining::chain_syncable_t<ui::size> ui::collection_layout::chain_default_cell_size() const {
+chaining::chain_sync_t<ui::size> ui::collection_layout::chain_default_cell_size() const {
     return impl_ptr<impl>()->_default_cell_size.chain();
 }
 
-chaining::chain_syncable_t<std::vector<ui::collection_layout::line>> ui::collection_layout::chain_lines() const {
+chaining::chain_sync_t<std::vector<ui::collection_layout::line>> ui::collection_layout::chain_lines() const {
     return impl_ptr<impl>()->_lines.chain();
 }
 
-chaining::chain_syncable_t<float> ui::collection_layout::chain_row_spacing() const {
+chaining::chain_sync_t<float> ui::collection_layout::chain_row_spacing() const {
     return impl_ptr<impl>()->_row_spacing.chain();
 }
 
-chaining::chain_syncable_t<float> ui::collection_layout::chain_col_spacing() const {
+chaining::chain_sync_t<float> ui::collection_layout::chain_col_spacing() const {
     return impl_ptr<impl>()->_col_spacing.chain();
 }
 
-chaining::chain_syncable_t<ui::layout_alignment> ui::collection_layout::chain_alignment() const {
+chaining::chain_sync_t<ui::layout_alignment> ui::collection_layout::chain_alignment() const {
     return impl_ptr<impl>()->_alignment.chain();
 }
 
-chaining::chain_syncable_t<ui::layout_direction> ui::collection_layout::chain_direction() const {
+chaining::chain_sync_t<ui::layout_direction> ui::collection_layout::chain_direction() const {
     return impl_ptr<impl>()->_direction.chain();
 }
 
-chaining::chain_syncable_t<ui::layout_order> ui::collection_layout::chain_row_order() const {
+chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_row_order() const {
     return impl_ptr<impl>()->_row_order.chain();
 }
 
-chaining::chain_syncable_t<ui::layout_order> ui::collection_layout::chain_col_order() const {
+chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_col_order() const {
     return impl_ptr<impl>()->_col_order.chain();
 }

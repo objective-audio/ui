@@ -68,8 +68,8 @@ class renderer : public base {
     ui::layout_guide_rect const &safe_area_layout_guide_rect() const;
     ui::layout_guide_rect &safe_area_layout_guide_rect();
 
-    [[nodiscard]] chaining::chain_unsyncable_t<std::nullptr_t> chain_will_render() const;
-    [[nodiscard]] chaining::chain_syncable_t<double> chain_scale_factor() const;
+    [[nodiscard]] chaining::chain_unsync_t<std::nullptr_t> chain_will_render() const;
+    [[nodiscard]] chaining::chain_sync_t<double> chain_scale_factor() const;
 
    private:
     ui::view_renderable _view_renderable = nullptr;

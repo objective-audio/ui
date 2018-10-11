@@ -46,10 +46,10 @@ class strings : public base {
 
     ui::rect_plane &rect_plane();
 
-    [[nodiscard]] chaining::chain_syncable_t<std::string> chain_text() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::font_atlas> chain_font_atlas() const;
-    [[nodiscard]] chaining::chain_syncable_t<opt_t<float>> chain_line_height() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::layout_alignment> chain_alignment() const;
+    [[nodiscard]] chaining::chain_sync_t<std::string> chain_text() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::font_atlas> chain_font_atlas() const;
+    [[nodiscard]] chaining::chain_sync_t<opt_t<float>> chain_line_height() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
     chaining::receiver<std::string> &text_receiver();
 };
 }  // namespace yas::ui

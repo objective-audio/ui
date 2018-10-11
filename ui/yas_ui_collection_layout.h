@@ -79,15 +79,15 @@ class collection_layout : public base {
     ui::layout_guide_rect &frame_layout_guide_rect();
     std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
 
-    [[nodiscard]] chaining::chain_syncable_t<std::size_t> chain_preferred_cell_count() const;
-    [[nodiscard]] chaining::chain_syncable_t<std::size_t> chain_actual_cell_count() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::size> chain_default_cell_size() const;
-    [[nodiscard]] chaining::chain_syncable_t<std::vector<line>> chain_lines() const;
-    [[nodiscard]] chaining::chain_syncable_t<float> chain_row_spacing() const;
-    [[nodiscard]] chaining::chain_syncable_t<float> chain_col_spacing() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::layout_alignment> chain_alignment() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::layout_direction> chain_direction() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::layout_order> chain_row_order() const;
-    [[nodiscard]] chaining::chain_syncable_t<ui::layout_order> chain_col_order() const;
+    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_preferred_cell_count() const;
+    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_actual_cell_count() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::size> chain_default_cell_size() const;
+    [[nodiscard]] chaining::chain_sync_t<std::vector<line>> chain_lines() const;
+    [[nodiscard]] chaining::chain_sync_t<float> chain_row_spacing() const;
+    [[nodiscard]] chaining::chain_sync_t<float> chain_col_spacing() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::layout_direction> chain_direction() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_row_order() const;
+    [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
 };
 }  // namespace yas::ui
