@@ -267,20 +267,19 @@ ui::rect_plane &ui::strings::rect_plane() {
     return impl_ptr<impl>()->_rect_plane;
 }
 
-chaining::chain<std::string, std::string, std::string, true> ui::strings::chain_text() const {
+chaining::chain_sync_t<std::string> ui::strings::chain_text() const {
     return impl_ptr<impl>()->_text.chain();
 }
 
-chaining::chain<ui::font_atlas, ui::font_atlas, ui::font_atlas, true> ui::strings::chain_font_atlas() const {
+chaining::chain_sync_t<ui::font_atlas> ui::strings::chain_font_atlas() const {
     return impl_ptr<impl>()->_font_atlas.chain();
 }
 
-chaining::chain<opt_t<float>, opt_t<float>, opt_t<float>, true> ui::strings::chain_line_height() const {
+chaining::chain_sync_t<opt_t<float>> ui::strings::chain_line_height() const {
     return impl_ptr<impl>()->_line_height.chain();
 }
 
-chaining::chain<ui::layout_alignment, ui::layout_alignment, ui::layout_alignment, true> ui::strings::chain_alignment()
-    const {
+chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() const {
     return impl_ptr<impl>()->_collection_layout.chain_alignment();
 }
 

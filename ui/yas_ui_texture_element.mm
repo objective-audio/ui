@@ -36,6 +36,6 @@ ui::uint_region const &ui::texture_element::tex_coords() const {
     return impl_ptr<impl>()->_tex_coords.value();
 }
 
-chaining::chain<ui::uint_region, ui::uint_region, ui::uint_region, true> ui::texture_element::chain_tex_coords() const {
+chaining::chain_sync_t<ui::uint_region> ui::texture_element::chain_tex_coords() const {
     return impl_ptr<impl>()->_tex_coords.chain();
 }

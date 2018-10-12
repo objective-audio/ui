@@ -353,6 +353,6 @@ ui::node &sample::soft_keyboard::node() {
     return impl_ptr<impl>()->_root_node;
 }
 
-chaining::chain<std::string, std::string, std::string, false> sample::soft_keyboard::chain() const {
+chaining::chain_unsync_t<std::string> sample::soft_keyboard::chain() const {
     return impl_ptr<impl>()->_key_sender.chain();
 }

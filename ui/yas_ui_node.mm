@@ -374,8 +374,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
         }
     }
 
-    chaining::chain<chain_pair_t, chain_pair_t, chain_pair_t, false> chain(
-        std::vector<ui::node::method> const &methods) {
+    chaining::chain_unsync_t<chain_pair_t> chain(std::vector<ui::node::method> const &methods) {
         for (auto const &method : methods) {
             if (this->_dispatch_observers.count(method) > 0) {
                 continue;
@@ -667,17 +666,15 @@ ui::renderable_node &ui::node::renderable() {
     return this->_renderable;
 }
 
-chaining::chain<ui::node::chain_pair_t, ui::node::chain_pair_t, ui::node::chain_pair_t, false> ui::node::chain(
-    ui::node::method const &method) const {
+chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
     return impl_ptr<impl>()->chain({method});
 }
 
-chaining::chain<ui::node::chain_pair_t, ui::node::chain_pair_t, ui::node::chain_pair_t, false> ui::node::chain(
-    std::vector<ui::node::method> const &methods) const {
+chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui::node::method> const &methods) const {
     return impl_ptr<impl>()->chain(methods);
 }
 
-chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::node::chain_renderer() const {
+chaining::chain_relayed_sync_t<ui::renderer, weak<ui::renderer>> ui::node::chain_renderer() const {
     return impl_ptr<impl>()->_renderer.chain().to([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
@@ -687,7 +684,7 @@ chaining::chain<ui::renderer, weak<ui::renderer>, weak<ui::renderer>, true> ui::
     });
 }
 
-chaining::chain<ui::node, weak<ui::node>, weak<ui::node>, true> ui::node::chain_parent() const {
+chaining::chain_relayed_sync_t<ui::node, weak<ui::node>> ui::node::chain_parent() const {
     return impl_ptr<impl>()->_parent.chain().to([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;

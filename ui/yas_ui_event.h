@@ -72,8 +72,8 @@ class event_manager : public base {
 
     virtual ~event_manager() final;
 
-    [[nodiscard]] chaining::chain<event, context, context, false> chain(method const &) const;
-    [[nodiscard]] chaining::chain<context, context, context, false> chain() const;
+    [[nodiscard]] chaining::chain_relayed_unsync_t<event, context> chain(method const &) const;
+    [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
 
     ui::event_inputtable &inputtable();
 
