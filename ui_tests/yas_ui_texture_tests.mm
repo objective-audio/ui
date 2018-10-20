@@ -212,7 +212,7 @@ using namespace yas;
 
     ui::texture texture{{.point_size = {8, 8}, .scale_factor = 1.0}};
 
-    opt_t<ui::texture::method> received;
+    std::optional<ui::texture::method> received;
 
     auto observer = texture.chain().perform([&received](auto const &pair) { received = pair.first; }).end();
 
@@ -221,7 +221,7 @@ using namespace yas;
     XCTAssertTrue(received);
     XCTAssertEqual(*received, ui::texture::method::size_updated);
 
-    received = nullopt;
+    received = std::nullopt;
 
     texture.metal().metal_setup(metal_system);
 

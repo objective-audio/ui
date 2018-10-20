@@ -312,7 +312,7 @@ struct test_render_encoder : base {
 }
 
 - (void)test_chain_with_methods {
-    opt_t<ui::node::method> called;
+    std::optional<ui::node::method> called;
 
     ui::node node;
 
@@ -327,7 +327,7 @@ struct test_render_encoder : base {
     XCTAssertTrue(called);
     XCTAssertEqual(*called, ui::node::method::added_to_super);
 
-    called = nullopt;
+    called = std::nullopt;
 
     node.remove_from_super_node();
 

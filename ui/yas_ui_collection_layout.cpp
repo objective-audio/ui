@@ -272,7 +272,7 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    std::experimental::optional<cell_location> _cell_location(std::size_t const cell_idx) {
+    std::optional<cell_location> _cell_location(std::size_t const cell_idx) {
         std::size_t top_idx = 0;
         std::size_t line_idx = 0;
 
@@ -284,7 +284,7 @@ struct ui::collection_layout::impl : base::impl {
             ++line_idx;
         }
 
-        return nullopt;
+        return std::nullopt;
     }
 
     ui::size _cell_size(std::size_t const idx) {

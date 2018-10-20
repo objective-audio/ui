@@ -33,7 +33,7 @@ struct ui::blur::impl : base::impl {
 
         if (sigma > 0.0) {
             this->_effect.set_metal_handler(
-                [sigma, prev_scale_factor = std::experimental::optional<double>{nullopt},
+                [sigma, prev_scale_factor = std::optional<double>{std::nullopt},
                  blur = objc_ptr<MPSImageGaussianBlur *>{nullptr}](ui::texture &src_texture, ui::texture &dst_texture,
                                                                    ui::metal_system &metal_system,
                                                                    id<MTLCommandBuffer> const commandBuffer) mutable {
