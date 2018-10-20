@@ -22,7 +22,7 @@ struct ui::strings::impl : base::impl {
 
     chaining::holder<std::string> _text;
     chaining::holder<ui::font_atlas> _font_atlas;
-    chaining::holder<opt_t<float>> _line_height;
+    chaining::holder<std::optional<float>> _line_height;
 
     impl(args &&args)
         : _collection_layout(
@@ -235,7 +235,7 @@ void ui::strings::set_font_atlas(ui::font_atlas atlas) {
     impl_ptr<impl>()->_font_atlas.set_value(std::move(atlas));
 }
 
-void ui::strings::set_line_height(std::experimental::optional<float> line_height) {
+void ui::strings::set_line_height(std::optional<float> line_height) {
     impl_ptr<impl>()->_line_height.set_value(std::move(line_height));
 }
 
@@ -251,7 +251,7 @@ ui::font_atlas const &ui::strings::font_atlas() const {
     return impl_ptr<impl>()->_font_atlas.value();
 }
 
-std::experimental::optional<float> const &ui::strings::line_height() const {
+std::optional<float> const &ui::strings::line_height() const {
     return impl_ptr<impl>()->_line_height.value();
 }
 
@@ -275,7 +275,7 @@ chaining::chain_sync_t<ui::font_atlas> ui::strings::chain_font_atlas() const {
     return impl_ptr<impl>()->_font_atlas.chain();
 }
 
-chaining::chain_sync_t<opt_t<float>> ui::strings::chain_line_height() const {
+chaining::chain_sync_t<std::optional<float>> ui::strings::chain_line_height() const {
     return impl_ptr<impl>()->_line_height.chain();
 }
 

@@ -97,7 +97,6 @@
 		B6F73BA71CDB7D7E009FD0DD /* yas_sample_touch_holder.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73BA01CDB7D7E009FD0DD /* yas_sample_touch_holder.mm */; };
 		B6F94ED0214E9386008C9CD9 /* yas_chaining_observer_pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F94EC2214E9386008C9CD9 /* yas_chaining_observer_pool.cpp */; };
 		B6F94ED1214E9386008C9CD9 /* yas_chaining_any_observer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F94ECF214E9386008C9CD9 /* yas_chaining_any_observer.cpp */; };
-		B6F94EFA214E93CB008C9CD9 /* yas_any.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F94EF7214E93CB008C9CD9 /* yas_any.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -326,9 +325,6 @@
 		B6F94ECD214E9386008C9CD9 /* yas_chaining_fetcher_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_chaining_fetcher_protocol.h; sourceTree = "<group>"; };
 		B6F94ECE214E9386008C9CD9 /* yas_chaining_sender_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_chaining_sender_private.h; sourceTree = "<group>"; };
 		B6F94ECF214E9386008C9CD9 /* yas_chaining_any_observer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_chaining_any_observer.cpp; sourceTree = "<group>"; };
-		B6F94EF7214E93CB008C9CD9 /* yas_any.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_any.cpp; sourceTree = "<group>"; };
-		B6F94EF8214E93CB008C9CD9 /* yas_any_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_any_private.h; sourceTree = "<group>"; };
-		B6F94EF9214E93CB008C9CD9 /* yas_any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_any.h; sourceTree = "<group>"; };
 		B6F9E472208A3967000B390E /* yas_flow_graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph.h; sourceTree = "<group>"; };
 		B6F9E474208A3968000B390E /* yas_flow_graph_private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_flow_graph_private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -558,9 +554,6 @@
 		B65F6E091CC87DDF007C3523 /* cpp_utils */ = {
 			isa = PBXGroup;
 			children = (
-				B6F94EF8214E93CB008C9CD9 /* yas_any_private.h */,
-				B6F94EF7214E93CB008C9CD9 /* yas_any.cpp */,
-				B6F94EF9214E93CB008C9CD9 /* yas_any.h */,
 				B65F6E0C1CC87DDF007C3523 /* yas_base_private.h */,
 				B65F6E0A1CC87DDF007C3523 /* yas_base.cpp */,
 				B65F6E0B1CC87DDF007C3523 /* yas_base.h */,
@@ -809,7 +802,6 @@
 				B65F6DF51CC87DB6007C3523 /* yas_ui_image.cpp in Sources */,
 				B65F6E341CC87DDF007C3523 /* yas_each_dictionary.cpp in Sources */,
 				B60428361D3B2EAF0076769D /* yas_ui_button.mm in Sources */,
-				B6F94EFA214E93CB008C9CD9 /* yas_any.cpp in Sources */,
 				B65F6E371CC87DDF007C3523 /* yas_objc_ptr.mm in Sources */,
 				B6435B071F88680700294E29 /* yas_ui_color.cpp in Sources */,
 				B6F73BA31CDB7D7E009FD0DD /* yas_sample_cursor.mm in Sources */,

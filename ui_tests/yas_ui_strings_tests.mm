@@ -156,10 +156,10 @@ using namespace yas;
 - (void)test_chain_line_height {
     ui::strings strings;
 
-    opt_t<float> notified = nullopt;
+    std::optional<float> notified = std::nullopt;
 
     auto observer = strings.chain_line_height()
-                        .perform([&notified](opt_t<float> const &line_height) { notified = line_height; })
+                        .perform([&notified](std::optional<float> const &line_height) { notified = line_height; })
                         .sync();
 
     XCTAssertFalse(notified);

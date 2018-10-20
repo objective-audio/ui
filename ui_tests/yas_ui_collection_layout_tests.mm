@@ -704,7 +704,7 @@ using namespace yas;
 - (void)test_chain_preferred_cell_count {
     ui::collection_layout layout;
 
-    opt_t<std::size_t> notified_count;
+    std::optional<std::size_t> notified_count;
 
     auto observer = layout.chain_preferred_cell_count()
                         .perform([&notified_count](auto const &count) { notified_count = count; })
@@ -719,7 +719,7 @@ using namespace yas;
 - (void)test_chain_alignment {
     ui::collection_layout layout;
 
-    opt_t<ui::layout_alignment> notified;
+    std::optional<ui::layout_alignment> notified;
 
     auto observer = layout.chain_alignment().perform([&notified](auto const &aligment) { notified = aligment; }).end();
 
@@ -732,7 +732,7 @@ using namespace yas;
 - (void)test_chain_lines {
     ui::collection_layout layout;
 
-    opt_t<std::vector<ui::collection_layout::line>> notified;
+    std::optional<std::vector<ui::collection_layout::line>> notified;
 
     auto observer = layout.chain_lines().perform([&notified](auto const &lines) { notified = lines; }).end();
 
@@ -745,7 +745,7 @@ using namespace yas;
 - (void)test_chain_default_cell_size {
     ui::collection_layout layout;
 
-    opt_t<ui::size> notified;
+    std::optional<ui::size> notified;
 
     auto observer = layout.chain_default_cell_size().perform([&notified](auto const &size) { notified = size; }).end();
 
@@ -759,7 +759,7 @@ using namespace yas;
 - (void)test_chain_row_order {
     ui::collection_layout layout;
 
-    opt_t<ui::layout_order> notified;
+    std::optional<ui::layout_order> notified;
 
     auto observer = layout.chain_row_order().perform([&notified](auto const &order) { notified = order; }).end();
 
@@ -772,7 +772,7 @@ using namespace yas;
 - (void)test_chain_col_order {
     ui::collection_layout layout;
 
-    opt_t<ui::layout_order> notified;
+    std::optional<ui::layout_order> notified;
 
     auto observer = layout.chain_col_order().perform([&notified](auto const &order) { notified = order; }).end();
 
@@ -785,7 +785,7 @@ using namespace yas;
 - (void)test_chain_direction {
     ui::collection_layout layout;
 
-    opt_t<ui::layout_direction> notified;
+    std::optional<ui::layout_direction> notified;
 
     auto observer =
         layout.chain_direction().perform([&notified](auto const &direction) { notified = direction; }).end();
@@ -799,7 +799,7 @@ using namespace yas;
 - (void)test_chain_row_spacing {
     ui::collection_layout layout;
 
-    opt_t<float> notified;
+    std::optional<float> notified;
 
     auto observer = layout.chain_row_spacing().perform([&notified](auto const &spacing) { notified = spacing; }).end();
 
@@ -812,7 +812,7 @@ using namespace yas;
 - (void)test_chain_col_spacing {
     ui::collection_layout layout;
 
-    opt_t<float> notified;
+    std::optional<float> notified;
 
     auto observer = layout.chain_col_spacing().perform([&notified](auto const &spacing) { notified = spacing; }).end();
 

@@ -37,7 +37,7 @@ struct ui::layout_guide::impl : base::impl {
     chain_t chain() {
         auto weak_guide = to_weak(cast<layout_guide>());
 
-        auto old_cache = std::make_shared<opt_t<float>>();
+        auto old_cache = std::make_shared<std::optional<float>>();
 
         return this->_value.chain()
             .guard([weak_guide](float const &) { return !!weak_guide; })
@@ -53,8 +53,8 @@ struct ui::layout_guide::impl : base::impl {
                     return (count == 0);
                 }
             }))
-            .to([cache = opt_t<float>(), old_cache, is_wait = false,
-                 weak_guide](std::pair<opt_t<float>, opt_t<bool>> const &pair) mutable {
+            .to([cache = std::optional<float>(), old_cache, is_wait = false,
+                 weak_guide](std::pair<std::optional<float>, std::optional<bool>> const &pair) mutable {
                 bool is_continue = false;
 
                 if (pair.first) {
@@ -69,14 +69,14 @@ struct ui::layout_guide::impl : base::impl {
 
                     if (is_wait) {
                         // wait開始ならキャッシュをクリアしてフロー中断
-                        cache = nullopt;
+                        cache = std::nullopt;
                         is_continue = false;
                         *old_cache = guide_impl->_value.value();
                     } else {
                         // wait終了ならキャッシュに値があればフロー継続
                         is_continue = !!cache;
                         if (!is_continue) {
-                            *old_cache = nullopt;
+                            *old_cache = std::nullopt;
                         }
                     }
                 }
@@ -90,10 +90,10 @@ struct ui::layout_guide::impl : base::impl {
                     return true;
                 }
                 float const old_value = **old_cache;
-                *old_cache = nullopt;
+                *old_cache = std::nullopt;
                 return old_value != *pair.first;
             })
-            .to([](std::pair<opt_t<float>, bool> const &pair) { return *pair.first; });
+            .to([](std::pair<std::optional<float>, bool> const &pair) { return *pair.first; });
     }
 
    private:
@@ -187,7 +187,7 @@ struct ui::layout_guide_point::impl : base::impl {
 
         return this->_x_guide.chain()
             .pair(this->_y_guide.chain())
-            .to([cache](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
+            .to([cache](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
                 if (pair.first) {
                     cache.x = *pair.first;
                 }
@@ -323,7 +323,7 @@ struct ui::layout_guide_range::impl : base::impl {
         return this->_min_guide.chain()
             .pair(this->_max_guide.chain())
             .to([min_cache = range.min(),
-                 max_cache = range.max()](std::pair<opt_t<float>, opt_t<float>> const &pair) mutable {
+                 max_cache = range.max()](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
                 if (pair.first) {
                     min_cache = *pair.first;
                 }
@@ -460,7 +460,7 @@ struct ui::layout_guide_rect::impl : base::impl {
         return this->_vertical_range.chain()
             .pair(this->_horizontal_range.chain())
             .to([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
-                    std::pair<opt_t<ui::range>, opt_t<ui::range>> const &pair) mutable {
+                    std::pair<std::optional<ui::range>, std::optional<ui::range>> const &pair) mutable {
                 if (pair.first) {
                     v_cache = *pair.first;
                 }

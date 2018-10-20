@@ -102,9 +102,9 @@ struct ui::font_atlas::impl : base::impl {
 
         this->_texture_changed_fetcher = chaining::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
-                return opt_t<ui::texture>{atlas.texture()};
+                return std::optional<ui::texture>{atlas.texture()};
             } else {
-                return opt_t<ui::texture>{nullopt};
+                return std::optional<ui::texture>{std::nullopt};
             }
         });
     }
