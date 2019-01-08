@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <FileRef
+      location = "group:ui_mac/ui_mac.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/chaining/chaining_mac/chaining_mac.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/cpp_utils/cpp_utils_mac/cpp_utils_mac.xcodeproj">
+   </FileRef>
 </Workspace>
