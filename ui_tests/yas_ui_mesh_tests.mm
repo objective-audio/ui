@@ -3,11 +3,11 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <ui/yas_ui_umbrella.h>
 #import <iostream>
 #import <sstream>
 #import "yas_each_index.h"
 #import "yas_objc_ptr.h"
-#import "yas_ui.h"
 
 using namespace yas;
 

@@ -3,10 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <ui/yas_ui_umbrella.h>
 #import <iostream>
 #import "yas_objc_ptr.h"
 #import "yas_test_metal_view_controller.h"
-#import "yas_ui.h"
 #import "yas_ui_metal_encode_info.h"
 #import "yas_ui_metal_render_encoder.h"
 
