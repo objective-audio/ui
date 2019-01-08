@@ -5,7 +5,7 @@
 #pragma once
 
 #include <MetalKit/MetalKit.h>
-#include "yas_objc_macros.h"
+#include <objc_utils/yas_objc_macros.h>
 
 #if TARGET_OS_IPHONE
 #elif TARGET_OS_MAC

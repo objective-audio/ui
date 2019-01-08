@@ -7,7 +7,7 @@
 #include <functional>
 #include <numeric>
 #include <tuple>
-#include "yas_fast_each.h"
+#include <cpp_utils/yas_fast_each.h>
 
 namespace yas::ui {
 std::function<std::vector<float>(std::tuple<float, float, std::size_t> const &)> justify(

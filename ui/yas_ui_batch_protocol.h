@@ -6,7 +6,7 @@
 
 #include <string>
 #include <vector>
-#include "yas_protocol.h"
+#include <cpp_utils/yas_protocol.h>
 
 namespace yas::ui {
 class mesh;

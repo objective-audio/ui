@@ -5,10 +5,10 @@
 #include "yas_ui_font_atlas.h"
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreText/CoreText.h>
-#include "yas_cf_ref.h"
-#include "yas_cf_utils.h"
-#include "yas_each_index.h"
-#include "yas_objc_macros.h"
+#include <cpp_utils/yas_cf_ref.h>
+#include <cpp_utils/yas_cf_utils.h>
+#include <cpp_utils/yas_each_index.h>
+#include <objc_utils/yas_objc_macros.h>
 #include "yas_ui_image.h"
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"

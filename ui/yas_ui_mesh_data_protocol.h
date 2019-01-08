@@ -5,8 +5,8 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include "yas_flagset.h"
-#include "yas_protocol.h"
+#include <cpp_utils/yas_flagset.h>
+#include <cpp_utils/yas_protocol.h>
 
 namespace yas::ui {
 enum class mesh_data_update_reason : std::size_t {

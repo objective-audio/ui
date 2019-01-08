@@ -5,7 +5,7 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include "yas_base.h"
+#include <cpp_utils/yas_base.h>
 #include "yas_ui_metal_system_protocol.h"
 
 namespace yas::ui {

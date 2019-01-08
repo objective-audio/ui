@@ -5,8 +5,8 @@
 #pragma once
 
 #include <vector>
-#include "yas_base.h"
-#include "yas_chaining.h"
+#include <cpp_utils/yas_base.h>
+#include <chaining/yas_chaining_umbrella.h>
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
 

@@ -3,7 +3,7 @@
 //
 
 #include "yas_ui_metal_texture.h"
-#include "yas_objc_ptr.h"
+#include <cpp_utils/yas_objc_ptr.h>
 #include "yas_ui_metal_system.h"
 #include "yas_ui_metal_types.h"
 

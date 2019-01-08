@@ -5,7 +5,7 @@
 #pragma once
 
 #include <string>
-#include "yas_protocol.h"
+#include <cpp_utils/yas_protocol.h>
 #include "yas_ui_types.h"
 
 namespace yas::ui {
