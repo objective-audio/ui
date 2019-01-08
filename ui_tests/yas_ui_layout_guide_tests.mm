@@ -5,8 +5,6 @@
 #import <XCTest/XCTest.h>
 #import <ui/yas_ui_layout_guide.h>
 
-#import <iostream>
-
 using namespace yas;
 
 @interface yas_ui_layout_guide_tests : XCTestCase
