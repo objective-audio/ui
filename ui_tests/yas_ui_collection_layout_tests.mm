@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_collection_layout.h"
-#import "yas_ui_layout_guide.h"
+#import <ui/yas_ui_collection_layout.h>
+#import <ui/yas_ui_layout_guide.h>
 
 using namespace yas;
 

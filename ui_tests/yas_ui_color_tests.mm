@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <ui/yas_ui_color.h>
 #import <sstream>
-#import "yas_ui_color.h"
 
 using namespace yas;
 

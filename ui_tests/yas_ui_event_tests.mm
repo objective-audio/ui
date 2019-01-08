@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <ui/yas_ui_event.h>
 #import <sstream>
-#import "yas_ui_event.h"
 
 using namespace yas;
 

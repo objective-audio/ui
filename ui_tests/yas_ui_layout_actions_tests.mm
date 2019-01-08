@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_layout_actions.h"
-#import "yas_ui_layout_guide.h"
+#import <ui/yas_ui_layout_actions.h>
+#import <ui/yas_ui_layout_guide.h>
 
 using namespace yas;
 using namespace std::chrono_literals;

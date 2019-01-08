@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_layout_guide.h"
+#import <ui/yas_ui_layout_guide.h>
 
 #import <iostream>
 

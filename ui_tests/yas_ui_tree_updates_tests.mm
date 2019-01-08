@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_batch_protocol.h"
-#import "yas_ui_node_protocol.h"
+#import <ui/yas_ui_batch_protocol.h>
+#import <ui/yas_ui_node_protocol.h>
 
 using namespace yas;
 

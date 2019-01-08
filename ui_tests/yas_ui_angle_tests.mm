@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_angle.h"
+#import <ui/yas_ui_angle.h>
 
 using namespace yas;
 
