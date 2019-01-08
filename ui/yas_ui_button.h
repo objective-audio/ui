@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <cpp_utils/yas_base.h>
 #include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_flagset.h>
 #include "yas_ui_types.h"
 

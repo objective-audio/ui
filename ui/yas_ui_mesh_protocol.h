@@ -5,9 +5,9 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <simd/simd.h>
 #include <cpp_utils/yas_flagset.h>
 #include <cpp_utils/yas_protocol.h>
+#include <simd/simd.h>
 
 namespace yas::ui {
 class metal_system;

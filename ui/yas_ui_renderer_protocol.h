@@ -6,8 +6,8 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <MetalKit/MetalKit.h>
-#include <objc_utils/yas_objc_macros.h>
 #include <cpp_utils/yas_protocol.h>
+#include <objc_utils/yas_objc_macros.h>
 
 @class YASUIMetalView;
 

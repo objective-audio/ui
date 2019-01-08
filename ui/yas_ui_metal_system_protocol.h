@@ -6,9 +6,9 @@
 
 #include <Metal/Metal.h>
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
-#include <objc_utils/yas_objc_macros.h>
 #include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_protocol.h>
+#include <objc_utils/yas_objc_macros.h>
 
 namespace yas::ui {
 class renderer;

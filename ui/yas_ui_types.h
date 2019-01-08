@@ -5,10 +5,10 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
 #include <ostream>
 #include <string>
-#include <cpp_utils/yas_flagset.h>
 #include "yas_ui_shared_types.h"
 
 namespace yas::ui {
