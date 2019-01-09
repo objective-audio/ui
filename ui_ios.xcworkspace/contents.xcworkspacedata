@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:ui_ios_sample/ui_ios_sample.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:ui_ios/ui_ios.xcodeproj">
    </FileRef>
    <FileRef
