@@ -32,8 +32,8 @@ struct ui::metal_system::impl : base::impl,
                                 testable_metal_system::impl {
     impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
-        this->_default_library.move_object(
-            [device newDefaultLibraryWithBundle:[NSBundle bundleForClass:[YASUIMetalView class]] error:nil]);
+        auto const bundle = make_objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
+        this->_default_library.move_object([device newDefaultLibraryWithBundle:bundle.object() error:nil]);
         this->_inflight_semaphore.move_object(dispatch_semaphore_create(ui::_uniforms_buffer_count));
 
         auto defaultLibrary = this->_default_library.object();
