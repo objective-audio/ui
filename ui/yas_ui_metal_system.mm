@@ -326,8 +326,6 @@ ui::renderable_metal_system &ui::metal_system::renderable() {
     return this->_renderable;
 }
 
-#if YAS_TEST
 ui::testable_metal_system ui::metal_system::testable() {
     return ui::testable_metal_system{impl_ptr<ui::testable_metal_system::impl>()};
 }
-#endif

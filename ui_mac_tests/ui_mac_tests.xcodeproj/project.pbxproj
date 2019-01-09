@@ -47,6 +47,7 @@
 		B6DE35BD21E6386C00E49BCB /* yas_ui_effect_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE34F321E6347600E49BCB /* yas_ui_effect_tests.mm */; };
 		B6DE35BE21E6389200E49BCB /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE358721E6361E00E49BCB /* AppKit.framework */; };
 		B6DE35BF21E638A000E49BCB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE357D21E635F000E49BCB /* Metal.framework */; };
+		B6DE35D121E63B7F00E49BCB /* yas_ui_metal_system_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE34FA21E6347600E49BCB /* yas_ui_metal_system_tests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -109,6 +110,9 @@
 		B6DE358F21E636E500E49BCB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		B6DE359121E6371800E49BCB /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B6DE359321E6372700E49BCB /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		B6DE35C721E63A2E00E49BCB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B6DE35CB21E63A4800E49BCB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		B6DE35CF21E63A9000E49BCB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +210,9 @@
 		B6DE354621E634A700E49BCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6DE35CF21E63A9000E49BCB /* OpenGL.framework */,
+				B6DE35CB21E63A4800E49BCB /* CoreText.framework */,
+				B6DE35C721E63A2E00E49BCB /* AVFoundation.framework */,
 				B6DE359321E6372700E49BCB /* Quartz.framework */,
 				B6DE359121E6371800E49BCB /* QuartzCore.framework */,
 				B6DE358F21E636E500E49BCB /* CoreFoundation.framework */,
@@ -312,6 +319,7 @@
 				B6DE35A721E637AB00E49BCB /* yas_ui_justified_layout_tests.mm in Sources */,
 				B6DE359F21E6376800E49BCB /* yas_ui_color_tests.mm in Sources */,
 				B6DE35BA21E6385500E49BCB /* yas_ui_angle_tests.mm in Sources */,
+				B6DE35D121E63B7F00E49BCB /* yas_ui_metal_system_tests.mm in Sources */,
 				B6DE35AE21E637E700E49BCB /* yas_ui_action_tests.mm in Sources */,
 				B6DE35A521E6379E00E49BCB /* yas_ui_mesh_tests.mm in Sources */,
 				B6DE35A121E6377800E49BCB /* yas_ui_layout_guide_tests.mm in Sources */,
