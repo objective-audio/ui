@@ -3,8 +3,8 @@
 //
 
 #include "yas_sample_draw_call_text.hpp"
-#include "yas_chaining_utils.h"
-#include "yas_timer.h"
+#include <chaining/yas_chaining_utils.h>
+#include <cpp_utils/yas_timer.h>
 
 using namespace yas;
 

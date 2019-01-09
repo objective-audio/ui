@@ -3,8 +3,8 @@
 //
 
 #include "yas_sample_cursor_over_planes.h"
-#include "yas_fast_each.h"
-#include "yas_ui_collider.h"
+#include <cpp_utils/yas_fast_each.h>
+#include <ui/yas_ui_collider.h>
 
 using namespace yas;
 

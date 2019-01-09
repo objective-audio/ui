@@ -3,7 +3,7 @@
 //
 
 #include "yas_sample_justified_points.h"
-#include "yas_fast_each.h"
+#include <cpp_utils/yas_fast_each.h>
 
 using namespace yas;
 

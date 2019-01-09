@@ -4,8 +4,10 @@
 
 #pragma once
 
-#include "yas_chaining.h"
-#include "yas_objc_ptr.h"
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_objc_ptr.h>
+#include <ui/yas_ui_metal_system.h>
+#include <ui/yas_ui_umbrella.h>
 #include "yas_sample_bg.h"
 #include "yas_sample_big_button.h"
 #include "yas_sample_big_button_text.h"
@@ -17,8 +19,6 @@
 #include "yas_sample_modifier_text.h"
 #include "yas_sample_soft_keyboard.h"
 #include "yas_sample_touch_holder.h"
-#include "yas_ui.h"
-#include "yas_ui_metal_system.h"
 
 namespace yas::sample {
 struct main {

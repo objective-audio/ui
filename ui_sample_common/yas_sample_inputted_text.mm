@@ -3,7 +3,7 @@
 //
 
 #include "yas_sample_inputted_text.h"
-#include "yas_chaining_utils.h"
+#include <chaining/yas_chaining_utils.h>
 
 using namespace yas;
 
