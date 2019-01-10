@@ -8,5 +8,4 @@ notifications:
 install:
   - brew install clang-format
 script:
-  - git submodule update --init --recursive
   - xcodebuild -workspace ui_mac.xcworkspace -scheme ui_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
