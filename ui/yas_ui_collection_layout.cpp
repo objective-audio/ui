@@ -3,9 +3,9 @@
 //
 
 #include "yas_ui_collection_layout.h"
-#include "yas_chaining_utils.h"
-#include "yas_delaying_caller.h"
-#include "yas_fast_each.h"
+#include <chaining/yas_chaining_utils.h>
+#include <cpp_utils/yas_delaying_caller.h>
+#include <cpp_utils/yas_fast_each.h>
 #include "yas_ui_layout_guide.h"
 
 using namespace yas;

@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <cpp_utils/yas_protocol.h>
 #include <simd/simd.h>
-#include "yas_protocol.h"
 
 namespace yas::ui {
 struct renderable_collider : protocol {

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include "yas_base.h"
+#include <cpp_utils/yas_base.h>
 #include "yas_ui_metal_system_protocol.h"
 
 namespace yas::ui {
@@ -24,9 +24,7 @@ class metal_system : public base {
     ui::makable_metal_system &makable();
     ui::renderable_metal_system &renderable();
 
-#if YAS_TEST
     ui::testable_metal_system testable();
-#endif
 
    private:
     ui::makable_metal_system _makable = nullptr;

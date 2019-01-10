@@ -5,9 +5,9 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <cpp_utils/yas_base.h>
 #include <simd/simd.h>
 #include <deque>
-#include "yas_base.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_metal_system.h"

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_base.h"
+#include <cpp_utils/yas_base.h>
 #include "yas_ui_batch_protocol.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_render_encoder_protocol.h"

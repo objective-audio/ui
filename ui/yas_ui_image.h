@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <cpp_utils/yas_base.h>
 #include <functional>
-#include "yas_base.h"
 #include "yas_ui_texture_protocol.h"
 #include "yas_ui_types.h"
 

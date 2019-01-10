@@ -3,7 +3,7 @@
 //
 
 #include "yas_ui_metal_system.h"
-#include "yas_each_index.h"
+#include <cpp_utils/yas_each_index.h>
 #include "yas_ui_mesh.h"
 #include "yas_ui_mesh_data.h"
 #include "yas_ui_metal_encode_info.h"
@@ -32,7 +32,8 @@ struct ui::metal_system::impl : base::impl,
                                 testable_metal_system::impl {
     impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
-        this->_default_library.move_object([device newDefaultLibrary]);
+        auto const bundle = make_objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
+        this->_default_library.move_object([device newDefaultLibraryWithBundle:bundle.object() error:nil]);
         this->_inflight_semaphore.move_object(dispatch_semaphore_create(ui::_uniforms_buffer_count));
 
         auto defaultLibrary = this->_default_library.object();
@@ -325,8 +326,6 @@ ui::renderable_metal_system &ui::metal_system::renderable() {
     return this->_renderable;
 }
 
-#if YAS_TEST
 ui::testable_metal_system ui::metal_system::testable() {
     return ui::testable_metal_system{impl_ptr<ui::testable_metal_system::impl>()};
 }
-#endif

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "yas_flagset.h"
-#include "yas_protocol.h"
+#include <cpp_utils/yas_flagset.h>
+#include <cpp_utils/yas_protocol.h>
 
 namespace yas::ui {
 class collider;

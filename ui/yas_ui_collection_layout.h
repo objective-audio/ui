@@ -4,10 +4,10 @@
 
 #pragma once
 
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_base.h>
+#include <cpp_utils/yas_result.h>
 #include <vector>
-#include "yas_base.h"
-#include "yas_chaining.h"
-#include "yas_result.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
 

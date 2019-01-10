@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "yas_base.h"
-#include "yas_chaining.h"
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_base.h>
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
 #include "yas_ui_render_target_protocol.h"

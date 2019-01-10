@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:ui_ios_sample/ui_ios_sample.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ui_ios/ui_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/chaining/chaining_ios/chaining_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/cpp_utils/cpp_utils_ios/cpp_utils_ios.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:submodules/objc_utils/objc_utils_ios/objc_utils_ios.xcodeproj">
+   </FileRef>
+</Workspace>

@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "yas_ui_collider.h"
-#import "yas_ui_detector.h"
+#import <ui/yas_ui_collider.h>
+#import <ui/yas_ui_detector.h>
 
 using namespace yas;
 

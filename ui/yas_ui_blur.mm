@@ -4,7 +4,7 @@
 
 #include "yas_ui_blur.h"
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
-#include "yas_chaining.h"
+#include <chaining/yas_chaining_umbrella.h>
 #include "yas_ui_effect.h"
 #include "yas_ui_metal_texture.h"
 #include "yas_ui_texture.h"

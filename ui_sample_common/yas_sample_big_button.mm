@@ -3,8 +3,8 @@
 //
 
 #include "yas_sample_big_button.h"
-#include "yas_each_index.h"
-#include "yas_ui_collider.h"
+#include <cpp_utils/yas_each_index.h>
+#include <ui/yas_ui_collider.h>
 
 using namespace yas;
 

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_ui.h"
+#include <ui/yas_ui_umbrella.h>
 
 namespace yas::ui {
 class texture;

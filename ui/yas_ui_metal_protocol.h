@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "yas_protocol.h"
-#include "yas_result.h"
+#include <cpp_utils/yas_protocol.h>
+#include <cpp_utils/yas_result.h>
 
 namespace yas::ui {
 class metal_system;

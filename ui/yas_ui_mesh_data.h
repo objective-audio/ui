@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <cpp_utils/yas_base.h>
 #include <vector>
-#include "yas_base.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_types.h"

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_objc_ptr.h"
+#include <cpp_utils/yas_objc_ptr.h>
 #include "yas_ui_metal_view.h"
 #include "yas_ui_renderer_protocol.h"
 #if TARGET_OS_IPHONE

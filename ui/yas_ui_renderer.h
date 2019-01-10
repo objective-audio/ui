@@ -5,10 +5,10 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_base.h>
 #include <simd/simd.h>
 #include <vector>
-#include "yas_base.h"
-#include "yas_chaining.h"
 #include "yas_ui_renderer_protocol.h"
 
 namespace yas::ui {

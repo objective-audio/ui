@@ -3,8 +3,8 @@
 //
 
 #include "yas_ui_strings.h"
+#include <cpp_utils/yas_fast_each.h>
 #include <numeric>
-#include "yas_fast_each.h"
 #include "yas_ui_collection_layout.h"
 #include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
