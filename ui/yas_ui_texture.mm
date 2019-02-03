@@ -35,8 +35,8 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 #pragma mark - ui::texture::impl
 
 struct ui::texture::impl : base::impl, metal_object::impl {
-    chaining::holder<ui::uint_size> _point_size;
-    chaining::holder<double> _scale_factor;
+    chaining::value::holder<ui::uint_size> _point_size;
+    chaining::value::holder<double> _scale_factor;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -101,8 +101,8 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     ui::uint_size actual_size() {
-        ui::uint_size const &point_size = this->_point_size.value();
-        double const &scale_factor = this->_scale_factor.value();
+        ui::uint_size const &point_size = this->_point_size.raw();
+        double const &scale_factor = this->_scale_factor.raw();
         return {static_cast<uint32_t>(point_size.width * scale_factor),
                 static_cast<uint32_t>(point_size.height * scale_factor)};
     }
@@ -228,7 +228,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         auto const &point_size = pair.first;
         auto const &draw_handler = pair.second;
 
-        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor.value()}};
+        ui::image image{{.point_size = point_size, .scale_factor = this->_scale_factor.raw()}};
 
         if (auto reserve_result = this->_reserve_image_size(image)) {
             if (draw_handler) {
@@ -259,7 +259,7 @@ bool ui::texture::operator!=(texture const &rhs) const {
 }
 
 ui::uint_size ui::texture::point_size() const {
-    return impl_ptr<impl>()->_point_size.value();
+    return impl_ptr<impl>()->_point_size.raw();
 }
 
 ui::uint_size ui::texture::actual_size() const {
@@ -267,7 +267,7 @@ ui::uint_size ui::texture::actual_size() const {
 }
 
 double ui::texture::scale_factor() const {
-    return impl_ptr<impl>()->_scale_factor.value();
+    return impl_ptr<impl>()->_scale_factor.raw();
 }
 
 uint32_t ui::texture::depth() const {

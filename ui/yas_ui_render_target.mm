@@ -142,7 +142,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::effect &effect() override {
-        return this->_effect.value();
+        return this->_effect.raw();
     }
 
     render_target_updates_t &updates() override {
@@ -152,7 +152,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     void clear_updates() override {
         this->_updates.flags.reset();
         this->_mesh.renderable().clear_updates();
-        if (auto &effect = this->_effect.value()) {
+        if (auto &effect = this->_effect.raw()) {
             effect.renderable().clear_updates();
         }
     }
@@ -183,9 +183,9 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     ui::layout_guide_rect _layout_guide_rect;
-    chaining::holder<ui::effect> _effect{ui::effect{nullptr}};
+    chaining::value::holder<ui::effect> _effect{ui::effect{nullptr}};
     chaining::notifier<ui::effect> _effect_setter;
-    chaining::holder<double> _scale_factor{1.0};
+    chaining::value::holder<double> _scale_factor{1.0};
 
    private:
     ui::rect_plane_data _data{1};
@@ -211,7 +211,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     void _set_textures_to_effect() {
-        if (auto &effect = this->_effect.value()) {
+        if (auto &effect = this->_effect.raw()) {
             effect.renderable().set_textures(this->_src_texture, this->_dst_texture);
         }
     }
@@ -248,7 +248,7 @@ void ui::render_target::set_scale_factor(double const scale_factor) {
 }
 
 double ui::render_target::scale_factor() const {
-    return impl_ptr<impl>()->_scale_factor.value();
+    return impl_ptr<impl>()->_scale_factor.raw();
 }
 
 void ui::render_target::set_effect(ui::effect effect) {
@@ -256,7 +256,7 @@ void ui::render_target::set_effect(ui::effect effect) {
 }
 
 ui::effect const &ui::render_target::effect() const {
-    return impl_ptr<impl>()->_effect.value();
+    return impl_ptr<impl>()->_effect.raw();
 }
 
 chaining::receiver<double> &ui::render_target::scale_factor_receiver() {

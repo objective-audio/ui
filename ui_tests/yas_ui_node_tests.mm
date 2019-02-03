@@ -53,26 +53,26 @@ struct test_render_encoder : base {
 - (void)test_create {
     ui::node node;
 
-    XCTAssertEqual(node.position().value().x, 0.0f);
-    XCTAssertEqual(node.position().value().y, 0.0f);
-    XCTAssertEqual(node.angle().value().degrees, 0.0f);
-    XCTAssertEqual(node.scale().value().width, 1.0f);
-    XCTAssertEqual(node.scale().value().height, 1.0f);
+    XCTAssertEqual(node.position().raw().x, 0.0f);
+    XCTAssertEqual(node.position().raw().y, 0.0f);
+    XCTAssertEqual(node.angle().raw().degrees, 0.0f);
+    XCTAssertEqual(node.scale().raw().width, 1.0f);
+    XCTAssertEqual(node.scale().raw().height, 1.0f);
 
-    XCTAssertEqual(node.color().value().red, 1.0f);
-    XCTAssertEqual(node.color().value().green, 1.0f);
-    XCTAssertEqual(node.color().value().blue, 1.0f);
-    XCTAssertEqual(node.alpha().value(), 1.0f);
+    XCTAssertEqual(node.color().raw().red, 1.0f);
+    XCTAssertEqual(node.color().raw().green, 1.0f);
+    XCTAssertEqual(node.color().raw().blue, 1.0f);
+    XCTAssertEqual(node.alpha().raw(), 1.0f);
 
-    XCTAssertFalse(node.mesh().value());
-    XCTAssertFalse(node.collider().value());
-    XCTAssertFalse(node.render_target().value());
+    XCTAssertFalse(node.mesh().raw());
+    XCTAssertFalse(node.collider().raw());
+    XCTAssertFalse(node.render_target().raw());
 
     XCTAssertEqual(node.children().size(), 0);
     XCTAssertFalse(node.parent());
     XCTAssertFalse(node.renderer());
 
-    XCTAssertTrue(node.is_enabled().value());
+    XCTAssertTrue(node.is_enabled().raw());
 
     XCTAssertTrue(node.renderable());
     XCTAssertTrue(node.metal());
@@ -99,36 +99,36 @@ struct test_render_encoder : base {
 
     node.is_enabled().set_value(true);
 
-    XCTAssertEqual(node.position().value().x, 1.0f);
-    XCTAssertEqual(node.position().value().y, 2.0f);
-    XCTAssertEqual(node.angle().value().degrees, 3.0f);
-    XCTAssertEqual(node.scale().value().width, 4.0f);
-    XCTAssertEqual(node.scale().value().height, 5.0f);
-    XCTAssertEqual(node.color().value().red, 0.1f);
-    XCTAssertEqual(node.color().value().green, 0.2f);
-    XCTAssertEqual(node.color().value().blue, 0.3f);
-    XCTAssertEqual(node.alpha().value(), 0.4f);
+    XCTAssertEqual(node.position().raw().x, 1.0f);
+    XCTAssertEqual(node.position().raw().y, 2.0f);
+    XCTAssertEqual(node.angle().raw().degrees, 3.0f);
+    XCTAssertEqual(node.scale().raw().width, 4.0f);
+    XCTAssertEqual(node.scale().raw().height, 5.0f);
+    XCTAssertEqual(node.color().raw().red, 0.1f);
+    XCTAssertEqual(node.color().raw().green, 0.2f);
+    XCTAssertEqual(node.color().raw().blue, 0.3f);
+    XCTAssertEqual(node.alpha().raw(), 0.4f);
 
     node.mesh().set_value(mesh);
-    XCTAssertTrue(node.mesh().value());
-    XCTAssertEqual(node.mesh().value(), mesh);
+    XCTAssertTrue(node.mesh().raw());
+    XCTAssertEqual(node.mesh().raw(), mesh);
 
     node.collider().set_value(collider);
-    XCTAssertTrue(node.collider().value());
-    XCTAssertEqual(node.collider().value(), collider);
+    XCTAssertTrue(node.collider().raw());
+    XCTAssertEqual(node.collider().raw(), collider);
 
     node.batch().set_value(batch);
     XCTAssertTrue(node.batch());
-    XCTAssertEqual(node.batch().value(), batch);
+    XCTAssertEqual(node.batch().raw(), batch);
 
     node.batch().set_value(nullptr);
-    XCTAssertFalse(node.batch().value());
+    XCTAssertFalse(node.batch().raw());
 
-    XCTAssertTrue(node.is_enabled().value());
+    XCTAssertTrue(node.is_enabled().raw());
 
     node.render_target().set_value(render_target);
-    XCTAssertTrue(node.render_target().value());
-    XCTAssertEqual(node.render_target().value(), render_target);
+    XCTAssertTrue(node.render_target().raw());
+    XCTAssertEqual(node.render_target().raw(), render_target);
 
     node.render_target().set_value(nullptr);
 }
@@ -137,18 +137,18 @@ struct test_render_encoder : base {
     ui::node node;
     ui::node const &const_node = node;
 
-    XCTAssertFalse(const_node.mesh().value());
-    XCTAssertFalse(const_node.collider().value());
-    XCTAssertFalse(const_node.batch().value());
+    XCTAssertFalse(const_node.mesh().raw());
+    XCTAssertFalse(const_node.collider().raw());
+    XCTAssertFalse(const_node.batch().raw());
 
     node.mesh().set_value(ui::mesh{});
     node.collider().set_value(ui::collider{});
     node.batch().set_value(ui::batch{});
 
-    XCTAssertTrue(const_node.mesh().value());
-    XCTAssertTrue(const_node.collider().value());
+    XCTAssertTrue(const_node.mesh().raw());
+    XCTAssertTrue(const_node.collider().raw());
     XCTAssertEqual(const_node.children().size(), 0);
-    XCTAssertTrue(const_node.batch().value());
+    XCTAssertTrue(const_node.batch().raw());
 }
 
 - (void)set_color_to_mesh {
@@ -436,7 +436,7 @@ struct test_render_encoder : base {
     node.mesh().set_value(ui::mesh{});
     ui::dynamic_mesh_data mesh_data{{.vertex_count = 2, .index_count = 2}};
     mesh_data.set_vertex_count(1);
-    node.mesh().value().set_mesh_data(mesh_data);
+    node.mesh().raw().set_mesh_data(mesh_data);
 
     node.angle().set_value({1.0f});
     node.is_enabled().set_value(false);
@@ -559,7 +559,7 @@ struct test_render_encoder : base {
     node.renderable().build_render_info(render_info);
 
     XCTAssertEqual(render_encoder.meshes().size(), 3);
-    XCTAssertEqual(render_encoder.meshes().at(0), node.mesh().value());
+    XCTAssertEqual(render_encoder.meshes().at(0), node.mesh().raw());
 }
 
 - (void)test_local_matrix {
@@ -568,9 +568,9 @@ struct test_render_encoder : base {
     node.scale().set_value(ui::size{2.0f, 0.5f});
     node.angle().set_value({90.0f});
 
-    simd::float4x4 expected_matrix = ui::matrix::translation(node.position().value().x, node.position().value().y) *
-                                     ui::matrix::rotation(node.angle().value().degrees) *
-                                     ui::matrix::scale(node.scale().value().width, node.scale().value().height);
+    simd::float4x4 expected_matrix = ui::matrix::translation(node.position().raw().x, node.position().raw().y) *
+                                     ui::matrix::rotation(node.angle().raw().degrees) *
+                                     ui::matrix::scale(node.scale().raw().width, node.scale().raw().height);
 
     XCTAssertTrue(is_equal(node.local_matrix(), expected_matrix));
 }
@@ -601,13 +601,13 @@ struct test_render_encoder : base {
     root_node.add_sub_node(sub_node);
 
     simd::float4x4 root_local_matrix =
-        ui::matrix::translation(root_node.position().value().x, root_node.position().value().y) *
-        ui::matrix::rotation(root_node.angle().value().degrees) *
-        ui::matrix::scale(root_node.scale().value().width, root_node.scale().value().height);
+        ui::matrix::translation(root_node.position().raw().x, root_node.position().raw().y) *
+        ui::matrix::rotation(root_node.angle().raw().degrees) *
+        ui::matrix::scale(root_node.scale().raw().width, root_node.scale().raw().height);
     simd::float4x4 sub_local_matrix =
-        ui::matrix::translation(sub_node.position().value().x, sub_node.position().value().y) *
-        ui::matrix::rotation(sub_node.angle().value().degrees) *
-        ui::matrix::scale(sub_node.scale().value().width, sub_node.scale().value().height);
+        ui::matrix::translation(sub_node.position().raw().x, sub_node.position().raw().y) *
+        ui::matrix::rotation(sub_node.angle().raw().degrees) *
+        ui::matrix::scale(sub_node.scale().raw().width, sub_node.scale().raw().height);
     simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
 
     XCTAssertTrue(is_equal(sub_node.matrix(), expected_matrix));
@@ -670,11 +670,11 @@ struct test_render_encoder : base {
     ui::node node;
     node.attach_x_layout_guide(x_guide);
 
-    XCTAssertEqual(node.position().value().x, -1.0f);
+    XCTAssertEqual(node.position().raw().x, -1.0f);
 
     x_guide.set_value(1.0f);
 
-    XCTAssertEqual(node.position().value().x, 1.0f);
+    XCTAssertEqual(node.position().raw().x, 1.0f);
 }
 
 - (void)test_attach_y_layout_guide {
@@ -683,11 +683,11 @@ struct test_render_encoder : base {
     ui::node node;
     node.attach_y_layout_guide(y_guide);
 
-    XCTAssertEqual(node.position().value().y, -1.0f);
+    XCTAssertEqual(node.position().raw().y, -1.0f);
 
     y_guide.set_value(1.0f);
 
-    XCTAssertEqual(node.position().value().y, 1.0f);
+    XCTAssertEqual(node.position().raw().y, 1.0f);
 }
 
 - (void)test_attach_position_layout_guide {
@@ -696,11 +696,11 @@ struct test_render_encoder : base {
     ui::node node;
     node.attach_position_layout_guides(guide_point);
 
-    XCTAssertTrue(node.position().value() == (ui::point{-1.0f, -2.0f}));
+    XCTAssertTrue(node.position().raw() == (ui::point{-1.0f, -2.0f}));
 
     guide_point.set_point({1.0f, 2.0f});
 
-    XCTAssertTrue(node.position().value() == (ui::point{1.0f, 2.0f}));
+    XCTAssertTrue(node.position().raw() == (ui::point{1.0f, 2.0f}));
 }
 
 @end

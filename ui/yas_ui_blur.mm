@@ -12,7 +12,7 @@
 using namespace yas;
 
 struct ui::blur::impl : base::impl {
-    chaining::holder<double> _sigma{0.0};
+    chaining::value::holder<double> _sigma{0.0};
     ui::effect _effect;
 
     void prepare(ui::blur &blur) {
@@ -29,7 +29,7 @@ struct ui::blur::impl : base::impl {
     chaining::any_observer _sigma_observer = nullptr;
 
     void _update_effect_handler() {
-        double const sigma = this->_sigma.value();
+        double const sigma = this->_sigma.raw();
 
         if (sigma > 0.0) {
             this->_effect.set_metal_handler(
@@ -67,7 +67,7 @@ void ui::blur::set_sigma(double const sigma) {
 }
 
 double ui::blur::sigma() const {
-    return impl_ptr<impl>()->_sigma.value();
+    return impl_ptr<impl>()->_sigma.raw();
 }
 
 ui::effect &ui::blur::effect() {

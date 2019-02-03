@@ -50,7 +50,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     ui::uint_size _view_size = {.width = 0, .height = 0};
     ui::uint_size _drawable_size = {.width = 0, .height = 0};
     double _scale_factor{0.0f};
-    chaining::holder<double> _scale_factor_notify{0.0f};
+    chaining::value::holder<double> _scale_factor_notify{0.0f};
     yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 

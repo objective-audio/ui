@@ -20,9 +20,9 @@ struct ui::strings::impl : base::impl {
     ui::rect_plane _rect_plane;
     chaining::receiver<std::string> _text_receiver = nullptr;
 
-    chaining::holder<std::string> _text;
-    chaining::holder<ui::font_atlas> _font_atlas;
-    chaining::holder<std::optional<float>> _line_height;
+    chaining::value::holder<std::string> _text;
+    chaining::value::holder<ui::font_atlas> _font_atlas;
+    chaining::value::holder<std::optional<float>> _line_height;
 
     impl(args &&args)
         : _collection_layout(
@@ -54,7 +54,7 @@ struct ui::strings::impl : base::impl {
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
         this->_texture_receiver = chaining::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
             if (auto strings = weak_strings.lock()) {
-                strings.rect_plane().node().mesh().value().set_texture(texture);
+                strings.rect_plane().node().mesh().raw().set_texture(texture);
             }
         });
 
@@ -95,7 +95,7 @@ struct ui::strings::impl : base::impl {
     }
 
     void _update_texture_chaining() {
-        if (auto &font_atlas = _font_atlas.value()) {
+        if (auto &font_atlas = _font_atlas.raw()) {
             if (!this->_texture_observer) {
                 auto weak_strings = to_weak(cast<ui::strings>());
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
@@ -108,7 +108,7 @@ struct ui::strings::impl : base::impl {
                                               .sync();
             }
         } else {
-            this->_rect_plane.node().mesh().value().set_texture(nullptr);
+            this->_rect_plane.node().mesh().raw().set_texture(nullptr);
             this->_texture_observer = nullptr;
         }
     }
@@ -116,14 +116,14 @@ struct ui::strings::impl : base::impl {
     void _update_layout() {
         this->_cell_rect_observers.clear();
 
-        auto const &font_atlas = this->_font_atlas.value();
+        auto const &font_atlas = this->_font_atlas.raw();
         if (!font_atlas || !font_atlas.texture() || !font_atlas.texture().metal_texture()) {
             this->_collection_layout.set_preferred_cell_count(0);
             this->_rect_plane.data().set_rect_count(0);
             return;
         }
 
-        auto const &src_text = this->_text.value();
+        auto const &src_text = this->_text.raw();
         auto const word_count = font_atlas ? std::min(src_text.size(), this->_max_word_count) : 0;
         std::string eliminated_text;
         eliminated_text.reserve(word_count);
@@ -199,11 +199,11 @@ struct ui::strings::impl : base::impl {
     }
 
     float _cell_height() {
-        auto const &line_height = this->_line_height.value();
+        auto const &line_height = this->_line_height.raw();
         if (line_height) {
             return *line_height;
         } else {
-            if (auto const &font_atlas = this->_font_atlas.value()) {
+            if (auto const &font_atlas = this->_font_atlas.raw()) {
                 return font_atlas.ascent() + font_atlas.descent() + font_atlas.leading();
             } else {
                 return 0.0f;
@@ -244,15 +244,15 @@ void ui::strings::set_alignment(ui::layout_alignment const alignment) {
 }
 
 std::string const &ui::strings::text() const {
-    return impl_ptr<impl>()->_text.value();
+    return impl_ptr<impl>()->_text.raw();
 }
 
 ui::font_atlas const &ui::strings::font_atlas() const {
-    return impl_ptr<impl>()->_font_atlas.value();
+    return impl_ptr<impl>()->_font_atlas.raw();
 }
 
 std::optional<float> const &ui::strings::line_height() const {
-    return impl_ptr<impl>()->_line_height.value();
+    return impl_ptr<impl>()->_line_height.raw();
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {

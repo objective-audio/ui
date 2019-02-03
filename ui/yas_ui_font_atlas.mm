@@ -110,7 +110,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
     ui::texture &texture() {
-        return this->_texture.value();
+        return this->_texture.raw();
     }
 
     void set_texture(ui::texture &&texture) {
@@ -154,7 +154,7 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    chaining::holder<ui::texture> _texture{ui::texture{nullptr}};
+    chaining::value::holder<ui::texture> _texture{ui::texture{nullptr}};
     std::vector<ui::word_info> _word_infos;
     chaining::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<chaining::any_observer> _element_observers;
