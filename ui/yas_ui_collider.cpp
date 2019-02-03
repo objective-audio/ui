@@ -82,15 +82,15 @@ template ui::rect_shape const &ui::shape::get<ui::shape::rect>() const;
 #pragma mark - collider
 
 struct ui::collider::impl : base::impl, renderable_collider::impl {
-    chaining::holder<ui::shape> _shape{ui::shape{nullptr}};
-    chaining::holder<bool> _enabled{true};
+    chaining::value::holder<ui::shape> _shape{ui::shape{nullptr}};
+    chaining::value::holder<bool> _enabled{true};
 
     impl(ui::shape &&shape) : _shape(std::move(shape)) {
     }
 
     bool hit_test(ui::point const &loc) {
-        auto const &shape = this->_shape.value();
-        if (shape && this->_enabled.value()) {
+        auto const &shape = this->_shape.raw();
+        if (shape && this->_enabled.raw()) {
             auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
             return shape.hit_test({pos.x, pos.y});
         }
@@ -125,7 +125,7 @@ void ui::collider::set_shape(ui::shape shape) {
 }
 
 ui::shape const &ui::collider::shape() const {
-    return impl_ptr<impl>()->_shape.value();
+    return impl_ptr<impl>()->_shape.raw();
 }
 
 void ui::collider::set_enabled(bool const enabled) {
@@ -133,7 +133,7 @@ void ui::collider::set_enabled(bool const enabled) {
 }
 
 bool ui::collider::is_enabled() const {
-    return impl_ptr<impl>()->_enabled.value();
+    return impl_ptr<impl>()->_enabled.raw();
 }
 
 bool ui::collider::hit_test(ui::point const &pos) const {

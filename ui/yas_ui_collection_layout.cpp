@@ -46,16 +46,16 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t cell_idx;
     };
 
-    chaining::holder<float> _row_spacing;
-    chaining::holder<float> _col_spacing;
-    chaining::holder<ui::layout_alignment> _alignment;
-    chaining::holder<ui::layout_direction> _direction;
-    chaining::holder<ui::layout_order> _row_order;
-    chaining::holder<ui::layout_order> _col_order;
-    chaining::holder<std::size_t> _preferred_cell_count;
-    chaining::holder<std::size_t> _actual_cell_count{std::size_t(0)};
-    chaining::holder<ui::size> _default_cell_size;
-    chaining::holder<std::vector<ui::collection_layout::line>> _lines;
+    chaining::value::holder<float> _row_spacing;
+    chaining::value::holder<float> _col_spacing;
+    chaining::value::holder<ui::layout_alignment> _alignment;
+    chaining::value::holder<ui::layout_direction> _direction;
+    chaining::value::holder<ui::layout_order> _row_order;
+    chaining::value::holder<ui::layout_order> _col_order;
+    chaining::value::holder<std::size_t> _preferred_cell_count;
+    chaining::value::holder<std::size_t> _actual_cell_count{std::size_t(0)};
+    chaining::value::holder<ui::size> _default_cell_size;
+    chaining::value::holder<std::vector<ui::collection_layout::line>> _lines;
 
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
@@ -170,7 +170,7 @@ struct ui::collection_layout::impl : base::impl {
 
     void _update_layout() {
         auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());
-        auto const &preferred_cell_count = this->_preferred_cell_count.value();
+        auto const &preferred_cell_count = this->_preferred_cell_count.raw();
 
         if (preferred_cell_count == 0) {
             this->_cell_guide_rects.clear();
@@ -242,7 +242,7 @@ struct ui::collection_layout::impl : base::impl {
         for (auto const &row_regions : regions) {
             if (row_regions.size() > 0) {
                 auto align_offset = 0.0f;
-                auto const alignment = this->_alignment.value();
+                auto const alignment = this->_alignment.raw();
 
                 if (alignment != ui::layout_alignment::min) {
                     auto const content_width =
@@ -276,7 +276,7 @@ struct ui::collection_layout::impl : base::impl {
         std::size_t top_idx = 0;
         std::size_t line_idx = 0;
 
-        for (auto const &line : this->_lines.value()) {
+        for (auto const &line : this->_lines.raw()) {
             if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
                 return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
             }
@@ -290,7 +290,7 @@ struct ui::collection_layout::impl : base::impl {
     ui::size _cell_size(std::size_t const idx) {
         std::size_t find_idx = 0;
 
-        for (auto const &line : this->_lines.value()) {
+        for (auto const &line : this->_lines.raw()) {
             std::size_t const line_idx = idx - find_idx;
             std::size_t const line_cell_count = line.cell_sizes.size();
 
@@ -301,7 +301,7 @@ struct ui::collection_layout::impl : base::impl {
             find_idx += line_cell_count;
         }
 
-        return this->_default_cell_size.value();
+        return this->_default_cell_size.raw();
     }
 
     bool _is_top_of_new_line(std::size_t const idx) {
@@ -318,18 +318,18 @@ struct ui::collection_layout::impl : base::impl {
         ui::size result;
         auto const &cell_size = _cell_size(idx);
 
-        switch (this->_direction.value()) {
+        switch (this->_direction.raw()) {
             case ui::layout_direction::horizontal:
                 result = ui::size{cell_size.height, cell_size.width};
             case ui::layout_direction::vertical:
                 result = cell_size;
         }
 
-        if (this->_row_order.value() == ui::layout_order::descending) {
+        if (this->_row_order.raw() == ui::layout_order::descending) {
             result.height *= -1.0f;
         }
 
-        if (this->_col_order.value() == ui::layout_order::descending) {
+        if (this->_col_order.raw() == ui::layout_order::descending) {
             result.width *= -1.0;
         }
 
@@ -341,16 +341,16 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     float _transformed_col_diff(std::size_t const idx) {
-        auto diff = fabsf(_transformed_cell_size(idx).width) + this->_col_spacing.value();
-        if (this->_col_order.value() == ui::layout_order::descending) {
+        auto diff = fabsf(_transformed_cell_size(idx).width) + this->_col_spacing.raw();
+        if (this->_col_order.raw() == ui::layout_order::descending) {
             diff *= -1.0f;
         }
         return diff;
     }
 
     float _transformed_row_cell_diff(std::size_t const idx) {
-        auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->_row_spacing.value();
-        if (this->_row_order.value() == ui::layout_order::descending) {
+        auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->_row_spacing.raw();
+        if (this->_row_order.raw() == ui::layout_order::descending) {
             diff *= -1.0f;
         }
         return diff;
@@ -358,7 +358,7 @@ struct ui::collection_layout::impl : base::impl {
 
     float _transformed_row_new_line_diff(std::size_t const idx) {
         auto diff = 0.0f;
-        auto const &lines = this->_lines.value();
+        auto const &lines = this->_lines.raw();
 
         if (auto cell_location = _cell_location(idx)) {
             auto line_idx = cell_location->line_idx;
@@ -366,7 +366,7 @@ struct ui::collection_layout::impl : base::impl {
             while (line_idx > 0) {
                 --line_idx;
 
-                diff += lines.at(line_idx).new_line_min_offset + this->_row_spacing.value();
+                diff += lines.at(line_idx).new_line_min_offset + this->_row_spacing.raw();
 
                 if (lines.at(line_idx).cell_sizes.size() > 0) {
                     break;
@@ -374,7 +374,7 @@ struct ui::collection_layout::impl : base::impl {
             }
         }
 
-        if (this->_row_order.value() == ui::layout_order::descending) {
+        if (this->_row_order.raw() == ui::layout_order::descending) {
             diff *= -1.0f;
         }
 
@@ -385,7 +385,7 @@ struct ui::collection_layout::impl : base::impl {
         auto const original = _direction_swapped_region_if_horizontal(this->_border_guide_rect.region());
         ui::region result{.size = original.size};
 
-        switch (this->_row_order.value()) {
+        switch (this->_row_order.raw()) {
             case ui::layout_order::ascending: {
                 result.origin.y = original.origin.y;
             } break;
@@ -395,7 +395,7 @@ struct ui::collection_layout::impl : base::impl {
             } break;
         }
 
-        switch (this->_col_order.value()) {
+        switch (this->_col_order.raw()) {
             case ui::layout_order::ascending: {
                 result.origin.x = original.origin.x;
             } break;
@@ -409,7 +409,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
     ui::region _direction_swapped_region_if_horizontal(ui::region const &region) {
-        if (this->_direction.value() == ui::layout_direction::horizontal) {
+        if (this->_direction.raw() == ui::layout_direction::horizontal) {
             return ui::region{.origin = {region.origin.y, region.origin.x},
                               .size = {region.size.height, region.size.width}};
         } else {
@@ -475,7 +475,7 @@ void ui::collection_layout::set_col_order(ui::layout_order const order) {
 }
 
 std::size_t const &ui::collection_layout::preferred_cell_count() const {
-    return impl_ptr<impl>()->_preferred_cell_count.value();
+    return impl_ptr<impl>()->_preferred_cell_count.raw();
 }
 
 std::size_t ui::collection_layout::actual_cell_count() const {
@@ -483,35 +483,35 @@ std::size_t ui::collection_layout::actual_cell_count() const {
 }
 
 ui::size const &ui::collection_layout::default_cell_size() const {
-    return impl_ptr<impl>()->_default_cell_size.value();
+    return impl_ptr<impl>()->_default_cell_size.raw();
 }
 
 std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
-    return impl_ptr<impl>()->_lines.value();
+    return impl_ptr<impl>()->_lines.raw();
 }
 
 float const &ui::collection_layout::row_spacing() const {
-    return impl_ptr<impl>()->_row_spacing.value();
+    return impl_ptr<impl>()->_row_spacing.raw();
 }
 
 float const &ui::collection_layout::col_spacing() const {
-    return impl_ptr<impl>()->_col_spacing.value();
+    return impl_ptr<impl>()->_col_spacing.raw();
 }
 
 ui::layout_alignment const &ui::collection_layout::alignment() const {
-    return impl_ptr<impl>()->_alignment.value();
+    return impl_ptr<impl>()->_alignment.raw();
 }
 
 ui::layout_direction const &ui::collection_layout::direction() const {
-    return impl_ptr<impl>()->_direction.value();
+    return impl_ptr<impl>()->_direction.raw();
 }
 
 ui::layout_order const &ui::collection_layout::row_order() const {
-    return impl_ptr<impl>()->_row_order.value();
+    return impl_ptr<impl>()->_row_order.raw();
 }
 
 ui::layout_order const &ui::collection_layout::col_order() const {
-    return impl_ptr<impl>()->_col_order.value();
+    return impl_ptr<impl>()->_col_order.raw();
 }
 
 ui::layout_borders const &ui::collection_layout::borders() const {

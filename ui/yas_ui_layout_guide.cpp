@@ -10,7 +10,7 @@ using namespace yas;
 #pragma mark - ui::layout_guide::impl
 
 struct ui::layout_guide::impl : base::impl {
-    chaining::holder<float> _value;
+    chaining::value::holder<float> _value;
     chaining::receiver<float> _receiver = nullptr;
 
     impl(float const value) : _value(value) {
@@ -71,7 +71,7 @@ struct ui::layout_guide::impl : base::impl {
                         // wait開始ならキャッシュをクリアしてフロー中断
                         cache = std::nullopt;
                         is_continue = false;
-                        *old_cache = guide_impl->_value.value();
+                        *old_cache = guide_impl->_value.raw();
                     } else {
                         // wait終了ならキャッシュに値があればフロー継続
                         is_continue = !!cache;
@@ -119,7 +119,7 @@ void ui::layout_guide::set_value(float const value) {
 }
 
 float const &ui::layout_guide::value() const {
-    return impl_ptr<impl>()->_value.value();
+    return impl_ptr<impl>()->_value.raw();
 }
 
 void ui::layout_guide::push_notify_waiting() {

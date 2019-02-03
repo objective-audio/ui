@@ -40,30 +40,30 @@ class node : public base {
     bool operator==(node const &) const;
     bool operator!=(node const &) const;
 
-    chaining::holder<ui::point> const &position() const;
-    chaining::holder<ui::point> &position();
-    chaining::holder<ui::angle> const &angle() const;
-    chaining::holder<ui::angle> &angle();
-    chaining::holder<ui::size> const &scale() const;
-    chaining::holder<ui::size> &scale();
-    chaining::holder<ui::color> const &color() const;
-    chaining::holder<ui::color> &color();
-    chaining::holder<float> const &alpha() const;
-    chaining::holder<float> &alpha();
-    chaining::holder<bool> const &is_enabled() const;
-    chaining::holder<bool> &is_enabled();
+    chaining::value::holder<ui::point> const &position() const;
+    chaining::value::holder<ui::point> &position();
+    chaining::value::holder<ui::angle> const &angle() const;
+    chaining::value::holder<ui::angle> &angle();
+    chaining::value::holder<ui::size> const &scale() const;
+    chaining::value::holder<ui::size> &scale();
+    chaining::value::holder<ui::color> const &color() const;
+    chaining::value::holder<ui::color> &color();
+    chaining::value::holder<float> const &alpha() const;
+    chaining::value::holder<float> &alpha();
+    chaining::value::holder<bool> const &is_enabled() const;
+    chaining::value::holder<bool> &is_enabled();
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
-    chaining::holder<ui::mesh> const &mesh() const;
-    chaining::holder<ui::mesh> &mesh();
-    chaining::holder<ui::collider> const &collider() const;
-    chaining::holder<ui::collider> &collider();
-    chaining::holder<ui::batch> const &batch() const;
-    chaining::holder<ui::batch> &batch();
-    chaining::holder<ui::render_target> const &render_target() const;
-    chaining::holder<ui::render_target> &render_target();
+    chaining::value::holder<ui::mesh> const &mesh() const;
+    chaining::value::holder<ui::mesh> &mesh();
+    chaining::value::holder<ui::collider> const &collider() const;
+    chaining::value::holder<ui::collider> &collider();
+    chaining::value::holder<ui::batch> const &batch() const;
+    chaining::value::holder<ui::batch> &batch();
+    chaining::value::holder<ui::render_target> const &render_target() const;
+    chaining::value::holder<ui::render_target> &render_target();
 
     void add_sub_node(ui::node);
     void add_sub_node(ui::node, std::size_t const);
