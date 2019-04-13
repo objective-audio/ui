@@ -34,7 +34,7 @@ struct sample::bg::impl : base::impl {
                         if (ui::renderer renderer = value) {
                             layout = renderer.safe_area_layout_guide_rect()
                                          .chain()
-                                         .receive(impl->_layout_guide_rect.receiver())
+                                         .send_to(impl->_layout_guide_rect.receiver())
                                          .sync();
                         } else {
                             layout = nullptr;

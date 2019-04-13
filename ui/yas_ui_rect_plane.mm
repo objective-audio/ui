@@ -40,7 +40,7 @@ struct ui::rect_plane_data::impl : base::impl {
 
         this->_element_observers.emplace_back(
             chain.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
-                .receive(this->_rect_tex_coords_receiver)
+                .send_to(this->_rect_tex_coords_receiver)
                 .sync());
     }
 };

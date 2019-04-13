@@ -72,7 +72,7 @@ using namespace yas;
     std::array<chaining::receiver<float>, 2> receivers{first_dst_guide.receiver(), second_dst_guide.receiver()};
 
     auto layout =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<1>()).receive(receivers).sync();
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<1>()).send_to(receivers).sync();
 
     XCTAssertTrue(layout);
 
@@ -89,7 +89,7 @@ using namespace yas;
                       .combine(second_src_guide.chain())
                       .to(ui::justify<2>())
                       .to([](std::array<float, 3> const &values) { return values[1]; })
-                      .receive(dst_guide.receiver())
+                      .send_to(dst_guide.receiver())
                       .sync();
 
     XCTAssertEqual(dst_guide.value(), 0.0f);
@@ -118,7 +118,7 @@ using namespace yas;
                                                        dst_guide_2.receiver()};
 
     auto layout =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>()).receive(receivers).sync();
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>()).send_to(receivers).sync();
 
     XCTAssertEqual(dst_guide_0.value(), -1.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
@@ -137,7 +137,7 @@ using namespace yas;
     std::array<float, 2> array{1.0f, 2.0f};
 
     auto observer =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).receive(receivers).sync();
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
 
     XCTAssertEqual(dst_guide_0.value(), 0.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
@@ -156,7 +156,7 @@ using namespace yas;
     std::array<float, 2> array{1.0f, 2.0f};
 
     auto observer =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).receive(receivers).sync();
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
 
     XCTAssertEqual(dst_guide_0.value(), 0.0f);
     XCTAssertEqual(dst_guide_1.value(), 1.0f);
@@ -171,7 +171,7 @@ using namespace yas;
     auto observer = first_src_guide.chain()
                         .combine(second_src_guide.chain())
                         .to(ui::justify())
-                        .receive(dst_guide.receiver())
+                        .send_to(dst_guide.receiver())
                         .sync();
 
     XCTAssertEqual(dst_guide.value(), 1.0f);

@@ -167,7 +167,7 @@ using namespace yas;
     ui::collider collider;
 
     chaining::notifier<ui::shape> sender;
-    auto observer = sender.chain().receive(collider.shape_receiver()).end();
+    auto observer = sender.chain().send_to(collider.shape_receiver()).end();
 
     XCTAssertFalse(collider.shape());
 
@@ -181,7 +181,7 @@ using namespace yas;
     ui::collider collider;
 
     chaining::notifier<bool> sender;
-    auto observer = sender.chain().receive(collider.enabled_receiver()).end();
+    auto observer = sender.chain().send_to(collider.enabled_receiver()).end();
 
     XCTAssertTrue(collider.is_enabled());
 

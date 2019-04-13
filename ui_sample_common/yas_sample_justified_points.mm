@@ -42,7 +42,7 @@ struct sample::justified_points::impl : base::impl {
                                            .chain()
                                            .combine(renderer.view_layout_guide_rect().right().chain())
                                            .to(ui::justify<sample::x_point_count - 1>())
-                                           .receive(x_receivers)
+                                           .send_to(x_receivers)
                                            .sync();
 
                             std::array<float, sample::y_point_count - 1> y_ratios;
@@ -68,7 +68,7 @@ struct sample::justified_points::impl : base::impl {
                                            .combine(renderer.view_layout_guide_rect().top().chain())
                                            .to(ui::justify<sample::y_point_count - 1>(y_ratios))
                                            .perform([](std::array<float, sample::y_point_count> const &value) {})
-                                           .receive(y_receivers)
+                                           .send_to(y_receivers)
                                            .sync();
                         } else {
                             x_layout = nullptr;
@@ -84,7 +84,7 @@ struct sample::justified_points::impl : base::impl {
     std::vector<chaining::any_observer> _guide_observers;
 
     void _setup_colors() {
-        this->_rect_plane.node().mesh().value().set_use_mesh_color(true);
+        this->_rect_plane.node().mesh().raw().set_use_mesh_color(true);
 
         auto &rect_plane_data = this->_rect_plane.data();
 

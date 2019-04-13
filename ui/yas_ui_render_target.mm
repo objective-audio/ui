@@ -38,7 +38,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_effect_observer =
             this->_effect_setter.chain()
                 .to([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
-                .receive(this->_effect.receiver())
+                .send_to(this->_effect.receiver())
                 .end();
 
         this->_set_textures_to_effect();
@@ -179,7 +179,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     }
 
     void sync_scale_from_renderer(ui::renderer const &renderer, ui::render_target &target) {
-        this->_scale_observer = renderer.chain_scale_factor().receive(target.scale_factor_receiver()).sync();
+        this->_scale_observer = renderer.chain_scale_factor().send_to(target.scale_factor_receiver()).sync();
     }
 
     ui::layout_guide_rect _layout_guide_rect;

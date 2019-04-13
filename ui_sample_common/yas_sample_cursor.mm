@@ -82,7 +82,7 @@ struct sample::cursor::impl : base::impl {
                         for (auto child_node : node.children()) {
                             auto make_fade_action = [](ui::node &node, float const alpha) {
                                 return ui::make_action({.target = node,
-                                                        .begin_alpha = node.alpha().value(),
+                                                        .begin_alpha = node.alpha().raw(),
                                                         .end_alpha = alpha,
                                                         .continuous_action = {.duration = 0.5}});
                             };

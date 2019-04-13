@@ -82,22 +82,22 @@ struct ui::collection_layout::impl : base::impl {
           _left_border_observer(_frame_guide_rect.left()
                                     .chain()
                                     .to(chaining::add(args.borders.left))
-                                    .receive(_border_guide_rect.left().receiver())
+                                    .send_to(_border_guide_rect.left().receiver())
                                     .sync()),
           _right_border_observer(_frame_guide_rect.right()
                                      .chain()
                                      .to(chaining::add(-args.borders.right))
-                                     .receive(_border_guide_rect.right().receiver())
+                                     .send_to(_border_guide_rect.right().receiver())
                                      .sync()),
           _bottom_border_observer(_frame_guide_rect.bottom()
                                       .chain()
                                       .to(chaining::add(args.borders.bottom))
-                                      .receive(_border_guide_rect.bottom().receiver())
+                                      .send_to(_border_guide_rect.bottom().receiver())
                                       .sync()),
           _top_border_observer(_frame_guide_rect.top()
                                    .chain()
                                    .to(chaining::add(-args.borders.top))
-                                   .receive(_border_guide_rect.top().receiver())
+                                   .send_to(_border_guide_rect.top().receiver())
                                    .sync()),
 
           _borders(std::move(args.borders)) {
@@ -122,25 +122,25 @@ struct ui::collection_layout::impl : base::impl {
                 .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
                 .end();
 
-        this->_property_observers.emplace_back(this->_row_spacing.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_row_spacing.chain().send_null(this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_col_spacing.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_col_spacing.chain().send_null(this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_alignment.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_alignment.chain().send_null(this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_direction.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_direction.chain().send_null(this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_row_order.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_row_order.chain().send_null(this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_col_order.chain().receive_null(this->_layout_receiver).end());
-
-        this->_property_observers.emplace_back(
-            this->_preferred_cell_count.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_col_order.chain().send_null(this->_layout_receiver).end());
 
         this->_property_observers.emplace_back(
-            this->_default_cell_size.chain().receive_null(this->_layout_receiver).end());
+            this->_preferred_cell_count.chain().send_null(this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_lines.chain().receive_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(
+            this->_default_cell_size.chain().send_null(this->_layout_receiver).end());
+
+        this->_property_observers.emplace_back(this->_lines.chain().send_null(this->_layout_receiver).end());
 
         this->_update_layout();
     }

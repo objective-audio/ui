@@ -20,7 +20,7 @@ struct sample::big_button::impl : base::impl {
         auto &data = this->_button.rect_plane().data();
         data.clear_observers();
 
-        this->_button.rect_plane().node().mesh().value().set_texture(texture);
+        this->_button.rect_plane().node().mesh().raw().set_texture(texture);
 
         if (!texture) {
             return;

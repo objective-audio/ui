@@ -25,7 +25,7 @@ class layout_guide : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<float, std::pair<std::optional<float>, bool>, float, true>;
+    using chain_t = chaining::chain<float, float, true>;
 
     chain_t chain() const;
     chaining::receiver<float> &receiver();
@@ -52,7 +52,7 @@ class layout_guide_point : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<ui::point, std::pair<std::optional<float>, std::optional<float>>, float, true>;
+    using chain_t = chaining::chain<ui::point, float, true>;
 
     chain_t chain() const;
     chaining::receiver<ui::point> &receiver();
@@ -80,7 +80,7 @@ class layout_guide_range : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<ui::range, std::pair<std::optional<float>, std::optional<float>>, float, true>;
+    using chain_t = chaining::chain<ui::range, float, true>;
 
     chain_t chain() const;
     chaining::receiver<ui::range> &receiver();
@@ -128,8 +128,7 @@ class layout_guide_rect : public base {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t =
-        chaining::chain<ui::region, std::pair<std::optional<ui::range>, std::optional<ui::range>>, float, true>;
+    using chain_t = chaining::chain<ui::region, float, true>;
 
     chain_t chain() const;
     chaining::receiver<ui::region> &receiver();

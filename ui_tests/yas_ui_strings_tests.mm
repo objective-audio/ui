@@ -204,7 +204,7 @@ using namespace yas;
 
     chaining::notifier<std::string> sender;
 
-    auto observer = sender.chain().receive(strings.text_receiver()).end();
+    auto observer = sender.chain().send_to(strings.text_receiver()).end();
 
     XCTAssertEqual(strings.text(), "");
 
