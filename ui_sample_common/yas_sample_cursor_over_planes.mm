@@ -75,11 +75,11 @@ struct sample::cursor_over_planes::impl : base::impl {
                         if (auto node = weak_node.lock()) {
                             if (auto renderer = node.renderer()) {
                                 auto is_detected =
-                                    renderer.detector().detect(cursor_event.position(), node.collider().value());
+                                    renderer.detector().detect(cursor_event.position(), node.collider().raw());
 
                                 auto make_color_action = [](ui::node &node, ui::color const &color) {
                                     return ui::make_action(
-                                        {.target = node, .begin_color = node.color().value(), .end_color = color});
+                                        {.target = node, .begin_color = node.color().raw(), .end_color = color});
                                 };
 
                                 if (is_detected && !*prev_detected) {

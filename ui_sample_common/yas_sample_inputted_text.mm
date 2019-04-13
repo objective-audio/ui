@@ -39,7 +39,7 @@ struct sample::inputted_text::impl : base::impl {
                             layout = renderer.safe_area_layout_guide_rect()
                                          .chain()
                                          .to(chaining::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
-                                         .receive(strings_frame_guide_rect.receiver())
+                                         .send_to(strings_frame_guide_rect.receiver())
                                          .sync();
                         } else {
                             event_observer = nullptr;

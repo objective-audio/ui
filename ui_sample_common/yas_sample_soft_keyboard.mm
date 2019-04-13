@@ -15,7 +15,7 @@ struct soft_key : base {
     struct impl : base::impl {
         impl(std::string &&key, float const width, ui::font_atlas &&atlas)
             : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
-            this->_button.rect_plane().node().mesh().value().set_use_mesh_color(true);
+            this->_button.rect_plane().node().mesh().raw().set_use_mesh_color(true);
             this->_button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
             this->_button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
@@ -55,7 +55,7 @@ struct soft_key : base {
         auto &strings_node = impl_ptr<impl>()->_strings.rect_plane().node();
         auto renderer = button_node.renderer();
 
-        button_node.collider().value().set_enabled(enabled);
+        button_node.collider().raw().set_enabled(enabled);
 
         float const alpha = enabled ? 1.0f : 0.0f;
 
@@ -63,10 +63,10 @@ struct soft_key : base {
         renderer.erase_action(strings_node);
 
         if (animated) {
+            renderer.insert_action(
+                ui::make_action({.target = button_node, .begin_alpha = button_node.alpha().raw(), .end_alpha = alpha}));
             renderer.insert_action(ui::make_action(
-                {.target = button_node, .begin_alpha = button_node.alpha().value(), .end_alpha = alpha}));
-            renderer.insert_action(ui::make_action(
-                {.target = strings_node, .begin_alpha = strings_node.alpha().value(), .end_alpha = alpha}));
+                {.target = strings_node, .begin_alpha = strings_node.alpha().raw(), .end_alpha = alpha}));
         } else {
             button_node.alpha().set_value(alpha);
             strings_node.alpha().set_value(alpha);
@@ -200,19 +200,19 @@ struct sample::soft_keyboard::impl : base::impl {
         auto &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
 
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.left().chain().receive(frame_guide_rect.left().receiver()).sync());
+            safe_area_guide_rect.left().chain().send_to(frame_guide_rect.left().receiver()).sync());
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.bottom().chain().receive(frame_guide_rect.bottom().receiver()).sync());
+            safe_area_guide_rect.bottom().chain().send_to(frame_guide_rect.bottom().receiver()).sync());
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.top().chain().receive(frame_guide_rect.top().receiver()).sync());
+            safe_area_guide_rect.top().chain().send_to(frame_guide_rect.top().receiver()).sync());
 
         ui::layout_guide max_right_guide;
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.left().chain().to(chaining::add(width)).receive(max_right_guide.receiver()).sync());
+            safe_area_guide_rect.left().chain().to(chaining::add(width)).send_to(max_right_guide.receiver()).sync());
         this->_frame_layouts.emplace_back(max_right_guide.chain()
                                               .combine(safe_area_guide_rect.right().chain())
                                               .to(chaining::min<float>())
-                                              .receive(frame_guide_rect.right().receiver())
+                                              .send_to(frame_guide_rect.right().receiver())
                                               .sync());
 
         this->_setup_soft_keys_layout();
@@ -302,12 +302,12 @@ struct sample::soft_keyboard::impl : base::impl {
                     layouts.reserve(4);
 
                     layouts.emplace_back(
-                        src_guide_rect.left().chain().receive(dst_guide_rect.left().receiver()).sync());
+                        src_guide_rect.left().chain().send_to(dst_guide_rect.left().receiver()).sync());
                     layouts.emplace_back(
-                        src_guide_rect.bottom().chain().receive(dst_guide_rect.bottom().receiver()).sync());
+                        src_guide_rect.bottom().chain().send_to(dst_guide_rect.bottom().receiver()).sync());
                     layouts.emplace_back(
-                        src_guide_rect.right().chain().receive(dst_guide_rect.right().receiver()).sync());
-                    layouts.emplace_back(src_guide_rect.top().chain().receive(dst_guide_rect.top().receiver()).sync());
+                        src_guide_rect.right().chain().send_to(dst_guide_rect.right().receiver()).sync());
+                    layouts.emplace_back(src_guide_rect.top().chain().send_to(dst_guide_rect.top().receiver()).sync());
 
                     this->_fixed_cell_layouts.emplace_back(std::move(layouts));
                 }

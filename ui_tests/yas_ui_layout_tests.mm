@@ -26,7 +26,7 @@ using namespace yas;
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
-    auto layout = src_guide.chain().to(chaining::add(8.0f)).receive(dst_guide.receiver()).sync();
+    auto layout = src_guide.chain().to(chaining::add(8.0f)).send_to(dst_guide.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -39,7 +39,7 @@ using namespace yas;
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
     ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
 
-    auto layout = src_guide_point.chain().to(chaining::add(distances)).receive(dst_guide_point.receiver()).sync();
+    auto layout = src_guide_point.chain().to(chaining::add(distances)).send_to(dst_guide_point.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -55,7 +55,7 @@ using namespace yas;
     ui::layout_guide_rect dst_guide_rect{{.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}}};
 
     auto layout =
-        src_guide_rect.chain().to(chaining::add<ui::region>(distances)).receive(dst_guide_rect.receiver()).sync();
+        src_guide_rect.chain().to(chaining::add<ui::region>(distances)).send_to(dst_guide_rect.receiver()).sync();
 
     XCTAssertTrue(layout);
 
@@ -73,7 +73,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = src_guide.chain().to(chaining::add(1.0f)).receive(dst_guide.receiver()).sync();
+    auto layout = src_guide.chain().to(chaining::add(1.0f)).send_to(dst_guide.receiver()).sync();
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 
@@ -92,7 +92,7 @@ using namespace yas;
     auto layout = src_guide_0.chain()
                       .combine(src_guide_1.chain())
                       .to(chaining::min<float>())
-                      .receive(dst_guide.receiver())
+                      .send_to(dst_guide.receiver())
                       .sync();
 
     XCTAssertEqual(dst_guide.value(), 1.0f);
@@ -118,7 +118,7 @@ using namespace yas;
     auto layout = src_guide_0.chain()
                       .combine(src_guide_1.chain())
                       .to(chaining::max<float>())
-                      .receive(dst_guide.receiver())
+                      .send_to(dst_guide.receiver())
                       .sync();
 
     XCTAssertEqual(dst_guide.value(), 2.0f);

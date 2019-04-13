@@ -77,7 +77,7 @@ void sample::main::setup() {
 
     auto &view_guide = this->renderer.view_layout_guide_rect();
     auto &target_guide = render_target.layout_guide_rect();
-    this->_render_target_layout = view_guide.chain().receive(target_guide.receiver()).sync();
+    this->_render_target_layout = view_guide.chain().send_to(target_guide.receiver()).sync();
 
     this->_render_target_node.render_target().set_value(render_target);
     root_node.add_sub_node(this->_render_target_node, 1);

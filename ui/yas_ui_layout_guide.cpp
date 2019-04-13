@@ -273,13 +273,13 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_min_observer = this->_min_guide.chain()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .to([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
-                                  .receive(this->_length_guide.receiver())
+                                  .send_to(this->_length_guide.receiver())
                                   .end();
 
         this->_max_observer = this->_max_guide.chain()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .to([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
-                                  .receive(this->_length_guide.receiver())
+                                  .send_to(this->_length_guide.receiver())
                                   .end();
 
         this->_receiver = chaining::receiver<ui::range>{[weak_range](ui::range const &range) {

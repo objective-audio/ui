@@ -79,17 +79,17 @@ struct ui::strings::impl : base::impl {
 
     void _prepare_chains(weak<ui::strings> &weak_strings) {
         this->_property_observers.emplace_back(this->_font_atlas.chain()
-                                                   .receive(this->_update_texture_receiver)
-                                                   .receive_null(this->_update_layout_receiver)
+                                                   .send_to(this->_update_texture_receiver)
+                                                   .send_null(this->_update_layout_receiver)
                                                    .sync());
 
-        this->_property_observers.emplace_back(this->_text.chain().receive_null(this->_update_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_text.chain().send_null(this->_update_layout_receiver).end());
 
         this->_property_observers.emplace_back(
-            this->_line_height.chain().receive_null(this->_update_layout_receiver).end());
+            this->_line_height.chain().send_null(this->_update_layout_receiver).end());
 
         this->_property_observers.emplace_back(
-            this->_collection_layout.chain_actual_cell_count().to_null().receive(this->_update_layout_receiver).end());
+            this->_collection_layout.chain_actual_cell_count().to_null().send_to(this->_update_layout_receiver).end());
 
         this->_property_observers.emplace_back(this->_collection_layout.chain_alignment().end());
     }
@@ -101,10 +101,10 @@ struct ui::strings::impl : base::impl {
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
                 this->_texture_observer = font_atlas.chain_texture()
                                               .guard([weak_strings](auto const &) { return !!weak_strings; })
-                                              .receive(strings_impl->_texture_receiver)
+                                              .send_to(strings_impl->_texture_receiver)
                                               .merge(font_atlas.chain_texture_updated())
                                               .to_null()
-                                              .receive(strings_impl->_update_layout_receiver)
+                                              .send_to(strings_impl->_update_layout_receiver)
                                               .sync();
             }
         } else {

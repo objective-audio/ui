@@ -75,7 +75,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                                                                                texture_impl->_draw_actual_padding};
                                          })
                                          .to_value(method::size_updated)
-                                         .receive(this->_notify_receiver)
+                                         .send_to(this->_notify_receiver)
                                          .end();
     }
 
@@ -124,7 +124,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     }
 
     void sync_scale_from_renderer(ui::renderer const &renderer, ui::texture &texture) {
-        this->_scale_observer = renderer.chain_scale_factor().receive(texture.scale_factor_receiver()).sync();
+        this->_scale_observer = renderer.chain_scale_factor().send_to(texture.scale_factor_receiver()).sync();
     }
 
     chaining::chain_unsync_t<chain_pair_t> chain() {

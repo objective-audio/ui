@@ -77,7 +77,7 @@ struct ui::font_atlas::impl : base::impl {
                                                  }
                                                  return false;
                                              })
-                                             .receive(this->_texture.receiver())
+                                             .send_to(this->_texture.receiver())
                                              .end();
 
         this->_texture_changed_receiver = chaining::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
@@ -88,7 +88,7 @@ struct ui::font_atlas::impl : base::impl {
 
                 if (texture) {
                     atlas_impl->_texture_observer = texture.chain(texture::method::metal_texture_changed)
-                                                        .receive(atlas_impl->_texture_updated_receiver)
+                                                        .send_to(atlas_impl->_texture_updated_receiver)
                                                         .end();
                 } else {
                     atlas_impl->_texture_observer = nullptr;
@@ -98,7 +98,7 @@ struct ui::font_atlas::impl : base::impl {
             }
         });
 
-        this->_texture_changed_observer = this->_texture.chain().receive(this->_texture_changed_receiver).end();
+        this->_texture_changed_observer = this->_texture.chain().send_to(this->_texture_changed_receiver).end();
 
         this->_texture_changed_fetcher = chaining::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
@@ -222,7 +222,7 @@ struct ui::font_atlas::impl : base::impl {
             this->_element_observers.emplace_back(
                 texture_element.chain_tex_coords()
                     .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
-                    .receive(this->_word_tex_coords_receiver)
+                    .send_to(this->_word_tex_coords_receiver)
                     .sync());
 
             auto const &advance = advances[idx];

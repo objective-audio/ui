@@ -50,8 +50,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
             this->_mesh.chain()
                 .guard([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
-                .to_value(ui::node_update_reason::mesh)
-                .normalize();
+                .to_value(ui::node_update_reason::mesh);
 
         auto color_observer = this->_color.chain().to_null();
         auto alpha_observer = this->_alpha.chain().to_null();
@@ -387,7 +386,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 case ui::node::method::removed_from_super:
                     observer = this->_notify_sender.chain()
                                    .guard([method](node::method const &value) { return method == value; })
-                                   .receive(this->_dispatch_receiver)
+                                   .send_to(this->_dispatch_receiver)
                                    .end();
                     break;
             }
@@ -708,7 +707,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
                            .to([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().raw().y};
                            })
-                           .receive(position.receiver())
+                           .send_to(position.receiver())
                            .sync();
 
     imp->_position_observer = nullptr;
@@ -724,7 +723,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
                            .to([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().raw().x, y};
                            })
-                           .receive(position.receiver())
+                           .send_to(position.receiver())
                            .sync();
 
     imp->_position_observer = nullptr;
@@ -735,7 +734,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
     auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
-    imp->_position_observer = guide_point.chain().receive(position.receiver()).sync();
+    imp->_position_observer = guide_point.chain().send_to(position.receiver()).sync();
 
     imp->_x_observer = nullptr;
     imp->_y_observer = nullptr;
