@@ -20,7 +20,7 @@ struct inputs {
     sampler sampler2D;
 };
 
-vertex color_inout2d vertex2d(device ui::vertex2d_t *vertex_array[[buffer(0)]],
+vertex color_inout2d vertex2d(device ui::vertex2d_t const *vertex_array[[buffer(0)]],
                               constant ui::uniforms2d_t &uniforms[[buffer(1)]], unsigned int vid[[vertex_id]]) {
     color_inout2d out;
 
