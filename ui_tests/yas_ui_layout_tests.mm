@@ -54,8 +54,7 @@ using namespace yas;
     ui::layout_guide_rect src_guide_rect{{.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}}};
     ui::layout_guide_rect dst_guide_rect{{.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}}};
 
-    auto layout =
-        src_guide_rect.chain().to(chaining::add<ui::region>(distances)).send_to(dst_guide_rect.receiver()).sync();
+    auto layout = src_guide_rect.chain().to(chaining::add<ui::region>(distances)).send_to(dst_guide_rect).sync();
 
     XCTAssertTrue(layout);
 

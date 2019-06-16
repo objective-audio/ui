@@ -62,8 +62,7 @@ struct layout_guide_point : base, chaining::receiver<ui::point> {
     chaining::receivable<ui::point> _receivable = nullptr;
 };
 
-class layout_guide_range : public base {
-   public:
+struct layout_guide_range : base, chaining::receiver<ui::range> {
     class impl;
 
     layout_guide_range();
@@ -78,7 +77,7 @@ class layout_guide_range : public base {
     layout_guide const &max() const;
     layout_guide const &length() const;
 
-    void set_range(ui::range);
+    void set_range(ui::range const &);
     ui::range range() const;
 
     void push_notify_waiting();
@@ -87,11 +86,13 @@ class layout_guide_range : public base {
     using chain_t = chaining::chain<ui::range, float, true>;
 
     chain_t chain() const;
-    chaining::perform_receiver<ui::range> &receiver();
+    chaining::receivable<ui::range> receivable();
+
+   private:
+    chaining::receivable<ui::range> _receivable = nullptr;
 };
 
-class layout_guide_rect : public base {
-   public:
+struct layout_guide_rect : base, chaining::receiver<ui::region> {
     class impl;
 
     struct ranges_args {
@@ -125,7 +126,7 @@ class layout_guide_rect : public base {
     void set_horizontal_range(ui::range);
     void set_vertical_range(ui::range);
     void set_ranges(ranges_args);
-    void set_region(ui::region);
+    void set_region(ui::region const &);
 
     ui::region region() const;
 
@@ -135,7 +136,10 @@ class layout_guide_rect : public base {
     using chain_t = chaining::chain<ui::region, float, true>;
 
     chain_t chain() const;
-    chaining::perform_receiver<ui::region> &receiver();
+    chaining::receivable<ui::region> receivable();
+
+   private:
+    chaining::receivable<ui::region> _receivable = nullptr;
 };
 
 struct layout_guide_pair {

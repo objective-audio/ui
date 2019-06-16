@@ -287,7 +287,7 @@ using namespace yas;
     XCTAssertEqual(notified.location, 1.0f);
     XCTAssertEqual(notified.length, 2.0f);
 
-    guide_range.receiver().receivable().receive_value({3.0f, 4.0f});
+    guide_range.receivable().receive_value({3.0f, 4.0f});
 
     XCTAssertEqual(notified.location, 3.0f);
     XCTAssertEqual(notified.length, 4.0f);
@@ -525,7 +525,7 @@ using namespace yas;
     XCTAssertEqual(notified.size.width, 3.0f);
     XCTAssertEqual(notified.size.height, 4.0f);
 
-    guide_rect.receiver().receivable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
+    guide_rect.receivable().receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
 
     XCTAssertEqual(notified.origin.x, 5.0f);
     XCTAssertEqual(notified.origin.y, 6.0f);
