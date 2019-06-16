@@ -149,11 +149,11 @@ chaining::chain_sync_t<bool> ui::collider::chain_enabled() const {
 }
 
 chaining::receiver<ui::shape> &ui::collider::shape_receiver() {
-    return impl_ptr<impl>()->_shape.receiver();
+    return impl_ptr<impl>()->_shape;
 }
 
 chaining::receiver<bool> &ui::collider::enabled_receiver() {
-    return impl_ptr<impl>()->_enabled.receiver();
+    return impl_ptr<impl>()->_enabled;
 }
 
 ui::renderable_collider &ui::collider::renderable() {

@@ -16,14 +16,14 @@ using namespace yas;
 struct ui::rect_plane_data::impl : base::impl {
     ui::dynamic_mesh_data _dynamic_mesh_data;
     std::vector<chaining::any_observer> _element_observers;
-    chaining::receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
+    chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
 
     impl(ui::dynamic_mesh_data &&data) : _dynamic_mesh_data(std::move(data)) {
     }
 
     void prepare(ui::rect_plane_data &data) {
-        this->_rect_tex_coords_receiver =
-            chaining::receiver<std::pair<ui::uint_region, std::size_t>>([weak_data = to_weak(data)](auto const &pair) {
+        this->_rect_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>(
+            [weak_data = to_weak(data)](auto const &pair) {
                 if (auto data = weak_data.lock()) {
                     data.set_rect_tex_coords(pair.first, pair.second);
                 }

@@ -66,7 +66,7 @@ struct ui::collection_layout::impl : base::impl {
     chaining::any_observer _top_border_observer;
     ui::layout_borders const _borders;
     chaining::any_observer _border_observer = nullptr;
-    chaining::receiver<> _layout_receiver = nullptr;
+    chaining::perform_receiver<> _layout_receiver = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -82,22 +82,22 @@ struct ui::collection_layout::impl : base::impl {
           _left_border_observer(_frame_guide_rect.left()
                                     .chain()
                                     .to(chaining::add(args.borders.left))
-                                    .send_to(_border_guide_rect.left().receiver())
+                                    .send_to(_border_guide_rect.left())
                                     .sync()),
           _right_border_observer(_frame_guide_rect.right()
                                      .chain()
                                      .to(chaining::add(-args.borders.right))
-                                     .send_to(_border_guide_rect.right().receiver())
+                                     .send_to(_border_guide_rect.right())
                                      .sync()),
           _bottom_border_observer(_frame_guide_rect.bottom()
                                       .chain()
                                       .to(chaining::add(args.borders.bottom))
-                                      .send_to(_border_guide_rect.bottom().receiver())
+                                      .send_to(_border_guide_rect.bottom())
                                       .sync()),
           _top_border_observer(_frame_guide_rect.top()
                                    .chain()
                                    .to(chaining::add(-args.borders.top))
-                                   .send_to(_border_guide_rect.top().receiver())
+                                   .send_to(_border_guide_rect.top())
                                    .sync()),
 
           _borders(std::move(args.borders)) {
@@ -109,7 +109,7 @@ struct ui::collection_layout::impl : base::impl {
     void prepare(ui::collection_layout &layout) {
         auto weak_layout = to_weak(layout);
 
-        this->_layout_receiver = chaining::receiver<>{[weak_layout]() {
+        this->_layout_receiver = chaining::perform_receiver<>{[weak_layout]() {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();

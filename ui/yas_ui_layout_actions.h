@@ -12,7 +12,7 @@ class renderer;
 
 namespace layout_action {
     struct args {
-        weak<ui::layout_guide> target;
+        base::weak<ui::layout_guide> target;
         float begin_value;
         float end_value;
 

@@ -9,21 +9,10 @@ using namespace yas;
 
 #pragma mark - ui::layout_guide::impl
 
-struct ui::layout_guide::impl : base::impl {
+struct ui::layout_guide::impl : base::impl, chaining::receivable<float>::impl {
     chaining::value::holder<float> _value;
-    chaining::receiver<float> _receiver = nullptr;
 
     impl(float const value) : _value(value) {
-    }
-
-    void prepare(layout_guide &guide) {
-        auto weak_guide = to_weak(cast<layout_guide>());
-
-        this->_receiver = chaining::receiver<float>([weak_guide](float const &value) {
-            if (auto guide = weak_guide.lock()) {
-                guide.set_value(value);
-            }
-        });
     }
 
     void push_notify_waiting() {
@@ -96,6 +85,10 @@ struct ui::layout_guide::impl : base::impl {
             .to([](std::pair<std::optional<float>, bool> const &pair) { return *pair.first; });
     }
 
+    void receive_value(float const &value) {
+        this->_value.set_value(value);
+    }
+
    private:
     chaining::notifier<bool> _wait_sender;
 };
@@ -106,7 +99,6 @@ ui::layout_guide::layout_guide() : layout_guide(0.0f) {
 }
 
 ui::layout_guide::layout_guide(float const value) : base(std::make_shared<impl>(value)) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide::layout_guide(std::nullptr_t) : base(nullptr) {
@@ -134,29 +126,21 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<float> &ui::layout_guide::receiver() {
-    return impl_ptr<impl>()->_receiver;
+chaining::receivable<float> ui::layout_guide::receivable() {
+    if (!this->_receivable) {
+        this->_receivable =
+            chaining::receivable<float>{this->template impl_ptr<typename chaining::receivable<float>::impl>()};
+    }
+    return this->_receivable;
 }
 
 #pragma mark - ui::layout_guide_point::impl
 
-struct ui::layout_guide_point::impl : base::impl {
+struct ui::layout_guide_point::impl : base::impl, chaining::receivable<ui::point>::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
-    chaining::receiver<ui::point> _receiver = nullptr;
-
     impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
-    }
-
-    void prepare(ui::layout_guide_point &guide_point) {
-        auto weak_guide_point = to_weak(guide_point);
-
-        this->_receiver = chaining::receiver<ui::point>([weak_guide_point](ui::point const &point) {
-            if (auto guide_point = weak_guide_point.lock()) {
-                guide_point.set_point(point);
-            }
-        });
     }
 
     void set_point(ui::point &&point) {
@@ -197,6 +181,11 @@ struct ui::layout_guide_point::impl : base::impl {
                 return cache;
             });
     }
+
+    void receive_value(ui::point const &point) override {
+        auto copied = point;
+        this->set_point(std::move(copied));
+    }
 };
 
 #pragma mark - ui::layout_guide_point
@@ -205,7 +194,6 @@ ui::layout_guide_point::layout_guide_point() : layout_guide_point(ui::point{}) {
 }
 
 ui::layout_guide_point::layout_guide_point(ui::point origin) : base(std::make_shared<impl>(std::move(origin))) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide_point::layout_guide_point(std::nullptr_t) : base(nullptr) {
@@ -249,20 +237,22 @@ ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<ui::point> &ui::layout_guide_point::receiver() {
-    return impl_ptr<impl>()->_receiver;
+chaining::receivable<ui::point> ui::layout_guide_point::receivable() {
+    if (!this->_receivable) {
+        this->_receivable =
+            chaining::receivable<ui::point>{this->template impl_ptr<typename chaining::receivable<ui::point>::impl>()};
+    }
+    return this->_receivable;
 }
 
 #pragma mark - ui::layout_guide_range::impl
 
-struct ui::layout_guide_range::impl : base::impl {
+struct ui::layout_guide_range::impl : base::impl, chaining::receivable<ui::range>::impl {
     layout_guide _min_guide;
     layout_guide _max_guide;
     layout_guide _length_guide;
     chaining::any_observer _min_observer = nullptr;
     chaining::any_observer _max_observer = nullptr;
-
-    chaining::receiver<ui::range> _receiver = nullptr;
 
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
@@ -273,23 +263,17 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_min_observer = this->_min_guide.chain()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .to([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
-                                  .send_to(this->_length_guide.receiver())
+                                  .send_to(this->_length_guide)
                                   .end();
 
         this->_max_observer = this->_max_guide.chain()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .to([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
-                                  .send_to(this->_length_guide.receiver())
+                                  .send_to(this->_length_guide)
                                   .end();
-
-        this->_receiver = chaining::receiver<ui::range>{[weak_range](ui::range const &range) {
-            if (auto guide_range = weak_range.lock()) {
-                guide_range.set_range(range);
-            }
-        }};
     }
 
-    void set_range(ui::range &&range) {
+    void set_range(ui::range const &range) {
         this->push_notify_waiting();
 
         this->_min_guide.set_value(range.min());
@@ -333,6 +317,10 @@ struct ui::layout_guide_range::impl : base::impl {
                 return ui::range{min_cache, max_cache - min_cache};
             });
     }
+
+    void receive_value(ui::range const &value) {
+        this->set_range(value);
+    }
 };
 
 #pragma mark - ui::layout_guide_range
@@ -369,8 +357,8 @@ ui::layout_guide const &ui::layout_guide_range::length() const {
     return impl_ptr<impl>()->_length_guide;
 }
 
-void ui::layout_guide_range::set_range(ui::range range) {
-    impl_ptr<impl>()->set_range(std::move(range));
+void ui::layout_guide_range::set_range(ui::range const &range) {
+    impl_ptr<impl>()->set_range(range);
 }
 
 ui::range ui::layout_guide_range::range() const {
@@ -389,29 +377,22 @@ ui::layout_guide_range::chain_t ui::layout_guide_range::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<ui::range> &ui::layout_guide_range::receiver() {
-    return impl_ptr<impl>()->_receiver;
+chaining::receivable<ui::range> ui::layout_guide_range::receivable() {
+    if (!this->_receivable) {
+        this->_receivable =
+            chaining::receivable<ui::range>{this->template impl_ptr<typename chaining::receivable<ui::range>::impl>()};
+    }
+    return this->_receivable;
 }
 
 #pragma mark - ui::layout_guide_rect::impl
 
-struct ui::layout_guide_rect::impl : base::impl {
+struct ui::layout_guide_rect::impl : base::impl, chaining::receivable<ui::region>::impl {
     layout_guide_range _vertical_range;
     layout_guide_range _horizontal_range;
 
-    chaining::receiver<ui::region> _receiver = nullptr;
-
     impl(ranges_args &&args)
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
-    }
-
-    void prepare(ui::layout_guide_rect &guide_rect) {
-        auto weak_guide_rect = to_weak(guide_rect);
-        this->_receiver = chaining::receiver<ui::region>{[weak_guide_rect](ui::region const &region) {
-            if (auto guide_rect = weak_guide_rect.lock()) {
-                guide_rect.set_region(region);
-            }
-        }};
     }
 
     void set_vertical_range(ui::range &&range) {
@@ -433,7 +414,7 @@ struct ui::layout_guide_rect::impl : base::impl {
         this->_horizontal_range.pop_notify_waiting();
     }
 
-    void set_region(ui::region &&region) {
+    void set_region(ui::region const &region) {
         this->set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
     }
 
@@ -470,6 +451,10 @@ struct ui::layout_guide_rect::impl : base::impl {
                 return ui::make_region(h_cache, v_cache);
             });
     }
+
+    void receive_value(ui::region const &region) override {
+        this->set_region(region);
+    }
 };
 
 #pragma mark - ui::layout_guide_rect
@@ -479,7 +464,6 @@ ui::layout_guide_rect::layout_guide_rect()
 }
 
 ui::layout_guide_rect::layout_guide_rect(ranges_args args) : base(std::make_shared<impl>(std::move(args))) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide_rect::layout_guide_rect(ui::region region)
@@ -559,8 +543,8 @@ void ui::layout_guide_rect::set_ranges(ranges_args args) {
     impl_ptr<impl>()->set_ranges(std::move(args));
 }
 
-void ui::layout_guide_rect::set_region(ui::region region) {
-    impl_ptr<impl>()->set_region(std::move(region));
+void ui::layout_guide_rect::set_region(ui::region const &region) {
+    impl_ptr<impl>()->set_region(region);
 }
 
 ui::region ui::layout_guide_rect::region() const {
@@ -579,8 +563,12 @@ ui::layout_guide_rect::chain_t ui::layout_guide_rect::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<ui::region> &ui::layout_guide_rect::receiver() {
-    return impl_ptr<impl>()->_receiver;
+chaining::receivable<ui::region> ui::layout_guide_rect::receivable() {
+    if (!this->_receivable) {
+        this->_receivable = chaining::receivable<ui::region>{
+            this->template impl_ptr<typename chaining::receivable<ui::region>::impl>()};
+    }
+    return this->_receivable;
 }
 
 #pragma mark - layout_guide_pair

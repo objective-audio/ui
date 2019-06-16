@@ -9,7 +9,7 @@ using namespace yas;
 namespace yas::sample {
 struct touch_object {
     ui::node node = nullptr;
-    weak<ui::action> scale_action;
+    base::weak<ui::action> scale_action;
 };
 }
 

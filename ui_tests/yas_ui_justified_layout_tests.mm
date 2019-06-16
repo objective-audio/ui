@@ -69,7 +69,7 @@ using namespace yas;
     ui::layout_guide second_src_guide{2.0f};
     ui::layout_guide first_dst_guide;
     ui::layout_guide second_dst_guide;
-    std::array<chaining::receiver<float>, 2> receivers{first_dst_guide.receiver(), second_dst_guide.receiver()};
+    std::array<ui::layout_guide, 2> receivers{first_dst_guide, second_dst_guide};
 
     auto layout =
         first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<1>()).send_to(receivers).sync();
@@ -89,7 +89,7 @@ using namespace yas;
                       .combine(second_src_guide.chain())
                       .to(ui::justify<2>())
                       .to([](std::array<float, 3> const &values) { return values[1]; })
-                      .send_to(dst_guide.receiver())
+                      .send_to(dst_guide)
                       .sync();
 
     XCTAssertEqual(dst_guide.value(), 0.0f);
@@ -114,8 +114,7 @@ using namespace yas;
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::array<chaining::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                       dst_guide_2.receiver()};
+    std::array<ui::layout_guide, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     auto layout =
         first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>()).send_to(receivers).sync();
@@ -131,8 +130,7 @@ using namespace yas;
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::array<chaining::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                       dst_guide_2.receiver()};
+    std::array<ui::layout_guide, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
@@ -150,8 +148,7 @@ using namespace yas;
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::vector<chaining::receiver<float>> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                     dst_guide_2.receiver()};
+    std::vector<ui::layout_guide> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
@@ -168,11 +165,8 @@ using namespace yas;
     ui::layout_guide second_src_guide{2.0f};
     ui::layout_guide dst_guide;
 
-    auto observer = first_src_guide.chain()
-                        .combine(second_src_guide.chain())
-                        .to(ui::justify())
-                        .send_to(dst_guide.receiver())
-                        .sync();
+    auto observer =
+        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify()).send_to(dst_guide).sync();
 
     XCTAssertEqual(dst_guide.value(), 1.0f);
 }

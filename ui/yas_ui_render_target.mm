@@ -38,7 +38,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
         this->_effect_observer =
             this->_effect_setter.chain()
                 .to([](ui::effect const &effect) { return effect ?: ui::effect::make_through_effect(); })
-                .send_to(this->_effect.receiver())
+                .send_to(this->_effect)
                 .end();
 
         this->_set_textures_to_effect();
@@ -260,7 +260,7 @@ ui::effect const &ui::render_target::effect() const {
 }
 
 chaining::receiver<double> &ui::render_target::scale_factor_receiver() {
-    return impl_ptr<impl>()->_scale_factor.receiver();
+    return impl_ptr<impl>()->_scale_factor;
 }
 
 ui::renderable_render_target &ui::render_target::renderable() {

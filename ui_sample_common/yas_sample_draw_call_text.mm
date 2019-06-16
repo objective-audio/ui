@@ -35,19 +35,19 @@ struct sample::draw_call_text::impl : base::impl {
                             left_layout = safe_area_guide_rect.left()
                                               .chain()
                                               .to(chaining::add(4.0f))
-                                              .send_to(strings_guide_rect.right().receiver())
+                                              .send_to(strings_guide_rect.right())
                                               .sync();
 
                             right_layout = safe_area_guide_rect.right()
                                                .chain()
                                                .to(chaining::add(-4.0f))
-                                               .send_to(strings_guide_rect.right().receiver())
+                                               .send_to(strings_guide_rect.right())
                                                .sync();
 
                             bottom_layout = safe_area_guide_rect.bottom()
                                                 .chain()
                                                 .to(chaining::add(4.0f))
-                                                .send_to(strings_guide_rect.bottom().receiver())
+                                                .send_to(strings_guide_rect.bottom())
                                                 .sync();
 
                             auto strings_handler = [top_layout =
@@ -62,7 +62,7 @@ struct sample::draw_call_text::impl : base::impl {
                                 top_layout = strings.frame_layout_guide_rect()
                                                  .bottom()
                                                  .chain()
-                                                 .send_to(strings.frame_layout_guide_rect().top().receiver())
+                                                 .send_to(strings.frame_layout_guide_rect().top())
                                                  .sync();
                             };
 

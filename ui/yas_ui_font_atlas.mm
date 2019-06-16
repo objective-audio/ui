@@ -58,17 +58,18 @@ struct ui::font_atlas::impl : base::impl {
         auto weak_atlas = to_weak(atlas);
 
         this->_word_tex_coords_receiver =
-            chaining::receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
+            chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
                 if (auto atlas = weak_atlas.lock()) {
                     atlas.impl_ptr<impl>()->_word_infos.at(pair.second).rect.set_tex_coord(pair.first);
                 }
             });
 
-        this->_texture_updated_receiver = chaining::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
-            if (auto atlas = weak_atlas.lock()) {
-                atlas.impl_ptr<impl>()->_texture_updated_sender.notify(texture);
-            }
-        });
+        this->_texture_updated_receiver =
+            chaining::perform_receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+                if (auto atlas = weak_atlas.lock()) {
+                    atlas.impl_ptr<impl>()->_texture_updated_sender.notify(texture);
+                }
+            });
 
         this->_texture_setter_observer = this->_texture_setter.chain()
                                              .guard([weak_atlas](ui::texture const &texture) {
@@ -77,26 +78,27 @@ struct ui::font_atlas::impl : base::impl {
                                                  }
                                                  return false;
                                              })
-                                             .send_to(this->_texture.receiver())
+                                             .send_to(this->_texture)
                                              .end();
 
-        this->_texture_changed_receiver = chaining::receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
-            if (auto atlas = weak_atlas.lock()) {
-                auto atlas_impl = atlas.impl_ptr<impl>();
+        this->_texture_changed_receiver =
+            chaining::perform_receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+                if (auto atlas = weak_atlas.lock()) {
+                    auto atlas_impl = atlas.impl_ptr<impl>();
 
-                atlas_impl->_update_word_infos();
+                    atlas_impl->_update_word_infos();
 
-                if (texture) {
-                    atlas_impl->_texture_observer = texture.chain(texture::method::metal_texture_changed)
-                                                        .send_to(atlas_impl->_texture_updated_receiver)
-                                                        .end();
-                } else {
-                    atlas_impl->_texture_observer = nullptr;
+                    if (texture) {
+                        atlas_impl->_texture_observer = texture.chain(texture::method::metal_texture_changed)
+                                                            .send_to(atlas_impl->_texture_updated_receiver)
+                                                            .end();
+                    } else {
+                        atlas_impl->_texture_observer = nullptr;
+                    }
+
+                    atlas_impl->_texture_changed_fetcher.broadcast();
                 }
-
-                atlas_impl->_texture_changed_fetcher.broadcast();
-            }
-        });
+            });
 
         this->_texture_changed_observer = this->_texture.chain().send_to(this->_texture_changed_receiver).end();
 
@@ -156,14 +158,14 @@ struct ui::font_atlas::impl : base::impl {
    private:
     chaining::value::holder<ui::texture> _texture{ui::texture{nullptr}};
     std::vector<ui::word_info> _word_infos;
-    chaining::receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
+    chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<chaining::any_observer> _element_observers;
-    chaining::receiver<ui::texture> _texture_updated_receiver = nullptr;
+    chaining::perform_receiver<ui::texture> _texture_updated_receiver = nullptr;
     chaining::any_observer _texture_observer = nullptr;
     chaining::notifier<ui::texture> _texture_setter;
     chaining::any_observer _texture_setter_observer = nullptr;
     chaining::any_observer _texture_changed_observer = nullptr;
-    chaining::receiver<ui::texture> _texture_changed_receiver = nullptr;
+    chaining::perform_receiver<ui::texture> _texture_changed_receiver = nullptr;
 
     void _update_word_infos() {
         this->_element_observers.clear();

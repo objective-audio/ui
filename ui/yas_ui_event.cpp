@@ -222,7 +222,7 @@ struct ui::event_manager::impl : base::impl, event_inputtable::impl {
     std::unordered_map<uint16_t, event> _key_events;
     std::unordered_map<uint32_t, event> _modifier_events;
 
-    chaining::receiver<context> _receiver = nullptr;
+    chaining::perform_receiver<context> _receiver = nullptr;
     chaining::notifier<context> _notifier;
 };
 

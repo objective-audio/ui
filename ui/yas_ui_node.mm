@@ -91,11 +91,12 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // dispatch
 
-        this->_dispatch_receiver = chaining::receiver<ui::node::method>([weak_node](ui::node::method const &method) {
-            if (auto node = weak_node.lock()) {
-                node.impl_ptr<impl>()->_dispatch_sender.notify(std::make_pair(method, node));
-            }
-        });
+        this->_dispatch_receiver =
+            chaining::perform_receiver<ui::node::method>([weak_node](ui::node::method const &method) {
+                if (auto node = weak_node.lock()) {
+                    node.impl_ptr<impl>()->_dispatch_sender.notify(std::make_pair(method, node));
+                }
+            });
     }
 
     std::vector<ui::node> &children() {
@@ -440,7 +441,7 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     std::vector<chaining::any_observer> _update_observers;
     std::unordered_map<ui::node::method, chaining::any_observer> _dispatch_observers;
     chaining::notifier<chain_pair_t> _dispatch_sender;
-    chaining::receiver<ui::node::method> _dispatch_receiver = nullptr;
+    chaining::perform_receiver<ui::node::method> _dispatch_receiver = nullptr;
     chaining::notifier<ui::node::method> _notify_sender;
 
     node_updates_t _updates;
@@ -673,7 +674,7 @@ chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui:
     return impl_ptr<impl>()->chain(methods);
 }
 
-chaining::chain_relayed_sync_t<ui::renderer, weak<ui::renderer>> ui::node::chain_renderer() const {
+chaining::chain_relayed_sync_t<ui::renderer, base::weak<ui::renderer>> ui::node::chain_renderer() const {
     return impl_ptr<impl>()->_renderer.chain().to([](weak<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             return renderer;
@@ -683,7 +684,7 @@ chaining::chain_relayed_sync_t<ui::renderer, weak<ui::renderer>> ui::node::chain
     });
 }
 
-chaining::chain_relayed_sync_t<ui::node, weak<ui::node>> ui::node::chain_parent() const {
+chaining::chain_relayed_sync_t<ui::node, base::weak<ui::node>> ui::node::chain_parent() const {
     return impl_ptr<impl>()->_parent.chain().to([](weak<ui::node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             return node;
@@ -707,7 +708,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
                            .to([weak_node](float const &x) {
                                return ui::point{x, weak_node.lock().position().raw().y};
                            })
-                           .send_to(position.receiver())
+                           .send_to(position)
                            .sync();
 
     imp->_position_observer = nullptr;
@@ -723,7 +724,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
                            .to([weak_node](float const &y) {
                                return ui::point{weak_node.lock().position().raw().x, y};
                            })
-                           .send_to(position.receiver())
+                           .send_to(position)
                            .sync();
 
     imp->_position_observer = nullptr;
@@ -734,7 +735,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
     auto &position = imp->_position;
     auto weak_node = to_weak(*this);
 
-    imp->_position_observer = guide_point.chain().send_to(position.receiver()).sync();
+    imp->_position_observer = guide_point.chain().send_to(position).sync();
 
     imp->_x_observer = nullptr;
     imp->_y_observer = nullptr;
