@@ -284,6 +284,6 @@ chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() cons
     return impl_ptr<impl>()->_collection_layout.chain_alignment();
 }
 
-chaining::perform_receiver<std::string> &ui::strings::text_receiver() {
+chaining::receiver<std::string> &ui::strings::text_receiver() {
     return impl_ptr<impl>()->_text_receiver;
 }

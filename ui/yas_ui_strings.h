@@ -50,6 +50,6 @@ class strings : public base {
     [[nodiscard]] chaining::chain_sync_t<ui::font_atlas> chain_font_atlas() const;
     [[nodiscard]] chaining::chain_sync_t<std::optional<float>> chain_line_height() const;
     [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
-    chaining::perform_receiver<std::string> &text_receiver();
+    chaining::receiver<std::string> &text_receiver();
 };
 }  // namespace yas::ui
