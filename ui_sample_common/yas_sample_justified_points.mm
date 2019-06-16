@@ -32,7 +32,7 @@ struct sample::justified_points::impl : base::impl {
                           y_layout = chaining::any_observer{nullptr}](ui::renderer const &renderer) mutable {
                     if (auto points = weak_points.lock()) {
                         if (renderer) {
-                            std::vector<chaining::receiver<float>> x_receivers;
+                            std::vector<chaining::perform_receiver<float>> x_receivers;
                             for (auto &guide : points.impl_ptr<impl>()->_x_layout_guides) {
                                 x_receivers.push_back(guide.receiver());
                             }
@@ -57,7 +57,7 @@ struct sample::justified_points::impl : base::impl {
                                 }
                             }
 
-                            std::vector<chaining::receiver<float>> y_receivers;
+                            std::vector<chaining::perform_receiver<float>> y_receivers;
                             for (auto &guide : points.impl_ptr<impl>()->_y_layout_guides) {
                                 y_receivers.push_back(guide.receiver());
                             }

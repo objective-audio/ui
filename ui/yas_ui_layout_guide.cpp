@@ -11,7 +11,7 @@ using namespace yas;
 
 struct ui::layout_guide::impl : base::impl {
     chaining::value::holder<float> _value;
-    chaining::receiver<float> _receiver = nullptr;
+    chaining::perform_receiver<float> _receiver = nullptr;
 
     impl(float const value) : _value(value) {
     }
@@ -19,7 +19,7 @@ struct ui::layout_guide::impl : base::impl {
     void prepare(layout_guide &guide) {
         auto weak_guide = to_weak(cast<layout_guide>());
 
-        this->_receiver = chaining::receiver<float>([weak_guide](float const &value) {
+        this->_receiver = chaining::perform_receiver<float>([weak_guide](float const &value) {
             if (auto guide = weak_guide.lock()) {
                 guide.set_value(value);
             }
@@ -134,7 +134,7 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<float> &ui::layout_guide::receiver() {
+chaining::perform_receiver<float> &ui::layout_guide::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 
@@ -144,7 +144,7 @@ struct ui::layout_guide_point::impl : base::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
-    chaining::receiver<ui::point> _receiver = nullptr;
+    chaining::perform_receiver<ui::point> _receiver = nullptr;
 
     impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
     }
@@ -152,7 +152,7 @@ struct ui::layout_guide_point::impl : base::impl {
     void prepare(ui::layout_guide_point &guide_point) {
         auto weak_guide_point = to_weak(guide_point);
 
-        this->_receiver = chaining::receiver<ui::point>([weak_guide_point](ui::point const &point) {
+        this->_receiver = chaining::perform_receiver<ui::point>([weak_guide_point](ui::point const &point) {
             if (auto guide_point = weak_guide_point.lock()) {
                 guide_point.set_point(point);
             }
@@ -249,7 +249,7 @@ ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<ui::point> &ui::layout_guide_point::receiver() {
+chaining::perform_receiver<ui::point> &ui::layout_guide_point::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 
@@ -262,7 +262,7 @@ struct ui::layout_guide_range::impl : base::impl {
     chaining::any_observer _min_observer = nullptr;
     chaining::any_observer _max_observer = nullptr;
 
-    chaining::receiver<ui::range> _receiver = nullptr;
+    chaining::perform_receiver<ui::range> _receiver = nullptr;
 
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
@@ -282,7 +282,7 @@ struct ui::layout_guide_range::impl : base::impl {
                                   .send_to(this->_length_guide.receiver())
                                   .end();
 
-        this->_receiver = chaining::receiver<ui::range>{[weak_range](ui::range const &range) {
+        this->_receiver = chaining::perform_receiver<ui::range>{[weak_range](ui::range const &range) {
             if (auto guide_range = weak_range.lock()) {
                 guide_range.set_range(range);
             }
@@ -389,7 +389,7 @@ ui::layout_guide_range::chain_t ui::layout_guide_range::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<ui::range> &ui::layout_guide_range::receiver() {
+chaining::perform_receiver<ui::range> &ui::layout_guide_range::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 
@@ -399,7 +399,7 @@ struct ui::layout_guide_rect::impl : base::impl {
     layout_guide_range _vertical_range;
     layout_guide_range _horizontal_range;
 
-    chaining::receiver<ui::region> _receiver = nullptr;
+    chaining::perform_receiver<ui::region> _receiver = nullptr;
 
     impl(ranges_args &&args)
         : _vertical_range(std::move(args.vertical_range)), _horizontal_range(std::move(args.horizontal_range)) {
@@ -407,7 +407,7 @@ struct ui::layout_guide_rect::impl : base::impl {
 
     void prepare(ui::layout_guide_rect &guide_rect) {
         auto weak_guide_rect = to_weak(guide_rect);
-        this->_receiver = chaining::receiver<ui::region>{[weak_guide_rect](ui::region const &region) {
+        this->_receiver = chaining::perform_receiver<ui::region>{[weak_guide_rect](ui::region const &region) {
             if (auto guide_rect = weak_guide_rect.lock()) {
                 guide_rect.set_region(region);
             }
@@ -579,7 +579,7 @@ ui::layout_guide_rect::chain_t ui::layout_guide_rect::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receiver<ui::region> &ui::layout_guide_rect::receiver() {
+chaining::perform_receiver<ui::region> &ui::layout_guide_rect::receiver() {
     return impl_ptr<impl>()->_receiver;
 }
 

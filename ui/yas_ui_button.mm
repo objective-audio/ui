@@ -32,7 +32,7 @@ struct ui::button::impl : base::impl {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
-        this->_leave_or_enter_or_move_tracking_receiver = chaining::receiver<>{[weak_button] {
+        this->_leave_or_enter_or_move_tracking_receiver = chaining::perform_receiver<>{[weak_button] {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
                 if (auto tracking_event = button_impl->_tracking_event) {
@@ -41,7 +41,7 @@ struct ui::button::impl : base::impl {
             }
         }};
 
-        this->_cancel_tracking_receiver = chaining::receiver<>{[weak_button]() {
+        this->_cancel_tracking_receiver = chaining::perform_receiver<>{[weak_button]() {
             if (auto button = weak_button.lock()) {
                 auto button_impl = button.impl_ptr<impl>();
                 if (auto tracking_event = button_impl->_tracking_event) {
@@ -258,8 +258,8 @@ struct ui::button::impl : base::impl {
     chaining::any_observer _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
     chaining::any_observer _rect_observer = nullptr;
-    chaining::receiver<> _leave_or_enter_or_move_tracking_receiver = nullptr;
-    chaining::receiver<> _cancel_tracking_receiver = nullptr;
+    chaining::perform_receiver<> _leave_or_enter_or_move_tracking_receiver = nullptr;
+    chaining::perform_receiver<> _cancel_tracking_receiver = nullptr;
 };
 
 #pragma mark - ui::button

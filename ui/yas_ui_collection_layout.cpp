@@ -66,7 +66,7 @@ struct ui::collection_layout::impl : base::impl {
     chaining::any_observer _top_border_observer;
     ui::layout_borders const _borders;
     chaining::any_observer _border_observer = nullptr;
-    chaining::receiver<> _layout_receiver = nullptr;
+    chaining::perform_receiver<> _layout_receiver = nullptr;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -109,7 +109,7 @@ struct ui::collection_layout::impl : base::impl {
     void prepare(ui::collection_layout &layout) {
         auto weak_layout = to_weak(layout);
 
-        this->_layout_receiver = chaining::receiver<>{[weak_layout]() {
+        this->_layout_receiver = chaining::perform_receiver<>{[weak_layout]() {
             if (auto layout = weak_layout.lock()) {
                 auto layout_impl = layout.impl_ptr<impl>();
                 layout_impl->_update_layout();

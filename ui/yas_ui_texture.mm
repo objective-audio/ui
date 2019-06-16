@@ -57,7 +57,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     void prepare(ui::texture &texture) {
         auto weak_texture = to_weak(texture);
 
-        this->_notify_receiver = chaining::receiver<method>([weak_texture](method const &method) {
+        this->_notify_receiver = chaining::perform_receiver<method>([weak_texture](method const &method) {
             if (auto texture = weak_texture.lock()) {
                 texture.impl_ptr<impl>()->_notify_sender.notify(std::make_pair(method, texture));
             }
@@ -140,7 +140,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     chaining::any_observer _scale_observer = nullptr;
     chaining::any_observer _properties_observer = nullptr;
     chaining::notifier<chain_pair_t> _notify_sender;
-    chaining::receiver<method> _notify_receiver = nullptr;
+    chaining::perform_receiver<method> _notify_receiver = nullptr;
 
     draw_image_result _reserve_image_size(image const &image) {
         if (!image) {
@@ -315,7 +315,7 @@ chaining::chain_relayed_unsync_t<ui::texture, ui::texture::chain_pair_t> ui::tex
 }
 
 chaining::receiver<double> &ui::texture::scale_factor_receiver() {
-    return impl_ptr<impl>()->_scale_factor.receiver();
+    return impl_ptr<impl>()->_scale_factor;
 }
 
 ui::metal_object &ui::texture::metal() {

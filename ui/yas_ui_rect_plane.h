@@ -50,7 +50,7 @@ class rect_plane_data : public base {
 
     ui::dynamic_mesh_data &dynamic_mesh_data();
 
-    chaining::receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
+    chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
 };
 
 class rect_plane : public base {

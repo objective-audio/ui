@@ -28,7 +28,7 @@ class layout_guide : public base {
     using chain_t = chaining::chain<float, float, true>;
 
     chain_t chain() const;
-    chaining::receiver<float> &receiver();
+    chaining::perform_receiver<float> &receiver();
 };
 
 class layout_guide_point : public base {
@@ -55,7 +55,7 @@ class layout_guide_point : public base {
     using chain_t = chaining::chain<ui::point, float, true>;
 
     chain_t chain() const;
-    chaining::receiver<ui::point> &receiver();
+    chaining::perform_receiver<ui::point> &receiver();
 };
 
 class layout_guide_range : public base {
@@ -83,7 +83,7 @@ class layout_guide_range : public base {
     using chain_t = chaining::chain<ui::range, float, true>;
 
     chain_t chain() const;
-    chaining::receiver<ui::range> &receiver();
+    chaining::perform_receiver<ui::range> &receiver();
 };
 
 class layout_guide_rect : public base {
@@ -131,7 +131,7 @@ class layout_guide_rect : public base {
     using chain_t = chaining::chain<ui::region, float, true>;
 
     chain_t chain() const;
-    chaining::receiver<ui::region> &receiver();
+    chaining::perform_receiver<ui::region> &receiver();
 };
 
 struct layout_guide_pair {

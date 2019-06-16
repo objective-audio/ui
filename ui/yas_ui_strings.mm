@@ -18,7 +18,7 @@ using namespace yas;
 struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
-    chaining::receiver<std::string> _text_receiver = nullptr;
+    chaining::perform_receiver<std::string> _text_receiver = nullptr;
 
     chaining::value::holder<std::string> _text;
     chaining::value::holder<ui::font_atlas> _font_atlas;
@@ -45,32 +45,33 @@ struct ui::strings::impl : base::impl {
 
    private:
     std::size_t const _max_word_count = 0;
-    chaining::receiver<ui::texture> _texture_receiver = nullptr;
-    chaining::receiver<ui::font_atlas> _update_texture_receiver = nullptr;
-    chaining::receiver<std::nullptr_t> _update_layout_receiver = nullptr;
+    chaining::perform_receiver<ui::texture> _texture_receiver = nullptr;
+    chaining::perform_receiver<ui::font_atlas> _update_texture_receiver = nullptr;
+    chaining::perform_receiver<std::nullptr_t> _update_layout_receiver = nullptr;
     chaining::any_observer _texture_observer = nullptr;
     std::vector<chaining::any_observer> _property_observers;
 
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
-        this->_texture_receiver = chaining::receiver<ui::texture>([weak_strings](ui::texture const &texture) {
+        this->_texture_receiver = chaining::perform_receiver<ui::texture>([weak_strings](ui::texture const &texture) {
             if (auto strings = weak_strings.lock()) {
                 strings.rect_plane().node().mesh().raw().set_texture(texture);
             }
         });
 
-        this->_update_texture_receiver = chaining::receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
-            if (auto strings = weak_strings.lock()) {
-                strings.impl_ptr<impl>()->_update_texture_chaining();
-            }
-        });
+        this->_update_texture_receiver =
+            chaining::perform_receiver<ui::font_atlas>([weak_strings](ui::font_atlas const &) {
+                if (auto strings = weak_strings.lock()) {
+                    strings.impl_ptr<impl>()->_update_texture_chaining();
+                }
+            });
 
-        this->_update_layout_receiver = chaining::receiver<std::nullptr_t>([weak_strings](auto const &) {
+        this->_update_layout_receiver = chaining::perform_receiver<std::nullptr_t>([weak_strings](auto const &) {
             if (auto strings = weak_strings.lock()) {
                 strings.impl_ptr<impl>()->_update_layout();
             }
         });
 
-        this->_text_receiver = chaining::receiver<std::string>([weak_strings](std::string const &text) {
+        this->_text_receiver = chaining::perform_receiver<std::string>([weak_strings](std::string const &text) {
             if (auto strings = weak_strings.lock()) {
                 strings.set_text(text);
             }
@@ -283,6 +284,6 @@ chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() cons
     return impl_ptr<impl>()->_collection_layout.chain_alignment();
 }
 
-chaining::receiver<std::string> &ui::strings::text_receiver() {
+chaining::perform_receiver<std::string> &ui::strings::text_receiver() {
     return impl_ptr<impl>()->_text_receiver;
 }

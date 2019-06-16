@@ -12,7 +12,7 @@
 namespace yas::ui {
 namespace translate_action {
     struct args {
-        weak<ui::node> target;
+        base::weak<ui::node> target;
         ui::point begin_position = {.v = 0.0f};
         ui::point end_position = {.v = 0.0f};
 
@@ -22,7 +22,7 @@ namespace translate_action {
 
 namespace rotate_action {
     struct args {
-        weak<ui::node> target;
+        base::weak<ui::node> target;
         ui::angle begin_angle = {0.0f};
         ui::angle end_angle = {0.0f};
         bool is_shortest = false;
@@ -33,7 +33,7 @@ namespace rotate_action {
 
 namespace scale_action {
     struct args {
-        weak<ui::node> target;
+        base::weak<ui::node> target;
         ui::size begin_scale = {.v = 1.0f};
         ui::size end_scale = {.v = 1.0f};
 
@@ -43,7 +43,7 @@ namespace scale_action {
 
 namespace color_action {
     struct args {
-        weak<ui::node> target;
+        base::weak<ui::node> target;
         ui::color begin_color = {.v = 1.0f};
         ui::color end_color = {.v = 1.0f};
 
@@ -53,7 +53,7 @@ namespace color_action {
 
 namespace alpha_action {
     struct args {
-        weak<ui::node> target;
+        base::weak<ui::node> target;
         float begin_alpha = 1.0f;
         float end_alpha = 1.0f;
 

@@ -69,7 +69,7 @@ using namespace yas;
     ui::layout_guide second_src_guide{2.0f};
     ui::layout_guide first_dst_guide;
     ui::layout_guide second_dst_guide;
-    std::array<chaining::receiver<float>, 2> receivers{first_dst_guide.receiver(), second_dst_guide.receiver()};
+    std::array<chaining::perform_receiver<float>, 2> receivers{first_dst_guide.receiver(), second_dst_guide.receiver()};
 
     auto layout =
         first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<1>()).send_to(receivers).sync();
@@ -114,8 +114,8 @@ using namespace yas;
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::array<chaining::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                       dst_guide_2.receiver()};
+    std::array<chaining::perform_receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                               dst_guide_2.receiver()};
 
     auto layout =
         first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>()).send_to(receivers).sync();
@@ -131,8 +131,8 @@ using namespace yas;
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::array<chaining::receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                       dst_guide_2.receiver()};
+    std::array<chaining::perform_receiver<float>, 3> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                               dst_guide_2.receiver()};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
@@ -150,8 +150,8 @@ using namespace yas;
     ui::layout_guide dst_guide_0;
     ui::layout_guide dst_guide_1;
     ui::layout_guide dst_guide_2;
-    std::vector<chaining::receiver<float>> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
-                                                     dst_guide_2.receiver()};
+    std::vector<chaining::perform_receiver<float>> receivers{dst_guide_0.receiver(), dst_guide_1.receiver(),
+                                                             dst_guide_2.receiver()};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
