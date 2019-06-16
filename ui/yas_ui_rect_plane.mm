@@ -213,7 +213,7 @@ ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
     return impl_ptr<impl>()->_dynamic_mesh_data;
 }
 
-chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
+chaining::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
     return impl_ptr<impl>()->_rect_tex_coords_receiver;
 }
 
