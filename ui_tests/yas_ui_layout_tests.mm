@@ -39,7 +39,7 @@ using namespace yas;
     ui::layout_guide_point src_guide_point{{.x = 1.0f, .y = 2.0f}};
     ui::layout_guide_point dst_guide_point{{.x = 3.0f, .y = 4.0f}};
 
-    auto layout = src_guide_point.chain().to(chaining::add(distances)).send_to(dst_guide_point.receiver()).sync();
+    auto layout = src_guide_point.chain().to(chaining::add(distances)).send_to(dst_guide_point).sync();
 
     XCTAssertTrue(layout);
 

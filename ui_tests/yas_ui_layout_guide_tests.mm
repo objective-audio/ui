@@ -152,7 +152,7 @@ using namespace yas;
     XCTAssertEqual(notified.x, 1.0f);
     XCTAssertEqual(notified.y, 2.0f);
 
-    guide_point.receiver().receivable().receive_value({3.0f, 4.0f});
+    guide_point.receivable().receive_value({3.0f, 4.0f});
 
     XCTAssertEqual(notified.x, 3.0f);
     XCTAssertEqual(notified.y, 4.0f);

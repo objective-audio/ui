@@ -33,8 +33,7 @@ struct layout_guide : base, chaining::receiver<float> {
     chaining::receivable<float> _receivable = nullptr;
 };
 
-class layout_guide_point : public base {
-   public:
+struct layout_guide_point : base, chaining::receiver<ui::point> {
     class impl;
 
     layout_guide_point();
@@ -57,7 +56,10 @@ class layout_guide_point : public base {
     using chain_t = chaining::chain<ui::point, float, true>;
 
     chain_t chain() const;
-    chaining::perform_receiver<ui::point> &receiver();
+    chaining::receivable<ui::point> receivable();
+
+   private:
+    chaining::receivable<ui::point> _receivable = nullptr;
 };
 
 class layout_guide_range : public base {

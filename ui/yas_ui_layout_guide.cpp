@@ -136,23 +136,11 @@ chaining::receivable<float> ui::layout_guide::receivable() {
 
 #pragma mark - ui::layout_guide_point::impl
 
-struct ui::layout_guide_point::impl : base::impl {
+struct ui::layout_guide_point::impl : base::impl, chaining::receivable<ui::point>::impl {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
-    chaining::perform_receiver<ui::point> _receiver = nullptr;
-
     impl(ui::point &&origin) : _x_guide(origin.x), _y_guide(origin.y) {
-    }
-
-    void prepare(ui::layout_guide_point &guide_point) {
-        auto weak_guide_point = to_weak(guide_point);
-
-        this->_receiver = chaining::perform_receiver<ui::point>([weak_guide_point](ui::point const &point) {
-            if (auto guide_point = weak_guide_point.lock()) {
-                guide_point.set_point(point);
-            }
-        });
     }
 
     void set_point(ui::point &&point) {
@@ -193,6 +181,11 @@ struct ui::layout_guide_point::impl : base::impl {
                 return cache;
             });
     }
+
+    void receive_value(ui::point const &point) override {
+        auto copied = point;
+        this->set_point(std::move(copied));
+    }
 };
 
 #pragma mark - ui::layout_guide_point
@@ -201,7 +194,6 @@ ui::layout_guide_point::layout_guide_point() : layout_guide_point(ui::point{}) {
 }
 
 ui::layout_guide_point::layout_guide_point(ui::point origin) : base(std::make_shared<impl>(std::move(origin))) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide_point::layout_guide_point(std::nullptr_t) : base(nullptr) {
@@ -245,8 +237,12 @@ ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::perform_receiver<ui::point> &ui::layout_guide_point::receiver() {
-    return impl_ptr<impl>()->_receiver;
+chaining::receivable<ui::point> ui::layout_guide_point::receivable() {
+    if (!this->_receivable) {
+        this->_receivable =
+            chaining::receivable<ui::point>{this->template impl_ptr<typename chaining::receivable<ui::point>::impl>()};
+    }
+    return this->_receivable;
 }
 
 #pragma mark - ui::layout_guide_range::impl
