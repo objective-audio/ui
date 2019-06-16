@@ -32,10 +32,8 @@ struct sample::bg::impl : base::impl {
                     if (sample::bg bg = weak_bg.lock()) {
                         auto impl = bg.impl_ptr<sample::bg::impl>();
                         if (ui::renderer renderer = value) {
-                            layout = renderer.safe_area_layout_guide_rect()
-                                         .chain()
-                                         .send_to(impl->_layout_guide_rect.receiver())
-                                         .sync();
+                            layout =
+                                renderer.safe_area_layout_guide_rect().chain().send_to(impl->_layout_guide_rect).sync();
                         } else {
                             layout = nullptr;
                         }

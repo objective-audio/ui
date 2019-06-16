@@ -199,20 +199,18 @@ struct sample::soft_keyboard::impl : base::impl {
         auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
         auto &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
 
+        this->_frame_layouts.emplace_back(safe_area_guide_rect.left().chain().send_to(frame_guide_rect.left()).sync());
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.left().chain().send_to(frame_guide_rect.left().receiver()).sync());
-        this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.bottom().chain().send_to(frame_guide_rect.bottom().receiver()).sync());
-        this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.top().chain().send_to(frame_guide_rect.top().receiver()).sync());
+            safe_area_guide_rect.bottom().chain().send_to(frame_guide_rect.bottom()).sync());
+        this->_frame_layouts.emplace_back(safe_area_guide_rect.top().chain().send_to(frame_guide_rect.top()).sync());
 
         ui::layout_guide max_right_guide;
         this->_frame_layouts.emplace_back(
-            safe_area_guide_rect.left().chain().to(chaining::add(width)).send_to(max_right_guide.receiver()).sync());
+            safe_area_guide_rect.left().chain().to(chaining::add(width)).send_to(max_right_guide).sync());
         this->_frame_layouts.emplace_back(max_right_guide.chain()
                                               .combine(safe_area_guide_rect.right().chain())
                                               .to(chaining::min<float>())
-                                              .send_to(frame_guide_rect.right().receiver())
+                                              .send_to(frame_guide_rect.right())
                                               .sync());
 
         this->_setup_soft_keys_layout();
@@ -301,13 +299,10 @@ struct sample::soft_keyboard::impl : base::impl {
                     std::vector<chaining::any_observer> layouts;
                     layouts.reserve(4);
 
-                    layouts.emplace_back(
-                        src_guide_rect.left().chain().send_to(dst_guide_rect.left().receiver()).sync());
-                    layouts.emplace_back(
-                        src_guide_rect.bottom().chain().send_to(dst_guide_rect.bottom().receiver()).sync());
-                    layouts.emplace_back(
-                        src_guide_rect.right().chain().send_to(dst_guide_rect.right().receiver()).sync());
-                    layouts.emplace_back(src_guide_rect.top().chain().send_to(dst_guide_rect.top().receiver()).sync());
+                    layouts.emplace_back(src_guide_rect.left().chain().send_to(dst_guide_rect.left()).sync());
+                    layouts.emplace_back(src_guide_rect.bottom().chain().send_to(dst_guide_rect.bottom()).sync());
+                    layouts.emplace_back(src_guide_rect.right().chain().send_to(dst_guide_rect.right()).sync());
+                    layouts.emplace_back(src_guide_rect.top().chain().send_to(dst_guide_rect.top()).sync());
 
                     this->_fixed_cell_layouts.emplace_back(std::move(layouts));
                 }

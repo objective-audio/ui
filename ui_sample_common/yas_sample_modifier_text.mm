@@ -48,18 +48,18 @@ struct sample::modifier_text::impl : base::impl {
                             left_layout = safe_area_guide_rect.left()
                                               .chain()
                                               .to(chaining::add(4.0f))
-                                              .send_to(strings_guide_rect.left().receiver())
+                                              .send_to(strings_guide_rect.left())
                                               .sync();
 
                             right_layout = safe_area_guide_rect.right()
                                                .chain()
                                                .to(chaining::add(-4.0f))
-                                               .send_to(strings_guide_rect.right().receiver())
+                                               .send_to(strings_guide_rect.right())
                                                .sync();
 
                             bottom_layout = text_impl->_bottom_guide.chain()
                                                 .to(chaining::add(4.0f))
-                                                .send_to(strings_guide_rect.bottom().receiver())
+                                                .send_to(strings_guide_rect.bottom())
                                                 .sync();
 
                             auto strings_handler = [top_layout =
@@ -74,7 +74,7 @@ struct sample::modifier_text::impl : base::impl {
                                                  .bottom()
                                                  .chain()
                                                  .to(chaining::add(distance))
-                                                 .send_to(strings.frame_layout_guide_rect().top().receiver())
+                                                 .send_to(strings.frame_layout_guide_rect().top())
                                                  .sync();
                             };
 
