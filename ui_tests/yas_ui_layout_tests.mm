@@ -26,7 +26,7 @@ using namespace yas;
     ui::layout_guide src_guide{0.5f};
     ui::layout_guide dst_guide{0.25f};
 
-    auto layout = src_guide.chain().to(chaining::add(8.0f)).send_to(dst_guide.receiver()).sync();
+    auto layout = src_guide.chain().to(chaining::add(8.0f)).send_to(dst_guide).sync();
 
     XCTAssertTrue(layout);
 
@@ -73,7 +73,7 @@ using namespace yas;
     ui::layout_guide src_guide{2.0f};
     ui::layout_guide dst_guide{-4.0f};
 
-    auto layout = src_guide.chain().to(chaining::add(1.0f)).send_to(dst_guide.receiver()).sync();
+    auto layout = src_guide.chain().to(chaining::add(1.0f)).send_to(dst_guide).sync();
 
     XCTAssertEqual(dst_guide.value(), 3.0f);
 
@@ -89,11 +89,7 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{-1.0f};
 
-    auto layout = src_guide_0.chain()
-                      .combine(src_guide_1.chain())
-                      .to(chaining::min<float>())
-                      .send_to(dst_guide.receiver())
-                      .sync();
+    auto layout = src_guide_0.chain().combine(src_guide_1.chain()).to(chaining::min<float>()).send_to(dst_guide).sync();
 
     XCTAssertEqual(dst_guide.value(), 1.0f);
 
@@ -115,11 +111,7 @@ using namespace yas;
     ui::layout_guide src_guide_1{2.0f};
     ui::layout_guide dst_guide{3.0f};
 
-    auto layout = src_guide_0.chain()
-                      .combine(src_guide_1.chain())
-                      .to(chaining::max<float>())
-                      .send_to(dst_guide.receiver())
-                      .sync();
+    auto layout = src_guide_0.chain().combine(src_guide_1.chain()).to(chaining::max<float>()).send_to(dst_guide).sync();
 
     XCTAssertEqual(dst_guide.value(), 2.0f);
 

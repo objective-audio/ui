@@ -9,21 +9,10 @@ using namespace yas;
 
 #pragma mark - ui::layout_guide::impl
 
-struct ui::layout_guide::impl : base::impl {
+struct ui::layout_guide::impl : base::impl, chaining::receivable<float>::impl {
     chaining::value::holder<float> _value;
-    chaining::perform_receiver<float> _receiver = nullptr;
 
     impl(float const value) : _value(value) {
-    }
-
-    void prepare(layout_guide &guide) {
-        auto weak_guide = to_weak(cast<layout_guide>());
-
-        this->_receiver = chaining::perform_receiver<float>([weak_guide](float const &value) {
-            if (auto guide = weak_guide.lock()) {
-                guide.set_value(value);
-            }
-        });
     }
 
     void push_notify_waiting() {
@@ -96,6 +85,10 @@ struct ui::layout_guide::impl : base::impl {
             .to([](std::pair<std::optional<float>, bool> const &pair) { return *pair.first; });
     }
 
+    void receive_value(float const &value) {
+        this->_value.set_value(value);
+    }
+
    private:
     chaining::notifier<bool> _wait_sender;
 };
@@ -106,7 +99,6 @@ ui::layout_guide::layout_guide() : layout_guide(0.0f) {
 }
 
 ui::layout_guide::layout_guide(float const value) : base(std::make_shared<impl>(value)) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::layout_guide::layout_guide(std::nullptr_t) : base(nullptr) {
@@ -134,8 +126,12 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::perform_receiver<float> &ui::layout_guide::receiver() {
-    return impl_ptr<impl>()->_receiver;
+chaining::receivable<float> ui::layout_guide::receivable() {
+    if (!this->_receivable) {
+        this->_receivable =
+            chaining::receivable<float>{this->template impl_ptr<typename chaining::receivable<float>::impl>()};
+    }
+    return this->_receivable;
 }
 
 #pragma mark - ui::layout_guide_point::impl
@@ -273,13 +269,13 @@ struct ui::layout_guide_range::impl : base::impl {
         this->_min_observer = this->_min_guide.chain()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .to([weak_range](float const &min) { return weak_range.lock().max().value() - min; })
-                                  .send_to(this->_length_guide.receiver())
+                                  .send_to(this->_length_guide)
                                   .end();
 
         this->_max_observer = this->_max_guide.chain()
                                   .guard([weak_range](float const &) { return !!weak_range; })
                                   .to([weak_range](float const &max) { return max - weak_range.lock().min().value(); })
-                                  .send_to(this->_length_guide.receiver())
+                                  .send_to(this->_length_guide)
                                   .end();
 
         this->_receiver = chaining::perform_receiver<ui::range>{[weak_range](ui::range const &range) {

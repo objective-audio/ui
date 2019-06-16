@@ -9,8 +9,7 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-class layout_guide : public base {
-   public:
+struct layout_guide : base, chaining::receiver<float> {
     class impl;
 
     layout_guide();
@@ -27,8 +26,11 @@ class layout_guide : public base {
 
     using chain_t = chaining::chain<float, float, true>;
 
-    chain_t chain() const;
-    chaining::perform_receiver<float> &receiver();
+    [[nodiscard]] chain_t chain() const;
+    [[nodiscard]] chaining::receivable<float> receivable() override;
+
+   private:
+    chaining::receivable<float> _receivable = nullptr;
 };
 
 class layout_guide_point : public base {

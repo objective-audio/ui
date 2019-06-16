@@ -82,22 +82,22 @@ struct ui::collection_layout::impl : base::impl {
           _left_border_observer(_frame_guide_rect.left()
                                     .chain()
                                     .to(chaining::add(args.borders.left))
-                                    .send_to(_border_guide_rect.left().receiver())
+                                    .send_to(_border_guide_rect.left())
                                     .sync()),
           _right_border_observer(_frame_guide_rect.right()
                                      .chain()
                                      .to(chaining::add(-args.borders.right))
-                                     .send_to(_border_guide_rect.right().receiver())
+                                     .send_to(_border_guide_rect.right())
                                      .sync()),
           _bottom_border_observer(_frame_guide_rect.bottom()
                                       .chain()
                                       .to(chaining::add(args.borders.bottom))
-                                      .send_to(_border_guide_rect.bottom().receiver())
+                                      .send_to(_border_guide_rect.bottom())
                                       .sync()),
           _top_border_observer(_frame_guide_rect.top()
                                    .chain()
                                    .to(chaining::add(-args.borders.top))
-                                   .send_to(_border_guide_rect.top().receiver())
+                                   .send_to(_border_guide_rect.top())
                                    .sync()),
 
           _borders(std::move(args.borders)) {
