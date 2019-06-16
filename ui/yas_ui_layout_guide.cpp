@@ -254,8 +254,6 @@ struct ui::layout_guide_range::impl : base::impl, chaining::receivable<ui::range
     chaining::any_observer _min_observer = nullptr;
     chaining::any_observer _max_observer = nullptr;
 
-    chaining::perform_receiver<ui::range> _receiver = nullptr;
-
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
 
