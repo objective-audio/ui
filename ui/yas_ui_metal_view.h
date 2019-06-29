@@ -6,6 +6,7 @@
 
 #include <MetalKit/MetalKit.h>
 #include <objc_utils/yas_objc_macros.h>
+#include "yas_ui_types.h"
 
 #if TARGET_OS_IPHONE
 #elif TARGET_OS_MAC
@@ -19,6 +20,7 @@
 @property (nonatomic, yas_weak_for_property) id<YASUIMetalViewDelegate> uiDelegate;
 
 - (yas_edge_insets)uiSafeAreaInsets;
+- (yas::ui::appearance)uiAppearance;
 
 @end
 

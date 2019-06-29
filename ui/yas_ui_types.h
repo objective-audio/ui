@@ -219,6 +219,11 @@ ui::point to_point(ui::uint_point const &);
 ui::size to_size(ui::uint_size const &);
 ui::range to_range(ui::uint_range const &);
 ui::region to_region(ui::uint_region const &);
+
+enum class appearance {
+    normal,
+    dark,
+};
 }  // namespace yas::ui
 
 namespace yas {
@@ -237,6 +242,7 @@ std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
 std::string to_string(ui::range const &);
+std::string to_string(ui::appearance const &);
 std::string to_string(simd::float2 const &);
 std::string to_string(simd::float3 const &);
 std::string to_string(simd::float4 const &);
@@ -257,6 +263,7 @@ std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::range const &);
+std::ostream &operator<<(std::ostream &, yas::ui::appearance const &);
 
 std::ostream &operator<<(std::ostream &, simd::float2 const &);
 std::ostream &operator<<(std::ostream &, simd::float3 const &);

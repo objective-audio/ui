@@ -59,8 +59,46 @@ namespace metal_view {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+#if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
+    [self.metalView addObserver:self
+                     forKeyPath:@"effectiveAppearance"
+                        options:NSKeyValueObservingOptionNew
+                        context:nil];
+#endif
+
     self.metalView.delegate = self;
     self.metalView.uiDelegate = self;
+}
+
+#if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
+- (void)dealloc {
+    [self.metalView removeObserver:self forKeyPath:@"effectiveAppearance"];
+
+    yas_super_dealloc();
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath
+                      ofObject:(nullable id)object
+                        change:(nullable NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(nullable void *)context {
+    if ([keyPath isEqualToString:@"effectiveAppearance"]) {
+        [self appearanceDidChange:self.metalView.uiAppearance];
+    }
+}
+#endif
+
+#if TARGET_OS_IPHONE
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle) {
+        [self appearanceDidChange:self.metalView.uiAppearance];
+    }
+}
+#endif
+
+- (void)appearanceDidChange:(yas::ui::appearance)appearance {
+    if (self->_cpp.renderable && self.metalView) {
+        self->_cpp.renderable.appearance_did_change(self.metalView, appearance);
+    }
 }
 
 - (YASUIMetalView *)metalView {
