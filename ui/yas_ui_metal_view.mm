@@ -67,6 +67,15 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     return self.safeAreaInsets;
 }
 
+- (ui::appearance)uiAppearance {
+    switch (self.traitCollection.userInterfaceStyle) {
+        case UIUserInterfaceStyleDark:
+            return ui::appearance::dark;
+        default:
+            return ui::appearance::normal;
+    }
+}
+
 - (CGSize)drawableSize {
     auto const view_size = self.frame.size;
     auto const scale = self.contentScaleFactor;
@@ -113,6 +122,16 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (yas_edge_insets)uiSafeAreaInsets {
     return NSEdgeInsetsZero;
+}
+
+- (ui::appearance)uiAppearance {
+    auto const name =
+        [self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+    if ([name isEqualToString:NSAppearanceNameDarkAqua]) {
+        return ui::appearance::dark;
+    } else {
+        return ui::appearance::normal;
+    }
 }
 
 - (void)_sendCursorEvent:(NSEvent *)event {

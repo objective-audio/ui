@@ -383,6 +383,15 @@ std::string yas::to_string(ui::range const &range) {
     return "{" + std::to_string(range.location) + ", " + std::to_string(range.length) + "}";
 }
 
+std::string yas::to_string(ui::appearance const &appearance) {
+    switch (appearance) {
+        case ui::appearance::normal:
+            return "normal";
+        case ui::appearance::dark:
+            return "dark";
+    }
+}
+
 std::string yas::to_string(simd::float2 const &value) {
     return "{" + std::to_string(value.x) + ", " + std::to_string(value.y) + "}";
 }
@@ -458,6 +467,11 @@ std::ostream &operator<<(std::ostream &os, yas::ui::size const &size) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::range const &range) {
     os << to_string(range);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::appearance const &appearance) {
+    os << to_string(appearance);
     return os;
 }
 

@@ -52,6 +52,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     double _scale_factor{0.0f};
     chaining::value::holder<double> _scale_factor_notify{0.0f};
     yas_edge_insets _safe_area_insets = {.top = 0, .left = 0, .bottom = 0, .right = 0};
+    chaining::value::holder<ui::appearance> _appearance{ui::appearance::normal};
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 
     ui::node _root_node;
@@ -84,6 +85,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
                     this->_safe_area_insets = metalView.uiSafeAreaInsets;
                     auto const drawable_size = metalView.drawableSize;
                     this->view_size_will_change(view, drawable_size);
+                    this->_appearance.set_value(metalView.uiAppearance);
                 } else {
                     throw "view not for metal.";
                 }
@@ -122,21 +124,20 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         }
     }
 
-    void view_safe_area_insets_did_change(yas_objc_view *const view) override {
+    void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) override {
         if (!to_bool(this->system_type())) {
             throw "system not found.";
         }
 
-        if (![view isKindOfClass:[YASUIMetalView class]]) {
-            return;
-        }
-
-        auto const metalView = (YASUIMetalView *)view;
-        auto const update_result = this->_update_safe_area_insets(metalView.uiSafeAreaInsets);
+        auto const update_result = this->_update_safe_area_insets(insets);
 
         if (to_bool(update_result)) {
             this->_update_safe_area_layout_guide_rect();
         }
+    }
+
+    void view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) override {
+        this->_appearance.set_value(appearance);
     }
 
     pre_render_result pre_render() {
@@ -374,6 +375,10 @@ ui::layout_guide_rect &ui::renderer::safe_area_layout_guide_rect() {
     return impl_ptr<impl>()->_safe_area_layout_guide_rect;
 }
 
+ui::appearance ui::renderer::appearance() const {
+    return impl_ptr<impl>()->_appearance.raw();
+}
+
 chaining::chain_unsync_t<std::nullptr_t> ui::renderer::chain_will_render() const {
     return impl_ptr<impl>()->_will_render_notifier.chain();
 }
@@ -382,6 +387,9 @@ chaining::chain_sync_t<double> ui::renderer::chain_scale_factor() const {
     return impl_ptr<impl>()->_scale_factor_notify.chain();
 }
 
+chaining::chain_sync_t<ui::appearance> ui::renderer::chain_appearance() const {
+    return impl_ptr<impl>()->_appearance.chain();
+}
 #pragma mark -
 
 std::string yas::to_string(ui::renderer::method const &method) {

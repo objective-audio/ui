@@ -8,6 +8,7 @@
 #include <MetalKit/MetalKit.h>
 #include <cpp_utils/yas_protocol.h>
 #include <objc_utils/yas_objc_macros.h>
+#include "yas_ui_types.h"
 
 @class YASUIMetalView;
 
@@ -18,8 +19,9 @@ struct view_renderable : protocol {
     struct impl : protocol::impl {
         virtual void view_configure(yas_objc_view *const view) = 0;
         virtual void view_size_will_change(yas_objc_view *const view, CGSize const size) = 0;
-        virtual void view_safe_area_insets_did_change(yas_objc_view *const view) = 0;
+        virtual void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) = 0;
         virtual void view_render(yas_objc_view *const view) = 0;
+        virtual void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) = 0;
     };
 
     explicit view_renderable(std::shared_ptr<impl> impl);
@@ -29,5 +31,6 @@ struct view_renderable : protocol {
     void size_will_change(yas_objc_view *const view, CGSize const size);
     void safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets);
     void render(yas_objc_view *const view);
+    void appearance_did_change(yas_objc_view *const view, ui::appearance const);
 };
 }  // namespace yas::ui
