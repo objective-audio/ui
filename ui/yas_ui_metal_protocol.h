@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_protocol.h>
 #include <cpp_utils/yas_result.h>
+#include <ostream>
 
 namespace yas::ui {
 class metal_system;
