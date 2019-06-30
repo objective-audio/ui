@@ -42,6 +42,6 @@ std::string yas::to_string(ui::batch_building_type const &type) {
 }
 
 std::ostream &operator<<(std::ostream &os, yas::ui::batch_building_type const &type) {
-    os << yas::to_string(type);
+    os << to_string(type);
     return os;
 }

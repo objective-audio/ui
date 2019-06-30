@@ -8,6 +8,7 @@
 #include <cpp_utils/yas_flagset.h>
 #include <cpp_utils/yas_protocol.h>
 #include <simd/simd.h>
+#include <ostream>
 
 namespace yas::ui {
 class metal_system;
