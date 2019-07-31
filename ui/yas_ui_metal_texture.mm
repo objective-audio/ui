@@ -30,13 +30,12 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
             }
 
-            auto texture_desc =
-                make_objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = this->_size] {
-                    return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
-                                                                              width:size.width
-                                                                             height:size.height
-                                                                          mipmapped:false];
-                });
+            auto texture_desc = objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = this->_size] {
+                return [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:format
+                                                                          width:size.width
+                                                                         height:size.height
+                                                                      mipmapped:false];
+            });
 
             if (!texture_desc) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
@@ -56,7 +55,7 @@ struct ui::metal_texture::impl : base::impl, ui::metal_object::impl {
         }
 
         if (!this->_sampler_object) {
-            auto sampler_desc = make_objc_ptr([MTLSamplerDescriptor new]);
+            auto sampler_desc = objc_ptr_with_move_object([MTLSamplerDescriptor new]);
             if (!sampler_desc) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_descriptor_failed};
             }

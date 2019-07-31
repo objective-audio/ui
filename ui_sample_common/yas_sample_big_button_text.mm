@@ -34,7 +34,7 @@ struct sample::big_button_text::impl : base::impl {
 
    private:
     ui::button::method _status;
-    chaining::any_observer _strings_observer = nullptr;
+    chaining::any_observer_ptr _strings_observer = nullptr;
 
     void _update_strings_position() {
         if (auto const &atlas = this->_strings.font_atlas()) {

@@ -27,10 +27,7 @@ struct layout_guide : base, chaining::receiver<float> {
     using chain_t = chaining::chain<float, float, true>;
 
     [[nodiscard]] chain_t chain() const;
-    [[nodiscard]] chaining::receivable<float> receivable() override;
-
-   private:
-    chaining::receivable<float> _receivable = nullptr;
+    [[nodiscard]] chaining::receivable_ptr<float> receivable() override;
 };
 
 struct layout_guide_point : base, chaining::receiver<ui::point> {
@@ -56,10 +53,7 @@ struct layout_guide_point : base, chaining::receiver<ui::point> {
     using chain_t = chaining::chain<ui::point, float, true>;
 
     chain_t chain() const;
-    chaining::receivable<ui::point> receivable();
-
-   private:
-    chaining::receivable<ui::point> _receivable = nullptr;
+    chaining::receivable_ptr<ui::point> receivable();
 };
 
 struct layout_guide_range : base, chaining::receiver<ui::range> {
@@ -86,10 +80,7 @@ struct layout_guide_range : base, chaining::receiver<ui::range> {
     using chain_t = chaining::chain<ui::range, float, true>;
 
     chain_t chain() const;
-    chaining::receivable<ui::range> receivable();
-
-   private:
-    chaining::receivable<ui::range> _receivable = nullptr;
+    chaining::receivable_ptr<ui::range> receivable();
 };
 
 struct layout_guide_rect : base, chaining::receiver<ui::region> {
@@ -136,10 +127,7 @@ struct layout_guide_rect : base, chaining::receiver<ui::region> {
     using chain_t = chaining::chain<ui::region, float, true>;
 
     chain_t chain() const;
-    chaining::receivable<ui::region> receivable();
-
-   private:
-    chaining::receivable<ui::region> _receivable = nullptr;
+    chaining::receivable_ptr<ui::region> receivable();
 };
 
 struct layout_guide_pair {

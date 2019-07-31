@@ -32,17 +32,17 @@ struct ui::metal_system::impl : base::impl,
                                 testable_metal_system::impl {
     impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
-        auto const bundle = make_objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
+        auto const bundle = objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
         this->_default_library.move_object([device newDefaultLibraryWithBundle:bundle.object() error:nil]);
         this->_inflight_semaphore.move_object(dispatch_semaphore_create(ui::_uniforms_buffer_count));
 
         auto defaultLibrary = this->_default_library.object();
 
         this->_fragment_function_with_texture =
-            make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_with_texture"]);
+            objc_ptr_with_move_object([defaultLibrary newFunctionWithName:@"fragment2d_with_texture"]);
         this->_fragment_function_without_texture =
-            make_objc_ptr([defaultLibrary newFunctionWithName:@"fragment2d_without_texture"]);
-        this->_vertex_function = make_objc_ptr([defaultLibrary newFunctionWithName:@"vertex2d"]);
+            objc_ptr_with_move_object([defaultLibrary newFunctionWithName:@"fragment2d_without_texture"]);
+        this->_vertex_function = objc_ptr_with_move_object([defaultLibrary newFunctionWithName:@"vertex2d"]);
 
         auto fragmentProgramWithTexture = this->_fragment_function_with_texture.object();
         auto fragmentProgramWithoutTexture = this->_fragment_function_without_texture.object();
@@ -52,7 +52,7 @@ struct ui::metal_system::impl : base::impl,
         assert(fragmentProgramWithoutTexture);
         assert(vertexProgram);
 
-        auto color_desc = make_objc_ptr([MTLRenderPipelineColorAttachmentDescriptor new]);
+        auto color_desc = objc_ptr_with_move_object([MTLRenderPipelineColorAttachmentDescriptor new]);
         auto colorDesc = color_desc.object();
         colorDesc.pixelFormat = MTLPixelFormatBGRA8Unorm;
         colorDesc.blendingEnabled = YES;
@@ -63,7 +63,7 @@ struct ui::metal_system::impl : base::impl,
         colorDesc.destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
         colorDesc.destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
 
-        auto pipeline_state_desc = make_objc_ptr([MTLRenderPipelineDescriptor new]);
+        auto pipeline_state_desc = objc_ptr_with_move_object([MTLRenderPipelineDescriptor new]);
         auto pipelineStateDesc = pipeline_state_desc.object();
         pipelineStateDesc.sampleCount = this->_sample_count;
         pipelineStateDesc.vertexFunction = vertexProgram;
@@ -138,7 +138,7 @@ struct ui::metal_system::impl : base::impl,
 
         dispatch_semaphore_wait(this->_inflight_semaphore.object(), DISPATCH_TIME_FOREVER);
 
-        auto command_buffer = make_objc_ptr<id<MTLCommandBuffer>>(
+        auto command_buffer = objc_ptr<id<MTLCommandBuffer>>(
             [commandQueue = this->_command_queue.object()]() { return [commandQueue commandBuffer]; });
         auto commandBuffer = command_buffer.object();
 
@@ -217,23 +217,24 @@ struct ui::metal_system::impl : base::impl,
     }
 
     objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const textureDesc) override {
-        return make_objc_ptr([mtlDevice() newTextureWithDescriptor:textureDesc]);
+        return objc_ptr_with_move_object([mtlDevice() newTextureWithDescriptor:textureDesc]);
     }
 
     objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const samplerDesc) override {
-        return make_objc_ptr([mtlDevice() newSamplerStateWithDescriptor:samplerDesc]);
+        return objc_ptr_with_move_object([mtlDevice() newSamplerStateWithDescriptor:samplerDesc]);
     }
 
     objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override {
-        return make_objc_ptr([*this->_fragment_function_with_texture newArgumentEncoderWithBufferIndex:0]);
+        return objc_ptr_with_move_object([*this->_fragment_function_with_texture newArgumentEncoderWithBufferIndex:0]);
     }
 
     objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override {
-        return make_objc_ptr([mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
+        return objc_ptr_with_move_object(
+            [mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
     }
 
     objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const sigma) override {
-        return make_objc_ptr([[MPSImageGaussianBlur alloc] initWithDevice:this->mtlDevice() sigma:sigma]);
+        return objc_ptr_with_move_object([[MPSImageGaussianBlur alloc] initWithDevice:this->mtlDevice() sigma:sigma]);
     }
 
     std::size_t last_encoded_mesh_count() {

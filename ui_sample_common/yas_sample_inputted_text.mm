@@ -72,7 +72,7 @@ struct sample::inputted_text::impl : base::impl {
     }
 
    private:
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
     ui::layout_guide_point _layout_guide_point;
 };
 

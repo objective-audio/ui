@@ -102,7 +102,7 @@ struct sample::modifier_text::impl : base::impl {
     }
 
    private:
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 
     void _update_text(ui::event const &event, std::unordered_set<ui::modifier_flags> &flags) {
         auto flag = event.get<ui::modifier>().flag();

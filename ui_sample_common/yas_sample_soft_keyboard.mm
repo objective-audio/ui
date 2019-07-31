@@ -111,16 +111,16 @@ struct sample::soft_keyboard::impl : base::impl {
     ui::font_atlas _font_atlas = nullptr;
 
     ui::collection_layout _collection_layout = nullptr;
-    std::vector<chaining::any_observer> _frame_layouts;
+    std::vector<chaining::any_observer_ptr> _frame_layouts;
 
-    std::vector<chaining::any_observer> _soft_key_observers;
-    chaining::any_observer _renderer_observer = nullptr;
-    chaining::any_observer _actual_cell_count_observer = nullptr;
+    std::vector<chaining::any_observer_ptr> _soft_key_observers;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
+    chaining::any_observer_ptr _actual_cell_count_observer = nullptr;
     ui::layout_animator _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect> _dst_cell_guide_rects;
-    std::vector<std::vector<chaining::any_observer>> _fixed_cell_layouts;
-    std::vector<chaining::any_observer> _dst_rect_observers;
+    std::vector<std::vector<chaining::any_observer_ptr>> _fixed_cell_layouts;
+    std::vector<chaining::any_observer_ptr> _dst_rect_observers;
 
     void _setup_soft_keys_if_needed() {
         if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
@@ -163,7 +163,7 @@ struct sample::soft_keyboard::impl : base::impl {
         for (auto const &key : keys) {
             sample::soft_key soft_key{key, key_width, this->_font_atlas};
 
-            chaining::any_observer observer =
+            chaining::any_observer_ptr observer =
                 soft_key.button()
                     .chain(ui::button::method::ended)
                     .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
@@ -296,7 +296,7 @@ struct sample::soft_keyboard::impl : base::impl {
                     auto &src_guide_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
                     auto &dst_guide_rect = this->_src_cell_guide_rects.at(idx);
 
-                    std::vector<chaining::any_observer> layouts;
+                    std::vector<chaining::any_observer_ptr> layouts;
                     layouts.reserve(4);
 
                     layouts.emplace_back(src_guide_rect.left().chain().send_to(dst_guide_rect.left()).sync());

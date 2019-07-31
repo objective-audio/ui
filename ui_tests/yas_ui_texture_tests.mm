@@ -29,7 +29,7 @@ using namespace yas;
 }
 
 - (void)test_create_texture {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -49,7 +49,7 @@ using namespace yas;
 }
 
 - (void)test_add_draw_handler {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -90,7 +90,7 @@ using namespace yas;
 }
 
 - (void)test_remove_draw_handler {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -114,7 +114,7 @@ using namespace yas;
 }
 
 - (void)test_observe_tex_coords {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -151,7 +151,7 @@ using namespace yas;
 }
 
 - (void)test_is_equal {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -169,7 +169,7 @@ using namespace yas;
 }
 
 - (void)test_is_not_equal {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -202,7 +202,7 @@ using namespace yas;
 }
 
 - (void)test_chain {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -230,7 +230,7 @@ using namespace yas;
 }
 
 - (void)test_chain_with_method {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;

@@ -66,7 +66,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
         auto point_size_chain = this->_point_size.chain().to_null();
         auto scale_factor_chain = this->_scale_factor.chain().to_null();
 
-        this->_properties_observer = point_size_chain.merge(scale_factor_chain)
+        this->_properties_observer = point_size_chain.merge(std::move(scale_factor_chain))
                                          .guard([weak_texture](auto const &) { return !!weak_texture; })
                                          .perform([weak_texture](auto const &) {
                                              auto texture_impl = weak_texture.lock().impl_ptr<impl>();
@@ -75,7 +75,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
                                                                                texture_impl->_draw_actual_padding};
                                          })
                                          .to_value(method::size_updated)
-                                         .send_to(this->_notify_receiver)
+                                         .send_to(*this->_notify_receiver)
                                          .end();
     }
 
@@ -94,7 +94,7 @@ struct ui::texture::impl : base::impl, metal_object::impl {
 
             this->_add_images_to_metal_texture();
 
-            this->_notify_receiver.receivable().receive_value(method::metal_texture_changed);
+            this->_notify_receiver->receivable()->receive_value(method::metal_texture_changed);
         }
 
         return ui::setup_metal_result{nullptr};
@@ -137,10 +137,10 @@ struct ui::texture::impl : base::impl, metal_object::impl {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element> _texture_elements;
-    chaining::any_observer _scale_observer = nullptr;
-    chaining::any_observer _properties_observer = nullptr;
+    chaining::any_observer_ptr _scale_observer = nullptr;
+    chaining::any_observer_ptr _properties_observer = nullptr;
     chaining::notifier<chain_pair_t> _notify_sender;
-    chaining::perform_receiver<method> _notify_receiver = nullptr;
+    std::optional<chaining::perform_receiver<method>> _notify_receiver = std::nullopt;
 
     draw_image_result _reserve_image_size(image const &image) {
         if (!image) {

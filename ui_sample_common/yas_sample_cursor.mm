@@ -118,7 +118,7 @@ struct sample::cursor::impl : base::impl {
             .end();
     }
 
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 };
 
 sample::cursor::cursor() : base(std::make_shared<impl>()) {

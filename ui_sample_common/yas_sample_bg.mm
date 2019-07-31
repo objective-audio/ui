@@ -43,8 +43,8 @@ struct sample::bg::impl : base::impl {
     }
 
    private:
-    chaining::any_observer _renderer_observer = nullptr;
-    chaining::any_observer _rect_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
+    chaining::any_observer_ptr _rect_observer = nullptr;
 };
 
 sample::bg::bg() : base(std::make_shared<impl>()) {

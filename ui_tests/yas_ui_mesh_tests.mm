@@ -56,7 +56,7 @@ using namespace yas;
 }
 
 - (void)test_set_mesh_variables {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -86,7 +86,7 @@ using namespace yas;
 }
 
 - (void)test_mesh_const_variables {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -145,7 +145,7 @@ using namespace yas;
 - (void)test_mesh_setup_metal_buffer_constant {
     ui::mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -172,7 +172,7 @@ using namespace yas;
 - (void)test_mesh_setup_metal_buffer_dynamic {
     ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -199,7 +199,7 @@ using namespace yas;
 - (void)test_write_to_buffer_dynamic {
     ui::dynamic_mesh_data mesh_data{{.vertex_count = 4, .index_count = 6}};
 
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -349,7 +349,7 @@ using namespace yas;
 }
 
 - (void)test_metal_setup {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;

@@ -111,7 +111,7 @@ struct sample::draw_call_text::impl : base::impl {
 
    private:
     timer _timer = nullptr;
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 };
 
 sample::draw_call_text::draw_call_text(ui::font_atlas font_atlas)

@@ -15,8 +15,9 @@ using namespace yas;
 
 struct ui::rect_plane_data::impl : base::impl {
     ui::dynamic_mesh_data _dynamic_mesh_data;
-    std::vector<chaining::any_observer> _element_observers;
-    chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver = nullptr;
+    std::vector<chaining::any_observer_ptr> _element_observers;
+    std::optional<chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>> _rect_tex_coords_receiver =
+        std::nullopt;
 
     impl(ui::dynamic_mesh_data &&data) : _dynamic_mesh_data(std::move(data)) {
     }
@@ -40,7 +41,7 @@ struct ui::rect_plane_data::impl : base::impl {
 
         this->_element_observers.emplace_back(
             chain.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
-                .send_to(this->_rect_tex_coords_receiver)
+                .send_to(*this->_rect_tex_coords_receiver)
                 .sync());
     }
 };
@@ -214,7 +215,7 @@ ui::dynamic_mesh_data &ui::rect_plane_data::dynamic_mesh_data() {
 }
 
 chaining::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
-    return impl_ptr<impl>()->_rect_tex_coords_receiver;
+    return *impl_ptr<impl>()->_rect_tex_coords_receiver;
 }
 
 #pragma mark - ui::rect_plane::impl

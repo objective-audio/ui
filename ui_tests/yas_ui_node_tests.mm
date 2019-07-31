@@ -118,7 +118,7 @@ struct test_render_encoder : base {
     XCTAssertEqual(node.collider().raw(), collider);
 
     node.batch().set_value(batch);
-    XCTAssertTrue(node.batch());
+    XCTAssertTrue(node.batch().raw());
     XCTAssertEqual(node.batch().raw(), batch);
 
     node.batch().set_value(nullptr);
@@ -497,7 +497,7 @@ struct test_render_encoder : base {
 }
 
 - (void)test_metal_setup {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;

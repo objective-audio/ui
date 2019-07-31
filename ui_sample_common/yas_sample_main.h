@@ -22,7 +22,7 @@
 
 namespace yas::sample {
 struct main {
-    ui::renderer renderer{ui::metal_system{make_objc_ptr(MTLCreateSystemDefaultDevice()).object()}};
+    ui::renderer renderer{ui::metal_system{objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object()}};
 
     void setup();
 
@@ -45,12 +45,12 @@ struct main {
 
     ui::batch _batch;
 
-    chaining::any_observer _button_observer = nullptr;
-    chaining::any_observer _keyboard_observer = nullptr;
+    chaining::any_observer_ptr _button_observer = nullptr;
+    chaining::any_observer_ptr _keyboard_observer = nullptr;
 
     ui::node _render_target_node;
     ui::blur _blur;
     ui::rect_plane _plane_on_target{1};
-    chaining::any_observer _render_target_layout = nullptr;
+    chaining::any_observer_ptr _render_target_layout = nullptr;
 };
 }  // namespace yas::sample

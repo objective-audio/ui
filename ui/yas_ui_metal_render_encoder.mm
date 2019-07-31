@@ -59,7 +59,7 @@ struct ui::metal_render_encoder::impl : base::impl,
 
         for (auto &metal_encode_info : this->_all_encode_infos) {
             auto renderPassDesc = metal_encode_info.renderPassDescriptor();
-            auto render_encoder = make_objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
+            auto render_encoder = objc_ptr<id<MTLRenderCommandEncoder>>([&commandBuffer, &renderPassDesc]() {
                 return [commandBuffer renderCommandEncoderWithDescriptor:renderPassDesc];
             });
             auto renderEncoder = render_encoder.object();

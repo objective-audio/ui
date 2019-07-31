@@ -52,8 +52,9 @@ struct ui::button::impl : base::impl {
 
         this->_renderer_observer =
             node.chain_renderer()
-                .perform([event_observer = base{nullptr}, leave_observers = std::vector<chaining::any_observer>(),
-                          collider_observers = std::vector<chaining::any_observer>(),
+                .perform([event_observer = chaining::any_observer_ptr{nullptr},
+                          leave_observers = std::vector<chaining::any_observer_ptr>(),
+                          collider_observers = std::vector<chaining::any_observer_ptr>(),
                           weak_button](ui::renderer const &value) mutable {
                     if (auto renderer = value) {
                         event_observer = renderer.event_manager()
@@ -142,32 +143,32 @@ struct ui::button::impl : base::impl {
         this->_rect_plane.data().set_rect_index(0, idx);
     }
 
-    std::vector<chaining::any_observer> _make_leave_chains() {
+    std::vector<chaining::any_observer_ptr> _make_leave_chains() {
         ui::node &node = this->_rect_plane.node();
         auto weak_node = to_weak(node);
         auto weak_button = to_weak(cast<ui::button>());
 
-        std::vector<chaining::any_observer> observers;
+        std::vector<chaining::any_observer_ptr> observers;
         observers.emplace_back(
-            node.position().chain().send_null(this->_leave_or_enter_or_move_tracking_receiver).end());
-        observers.emplace_back(node.angle().chain().send_null(this->_leave_or_enter_or_move_tracking_receiver).end());
-        observers.emplace_back(node.scale().chain().send_null(this->_leave_or_enter_or_move_tracking_receiver).end());
+            node.position().chain().send_null(*this->_leave_or_enter_or_move_tracking_receiver).end());
+        observers.emplace_back(node.angle().chain().send_null(*this->_leave_or_enter_or_move_tracking_receiver).end());
+        observers.emplace_back(node.scale().chain().send_null(*this->_leave_or_enter_or_move_tracking_receiver).end());
 
         observers.emplace_back(node.collider()
                                    .chain()
                                    .guard([](ui::collider const &value) { return !value; })
-                                   .send_null(this->_cancel_tracking_receiver)
+                                   .send_null(*this->_cancel_tracking_receiver)
                                    .end());
         observers.emplace_back(node.is_enabled()
                                    .chain()
                                    .guard([](bool const &value) { return !value; })
-                                   .send_null(this->_cancel_tracking_receiver)
+                                   .send_null(*this->_cancel_tracking_receiver)
                                    .end());
 
         return observers;
     }
 
-    std::vector<chaining::any_observer> _make_collider_chains() {
+    std::vector<chaining::any_observer_ptr> _make_collider_chains() {
         auto &node = this->_rect_plane.node();
         auto weak_button = to_weak(cast<ui::button>());
 
@@ -175,17 +176,17 @@ struct ui::button::impl : base::impl {
                                   .raw()
                                   .chain_shape()
                                   .guard([](ui::shape const &shape) { return !shape; })
-                                  .send_null(this->_cancel_tracking_receiver)
+                                  .send_null(*this->_cancel_tracking_receiver)
                                   .end();
 
         auto enabled_observer = node.collider()
                                     .raw()
                                     .chain_enabled()
                                     .guard([](bool const &enabled) { return !enabled; })
-                                    .send_null(this->_cancel_tracking_receiver)
+                                    .send_null(*this->_cancel_tracking_receiver)
                                     .end();
 
-        return std::vector<chaining::any_observer>{std::move(shape_observer), std::move(enabled_observer)};
+        return std::vector<chaining::any_observer_ptr>{std::move(shape_observer), std::move(enabled_observer)};
     }
 
     void _update_tracking(ui::event const &event) {
@@ -255,11 +256,11 @@ struct ui::button::impl : base::impl {
             std::make_pair(method, context{.button = cast<ui::button>(), .touch = event.get<ui::touch>()}));
     }
 
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
     ui::event _tracking_event = nullptr;
-    chaining::any_observer _rect_observer = nullptr;
-    chaining::perform_receiver<> _leave_or_enter_or_move_tracking_receiver = nullptr;
-    chaining::perform_receiver<> _cancel_tracking_receiver = nullptr;
+    chaining::any_observer_ptr _rect_observer = nullptr;
+    std::optional<chaining::perform_receiver<>> _leave_or_enter_or_move_tracking_receiver = std::nullopt;
+    std::optional<chaining::perform_receiver<>> _cancel_tracking_receiver = std::nullopt;
 };
 
 #pragma mark - ui::button

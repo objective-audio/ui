@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <string>
 #include <ostream>
+#include <string>
 
 namespace yas::ui {
 enum class layout_direction {

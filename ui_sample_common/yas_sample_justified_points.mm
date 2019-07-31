@@ -80,8 +80,8 @@ struct sample::justified_points::impl : base::impl {
     }
 
    private:
-    chaining::any_observer _renderer_observer = nullptr;
-    std::vector<chaining::any_observer> _guide_observers;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
+    std::vector<chaining::any_observer_ptr> _guide_observers;
 
     void _setup_colors() {
         this->_rect_plane.node().mesh().raw().set_use_mesh_color(true);

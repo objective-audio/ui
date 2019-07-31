@@ -51,7 +51,7 @@ namespace metal_view {
     if (self.nibName || self.nibBundle) {
         [super loadView];
     } else {
-        auto view = make_objc_ptr([[YASUIMetalView alloc] initWithFrame:CGRectZero device:nil]);
+        auto view = objc_ptr_with_move_object([[YASUIMetalView alloc] initWithFrame:CGRectZero device:nil]);
         self.view = view.object();
     }
 }
