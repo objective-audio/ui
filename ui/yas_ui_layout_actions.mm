@@ -79,7 +79,7 @@ struct ui::layout_animator::impl : base::impl {
     }
 
    private:
-    std::vector<chaining::any_observer> _observers;
+    std::vector<chaining::any_observer_ptr> _observers;
 };
 
 ui::layout_animator::layout_animator(args args) : base(std::make_shared<impl>(std::move(args))) {

@@ -30,7 +30,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                                     .usages = {ui::texture_usage::shader_write},
                                     .pixel_format = ui::pixel_format::bgra8_unorm}}) {
         this->_updates.flags.set();
-        this->_render_pass_descriptor = make_objc_ptr([MTLRenderPassDescriptor new]);
+        this->_render_pass_descriptor = objc_ptr_with_move_object([MTLRenderPassDescriptor new]);
         this->_mesh.set_mesh_data(this->_data.dynamic_mesh_data());
         this->_mesh.set_texture(this->_dst_texture);
 
@@ -54,7 +54,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
                         auto renderPassDescriptor = *target.impl_ptr<impl>()->_render_pass_descriptor;
 
                         if (ui::metal_texture const &metal_texture = texture.metal_texture()) {
-                            auto color_desc = make_objc_ptr([MTLRenderPassColorAttachmentDescriptor new]);
+                            auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
                             auto colorDesc = *color_desc;
                             colorDesc.texture = metal_texture.texture();
                             colorDesc.loadAction = MTLLoadActionClear;
@@ -192,13 +192,13 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::mesh _mesh;
     ui::texture _src_texture;
     ui::texture _dst_texture;
-    chaining::any_observer _src_texture_observer = nullptr;
-    chaining::any_observer _dst_texture_observer = nullptr;
+    chaining::any_observer_ptr _src_texture_observer = nullptr;
+    chaining::any_observer_ptr _dst_texture_observer = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    chaining::any_observer _scale_observer = nullptr;
-    chaining::any_observer _rect_observer = nullptr;
-    chaining::any_observer _effect_observer = nullptr;
+    chaining::any_observer_ptr _scale_observer = nullptr;
+    chaining::any_observer_ptr _rect_observer = nullptr;
+    chaining::any_observer_ptr _effect_observer = nullptr;
 
     void _set_updated(ui::render_target_update_reason const reason) {
         this->_updates.set(reason);
@@ -229,7 +229,7 @@ struct ui::render_target::impl : base::impl, renderable_render_target::impl, met
     ui::metal_system _metal_system = nullptr;
 
     render_target_updates_t _updates;
-    std::vector<chaining::any_observer> _update_observers;
+    std::vector<chaining::any_observer_ptr> _update_observers;
 };
 
 ui::render_target::render_target() : base(std::make_shared<impl>()) {

@@ -16,20 +16,20 @@ struct sample::cursor_over_planes::impl : base::impl {
     }
 
     void prepare(sample::cursor_over_planes &planes) {
-        this->_renderer_observer =
-            root_node.chain_renderer()
-                .perform([weak_touch_holder = to_weak(planes),
-                          event_observers = std::vector<chaining::any_observer>{}](ui::renderer const &value) mutable {
-                    if (auto touch_holder = weak_touch_holder.lock()) {
-                        auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
-                        if (auto renderer = value) {
-                            event_observers = _make_event_observers(impl->_nodes, renderer);
-                        } else {
-                            event_observers.clear();
-                        }
-                    }
-                })
-                .end();
+        this->_renderer_observer = root_node.chain_renderer()
+                                       .perform([weak_touch_holder = to_weak(planes),
+                                                 event_observers = std::vector<chaining::any_observer_ptr>{}](
+                                                    ui::renderer const &value) mutable {
+                                           if (auto touch_holder = weak_touch_holder.lock()) {
+                                               auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
+                                               if (auto renderer = value) {
+                                                   event_observers = _make_event_observers(impl->_nodes, renderer);
+                                               } else {
+                                                   event_observers.clear();
+                                               }
+                                           }
+                                       })
+                                       .end();
     }
 
    private:
@@ -59,9 +59,9 @@ struct sample::cursor_over_planes::impl : base::impl {
         }
     }
 
-    static std::vector<chaining::any_observer> _make_event_observers(std::vector<ui::node> const &nodes,
-                                                                     ui::renderer &renderer) {
-        std::vector<chaining::any_observer> event_observers;
+    static std::vector<chaining::any_observer_ptr> _make_event_observers(std::vector<ui::node> const &nodes,
+                                                                         ui::renderer &renderer) {
+        std::vector<chaining::any_observer_ptr> event_observers;
         event_observers.reserve(nodes.size());
 
         for (auto &node : nodes) {
@@ -101,7 +101,7 @@ struct sample::cursor_over_planes::impl : base::impl {
     }
 
     std::vector<ui::node> _nodes;
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 };
 
 sample::cursor_over_planes::cursor_over_planes() : base(std::make_shared<impl>()) {

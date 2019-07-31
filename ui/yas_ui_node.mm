@@ -40,9 +40,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
 
         // geometry
 
-        auto pos_observer = this->_position.chain().to_value(ui::node_update_reason::geometry);
-        auto angle_observer = this->_angle.chain().to_value(ui::node_update_reason::geometry);
-        auto scale_observer = this->_scale.chain().to_value(ui::node_update_reason::geometry);
+        auto pos_chain = this->_position.chain().to_value(ui::node_update_reason::geometry);
+        auto angle_chain = this->_angle.chain().to_value(ui::node_update_reason::geometry);
+        auto scale_chain = this->_scale.chain().to_value(ui::node_update_reason::geometry);
 
         // mesh and mesh_color
 
@@ -52,34 +52,34 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .to_value(ui::node_update_reason::mesh);
 
-        auto color_observer = this->_color.chain().to_null();
-        auto alpha_observer = this->_alpha.chain().to_null();
+        auto color_chain = this->_color.chain().to_null();
+        auto alpha_chain = this->_alpha.chain().to_null();
 
         auto mesh_color_observer =
-            color_observer.merge(alpha_observer)
+            color_chain.merge(std::move(alpha_chain))
                 .guard([weak_node](auto const &) { return !!weak_node; })
                 .perform([weak_node](auto const &) { weak_node.lock().impl_ptr<impl>()->_update_mesh_color(); })
                 .end();
 
         // collider
 
-        auto collider_observer = this->_collider.chain().to_value(ui::node_update_reason::collider);
+        auto collider_chain = this->_collider.chain().to_value(ui::node_update_reason::collider);
 
         // batch
 
-        auto batch_observer = this->_batch.chain().to_value(ui::node_update_reason::batch);
+        auto batch_chain = this->_batch.chain().to_value(ui::node_update_reason::batch);
 
         // render_target
 
-        auto render_target_observer = this->_render_target.chain().to_value(ui::node_update_reason::render_target);
+        auto render_target_chain = this->_render_target.chain().to_value(ui::node_update_reason::render_target);
 
-        auto updates_observer = enabled_observer.merge(pos_observer)
-                                    .merge(angle_observer)
-                                    .merge(scale_observer)
-                                    .merge(mesh_observer)
-                                    .merge(collider_observer)
-                                    .merge(batch_observer)
-                                    .merge(render_target_observer)
+        auto updates_observer = enabled_observer.merge(std::move(pos_chain))
+                                    .merge(std::move(angle_chain))
+                                    .merge(std::move(scale_chain))
+                                    .merge(std::move(mesh_observer))
+                                    .merge(std::move(collider_chain))
+                                    .merge(std::move(batch_chain))
+                                    .merge(std::move(render_target_chain))
                                     .perform([weak_node](ui::node_update_reason const &reason) {
                                         weak_node.lock().impl_ptr<impl>()->_set_updated(reason);
                                     })
@@ -380,14 +380,14 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
                 continue;
             }
 
-            chaining::any_observer observer = nullptr;
+            chaining::any_observer_ptr observer = nullptr;
 
             switch (method) {
                 case ui::node::method::added_to_super:
                 case ui::node::method::removed_from_super:
                     observer = this->_notify_sender.chain()
                                    .guard([method](node::method const &value) { return method == value; })
-                                   .send_to(this->_dispatch_receiver)
+                                   .send_to(*this->_dispatch_receiver)
                                    .end();
                     break;
             }
@@ -428,9 +428,9 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     chaining::value::holder<ui::render_target> _render_target{ui::render_target{nullptr}};
     chaining::value::holder<bool> _enabled{true};
 
-    chaining::any_observer _x_observer = nullptr;
-    chaining::any_observer _y_observer = nullptr;
-    chaining::any_observer _position_observer = nullptr;
+    chaining::any_observer_ptr _x_observer = nullptr;
+    chaining::any_observer_ptr _y_observer = nullptr;
+    chaining::any_observer_ptr _position_observer = nullptr;
 
    private:
     std::vector<ui::node> _children;
@@ -438,10 +438,10 @@ struct ui::node::impl : public base::impl, public renderable_node::impl, public 
     simd::float4x4 _matrix = matrix_identity_float4x4;
     simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<chaining::any_observer> _update_observers;
-    std::unordered_map<ui::node::method, chaining::any_observer> _dispatch_observers;
+    std::vector<chaining::any_observer_ptr> _update_observers;
+    std::unordered_map<ui::node::method, chaining::any_observer_ptr> _dispatch_observers;
     chaining::notifier<chain_pair_t> _dispatch_sender;
-    chaining::perform_receiver<ui::node::method> _dispatch_receiver = nullptr;
+    std::optional<chaining::perform_receiver<ui::node::method>> _dispatch_receiver = std::nullopt;
     chaining::notifier<ui::node::method> _notify_sender;
 
     node_updates_t _updates;

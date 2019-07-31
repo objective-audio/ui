@@ -20,8 +20,8 @@ struct sample::inputted_text::impl : base::impl {
 
         this->_renderer_observer =
             node.chain_renderer()
-                .perform([weak_text = to_weak(text), event_observer = base{nullptr},
-                          layout = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
+                .perform([weak_text = to_weak(text), event_observer = chaining::any_observer_ptr{nullptr},
+                          layout = chaining::any_observer_ptr{nullptr}](ui::renderer const &value) mutable {
                     if (auto text = weak_text.lock()) {
                         if (auto renderer = value) {
                             auto text_impl = text.impl_ptr<inputted_text::impl>();
@@ -72,7 +72,7 @@ struct sample::inputted_text::impl : base::impl {
     }
 
    private:
-    chaining::any_observer _renderer_observer = nullptr;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
     ui::layout_guide_point _layout_guide_point;
 };
 

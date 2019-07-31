@@ -26,7 +26,7 @@ struct ui::blur::impl : base::impl {
     }
 
    private:
-    chaining::any_observer _sigma_observer = nullptr;
+    chaining::any_observer_ptr _sigma_observer = nullptr;
 
     void _update_effect_handler() {
         double const sigma = this->_sigma.raw();
@@ -55,7 +55,7 @@ struct ui::blur::impl : base::impl {
     }
 };
 
-ui::blur::blur() : base(std::make_shared<impl>()) {
+ui::blur::blur() : base(std::make_shared<blur::impl>()) {
     impl_ptr<impl>()->prepare(*this);
 }
 

@@ -9,7 +9,7 @@ using namespace yas;
 
 #pragma mark - ui::layout_guide::impl
 
-struct ui::layout_guide::impl : base::impl, chaining::receivable<float>::impl {
+struct ui::layout_guide::impl : base::impl, chaining::receivable<float> {
     chaining::value::holder<float> _value;
 
     impl(float const value) : _value(value) {
@@ -126,17 +126,13 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receivable<float> ui::layout_guide::receivable() {
-    if (!this->_receivable) {
-        this->_receivable =
-            chaining::receivable<float>{this->template impl_ptr<typename chaining::receivable<float>::impl>()};
-    }
-    return this->_receivable;
+chaining::receivable_ptr<float> ui::layout_guide::receivable() {
+    return this->impl_ptr<chaining::receivable<float>>();
 }
 
 #pragma mark - ui::layout_guide_point::impl
 
-struct ui::layout_guide_point::impl : base::impl, chaining::receivable<ui::point>::impl {
+struct ui::layout_guide_point::impl : base::impl, chaining::receivable<ui::point> {
     layout_guide _x_guide;
     layout_guide _y_guide;
 
@@ -237,22 +233,18 @@ ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receivable<ui::point> ui::layout_guide_point::receivable() {
-    if (!this->_receivable) {
-        this->_receivable =
-            chaining::receivable<ui::point>{this->template impl_ptr<typename chaining::receivable<ui::point>::impl>()};
-    }
-    return this->_receivable;
+chaining::receivable_ptr<ui::point> ui::layout_guide_point::receivable() {
+    return this->impl_ptr<chaining::receivable<ui::point>>();
 }
 
 #pragma mark - ui::layout_guide_range::impl
 
-struct ui::layout_guide_range::impl : base::impl, chaining::receivable<ui::range>::impl {
+struct ui::layout_guide_range::impl : base::impl, chaining::receivable<ui::range> {
     layout_guide _min_guide;
     layout_guide _max_guide;
     layout_guide _length_guide;
-    chaining::any_observer _min_observer = nullptr;
-    chaining::any_observer _max_observer = nullptr;
+    chaining::any_observer_ptr _min_observer = nullptr;
+    chaining::any_observer_ptr _max_observer = nullptr;
 
     impl(ui::range &&range) : _min_guide(range.min()), _max_guide(range.max()), _length_guide(range.length) {
     }
@@ -377,17 +369,13 @@ ui::layout_guide_range::chain_t ui::layout_guide_range::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receivable<ui::range> ui::layout_guide_range::receivable() {
-    if (!this->_receivable) {
-        this->_receivable =
-            chaining::receivable<ui::range>{this->template impl_ptr<typename chaining::receivable<ui::range>::impl>()};
-    }
-    return this->_receivable;
+chaining::receivable_ptr<ui::range> ui::layout_guide_range::receivable() {
+    return this->impl_ptr<chaining::receivable<ui::range>>();
 }
 
 #pragma mark - ui::layout_guide_rect::impl
 
-struct ui::layout_guide_rect::impl : base::impl, chaining::receivable<ui::region>::impl {
+struct ui::layout_guide_rect::impl : base::impl, chaining::receivable<ui::region> {
     layout_guide_range _vertical_range;
     layout_guide_range _horizontal_range;
 
@@ -563,12 +551,8 @@ ui::layout_guide_rect::chain_t ui::layout_guide_rect::chain() const {
     return impl_ptr<impl>()->chain();
 }
 
-chaining::receivable<ui::region> ui::layout_guide_rect::receivable() {
-    if (!this->_receivable) {
-        this->_receivable = chaining::receivable<ui::region>{
-            this->template impl_ptr<typename chaining::receivable<ui::region>::impl>()};
-    }
-    return this->_receivable;
+chaining::receivable_ptr<ui::region> ui::layout_guide_rect::receivable() {
+    return this->impl_ptr<chaining::receivable<ui::region>>();
 }
 
 #pragma mark - layout_guide_pair

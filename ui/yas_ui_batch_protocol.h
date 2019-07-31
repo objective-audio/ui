@@ -5,9 +5,9 @@
 #pragma once
 
 #include <cpp_utils/yas_protocol.h>
+#include <ostream>
 #include <string>
 #include <vector>
-#include <ostream>
 
 namespace yas::ui {
 class mesh;

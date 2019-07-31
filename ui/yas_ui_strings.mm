@@ -18,7 +18,7 @@ using namespace yas;
 struct ui::strings::impl : base::impl {
     ui::collection_layout _collection_layout;
     ui::rect_plane _rect_plane;
-    chaining::perform_receiver<std::string> _text_receiver = nullptr;
+    std::optional<chaining::perform_receiver<std::string>> _text_receiver = std::nullopt;
 
     chaining::value::holder<std::string> _text;
     chaining::value::holder<ui::font_atlas> _font_atlas;
@@ -45,11 +45,11 @@ struct ui::strings::impl : base::impl {
 
    private:
     std::size_t const _max_word_count = 0;
-    chaining::perform_receiver<ui::texture> _texture_receiver = nullptr;
-    chaining::perform_receiver<ui::font_atlas> _update_texture_receiver = nullptr;
-    chaining::perform_receiver<std::nullptr_t> _update_layout_receiver = nullptr;
-    chaining::any_observer _texture_observer = nullptr;
-    std::vector<chaining::any_observer> _property_observers;
+    std::optional<chaining::perform_receiver<ui::texture>> _texture_receiver = std::nullopt;
+    std::optional<chaining::perform_receiver<ui::font_atlas>> _update_texture_receiver = std::nullopt;
+    std::optional<chaining::perform_receiver<std::nullptr_t>> _update_layout_receiver = std::nullopt;
+    chaining::any_observer_ptr _texture_observer = nullptr;
+    std::vector<chaining::any_observer_ptr> _property_observers;
 
     void _prepare_receivers(weak<ui::strings> &weak_strings) {
         this->_texture_receiver = chaining::perform_receiver<ui::texture>([weak_strings](ui::texture const &texture) {
@@ -80,17 +80,17 @@ struct ui::strings::impl : base::impl {
 
     void _prepare_chains(weak<ui::strings> &weak_strings) {
         this->_property_observers.emplace_back(this->_font_atlas.chain()
-                                                   .send_to(this->_update_texture_receiver)
-                                                   .send_null(this->_update_layout_receiver)
+                                                   .send_to(*this->_update_texture_receiver)
+                                                   .send_null(*this->_update_layout_receiver)
                                                    .sync());
 
-        this->_property_observers.emplace_back(this->_text.chain().send_null(this->_update_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_text.chain().send_null(*this->_update_layout_receiver).end());
 
         this->_property_observers.emplace_back(
-            this->_line_height.chain().send_null(this->_update_layout_receiver).end());
+            this->_line_height.chain().send_null(*this->_update_layout_receiver).end());
 
         this->_property_observers.emplace_back(
-            this->_collection_layout.chain_actual_cell_count().to_null().send_to(this->_update_layout_receiver).end());
+            this->_collection_layout.chain_actual_cell_count().to_null().send_to(*this->_update_layout_receiver).end());
 
         this->_property_observers.emplace_back(this->_collection_layout.chain_alignment().end());
     }
@@ -102,10 +102,10 @@ struct ui::strings::impl : base::impl {
                 auto strings_impl = weak_strings.lock().impl_ptr<impl>();
                 this->_texture_observer = font_atlas.chain_texture()
                                               .guard([weak_strings](auto const &) { return !!weak_strings; })
-                                              .send_to(strings_impl->_texture_receiver)
+                                              .send_to(*strings_impl->_texture_receiver)
                                               .merge(font_atlas.chain_texture_updated())
                                               .to_null()
-                                              .send_to(strings_impl->_update_layout_receiver)
+                                              .send_to(*strings_impl->_update_layout_receiver)
                                               .sync();
             }
         } else {
@@ -213,7 +213,7 @@ struct ui::strings::impl : base::impl {
     }
 
    private:
-    std::vector<chaining::any_observer> _cell_rect_observers;
+    std::vector<chaining::any_observer_ptr> _cell_rect_observers;
 };
 
 ui::strings::strings() : strings(args{}) {
@@ -285,5 +285,5 @@ chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() cons
 }
 
 chaining::receiver<std::string> &ui::strings::text_receiver() {
-    return impl_ptr<impl>()->_text_receiver;
+    return *impl_ptr<impl>()->_text_receiver;
 }

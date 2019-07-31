@@ -28,7 +28,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -45,7 +45,8 @@ using namespace yas;
     XCTAssertEqual(font_atlas.words(), "abcde12345");
     XCTAssertEqual(font_atlas.texture(), texture);
 
-    auto ct_font_ref = make_cf_ref(CTFontCreateWithName(to_cf_object(std::string("HelveticaNeue")), 14.0, nullptr));
+    auto ct_font_ref =
+        cf_ref_with_move_object(CTFontCreateWithName(to_cf_object(std::string("HelveticaNeue")), 14.0, nullptr));
     auto ct_font_obj = ct_font_ref.object();
     XCTAssertEqual(font_atlas.ascent(), CTFontGetAscent(ct_font_obj));
     XCTAssertEqual(font_atlas.descent(), CTFontGetDescent(ct_font_obj));
@@ -59,7 +60,7 @@ using namespace yas;
 }
 
 - (void)test_chain_texture {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;

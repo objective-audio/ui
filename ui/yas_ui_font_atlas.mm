@@ -40,11 +40,11 @@ struct ui::font_atlas::impl : base::impl {
     double _descent;
     double _leading;
     std::string _words;
-    chaining::fetcher<ui::texture> _texture_changed_fetcher = nullptr;
+    std::optional<chaining::fetcher<ui::texture>> _texture_changed_fetcher = std::nullopt;
     chaining::notifier<ui::texture> _texture_updated_sender;
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
-        : _ct_font_ref(make_cf_ref(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
+        : _ct_font_ref(cf_ref_with_move_object(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
           _font_name(std::move(font_name)),
           _font_size(font_size),
           _words(std::move(words)) {
@@ -90,17 +90,17 @@ struct ui::font_atlas::impl : base::impl {
 
                     if (texture) {
                         atlas_impl->_texture_observer = texture.chain(texture::method::metal_texture_changed)
-                                                            .send_to(atlas_impl->_texture_updated_receiver)
+                                                            .send_to(*atlas_impl->_texture_updated_receiver)
                                                             .end();
                     } else {
                         atlas_impl->_texture_observer = nullptr;
                     }
 
-                    atlas_impl->_texture_changed_fetcher.broadcast();
+                    atlas_impl->_texture_changed_fetcher->broadcast();
                 }
             });
 
-        this->_texture_changed_observer = this->_texture.chain().send_to(this->_texture_changed_receiver).end();
+        this->_texture_changed_observer = this->_texture.chain().send_to(*this->_texture_changed_receiver).end();
 
         this->_texture_changed_fetcher = chaining::fetcher<ui::texture>([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
@@ -158,14 +158,15 @@ struct ui::font_atlas::impl : base::impl {
    private:
     chaining::value::holder<ui::texture> _texture{ui::texture{nullptr}};
     std::vector<ui::word_info> _word_infos;
-    chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
-    std::vector<chaining::any_observer> _element_observers;
-    chaining::perform_receiver<ui::texture> _texture_updated_receiver = nullptr;
-    chaining::any_observer _texture_observer = nullptr;
+    std::optional<chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>> _word_tex_coords_receiver =
+        std::nullopt;
+    std::vector<chaining::any_observer_ptr> _element_observers;
+    std::optional<chaining::perform_receiver<ui::texture>> _texture_updated_receiver = std::nullopt;
+    chaining::any_observer_ptr _texture_observer = nullptr;
     chaining::notifier<ui::texture> _texture_setter;
-    chaining::any_observer _texture_setter_observer = nullptr;
-    chaining::any_observer _texture_changed_observer = nullptr;
-    chaining::perform_receiver<ui::texture> _texture_changed_receiver = nullptr;
+    chaining::any_observer_ptr _texture_setter_observer = nullptr;
+    chaining::any_observer_ptr _texture_changed_observer = nullptr;
+    std::optional<chaining::perform_receiver<ui::texture>> _texture_changed_receiver = std::nullopt;
 
     void _update_word_infos() {
         this->_element_observers.clear();
@@ -224,7 +225,7 @@ struct ui::font_atlas::impl : base::impl {
             this->_element_observers.emplace_back(
                 texture_element.chain_tex_coords()
                     .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
-                    .send_to(this->_word_tex_coords_receiver)
+                    .send_to(*this->_word_tex_coords_receiver)
                     .sync());
 
             auto const &advance = advances[idx];
@@ -285,7 +286,7 @@ void ui::font_atlas::set_texture(ui::texture texture) {
 }
 
 chaining::chain_sync_t<ui::texture> ui::font_atlas::chain_texture() const {
-    return impl_ptr<impl>()->_texture_changed_fetcher.chain();
+    return impl_ptr<impl>()->_texture_changed_fetcher->chain();
 }
 
 chaining::chain_unsync_t<ui::texture> ui::font_atlas::chain_texture_updated() const {

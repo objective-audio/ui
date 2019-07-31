@@ -60,13 +60,13 @@ struct ui::collection_layout::impl : base::impl {
     ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     std::vector<ui::layout_guide_rect> _cell_guide_rects;
-    chaining::any_observer _left_border_observer;
-    chaining::any_observer _right_border_observer;
-    chaining::any_observer _bottom_border_observer;
-    chaining::any_observer _top_border_observer;
+    chaining::any_observer_ptr _left_border_observer;
+    chaining::any_observer_ptr _right_border_observer;
+    chaining::any_observer_ptr _bottom_border_observer;
+    chaining::any_observer_ptr _top_border_observer;
     ui::layout_borders const _borders;
-    chaining::any_observer _border_observer = nullptr;
-    chaining::perform_receiver<> _layout_receiver = nullptr;
+    chaining::any_observer_ptr _border_observer = nullptr;
+    std::optional<chaining::perform_receiver<>> _layout_receiver = std::nullopt;
 
     impl(args &&args)
         : _frame_guide_rect(std::move(args.frame)),
@@ -122,25 +122,25 @@ struct ui::collection_layout::impl : base::impl {
                 .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
                 .end();
 
-        this->_property_observers.emplace_back(this->_row_spacing.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_row_spacing.chain().send_null(*this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_col_spacing.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_col_spacing.chain().send_null(*this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_alignment.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_alignment.chain().send_null(*this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_direction.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_direction.chain().send_null(*this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_row_order.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_row_order.chain().send_null(*this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_col_order.chain().send_null(this->_layout_receiver).end());
-
-        this->_property_observers.emplace_back(
-            this->_preferred_cell_count.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_col_order.chain().send_null(*this->_layout_receiver).end());
 
         this->_property_observers.emplace_back(
-            this->_default_cell_size.chain().send_null(this->_layout_receiver).end());
+            this->_preferred_cell_count.chain().send_null(*this->_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_lines.chain().send_null(this->_layout_receiver).end());
+        this->_property_observers.emplace_back(
+            this->_default_cell_size.chain().send_null(*this->_layout_receiver).end());
+
+        this->_property_observers.emplace_back(this->_lines.chain().send_null(*this->_layout_receiver).end());
 
         this->_update_layout();
     }
@@ -166,7 +166,7 @@ struct ui::collection_layout::impl : base::impl {
     }
 
    private:
-    std::vector<base> _property_observers;
+    std::vector<chaining::any_observer_ptr> _property_observers;
 
     void _update_layout() {
         auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());

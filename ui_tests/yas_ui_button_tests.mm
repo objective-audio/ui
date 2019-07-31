@@ -56,7 +56,7 @@ using namespace yas;
 }
 
 - (void)test_method_changed {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;

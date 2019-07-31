@@ -48,7 +48,7 @@ using namespace yas;
 }
 
 - (void)test_render_mesh_building {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -84,7 +84,7 @@ using namespace yas;
 }
 
 - (void)test_mesh_batching {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -174,7 +174,7 @@ using namespace yas;
 }
 
 - (void)test_overwrite {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;
@@ -223,7 +223,7 @@ using namespace yas;
 }
 
 - (void)test_metal_setup {
-    auto device = make_objc_ptr(MTLCreateSystemDefaultDevice());
+    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
         return;

@@ -113,8 +113,8 @@ ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {
             auto const height = std::min(srcTexture.height, dstTexture.height);
             auto const zero_origin = MTLOriginMake(0, 0, 0);
 
-            auto encoder = make_objc_ptr<id<MTLBlitCommandEncoder>>(
-                [commandBuffer]() { return [commandBuffer blitCommandEncoder]; });
+            auto encoder =
+                objc_ptr<id<MTLBlitCommandEncoder>>([commandBuffer]() { return [commandBuffer blitCommandEncoder]; });
 
             [*encoder copyFromTexture:srcTexture
                           sourceSlice:0
