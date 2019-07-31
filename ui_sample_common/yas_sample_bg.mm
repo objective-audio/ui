@@ -28,7 +28,7 @@ struct sample::bg::impl : base::impl {
         this->_renderer_observer =
             this->_rect_plane.node()
                 .chain_renderer()
-                .perform([weak_bg, layout = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
+                .perform([weak_bg, layout = chaining::any_observer_ptr{nullptr}](ui::renderer const &value) mutable {
                     if (sample::bg bg = weak_bg.lock()) {
                         auto impl = bg.impl_ptr<sample::bg::impl>();
                         if (ui::renderer renderer = value) {

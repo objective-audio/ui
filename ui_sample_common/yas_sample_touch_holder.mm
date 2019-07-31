@@ -24,7 +24,7 @@ struct sample::touch_holder::impl : base::impl {
         this->_renderer_observer =
             root_node.chain_renderer()
                 .perform([weak_touch_holder = to_weak(holder),
-                          event_observer = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
+                          event_observer = chaining::any_observer_ptr{nullptr}](ui::renderer const &value) mutable {
                     if (auto renderer = value) {
                         event_observer = renderer.event_manager()
                                              .chain(ui::event_manager::method::touch_changed)

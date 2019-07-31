@@ -22,10 +22,11 @@ struct sample::modifier_text::impl : base::impl {
 
         this->_renderer_observer =
             node.chain_renderer()
-                .perform([weak_text = to_weak(text), event_observer = chaining::any_observer{nullptr},
-                          left_layout = chaining::any_observer{nullptr}, right_layout = chaining::any_observer{nullptr},
-                          bottom_layout = chaining::any_observer{nullptr},
-                          strings_observer = chaining::any_observer{nullptr}](ui::renderer const &value) mutable {
+                .perform([weak_text = to_weak(text), event_observer = chaining::any_observer_ptr{nullptr},
+                          left_layout = chaining::any_observer_ptr{nullptr},
+                          right_layout = chaining::any_observer_ptr{nullptr},
+                          bottom_layout = chaining::any_observer_ptr{nullptr},
+                          strings_observer = chaining::any_observer_ptr{nullptr}](ui::renderer const &value) mutable {
                     if (auto text = weak_text.lock()) {
                         if (auto renderer = value) {
                             event_observer = renderer.event_manager()
@@ -62,21 +63,21 @@ struct sample::modifier_text::impl : base::impl {
                                                 .send_to(strings_guide_rect.bottom())
                                                 .sync();
 
-                            auto strings_handler = [top_layout =
-                                                        chaining::any_observer{nullptr}](ui::strings &strings) mutable {
-                                float distance = 0.0f;
+                            auto strings_handler =
+                                [top_layout = chaining::any_observer_ptr{nullptr}](ui::strings &strings) mutable {
+                                    float distance = 0.0f;
 
-                                if (auto const &font_atlas = strings.font_atlas()) {
-                                    distance += font_atlas.ascent() + font_atlas.descent();
-                                }
+                                    if (auto const &font_atlas = strings.font_atlas()) {
+                                        distance += font_atlas.ascent() + font_atlas.descent();
+                                    }
 
-                                top_layout = strings.frame_layout_guide_rect()
-                                                 .bottom()
-                                                 .chain()
-                                                 .to(chaining::add(distance))
-                                                 .send_to(strings.frame_layout_guide_rect().top())
-                                                 .sync();
-                            };
+                                    top_layout = strings.frame_layout_guide_rect()
+                                                     .bottom()
+                                                     .chain()
+                                                     .to(chaining::add(distance))
+                                                     .send_to(strings.frame_layout_guide_rect().top())
+                                                     .sync();
+                                };
 
                             strings_handler(strings);
 

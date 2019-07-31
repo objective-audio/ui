@@ -28,8 +28,8 @@ struct sample::justified_points::impl : base::impl {
 
         this->_renderer_observer =
             node.chain_renderer()
-                .perform([weak_points = to_weak(points), x_layout = chaining::any_observer{nullptr},
-                          y_layout = chaining::any_observer{nullptr}](ui::renderer const &renderer) mutable {
+                .perform([weak_points = to_weak(points), x_layout = chaining::any_observer_ptr{nullptr},
+                          y_layout = chaining::any_observer_ptr{nullptr}](ui::renderer const &renderer) mutable {
                     if (auto points = weak_points.lock()) {
                         if (renderer) {
                             std::vector<ui::layout_guide> x_receivers;
