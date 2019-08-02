@@ -78,10 +78,10 @@ using namespace yas;
 
     ui::node target1;
     ui::node target2;
-    ui::action action1;
-    ui::action action2;
-    action1.set_target(target1);
-    action2.set_target(target2);
+    auto action1 = ui::action::make_shared();
+    auto action2 = ui::action::make_shared();
+    action1->set_target(target1);
+    action2->set_target(target2);
 
     renderer.insert_action(action1);
 

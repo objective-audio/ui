@@ -20,7 +20,7 @@ namespace layout_action {
     };
 }  // namespace layout_action
 
-[[nodiscard]] ui::continuous_action make_action(layout_action::args);
+[[nodiscard]] std::shared_ptr<ui::continuous_action> make_action(layout_action::args);
 
 class layout_animator : public base {
    public:

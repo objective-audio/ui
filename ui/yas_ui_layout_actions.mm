@@ -8,12 +8,12 @@
 
 using namespace yas;
 
-ui::continuous_action ui::make_action(layout_action::args args) {
+std::shared_ptr<ui::continuous_action> ui::make_action(layout_action::args args) {
     auto target = args.target;
-    ui::continuous_action action{std::move(args.continuous_action)};
-    action.set_target(target);
+    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    action->set_target(target);
 
-    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+    action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 target.set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
@@ -68,7 +68,7 @@ struct ui::layout_animator::impl : base::impl {
                                                              .begin_value = dst_guide.value(),
                                                              .end_value = value,
                                                              .continuous_action = {.duration = args.duration}});
-                                        action.set_value_transformer(interporator.value_transformer());
+                                        action->set_value_transformer(interporator.value_transformer());
                                         renderer.insert_action(std::move(action));
                                     }
                                 })

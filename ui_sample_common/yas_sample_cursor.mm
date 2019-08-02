@@ -56,7 +56,7 @@ struct sample::cursor::impl : base::impl {
         this->node.add_sub_node(mesh_node.node());
     }
 
-    static ui::action _make_rotate_action(ui::node &target) {
+    static std::shared_ptr<ui::parallel_action> _make_rotate_action(ui::node &target) {
         auto rotate_action = ui::make_action(
             {.target = target, .end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
 
@@ -64,58 +64,59 @@ struct sample::cursor::impl : base::impl {
                                              .begin_scale = {.v = 10.0f},
                                              .end_scale = {.v = 15.0f},
                                              .continuous_action = {.duration = 5.0f, .loop_count = 0}});
-        scale_action.set_value_transformer(
+        scale_action->set_value_transformer(
             ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_sine_transformer()}));
 
-        return ui::parallel_action{{.actions = {std::move(rotate_action), std::move(scale_action)}}};
+        return ui::parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}});
     }
 
     static chaining::any_observer_ptr _make_event_observer(ui::node &node, ui::renderer &renderer) {
         return renderer.event_manager()
             .chain(ui::event_manager::method::cursor_changed)
-            .perform([weak_node = to_weak(node), weak_action = weak<ui::action>{}](ui::event const &event) mutable {
-                if (auto node = weak_node.lock()) {
-                    auto const &value = event.get<ui::cursor>();
+            .perform(
+                [weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](ui::event const &event) mutable {
+                    if (auto node = weak_node.lock()) {
+                        auto const &value = event.get<ui::cursor>();
 
-                    node.position().set_value(node.parent().convert_position(value.position()));
+                        node.position().set_value(node.parent().convert_position(value.position()));
 
-                    if (auto renderer = node.renderer()) {
-                        for (auto child_node : node.children()) {
-                            auto make_fade_action = [](ui::node &node, float const alpha) {
-                                return ui::make_action({.target = node,
-                                                        .begin_alpha = node.alpha().raw(),
-                                                        .end_alpha = alpha,
-                                                        .continuous_action = {.duration = 0.5}});
-                            };
+                        if (auto renderer = node.renderer()) {
+                            for (auto child_node : node.children()) {
+                                auto make_fade_action = [](ui::node &node, float const alpha) {
+                                    return ui::make_action({.target = node,
+                                                            .begin_alpha = node.alpha().raw(),
+                                                            .end_alpha = alpha,
+                                                            .continuous_action = {.duration = 0.5}});
+                                };
 
-                            switch (event.phase()) {
-                                case ui::event_phase::began: {
-                                    if (auto prev_action = weak_action.lock()) {
-                                        renderer.erase_action(prev_action);
-                                    }
+                                switch (event.phase()) {
+                                    case ui::event_phase::began: {
+                                        if (auto prev_action = weak_action.lock()) {
+                                            renderer.erase_action(prev_action);
+                                        }
 
-                                    auto action = make_fade_action(child_node, 1.0f);
-                                    renderer.insert_action(action);
-                                    weak_action = action;
-                                } break;
+                                        auto action = make_fade_action(child_node, 1.0f);
+                                        renderer.insert_action(action);
+                                        weak_action = action;
+                                    } break;
 
-                                case ui::event_phase::ended: {
-                                    if (auto prev_action = weak_action.lock()) {
-                                        renderer.erase_action(prev_action);
-                                    }
+                                    case ui::event_phase::ended: {
+                                        if (auto prev_action = weak_action.lock()) {
+                                            renderer.erase_action(prev_action);
+                                        }
 
-                                    auto action = make_fade_action(child_node, 0.0f);
-                                    renderer.insert_action(action);
-                                    weak_action = action;
-                                } break;
+                                        auto action = make_fade_action(child_node, 0.0f);
+                                        renderer.insert_action(action);
+                                        weak_action = action;
+                                    } break;
 
-                                default:
-                                    break;
+                                    default:
+                                        break;
+                                }
                             }
                         }
                     }
-                }
-            })
+                })
             .end();
     }
 

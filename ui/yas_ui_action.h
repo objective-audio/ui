@@ -16,21 +16,15 @@ namespace yas::ui {
 using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 using duration_t = std::chrono::duration<double>;
 
-struct updatable_action : protocol {
-    struct impl : protocol::impl {
-        virtual bool update(time_point_t const &time) = 0;
-    };
+struct updatable_action {
+    virtual ~updatable_action() = default;
 
-    explicit updatable_action(std::shared_ptr<impl> &&);
-    updatable_action(std::nullptr_t);
-
-    bool update(time_point_t const &time);
+    virtual bool update(time_point_t const &time) = 0;
 };
 
-class action : public base {
-   public:
-    class impl;
+class parallel_action;
 
+struct action : std::enable_shared_from_this<action>, updatable_action {
     struct args {
         time_point_t begin_time = std::chrono::system_clock::now();
         double delay = 0.0;
@@ -40,42 +34,43 @@ class action : public base {
     using value_update_f = std::function<void(double const)>;
     using completion_f = std::function<void(void)>;
 
-    action();
-    explicit action(args);
-    action(std::nullptr_t);
-
     base target() const;
     time_point_t const &begin_time() const;
     double delay() const;
     time_update_f const &time_updater() const;
     completion_f const &completion_handler() const;
 
-    void set_target(weak<base> const &);
+    void set_target(base::weak<base> const &);
     void set_time_updater(time_update_f);
     void set_completion_handler(completion_f);
 
-    ui::updatable_action &updatable();
+    std::shared_ptr<ui::updatable_action> updatable();
 
    protected:
-    action(std::shared_ptr<impl> &&);
+    base::weak<base> _target{nullptr};
+    time_point_t _begin_time = std::chrono::system_clock::now();
+    duration_t _delay{0.0};
+    time_update_f _time_updater;
+    completion_f _completion_handler;
+
+    explicit action(args);
+
+    duration_t time_diff(time_point_t const &time);
 
    private:
-    ui::updatable_action _updatable = nullptr;
+    bool update(time_point_t const &time) override;
+
+   public:
+    static std::shared_ptr<action> make_shared();
+    static std::shared_ptr<action> make_shared(args);
+
+    friend std::shared_ptr<ui::parallel_action> make_action_sequence(std::vector<std::shared_ptr<action>>,
+                                                                     time_point_t const &);
 };
 }  // namespace yas::ui
 
-template <>
-struct std::hash<yas::ui::action> {
-    std::size_t operator()(yas::ui::action const &key) const {
-        return std::hash<uintptr_t>()(key.identifier());
-    }
-};
-
 namespace yas::ui {
-class continuous_action : public action {
-   public:
-    class impl;
-
+struct continuous_action final : action {
     struct args {
         double duration = 0.3;
         std::size_t loop_count = 1;
@@ -83,11 +78,7 @@ class continuous_action : public action {
         action::args action;
     };
 
-    continuous_action();
-    continuous_action(continuous_action::args args);
-    continuous_action(std::nullptr_t);
-
-    virtual ~continuous_action() final;
+    virtual ~continuous_action();
 
     double duration() const;
     value_update_f const &value_updater() const;
@@ -96,30 +87,50 @@ class continuous_action : public action {
 
     void set_value_updater(value_update_f);
     void set_value_transformer(transform_f);
+
+   private:
+    double _duration = 0.3;
+    value_update_f _value_updater;
+    transform_f _value_transformer;
+    std::size_t _loop_count = 1;
+    std::size_t _index = 0;
+
+    explicit continuous_action(args &&args);
+
+    void prepare();
+
+   public:
+    static std::shared_ptr<continuous_action> make_shared();
+    static std::shared_ptr<continuous_action> make_shared(args);
 };
 
-class parallel_action : public action {
-   public:
-    class impl;
-
+struct parallel_action final : action {
     struct args {
-        weak<base> target;
-        std::unordered_set<action> actions;
+        base::weak<base> target;
+        std::unordered_set<std::shared_ptr<action>> actions;
 
         action::args action;
     };
 
-    parallel_action();
-    parallel_action(args);
-    parallel_action(std::nullptr_t);
+    virtual ~parallel_action();
 
-    virtual ~parallel_action() final;
+    std::vector<std::shared_ptr<action>> actions() const;
 
-    std::vector<action> actions() const;
+    void insert_action(std::shared_ptr<action>);
+    void erase_action(std::shared_ptr<action> const &);
 
-    void insert_action(action);
-    void erase_action(action const &);
+   private:
+    std::unordered_set<std::shared_ptr<action>> _actions;
+
+    explicit parallel_action(action::args &&);
+
+    void prepare(args &&);
+
+   public:
+    static std::shared_ptr<parallel_action> make_shared();
+    static std::shared_ptr<parallel_action> make_shared(args);
 };
 
-[[nodiscard]] parallel_action make_action_sequence(std::vector<action> actions, time_point_t const &begin_time);
+[[nodiscard]] std::shared_ptr<ui::parallel_action> make_action_sequence(std::vector<std::shared_ptr<action>> actions,
+                                                                        time_point_t const &begin_time);
 }  // namespace yas::ui

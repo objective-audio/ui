@@ -30,17 +30,17 @@ using namespace std::chrono_literals;
     auto action = ui::make_action(
         {.target = target, .begin_value = 0.0f, .end_value = 1.0f, .continuous_action = std::move(args)});
 
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.value(), 0.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.value(), 0.5f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.value(), 1.0f);
 }

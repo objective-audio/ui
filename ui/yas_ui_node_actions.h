@@ -61,9 +61,9 @@ namespace alpha_action {
     };
 }  // namespace alpha_action
 
-[[nodiscard]] continuous_action make_action(translate_action::args);
-[[nodiscard]] continuous_action make_action(rotate_action::args);
-[[nodiscard]] continuous_action make_action(scale_action::args);
-[[nodiscard]] continuous_action make_action(color_action::args);
-[[nodiscard]] continuous_action make_action(alpha_action::args);
+[[nodiscard]] std::shared_ptr<continuous_action> make_action(translate_action::args);
+[[nodiscard]] std::shared_ptr<continuous_action> make_action(rotate_action::args);
+[[nodiscard]] std::shared_ptr<continuous_action> make_action(scale_action::args);
+[[nodiscard]] std::shared_ptr<continuous_action> make_action(color_action::args);
+[[nodiscard]] std::shared_ptr<continuous_action> make_action(alpha_action::args);
 }  // namespace yas::ui

@@ -56,7 +56,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     simd::float4x4 _projection_matrix = matrix_identity_float4x4;
 
     ui::node _root_node;
-    ui::parallel_action _action;
+    std::shared_ptr<ui::parallel_action> _action = ui::parallel_action::make_shared();
     ui::detector _detector;
     ui::event_manager _event_manager;
     ui::layout_guide_rect _view_layout_guide_rect;
@@ -141,7 +141,7 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
     }
 
     pre_render_result pre_render() {
-        this->_action.updatable().update(std::chrono::system_clock::now());
+        this->_action->updatable()->update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
         this->_root_node.renderable().fetch_updates(tree_updates);
@@ -178,18 +178,18 @@ struct yas::ui::renderer::impl : yas::base::impl, yas::ui::view_renderable::impl
         this->_detector.updatable().end_update();
     }
 
-    void insert_action(ui::action action) {
-        this->_action.insert_action(action);
+    void insert_action(std::shared_ptr<ui::action> action) {
+        this->_action->insert_action(action);
     }
 
-    void erase_action(ui::action const &action) {
-        this->_action.erase_action(action);
+    void erase_action(std::shared_ptr<ui::action> const &action) {
+        this->_action->erase_action(action);
     }
 
     void erase_action(base const &target) {
-        for (auto const &action : this->_action.actions()) {
-            if (action.target() == target) {
-                this->_action.erase_action(action);
+        for (auto const &action : this->_action->actions()) {
+            if (action->target() == target) {
+                this->_action->erase_action(action);
             }
         }
     }
@@ -335,15 +335,15 @@ ui::event_manager &ui::renderer::event_manager() {
     return impl_ptr<impl>()->_event_manager;
 }
 
-std::vector<ui::action> ui::renderer::actions() const {
-    return impl_ptr<impl>()->_action.actions();
+std::vector<std::shared_ptr<ui::action>> ui::renderer::actions() const {
+    return impl_ptr<impl>()->_action->actions();
 }
 
-void ui::renderer::insert_action(ui::action action) {
+void ui::renderer::insert_action(std::shared_ptr<ui::action> action) {
     impl_ptr<impl>()->insert_action(std::move(action));
 }
 
-void ui::renderer::erase_action(ui::action const &action) {
+void ui::renderer::erase_action(std::shared_ptr<ui::action> const &action) {
     impl_ptr<impl>()->erase_action(action);
 }
 
