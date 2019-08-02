@@ -69,8 +69,8 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
 
-    ui::action pre_render_action;
-    pre_render_action.set_time_updater([expectation, self, &metal_system, count = int{0}](auto const &) mutable {
+    auto pre_render_action = ui::action::make_shared();
+    pre_render_action->set_time_updater([expectation, self, &metal_system, count = int{0}](auto const &) mutable {
         [expectation fulfill];
         return true;
     });

@@ -96,9 +96,9 @@ using namespace yas;
 
     ui::renderer renderer{ui::metal_system{device.object()}};
 
-    ui::action pre_render_action;
+    auto pre_render_action = ui::action::make_shared();
 
-    pre_render_action.set_time_updater([&metal_system = renderer.metal_system(), expectation, self](auto const &) {
+    pre_render_action->set_time_updater([&metal_system = renderer.metal_system(), expectation, self](auto const &) {
         auto mtlDevice = metal_system.testable().mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;

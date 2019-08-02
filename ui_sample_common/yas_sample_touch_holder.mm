@@ -9,7 +9,7 @@ using namespace yas;
 namespace yas::sample {
 struct touch_object {
     ui::node node = nullptr;
-    base::weak<ui::action> scale_action;
+    std::weak_ptr<ui::action> scale_action;
 };
 }
 
@@ -113,20 +113,21 @@ struct sample::touch_holder::impl : base::impl {
                                               .begin_scale = {.v = 0.1f},
                                               .end_scale = {.v = 200.0f},
                                               .continuous_action = {.duration = 0.1}});
-        scale_action1.set_value_transformer(ui::ease_in_sine_transformer());
+        scale_action1->set_value_transformer(ui::ease_in_sine_transformer());
 
         auto scale_action2 = ui::make_action({.target = node,
                                               .begin_scale = {.v = 200.0f},
                                               .end_scale = {.v = 100.0f},
                                               .continuous_action = {.duration = 0.2}});
-        scale_action2.set_value_transformer(ui::ease_out_sine_transformer());
+        scale_action2->set_value_transformer(ui::ease_out_sine_transformer());
 
         auto scale_action = ui::make_action_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
 
         auto alpha_action = ui::make_action(
             {.target = node, .begin_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});
 
-        ui::parallel_action action{{.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}}};
+        auto action = ui::parallel_action::make_shared(
+            {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}});
 
         root_node.renderer().insert_action(action);
 
@@ -149,7 +150,7 @@ struct sample::touch_holder::impl : base::impl {
 
             if (auto prev_action = touch_object.scale_action.lock()) {
                 renderer.erase_action(prev_action);
-                touch_object.scale_action = nullptr;
+                touch_object.scale_action.reset();
             }
 
             auto const &node = touch_object.node;
@@ -158,17 +159,18 @@ struct sample::touch_holder::impl : base::impl {
                                                  .begin_scale = touch_object.node.scale().raw(),
                                                  .end_scale = {.v = 300.0f},
                                                  .continuous_action = {.duration = 0.3}});
-            scale_action.set_value_transformer(ui::ease_out_sine_transformer());
-            scale_action.set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
+            scale_action->set_value_transformer(ui::ease_out_sine_transformer());
+            scale_action->set_completion_handler([node = node]() mutable { node.remove_from_super_node(); });
 
             auto alpha_action = ui::make_action({.target = node,
                                                  .begin_alpha = node.alpha().raw(),
                                                  .end_alpha = 0.0f,
                                                  .continuous_action = {.duration = 0.3}});
-            alpha_action.set_value_transformer(
+            alpha_action->set_value_transformer(
                 ui::connect({ui::ease_out_sine_transformer(), ui::ease_out_sine_transformer()}));
 
-            ui::parallel_action action{{.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}}};
+            auto action = ui::parallel_action::make_shared(
+                {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}});
 
             renderer.insert_action(action);
 

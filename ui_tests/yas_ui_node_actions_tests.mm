@@ -35,19 +35,19 @@ using namespace yas;
                                    .end_position = {1.0f, 1.0f},
                                    .continuous_action = std::move(args)});
 
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.position().raw().x, 0.0f);
     XCTAssertEqual(target.position().raw().y, -1.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.position().raw().x, 0.5f);
     XCTAssertEqual(target.position().raw().y, 0.0f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.position().raw().x, 1.0f);
     XCTAssertEqual(target.position().raw().y, 1.0f);
@@ -63,17 +63,17 @@ using namespace yas;
                                    .is_shortest = false,
                                    .continuous_action = std::move(args)});
 
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.angle().raw().degrees, 0.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.angle().raw().degrees, 180.0f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.angle().raw().degrees, 360.0f);
 }
@@ -88,17 +88,17 @@ using namespace yas;
                                    .is_shortest = true,
                                    .continuous_action = std::move(args)});
 
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.angle().raw().degrees, 360.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.angle().raw().degrees, 315.0f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.angle().raw().degrees, 270.0f);
 }
@@ -113,17 +113,17 @@ using namespace yas;
                                    .is_shortest = true,
                                    .continuous_action = std::move(args)});
 
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.angle().raw().degrees, 180.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.angle().raw().degrees, 135.0f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.angle().raw().degrees, 90.0f);
 }
@@ -137,19 +137,19 @@ using namespace yas;
                                    .end_scale = {1.0f, 1.0f},
                                    .continuous_action = std::move(args)});
 
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.scale().raw().width, 0.0f);
     XCTAssertEqual(target.scale().raw().height, -1.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.scale().raw().width, 0.5f);
     XCTAssertEqual(target.scale().raw().height, 0.0f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.scale().raw().width, 1.0f);
     XCTAssertEqual(target.scale().raw().height, 1.0f);
@@ -166,21 +166,21 @@ using namespace yas;
 
     ui::mesh mesh;
     target.mesh().set_value(mesh);
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.color().raw().red, 0.0f);
     XCTAssertEqual(target.color().raw().green, 0.25f);
     XCTAssertEqual(target.color().raw().blue, 0.5f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.color().raw().red, 0.5f);
     XCTAssertEqual(target.color().raw().green, 0.5f);
     XCTAssertEqual(target.color().raw().blue, 0.5f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.color().raw().red, 1.0f);
     XCTAssertEqual(target.color().raw().green, 0.75f);
@@ -196,17 +196,17 @@ using namespace yas;
 
     ui::mesh mesh;
     target.mesh().set_value(mesh);
-    auto &updatable = action.updatable();
+    auto updatable = action->updatable();
 
-    updatable.update(time);
+    updatable->update(time);
 
     XCTAssertEqual(target.alpha().raw(), 1.0f);
 
-    updatable.update(time + 500ms);
+    updatable->update(time + 500ms);
 
     XCTAssertEqual(target.alpha().raw(), 0.5f);
 
-    updatable.update(time + 1s);
+    updatable->update(time + 1s);
 
     XCTAssertEqual(target.alpha().raw(), 0.0f);
 }

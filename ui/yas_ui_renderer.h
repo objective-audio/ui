@@ -55,9 +55,9 @@ class renderer : public base {
 
     ui::event_manager &event_manager();
 
-    std::vector<ui::action> actions() const;
-    void insert_action(ui::action);
-    void erase_action(ui::action const &);
+    std::vector<std::shared_ptr<ui::action>> actions() const;
+    void insert_action(std::shared_ptr<ui::action>);
+    void erase_action(std::shared_ptr<ui::action> const &);
     void erase_action(base const &target);
 
     ui::detector const &detector() const;

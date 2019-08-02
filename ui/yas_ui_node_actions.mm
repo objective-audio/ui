@@ -11,12 +11,12 @@ using namespace yas;
 
 #pragma mark - translate_action
 
-ui::continuous_action ui::make_action(translate_action::args args) {
+std::shared_ptr<ui::continuous_action> ui::make_action(translate_action::args args) {
     auto target = args.target;
-    ui::continuous_action action{std::move(args.continuous_action)};
-    action.set_target(target);
+    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    action->set_target(target);
 
-    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+    action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 target.position().set_value(
@@ -30,12 +30,12 @@ ui::continuous_action ui::make_action(translate_action::args args) {
 
 #pragma mark - rotate_action
 
-ui::continuous_action ui::make_action(rotate_action::args args) {
+std::shared_ptr<ui::continuous_action> ui::make_action(rotate_action::args args) {
     auto target = args.target;
-    ui::continuous_action action{std::move(args.continuous_action)};
-    action.set_target(target);
+    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    action->set_target(target);
 
-    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+    action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 auto const end_angle = args.end_angle;
@@ -55,12 +55,12 @@ ui::continuous_action ui::make_action(rotate_action::args args) {
 
 #pragma mark - scale_action
 
-ui::continuous_action ui::make_action(ui::scale_action::args args) {
+std::shared_ptr<ui::continuous_action> ui::make_action(ui::scale_action::args args) {
     auto target = args.target;
-    ui::continuous_action action{std::move(args.continuous_action)};
-    action.set_target(target);
+    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    action->set_target(target);
 
-    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+    action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 target.scale().set_value(
@@ -74,12 +74,12 @@ ui::continuous_action ui::make_action(ui::scale_action::args args) {
 
 #pragma mark - color_action
 
-ui::continuous_action ui::make_action(ui::color_action::args args) {
+std::shared_ptr<ui::continuous_action> ui::make_action(ui::color_action::args args) {
     auto target = args.target;
-    ui::continuous_action action{std::move(args.continuous_action)};
-    action.set_target(target);
+    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    action->set_target(target);
 
-    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+    action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 target.color().set_value(
@@ -93,12 +93,12 @@ ui::continuous_action ui::make_action(ui::color_action::args args) {
 
 #pragma mark - alpha_action
 
-ui::continuous_action ui::make_action(ui::alpha_action::args args) {
+std::shared_ptr<ui::continuous_action> ui::make_action(ui::alpha_action::args args) {
     auto target = args.target;
-    ui::continuous_action action{std::move(args.continuous_action)};
-    action.set_target(target);
+    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    action->set_target(target);
 
-    action.set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
+    action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
                 target.alpha().set_value((args.end_alpha - args.begin_alpha) * (float)value + args.begin_alpha);
