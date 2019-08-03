@@ -94,7 +94,7 @@ struct ui::strings::impl : base::impl {
                                                    .send_to(*this->_update_layout_receiver)
                                                    .end());
 
-        this->_property_observers.emplace_back(this->_collection_layout->chain_alignment().end());
+        this->_property_observers.emplace_back(this->_collection_layout->alignment.chain().end());
     }
 
     void _update_texture_chaining() {
@@ -243,7 +243,7 @@ void ui::strings::set_line_height(std::optional<float> line_height) {
 }
 
 void ui::strings::set_alignment(ui::layout_alignment const alignment) {
-    impl_ptr<impl>()->_collection_layout->set_alignment(alignment);
+    impl_ptr<impl>()->_collection_layout->alignment.set_value(alignment);
 }
 
 std::string const &ui::strings::text() const {
@@ -259,7 +259,7 @@ std::optional<float> const &ui::strings::line_height() const {
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {
-    return impl_ptr<impl>()->_collection_layout->alignment();
+    return impl_ptr<impl>()->_collection_layout->alignment.raw();
 }
 
 ui::layout_guide_rect &ui::strings::frame_layout_guide_rect() {
@@ -283,7 +283,7 @@ chaining::chain_sync_t<std::optional<float>> ui::strings::chain_line_height() co
 }
 
 chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() const {
-    return impl_ptr<impl>()->_collection_layout->chain_alignment();
+    return impl_ptr<impl>()->_collection_layout->alignment.chain();
 }
 
 chaining::receiver<std::string> &ui::strings::text_receiver() {

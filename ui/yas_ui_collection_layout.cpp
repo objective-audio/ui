@@ -44,12 +44,12 @@ ui::collection_layout::collection_layout(args args)
       preferred_cell_count(args.preferred_cell_count),
       default_cell_size(std::move(args.default_cell_size)),
       lines(std::move(args.lines)),
-      _row_spacing(args.row_spacing),
-      _col_spacing(args.col_spacing),
-      _alignment(args.alignment),
-      _direction(args.direction),
-      _row_order(args.row_order),
-      _col_order(args.col_order),
+      row_spacing(args.row_spacing),
+      col_spacing(args.col_spacing),
+      alignment(args.alignment),
+      direction(args.direction),
+      row_order(args.row_order),
+      col_order(args.col_order),
       _left_border_observer(_frame_guide_rect.left()
                                 .chain()
                                 .to(chaining::add(args.borders.left))
@@ -88,56 +88,8 @@ ui::region ui::collection_layout::frame() const {
     return this->_frame_guide_rect.region();
 }
 
-void ui::collection_layout::set_row_spacing(float const spacing) {
-    this->_row_spacing.set_value(spacing);
-}
-
-void ui::collection_layout::set_col_spacing(float const spacing) {
-    this->_col_spacing.set_value(spacing);
-}
-
-void ui::collection_layout::set_alignment(ui::layout_alignment const align) {
-    this->_alignment.set_value(align);
-}
-
-void ui::collection_layout::set_direction(ui::layout_direction const dir) {
-    this->_direction.set_value(dir);
-}
-
-void ui::collection_layout::set_row_order(ui::layout_order const order) {
-    this->_row_order.set_value(order);
-}
-
-void ui::collection_layout::set_col_order(ui::layout_order const order) {
-    this->_col_order.set_value(order);
-}
-
 std::size_t ui::collection_layout::actual_cell_count() const {
     return this->_cell_guide_rects.size();
-}
-
-float const &ui::collection_layout::row_spacing() const {
-    return this->_row_spacing.raw();
-}
-
-float const &ui::collection_layout::col_spacing() const {
-    return this->_col_spacing.raw();
-}
-
-ui::layout_alignment const &ui::collection_layout::alignment() const {
-    return this->_alignment.raw();
-}
-
-ui::layout_direction const &ui::collection_layout::direction() const {
-    return this->_direction.raw();
-}
-
-ui::layout_order const &ui::collection_layout::row_order() const {
-    return this->_row_order.raw();
-}
-
-ui::layout_order const &ui::collection_layout::col_order() const {
-    return this->_col_order.raw();
 }
 
 ui::layout_borders const &ui::collection_layout::borders() const {
@@ -156,30 +108,6 @@ chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_cou
     return this->_actual_cell_count.chain();
 }
 
-chaining::chain_sync_t<float> ui::collection_layout::chain_row_spacing() const {
-    return this->_row_spacing.chain();
-}
-
-chaining::chain_sync_t<float> ui::collection_layout::chain_col_spacing() const {
-    return this->_col_spacing.chain();
-}
-
-chaining::chain_sync_t<ui::layout_alignment> ui::collection_layout::chain_alignment() const {
-    return this->_alignment.chain();
-}
-
-chaining::chain_sync_t<ui::layout_direction> ui::collection_layout::chain_direction() const {
-    return this->_direction.chain();
-}
-
-chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_row_order() const {
-    return this->_row_order.chain();
-}
-
-chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_col_order() const {
-    return this->_col_order.chain();
-}
-
 void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &layout) {
     auto weak_layout = to_weak(layout);
 
@@ -194,17 +122,17 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
                                  .perform([weak_layout](ui::region const &) { weak_layout.lock()->_update_layout(); })
                                  .end();
 
-    this->_property_observers.emplace_back(this->_row_spacing.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->row_spacing.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(this->_col_spacing.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->col_spacing.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(this->_alignment.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->alignment.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(this->_direction.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->direction.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(this->_row_order.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->row_order.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(this->_col_order.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->col_order.chain().send_null(*this->_layout_receiver).end());
 
     this->_property_observers.emplace_back(this->preferred_cell_count.chain().send_null(*this->_layout_receiver).end());
 
@@ -301,7 +229,7 @@ void ui::collection_layout::_update_layout() {
     for (auto const &row_regions : regions) {
         if (row_regions.size() > 0) {
             auto align_offset = 0.0f;
-            auto const alignment = this->_alignment.raw();
+            auto const alignment = this->alignment.raw();
 
             if (alignment != ui::layout_alignment::min) {
                 auto const content_width =
@@ -377,18 +305,18 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
     ui::size result;
     auto const &cell_size = _cell_size(idx);
 
-    switch (this->_direction.raw()) {
+    switch (this->direction.raw()) {
         case ui::layout_direction::horizontal:
             result = ui::size{cell_size.height, cell_size.width};
         case ui::layout_direction::vertical:
             result = cell_size;
     }
 
-    if (this->_row_order.raw() == ui::layout_order::descending) {
+    if (this->row_order.raw() == ui::layout_order::descending) {
         result.height *= -1.0f;
     }
 
-    if (this->_col_order.raw() == ui::layout_order::descending) {
+    if (this->col_order.raw() == ui::layout_order::descending) {
         result.width *= -1.0;
     }
 
@@ -400,16 +328,16 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
 }
 
 float ui::collection_layout::_transformed_col_diff(std::size_t const idx) {
-    auto diff = fabsf(_transformed_cell_size(idx).width) + this->_col_spacing.raw();
-    if (this->_col_order.raw() == ui::layout_order::descending) {
+    auto diff = fabsf(_transformed_cell_size(idx).width) + this->col_spacing.raw();
+    if (this->col_order.raw() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
     return diff;
 }
 
 float ui::collection_layout::_transformed_row_cell_diff(std::size_t const idx) {
-    auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->_row_spacing.raw();
-    if (this->_row_order.raw() == ui::layout_order::descending) {
+    auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->row_spacing.raw();
+    if (this->row_order.raw() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
     return diff;
@@ -425,7 +353,7 @@ float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const id
         while (line_idx > 0) {
             --line_idx;
 
-            diff += lines.at(line_idx).new_line_min_offset + this->_row_spacing.raw();
+            diff += lines.at(line_idx).new_line_min_offset + this->row_spacing.raw();
 
             if (lines.at(line_idx).cell_sizes.size() > 0) {
                 break;
@@ -433,7 +361,7 @@ float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const id
         }
     }
 
-    if (this->_row_order.raw() == ui::layout_order::descending) {
+    if (this->row_order.raw() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
 
@@ -444,7 +372,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
     auto const original = _direction_swapped_region_if_horizontal(this->_border_guide_rect.region());
     ui::region result{.size = original.size};
 
-    switch (this->_row_order.raw()) {
+    switch (this->row_order.raw()) {
         case ui::layout_order::ascending: {
             result.origin.y = original.origin.y;
         } break;
@@ -454,7 +382,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
         } break;
     }
 
-    switch (this->_col_order.raw()) {
+    switch (this->col_order.raw()) {
         case ui::layout_order::ascending: {
             result.origin.x = original.origin.x;
         } break;
@@ -468,7 +396,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
 }
 
 ui::region ui::collection_layout::_direction_swapped_region_if_horizontal(ui::region const &region) {
-    if (this->_direction.raw() == ui::layout_direction::horizontal) {
+    if (this->direction.raw() == ui::layout_direction::horizontal) {
         return ui::region{.origin = {region.origin.y, region.origin.x},
                           .size = {region.size.height, region.size.width}};
     } else {

@@ -49,22 +49,15 @@ struct collection_layout {
     chaining::value::holder<std::size_t> preferred_cell_count;
     chaining::value::holder<ui::size> default_cell_size;
     chaining::value::holder<std::vector<ui::collection_layout::line>> lines;
-
-    void set_row_spacing(float const);
-    void set_col_spacing(float const);
-    void set_alignment(ui::layout_alignment const);
-    void set_direction(ui::layout_direction const);
-    void set_row_order(ui::layout_order const);
-    void set_col_order(ui::layout_order const);
+    chaining::value::holder<float> row_spacing;
+    chaining::value::holder<float> col_spacing;
+    chaining::value::holder<ui::layout_alignment> alignment;
+    chaining::value::holder<ui::layout_direction> direction;
+    chaining::value::holder<ui::layout_order> row_order;
+    chaining::value::holder<ui::layout_order> col_order;
 
     ui::region frame() const;
     std::size_t actual_cell_count() const;
-    float const &row_spacing() const;
-    float const &col_spacing() const;
-    ui::layout_alignment const &alignment() const;
-    ui::layout_direction const &direction() const;
-    ui::layout_order const &row_order() const;
-    ui::layout_order const &col_order() const;
 
     ui::layout_borders const &borders() const;
 
@@ -72,12 +65,6 @@ struct collection_layout {
     std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
 
     [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_actual_cell_count() const;
-    [[nodiscard]] chaining::chain_sync_t<float> chain_row_spacing() const;
-    [[nodiscard]] chaining::chain_sync_t<float> chain_col_spacing() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_direction> chain_direction() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_row_order() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
 
    private:
     struct cell_location {
@@ -85,12 +72,6 @@ struct collection_layout {
         std::size_t cell_idx;
     };
 
-    chaining::value::holder<float> _row_spacing;
-    chaining::value::holder<float> _col_spacing;
-    chaining::value::holder<ui::layout_alignment> _alignment;
-    chaining::value::holder<ui::layout_direction> _direction;
-    chaining::value::holder<ui::layout_order> _row_order;
-    chaining::value::holder<ui::layout_order> _col_order;
     chaining::value::holder<std::size_t> _actual_cell_count{std::size_t(0)};
 
     ui::layout_guide_rect _frame_guide_rect;
