@@ -12,7 +12,7 @@
 namespace yas::ui {
 class node;
 
-    struct batch final : base, renderable_batch, std::enable_shared_from_this<batch> {
+struct batch final : base, renderable_batch, std::enable_shared_from_this<batch> {
     class impl;
 
     virtual ~batch();
@@ -26,7 +26,7 @@ class node;
     ui::metal_object _metal_object = nullptr;
 
     batch();
-    
+
     virtual std::vector<ui::mesh> &meshes() override;
     virtual void begin_render_meshes_building(batch_building_type const) override;
     virtual void commit_render_meshes_building() override;
