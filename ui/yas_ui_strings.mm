@@ -121,7 +121,7 @@ struct ui::strings::impl : base::impl {
 
         auto const &font_atlas = this->_font_atlas.raw();
         if (!font_atlas || !font_atlas.texture() || !font_atlas.texture().metal_texture()) {
-            this->_collection_layout->set_preferred_cell_count(0);
+            this->_collection_layout->preferred_cell_count.set_value(0);
             this->_rect_plane.data().set_rect_count(0);
             return;
         }
@@ -154,7 +154,7 @@ struct ui::strings::impl : base::impl {
         }
 
         this->_collection_layout->set_lines(std::move(lines));
-        this->_collection_layout->set_preferred_cell_count(eliminated_text.size());
+        this->_collection_layout->preferred_cell_count.set_value(eliminated_text.size());
 
         auto const actual_cell_count = this->_collection_layout->actual_cell_count();
 

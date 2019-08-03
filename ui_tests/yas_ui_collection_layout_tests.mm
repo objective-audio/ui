@@ -28,7 +28,7 @@ using namespace yas;
     XCTAssertTrue(layout);
 
     XCTAssertTrue(layout->frame() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
-    XCTAssertEqual(layout->preferred_cell_count(), 0);
+    XCTAssertEqual(layout->preferred_cell_count.raw(), 0);
     XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
     XCTAssertEqual(layout->lines().size(), 0);
     XCTAssertEqual(layout->row_spacing(), 0.0f);
@@ -57,7 +57,7 @@ using namespace yas;
     XCTAssertTrue(layout);
 
     XCTAssertTrue(layout->frame() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
-    XCTAssertEqual(layout->preferred_cell_count(), 10);
+    XCTAssertEqual(layout->preferred_cell_count.raw(), 10);
     XCTAssertTrue(layout->default_cell_size() == (ui::size{2.5f, 3.5f}));
     XCTAssertEqual(layout->lines().size(), 1);
     XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 2);
@@ -113,11 +113,11 @@ using namespace yas;
 
     XCTAssertEqual(layout->actual_cell_count(), 1);
 
-    layout->set_preferred_cell_count(5);
+    layout->preferred_cell_count.set_value(5);
 
     XCTAssertEqual(layout->actual_cell_count(), 4);
 
-    layout->set_preferred_cell_count(2);
+    layout->preferred_cell_count.set_value(2);
 
     XCTAssertEqual(layout->actual_cell_count(), 2);
 }
@@ -132,11 +132,11 @@ using namespace yas;
                         .perform([&notified_count](auto const &count) { notified_count = count; })
                         .end();
 
-    layout->set_preferred_cell_count(5);
+    layout->preferred_cell_count.set_value(5);
 
     XCTAssertEqual(notified_count, 4);
 
-    layout->set_preferred_cell_count(2);
+    layout->preferred_cell_count.set_value(2);
 
     XCTAssertEqual(notified_count, 2);
 }
@@ -240,15 +240,15 @@ using namespace yas;
 - (void)test_set_preferred_cell_count {
     auto layout = ui::collection_layout::make_shared({.preferred_cell_count = 2});
 
-    XCTAssertEqual(layout->preferred_cell_count(), 2);
+    XCTAssertEqual(layout->preferred_cell_count.raw(), 2);
 
-    layout->set_preferred_cell_count(3);
+    layout->preferred_cell_count.set_value(3);
 
-    XCTAssertEqual(layout->preferred_cell_count(), 3);
+    XCTAssertEqual(layout->preferred_cell_count.raw(), 3);
 
-    layout->set_preferred_cell_count(0);
+    layout->preferred_cell_count.set_value(0);
 
-    XCTAssertEqual(layout->preferred_cell_count(), 0);
+    XCTAssertEqual(layout->preferred_cell_count.raw(), 0);
 }
 
 - (void)test_set_default_cell_size {
@@ -705,11 +705,11 @@ using namespace yas;
 
     std::optional<std::size_t> notified_count;
 
-    auto observer = layout->chain_preferred_cell_count()
+    auto observer = layout->preferred_cell_count.chain()
                         .perform([&notified_count](auto const &count) { notified_count = count; })
                         .end();
 
-    layout->set_preferred_cell_count(10);
+    layout->preferred_cell_count.set_value(10);
 
     XCTAssertTrue(notified_count);
     XCTAssertEqual(*notified_count, 10);

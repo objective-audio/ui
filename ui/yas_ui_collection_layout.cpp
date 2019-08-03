@@ -41,7 +41,7 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 
 ui::collection_layout::collection_layout(args args)
     : _frame_guide_rect(std::move(args.frame)),
-      _preferred_cell_count(args.preferred_cell_count),
+      preferred_cell_count(args.preferred_cell_count),
       _default_cell_size(std::move(args.default_cell_size)),
       _lines(std::move(args.lines)),
       _row_spacing(args.row_spacing),
@@ -84,10 +84,6 @@ void ui::collection_layout::set_frame(ui::region frame) {
     }
 }
 
-void ui::collection_layout::set_preferred_cell_count(std::size_t const count) {
-    this->_preferred_cell_count.set_value(count);
-}
-
 ui::region ui::collection_layout::frame() const {
     return this->_frame_guide_rect.region();
 }
@@ -122,10 +118,6 @@ void ui::collection_layout::set_row_order(ui::layout_order const order) {
 
 void ui::collection_layout::set_col_order(ui::layout_order const order) {
     this->_col_order.set_value(order);
-}
-
-std::size_t const &ui::collection_layout::preferred_cell_count() const {
-    return this->_preferred_cell_count.raw();
 }
 
 std::size_t ui::collection_layout::actual_cell_count() const {
@@ -174,10 +166,6 @@ ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
 
 std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rects() {
     return this->_cell_guide_rects;
-}
-
-chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_preferred_cell_count() const {
-    return this->_preferred_cell_count.chain();
 }
 
 chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
@@ -242,8 +230,7 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
 
     this->_property_observers.emplace_back(this->_col_order.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(
-        this->_preferred_cell_count.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->preferred_cell_count.chain().send_null(*this->_layout_receiver).end());
 
     this->_property_observers.emplace_back(this->_default_cell_size.chain().send_null(*this->_layout_receiver).end());
 
@@ -266,7 +253,7 @@ void ui::collection_layout::pop_notify_waiting() {
 
 void ui::collection_layout::_update_layout() {
     auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());
-    auto const &preferred_cell_count = this->_preferred_cell_count.raw();
+    auto const &preferred_cell_count = this->preferred_cell_count.raw();
 
     if (preferred_cell_count == 0) {
         this->_cell_guide_rects.clear();
