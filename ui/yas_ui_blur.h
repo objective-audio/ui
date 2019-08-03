@@ -21,6 +21,11 @@ struct blur {
     chaining::any_observer_ptr _sigma_observer = nullptr;
 
     blur();
+    
+    blur(blur const &) = delete;
+    blur(blur &&) = delete;
+    blur &operator=(blur const &) = delete;
+    blur &operator=(blur &&) = delete;
 
     void _prepare(std::shared_ptr<blur> &);
     void _update_effect_handler();
