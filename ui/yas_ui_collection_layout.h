@@ -5,7 +5,6 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_result.h>
 #include <vector>
 #include "yas_ui_layout_types.h"
@@ -21,7 +20,7 @@ class observer;
 namespace yas::ui {
 class layout_guide_rect;
 
-struct collection_layout : base {
+struct collection_layout {
     class impl;
 
     struct line {
@@ -86,6 +85,8 @@ struct collection_layout : base {
     [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
 
    private:
+    std::shared_ptr<impl> _impl;
+
     collection_layout(args);
 
     void _prepare(std::shared_ptr<collection_layout> const &);

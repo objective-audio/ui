@@ -40,7 +40,7 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 
 #pragma mark - ui::colleciton_layout::impl
 
-struct ui::collection_layout::impl : base::impl {
+struct ui::collection_layout::impl {
     struct cell_location {
         std::size_t line_idx;
         std::size_t cell_idx;
@@ -111,15 +111,14 @@ struct ui::collection_layout::impl : base::impl {
 
         this->_layout_receiver = chaining::perform_receiver<>{[weak_layout]() {
             if (auto layout = weak_layout.lock()) {
-                auto layout_impl = layout->impl_ptr<impl>();
-                layout_impl->_update_layout();
+                layout->_impl->_update_layout();
             }
         }};
 
         this->_border_observer =
             this->_border_guide_rect.chain()
                 .guard([weak_layout](ui::region const &) { return !weak_layout.expired(); })
-                .perform([weak_layout](ui::region const &) { weak_layout.lock()->impl_ptr<impl>()->_update_layout(); })
+                .perform([weak_layout](ui::region const &) { weak_layout.lock()->_impl->_update_layout(); })
                 .end();
 
         this->_property_observers.emplace_back(this->_row_spacing.chain().send_null(*this->_layout_receiver).end());
@@ -420,147 +419,147 @@ struct ui::collection_layout::impl : base::impl {
 
 #pragma mark - ui::collection_layout
 
-ui::collection_layout::collection_layout(args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::collection_layout::collection_layout(args args) : _impl(std::make_shared<impl>(std::move(args))) {
 }
 
 void ui::collection_layout::set_frame(ui::region frame) {
-    impl_ptr<impl>()->set_frame(std::move(frame));
+    this->_impl->set_frame(std::move(frame));
 }
 
 void ui::collection_layout::set_preferred_cell_count(std::size_t const count) {
-    impl_ptr<impl>()->_preferred_cell_count.set_value(count);
+    this->_impl->_preferred_cell_count.set_value(count);
 }
 
 ui::region ui::collection_layout::frame() const {
-    return impl_ptr<impl>()->_frame_guide_rect.region();
+    return this->_impl->_frame_guide_rect.region();
 }
 
 void ui::collection_layout::set_default_cell_size(ui::size size) {
-    impl_ptr<impl>()->_default_cell_size.set_value(std::move(size));
+    this->_impl->_default_cell_size.set_value(std::move(size));
 }
 
 void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> lines) {
-    impl_ptr<impl>()->_lines.set_value(std::move(lines));
+    this->_impl->_lines.set_value(std::move(lines));
 }
 
 void ui::collection_layout::set_row_spacing(float const spacing) {
-    impl_ptr<impl>()->_row_spacing.set_value(spacing);
+    this->_impl->_row_spacing.set_value(spacing);
 }
 
 void ui::collection_layout::set_col_spacing(float const spacing) {
-    impl_ptr<impl>()->_col_spacing.set_value(spacing);
+    this->_impl->_col_spacing.set_value(spacing);
 }
 
 void ui::collection_layout::set_alignment(ui::layout_alignment const align) {
-    impl_ptr<impl>()->_alignment.set_value(align);
+    this->_impl->_alignment.set_value(align);
 }
 
 void ui::collection_layout::set_direction(ui::layout_direction const dir) {
-    impl_ptr<impl>()->_direction.set_value(dir);
+    this->_impl->_direction.set_value(dir);
 }
 
 void ui::collection_layout::set_row_order(ui::layout_order const order) {
-    impl_ptr<impl>()->_row_order.set_value(order);
+    this->_impl->_row_order.set_value(order);
 }
 
 void ui::collection_layout::set_col_order(ui::layout_order const order) {
-    impl_ptr<impl>()->_col_order.set_value(order);
+    this->_impl->_col_order.set_value(order);
 }
 
 std::size_t const &ui::collection_layout::preferred_cell_count() const {
-    return impl_ptr<impl>()->_preferred_cell_count.raw();
+    return this->_impl->_preferred_cell_count.raw();
 }
 
 std::size_t ui::collection_layout::actual_cell_count() const {
-    return impl_ptr<impl>()->_cell_guide_rects.size();
+    return this->_impl->_cell_guide_rects.size();
 }
 
 ui::size const &ui::collection_layout::default_cell_size() const {
-    return impl_ptr<impl>()->_default_cell_size.raw();
+    return this->_impl->_default_cell_size.raw();
 }
 
 std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
-    return impl_ptr<impl>()->_lines.raw();
+    return this->_impl->_lines.raw();
 }
 
 float const &ui::collection_layout::row_spacing() const {
-    return impl_ptr<impl>()->_row_spacing.raw();
+    return this->_impl->_row_spacing.raw();
 }
 
 float const &ui::collection_layout::col_spacing() const {
-    return impl_ptr<impl>()->_col_spacing.raw();
+    return this->_impl->_col_spacing.raw();
 }
 
 ui::layout_alignment const &ui::collection_layout::alignment() const {
-    return impl_ptr<impl>()->_alignment.raw();
+    return this->_impl->_alignment.raw();
 }
 
 ui::layout_direction const &ui::collection_layout::direction() const {
-    return impl_ptr<impl>()->_direction.raw();
+    return this->_impl->_direction.raw();
 }
 
 ui::layout_order const &ui::collection_layout::row_order() const {
-    return impl_ptr<impl>()->_row_order.raw();
+    return this->_impl->_row_order.raw();
 }
 
 ui::layout_order const &ui::collection_layout::col_order() const {
-    return impl_ptr<impl>()->_col_order.raw();
+    return this->_impl->_col_order.raw();
 }
 
 ui::layout_borders const &ui::collection_layout::borders() const {
-    return impl_ptr<impl>()->_borders;
+    return this->_impl->_borders;
 }
 
 ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
-    return impl_ptr<impl>()->_frame_guide_rect;
+    return this->_impl->_frame_guide_rect;
 }
 
 std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rects() {
-    return impl_ptr<impl>()->_cell_guide_rects;
+    return this->_impl->_cell_guide_rects;
 }
 
 chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_preferred_cell_count() const {
-    return impl_ptr<impl>()->_preferred_cell_count.chain();
+    return this->_impl->_preferred_cell_count.chain();
 }
 
 chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
-    return impl_ptr<impl>()->_actual_cell_count.chain();
+    return this->_impl->_actual_cell_count.chain();
 }
 
 chaining::chain_sync_t<ui::size> ui::collection_layout::chain_default_cell_size() const {
-    return impl_ptr<impl>()->_default_cell_size.chain();
+    return this->_impl->_default_cell_size.chain();
 }
 
 chaining::chain_sync_t<std::vector<ui::collection_layout::line>> ui::collection_layout::chain_lines() const {
-    return impl_ptr<impl>()->_lines.chain();
+    return this->_impl->_lines.chain();
 }
 
 chaining::chain_sync_t<float> ui::collection_layout::chain_row_spacing() const {
-    return impl_ptr<impl>()->_row_spacing.chain();
+    return this->_impl->_row_spacing.chain();
 }
 
 chaining::chain_sync_t<float> ui::collection_layout::chain_col_spacing() const {
-    return impl_ptr<impl>()->_col_spacing.chain();
+    return this->_impl->_col_spacing.chain();
 }
 
 chaining::chain_sync_t<ui::layout_alignment> ui::collection_layout::chain_alignment() const {
-    return impl_ptr<impl>()->_alignment.chain();
+    return this->_impl->_alignment.chain();
 }
 
 chaining::chain_sync_t<ui::layout_direction> ui::collection_layout::chain_direction() const {
-    return impl_ptr<impl>()->_direction.chain();
+    return this->_impl->_direction.chain();
 }
 
 chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_row_order() const {
-    return impl_ptr<impl>()->_row_order.chain();
+    return this->_impl->_row_order.chain();
 }
 
 chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_col_order() const {
-    return impl_ptr<impl>()->_col_order.chain();
+    return this->_impl->_col_order.chain();
 }
 
 void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &layout) {
-    impl_ptr<impl>()->prepare(layout);
+    this->_impl->prepare(layout);
 }
 
 std::shared_ptr<ui::collection_layout> ui::collection_layout::make_shared() {
