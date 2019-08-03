@@ -28,11 +28,9 @@ struct button : base, std::enable_shared_from_this<button> {
     };
 
     struct context {
-        ui::button const &button;
+        std::shared_ptr<ui::button> const &button;
         ui::touch_event const &touch;
     };
-
-    button(std::nullptr_t);
 
     virtual ~button() final;
 
