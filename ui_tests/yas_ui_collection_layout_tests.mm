@@ -29,7 +29,7 @@ using namespace yas;
 
     XCTAssertTrue(layout->frame() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
     XCTAssertEqual(layout->preferred_cell_count.raw(), 0);
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{1.0f, 1.0f}));
     XCTAssertEqual(layout->lines().size(), 0);
     XCTAssertEqual(layout->row_spacing(), 0.0f);
     XCTAssertEqual(layout->col_spacing(), 0.0f);
@@ -58,7 +58,7 @@ using namespace yas;
 
     XCTAssertTrue(layout->frame() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
     XCTAssertEqual(layout->preferred_cell_count.raw(), 10);
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{2.5f, 3.5f}));
+    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{2.5f, 3.5f}));
     XCTAssertEqual(layout->lines().size(), 1);
     XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 2);
     XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
@@ -256,7 +256,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_layout_guide_rects();
 
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{1.0f, 1.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
@@ -265,9 +265,9 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
 
-    layout->set_default_cell_size({2.0f, 3.0f});
+    layout->default_cell_size.set_value({2.0f, 3.0f});
 
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{2.0f, 3.0f}));
+    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{2.0f, 3.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
@@ -746,9 +746,9 @@ using namespace yas;
 
     std::optional<ui::size> notified;
 
-    auto observer = layout->chain_default_cell_size().perform([&notified](auto const &size) { notified = size; }).end();
+    auto observer = layout->default_cell_size.chain().perform([&notified](auto const &size) { notified = size; }).end();
 
-    layout->set_default_cell_size({1.0f, 2.0f});
+    layout->default_cell_size.set_value({1.0f, 2.0f});
 
     XCTAssertTrue(notified);
     XCTAssertEqual(notified->width, 1.0f);
