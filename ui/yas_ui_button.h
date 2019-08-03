@@ -15,7 +15,7 @@ class layout_guide_rect;
 class touch_event;
 class texture;
 
-struct button : base, std::enable_shared_from_this<button> {
+struct button final : base, std::enable_shared_from_this<button> {
     class impl;
 
     enum class method {
@@ -32,7 +32,7 @@ struct button : base, std::enable_shared_from_this<button> {
         ui::touch_event const &touch;
     };
 
-    virtual ~button() final;
+    virtual ~button();
 
     void set_texture(ui::texture);
     ui::texture const &texture() const;
