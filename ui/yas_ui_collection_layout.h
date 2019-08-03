@@ -22,7 +22,6 @@ namespace yas::ui {
 class layout_guide_rect;
 
 struct collection_layout : base {
-   public:
     class impl;
 
     struct line {
