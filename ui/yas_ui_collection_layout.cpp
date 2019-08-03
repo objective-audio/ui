@@ -565,3 +565,11 @@ chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_row_order(
 chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_col_order() const {
     return impl_ptr<impl>()->_col_order.chain();
 }
+
+std::shared_ptr<ui::collection_layout> ui::collection_layout::make_shared() {
+    return make_shared({});
+}
+
+std::shared_ptr<ui::collection_layout> ui::collection_layout::make_shared(args args) {
+    return std::shared_ptr<collection_layout>(new collection_layout{std::move(args)});
+}

@@ -89,5 +89,8 @@ struct collection_layout : base {
     [[nodiscard]] chaining::chain_sync_t<ui::layout_direction> chain_direction() const;
     [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_row_order() const;
     [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
+
+    static std::shared_ptr<collection_layout> make_shared();
+    static std::shared_ptr<collection_layout> make_shared(args);
 };
 }  // namespace yas::ui
