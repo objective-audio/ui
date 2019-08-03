@@ -49,7 +49,7 @@ struct main {
     chaining::any_observer_ptr _keyboard_observer = nullptr;
 
     ui::node _render_target_node;
-    ui::blur _blur;
+    std::shared_ptr<ui::blur> _blur = ui::blur::make_shared();
     ui::rect_plane _plane_on_target{1};
     chaining::any_observer_ptr _render_target_layout = nullptr;
 };
