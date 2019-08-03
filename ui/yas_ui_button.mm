@@ -28,7 +28,7 @@ struct ui::button::impl : base::impl {
         this->_update_rect_index();
     }
 
-    void prepare(std::shared_ptr<ui::button> &&button) {
+    void prepare(std::shared_ptr<ui::button> const &button) {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
