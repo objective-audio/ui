@@ -47,8 +47,6 @@ struct collection_layout : base {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    collection_layout();
-    collection_layout(args);
     collection_layout(std::nullptr_t);
 
     void set_frame(ui::region);
@@ -90,6 +88,11 @@ struct collection_layout : base {
     [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_row_order() const;
     [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
 
+   private:
+    collection_layout();
+    collection_layout(args);
+
+   public:
     static std::shared_ptr<collection_layout> make_shared();
     static std::shared_ptr<collection_layout> make_shared(args);
 };
