@@ -25,7 +25,7 @@ ui::effect &ui::blur::effect() {
     return *this->_effect;
 }
 
-void ui::blur::prepare(std::shared_ptr<ui::blur> &blur) {
+void ui::blur::_prepare(std::shared_ptr<ui::blur> &blur) {
     auto weak_blur = to_weak(blur);
 
     this->_sigma_observer = this->_sigma.chain()
@@ -62,6 +62,6 @@ void ui::blur::_update_effect_handler() {
 
 std::shared_ptr<ui::blur> ui::blur::make_shared() {
     auto shared = std::shared_ptr<blur>(new blur{});
-    shared->prepare(shared);
+    shared->_prepare(shared);
     return shared;
 }

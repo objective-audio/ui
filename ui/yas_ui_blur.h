@@ -22,7 +22,7 @@ struct blur {
 
     blur();
 
-    void prepare(std::shared_ptr<blur> &);
+    void _prepare(std::shared_ptr<blur> &);
     void _update_effect_handler();
 
    public:
