@@ -47,8 +47,6 @@ struct collection_layout : base {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    collection_layout(std::nullptr_t);
-
     void set_frame(ui::region);
     void set_preferred_cell_count(std::size_t const);
     void set_default_cell_size(ui::size);

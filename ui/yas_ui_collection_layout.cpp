@@ -423,9 +423,6 @@ struct ui::collection_layout::impl : base::impl {
 ui::collection_layout::collection_layout(args args) : base(std::make_shared<impl>(std::move(args))) {
 }
 
-ui::collection_layout::collection_layout(std::nullptr_t) : base(nullptr) {
-}
-
 void ui::collection_layout::set_frame(ui::region frame) {
     impl_ptr<impl>()->set_frame(std::move(frame));
 }
