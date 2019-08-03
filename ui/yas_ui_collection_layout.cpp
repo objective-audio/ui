@@ -70,7 +70,7 @@ ui::collection_layout::collection_layout(args args)
                                .to(chaining::add(-args.borders.top))
                                .send_to(_border_guide_rect.top())
                                .sync()),
-      _borders(std::move(args.borders)) {
+      borders(std::move(args.borders)) {
     if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
         throw "borders value is negative.";
     }
@@ -90,10 +90,6 @@ ui::region ui::collection_layout::frame() const {
 
 std::size_t ui::collection_layout::actual_cell_count() const {
     return this->_cell_guide_rects.size();
-}
-
-ui::layout_borders const &ui::collection_layout::borders() const {
-    return this->_borders;
 }
 
 ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
