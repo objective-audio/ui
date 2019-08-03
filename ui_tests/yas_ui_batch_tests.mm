@@ -32,7 +32,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto batch = ui::batch::make_unique();
+    auto batch = ui::batch::make_shared();
 
     XCTAssertTrue(batch);
 
@@ -48,7 +48,7 @@ using namespace yas;
         return;
     }
 
-    auto batch = ui::batch::make_unique();
+    auto batch = ui::batch::make_shared();
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -86,7 +86,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto batch = ui::batch::make_unique();
+    auto batch = ui::batch::make_shared();
 
     ui::mesh mesh1;
     mesh1.set_color({0.5f, 0.5f, 0.5f, 0.5f});
@@ -176,7 +176,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto batch = ui::batch::make_unique();
+    auto batch = ui::batch::make_shared();
 
     ui::mesh mesh;
     ui::dynamic_mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
@@ -225,7 +225,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    auto batch = ui::batch::make_unique();
+    auto batch = ui::batch::make_shared();
 
     ui::mesh mesh;
     ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};

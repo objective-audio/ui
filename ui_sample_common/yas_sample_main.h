@@ -43,7 +43,7 @@ struct main {
     sample::soft_keyboard _soft_keyboard{_font_atlas};
     sample::justified_points _justified_points;
 
-    std::shared_ptr<ui::batch> _batch = ui::batch::make_unique();
+    std::shared_ptr<ui::batch> _batch = ui::batch::make_shared();
 
     chaining::any_observer_ptr _button_observer = nullptr;
     chaining::any_observer_ptr _keyboard_observer = nullptr;

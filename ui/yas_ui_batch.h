@@ -33,6 +33,6 @@ struct batch final : base, renderable_batch, std::enable_shared_from_this<batch>
     void clear_render_meshes() override;
 
    public:
-    static std::unique_ptr<batch> make_unique();
+    static std::shared_ptr<batch> make_shared();
 };
 }  // namespace yas::ui
