@@ -73,3 +73,7 @@ double ui::blur::sigma() const {
 ui::effect &ui::blur::effect() {
     return impl_ptr<impl>()->_effect;
 }
+
+std::shared_ptr<ui::blur> ui::blur::make_shared() {
+    return std::shared_ptr<blur>(new blur{});
+}

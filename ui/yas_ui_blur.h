@@ -19,5 +19,7 @@ struct blur : base {
     double sigma() const;
 
     ui::effect &effect();
+
+    static std::shared_ptr<blur> make_shared();
 };
 }  // namespace yas::ui
