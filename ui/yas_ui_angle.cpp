@@ -87,10 +87,10 @@ ui::angle const &ui::angle::zero() {
     return _zero_angle;
 }
 
-ui::angle ui::make_radians_angle(float const value) {
+ui::angle ui::angle::make_radians(float const value) {
     return ui::angle{value * (180.0f / static_cast<float>(M_PI))};
 }
 
-ui::angle ui::make_degrees_angle(float const value) {
+ui::angle ui::angle::make_degrees(float const value) {
     return ui::angle{value};
 }
