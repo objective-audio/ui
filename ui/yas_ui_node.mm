@@ -66,6 +66,21 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
 
         // batch
 
+        auto batch_observer = this->_batch.chain()
+                                  .perform([prev_batch = std::shared_ptr<ui::batch>{nullptr}](
+                                               std::shared_ptr<ui::batch> const &batch) mutable {
+                                      if (prev_batch) {
+                                          prev_batch->renderable()->clear_render_meshes();
+                                      }
+
+                                      if (batch) {
+                                          batch->renderable()->clear_render_meshes();
+                                      }
+
+                                      prev_batch = batch;
+                                  })
+                                  .end();
+
         auto batch_chain = this->_batch.chain().to_value(ui::node_update_reason::batch);
 
         // render_target
@@ -86,6 +101,7 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
 
         this->_update_observers.reserve(2);
         this->_update_observers.emplace_back(std::move(mesh_color_observer));
+        this->_update_observers.emplace_back(std::move(batch_observer));
         this->_update_observers.emplace_back(std::move(updates_observer));
 
         // dispatch
@@ -118,18 +134,6 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
         if (auto parent = this->_parent.raw().lock()) {
             parent.impl_ptr<impl>()->_remove_sub_node(cast<ui::node>());
         }
-    }
-
-    void set_batch(std::shared_ptr<ui::batch> &&batch) {
-        if (batch) {
-            batch->renderable()->clear_render_meshes();
-        }
-
-        if (auto &old_batch = _batch.raw()) {
-            old_batch->renderable()->clear_render_meshes();
-        }
-
-        this->_batch.set_value(std::move(batch));
     }
 
     void build_render_info(ui::render_info &render_info) override {
@@ -611,8 +615,8 @@ chaining::value::holder<std::shared_ptr<ui::batch>> const &ui::node::batch() con
     return impl_ptr<impl>()->_batch;
 }
 
-void ui::node::set_batch(std::shared_ptr<ui::batch> batch) {
-    impl_ptr<impl>()->set_batch(std::move(batch));
+chaining::value::holder<std::shared_ptr<ui::batch>> &ui::node::batch() {
+    return impl_ptr<impl>()->_batch;
 }
 
 chaining::value::holder<ui::render_target> const &ui::node::render_target() const {

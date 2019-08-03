@@ -117,11 +117,11 @@ struct test_render_encoder : base {
     XCTAssertTrue(node.collider().raw());
     XCTAssertEqual(node.collider().raw(), collider);
 
-    node.set_batch(batch);
+    node.batch().set_value(batch);
     XCTAssertTrue(node.batch().raw());
     XCTAssertEqual(node.batch().raw(), batch);
 
-    node.set_batch(nullptr);
+    node.batch().set_value(nullptr);
     XCTAssertFalse(node.batch().raw());
 
     XCTAssertTrue(node.is_enabled().raw());
@@ -143,7 +143,7 @@ struct test_render_encoder : base {
 
     node.mesh().set_value(ui::mesh{});
     node.collider().set_value(ui::collider{});
-    node.set_batch(ui::batch::make_shared());
+    node.batch().set_value(ui::batch::make_shared());
 
     XCTAssertTrue(const_node.mesh().raw());
     XCTAssertTrue(const_node.collider().raw());
@@ -441,7 +441,7 @@ struct test_render_encoder : base {
     node.angle().set_value({1.0f});
     node.is_enabled().set_value(false);
     node.collider().set_value(ui::collider{});
-    node.set_batch(ui::batch::make_shared());
+    node.batch().set_value(ui::batch::make_shared());
 
     ui::node sub_node;
     node.add_sub_node(sub_node);
@@ -540,7 +540,7 @@ struct test_render_encoder : base {
 
     sub_node.mesh().set_value(ui::mesh{});
 
-    batch_node.set_batch(ui::batch::make_shared());
+    batch_node.batch().set_value(ui::batch::make_shared());
     batch_node.add_sub_node(batch_sub_node);
 
     batch_sub_node.mesh().set_value(ui::mesh{});
