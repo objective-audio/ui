@@ -28,5 +28,8 @@ struct batch : base {
     ui::renderable_batch _renderable = nullptr;
     ui::render_encodable _encodable = nullptr;
     ui::metal_object _metal_object = nullptr;
+
+   public:
+    static std::unique_ptr<batch> make_unique();
 };
 }  // namespace yas::ui

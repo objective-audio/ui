@@ -145,3 +145,7 @@ ui::metal_object &ui::batch::metal() {
     }
     return this->_metal_object;
 }
+
+std::unique_ptr<ui::batch> ui::batch::make_unique() {
+    return std::unique_ptr<batch>(new batch{});
+}
