@@ -15,9 +15,6 @@ class node;
 struct batch final : base {
     class impl;
 
-    batch();
-    batch(std::nullptr_t);
-
     virtual ~batch();
 
     ui::renderable_batch &renderable();
@@ -28,6 +25,9 @@ struct batch final : base {
     ui::renderable_batch _renderable = nullptr;
     ui::render_encodable _encodable = nullptr;
     ui::metal_object _metal_object = nullptr;
+
+    batch();
+    batch(std::nullptr_t);
 
    public:
     static std::unique_ptr<batch> make_unique();

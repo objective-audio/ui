@@ -12,7 +12,7 @@ void sample::main::setup() {
     root_node.add_sub_node(this->_bg.rect_plane().node());
 
     ui::node batch_node;
-    batch_node.batch().set_value(ui::batch{});
+    batch_node.batch().set_value(ui::batch::make_unique());
     batch_node.add_sub_node(this->_cursor_over_planes.node());
     root_node.add_sub_node(std::move(batch_node));
 

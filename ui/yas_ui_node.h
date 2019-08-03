@@ -59,8 +59,8 @@ struct node : base {
     chaining::value::holder<ui::mesh> &mesh();
     chaining::value::holder<ui::collider> const &collider() const;
     chaining::value::holder<ui::collider> &collider();
-    chaining::value::holder<ui::batch> const &batch() const;
-    chaining::value::holder<ui::batch> &batch();
+    chaining::value::holder<std::shared_ptr<ui::batch>> const &batch() const;
+    chaining::value::holder<std::shared_ptr<ui::batch>> &batch();
     chaining::value::holder<ui::render_target> const &render_target() const;
     chaining::value::holder<ui::render_target> &render_target();
 
