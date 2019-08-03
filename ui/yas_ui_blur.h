@@ -12,7 +12,6 @@ class effect;
 struct blur : base {
     class impl;
 
-    blur();
     blur(std::nullptr_t);
 
     void set_sigma(double const);
@@ -20,6 +19,10 @@ struct blur : base {
 
     ui::effect &effect();
 
+   private:
+    blur();
+
+   public:
     static std::shared_ptr<blur> make_shared();
 };
 }  // namespace yas::ui
