@@ -12,13 +12,13 @@
 namespace yas::ui {
 class node;
 
-struct batch : base {
+struct batch final : base {
     class impl;
 
     batch();
     batch(std::nullptr_t);
 
-    virtual ~batch() final;
+    virtual ~batch();
 
     ui::renderable_batch &renderable();
     ui::render_encodable &encodable();
