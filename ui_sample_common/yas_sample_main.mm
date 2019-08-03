@@ -64,12 +64,12 @@ void sample::main::setup() {
 
     ui::render_target render_target;
     render_target.sync_scale_from_renderer(this->renderer);
-    render_target.set_effect(this->_blur.effect());
+    render_target.set_effect(this->_blur->effect());
 
     auto blur_action = ui::continuous_action::make_shared({.duration = 5.0, .loop_count = 0});
     blur_action->set_value_updater([weak_blur = to_weak(this->_blur)](double const value) {
         if (auto blur = weak_blur.lock()) {
-            blur.set_sigma(value * 20.0);
+            blur->set_sigma(value * 20.0);
         }
     });
     blur_action->set_value_transformer(ui::ping_pong_transformer());

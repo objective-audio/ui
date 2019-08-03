@@ -11,8 +11,7 @@
 namespace yas::ui {
 class collider;
 
-class detector : public base {
-   public:
+struct detector : base {
     detector();
     detector(std::nullptr_t);
 

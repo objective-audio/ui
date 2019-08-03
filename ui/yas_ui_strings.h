@@ -13,8 +13,7 @@ class rect_plane;
 class layout_guide_rect;
 enum class layout_alignment;
 
-class strings : public base {
-   public:
+struct strings : base {
     class impl;
 
     struct args {

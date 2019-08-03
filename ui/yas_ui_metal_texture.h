@@ -13,8 +13,7 @@ namespace yas::ui {
 class uint_size;
 class metal_system;
 
-class metal_texture : public base {
-   public:
+struct metal_texture : base {
     class impl;
 
     metal_texture(ui::uint_size size, ui::texture_usages_t const, ui::pixel_format const);
