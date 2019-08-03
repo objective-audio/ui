@@ -17,7 +17,7 @@ void sample::main::setup() {
     root_node.add_sub_node(std::move(batch_node));
 
     root_node.add_sub_node(this->_soft_keyboard.node());
-    root_node.add_sub_node(this->_big_button.button().rect_plane().node());
+    root_node.add_sub_node(this->_big_button.button()->rect_plane().node());
     root_node.add_sub_node(this->_cursor.node());
     root_node.add_sub_node(this->_touch_holder.node());
     root_node.add_sub_node(this->_inputted_text.strings().rect_plane().node());
@@ -25,14 +25,14 @@ void sample::main::setup() {
     root_node.add_sub_node(this->_justified_points.rect_plane().node());
     root_node.add_sub_node(this->_draw_call_text.strings().rect_plane().node());
 
-    this->_big_button.button().rect_plane().node().add_sub_node(this->_big_button_text.strings().rect_plane().node());
+    this->_big_button.button()->rect_plane().node().add_sub_node(this->_big_button_text.strings().rect_plane().node());
 
-    auto const big_button_region = this->_big_button.button().layout_guide_rect().region();
+    auto const big_button_region = this->_big_button.button()->layout_guide_rect().region();
     this->_big_button_text.strings().frame_layout_guide_rect().set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
     this->_button_observer = this->_big_button.button()
-                                 .chain()
+                                 ->chain()
                                  .perform([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
                                      if (auto text = weak_text.lock()) {
                                          text.set_status(pair.first);
@@ -48,7 +48,7 @@ void sample::main::setup() {
                                    })
                                    .end();
 
-    auto button_pos_action = ui::make_action({.target = this->_big_button.button().rect_plane().node(),
+    auto button_pos_action = ui::make_action({.target = this->_big_button.button()->rect_plane().node(),
                                               .begin_position = {0.0f, 0.0f},
                                               .end_position = {32.0f, 0.0f},
                                               .continuous_action = {.duration = 5.0, .loop_count = 0}});
