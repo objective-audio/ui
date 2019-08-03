@@ -323,7 +323,6 @@ ui::layout_guide_rect &ui::button::layout_guide_rect() {
 }
 
 void ui::button::_prepare() {
-    
 }
 
 std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region) {
