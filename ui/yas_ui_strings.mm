@@ -153,7 +153,7 @@ struct ui::strings::impl : base::impl {
                 ui::collection_layout::line{.cell_sizes = std::move(cell_sizes), .new_line_min_offset = cell_height});
         }
 
-        this->_collection_layout->set_lines(std::move(lines));
+        this->_collection_layout->lines.set_value(std::move(lines));
         this->_collection_layout->preferred_cell_count.set_value(eliminated_text.size());
 
         auto const actual_cell_count = this->_collection_layout->actual_cell_count();

@@ -43,7 +43,7 @@ ui::collection_layout::collection_layout(args args)
     : _frame_guide_rect(std::move(args.frame)),
       preferred_cell_count(args.preferred_cell_count),
       default_cell_size(std::move(args.default_cell_size)),
-      _lines(std::move(args.lines)),
+      lines(std::move(args.lines)),
       _row_spacing(args.row_spacing),
       _col_spacing(args.col_spacing),
       _alignment(args.alignment),
@@ -88,10 +88,6 @@ ui::region ui::collection_layout::frame() const {
     return this->_frame_guide_rect.region();
 }
 
-void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> lines) {
-    this->_lines.set_value(std::move(lines));
-}
-
 void ui::collection_layout::set_row_spacing(float const spacing) {
     this->_row_spacing.set_value(spacing);
 }
@@ -118,10 +114,6 @@ void ui::collection_layout::set_col_order(ui::layout_order const order) {
 
 std::size_t ui::collection_layout::actual_cell_count() const {
     return this->_cell_guide_rects.size();
-}
-
-std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
-    return this->_lines.raw();
 }
 
 float const &ui::collection_layout::row_spacing() const {
@@ -162,10 +154,6 @@ std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rec
 
 chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
     return this->_actual_cell_count.chain();
-}
-
-chaining::chain_sync_t<std::vector<ui::collection_layout::line>> ui::collection_layout::chain_lines() const {
-    return this->_lines.chain();
 }
 
 chaining::chain_sync_t<float> ui::collection_layout::chain_row_spacing() const {
@@ -222,7 +210,7 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
 
     this->_property_observers.emplace_back(this->default_cell_size.chain().send_null(*this->_layout_receiver).end());
 
-    this->_property_observers.emplace_back(this->_lines.chain().send_null(*this->_layout_receiver).end());
+    this->_property_observers.emplace_back(this->lines.chain().send_null(*this->_layout_receiver).end());
 
     this->_update_layout();
 }
@@ -347,7 +335,7 @@ std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell
     std::size_t top_idx = 0;
     std::size_t line_idx = 0;
 
-    for (auto const &line : this->_lines.raw()) {
+    for (auto const &line : this->lines.raw()) {
         if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
             return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
         }
@@ -361,7 +349,7 @@ std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell
 ui::size ui::collection_layout::_cell_size(std::size_t const idx) {
     std::size_t find_idx = 0;
 
-    for (auto const &line : this->_lines.raw()) {
+    for (auto const &line : this->lines.raw()) {
         std::size_t const line_idx = idx - find_idx;
         std::size_t const line_cell_count = line.cell_sizes.size();
 
@@ -429,7 +417,7 @@ float ui::collection_layout::_transformed_row_cell_diff(std::size_t const idx) {
 
 float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const idx) {
     auto diff = 0.0f;
-    auto const &lines = this->_lines.raw();
+    auto const &lines = this->lines.raw();
 
     if (auto cell_location = _cell_location(idx)) {
         auto line_idx = cell_location->line_idx;
