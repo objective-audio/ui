@@ -14,7 +14,7 @@
 
 using namespace yas;
 
-struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::impl, metal_object::impl {
+struct ui::batch::impl : base::impl, render_encodable::impl, metal_object::impl {
     void append_mesh(ui::mesh &&mesh) override {
         if (this->_building_type == ui::batch_building_type::rebuild) {
             ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh.texture());
@@ -27,11 +27,11 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
         }
     }
 
-    std::vector<ui::mesh> &meshes() override {
+    std::vector<ui::mesh> &meshes() {
         return this->_render_meshes;
     }
 
-    void begin_render_meshes_building(ui::batch_building_type const building_type) override {
+    void begin_render_meshes_building(ui::batch_building_type const building_type) {
         if (building_type == ui::batch_building_type::rebuild) {
             this->clear_render_meshes();
         }
@@ -39,7 +39,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
         this->_building_type = building_type;
     }
 
-    void commit_render_meshes_building() override {
+    void commit_render_meshes_building() {
         if (!to_bool(this->_building_type)) {
             throw "don't commit if batch_building_type is none.";
         }
@@ -79,7 +79,7 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
         this->_building_type = ui::batch_building_type::none;
     }
 
-    void clear_render_meshes() override {
+    void clear_render_meshes() {
         this->_render_meshes.clear();
         this->_render_mesh_infos.clear();
     }
@@ -120,16 +120,26 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
 ui::batch::batch() : base(std::make_shared<impl>()) {
 }
 
-ui::batch::batch(std::nullptr_t) : base(nullptr) {
-}
-
 ui::batch::~batch() = default;
 
-ui::renderable_batch &ui::batch::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_batch{impl_ptr<ui::renderable_batch::impl>()};
-    }
-    return this->_renderable;
+std::vector<ui::mesh> &ui::batch::meshes() {
+    return impl_ptr<impl>()->meshes();
+}
+
+void ui::batch::begin_render_meshes_building(batch_building_type const type) {
+    impl_ptr<impl>()->begin_render_meshes_building(type);
+}
+
+void ui::batch::commit_render_meshes_building() {
+    impl_ptr<impl>()->commit_render_meshes_building();
+}
+
+void ui::batch::clear_render_meshes() {
+    impl_ptr<impl>()->clear_render_meshes();
+}
+
+std::shared_ptr<ui::renderable_batch> ui::batch::renderable() {
+    return std::dynamic_pointer_cast<renderable_batch>(shared_from_this());
 }
 
 ui::render_encodable &ui::batch::encodable() {
@@ -144,4 +154,8 @@ ui::metal_object &ui::batch::metal() {
         this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
     }
     return this->_metal_object;
+}
+
+std::shared_ptr<ui::batch> ui::batch::make_shared() {
+    return std::shared_ptr<batch>(new batch{});
 }

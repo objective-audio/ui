@@ -120,13 +120,13 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
         }
     }
 
-    void set_batch(ui::batch &&batch) {
+    void set_batch(std::shared_ptr<ui::batch> &&batch) {
         if (batch) {
-            batch.renderable().clear_render_meshes();
+            batch->renderable()->clear_render_meshes();
         }
 
         if (auto &old_batch = _batch.raw()) {
-            old_batch.renderable().clear_render_meshes();
+            old_batch->renderable()->clear_render_meshes();
         }
 
         this->_batch.set_value(std::move(batch));
@@ -221,11 +221,11 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
                 auto const building_type = tree_updates.batch_building_type();
 
                 ui::render_info batch_render_info{.detector = render_info.detector};
-                auto &batch_renderable = batch.renderable();
+                auto batch_renderable = batch->renderable();
 
                 if (to_bool(building_type)) {
-                    batch_render_info.render_encodable = batch.encodable();
-                    batch_renderable.begin_render_meshes_building(building_type);
+                    batch_render_info.render_encodable = batch->encodable();
+                    batch_renderable->begin_render_meshes_building(building_type);
                 }
 
                 for (auto &sub_node : this->_children) {
@@ -235,10 +235,10 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
                 }
 
                 if (to_bool(building_type)) {
-                    batch_renderable.commit_render_meshes_building();
+                    batch_renderable->commit_render_meshes_building();
                 }
 
-                for (auto &mesh : batch_renderable.meshes()) {
+                for (auto &mesh : batch_renderable->meshes()) {
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_info.render_encodable.append_mesh(mesh);
                 }
@@ -276,7 +276,7 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
         }
 
         if (auto &batch = this->_batch.raw()) {
-            if (auto ul = unless(batch.metal().metal_setup(metal_system))) {
+            if (auto ul = unless(batch->metal().metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
@@ -423,7 +423,7 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
     chaining::value::holder<float> _alpha{1.0f};
     chaining::value::holder<ui::mesh> _mesh{ui::mesh{nullptr}};
     chaining::value::holder<ui::collider> _collider{ui::collider{nullptr}};
-    chaining::value::holder<ui::batch> _batch{ui::batch{nullptr}};
+    chaining::value::holder<std::shared_ptr<ui::batch>> _batch{std::shared_ptr<ui::batch>{nullptr}};
     chaining::value::holder<ui::render_target> _render_target{ui::render_target{nullptr}};
     chaining::value::holder<bool> _enabled{true};
 
@@ -607,12 +607,12 @@ chaining::value::holder<ui::collider> &ui::node::collider() {
     return impl_ptr<impl>()->_collider;
 }
 
-chaining::value::holder<ui::batch> const &ui::node::batch() const {
+chaining::value::holder<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
     return impl_ptr<impl>()->_batch;
 }
 
-chaining::value::holder<ui::batch> &ui::node::batch() {
-    return impl_ptr<impl>()->_batch;
+void ui::node::set_batch(std::shared_ptr<ui::batch> batch) {
+    impl_ptr<impl>()->set_batch(std::move(batch));
 }
 
 chaining::value::holder<ui::render_target> const &ui::node::render_target() const {

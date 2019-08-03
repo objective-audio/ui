@@ -62,6 +62,7 @@ struct sample::draw_call_text::impl : base::impl {
                                     top_layout = strings.frame_layout_guide_rect()
                                                      .bottom()
                                                      .chain()
+                                                     .to(chaining::add(distance))
                                                      .send_to(strings.frame_layout_guide_rect().top())
                                                      .sync();
                                 };

@@ -32,19 +32,13 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::batch batch;
+    auto batch = ui::batch::make_shared();
 
     XCTAssertTrue(batch);
 
-    XCTAssertTrue(batch.renderable());
-    XCTAssertTrue(batch.encodable());
-    XCTAssertTrue(batch.metal());
-}
-
-- (void)test_create_null {
-    ui::batch batch{nullptr};
-
-    XCTAssertFalse(batch);
+    XCTAssertTrue(batch->renderable());
+    XCTAssertTrue(batch->encodable());
+    XCTAssertTrue(batch->metal());
 }
 
 - (void)test_render_mesh_building {
@@ -54,31 +48,31 @@ using namespace yas;
         return;
     }
 
-    ui::batch batch;
+    auto batch = ui::batch::make_shared();
 
-    batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
     ui::mesh mesh1;
     ui::mesh mesh2;
-    batch.encodable().append_mesh(mesh1);
-    batch.encodable().append_mesh(mesh2);
+    batch->encodable().append_mesh(mesh1);
+    batch->encodable().append_mesh(mesh2);
 
     ui::metal_system metal_system{device.object()};
 
     ui::mesh mesh3;
     ui::texture texture3{ui::texture::args{}};
     mesh3.set_texture(texture3);
-    batch.encodable().append_mesh(mesh3);
+    batch->encodable().append_mesh(mesh3);
 
-    batch.renderable().commit_render_meshes_building();
+    batch->renderable()->commit_render_meshes_building();
 
-    auto const &meshes = batch.renderable().meshes();
+    auto const &meshes = batch->renderable()->meshes();
     XCTAssertEqual(meshes.size(), 2);
     XCTAssertFalse(meshes.at(0).texture());
     XCTAssertTrue(meshes.at(1).texture());
     XCTAssertEqual(meshes.at(1).texture(), texture3);
 
-    batch.renderable().clear_render_meshes();
+    batch->renderable()->clear_render_meshes();
 
     XCTAssertEqual(meshes.size(), 0);
 }
@@ -92,7 +86,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    ui::batch batch;
+    auto batch = ui::batch::make_shared();
 
     ui::mesh mesh1;
     mesh1.set_color({0.5f, 0.5f, 0.5f, 0.5f});
@@ -131,14 +125,14 @@ using namespace yas;
     mesh1.metal().metal_setup(metal_system);
     mesh2.metal().metal_setup(metal_system);
 
-    batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch.encodable().append_mesh(mesh1);
-    batch.encodable().append_mesh(mesh2);
+    batch->encodable().append_mesh(mesh1);
+    batch->encodable().append_mesh(mesh2);
 
-    batch.renderable().commit_render_meshes_building();
+    batch->renderable()->commit_render_meshes_building();
 
-    auto &meshes = batch.renderable().meshes();
+    auto &meshes = batch->renderable()->meshes();
     XCTAssertEqual(meshes.size(), 1);
 
     auto &render_mesh = meshes.at(0);
@@ -182,7 +176,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    ui::batch batch;
+    auto batch = ui::batch::make_shared();
 
     ui::mesh mesh;
     ui::dynamic_mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
@@ -195,11 +189,11 @@ using namespace yas;
         indices.at(0) = 3;
     });
 
-    batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
-    batch.encodable().append_mesh(mesh);
-    batch.renderable().commit_render_meshes_building();
+    batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch->encodable().append_mesh(mesh);
+    batch->renderable()->commit_render_meshes_building();
 
-    auto &meshes = batch.renderable().meshes();
+    auto &meshes = batch->renderable()->meshes();
     XCTAssertEqual(meshes.size(), 1);
 
     auto &render_mesh = meshes.at(0);
@@ -215,8 +209,8 @@ using namespace yas;
         indices.at(0) = 13;
     });
 
-    batch.renderable().begin_render_meshes_building(ui::batch_building_type::overwrite);
-    batch.renderable().commit_render_meshes_building();
+    batch->renderable()->begin_render_meshes_building(ui::batch_building_type::overwrite);
+    batch->renderable()->commit_render_meshes_building();
 
     XCTAssertEqual(vertices[0].position.x, 11.0f);
     XCTAssertEqual(indices[0], 13);
@@ -231,7 +225,7 @@ using namespace yas;
 
     ui::metal_system metal_system{device.object()};
 
-    ui::batch batch;
+    auto batch = ui::batch::make_shared();
 
     ui::mesh mesh;
     ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
@@ -239,13 +233,13 @@ using namespace yas;
 
     mesh.metal().metal_setup(metal_system);
 
-    batch.renderable().begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch.encodable().append_mesh(mesh);
+    batch->encodable().append_mesh(mesh);
 
-    batch.renderable().commit_render_meshes_building();
+    batch->renderable()->commit_render_meshes_building();
 
-    XCTAssertTrue(batch.metal().metal_setup(metal_system));
+    XCTAssertTrue(batch->metal().metal_setup(metal_system));
 }
 
 - (void)test_batch_building_type_to_string {

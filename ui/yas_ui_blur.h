@@ -21,7 +21,7 @@ struct blur {
     chaining::any_observer_ptr _sigma_observer = nullptr;
 
     blur();
-    
+
     blur(blur const &) = delete;
     blur(blur &&) = delete;
     blur &operator=(blur const &) = delete;

@@ -7,7 +7,7 @@
 #include <cstdint>
 
 namespace yas::ui {
-struct angle {
+struct angle final {
     float degrees;
 
     bool operator==(angle const &rhs) const;
