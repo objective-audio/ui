@@ -12,8 +12,7 @@
 namespace yas::ui {
 class image;
 
-class texture_element : public base {
-   public:
+struct texture_element : base {
     class impl;
 
     texture_element(draw_pair_t &&);

@@ -22,8 +22,7 @@ class layout_guide_rect;
 class metal_system;
 enum class system_type;
 
-class renderer : public base {
-   public:
+struct renderer : base {
     class impl;
 
     enum class method {

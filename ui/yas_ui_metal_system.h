@@ -9,8 +9,7 @@
 #include "yas_ui_metal_system_protocol.h"
 
 namespace yas::ui {
-class metal_system : public base {
-   public:
+struct metal_system : base {
     class impl;
 
     explicit metal_system(id<MTLDevice> const);

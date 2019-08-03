@@ -17,8 +17,7 @@ class image;
 class metal_texture;
 class texture_element;
 
-class texture : public base {
-   public:
+struct texture : base {
     class impl;
 
     struct args {

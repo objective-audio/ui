@@ -11,7 +11,7 @@ class texture;
 }
 
 namespace yas::sample {
-struct big_button : public base {
+struct big_button : base {
     class impl;
 
     big_button();

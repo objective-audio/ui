@@ -12,8 +12,7 @@
 namespace yas::ui {
 class uint_size;
 
-class image : public base {
-   public:
+struct image : base {
     class impl;
 
     struct args {

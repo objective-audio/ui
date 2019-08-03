@@ -13,10 +13,9 @@ namespace yas::ui {
 class node;
 class color;
 
-class rect_plane_data : public base {
+struct rect_plane_data : base {
     class impl;
 
-   public:
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 
     explicit rect_plane_data(ui::dynamic_mesh_data mesh_data);
@@ -53,10 +52,9 @@ class rect_plane_data : public base {
     chaining::receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
 };
 
-class rect_plane : public base {
+struct rect_plane : base {
     class impl;
 
-   public:
     explicit rect_plane(rect_plane_data);
     explicit rect_plane(std::size_t const max_rect_count);
     rect_plane(std::size_t const max_rect_count, std::size_t const max_index_count);

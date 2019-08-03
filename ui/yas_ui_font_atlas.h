@@ -8,8 +8,7 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-class font_atlas : public base {
-   public:
+struct font_atlas : base {
     class impl;
 
     enum class method { texture_changed, texture_updated };

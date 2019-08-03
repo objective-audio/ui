@@ -29,8 +29,7 @@ struct rect_shape {
     bool hit_test(ui::point const &pos) const;
 };
 
-class shape : public base {
-   public:
+struct shape : base {
     class impl_base;
 
     template <typename T>
@@ -63,8 +62,7 @@ class shape : public base {
     typename T::type const &get() const;
 };
 
-class collider : public base {
-   public:
+struct collider : base {
     class impl;
 
     collider();

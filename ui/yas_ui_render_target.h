@@ -16,8 +16,7 @@ class mesh;
 class layout_guide_rect;
 class effect;
 
-class render_target : public base {
-   public:
+struct render_target : base {
     class impl;
 
     render_target();

@@ -28,8 +28,7 @@ struct manageable_event : protocol {
     void set_phase(event_phase);
 };
 
-class event : public base {
-   public:
+struct event : base {
     class impl_base;
 
     template <typename T>
@@ -56,8 +55,7 @@ class event : public base {
     ui::manageable_event _manageable = nullptr;
 };
 
-class event_manager : public base {
-   public:
+struct event_manager : base {
     class impl;
 
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };

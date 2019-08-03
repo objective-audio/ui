@@ -15,8 +15,7 @@ class layout_guide_rect;
 class touch_event;
 class texture;
 
-class button : public base {
-   public:
+struct button : base {
     class impl;
 
     enum class method {

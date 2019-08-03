@@ -13,10 +13,9 @@ namespace yas::ui {
 class metal_encode_info;
 class metal_system;
 
-class metal_render_encoder : public base {
+struct metal_render_encoder : base {
     class impl;
 
-   public:
     struct encode_result_t {
         std::size_t const encoded_mesh_count;
     };
