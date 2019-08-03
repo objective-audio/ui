@@ -139,13 +139,13 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
     this->_update_layout();
 }
 
-void ui::collection_layout::push_notify_waiting() {
+void ui::collection_layout::_push_notify_waiting() {
     for (auto &rect : this->_cell_guide_rects) {
         rect.push_notify_waiting();
     }
 }
 
-void ui::collection_layout::pop_notify_waiting() {
+void ui::collection_layout::_pop_notify_waiting() {
     for (auto &rect : this->_cell_guide_rects) {
         rect.pop_notify_waiting();
     }
@@ -218,7 +218,7 @@ void ui::collection_layout::_update_layout() {
 
     this->_cell_guide_rects.resize(actual_cell_count);
 
-    this->push_notify_waiting();
+    this->_push_notify_waiting();
 
     std::size_t idx = 0;
 
@@ -248,7 +248,7 @@ void ui::collection_layout::_update_layout() {
         }
     }
 
-    this->pop_notify_waiting();
+    this->_pop_notify_waiting();
 
     if (prev_actual_cell_count != actual_cell_count) {
         this->_actual_cell_count.set_value(actual_cell_count);

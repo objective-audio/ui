@@ -89,8 +89,8 @@ struct collection_layout {
     collection_layout(args);
 
     void _prepare(std::shared_ptr<collection_layout> const &);
-    void push_notify_waiting();
-    void pop_notify_waiting();
+    void _push_notify_waiting();
+    void _pop_notify_waiting();
     void _update_layout();
     std::optional<cell_location> _cell_location(std::size_t const cell_idx);
     ui::size _cell_size(std::size_t const idx);
