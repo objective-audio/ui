@@ -89,8 +89,9 @@ struct collection_layout : base {
     [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
 
    private:
-    collection_layout();
     collection_layout(args);
+
+    void _prepare(std::shared_ptr<collection_layout> const &);
 
    public:
     static std::shared_ptr<collection_layout> make_shared();

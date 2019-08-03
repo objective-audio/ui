@@ -106,20 +106,20 @@ struct ui::collection_layout::impl : base::impl {
         }
     }
 
-    void prepare(ui::collection_layout &layout) {
+    void prepare(std::shared_ptr<ui::collection_layout> const &layout) {
         auto weak_layout = to_weak(layout);
 
         this->_layout_receiver = chaining::perform_receiver<>{[weak_layout]() {
             if (auto layout = weak_layout.lock()) {
-                auto layout_impl = layout.impl_ptr<impl>();
+                auto layout_impl = layout->impl_ptr<impl>();
                 layout_impl->_update_layout();
             }
         }};
 
         this->_border_observer =
             this->_border_guide_rect.chain()
-                .guard([weak_layout](ui::region const &) { return !!weak_layout; })
-                .perform([weak_layout](ui::region const &) { weak_layout.lock().impl_ptr<impl>()->_update_layout(); })
+                .guard([weak_layout](ui::region const &) { return !weak_layout.expired(); })
+                .perform([weak_layout](ui::region const &) { weak_layout.lock()->impl_ptr<impl>()->_update_layout(); })
                 .end();
 
         this->_property_observers.emplace_back(this->_row_spacing.chain().send_null(*this->_layout_receiver).end());
@@ -420,11 +420,7 @@ struct ui::collection_layout::impl : base::impl {
 
 #pragma mark - ui::collection_layout
 
-ui::collection_layout::collection_layout() : collection_layout(args{}) {
-}
-
 ui::collection_layout::collection_layout(args args) : base(std::make_shared<impl>(std::move(args))) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::collection_layout::collection_layout(std::nullptr_t) : base(nullptr) {
@@ -566,10 +562,16 @@ chaining::chain_sync_t<ui::layout_order> ui::collection_layout::chain_col_order(
     return impl_ptr<impl>()->_col_order.chain();
 }
 
+void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &layout) {
+    impl_ptr<impl>()->prepare(layout);
+}
+
 std::shared_ptr<ui::collection_layout> ui::collection_layout::make_shared() {
     return make_shared({});
 }
 
 std::shared_ptr<ui::collection_layout> ui::collection_layout::make_shared(args args) {
-    return std::shared_ptr<collection_layout>(new collection_layout{std::move(args)});
+    auto shared = std::shared_ptr<collection_layout>(new collection_layout{std::move(args)});
+    shared->_prepare(shared);
+    return shared;
 }
