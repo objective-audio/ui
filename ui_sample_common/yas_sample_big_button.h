@@ -19,6 +19,6 @@ struct big_button : base {
 
     void set_texture(ui::texture);
 
-    ui::button &button();
+    std::shared_ptr<ui::button> &button();
 };
 }  // namespace yas::sample

@@ -14,15 +14,16 @@ namespace yas::sample {
 struct soft_key : base {
     struct impl : base::impl {
         impl(std::string &&key, float const width, ui::font_atlas &&atlas)
-            : _button({.size = {width, width}}), _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
-            this->_button.rect_plane().node().mesh().raw().set_use_mesh_color(true);
-            this->_button.rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-            this->_button.rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
+            : _button(ui::button::make_shared({.size = {width, width}})),
+              _strings({.font_atlas = std::move(atlas), .max_word_count = 1}) {
+            this->_button->rect_plane().node().mesh().raw().set_use_mesh_color(true);
+            this->_button->rect_plane().data().set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+            this->_button->rect_plane().data().set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
             this->_strings.set_text(key);
             this->_strings.set_alignment(ui::layout_alignment::mid);
 
-            this->_button.rect_plane().node().add_sub_node(this->_strings.rect_plane().node());
+            this->_button->rect_plane().node().add_sub_node(this->_strings.rect_plane().node());
 
             auto const &font_atlas = this->_strings.font_atlas();
             float const strings_offset_y = std::roundf((width + font_atlas.ascent() + font_atlas.descent()) * 0.5f);
@@ -31,7 +32,7 @@ struct soft_key : base {
                 {.origin = {.y = strings_offset_y}, .size = {.width = width}});
         }
 
-        ui::button _button;
+        std::shared_ptr<ui::button> _button;
         ui::strings _strings;
     };
 
@@ -42,7 +43,7 @@ struct soft_key : base {
     soft_key(std::nullptr_t) : base(nullptr) {
     }
 
-    ui::button &button() {
+    std::shared_ptr<ui::button> &button() {
         return impl_ptr<impl>()->_button;
     }
 
@@ -51,7 +52,7 @@ struct soft_key : base {
     }
 
     void set_enabled(bool const enabled, bool const animated = false) {
-        auto &button_node = button().rect_plane().node();
+        auto &button_node = button()->rect_plane().node();
         auto &strings_node = impl_ptr<impl>()->_strings.rect_plane().node();
         auto renderer = button_node.renderer();
 
@@ -165,7 +166,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
             chaining::any_observer_ptr observer =
                 soft_key.button()
-                    .chain(ui::button::method::ended)
+                    ->chain(ui::button::method::ended)
                     .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>()), key](auto const &context) {
                         if (auto keyboard = weak_keyboard.lock()) {
                             keyboard.impl_ptr<impl>()->_key_sender.notify(key);
@@ -175,7 +176,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
             this->_soft_key_observers.emplace_back(std::move(observer));
 
-            auto &node = soft_key.button().rect_plane().node();
+            auto &node = soft_key.button()->rect_plane().node();
 
             this->_root_node.add_sub_node(node);
             this->_soft_keys.emplace_back(std::move(soft_key));
@@ -245,8 +246,8 @@ struct sample::soft_keyboard::impl : base::impl {
         guide_pairs.reserve(key_count * 4);
 
         auto handler = [](sample::soft_key &soft_key, ui::region const &region) {
-            soft_key.button().rect_plane().node().position().set_value({region.origin.x, region.origin.y});
-            soft_key.button().layout_guide_rect().set_region({.size = region.size});
+            soft_key.button()->rect_plane().node().position().set_value({region.origin.x, region.origin.y});
+            soft_key.button()->layout_guide_rect().set_region({.size = region.size});
         };
 
         auto each = make_fast_each(key_count);

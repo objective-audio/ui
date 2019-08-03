@@ -26,33 +26,27 @@ using namespace yas;
 }
 
 - (void)test_initial {
-    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}};
+    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
 
     XCTAssertTrue(button);
-    XCTAssertTrue(button.rect_plane());
-    XCTAssertEqual(button.state_index(), 0);
-    XCTAssertEqual(button.state_count(), 1);
+    XCTAssertTrue(button->rect_plane());
+    XCTAssertEqual(button->state_index(), 0);
+    XCTAssertEqual(button->state_count(), 1);
 }
 
 - (void)test_initial_with_state_count {
-    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3};
+    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3);
 
-    XCTAssertEqual(button.state_count(), 3);
-}
-
-- (void)test_create_with_null {
-    ui::button button{nullptr};
-
-    XCTAssertFalse(button);
+    XCTAssertEqual(button->state_count(), 3);
 }
 
 - (void)test_state_index {
-    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2};
+    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2);
 
-    XCTAssertNoThrow(button.set_state_index(1));
-    XCTAssertEqual(button.state_index(), 1);
+    XCTAssertNoThrow(button->set_state_index(1));
+    XCTAssertEqual(button->state_index(), 1);
 
-    XCTAssertThrows(button.set_state_index(2));
+    XCTAssertThrows(button->set_state_index(2));
 }
 
 - (void)test_method_changed {
@@ -76,13 +70,14 @@ using namespace yas;
     });
     renderer.insert_action(pre_render_action);
 
-    ui::button button{{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}};
-    renderer.root_node().add_sub_node(button.rect_plane().node());
+    auto button = ui::button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});
+    renderer.root_node().add_sub_node(button->rect_plane().node());
 
     std::vector<ui::button::method> observed_methods;
 
-    auto observer =
-        button.chain().perform([&observed_methods](auto const &pair) { observed_methods.push_back(pair.first); }).end();
+    auto observer = button->chain()
+                        .perform([&observed_methods](auto const &pair) { observed_methods.push_back(pair.first); })
+                        .end();
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
@@ -120,16 +115,16 @@ using namespace yas;
 }
 
 - (void)test_set_texture {
-    ui::button button{{.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}};
+    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
 
-    XCTAssertFalse(button.rect_plane().node().mesh().raw().texture());
+    XCTAssertFalse(button->rect_plane().node().mesh().raw().texture());
 
     ui::texture texture{{.point_size = {8, 8}}};
 
-    button.set_texture(texture);
+    button->set_texture(texture);
 
-    XCTAssertTrue(button.rect_plane().node().mesh().raw().texture());
-    XCTAssertEqual(button.texture(), texture);
+    XCTAssertTrue(button->rect_plane().node().mesh().raw().texture());
+    XCTAssertEqual(button->texture(), texture);
 }
 
 - (void)test_state_index_to_rect_index {

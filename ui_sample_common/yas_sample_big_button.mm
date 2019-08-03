@@ -12,15 +12,15 @@ using namespace yas;
 
 struct sample::big_button::impl : base::impl {
     impl() {
-        this->_button.rect_plane().node().collider().set_value(
+        this->_button->rect_plane().node().collider().set_value(
             ui::collider{ui::shape{ui::circle_shape{.radius = this->_radius}}});
     }
 
     void set_texture(ui::texture &&texture) {
-        auto &data = this->_button.rect_plane().data();
+        auto &data = this->_button->rect_plane().data();
         data.clear_observers();
 
-        this->_button.rect_plane().node().mesh().raw().set_texture(texture);
+        this->_button->rect_plane().node().mesh().raw().set_texture(texture);
 
         if (!texture) {
             return;
@@ -46,8 +46,8 @@ struct sample::big_button::impl : base::impl {
     }
 
     float const _radius = 60;
-    ui::button _button{
-        {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}}};
+    std::shared_ptr<ui::button> _button = ui::button::make_shared(
+        {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}});
 };
 
 #pragma mark - big_button
@@ -62,6 +62,6 @@ void sample::big_button::set_texture(ui::texture texture) {
     impl_ptr<impl>()->set_texture(std::move(texture));
 }
 
-ui::button &sample::big_button::button() {
+std::shared_ptr<ui::button> &sample::big_button::button() {
     return impl_ptr<impl>()->_button;
 }

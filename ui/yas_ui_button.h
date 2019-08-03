@@ -15,7 +15,7 @@ class layout_guide_rect;
 class touch_event;
 class texture;
 
-struct button : base {
+struct button final : base, std::enable_shared_from_this<button> {
     class impl;
 
     enum class method {
@@ -28,15 +28,11 @@ struct button : base {
     };
 
     struct context {
-        ui::button const &button;
+        std::shared_ptr<ui::button> const &button;
         ui::touch_event const &touch;
     };
 
-    button(ui::region const &region);
-    button(ui::region const &region, std::size_t const state_count);
-    button(std::nullptr_t);
-
-    virtual ~button() final;
+    virtual ~button();
 
     void set_texture(ui::texture);
     ui::texture const &texture() const;
@@ -54,6 +50,15 @@ struct button : base {
     ui::rect_plane &rect_plane();
 
     ui::layout_guide_rect &layout_guide_rect();
+
+   private:
+    button(ui::region const &region, std::size_t const state_count);
+
+    void _prepare();
+
+   public:
+    static std::shared_ptr<button> make_shared(ui::region const &);
+    static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count);
 };
 }  // namespace yas::ui
 
