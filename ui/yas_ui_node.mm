@@ -611,8 +611,8 @@ chaining::value::holder<std::shared_ptr<ui::batch>> const &ui::node::batch() con
     return impl_ptr<impl>()->_batch;
 }
 
-chaining::value::holder<std::shared_ptr<ui::batch>> &ui::node::batch() {
-    return impl_ptr<impl>()->_batch;
+void ui::node::set_batch(std::shared_ptr<ui::batch> batch) {
+    impl_ptr<impl>()->set_batch(std::move(batch));
 }
 
 chaining::value::holder<ui::render_target> const &ui::node::render_target() const {
