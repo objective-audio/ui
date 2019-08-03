@@ -13,10 +13,9 @@ class texture;
 class mesh_data;
 enum class primitive_type;
 
-class mesh : public base {
+struct mesh : base {
     class impl;
 
-   public:
     mesh();
     mesh(std::nullptr_t);
 

@@ -9,10 +9,9 @@
 namespace yas::ui {
 class effect;
 
-class blur : public base {
+struct blur : base {
     class impl;
 
-   public:
     blur();
     blur(std::nullptr_t);
 

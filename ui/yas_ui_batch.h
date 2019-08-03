@@ -12,10 +12,9 @@
 namespace yas::ui {
 class node;
 
-class batch : public base {
+struct batch : base {
     class impl;
 
-   public:
     batch();
     batch(std::nullptr_t);
 

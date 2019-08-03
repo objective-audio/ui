@@ -29,8 +29,7 @@ using namespace yas;
 
 #pragma mark - node::impl
 
-struct ui::node::impl : public base::impl, public renderable_node::impl, public metal_object::impl {
-   public:
+struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
     void prepare(ui::node &node) {
         auto weak_node = to_weak(node);
 

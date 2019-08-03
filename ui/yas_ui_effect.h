@@ -13,10 +13,9 @@
 namespace yas::ui {
 class texture;
 
-class effect : public base {
+struct effect : base {
     class impl;
 
-   public:
     using metal_handler_f =
         std::function<void(ui::texture &src, ui::texture &dst, ui::metal_system &, id<MTLCommandBuffer> const)>;
 

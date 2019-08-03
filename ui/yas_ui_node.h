@@ -23,8 +23,7 @@ class render_target;
 class layout_guide;
 class layout_guide_point;
 
-class node : public base {
-   public:
+struct node : base {
     class impl;
 
     enum class method {

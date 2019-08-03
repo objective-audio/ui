@@ -21,7 +21,7 @@ class observer;
 namespace yas::ui {
 class layout_guide_rect;
 
-class collection_layout : public base {
+struct collection_layout : base {
    public:
     class impl;
 

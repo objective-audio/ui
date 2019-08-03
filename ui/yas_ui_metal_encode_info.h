@@ -14,10 +14,9 @@ class mesh;
 class effect;
 class texture;
 
-class metal_encode_info : public base {
+struct metal_encode_info : base {
     class impl;
 
-   public:
     struct args {
         MTLRenderPassDescriptor *renderPassDescriptor = nil;
         id<MTLRenderPipelineState> pipelineStateWithTexture = nil;

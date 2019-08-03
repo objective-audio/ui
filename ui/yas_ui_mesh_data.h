@@ -11,8 +11,7 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-class mesh_data : public base {
-   public:
+struct mesh_data : base {
     struct args {
         std::size_t vertex_count = 0;
         std::size_t index_count = 0;
