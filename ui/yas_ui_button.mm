@@ -322,13 +322,17 @@ ui::layout_guide_rect &ui::button::layout_guide_rect() {
     return impl_ptr<impl>()->_layout_guide_rect;
 }
 
+void ui::button::_prepare() {
+    
+}
+
 std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region) {
     return make_shared(region, 1);
 }
 
 std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
     auto shared = std::shared_ptr<button>(new button{region, state_count});
-
+    shared->_prepare();
     return shared;
 }
 

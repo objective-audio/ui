@@ -55,6 +55,10 @@ struct button : base, std::enable_shared_from_this<button> {
 
     ui::layout_guide_rect &layout_guide_rect();
 
+private:
+    void _prepare();
+    
+public:
     static std::shared_ptr<button> make_shared(ui::region const &);
     static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count);
 };
