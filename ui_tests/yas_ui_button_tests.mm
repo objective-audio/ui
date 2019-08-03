@@ -40,12 +40,6 @@ using namespace yas;
     XCTAssertEqual(button->state_count(), 3);
 }
 
-- (void)test_create_with_null {
-    ui::button button{nullptr};
-
-    XCTAssertFalse(button);
-}
-
 - (void)test_state_index {
     auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2);
 
