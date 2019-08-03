@@ -15,13 +15,13 @@ struct ui::blur::impl : base::impl {
     chaining::value::holder<double> _sigma{0.0};
     ui::effect _effect;
 
-    void prepare(ui::blur &blur) {
+    void prepare(std::shared_ptr<ui::blur> &blur) {
         auto weak_blur = to_weak(blur);
 
         this->_sigma_observer =
             this->_sigma.chain()
-                .guard([weak_blur](double const &) { return !!weak_blur; })
-                .perform([weak_blur](double const &) { weak_blur.lock().impl_ptr<impl>()->_update_effect_handler(); })
+                .guard([weak_blur](double const &) { return !weak_blur.expired(); })
+                .perform([weak_blur](double const &) { weak_blur.lock()->impl_ptr<impl>()->_update_effect_handler(); })
                 .sync();
     }
 
@@ -56,7 +56,6 @@ struct ui::blur::impl : base::impl {
 };
 
 ui::blur::blur() : base(std::make_shared<blur::impl>()) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::blur::blur(std::nullptr_t) : base(nullptr) {
@@ -75,5 +74,7 @@ ui::effect &ui::blur::effect() {
 }
 
 std::shared_ptr<ui::blur> ui::blur::make_shared() {
-    return std::shared_ptr<blur>(new blur{});
+    auto shared = std::shared_ptr<blur>(new blur{});
+    shared->impl_ptr<impl>()->prepare(shared);
+    return shared;
 }
