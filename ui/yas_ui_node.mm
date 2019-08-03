@@ -122,11 +122,11 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
 
     void set_batch(std::shared_ptr<ui::batch> &&batch) {
         if (batch) {
-            batch->renderable().clear_render_meshes();
+            batch->renderable()->clear_render_meshes();
         }
 
         if (auto &old_batch = _batch.raw()) {
-            old_batch->renderable().clear_render_meshes();
+            old_batch->renderable()->clear_render_meshes();
         }
 
         this->_batch.set_value(std::move(batch));
@@ -221,11 +221,11 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
                 auto const building_type = tree_updates.batch_building_type();
 
                 ui::render_info batch_render_info{.detector = render_info.detector};
-                auto &batch_renderable = batch->renderable();
+                auto batch_renderable = batch->renderable();
 
                 if (to_bool(building_type)) {
                     batch_render_info.render_encodable = batch->encodable();
-                    batch_renderable.begin_render_meshes_building(building_type);
+                    batch_renderable->begin_render_meshes_building(building_type);
                 }
 
                 for (auto &sub_node : this->_children) {
@@ -235,10 +235,10 @@ struct ui::node::impl : base::impl, renderable_node::impl, metal_object::impl {
                 }
 
                 if (to_bool(building_type)) {
-                    batch_renderable.commit_render_meshes_building();
+                    batch_renderable->commit_render_meshes_building();
                 }
 
-                for (auto &mesh : batch_renderable.meshes()) {
+                for (auto &mesh : batch_renderable->meshes()) {
                     mesh.renderable().set_matrix(mesh_matrix);
                     render_info.render_encodable.append_mesh(mesh);
                 }
