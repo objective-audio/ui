@@ -15,7 +15,7 @@ class layout_guide_rect;
 class touch_event;
 class texture;
 
-struct button : base {
+struct button : base, std::enable_shared_from_this<button> {
     class impl;
 
     enum class method {
@@ -54,7 +54,7 @@ struct button : base {
     ui::rect_plane &rect_plane();
 
     ui::layout_guide_rect &layout_guide_rect();
-    
+
     static std::shared_ptr<button> make_shared(ui::region const &);
     static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count);
 };
