@@ -328,7 +328,7 @@ std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region) {
 
 std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
     auto shared = std::shared_ptr<button>(new button{region, state_count});
-    
+
     return shared;
 }
 
