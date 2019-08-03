@@ -120,9 +120,6 @@ struct ui::batch::impl : base::impl, renderable_batch::impl, render_encodable::i
 ui::batch::batch() : base(std::make_shared<impl>()) {
 }
 
-ui::batch::batch(std::nullptr_t) : base(nullptr) {
-}
-
 ui::batch::~batch() = default;
 
 ui::renderable_batch &ui::batch::renderable() {

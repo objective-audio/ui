@@ -27,7 +27,6 @@ struct batch final : base {
     ui::metal_object _metal_object = nullptr;
 
     batch();
-    batch(std::nullptr_t);
 
    public:
     static std::unique_ptr<batch> make_unique();
