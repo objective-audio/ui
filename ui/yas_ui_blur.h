@@ -12,8 +12,6 @@ class effect;
 struct blur : base {
     class impl;
 
-    blur(std::nullptr_t);
-
     void set_sigma(double const);
     double sigma() const;
 

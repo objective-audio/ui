@@ -58,9 +58,6 @@ struct ui::blur::impl : base::impl {
 ui::blur::blur() : base(std::make_shared<blur::impl>()) {
 }
 
-ui::blur::blur(std::nullptr_t) : base(nullptr) {
-}
-
 void ui::blur::set_sigma(double const sigma) {
     impl_ptr<impl>()->_sigma.set_value(sigma);
 }
