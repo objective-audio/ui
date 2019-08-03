@@ -265,9 +265,6 @@ struct ui::button::impl : base::impl {
 
 #pragma mark - ui::button
 
-ui::button::button(ui::region const &region) : button(region, 1) {
-}
-
 ui::button::button(ui::region const &region, std::size_t const state_count)
     : base(std::make_shared<impl>(region, state_count)) {
 }

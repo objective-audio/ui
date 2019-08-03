@@ -32,8 +32,6 @@ struct button : base, std::enable_shared_from_this<button> {
         ui::touch_event const &touch;
     };
 
-    button(ui::region const &region);
-    button(ui::region const &region, std::size_t const state_count);
     button(std::nullptr_t);
 
     virtual ~button() final;
@@ -56,6 +54,8 @@ struct button : base, std::enable_shared_from_this<button> {
     ui::layout_guide_rect &layout_guide_rect();
 
    private:
+    button(ui::region const &region, std::size_t const state_count);
+
     void _prepare();
 
    public:
