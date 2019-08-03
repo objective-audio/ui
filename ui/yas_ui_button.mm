@@ -28,13 +28,13 @@ struct ui::button::impl : base::impl {
         this->_update_rect_index();
     }
 
-    void prepare(ui::button &button) {
+    void prepare(std::shared_ptr<ui::button> &&button) {
         auto const weak_button = to_weak(button);
         auto &node = this->_rect_plane.node();
 
         this->_leave_or_enter_or_move_tracking_receiver = chaining::perform_receiver<>{[weak_button] {
             if (auto button = weak_button.lock()) {
-                auto button_impl = button.impl_ptr<impl>();
+                auto button_impl = button->impl_ptr<impl>();
                 if (auto tracking_event = button_impl->_tracking_event) {
                     button_impl->_leave_or_enter_or_move_tracking(tracking_event);
                 }
@@ -43,7 +43,7 @@ struct ui::button::impl : base::impl {
 
         this->_cancel_tracking_receiver = chaining::perform_receiver<>{[weak_button]() {
             if (auto button = weak_button.lock()) {
-                auto button_impl = button.impl_ptr<impl>();
+                auto button_impl = button->impl_ptr<impl>();
                 if (auto tracking_event = button_impl->_tracking_event) {
                     button_impl->_cancel_tracking(tracking_event);
                 }
@@ -59,13 +59,13 @@ struct ui::button::impl : base::impl {
                     if (auto renderer = value) {
                         event_observer = renderer.event_manager()
                                              .chain(ui::event_manager::method::touch_changed)
-                                             .guard([weak_button](ui::event const &) { return !!weak_button; })
+                                             .guard([weak_button](ui::event const &) { return !weak_button.expired(); })
                                              .perform([weak_button](ui::event const &event) {
-                                                 weak_button.lock().impl_ptr<impl>()->_update_tracking(event);
+                                                 weak_button.lock()->impl_ptr<impl>()->_update_tracking(event);
                                              })
                                              .end();
                         if (auto button = weak_button.lock()) {
-                            auto button_impl = button.impl_ptr<impl>();
+                            auto button_impl = button->impl_ptr<impl>();
                             leave_observers = button_impl->_make_leave_chains();
                             collider_observers = button_impl->_make_collider_chains();
                         }
@@ -78,9 +78,9 @@ struct ui::button::impl : base::impl {
                 .end();
 
         this->_rect_observer = this->_layout_guide_rect.chain()
-                                   .guard([weak_button](ui::region const &) { return !!weak_button; })
+                                   .guard([weak_button](ui::region const &) { return !weak_button.expired(); })
                                    .perform([weak_button, state_count = this->_state_count](ui::region const &value) {
-                                       weak_button.lock().impl_ptr<impl>()->_update_rect_positions(value, state_count);
+                                       weak_button.lock()->impl_ptr<impl>()->_update_rect_positions(value, state_count);
                                    })
                                    .end();
     }
@@ -270,7 +270,6 @@ ui::button::button(ui::region const &region) : button(region, 1) {
 
 ui::button::button(ui::region const &region, std::size_t const state_count)
     : base(std::make_shared<impl>(region, state_count)) {
-    impl_ptr<impl>()->prepare(*this);
 }
 
 ui::button::button(std::nullptr_t) : base(nullptr) {
@@ -323,6 +322,7 @@ ui::layout_guide_rect &ui::button::layout_guide_rect() {
 }
 
 void ui::button::_prepare() {
+    impl_ptr<impl>()->prepare(shared_from_this());
 }
 
 std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region) {
