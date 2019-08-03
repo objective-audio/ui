@@ -322,6 +322,16 @@ ui::layout_guide_rect &ui::button::layout_guide_rect() {
     return impl_ptr<impl>()->_layout_guide_rect;
 }
 
+std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region) {
+    return make_shared(region, 1);
+}
+
+std::shared_ptr<ui::button> ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
+    auto shared = std::shared_ptr<button>(new button{region, state_count});
+    
+    return shared;
+}
+
 #pragma mark -
 
 std::size_t yas::to_rect_index(std::size_t const state_idx, bool is_tracking) {
