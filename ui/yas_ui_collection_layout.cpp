@@ -40,7 +40,7 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 #pragma mark - ui::collection_layout
 
 ui::collection_layout::collection_layout(args args)
-    : _frame_guide_rect(std::move(args.frame)),
+    : frame_guide_rect(std::move(args.frame)),
       preferred_cell_count(args.preferred_cell_count),
       default_cell_size(std::move(args.default_cell_size)),
       lines(std::move(args.lines)),
@@ -50,26 +50,23 @@ ui::collection_layout::collection_layout(args args)
       direction(args.direction),
       row_order(args.row_order),
       col_order(args.col_order),
-      _left_border_observer(_frame_guide_rect.left()
+      _left_border_observer(frame_guide_rect.left()
                                 .chain()
                                 .to(chaining::add(args.borders.left))
                                 .send_to(_border_guide_rect.left())
                                 .sync()),
-      _right_border_observer(_frame_guide_rect.right()
+      _right_border_observer(frame_guide_rect.right()
                                  .chain()
                                  .to(chaining::add(-args.borders.right))
                                  .send_to(_border_guide_rect.right())
                                  .sync()),
-      _bottom_border_observer(_frame_guide_rect.bottom()
+      _bottom_border_observer(frame_guide_rect.bottom()
                                   .chain()
                                   .to(chaining::add(args.borders.bottom))
                                   .send_to(_border_guide_rect.bottom())
                                   .sync()),
-      _top_border_observer(_frame_guide_rect.top()
-                               .chain()
-                               .to(chaining::add(-args.borders.top))
-                               .send_to(_border_guide_rect.top())
-                               .sync()),
+      _top_border_observer(
+          frame_guide_rect.top().chain().to(chaining::add(-args.borders.top)).send_to(_border_guide_rect.top()).sync()),
       borders(std::move(args.borders)) {
     if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
         throw "borders value is negative.";
@@ -77,23 +74,19 @@ ui::collection_layout::collection_layout(args args)
 }
 
 void ui::collection_layout::set_frame(ui::region frame) {
-    if (this->_frame_guide_rect.region() != frame) {
-        this->_frame_guide_rect.set_region(std::move(frame));
+    if (this->frame_guide_rect.region() != frame) {
+        this->frame_guide_rect.set_region(std::move(frame));
 
         this->_update_layout();
     }
 }
 
 ui::region ui::collection_layout::frame() const {
-    return this->_frame_guide_rect.region();
+    return this->frame_guide_rect.region();
 }
 
 std::size_t ui::collection_layout::actual_cell_count() const {
     return this->cell_guide_rects.size();
-}
-
-ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
-    return this->_frame_guide_rect;
 }
 
 chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
@@ -148,7 +141,7 @@ void ui::collection_layout::_pop_notify_waiting() {
 }
 
 void ui::collection_layout::_update_layout() {
-    auto frame_region = this->_direction_swapped_region_if_horizontal(this->_frame_guide_rect.region());
+    auto frame_region = this->_direction_swapped_region_if_horizontal(this->frame_guide_rect.region());
     auto const &preferred_cell_count = this->preferred_cell_count.raw();
 
     if (preferred_cell_count == 0) {

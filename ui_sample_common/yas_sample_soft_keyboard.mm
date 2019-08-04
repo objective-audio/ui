@@ -198,7 +198,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
         auto renderer = this->_root_node.renderer();
         auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
-        auto &frame_guide_rect = this->_collection_layout->frame_layout_guide_rect();
+        auto &frame_guide_rect = this->_collection_layout->frame_guide_rect;
 
         this->_frame_layouts.emplace_back(safe_area_guide_rect.left().chain().send_to(frame_guide_rect.left()).sync());
         this->_frame_layouts.emplace_back(

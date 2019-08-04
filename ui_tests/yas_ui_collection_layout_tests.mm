@@ -152,10 +152,10 @@ using namespace yas;
 
     XCTAssertTrue(layout->frame() == (ui::region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
 
-    XCTAssertEqual(layout->frame_layout_guide_rect().left().value(), 2.0f);
-    XCTAssertEqual(layout->frame_layout_guide_rect().right().value(), 10.0f);
-    XCTAssertEqual(layout->frame_layout_guide_rect().bottom().value(), 4.0f);
-    XCTAssertEqual(layout->frame_layout_guide_rect().top().value(), 20.0f);
+    XCTAssertEqual(layout->frame_guide_rect.left().value(), 2.0f);
+    XCTAssertEqual(layout->frame_guide_rect.right().value(), 10.0f);
+    XCTAssertEqual(layout->frame_guide_rect.bottom().value(), 4.0f);
+    XCTAssertEqual(layout->frame_guide_rect.top().value(), 20.0f);
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
@@ -163,10 +163,10 @@ using namespace yas;
 
     XCTAssertTrue(layout->frame() == (ui::region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
 
-    XCTAssertEqual(layout->frame_layout_guide_rect().left().value(), 3.0f);
-    XCTAssertEqual(layout->frame_layout_guide_rect().right().value(), 10.0f);
-    XCTAssertEqual(layout->frame_layout_guide_rect().bottom().value(), 5.0f);
-    XCTAssertEqual(layout->frame_layout_guide_rect().top().value(), 21.0f);
+    XCTAssertEqual(layout->frame_guide_rect.left().value(), 3.0f);
+    XCTAssertEqual(layout->frame_guide_rect.right().value(), 10.0f);
+    XCTAssertEqual(layout->frame_guide_rect.bottom().value(), 5.0f);
+    XCTAssertEqual(layout->frame_guide_rect.top().value(), 21.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 4.0f);
     XCTAssertEqual(cell_guide_rects.at(0).right().value(), 6.0f);

@@ -263,7 +263,7 @@ ui::layout_alignment const &ui::strings::alignment() const {
 }
 
 ui::layout_guide_rect &ui::strings::frame_layout_guide_rect() {
-    return impl_ptr<impl>()->_collection_layout->frame_layout_guide_rect();
+    return impl_ptr<impl>()->_collection_layout->frame_guide_rect;
 }
 
 ui::rect_plane &ui::strings::rect_plane() {

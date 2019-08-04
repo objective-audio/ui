@@ -61,8 +61,7 @@ struct collection_layout {
 
     ui::layout_borders const borders;
 
-    ui::layout_guide_rect &frame_layout_guide_rect();
-
+    ui::layout_guide_rect frame_guide_rect;
     std::vector<ui::layout_guide_rect> cell_guide_rects;
 
     [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_actual_cell_count() const;
@@ -75,7 +74,6 @@ struct collection_layout {
 
     chaining::value::holder<std::size_t> _actual_cell_count{std::size_t(0)};
 
-    ui::layout_guide_rect _frame_guide_rect;
     ui::layout_guide_rect _border_guide_rect;
     chaining::any_observer_ptr _left_border_observer;
     chaining::any_observer_ptr _right_border_observer;
