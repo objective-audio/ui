@@ -294,7 +294,7 @@ struct sample::soft_keyboard::impl : base::impl {
             auto const &idx = yas_each_index(each);
             if (idx < layout_count) {
                 if (idx >= this->_fixed_cell_layouts.size()) {
-                    auto &src_guide_rect = this->_collection_layout->cell_layout_guide_rects().at(idx);
+                    auto &src_guide_rect = this->_collection_layout->cell_guide_rects.at(idx);
                     auto &dst_guide_rect = this->_src_cell_guide_rects.at(idx);
 
                     std::vector<chaining::any_observer_ptr> layouts;
