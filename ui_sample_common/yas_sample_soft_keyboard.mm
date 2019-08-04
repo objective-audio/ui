@@ -111,7 +111,7 @@ struct sample::soft_keyboard::impl : base::impl {
     std::vector<sample::soft_key> _soft_keys;
     ui::font_atlas _font_atlas = nullptr;
 
-    ui::collection_layout _collection_layout = nullptr;
+    std::shared_ptr<ui::collection_layout> _collection_layout = nullptr;
     std::vector<chaining::any_observer_ptr> _frame_layouts;
 
     std::vector<chaining::any_observer_ptr> _soft_key_observers;
@@ -153,13 +153,13 @@ struct sample::soft_keyboard::impl : base::impl {
         this->_soft_keys.reserve(key_count);
         this->_soft_key_observers.reserve(key_count);
 
-        this->_collection_layout =
-            ui::collection_layout{{.frame = {.size = {width, 0.0f}},
-                                   .preferred_cell_count = key_count,
-                                   .lines = {{.cell_sizes = cell_sizes}},
-                                   .row_spacing = spacing,
-                                   .col_spacing = spacing,
-                                   .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}}};
+        this->_collection_layout = ui::collection_layout::make_shared(
+            {.frame = {.size = {width, 0.0f}},
+             .preferred_cell_count = key_count,
+             .lines = {{.cell_sizes = cell_sizes}},
+             .row_spacing = spacing,
+             .col_spacing = spacing,
+             .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}});
 
         for (auto const &key : keys) {
             sample::soft_key soft_key{key, key_width, this->_font_atlas};
@@ -183,7 +183,8 @@ struct sample::soft_keyboard::impl : base::impl {
         }
 
         this->_actual_cell_count_observer =
-            this->_collection_layout.chain_actual_cell_count()
+            this->_collection_layout->actual_cell_count()
+                .chain()
                 .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &) {
                     if (auto keyboard = weak_keyboard.lock()) {
                         keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
@@ -198,7 +199,7 @@ struct sample::soft_keyboard::impl : base::impl {
 
         auto renderer = this->_root_node.renderer();
         auto &safe_area_guide_rect = renderer.safe_area_layout_guide_rect();
-        auto &frame_guide_rect = this->_collection_layout.frame_layout_guide_rect();
+        auto &frame_guide_rect = this->_collection_layout->frame_guide_rect;
 
         this->_frame_layouts.emplace_back(safe_area_guide_rect.left().chain().send_to(frame_guide_rect.left()).sync());
         this->_frame_layouts.emplace_back(
@@ -287,14 +288,14 @@ struct sample::soft_keyboard::impl : base::impl {
             return;
         }
 
-        auto const layout_count = this->_collection_layout.actual_cell_count();
+        auto const layout_count = this->_collection_layout->actual_cell_count().raw();
 
         auto each = make_fast_each(key_count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             if (idx < layout_count) {
                 if (idx >= this->_fixed_cell_layouts.size()) {
-                    auto &src_guide_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
+                    auto &src_guide_rect = this->_collection_layout->cell_guide_rects.at(idx);
                     auto &dst_guide_rect = this->_src_cell_guide_rects.at(idx);
 
                     std::vector<chaining::any_observer_ptr> layouts;
@@ -323,7 +324,7 @@ struct sample::soft_keyboard::impl : base::impl {
             return;
         }
 
-        auto const layout_count = this->_collection_layout.actual_cell_count();
+        auto const layout_count = this->_collection_layout->actual_cell_count().raw();
         auto renderer = this->_root_node.renderer();
 
         auto each = make_fast_each(key_count);

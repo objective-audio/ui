@@ -16,7 +16,7 @@
 using namespace yas;
 
 struct ui::strings::impl : base::impl {
-    ui::collection_layout _collection_layout;
+    std::shared_ptr<ui::collection_layout> _collection_layout;
     ui::rect_plane _rect_plane;
     std::optional<chaining::perform_receiver<std::string>> _text_receiver = std::nullopt;
 
@@ -25,8 +25,8 @@ struct ui::strings::impl : base::impl {
     chaining::value::holder<std::optional<float>> _line_height;
 
     impl(args &&args)
-        : _collection_layout(
-              {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending}),
+        : _collection_layout(ui::collection_layout::make_shared(
+              {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending})),
           _rect_plane(args.max_word_count),
           _text(std::move(args.text)),
           _font_atlas(std::move(args.font_atlas)),
@@ -89,10 +89,13 @@ struct ui::strings::impl : base::impl {
         this->_property_observers.emplace_back(
             this->_line_height.chain().send_null(*this->_update_layout_receiver).end());
 
-        this->_property_observers.emplace_back(
-            this->_collection_layout.chain_actual_cell_count().to_null().send_to(*this->_update_layout_receiver).end());
+        this->_property_observers.emplace_back(this->_collection_layout->actual_cell_count()
+                                                   .chain()
+                                                   .to_null()
+                                                   .send_to(*this->_update_layout_receiver)
+                                                   .end());
 
-        this->_property_observers.emplace_back(this->_collection_layout.chain_alignment().end());
+        this->_property_observers.emplace_back(this->_collection_layout->alignment.chain().end());
     }
 
     void _update_texture_chaining() {
@@ -119,7 +122,7 @@ struct ui::strings::impl : base::impl {
 
         auto const &font_atlas = this->_font_atlas.raw();
         if (!font_atlas || !font_atlas.texture() || !font_atlas.texture().metal_texture()) {
-            this->_collection_layout.set_preferred_cell_count(0);
+            this->_collection_layout->preferred_cell_count.set_value(0);
             this->_rect_plane.data().set_rect_count(0);
             return;
         }
@@ -151,10 +154,10 @@ struct ui::strings::impl : base::impl {
                 ui::collection_layout::line{.cell_sizes = std::move(cell_sizes), .new_line_min_offset = cell_height});
         }
 
-        this->_collection_layout.set_lines(std::move(lines));
-        this->_collection_layout.set_preferred_cell_count(eliminated_text.size());
+        this->_collection_layout->lines.set_value(std::move(lines));
+        this->_collection_layout->preferred_cell_count.set_value(eliminated_text.size());
 
-        auto const actual_cell_count = this->_collection_layout.actual_cell_count();
+        auto const actual_cell_count = this->_collection_layout->actual_cell_count().raw();
 
         this->_rect_plane.data().set_rect_count(actual_cell_count);
 
@@ -182,7 +185,7 @@ struct ui::strings::impl : base::impl {
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             auto const word = eliminated_text.substr(idx, 1);
-            auto &cell_rect = this->_collection_layout.cell_layout_guide_rects().at(idx);
+            auto &cell_rect = this->_collection_layout->cell_guide_rects.at(idx);
 
             auto weak_strings = to_weak(strings);
 
@@ -241,7 +244,7 @@ void ui::strings::set_line_height(std::optional<float> line_height) {
 }
 
 void ui::strings::set_alignment(ui::layout_alignment const alignment) {
-    impl_ptr<impl>()->_collection_layout.set_alignment(alignment);
+    impl_ptr<impl>()->_collection_layout->alignment.set_value(alignment);
 }
 
 std::string const &ui::strings::text() const {
@@ -257,11 +260,11 @@ std::optional<float> const &ui::strings::line_height() const {
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {
-    return impl_ptr<impl>()->_collection_layout.alignment();
+    return impl_ptr<impl>()->_collection_layout->alignment.raw();
 }
 
 ui::layout_guide_rect &ui::strings::frame_layout_guide_rect() {
-    return impl_ptr<impl>()->_collection_layout.frame_layout_guide_rect();
+    return impl_ptr<impl>()->_collection_layout->frame_guide_rect;
 }
 
 ui::rect_plane &ui::strings::rect_plane() {
@@ -281,7 +284,7 @@ chaining::chain_sync_t<std::optional<float>> ui::strings::chain_line_height() co
 }
 
 chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() const {
-    return impl_ptr<impl>()->_collection_layout.chain_alignment();
+    return impl_ptr<impl>()->_collection_layout->alignment.chain();
 }
 
 chaining::receiver<std::string> &ui::strings::text_receiver() {

@@ -8,11 +8,6 @@
 #include <cpp_utils/yas_base.h>
 #include "yas_ui_event_protocol.h"
 
-namespace yas {
-template <typename K, typename T>
-class subject;
-}
-
 namespace yas::ui {
 struct manageable_event : protocol {
     struct impl : protocol::impl {

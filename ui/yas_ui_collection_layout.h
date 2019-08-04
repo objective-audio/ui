@@ -5,26 +5,16 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_result.h>
 #include <vector>
+#include "yas_ui_layout_guide.h"
 #include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
-
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
 
 namespace yas::ui {
 class layout_guide_rect;
 
-struct collection_layout : base {
-   public:
-    class impl;
-
+struct collection_layout {
     struct line {
         std::vector<ui::size> cell_sizes;
         float new_line_min_offset = 0.0f;
@@ -47,47 +37,55 @@ struct collection_layout : base {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    collection_layout();
+    chaining::value::holder<std::size_t> preferred_cell_count;
+    chaining::value::holder<std::size_t> const &actual_cell_count() const;
+    chaining::value::holder<ui::size> default_cell_size;
+    chaining::value::holder<std::vector<ui::collection_layout::line>> lines;
+    chaining::value::holder<float> row_spacing;
+    chaining::value::holder<float> col_spacing;
+    chaining::value::holder<ui::layout_alignment> alignment;
+    chaining::value::holder<ui::layout_direction> direction;
+    chaining::value::holder<ui::layout_order> row_order;
+    chaining::value::holder<ui::layout_order> col_order;
+    ui::layout_borders const borders;
+    ui::layout_guide_rect frame_guide_rect;
+    std::vector<ui::layout_guide_rect> cell_guide_rects;
+
+   private:
+    struct cell_location {
+        std::size_t line_idx;
+        std::size_t cell_idx;
+    };
+
+    chaining::value::holder<std::size_t> _actual_cell_count{std::size_t(0)};
+
+    ui::layout_guide_rect _border_guide_rect;
+    chaining::any_observer_ptr _left_border_observer;
+    chaining::any_observer_ptr _right_border_observer;
+    chaining::any_observer_ptr _bottom_border_observer;
+    chaining::any_observer_ptr _top_border_observer;
+    std::optional<chaining::perform_receiver<>> _layout_receiver = std::nullopt;
+
+    chaining::observer_pool _pool;
+
     collection_layout(args);
-    collection_layout(std::nullptr_t);
 
-    void set_frame(ui::region);
-    void set_preferred_cell_count(std::size_t const);
-    void set_default_cell_size(ui::size);
-    void set_lines(std::vector<ui::collection_layout::line>);
-    void set_row_spacing(float const);
-    void set_col_spacing(float const);
-    void set_alignment(ui::layout_alignment const);
-    void set_direction(ui::layout_direction const);
-    void set_row_order(ui::layout_order const);
-    void set_col_order(ui::layout_order const);
+    void _prepare(std::shared_ptr<collection_layout> const &);
+    void _push_notify_waiting();
+    void _pop_notify_waiting();
+    void _update_layout();
+    std::optional<cell_location> _cell_location(std::size_t const cell_idx);
+    ui::size _cell_size(std::size_t const idx);
+    bool _is_top_of_new_line(std::size_t const idx);
+    ui::size _transformed_cell_size(std::size_t const idx);
+    float _transformed_col_diff(std::size_t const idx);
+    float _transformed_row_cell_diff(std::size_t const idx);
+    float _transformed_row_new_line_diff(std::size_t const idx);
+    ui::region _transformed_border_rect();
+    ui::region _direction_swapped_region_if_horizontal(ui::region const &region);
 
-    ui::region frame() const;
-    std::size_t const &preferred_cell_count() const;
-    std::size_t actual_cell_count() const;
-    ui::size const &default_cell_size() const;
-    std::vector<line> const &lines() const;
-    float const &row_spacing() const;
-    float const &col_spacing() const;
-    ui::layout_alignment const &alignment() const;
-    ui::layout_direction const &direction() const;
-    ui::layout_order const &row_order() const;
-    ui::layout_order const &col_order() const;
-
-    ui::layout_borders const &borders() const;
-
-    ui::layout_guide_rect &frame_layout_guide_rect();
-    std::vector<ui::layout_guide_rect> &cell_layout_guide_rects();
-
-    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_preferred_cell_count() const;
-    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_actual_cell_count() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::size> chain_default_cell_size() const;
-    [[nodiscard]] chaining::chain_sync_t<std::vector<line>> chain_lines() const;
-    [[nodiscard]] chaining::chain_sync_t<float> chain_row_spacing() const;
-    [[nodiscard]] chaining::chain_sync_t<float> chain_col_spacing() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_direction> chain_direction() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_row_order() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_order> chain_col_order() const;
+   public:
+    static std::shared_ptr<collection_layout> make_shared();
+    static std::shared_ptr<collection_layout> make_shared(args);
 };
 }  // namespace yas::ui
