@@ -76,8 +76,6 @@ ui::collection_layout::collection_layout(args args)
 void ui::collection_layout::set_frame(ui::region frame) {
     if (this->frame_guide_rect.region() != frame) {
         this->frame_guide_rect.set_region(std::move(frame));
-
-        this->_update_layout();
     }
 }
 
@@ -98,28 +96,17 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
         }
     }};
 
-    this->_border_observer = this->_border_guide_rect.chain()
-                                 .guard([weak_layout](ui::region const &) { return !weak_layout.expired(); })
-                                 .perform([weak_layout](ui::region const &) { weak_layout.lock()->_update_layout(); })
-                                 .end();
-
-    this->_property_observers.emplace_back(this->row_spacing.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->col_spacing.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->alignment.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->direction.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->row_order.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->col_order.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->preferred_cell_count.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->default_cell_size.chain().send_null(*this->_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->lines.chain().send_null(*this->_layout_receiver).end());
+    this->_pool += this->frame_guide_rect.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->_border_guide_rect.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->row_spacing.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->col_spacing.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->alignment.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->direction.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->row_order.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->col_order.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->preferred_cell_count.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->default_cell_size.chain().send_null(*this->_layout_receiver).end();
+    this->_pool += this->lines.chain().send_null(*this->_layout_receiver).end();
 
     this->_update_layout();
 }

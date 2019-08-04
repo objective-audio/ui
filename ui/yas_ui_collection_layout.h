@@ -77,10 +77,9 @@ struct collection_layout {
     chaining::any_observer_ptr _right_border_observer;
     chaining::any_observer_ptr _bottom_border_observer;
     chaining::any_observer_ptr _top_border_observer;
-    chaining::any_observer_ptr _border_observer = nullptr;
     std::optional<chaining::perform_receiver<>> _layout_receiver = std::nullopt;
 
-    std::vector<chaining::any_observer_ptr> _property_observers;
+    chaining::observer_pool _pool;
 
     collection_layout(args);
 
