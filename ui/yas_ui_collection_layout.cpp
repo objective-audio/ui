@@ -73,16 +73,6 @@ ui::collection_layout::collection_layout(args args)
     }
 }
 
-void ui::collection_layout::set_frame(ui::region frame) {
-    if (this->frame_guide_rect.region() != frame) {
-        this->frame_guide_rect.set_region(std::move(frame));
-    }
-}
-
-ui::region ui::collection_layout::frame() const {
-    return this->frame_guide_rect.region();
-}
-
 chaining::value::holder<std::size_t> const &ui::collection_layout::actual_cell_count() const {
     return this->_actual_cell_count;
 }

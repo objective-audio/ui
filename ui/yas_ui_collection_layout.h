@@ -44,8 +44,6 @@ struct collection_layout {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    void set_frame(ui::region);
-
     chaining::value::holder<std::size_t> preferred_cell_count;
     chaining::value::holder<std::size_t> const &actual_cell_count() const;
     chaining::value::holder<ui::size> default_cell_size;
@@ -56,11 +54,7 @@ struct collection_layout {
     chaining::value::holder<ui::layout_direction> direction;
     chaining::value::holder<ui::layout_order> row_order;
     chaining::value::holder<ui::layout_order> col_order;
-
-    ui::region frame() const;
-
     ui::layout_borders const borders;
-
     ui::layout_guide_rect frame_guide_rect;
     std::vector<ui::layout_guide_rect> cell_guide_rects;
 

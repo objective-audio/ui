@@ -27,7 +27,7 @@ using namespace yas;
 
     XCTAssertTrue(layout);
 
-    XCTAssertTrue(layout->frame() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
     XCTAssertEqual(layout->preferred_cell_count.raw(), 0);
     XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{1.0f, 1.0f}));
     XCTAssertEqual(layout->lines.raw().size(), 0);
@@ -56,7 +56,7 @@ using namespace yas;
 
     XCTAssertTrue(layout);
 
-    XCTAssertTrue(layout->frame() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
     XCTAssertEqual(layout->preferred_cell_count.raw(), 10);
     XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{2.5f, 3.5f}));
     XCTAssertEqual(layout->lines.raw().size(), 1);
@@ -151,7 +151,7 @@ using namespace yas;
                                             .col_spacing = 1.0f,
                                             .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
 
-    XCTAssertTrue(layout->frame() == (ui::region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
 
     XCTAssertEqual(layout->frame_guide_rect.left().value(), 2.0f);
     XCTAssertEqual(layout->frame_guide_rect.right().value(), 10.0f);
@@ -160,9 +160,9 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    layout->set_frame({.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}});
+    layout->frame_guide_rect.set_region({.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}});
 
-    XCTAssertTrue(layout->frame() == (ui::region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
 
     XCTAssertEqual(layout->frame_guide_rect.left().value(), 3.0f);
     XCTAssertEqual(layout->frame_guide_rect.right().value(), 10.0f);
@@ -199,7 +199,7 @@ using namespace yas;
     // フレームの高さが0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
-    layout->set_frame({.size = {0.0f, 0.5f}});
+    layout->frame_guide_rect.set_region({.size = {0.0f, 0.5f}});
 
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count().raw(), 0);
@@ -209,7 +209,7 @@ using namespace yas;
     // セルの並びを横にすれば高さの制限は受けない
     XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
-    layout->set_frame({.size = {0.0f, 0.5f}});
+    layout->frame_guide_rect.set_region({.size = {0.0f, 0.5f}});
 
     XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 }
@@ -223,7 +223,7 @@ using namespace yas;
     // フレームの幅が0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
-    layout->set_frame({.size = {0.5f, 0.0f}});
+    layout->frame_guide_rect.set_region({.size = {0.5f, 0.0f}});
 
     // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count().raw(), 0);
@@ -233,7 +233,7 @@ using namespace yas;
     // セルの並びを縦にすれば高さの制限は受けない
     XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
-    layout->set_frame({.size = {0.5f, 0.0f}});
+    layout->frame_guide_rect.set_region({.size = {0.5f, 0.0f}});
 
     XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 }
