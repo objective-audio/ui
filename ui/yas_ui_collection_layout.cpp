@@ -89,15 +89,11 @@ ui::region ui::collection_layout::frame() const {
 }
 
 std::size_t ui::collection_layout::actual_cell_count() const {
-    return this->_cell_guide_rects.size();
+    return this->cell_guide_rects.size();
 }
 
 ui::layout_guide_rect &ui::collection_layout::frame_layout_guide_rect() {
     return this->_frame_guide_rect;
-}
-
-std::vector<ui::layout_guide_rect> &ui::collection_layout::cell_layout_guide_rects() {
-    return this->_cell_guide_rects;
 }
 
 chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
@@ -140,13 +136,13 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
 }
 
 void ui::collection_layout::_push_notify_waiting() {
-    for (auto &rect : this->_cell_guide_rects) {
+    for (auto &rect : this->cell_guide_rects) {
         rect.push_notify_waiting();
     }
 }
 
 void ui::collection_layout::_pop_notify_waiting() {
-    for (auto &rect : this->_cell_guide_rects) {
+    for (auto &rect : this->cell_guide_rects) {
         rect.pop_notify_waiting();
     }
 }
@@ -156,7 +152,7 @@ void ui::collection_layout::_update_layout() {
     auto const &preferred_cell_count = this->preferred_cell_count.raw();
 
     if (preferred_cell_count == 0) {
-        this->_cell_guide_rects.clear();
+        this->cell_guide_rects.clear();
         this->_actual_cell_count.set_value(0);
         return;
     }
@@ -169,7 +165,7 @@ void ui::collection_layout::_update_layout() {
     float row_max_diff = 0.0f;
     ui::point origin = {.v = 0.0f};
     std::vector<ui::region> row_regions;
-    auto const prev_actual_cell_count = this->_cell_guide_rects.size();
+    auto const prev_actual_cell_count = this->cell_guide_rects.size();
     std::size_t actual_cell_count = 0;
 
     auto each = make_fast_each(preferred_cell_count);
@@ -216,7 +212,7 @@ void ui::collection_layout::_update_layout() {
         regions.emplace_back(std::move(row_regions));
     }
 
-    this->_cell_guide_rects.resize(actual_cell_count);
+    this->cell_guide_rects.resize(actual_cell_count);
 
     this->_push_notify_waiting();
 
@@ -240,7 +236,7 @@ void ui::collection_layout::_update_layout() {
             for (auto const &region : row_regions) {
                 ui::region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
                                           .size = region.size};
-                this->_cell_guide_rects.at(idx).set_region(
+                this->cell_guide_rects.at(idx).set_region(
                     this->_direction_swapped_region_if_horizontal(aligned_region));
 
                 ++idx;

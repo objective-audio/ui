@@ -184,7 +184,7 @@ struct ui::strings::impl : base::impl {
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
             auto const word = eliminated_text.substr(idx, 1);
-            auto &cell_rect = this->_collection_layout->cell_layout_guide_rects().at(idx);
+            auto &cell_rect = this->_collection_layout->cell_guide_rects.at(idx);
 
             auto weak_strings = to_weak(strings);
 
