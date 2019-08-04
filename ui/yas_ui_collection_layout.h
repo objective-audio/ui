@@ -11,13 +11,6 @@
 #include "yas_ui_layout_types.h"
 #include "yas_ui_types.h"
 
-namespace yas {
-template <typename K, typename T>
-class subject;
-template <typename K, typename T>
-class observer;
-}  // namespace yas
-
 namespace yas::ui {
 class layout_guide_rect;
 
