@@ -111,15 +111,15 @@ using namespace yas;
     auto layout = ui::collection_layout::make_shared(
         {.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
-    XCTAssertEqual(layout->actual_cell_count(), 1);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 1);
 
     layout->preferred_cell_count.set_value(5);
 
-    XCTAssertEqual(layout->actual_cell_count(), 4);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 4);
 
     layout->preferred_cell_count.set_value(2);
 
-    XCTAssertEqual(layout->actual_cell_count(), 2);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 2);
 }
 
 - (void)test_chain_actual_cell_count {
@@ -128,7 +128,8 @@ using namespace yas;
 
     std::size_t notified_count = 0;
 
-    auto observer = layout->chain_actual_cell_count()
+    auto observer = layout->actual_cell_count()
+                        .chain()
                         .perform([&notified_count](auto const &count) { notified_count = count; })
                         .end();
 
@@ -196,21 +197,21 @@ using namespace yas;
                                                       .direction = ui::layout_direction::vertical});
 
     // フレームの高さが0ならセルを作る範囲の制限をかけない
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
     layout->set_frame({.size = {0.0f, 0.5f}});
 
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
-    XCTAssertEqual(layout->actual_cell_count(), 0);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 0);
 
     layout->direction.set_value(ui::layout_direction::horizontal);
 
     // セルの並びを横にすれば高さの制限は受けない
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
     layout->set_frame({.size = {0.0f, 0.5f}});
 
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 }
 
 - (void)test_limiting_col {
@@ -220,21 +221,21 @@ using namespace yas;
                                                       .direction = ui::layout_direction::horizontal});
 
     // フレームの幅が0ならセルを作る範囲の制限をかけない
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
     layout->set_frame({.size = {0.5f, 0.0f}});
 
     // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
-    XCTAssertEqual(layout->actual_cell_count(), 0);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 0);
 
     layout->direction.set_value(ui::layout_direction::vertical);
 
     // セルの並びを縦にすれば高さの制限は受けない
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 
     layout->set_frame({.size = {0.5f, 0.0f}});
 
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
 }
 
 - (void)test_set_preferred_cell_count {
@@ -399,7 +400,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->actual_cell_count(), 3);
+    XCTAssertEqual(layout->actual_cell_count().raw(), 3);
 
     XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
     XCTAssertEqual(cell_guide_rects.at(0).right().value(), 2.0f);

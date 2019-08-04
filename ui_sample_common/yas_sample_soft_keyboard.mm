@@ -183,7 +183,8 @@ struct sample::soft_keyboard::impl : base::impl {
         }
 
         this->_actual_cell_count_observer =
-            this->_collection_layout->chain_actual_cell_count()
+            this->_collection_layout->actual_cell_count()
+                .chain()
                 .perform([weak_keyboard = to_weak(cast<sample::soft_keyboard>())](auto const &) {
                     if (auto keyboard = weak_keyboard.lock()) {
                         keyboard.impl_ptr<impl>()->_update_soft_keys_enabled(true);
@@ -287,7 +288,7 @@ struct sample::soft_keyboard::impl : base::impl {
             return;
         }
 
-        auto const layout_count = this->_collection_layout->actual_cell_count();
+        auto const layout_count = this->_collection_layout->actual_cell_count().raw();
 
         auto each = make_fast_each(key_count);
         while (yas_each_next(each)) {
@@ -323,7 +324,7 @@ struct sample::soft_keyboard::impl : base::impl {
             return;
         }
 
-        auto const layout_count = this->_collection_layout->actual_cell_count();
+        auto const layout_count = this->_collection_layout->actual_cell_count().raw();
         auto renderer = this->_root_node.renderer();
 
         auto each = make_fast_each(key_count);

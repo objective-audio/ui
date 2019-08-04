@@ -89,7 +89,8 @@ struct ui::strings::impl : base::impl {
         this->_property_observers.emplace_back(
             this->_line_height.chain().send_null(*this->_update_layout_receiver).end());
 
-        this->_property_observers.emplace_back(this->_collection_layout->chain_actual_cell_count()
+        this->_property_observers.emplace_back(this->_collection_layout->actual_cell_count()
+                                                   .chain()
                                                    .to_null()
                                                    .send_to(*this->_update_layout_receiver)
                                                    .end());
@@ -156,7 +157,7 @@ struct ui::strings::impl : base::impl {
         this->_collection_layout->lines.set_value(std::move(lines));
         this->_collection_layout->preferred_cell_count.set_value(eliminated_text.size());
 
-        auto const actual_cell_count = this->_collection_layout->actual_cell_count();
+        auto const actual_cell_count = this->_collection_layout->actual_cell_count().raw();
 
         this->_rect_plane.data().set_rect_count(actual_cell_count);
 

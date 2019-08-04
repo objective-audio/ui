@@ -85,12 +85,8 @@ ui::region ui::collection_layout::frame() const {
     return this->frame_guide_rect.region();
 }
 
-std::size_t ui::collection_layout::actual_cell_count() const {
-    return this->cell_guide_rects.size();
-}
-
-chaining::chain_sync_t<std::size_t> ui::collection_layout::chain_actual_cell_count() const {
-    return this->_actual_cell_count.chain();
+chaining::value::holder<std::size_t> const &ui::collection_layout::actual_cell_count() const {
+    return this->_actual_cell_count;
 }
 
 void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &layout) {

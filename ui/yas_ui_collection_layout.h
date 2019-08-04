@@ -47,6 +47,7 @@ struct collection_layout {
     void set_frame(ui::region);
 
     chaining::value::holder<std::size_t> preferred_cell_count;
+    chaining::value::holder<std::size_t> const &actual_cell_count() const;
     chaining::value::holder<ui::size> default_cell_size;
     chaining::value::holder<std::vector<ui::collection_layout::line>> lines;
     chaining::value::holder<float> row_spacing;
@@ -57,14 +58,11 @@ struct collection_layout {
     chaining::value::holder<ui::layout_order> col_order;
 
     ui::region frame() const;
-    std::size_t actual_cell_count() const;
 
     ui::layout_borders const borders;
 
     ui::layout_guide_rect frame_guide_rect;
     std::vector<ui::layout_guide_rect> cell_guide_rects;
-
-    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_actual_cell_count() const;
 
    private:
     struct cell_location {
