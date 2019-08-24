@@ -6,7 +6,7 @@
 
 using namespace yas;
 
-struct ui::image::impl : base::impl {
+struct ui::image::impl {
     impl(uint_size const point_size, double const scale_factor)
         : _point_size(point_size),
           _scale_factor(scale_factor),
@@ -45,38 +45,39 @@ struct ui::image::impl : base::impl {
     CGContextRef _bitmap_context;
 };
 
-ui::image::image(ui::image::args args) : base(std::make_shared<impl>(args.point_size, args.scale_factor)) {
-}
-
-ui::image::image(std::nullptr_t) : base(nullptr) {
+ui::image::image(ui::image::args const &args) : _impl(std::make_unique<impl>(args.point_size, args.scale_factor)) {
 }
 
 ui::image::~image() = default;
 
 ui::uint_size ui::image::point_size() const {
-    return impl_ptr<impl>()->_point_size;
+    return this->_impl->_point_size;
 }
 
 ui::uint_size ui::image::actual_size() const {
-    return impl_ptr<impl>()->_actual_size;
+    return this->_impl->_actual_size;
 }
 
 double ui::image::scale_factor() const {
-    return impl_ptr<impl>()->_scale_factor;
+    return this->_impl->_scale_factor;
 }
 
 const void *ui::image::data() const {
-    return CGBitmapContextGetData(impl_ptr<impl>()->_bitmap_context);
+    return CGBitmapContextGetData(this->_impl->_bitmap_context);
 }
 
 void *ui::image::data() {
-    return CGBitmapContextGetData(impl_ptr<impl>()->_bitmap_context);
+    return CGBitmapContextGetData(this->_impl->_bitmap_context);
 }
 
 void ui::image::clear() {
-    impl_ptr<impl>()->clear();
+    this->_impl->clear();
 }
 
 void ui::image::draw(ui::draw_handler_f const &function) {
-    impl_ptr<impl>()->draw(function);
+    this->_impl->draw(function);
+}
+
+ui::image_ptr ui::image::make_shared(args const &args) {
+    return std::shared_ptr<image>(new image{std::move(args)});
 }

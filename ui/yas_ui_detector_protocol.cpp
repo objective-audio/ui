@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_detector_protocol.h"
-#include "yas_ui_collider.h"
 
 using namespace yas;
 
@@ -23,7 +22,7 @@ void ui::updatable_detector::begin_update() {
     impl_ptr<impl>()->begin_update();
 }
 
-void ui::updatable_detector::push_front_collider(ui::collider collider) {
+void ui::updatable_detector::push_front_collider(ui::collider_ptr collider) {
     impl_ptr<impl>()->push_front_collider(std::move(collider));
 }
 

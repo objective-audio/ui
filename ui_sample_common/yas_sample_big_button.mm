@@ -10,17 +10,17 @@ using namespace yas;
 
 #pragma mark - big_button::impl
 
-struct sample::big_button::impl : base::impl {
+struct sample::big_button::impl {
     impl() {
-        this->_button->rect_plane().node().collider().set_value(
-            ui::collider{ui::shape{ui::circle_shape{.radius = this->_radius}}});
+        this->_button->rect_plane()->node()->collider()->set_value(
+            ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{.radius = this->_radius})));
     }
 
-    void set_texture(ui::texture &&texture) {
-        auto &data = this->_button->rect_plane().data();
-        data.clear_observers();
+    void set_texture(ui::texture_ptr const &texture) {
+        auto const &data = this->_button->rect_plane()->data();
+        data->clear_observers();
 
-        this->_button->rect_plane().node().mesh().raw().set_texture(texture);
+        this->_button->rect_plane()->node()->mesh()->raw()->set_texture(texture);
 
         if (!texture) {
             return;
@@ -30,19 +30,19 @@ struct sample::big_button::impl : base::impl {
 
         ui::uint_size image_size{width, width};
 
-        auto element0 = texture.add_draw_handler(image_size, [image_size](CGContextRef const ctx) {
+        auto element0 = texture->add_draw_handler(image_size, [image_size](CGContextRef const ctx) {
             CGContextSetFillColorWithColor(ctx, [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);
             CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
         });
 
-        data.observe_rect_tex_coords(element0, 0);
+        data->observe_rect_tex_coords(element0, 0);
 
-        auto element1 = texture.add_draw_handler(image_size, [image_size](const CGContextRef ctx) {
+        auto element1 = texture->add_draw_handler(image_size, [image_size](const CGContextRef ctx) {
             CGContextSetFillColorWithColor(ctx, [yas_objc_color redColor].CGColor);
             CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, image_size.width, image_size.height));
         });
 
-        data.observe_rect_tex_coords(element1, 1);
+        data->observe_rect_tex_coords(element1, 1);
     }
 
     float const _radius = 60;
@@ -52,16 +52,17 @@ struct sample::big_button::impl : base::impl {
 
 #pragma mark - big_button
 
-sample::big_button::big_button() : base(std::make_shared<impl>()) {
+sample::big_button::big_button() : _impl(std::make_unique<impl>()) {
 }
 
-sample::big_button::big_button(std::nullptr_t) : base(nullptr) {
-}
-
-void sample::big_button::set_texture(ui::texture texture) {
-    impl_ptr<impl>()->set_texture(std::move(texture));
+void sample::big_button::set_texture(ui::texture_ptr const &texture) {
+    this->_impl->set_texture(texture);
 }
 
 std::shared_ptr<ui::button> &sample::big_button::button() {
-    return impl_ptr<impl>()->_button;
+    return this->_impl->_button;
+}
+
+sample::big_button_ptr sample::big_button::make_shared() {
+    return std::shared_ptr<big_button>(new big_button{});
 }

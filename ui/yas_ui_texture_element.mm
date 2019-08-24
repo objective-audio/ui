@@ -6,36 +6,25 @@
 
 using namespace yas;
 
-#pragma mark - ui::teture::texture_element::impl
-
-struct ui::texture_element::impl : base::impl {
-    draw_pair_t const _draw_pair;
-    chaining::value::holder<ui::uint_region> _tex_coords{ui::uint_region::zero()};
-
-    impl(draw_pair_t &&pair) : _draw_pair(std::move(pair)) {
-    }
-};
-
-#pragma mark - ui::texture_element
-
-ui::texture_element::texture_element(draw_pair_t &&pair) : base(std::make_shared<impl>(std::move(pair))) {
-}
-
-ui::texture_element::texture_element(std::nullptr_t) : base(nullptr) {
+ui::texture_element::texture_element(draw_pair_t &&pair) : _draw_pair(std::move(pair)) {
 }
 
 ui::draw_pair_t const &ui::texture_element::draw_pair() const {
-    return impl_ptr<impl>()->_draw_pair;
+    return this->_draw_pair;
 }
 
 void ui::texture_element::set_tex_coords(ui::uint_region const &tex_coords) {
-    impl_ptr<impl>()->_tex_coords.set_value(tex_coords);
+    this->_tex_coords->set_value(tex_coords);
 }
 
 ui::uint_region const &ui::texture_element::tex_coords() const {
-    return impl_ptr<impl>()->_tex_coords.raw();
+    return this->_tex_coords->raw();
 }
 
 chaining::chain_sync_t<ui::uint_region> ui::texture_element::chain_tex_coords() const {
-    return impl_ptr<impl>()->_tex_coords.chain();
+    return this->_tex_coords->chain();
+}
+
+ui::texture_element_ptr ui::texture_element::make_shared(draw_pair_t &&pair) {
+    return std::shared_ptr<texture_element>(new texture_element{std::move(pair)});
 }

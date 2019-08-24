@@ -27,7 +27,7 @@ using namespace yas;
 }
 
 - (void)test_update_translate_action {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
@@ -39,22 +39,22 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target.position().raw().x, 0.0f);
-    XCTAssertEqual(target.position().raw().y, -1.0f);
+    XCTAssertEqual(target->position()->raw().x, 0.0f);
+    XCTAssertEqual(target->position()->raw().y, -1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.position().raw().x, 0.5f);
-    XCTAssertEqual(target.position().raw().y, 0.0f);
+    XCTAssertEqual(target->position()->raw().x, 0.5f);
+    XCTAssertEqual(target->position()->raw().y, 0.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.position().raw().x, 1.0f);
-    XCTAssertEqual(target.position().raw().y, 1.0f);
+    XCTAssertEqual(target->position()->raw().x, 1.0f);
+    XCTAssertEqual(target->position()->raw().y, 1.0f);
 }
 
 - (void)test_update_rotate_action {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
@@ -67,19 +67,19 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target.angle().raw().degrees, 0.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 0.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.angle().raw().degrees, 180.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 180.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.angle().raw().degrees, 360.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 360.0f);
 }
 
 - (void)test_update_rotate_action_shortest_1 {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
@@ -92,19 +92,19 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target.angle().raw().degrees, 360.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 360.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.angle().raw().degrees, 315.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 315.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.angle().raw().degrees, 270.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 270.0f);
 }
 
 - (void)test_update_rotate_action_shortest_2 {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
@@ -117,19 +117,19 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target.angle().raw().degrees, 180.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 180.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.angle().raw().degrees, 135.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 135.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.angle().raw().degrees, 90.0f);
+    XCTAssertEqual(target->angle()->raw().degrees, 90.0f);
 }
 
 - (void)test_update_scale_action {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
@@ -141,22 +141,22 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target.scale().raw().width, 0.0f);
-    XCTAssertEqual(target.scale().raw().height, -1.0f);
+    XCTAssertEqual(target->scale()->raw().width, 0.0f);
+    XCTAssertEqual(target->scale()->raw().height, -1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.scale().raw().width, 0.5f);
-    XCTAssertEqual(target.scale().raw().height, 0.0f);
+    XCTAssertEqual(target->scale()->raw().width, 0.5f);
+    XCTAssertEqual(target->scale()->raw().height, 0.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.scale().raw().width, 1.0f);
-    XCTAssertEqual(target.scale().raw().height, 1.0f);
+    XCTAssertEqual(target->scale()->raw().width, 1.0f);
+    XCTAssertEqual(target->scale()->raw().height, 1.0f);
 }
 
 - (void)test_update_color_action {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action({.target = target,
@@ -164,51 +164,51 @@ using namespace yas;
                                    .end_color = {1.0f, 0.75f, 0.5f},
                                    .continuous_action = std::move(args)});
 
-    ui::mesh mesh;
-    target.mesh().set_value(mesh);
+    auto mesh = ui::mesh::make_shared();
+    target->mesh()->set_value(mesh);
     auto updatable = action->updatable();
 
     updatable->update(time);
 
-    XCTAssertEqual(target.color().raw().red, 0.0f);
-    XCTAssertEqual(target.color().raw().green, 0.25f);
-    XCTAssertEqual(target.color().raw().blue, 0.5f);
+    XCTAssertEqual(target->color()->raw().red, 0.0f);
+    XCTAssertEqual(target->color()->raw().green, 0.25f);
+    XCTAssertEqual(target->color()->raw().blue, 0.5f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.color().raw().red, 0.5f);
-    XCTAssertEqual(target.color().raw().green, 0.5f);
-    XCTAssertEqual(target.color().raw().blue, 0.5f);
+    XCTAssertEqual(target->color()->raw().red, 0.5f);
+    XCTAssertEqual(target->color()->raw().green, 0.5f);
+    XCTAssertEqual(target->color()->raw().blue, 0.5f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.color().raw().red, 1.0f);
-    XCTAssertEqual(target.color().raw().green, 0.75f);
-    XCTAssertEqual(target.color().raw().blue, 0.5f);
+    XCTAssertEqual(target->color()->raw().red, 1.0f);
+    XCTAssertEqual(target->color()->raw().green, 0.75f);
+    XCTAssertEqual(target->color()->raw().blue, 0.5f);
 }
 
 - (void)test_update_alpha_action {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto time = std::chrono::system_clock::now();
     ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
     auto action = ui::make_action(
         {.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
 
-    ui::mesh mesh;
-    target.mesh().set_value(mesh);
+    auto mesh = ui::mesh::make_shared();
+    target->mesh()->set_value(mesh);
     auto updatable = action->updatable();
 
     updatable->update(time);
 
-    XCTAssertEqual(target.alpha().raw(), 1.0f);
+    XCTAssertEqual(target->alpha()->raw(), 1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target.alpha().raw(), 0.5f);
+    XCTAssertEqual(target->alpha()->raw(), 0.5f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target.alpha().raw(), 0.0f);
+    XCTAssertEqual(target->alpha()->raw(), 0.0f);
 }
 
 @end

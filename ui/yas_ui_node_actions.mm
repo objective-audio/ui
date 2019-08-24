@@ -19,7 +19,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(translate_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.position().set_value(
+                target->position()->set_value(
                     {.v = (args.end_position.v - args.begin_position.v) * (float)value + args.begin_position.v});
             }
         }
@@ -45,7 +45,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(rotate_action::args args)
                     begin_angle = begin_angle.shortest_from(end_angle);
                 }
 
-                target.angle().set_value({(end_angle - begin_angle) * static_cast<float>(value) + begin_angle});
+                target->angle()->set_value({(end_angle - begin_angle) * static_cast<float>(value) + begin_angle});
             }
         }
     });
@@ -63,7 +63,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::scale_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.scale().set_value(
+                target->scale()->set_value(
                     {.v = (args.end_scale.v - args.begin_scale.v) * (float)value + args.begin_scale.v});
             }
         }
@@ -82,7 +82,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::color_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.color().set_value(
+                target->color()->set_value(
                     {.v = (args.end_color.v - args.begin_color.v) * (float)value + args.begin_color.v});
             }
         }
@@ -101,7 +101,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::alpha_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.alpha().set_value((args.end_alpha - args.begin_alpha) * (float)value + args.begin_alpha);
+                target->alpha()->set_value((args.end_alpha - args.begin_alpha) * (float)value + args.begin_alpha);
             }
         }
     });

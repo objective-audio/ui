@@ -5,8 +5,8 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
 #include "yas_ui_event_protocol.h"
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 struct manageable_event : protocol {
@@ -23,17 +23,11 @@ struct manageable_event : protocol {
     void set_phase(event_phase);
 };
 
-struct event : base {
+struct event {
     class impl_base;
 
     template <typename T>
     class impl;
-
-    explicit event(cursor const &);
-    explicit event(touch const &);
-    explicit event(key const &);
-    explicit event(modifier const &);
-    event(std::nullptr_t);
 
     virtual ~event() final;
 
@@ -44,34 +38,54 @@ struct event : base {
     template <typename T>
     typename T::type const &get() const;
 
+    uintptr_t identifier() const;
+
     ui::manageable_event &manageable();
 
+    bool operator==(event const &) const;
+    bool operator!=(event const &) const;
+
+    [[nodiscard]] static event_ptr make_shared(cursor const &);
+    [[nodiscard]] static event_ptr make_shared(touch const &);
+    [[nodiscard]] static event_ptr make_shared(key const &);
+    [[nodiscard]] static event_ptr make_shared(modifier const &);
+
    private:
+    std::shared_ptr<impl_base> _impl;
+
     ui::manageable_event _manageable = nullptr;
+
+    explicit event(cursor const &);
+    explicit event(touch const &);
+    explicit event(key const &);
+    explicit event(modifier const &);
 };
 
-struct event_manager : base {
+struct event_manager {
     class impl;
 
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
 
     struct context {
         method const &method;
-        event const &event;
+        event_ptr const &event;
     };
-
-    event_manager();
-    event_manager(std::nullptr_t);
 
     virtual ~event_manager() final;
 
-    [[nodiscard]] chaining::chain_relayed_unsync_t<event, context> chain(method const &) const;
+    [[nodiscard]] chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
 
     ui::event_inputtable &inputtable();
 
+    [[nodiscard]] static event_manager_ptr make_shared();
+
    private:
+    std::shared_ptr<impl> _impl;
+
     ui::event_inputtable _inputtable = nullptr;
+
+    event_manager();
 };
 }  // namespace yas::ui
 
@@ -82,10 +96,3 @@ std::string to_string(ui::event_manager::method const &);
 
 std::ostream &operator<<(std::ostream &, yas::ui::event const &);
 std::ostream &operator<<(std::ostream &, yas::ui::event_manager::method const &);
-
-template <>
-struct std::hash<yas::ui::event> {
-    std::size_t operator()(yas::ui::event const &key) const {
-        return std::hash<uintptr_t>()(key.identifier());
-    }
-};

@@ -4,13 +4,12 @@
 
 #include "yas_ui_detector.h"
 #include <deque>
-#include "yas_ui_collider.h"
 
 using namespace yas;
 
 #pragma mark - ui::detector::impl
 
-struct ui::detector::impl : base::impl, updatable_detector::impl {
+struct ui::detector::impl : updatable_detector::impl {
     impl() {
         this->_updating = true;
     }
@@ -24,7 +23,7 @@ struct ui::detector::impl : base::impl, updatable_detector::impl {
         this->_colliders.clear();
     }
 
-    void push_front_collider(ui::collider &&collider) override {
+    void push_front_collider(ui::collider_ptr &&collider) override {
         if (!this->_updating) {
             throw "detector is not updating.";
         }
@@ -36,16 +35,16 @@ struct ui::detector::impl : base::impl, updatable_detector::impl {
         this->_updating = false;
     }
 
-    ui::collider detect(ui::point const &location) {
+    ui::collider_ptr detect(ui::point const &location) {
         for (auto const &collider : this->_colliders) {
-            if (collider.hit_test(location)) {
+            if (collider->hit_test(location)) {
                 return collider;
             }
         }
         return nullptr;
     }
 
-    bool detect(ui::point const &location, ui::collider const &collider) {
+    bool detect(ui::point const &location, ui::collider_ptr const &collider) {
         if (auto detected_collider = detect(location)) {
             if (detected_collider == collider) {
                 return true;
@@ -55,31 +54,32 @@ struct ui::detector::impl : base::impl, updatable_detector::impl {
     }
 
    private:
-    std::deque<ui::collider> _colliders;
+    std::deque<ui::collider_ptr> _colliders;
     bool _updating = false;
 };
 
 #pragma mark - ui::detector
 
-ui::detector::detector() : base(std::make_shared<impl>()) {
-}
-
-ui::detector::detector(std::nullptr_t) : base(nullptr) {
+ui::detector::detector() : _impl(std::make_shared<impl>()) {
 }
 
 ui::detector::~detector() = default;
 
-ui::collider ui::detector::detect(ui::point const &location) const {
-    return impl_ptr<impl>()->detect(location);
+ui::collider_ptr ui::detector::detect(ui::point const &location) const {
+    return this->_impl->detect(location);
 }
 
-bool ui::detector::detect(ui::point const &location, ui::collider const &collider) const {
-    return impl_ptr<impl>()->detect(location, collider);
+bool ui::detector::detect(ui::point const &location, ui::collider_ptr const &collider) const {
+    return this->_impl->detect(location, collider);
 }
 
 ui::updatable_detector &ui::detector::updatable() {
     if (!this->_updatable) {
-        this->_updatable = ui::updatable_detector{impl_ptr<ui::updatable_detector::impl>()};
+        this->_updatable = ui::updatable_detector{this->_impl};
     }
     return this->_updatable;
+}
+
+ui::detector_ptr ui::detector::make_shared() {
+    return std::shared_ptr<detector>(new detector{});
 }

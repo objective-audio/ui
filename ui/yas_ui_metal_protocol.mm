@@ -12,7 +12,7 @@ ui::metal_object::metal_object(std::shared_ptr<impl> impl) : protocol(std::move(
 ui::metal_object::metal_object(std::nullptr_t) : protocol(nullptr) {
 }
 
-ui::setup_metal_result ui::metal_object::metal_setup(ui::metal_system const &metal_system) {
+ui::setup_metal_result ui::metal_object::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
     return impl_ptr<impl>()->metal_setup(metal_system);
 }
 

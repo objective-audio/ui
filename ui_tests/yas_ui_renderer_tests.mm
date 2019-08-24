@@ -27,37 +27,31 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::renderer renderer;
+    auto renderer = ui::renderer::make_shared();
 
-    XCTAssertFalse(renderer.metal_system());
+    XCTAssertFalse(renderer->metal_system());
 
-    XCTAssertTrue(renderer.root_node());
-    XCTAssertEqual(renderer.actions().size(), 0);
+    XCTAssertTrue(renderer->root_node());
+    XCTAssertEqual(renderer->actions().size(), 0);
 
-    XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
-    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
-    XCTAssertEqual(renderer.scale_factor(), 0.0);
+    XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer->scale_factor(), 0.0);
 
-    XCTAssertTrue(renderer.view_renderable());
-    XCTAssertTrue(renderer.event_manager());
-    XCTAssertTrue(renderer.detector());
+    XCTAssertTrue(renderer->view_renderable());
+    XCTAssertTrue(renderer->event_manager());
+    XCTAssertTrue(renderer->detector());
 
-    XCTAssertEqual(renderer.system_type(), ui::system_type::none);
-    XCTAssertFalse(renderer.metal_system());
+    XCTAssertEqual(renderer->system_type(), ui::system_type::none);
+    XCTAssertFalse(renderer->metal_system());
 }
 
 - (void)test_const_getter {
-    ui::renderer const renderer;
+    std::shared_ptr<ui::renderer const> renderer = ui::renderer::make_shared();
 
-    XCTAssertTrue(renderer.root_node());
-    XCTAssertTrue(renderer.detector());
-    XCTAssertFalse(renderer.metal_system());
-}
-
-- (void)test_create_null {
-    ui::renderer renderer{nullptr};
-
-    XCTAssertFalse(renderer);
+    XCTAssertTrue(renderer->root_node());
+    XCTAssertTrue(renderer->detector());
+    XCTAssertFalse(renderer->metal_system());
 }
 
 - (void)test_metal_system {
@@ -67,39 +61,39 @@ using namespace yas;
         return;
     }
 
-    ui::renderer renderer{ui::metal_system{device.object()}};
+    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
 
-    XCTAssertEqual(renderer.system_type(), ui::system_type::metal);
-    XCTAssertTrue(renderer.metal_system());
+    XCTAssertEqual(renderer->system_type(), ui::system_type::metal);
+    XCTAssertTrue(renderer->metal_system());
 }
 
 - (void)test_action {
-    ui::renderer renderer;
+    auto renderer = ui::renderer::make_shared();
 
-    ui::node target1;
-    ui::node target2;
+    auto target1 = ui::node::make_shared();
+    auto target2 = ui::node::make_shared();
     auto action1 = ui::action::make_shared();
     auto action2 = ui::action::make_shared();
     action1->set_target(target1);
     action2->set_target(target2);
 
-    renderer.insert_action(action1);
+    renderer->insert_action(action1);
 
-    XCTAssertEqual(renderer.actions().size(), 1);
-    XCTAssertEqual(renderer.actions().at(0), action1);
+    XCTAssertEqual(renderer->actions().size(), 1);
+    XCTAssertEqual(renderer->actions().at(0), action1);
 
-    renderer.insert_action(action2);
+    renderer->insert_action(action2);
 
-    XCTAssertEqual(renderer.actions().size(), 2);
+    XCTAssertEqual(renderer->actions().size(), 2);
 
-    renderer.erase_action(target1);
+    renderer->erase_action(target1);
 
-    XCTAssertEqual(renderer.actions().size(), 1);
-    XCTAssertEqual(renderer.actions().at(0), action2);
+    XCTAssertEqual(renderer->actions().size(), 1);
+    XCTAssertEqual(renderer->actions().at(0), action2);
 
-    renderer.erase_action(action2);
+    renderer->erase_action(action2);
 
-    XCTAssertEqual(renderer.actions().size(), 0);
+    XCTAssertEqual(renderer->actions().size(), 0);
 }
 
 - (void)test_view_configure {
@@ -112,18 +106,18 @@ using namespace yas;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    ui::renderer renderer{ui::metal_system{device.object()}};
+    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
 
-    XCTAssertEqual(renderer.view_size(), (ui::uint_size{0, 0}));
-    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
 
-    renderer.view_renderable().configure(view);
+    renderer->view_renderable().configure(view);
 
-    double const scale_factor = renderer.scale_factor();
+    double const scale_factor = renderer->scale_factor();
     XCTAssertEqual(view.sampleCount, 4);
-    XCTAssertEqual(renderer.view_size(), (ui::uint_size{256, 128}));
-    XCTAssertEqual(renderer.drawable_size(), (ui::uint_size{static_cast<uint32_t>(256 * scale_factor),
-                                                            static_cast<uint32_t>(128 * scale_factor)}));
+    XCTAssertEqual(renderer->view_size(), (ui::uint_size{256, 128}));
+    XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{static_cast<uint32_t>(256 * scale_factor),
+                                                             static_cast<uint32_t>(128 * scale_factor)}));
 }
 
 - (void)test_method_to_string {
@@ -154,18 +148,18 @@ using namespace yas;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    ui::renderer renderer{ui::metal_system{device.object()}};
+    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
 
     double notified = 0.0f;
 
     auto observer =
-        renderer.chain_scale_factor().perform([&notified](double const &value) { notified = value; }).sync();
+        renderer->chain_scale_factor().perform([&notified](double const &value) { notified = value; }).sync();
 
     XCTAssertEqual(notified, 0.0f);
 
-    renderer.view_renderable().configure(view);
+    renderer->view_renderable().configure(view);
 
-    XCTAssertEqual(notified, renderer.scale_factor());
+    XCTAssertEqual(notified, renderer->scale_factor());
 }
 
 @end

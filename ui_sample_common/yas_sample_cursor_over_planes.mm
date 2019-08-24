@@ -8,28 +8,28 @@
 
 using namespace yas;
 
-struct sample::cursor_over_planes::impl : base::impl {
-    ui::node root_node;
+struct sample::cursor_over_planes::impl {
+    ui::node_ptr root_node = ui::node::make_shared();
 
     impl() {
         this->_setup_nodes();
     }
 
-    void prepare(sample::cursor_over_planes &planes) {
-        this->_renderer_observer = root_node.chain_renderer()
-                                       .perform([weak_touch_holder = to_weak(planes),
-                                                 event_observers = std::vector<chaining::any_observer_ptr>{}](
-                                                    ui::renderer const &value) mutable {
-                                           if (auto touch_holder = weak_touch_holder.lock()) {
-                                               auto impl = touch_holder.impl_ptr<cursor_over_planes::impl>();
-                                               if (auto renderer = value) {
-                                                   event_observers = _make_event_observers(impl->_nodes, renderer);
-                                               } else {
-                                                   event_observers.clear();
-                                               }
-                                           }
-                                       })
-                                       .end();
+    void prepare(sample::cursor_over_planes_ptr const &planes) {
+        this->_renderer_observer =
+            root_node->chain_renderer()
+                .perform([weak_planes = to_weak(planes), event_observers = std::vector<chaining::any_observer_ptr>{}](
+                             ui::renderer_ptr const &value) mutable {
+                    if (auto planes = weak_planes.lock()) {
+                        auto &impl = planes->_impl;
+                        if (value) {
+                            event_observers = _make_event_observers(impl->_nodes, value);
+                        } else {
+                            event_observers.clear();
+                        }
+                    }
+                })
+                .end();
     }
 
    private:
@@ -40,54 +40,54 @@ struct sample::cursor_over_planes::impl : base::impl {
         auto each = make_fast_each(count);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            ui::rect_plane plane{1};
-            plane.data().set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
+            auto plane = ui::rect_plane::make_shared(1);
+            plane->data()->set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
-            auto &node = plane.node();
-            node.position().set_value({100.0f, 0.0f});
-            node.scale().set_value({10.0f, 30.0f});
-            node.color().set_value({.v = 0.3f});
-            node.collider().set_value(ui::collider{ui::shape{ui::rect_shape{}}});
+            auto const &node = plane->node();
+            node->position()->set_value({100.0f, 0.0f});
+            node->scale()->set_value({10.0f, 30.0f});
+            node->color()->set_value({.v = 0.3f});
+            node->collider()->set_value(ui::collider::make_shared(ui::shape::make_shared(ui::rect_shape{})));
 
-            ui::node handle_node;
-            handle_node.add_sub_node(node);
-            handle_node.angle().set_value({360.0f / count * idx});
+            auto handle_node = ui::node::make_shared();
+            handle_node->add_sub_node(node);
+            handle_node->angle()->set_value({360.0f / count * idx});
 
-            root_node.add_sub_node(handle_node);
+            root_node->add_sub_node(handle_node);
 
             this->_nodes.emplace_back(node);
         }
     }
 
-    static std::vector<chaining::any_observer_ptr> _make_event_observers(std::vector<ui::node> const &nodes,
-                                                                         ui::renderer &renderer) {
+    static std::vector<chaining::any_observer_ptr> _make_event_observers(std::vector<ui::node_ptr> const &nodes,
+                                                                         ui::renderer_ptr const &renderer) {
         std::vector<chaining::any_observer_ptr> event_observers;
         event_observers.reserve(nodes.size());
 
         for (auto &node : nodes) {
             event_observers.emplace_back(
-                renderer.event_manager()
-                    .chain(ui::event_manager::method::cursor_changed)
+                renderer->event_manager()
+                    ->chain(ui::event_manager::method::cursor_changed)
                     .perform([weak_node = to_weak(node),
-                              prev_detected = std::make_shared<bool>(false)](ui::event const &event) {
-                        auto cursor_event = event.get<ui::cursor>();
+                              prev_detected = std::make_shared<bool>(false)](ui::event_ptr const &event) {
+                        auto const &cursor_event = event->get<ui::cursor>();
 
                         if (auto node = weak_node.lock()) {
-                            if (auto renderer = node.renderer()) {
+                            if (auto renderer = node->renderer()) {
                                 auto is_detected =
-                                    renderer.detector().detect(cursor_event.position(), node.collider().raw());
+                                    renderer->detector()->detect(cursor_event.position(), node->collider()->raw());
 
-                                auto make_color_action = [](ui::node &node, ui::color const &color) {
+                                auto make_color_action = [](ui::node_ptr const &node, ui::color const &color) {
                                     return ui::make_action(
-                                        {.target = node, .begin_color = node.color().raw(), .end_color = color});
+                                        {.target = node, .begin_color = node->color()->raw(), .end_color = color});
                                 };
 
                                 if (is_detected && !*prev_detected) {
-                                    renderer.erase_action(node);
-                                    renderer.insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
+                                    renderer->erase_action(node);
+                                    renderer->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
                                 } else if (!is_detected && *prev_detected) {
-                                    renderer.erase_action(node);
-                                    renderer.insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
+                                    renderer->erase_action(node);
+                                    renderer->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
                                 }
 
                                 *prev_detected = is_detected;
@@ -100,17 +100,23 @@ struct sample::cursor_over_planes::impl : base::impl {
         return event_observers;
     }
 
-    std::vector<ui::node> _nodes;
+    std::vector<ui::node_ptr> _nodes;
     chaining::any_observer_ptr _renderer_observer = nullptr;
 };
 
-sample::cursor_over_planes::cursor_over_planes() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->prepare(*this);
+sample::cursor_over_planes::cursor_over_planes() : _impl(std::make_unique<impl>()) {
 }
 
-sample::cursor_over_planes::cursor_over_planes(std::nullptr_t) : base(nullptr) {
+ui::node_ptr const &sample::cursor_over_planes::node() {
+    return this->_impl->root_node;
 }
 
-ui::node &sample::cursor_over_planes::node() {
-    return impl_ptr<impl>()->root_node;
+void sample::cursor_over_planes::_prepare(cursor_over_planes_ptr const &shared) {
+    this->_impl->prepare(shared);
+}
+
+sample::cursor_over_planes_ptr sample::cursor_over_planes::make_shared() {
+    auto shared = std::shared_ptr<cursor_over_planes>(new cursor_over_planes{});
+    shared->_prepare(shared);
+    return shared;
 }

@@ -19,19 +19,19 @@ using namespace yas;
 
 #pragma mark - ui::mesh::impl
 
-struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
+struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
     impl() {
         this->_updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
         if (this->_mesh_data) {
-            if (auto ul = unless(this->_mesh_data.metal().metal_setup(metal_system))) {
+            if (auto ul = unless(this->_mesh_data->metal().metal_setup(metal_system))) {
                 return ul.value;
             }
         }
         if (this->_texture) {
-            if (auto ul = unless(this->_texture.metal().metal_setup(metal_system))) {
+            if (auto ul = unless(this->_texture->metal().metal_setup(metal_system))) {
                 return ul.value;
             }
         }
@@ -54,14 +54,14 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     std::size_t render_vertex_count() override {
         if (this->is_rendering_color_exists()) {
-            return this->_mesh_data.vertex_count();
+            return this->_mesh_data->vertex_count();
         }
         return 0;
     }
 
     std::size_t render_index_count() override {
         if (this->is_rendering_color_exists()) {
-            return this->_mesh_data.index_count();
+            return this->_mesh_data->index_count();
         }
         return 0;
     }
@@ -72,7 +72,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     bool pre_render() override {
         if (this->_mesh_data) {
-            this->_mesh_data.renderable().update_render_buffer();
+            this->_mesh_data->renderable().update_render_buffer();
             return this->is_rendering_color_exists();
         }
 
@@ -81,25 +81,25 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
     void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
         if (this->_needs_write(building_type)) {
-            mesh_info.mesh_data.write([&src_mesh_data = this->_mesh_data, &matrix = this->_matrix,
-                                       &color = this->_color, is_use_mesh_color = this->_use_mesh_color,
-                                       &mesh_info](auto &vertices, auto &indices) {
+            mesh_info.mesh_data->write([&src_mesh_data = this->_mesh_data, &matrix = this->_matrix,
+                                        &color = this->_color, is_use_mesh_color = this->_use_mesh_color,
+                                        &mesh_info](auto &vertices, auto &indices) {
                 auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
                 auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
 
                 auto *dst_indices = &indices[dst_index_offset];
-                auto const *src_indices = src_mesh_data.indices();
+                auto const *src_indices = src_mesh_data->indices();
 
-                auto each = make_fast_each(src_mesh_data.index_count());
+                auto each = make_fast_each(src_mesh_data->index_count());
                 while (yas_each_next(each)) {
                     auto const &idx = yas_each_index(each);
                     dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
                 }
 
                 auto *dst_vertices = &vertices[dst_vertex_offset];
-                auto const *src_vertices = src_mesh_data.vertices();
+                auto const *src_vertices = src_mesh_data->vertices();
 
-                each = make_fast_each(src_mesh_data.vertex_count());
+                each = make_fast_each(src_mesh_data->vertex_count());
                 while (yas_each_next(each)) {
                     auto &idx = yas_each_index(each);
                     auto &dst_vertex = dst_vertices[idx];
@@ -111,23 +111,23 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             });
         }
 
-        mesh_info.vertex_idx += this->_mesh_data.vertex_count();
-        mesh_info.index_idx += this->_mesh_data.index_count();
+        mesh_info.vertex_idx += this->_mesh_data->vertex_count();
+        mesh_info.index_idx += this->_mesh_data->index_count();
     }
 
     void clear_updates() override {
         this->_updates.flags.reset();
 
         if (this->_mesh_data) {
-            this->_mesh_data.renderable().clear_updates();
+            this->_mesh_data->renderable().clear_updates();
         }
     }
 
-    ui::mesh_data &mesh_data() {
+    ui::mesh_data_ptr const &mesh_data() {
         return this->_mesh_data;
     }
 
-    ui::texture &texture() {
+    ui::texture_ptr const &texture() {
         return this->_texture;
     }
 
@@ -143,8 +143,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return this->_use_mesh_color;
     }
 
-    void set_mesh_data(ui::mesh_data &&mesh_data) {
-        if (!is_same(this->_mesh_data, mesh_data)) {
+    void set_mesh_data(ui::mesh_data_ptr &&mesh_data) {
+        if (this->_mesh_data != mesh_data) {
             this->_mesh_data = std::move(mesh_data);
 
             if (this->_is_color_exists()) {
@@ -153,9 +153,9 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         }
     }
 
-    void set_texture(ui::texture &&texture) {
-        if (!is_same(this->_texture, texture)) {
-            this->_texture = std::move(texture);
+    void set_texture(ui::texture_ptr const &texture) {
+        if (this->_texture != texture) {
+            this->_texture = texture;
 
             if (this->is_rendering_color_exists()) {
                 this->_updates.set(ui::mesh_update_reason::texture);
@@ -199,7 +199,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
    private:
     bool _is_mesh_data_exists() {
-        return this->_mesh_data && this->_mesh_data.index_count() > 0;
+        return this->_mesh_data && this->_mesh_data->index_count() > 0;
     }
 
     bool _is_color_exists() {
@@ -228,7 +228,7 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
             if (this->_mesh_data) {
                 static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
 
-                if (this->_mesh_data.renderable().updates().and_test(_mesh_data_overwrite_updates)) {
+                if (this->_mesh_data->renderable().updates().and_test(_mesh_data_overwrite_updates)) {
                     return true;
                 }
             }
@@ -237,8 +237,8 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
         return false;
     }
 
-    ui::mesh_data _mesh_data = nullptr;
-    ui::texture _texture = nullptr;
+    ui::mesh_data_ptr _mesh_data = nullptr;
+    ui::texture_ptr _texture = nullptr;
     ui::primitive_type _primitive_type = ui::primitive_type::triangle;
     simd::float4 _color = 1.0f;
     bool _use_mesh_color = false;
@@ -250,74 +250,71 @@ struct ui::mesh::impl : base::impl, renderable_mesh::impl, metal_object::impl {
 
 #pragma mark - ui::mesh
 
-ui::mesh::mesh() : base(std::make_shared<impl>()) {
-}
-
-ui::mesh::mesh(std::nullptr_t) : base(nullptr) {
+ui::mesh::mesh() : _impl(std::make_shared<impl>()) {
 }
 
 ui::mesh::~mesh() = default;
 
-ui::mesh_data const &ui::mesh::mesh_data() const {
-    return impl_ptr<impl>()->mesh_data();
+ui::mesh_data_ptr const &ui::mesh::mesh_data() const {
+    return this->_impl->mesh_data();
 }
 
-ui::texture const &ui::mesh::texture() const {
-    return impl_ptr<impl>()->texture();
+ui::texture_ptr const &ui::mesh::texture() const {
+    return this->_impl->texture();
 }
 
 simd::float4 const &ui::mesh::color() const {
-    return impl_ptr<impl>()->color();
+    return this->_impl->color();
 }
 
 bool ui::mesh::is_use_mesh_color() const {
-    return impl_ptr<impl>()->is_use_mesh_color();
+    return this->_impl->is_use_mesh_color();
 }
 
 ui::primitive_type const &ui::mesh::primitive_type() const {
-    return impl_ptr<impl>()->primitive_type();
+    return this->_impl->primitive_type();
 }
 
-void ui::mesh::set_mesh_data(ui::mesh_data data) {
-    impl_ptr<impl>()->set_mesh_data(std::move(data));
+void ui::mesh::set_mesh_data(ui::mesh_data_ptr data) {
+    this->_impl->set_mesh_data(std::move(data));
 }
 
-void ui::mesh::set_texture(ui::texture texture) {
-    impl_ptr<impl>()->set_texture(std::move(texture));
+void ui::mesh::set_texture(ui::texture_ptr const &texture) {
+    this->_impl->set_texture(texture);
 }
 
 void ui::mesh::set_color(simd::float4 color) {
-    impl_ptr<impl>()->set_color(std::move(color));
+    this->_impl->set_color(std::move(color));
 }
 
 void ui::mesh::set_use_mesh_color(bool const use) {
-    impl_ptr<impl>()->set_use_mesh_color(use);
+    this->_impl->set_use_mesh_color(use);
 }
 
 void ui::mesh::set_primitive_type(ui::primitive_type const type) {
-    impl_ptr<impl>()->set_primitive_type(type);
+    this->_impl->set_primitive_type(type);
 }
 
-ui::mesh_data &ui::mesh::mesh_data() {
-    return impl_ptr<impl>()->mesh_data();
+ui::mesh_data_ptr const &ui::mesh::mesh_data() {
+    return this->_impl->mesh_data();
 }
 
-ui::texture &ui::mesh::texture() {
-    return impl_ptr<impl>()->texture();
+ui::mesh_ptr ui::mesh::make_shared() {
+    return std::shared_ptr<mesh>(new mesh{});
 }
 
 #pragma mark - protocol
 
 ui::metal_object &ui::mesh::metal() {
     if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+        this->_metal_object = ui::metal_object{this->_impl};
     }
     return this->_metal_object;
 }
 
 ui::renderable_mesh &ui::mesh::renderable() {
     if (!this->_renderable) {
-        this->_renderable = ui::renderable_mesh{impl_ptr<ui::renderable_mesh::impl>()};
+        this->_renderable = ui::renderable_mesh{this->_impl};
     }
     return this->_renderable;
 }

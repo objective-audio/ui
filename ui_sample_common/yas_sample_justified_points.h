@@ -5,16 +5,23 @@
 #pragma once
 
 #include <ui/yas_ui_umbrella.h>
+#include "yas_sample_ptr.h"
 
 namespace yas::sample {
-struct justified_points : base {
+struct justified_points final {
     class impl;
 
+    virtual ~justified_points();
+
+    ui::rect_plane_ptr const &rect_plane();
+
+    static justified_points_ptr make_shared();
+
+   private:
+    std::unique_ptr<impl> _impl;
+
     justified_points();
-    justified_points(std::nullptr_t);
 
-    virtual ~justified_points() final;
-
-    ui::rect_plane &rect_plane();
+    void _prepare(justified_points_ptr const &);
 };
 }  // namespace yas::sample

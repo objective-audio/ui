@@ -8,10 +8,9 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include "yas_ui_mesh.h"
 
 namespace yas::ui {
-class mesh;
-
 enum class batch_building_type {
     none,
     rebuild,
@@ -21,7 +20,7 @@ enum class batch_building_type {
 struct renderable_batch {
     virtual ~renderable_batch() = default;
 
-    virtual std::vector<ui::mesh> &meshes() = 0;
+    virtual std::vector<ui::mesh_ptr> const &meshes() = 0;
     virtual void begin_render_meshes_building(batch_building_type const) = 0;
     virtual void commit_render_meshes_building() = 0;
     virtual void clear_render_meshes() = 0;

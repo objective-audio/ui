@@ -4,27 +4,30 @@
 
 #pragma once
 
-#include <cpp_utils/yas_base.h>
+#include "yas_ui_collider.h"
 #include "yas_ui_detector_protocol.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-class collider;
 
-struct detector : base {
-    detector();
-    detector(std::nullptr_t);
+struct detector final {
+    virtual ~detector();
 
-    virtual ~detector() final;
-
-    ui::collider detect(ui::point const &) const;
-    bool detect(ui::point const &, ui::collider const &) const;
+    ui::collider_ptr detect(ui::point const &) const;
+    bool detect(ui::point const &, ui::collider_ptr const &) const;
 
     ui::updatable_detector &updatable();
+
+    [[nodiscard]] static detector_ptr make_shared();
 
    private:
     class impl;
 
+    std::shared_ptr<impl> _impl;
+
     ui::updatable_detector _updatable = nullptr;
+
+    detector();
 };
 }  // namespace yas::ui

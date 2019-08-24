@@ -5,19 +5,16 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <cpp_utils/yas_base.h>
 #include "yas_ui_metal_protocol.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
 class uint_size;
 class metal_system;
 
-struct metal_texture : base {
+struct metal_texture {
     class impl;
-
-    metal_texture(ui::uint_size size, ui::texture_usages_t const, ui::pixel_format const);
-    metal_texture(std::nullptr_t);
 
     virtual ~metal_texture() final;
 
@@ -29,11 +26,18 @@ struct metal_texture : base {
     MTLPixelFormat pixel_format() const;
     MTLTextureUsage texture_usage() const;
 
-    ui::metal_system const &metal_system();
+    std::shared_ptr<ui::metal_system> const &metal_system();
 
     ui::metal_object &metal();
 
+    [[nodiscard]] static metal_texture_ptr make_shared(ui::uint_size actual_size, ui::texture_usages_t const,
+                                                       ui::pixel_format const);
+
    private:
+    std::shared_ptr<impl> _impl;
+
     ui::metal_object _metal_object = nullptr;
+
+    metal_texture(ui::uint_size &&, ui::texture_usages_t const, ui::pixel_format const);
 };
 }  // namespace yas::ui

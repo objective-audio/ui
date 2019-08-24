@@ -27,17 +27,17 @@ using namespace yas;
 
     XCTAssertTrue(layout);
 
-    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
-    XCTAssertEqual(layout->preferred_cell_count.raw(), 0);
-    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{1.0f, 1.0f}));
-    XCTAssertEqual(layout->lines.raw().size(), 0);
-    XCTAssertEqual(layout->row_spacing.raw(), 0.0f);
-    XCTAssertEqual(layout->col_spacing.raw(), 0.0f);
+    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
+    XCTAssertEqual(layout->preferred_cell_count->raw(), 0);
+    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{1.0f, 1.0f}));
+    XCTAssertEqual(layout->lines->raw().size(), 0);
+    XCTAssertEqual(layout->row_spacing->raw(), 0.0f);
+    XCTAssertEqual(layout->col_spacing->raw(), 0.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
-    XCTAssertEqual(layout->alignment.raw(), ui::layout_alignment::min);
-    XCTAssertEqual(layout->direction.raw(), ui::layout_direction::vertical);
-    XCTAssertEqual(layout->row_order.raw(), ui::layout_order::ascending);
-    XCTAssertEqual(layout->col_order.raw(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::min);
+    XCTAssertEqual(layout->direction->raw(), ui::layout_direction::vertical);
+    XCTAssertEqual(layout->row_order->raw(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->col_order->raw(), ui::layout_order::ascending);
 }
 
 - (void)test_create_with_args {
@@ -56,21 +56,21 @@ using namespace yas;
 
     XCTAssertTrue(layout);
 
-    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
-    XCTAssertEqual(layout->preferred_cell_count.raw(), 10);
-    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{2.5f, 3.5f}));
-    XCTAssertEqual(layout->lines.raw().size(), 1);
-    XCTAssertEqual(layout->lines.raw().at(0).cell_sizes.size(), 2);
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
-    XCTAssertEqual(layout->lines.raw().at(0).new_line_min_offset, 3.9f);
-    XCTAssertEqual(layout->row_spacing.raw(), 4.0f);
-    XCTAssertEqual(layout->col_spacing.raw(), 4.0f);
+    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
+    XCTAssertEqual(layout->preferred_cell_count->raw(), 10);
+    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{2.5f, 3.5f}));
+    XCTAssertEqual(layout->lines->raw().size(), 1);
+    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 2);
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
+    XCTAssertEqual(layout->lines->raw().at(0).new_line_min_offset, 3.9f);
+    XCTAssertEqual(layout->row_spacing->raw(), 4.0f);
+    XCTAssertEqual(layout->col_spacing->raw(), 4.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
-    XCTAssertEqual(layout->alignment.raw(), ui::layout_alignment::max);
-    XCTAssertEqual(layout->direction.raw(), ui::layout_direction::horizontal);
-    XCTAssertEqual(layout->row_order.raw(), ui::layout_order::descending);
-    XCTAssertEqual(layout->col_order.raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->direction->raw(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->row_order->raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order->raw(), ui::layout_order::descending);
 }
 
 - (void)test_cell_layout_guide_rects {
@@ -86,40 +86,40 @@ using namespace yas;
 
     XCTAssertEqual(cell_guide_rects.size(), 4);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 8.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->top()->value(), 8.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 8.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 8.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->right()->value(), 8.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->top()->value(), 8.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 9.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 12.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->right()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 9.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->top()->value(), 12.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 8.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 9.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 12.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->left()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->right()->value(), 8.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->bottom()->value(), 9.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->top()->value(), 12.0f);
 }
 
 - (void)test_actual_cell_count {
     auto layout = ui::collection_layout::make_shared(
         {.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
-    XCTAssertEqual(layout->actual_cell_count().raw(), 1);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 1);
 
-    layout->preferred_cell_count.set_value(5);
+    layout->preferred_cell_count->set_value(5);
 
-    XCTAssertEqual(layout->actual_cell_count().raw(), 4);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 4);
 
-    layout->preferred_cell_count.set_value(2);
+    layout->preferred_cell_count->set_value(2);
 
-    XCTAssertEqual(layout->actual_cell_count().raw(), 2);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 2);
 }
 
 - (void)test_chain_actual_cell_count {
@@ -129,15 +129,15 @@ using namespace yas;
     std::size_t notified_count = 0;
 
     auto observer = layout->actual_cell_count()
-                        .chain()
+                        ->chain()
                         .perform([&notified_count](auto const &count) { notified_count = count; })
                         .end();
 
-    layout->preferred_cell_count.set_value(5);
+    layout->preferred_cell_count->set_value(5);
 
     XCTAssertEqual(notified_count, 4);
 
-    layout->preferred_cell_count.set_value(2);
+    layout->preferred_cell_count->set_value(2);
 
     XCTAssertEqual(notified_count, 2);
 }
@@ -151,43 +151,43 @@ using namespace yas;
                                             .col_spacing = 1.0f,
                                             .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
 
-    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
 
-    XCTAssertEqual(layout->frame_guide_rect.left().value(), 2.0f);
-    XCTAssertEqual(layout->frame_guide_rect.right().value(), 10.0f);
-    XCTAssertEqual(layout->frame_guide_rect.bottom().value(), 4.0f);
-    XCTAssertEqual(layout->frame_guide_rect.top().value(), 20.0f);
+    XCTAssertEqual(layout->frame_guide_rect->left()->value(), 2.0f);
+    XCTAssertEqual(layout->frame_guide_rect->right()->value(), 10.0f);
+    XCTAssertEqual(layout->frame_guide_rect->bottom()->value(), 4.0f);
+    XCTAssertEqual(layout->frame_guide_rect->top()->value(), 20.0f);
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    layout->frame_guide_rect.set_region({.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}});
+    layout->frame_guide_rect->set_region({.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}});
 
-    XCTAssertTrue(layout->frame_guide_rect.region() == (ui::region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
 
-    XCTAssertEqual(layout->frame_guide_rect.left().value(), 3.0f);
-    XCTAssertEqual(layout->frame_guide_rect.right().value(), 10.0f);
-    XCTAssertEqual(layout->frame_guide_rect.bottom().value(), 5.0f);
-    XCTAssertEqual(layout->frame_guide_rect.top().value(), 21.0f);
+    XCTAssertEqual(layout->frame_guide_rect->left()->value(), 3.0f);
+    XCTAssertEqual(layout->frame_guide_rect->right()->value(), 10.0f);
+    XCTAssertEqual(layout->frame_guide_rect->bottom()->value(), 5.0f);
+    XCTAssertEqual(layout->frame_guide_rect->top()->value(), 21.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 4.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 9.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 4.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->top()->value(), 9.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 7.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 9.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 9.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 7.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->right()->value(), 9.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->top()->value(), 9.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 4.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 10.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 13.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 4.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->right()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 10.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->top()->value(), 13.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 7.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 9.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 10.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 13.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->left()->value(), 7.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->right()->value(), 9.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->bottom()->value(), 10.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->top()->value(), 13.0f);
 }
 
 - (void)test_limiting_row {
@@ -197,21 +197,21 @@ using namespace yas;
                                                       .direction = ui::layout_direction::vertical});
 
     // フレームの高さが0ならセルを作る範囲の制限をかけない
-    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
 
-    layout->frame_guide_rect.set_region({.size = {0.0f, 0.5f}});
+    layout->frame_guide_rect->set_region({.size = {0.0f, 0.5f}});
 
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
-    XCTAssertEqual(layout->actual_cell_count().raw(), 0);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 0);
 
-    layout->direction.set_value(ui::layout_direction::horizontal);
+    layout->direction->set_value(ui::layout_direction::horizontal);
 
     // セルの並びを横にすれば高さの制限は受けない
-    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
 
-    layout->frame_guide_rect.set_region({.size = {0.0f, 0.5f}});
+    layout->frame_guide_rect->set_region({.size = {0.0f, 0.5f}});
 
-    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
 }
 
 - (void)test_limiting_col {
@@ -221,35 +221,35 @@ using namespace yas;
                                                       .direction = ui::layout_direction::horizontal});
 
     // フレームの幅が0ならセルを作る範囲の制限をかけない
-    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
 
-    layout->frame_guide_rect.set_region({.size = {0.5f, 0.0f}});
+    layout->frame_guide_rect->set_region({.size = {0.5f, 0.0f}});
 
     // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
-    XCTAssertEqual(layout->actual_cell_count().raw(), 0);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 0);
 
-    layout->direction.set_value(ui::layout_direction::vertical);
+    layout->direction->set_value(ui::layout_direction::vertical);
 
     // セルの並びを縦にすれば高さの制限は受けない
-    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
 
-    layout->frame_guide_rect.set_region({.size = {0.5f, 0.0f}});
+    layout->frame_guide_rect->set_region({.size = {0.5f, 0.0f}});
 
-    XCTAssertEqual(layout->actual_cell_count().raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
 }
 
 - (void)test_set_preferred_cell_count {
     auto layout = ui::collection_layout::make_shared({.preferred_cell_count = 2});
 
-    XCTAssertEqual(layout->preferred_cell_count.raw(), 2);
+    XCTAssertEqual(layout->preferred_cell_count->raw(), 2);
 
-    layout->preferred_cell_count.set_value(3);
+    layout->preferred_cell_count->set_value(3);
 
-    XCTAssertEqual(layout->preferred_cell_count.raw(), 3);
+    XCTAssertEqual(layout->preferred_cell_count->raw(), 3);
 
-    layout->preferred_cell_count.set_value(0);
+    layout->preferred_cell_count->set_value(0);
 
-    XCTAssertEqual(layout->preferred_cell_count.raw(), 0);
+    XCTAssertEqual(layout->preferred_cell_count->raw(), 0);
 }
 
 - (void)test_set_default_cell_size {
@@ -257,25 +257,25 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{1.0f, 1.0f}));
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 
-    layout->default_cell_size.set_value({2.0f, 3.0f});
+    layout->default_cell_size->set_value({2.0f, 3.0f});
 
-    XCTAssertTrue(layout->default_cell_size.raw() == (ui::size{2.0f, 3.0f}));
+    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{2.0f, 3.0f}));
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 6.0f);
 }
 
 - (void)test_new_line_by_frame_only {
@@ -283,40 +283,40 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->lines.raw().size(), 0);
+    XCTAssertEqual(layout->lines->raw().size(), 0);
 
-    layout->lines.set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}},
-                              .new_line_min_offset = 0.0f}});
+    layout->lines->set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}},
+                               .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines.raw().size(), 1);
-    XCTAssertEqual(layout->lines.raw().at(0).cell_sizes.size(), 5);
+    XCTAssertEqual(layout->lines->raw().size(), 1);
+    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 5);
 
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines.raw().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).right().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).bottom().value(), 5.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).top().value(), 7.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->top()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->right()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->top()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->right()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->top()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->bottom()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->top()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->right()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->bottom()->value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->top()->value(), 7.0f);
 }
 
 - (void)test_new_line_by_lines {
@@ -324,34 +324,34 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    layout->lines.set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
-                             {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
+    layout->lines->set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
+                              {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines.raw().size(), 2);
-    XCTAssertEqual(layout->lines.raw().at(0).cell_sizes.size(), 3);
-    XCTAssertEqual(layout->lines.raw().at(1).cell_sizes.size(), 2);
+    XCTAssertEqual(layout->lines->raw().size(), 2);
+    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout->lines->raw().at(1).cell_sizes.size(), 2);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 6.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->top()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->right()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->top()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->right()->value(), 6.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->top()->value(), 3.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 4.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).right().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).bottom().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).top().value(), 5.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->bottom()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->top()->value(), 4.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->right()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->bottom()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->top()->value(), 5.0f);
 }
 
 - (void)test_new_line_by_frame_and_lines {
@@ -361,35 +361,35 @@ using namespace yas;
 
     ui::size const cell_size = {1.0f, 1.0f};
 
-    layout->lines.set_value({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
-                             {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
+    layout->lines->set_value({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
+                              {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines.raw().size(), 2);
-    XCTAssertEqual(layout->lines.raw().at(0).cell_sizes.size(), 3);
-    XCTAssertEqual(layout->lines.raw().at(1).cell_sizes.size(), 2);
+    XCTAssertEqual(layout->lines->raw().size(), 2);
+    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout->lines->raw().at(1).cell_sizes.size(), 2);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->top()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->right()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->top()->value(), 1.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->top()->value(), 2.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(3).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).right().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).bottom().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(3).top().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).right().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).bottom().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(4).top().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->right()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->bottom()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(3)->top()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->right()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->bottom()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(4)->top()->value(), 3.0f);
 }
 
 - (void)test_set_cell_sizes_zero_width {
@@ -400,22 +400,22 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->actual_cell_count().raw(), 3);
+    XCTAssertEqual(layout->actual_cell_count()->raw(), 3);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).right().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).top().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->top()->value(), 1.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).right().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).top().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->right()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->top()->value(), 2.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).right().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).top().value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->right()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->top()->value(), 3.0f);
 }
 
 - (void)test_set_row_spacing {
@@ -424,25 +424,25 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->row_spacing.raw(), 0.0f);
+    XCTAssertEqual(layout->row_spacing->raw(), 0.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 
-    layout->row_spacing.set_value(1.0f);
+    layout->row_spacing->set_value(1.0f);
 
-    XCTAssertEqual(layout->row_spacing.raw(), 1.0f);
+    XCTAssertEqual(layout->row_spacing->raw(), 1.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 2.0f);
 }
 
 - (void)test_set_col_spacing {
@@ -451,37 +451,37 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->col_spacing.raw(), 0.0f);
+    XCTAssertEqual(layout->col_spacing->raw(), 0.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
 
-    layout->col_spacing.set_value(1.0f);
+    layout->col_spacing->set_value(1.0f);
 
-    XCTAssertEqual(layout->col_spacing.raw(), 1.0f);
+    XCTAssertEqual(layout->col_spacing->raw(), 1.0f);
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 2.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 2.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_set_aligmnent {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->alignment.set_value(ui::layout_alignment::mid);
+    layout->alignment->set_value(ui::layout_alignment::mid);
 
-    XCTAssertEqual(layout->alignment.raw(), ui::layout_alignment::mid);
+    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::mid);
 
-    layout->alignment.set_value(ui::layout_alignment::max);
+    layout->alignment->set_value(ui::layout_alignment::max);
 
-    XCTAssertEqual(layout->alignment.raw(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::max);
 }
 
 - (void)test_alignment_mid {
@@ -492,12 +492,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.5f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 2.5f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.5f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.5f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 2.5f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 1.5f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_alignment_max {
@@ -508,36 +508,36 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 3.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 3.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_set_direction {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->direction.set_value(ui::layout_direction::horizontal);
+    layout->direction->set_value(ui::layout_direction::horizontal);
 
-    XCTAssertEqual(layout->direction.raw(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->direction->raw(), ui::layout_direction::horizontal);
 }
 
 - (void)test_set_row_order {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->row_order.set_value(ui::layout_order::descending);
+    layout->row_order->set_value(ui::layout_order::descending);
 
-    XCTAssertEqual(layout->row_order.raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->row_order->raw(), ui::layout_order::descending);
 }
 
 - (void)test_set_col_order {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->col_order.set_value(ui::layout_order::descending);
+    layout->col_order->set_value(ui::layout_order::descending);
 
-    XCTAssertEqual(layout->col_order.raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order->raw(), ui::layout_order::descending);
 }
 
 - (void)test_vertical_each_ascending_order {
@@ -550,12 +550,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_vertical_row_descending_order {
@@ -568,12 +568,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
 }
 
 - (void)test_vertical_col_descending_order {
@@ -586,12 +586,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_vertical_each_descending_order {
@@ -604,12 +604,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
 }
 
 - (void)test_horizontal_each_ascending_order {
@@ -622,12 +622,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
 }
 
 - (void)test_horizontal_row_descending_order {
@@ -640,12 +640,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
 }
 
 - (void)test_horizontal_col_descending_order {
@@ -658,12 +658,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_horizontal_each_descending_order {
@@ -676,12 +676,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(cell_guide_rects.at(0).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(0).bottom().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).left().value(), 1.0f);
-    XCTAssertEqual(cell_guide_rects.at(1).bottom().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).left().value(), 0.0f);
-    XCTAssertEqual(cell_guide_rects.at(2).bottom().value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->left()->value(), 1.0f);
+    XCTAssertEqual(cell_guide_rects.at(1)->bottom()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 0.0f);
+    XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 1.0f);
 }
 
 - (void)test_is_equal_line {
@@ -706,11 +706,11 @@ using namespace yas;
 
     std::optional<std::size_t> notified_count;
 
-    auto observer = layout->preferred_cell_count.chain()
+    auto observer = layout->preferred_cell_count->chain()
                         .perform([&notified_count](auto const &count) { notified_count = count; })
                         .end();
 
-    layout->preferred_cell_count.set_value(10);
+    layout->preferred_cell_count->set_value(10);
 
     XCTAssertTrue(notified_count);
     XCTAssertEqual(*notified_count, 10);
@@ -721,9 +721,10 @@ using namespace yas;
 
     std::optional<ui::layout_alignment> notified;
 
-    auto observer = layout->alignment.chain().perform([&notified](auto const &aligment) { notified = aligment; }).end();
+    auto observer =
+        layout->alignment->chain().perform([&notified](auto const &aligment) { notified = aligment; }).end();
 
-    layout->alignment.set_value(ui::layout_alignment::max);
+    layout->alignment->set_value(ui::layout_alignment::max);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_alignment::max);
@@ -734,9 +735,9 @@ using namespace yas;
 
     std::optional<std::vector<ui::collection_layout::line>> notified;
 
-    auto observer = layout->lines.chain().perform([&notified](auto const &lines) { notified = lines; }).end();
+    auto observer = layout->lines->chain().perform([&notified](auto const &lines) { notified = lines; }).end();
 
-    layout->lines.set_value({{}});
+    layout->lines->set_value({{}});
 
     XCTAssertTrue(notified);
     XCTAssertEqual(notified->size(), 1);
@@ -747,9 +748,10 @@ using namespace yas;
 
     std::optional<ui::size> notified;
 
-    auto observer = layout->default_cell_size.chain().perform([&notified](auto const &size) { notified = size; }).end();
+    auto observer =
+        layout->default_cell_size->chain().perform([&notified](auto const &size) { notified = size; }).end();
 
-    layout->default_cell_size.set_value({1.0f, 2.0f});
+    layout->default_cell_size->set_value({1.0f, 2.0f});
 
     XCTAssertTrue(notified);
     XCTAssertEqual(notified->width, 1.0f);
@@ -761,9 +763,9 @@ using namespace yas;
 
     std::optional<ui::layout_order> notified;
 
-    auto observer = layout->row_order.chain().perform([&notified](auto const &order) { notified = order; }).end();
+    auto observer = layout->row_order->chain().perform([&notified](auto const &order) { notified = order; }).end();
 
-    layout->row_order.set_value(ui::layout_order::descending);
+    layout->row_order->set_value(ui::layout_order::descending);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_order::descending);
@@ -774,9 +776,9 @@ using namespace yas;
 
     std::optional<ui::layout_order> notified;
 
-    auto observer = layout->col_order.chain().perform([&notified](auto const &order) { notified = order; }).end();
+    auto observer = layout->col_order->chain().perform([&notified](auto const &order) { notified = order; }).end();
 
-    layout->col_order.set_value(ui::layout_order::descending);
+    layout->col_order->set_value(ui::layout_order::descending);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_order::descending);
@@ -788,9 +790,9 @@ using namespace yas;
     std::optional<ui::layout_direction> notified;
 
     auto observer =
-        layout->direction.chain().perform([&notified](auto const &direction) { notified = direction; }).end();
+        layout->direction->chain().perform([&notified](auto const &direction) { notified = direction; }).end();
 
-    layout->direction.set_value(ui::layout_direction::horizontal);
+    layout->direction->set_value(ui::layout_direction::horizontal);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_direction::horizontal);
@@ -801,9 +803,10 @@ using namespace yas;
 
     std::optional<float> notified;
 
-    auto observer = layout->row_spacing.chain().perform([&notified](auto const &spacing) { notified = spacing; }).end();
+    auto observer =
+        layout->row_spacing->chain().perform([&notified](auto const &spacing) { notified = spacing; }).end();
 
-    layout->row_spacing.set_value(11.0f);
+    layout->row_spacing->set_value(11.0f);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, 11.0f);
@@ -814,9 +817,10 @@ using namespace yas;
 
     std::optional<float> notified;
 
-    auto observer = layout->col_spacing.chain().perform([&notified](auto const &spacing) { notified = spacing; }).end();
+    auto observer =
+        layout->col_spacing->chain().perform([&notified](auto const &spacing) { notified = spacing; }).end();
 
-    layout->col_spacing.set_value(11.0f);
+    layout->col_spacing->set_value(11.0f);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, 11.0f);

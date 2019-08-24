@@ -16,7 +16,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(layout_action::args args)
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target.set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
+                target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
             }
         }
     });
@@ -24,7 +24,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(layout_action::args args)
     return action;
 }
 
-struct ui::layout_animator::impl : base::impl {
+struct ui::layout_animator::impl {
     args _args;
     ui::transform_f _value_transformer;
 
@@ -34,42 +34,42 @@ struct ui::layout_animator::impl : base::impl {
     ~impl() {
         if (auto renderer = this->_args.renderer.lock()) {
             for (auto const &guide_pair : this->_args.layout_guide_pairs) {
-                renderer.erase_action(guide_pair.destination);
+                renderer->erase_action(guide_pair.destination);
             }
         }
     }
 
-    void prepare(ui::layout_animator &interporator) {
+    void prepare(ui::layout_animator_ptr const &animator) {
         this->_observers.reserve(this->_args.layout_guide_pairs.size());
 
         for (auto &guide_pair : this->_args.layout_guide_pairs) {
             auto &src_guide = guide_pair.source;
             auto &dst_guide = guide_pair.destination;
 
-            dst_guide.set_value(src_guide.value());
+            dst_guide->set_value(src_guide->value());
 
-            auto weak_interporator = to_weak(interporator);
+            auto weak_animator = to_weak(animator);
             auto weak_dst_guide = to_weak(dst_guide);
 
-            auto observer = src_guide.chain()
-                                .guard([weak_interporator, weak_dst_guide](float const &) {
-                                    return weak_interporator && weak_dst_guide;
+            auto observer = src_guide->chain()
+                                .guard([weak_animator, weak_dst_guide](float const &) {
+                                    return !weak_animator.expired() && !weak_dst_guide.expired();
                                 })
-                                .perform([weak_interporator, weak_dst_guide](float const &value) {
-                                    auto interporator = weak_interporator.lock();
-                                    auto const &args = interporator.impl_ptr<impl>()->_args;
+                                .perform([weak_animator, weak_dst_guide](float const &value) {
+                                    auto animator = weak_animator.lock();
+                                    auto const &args = animator->_impl->_args;
                                     if (auto renderer = args.renderer.lock()) {
                                         auto dst_guide = weak_dst_guide.lock();
 
-                                        renderer.erase_action(dst_guide);
+                                        renderer->erase_action(dst_guide);
 
                                         auto action =
                                             ui::make_action({.target = dst_guide,
-                                                             .begin_value = dst_guide.value(),
+                                                             .begin_value = dst_guide->value(),
                                                              .end_value = value,
                                                              .continuous_action = {.duration = args.duration}});
-                                        action->set_value_transformer(interporator.value_transformer());
-                                        renderer.insert_action(std::move(action));
+                                        action->set_value_transformer(animator->value_transformer());
+                                        renderer->insert_action(std::move(action));
                                     }
                                 })
                                 .end();
@@ -82,17 +82,23 @@ struct ui::layout_animator::impl : base::impl {
     std::vector<chaining::any_observer_ptr> _observers;
 };
 
-ui::layout_animator::layout_animator(args args) : base(std::make_shared<impl>(std::move(args))) {
-    impl_ptr<impl>()->prepare(*this);
-}
-
-ui::layout_animator::layout_animator(std::nullptr_t) : base(nullptr) {
+ui::layout_animator::layout_animator(args args) : _impl(std::make_unique<impl>(std::move(args))) {
 }
 
 void ui::layout_animator::set_value_transformer(ui::transform_f transform) {
-    impl_ptr<impl>()->_value_transformer = transform;
+    this->_impl->_value_transformer = transform;
 }
 
 ui::transform_f const &ui::layout_animator::value_transformer() const {
-    return impl_ptr<impl>()->_value_transformer;
+    return this->_impl->_value_transformer;
+}
+
+void ui::layout_animator::_prepare(ui::layout_animator_ptr const &animator) {
+    this->_impl->prepare(animator);
+}
+
+ui::layout_animator_ptr ui::layout_animator::make_shared(args args) {
+    auto shared = std::shared_ptr<layout_animator>(new layout_animator{std::move(args)});
+    shared->_prepare(shared);
+    return shared;
 }

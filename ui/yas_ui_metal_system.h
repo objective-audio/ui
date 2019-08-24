@@ -5,18 +5,15 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <cpp_utils/yas_base.h>
 #include "yas_ui_metal_system_protocol.h"
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
-struct metal_system : base {
+
+struct metal_system final {
     class impl;
 
-    explicit metal_system(id<MTLDevice> const);
-    metal_system(id<MTLDevice> const, uint32_t const sample_count);
-    metal_system(std::nullptr_t);
-
-    virtual ~metal_system() final;
+    virtual ~metal_system();
 
     std::size_t last_encoded_mesh_count() const;
 
@@ -25,8 +22,22 @@ struct metal_system : base {
 
     ui::testable_metal_system testable();
 
+    [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const);
+    [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const, uint32_t const sample_count);
+
    private:
+    std::shared_ptr<impl> _impl;
+
     ui::makable_metal_system _makable = nullptr;
     ui::renderable_metal_system _renderable = nullptr;
+
+    metal_system(id<MTLDevice> const, uint32_t const sample_count);
+
+    metal_system(metal_system const &) = delete;
+    metal_system(metal_system &&) = delete;
+    metal_system &operator=(metal_system const &) = delete;
+    metal_system &operator=(metal_system &&) = delete;
+
+    void _prepare(metal_system_ptr const &);
 };
 }  // namespace yas::ui

@@ -23,68 +23,66 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::detector detector;
+    auto detector = ui::detector::make_shared();
 
     XCTAssertTrue(detector);
-    XCTAssertTrue(detector.updatable());
-}
-
-- (void)test_create_null {
-    ui::detector detector{nullptr};
-
-    XCTAssertFalse(detector);
+    XCTAssertTrue(detector->updatable());
 }
 
 - (void)test_detect {
-    ui::detector detector;
+    auto detector = ui::detector::make_shared();
 
-    XCTAssertFalse(detector.detect({.v = 0.0f}));
+    XCTAssertFalse(detector->detect({.v = 0.0f}));
 
-    ui::collider collider1{ui::shape{{.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
-    ui::collider collider2{ui::shape{{.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
+    auto collider1 =
+        ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
+    auto collider2 =
+        ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    detector.updatable().begin_update();
-    detector.updatable().push_front_collider(collider1);
-    detector.updatable().push_front_collider(collider2);
-    detector.updatable().end_update();
+    detector->updatable().begin_update();
+    detector->updatable().push_front_collider(collider1);
+    detector->updatable().push_front_collider(collider2);
+    detector->updatable().end_update();
 
-    XCTAssertEqual(detector.detect({.v = 0.0f}), collider2);
+    XCTAssertEqual(detector->detect({.v = 0.0f}), collider2);
 
-    detector.updatable().begin_update();
-    detector.updatable().end_update();
+    detector->updatable().begin_update();
+    detector->updatable().end_update();
 
-    XCTAssertFalse(detector.detect({.v = 0.0f}));
+    XCTAssertFalse(detector->detect({.v = 0.0f}));
 }
 
 - (void)test_detect_with_collider {
-    ui::detector detector;
+    auto detector = ui::detector::make_shared();
 
-    ui::collider collider1{ui::shape{{.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
-    ui::collider collider2{ui::shape{{.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}}};
+    auto collider1 =
+        ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
+    auto collider2 =
+        ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    detector.updatable().push_front_collider(collider1);
-    detector.updatable().push_front_collider(collider2);
+    detector->updatable().push_front_collider(collider1);
+    detector->updatable().push_front_collider(collider2);
 
-    XCTAssertFalse(detector.detect({.v = 0.0f}, collider1));
-    XCTAssertTrue(detector.detect({.v = 0.0f}, collider2));
+    XCTAssertFalse(detector->detect({.v = 0.0f}, collider1));
+    XCTAssertTrue(detector->detect({.v = 0.0f}, collider2));
 }
 
 - (void)test_is_updating {
-    ui::detector detector;
+    auto detector = ui::detector::make_shared();
 
-    XCTAssertTrue(detector.updatable().is_updating());
+    XCTAssertTrue(detector->updatable().is_updating());
 
-    detector.updatable().begin_update();
+    detector->updatable().begin_update();
 
-    XCTAssertTrue(detector.updatable().is_updating());
+    XCTAssertTrue(detector->updatable().is_updating());
 
-    detector.updatable().end_update();
+    detector->updatable().end_update();
 
-    XCTAssertFalse(detector.updatable().is_updating());
+    XCTAssertFalse(detector->updatable().is_updating());
 
-    detector.updatable().begin_update();
+    detector->updatable().begin_update();
 
-    XCTAssertTrue(detector.updatable().is_updating());
+    XCTAssertTrue(detector->updatable().is_updating());
 }
 
 @end

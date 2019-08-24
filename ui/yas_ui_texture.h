@@ -5,10 +5,10 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_result.h>
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_metal_system.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_texture_protocol.h"
 #include "yas_ui_types.h"
 
@@ -17,7 +17,7 @@ class image;
 class metal_texture;
 class texture_element;
 
-struct texture : base {
+struct texture {
     class impl;
 
     struct args {
@@ -33,11 +33,7 @@ struct texture : base {
         size_updated,
     };
 
-    explicit texture(args);
-    texture(std::nullptr_t);
-
-    bool operator==(texture const &) const;
-    bool operator!=(texture const &) const;
+    uintptr_t identifier() const;
 
     uint_size point_size() const;
     uint_size actual_size() const;
@@ -48,23 +44,30 @@ struct texture : base {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    [[nodiscard]] texture_element const &add_draw_handler(ui::uint_size, ui::draw_handler_f);
-    void remove_draw_handler(texture_element const &);
+    [[nodiscard]] texture_element_ptr const &add_draw_handler(ui::uint_size, ui::draw_handler_f);
+    void remove_draw_handler(texture_element_ptr const &);
 
-    ui::metal_texture &metal_texture();
-    ui::metal_texture const &metal_texture() const;
+    std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
-    using chain_pair_t = std::pair<method, texture>;
+    using chain_pair_t = std::pair<method, texture_ptr>;
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain() const;
-    [[nodiscard]] chaining::chain_relayed_unsync_t<texture, chain_pair_t> chain(method const &) const;
-    chaining::receiver<double> &scale_factor_receiver();
+    [[nodiscard]] chaining::chain_relayed_unsync_t<texture_ptr, chain_pair_t> chain(method const &) const;
+    [[nodiscard]] std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
 
     ui::metal_object &metal();
 
-    void sync_scale_from_renderer(ui::renderer const &);
+    void sync_scale_from_renderer(ui::renderer_ptr const &);
+
+    [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
+    std::shared_ptr<impl> _impl;
+
     ui::metal_object _metal_object = nullptr;
+
+    explicit texture(args &&);
+
+    void _prepare(texture_ptr const &);
 };
 }  // namespace yas::ui
 
