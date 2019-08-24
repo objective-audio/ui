@@ -9,10 +9,10 @@
 #include "yas_ui_effect_protocol.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_render_target_protocol.h"
 
 namespace yas::ui {
-class renderer;
 class render_info;
 enum class batch_building_type;
 
@@ -45,8 +45,8 @@ struct tree_updates {
 
 struct renderable_node : protocol {
     struct impl : protocol::impl {
-        virtual ui::renderer renderer() = 0;
-        virtual void set_renderer(ui::renderer &&) = 0;
+        virtual ui::renderer_ptr renderer() = 0;
+        virtual void set_renderer(ui::renderer_ptr const &) = 0;
         virtual void fetch_updates(ui::tree_updates &) = 0;
         virtual void build_render_info(ui::render_info &) = 0;
         virtual bool is_rendering_color_exists() = 0;
@@ -56,8 +56,8 @@ struct renderable_node : protocol {
     explicit renderable_node(std::shared_ptr<impl>);
     renderable_node(std::nullptr_t);
 
-    ui::renderer renderer();
-    void set_renderer(ui::renderer);
+    ui::renderer_ptr renderer();
+    void set_renderer(ui::renderer_ptr const &);
     void fetch_updates(ui::tree_updates &);
     void build_render_info(ui::render_info &);
     bool is_rendering_color_exists();

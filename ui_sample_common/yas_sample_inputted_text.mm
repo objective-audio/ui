@@ -7,37 +7,37 @@
 
 using namespace yas;
 
-struct sample::inputted_text::impl : base::impl {
-    ui::strings _strings;
+struct sample::inputted_text::impl {
+    ui::strings_ptr _strings;
 
-    impl(ui::font_atlas &&font_atlas)
-        : _strings(
-              {.font_atlas = std::move(font_atlas), .max_word_count = 512, .alignment = ui::layout_alignment::min}) {
+    impl(ui::font_atlas_ptr const &font_atlas)
+        : _strings(ui::strings::make_shared(
+              {.font_atlas = font_atlas, .max_word_count = 512, .alignment = ui::layout_alignment::min})) {
     }
 
-    void prepare(sample::inputted_text &text) {
-        auto &node = this->_strings.rect_plane().node();
+    void prepare(sample::inputted_text_ptr const &text) {
+        auto &node = this->_strings->rect_plane()->node();
 
         this->_renderer_observer =
-            node.chain_renderer()
+            node->chain_renderer()
                 .perform([weak_text = to_weak(text), event_observer = chaining::any_observer_ptr{nullptr},
-                          layout = chaining::any_observer_ptr{nullptr}](ui::renderer const &value) mutable {
+                          layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                     if (auto text = weak_text.lock()) {
-                        if (auto renderer = value) {
-                            auto text_impl = text.impl_ptr<inputted_text::impl>();
-                            auto &strings_frame_guide_rect = text_impl->_strings.frame_layout_guide_rect();
+                        if (renderer) {
+                            auto &text_impl = text->_impl;
+                            auto &strings_frame_guide_rect = text_impl->_strings->frame_layout_guide_rect();
 
-                            event_observer = renderer.event_manager()
-                                                 .chain(ui::event_manager::method::key_changed)
-                                                 .perform([weak_text](ui::event const &event) {
+                            event_observer = renderer->event_manager()
+                                                 ->chain(ui::event_manager::method::key_changed)
+                                                 .perform([weak_text](ui::event_ptr const &event) {
                                                      if (auto text = weak_text.lock()) {
-                                                         text.impl_ptr<inputted_text::impl>()->update_text(event);
+                                                         text->_impl->update_text(event);
                                                      }
                                                  })
                                                  .end();
 
-                            layout = renderer.safe_area_layout_guide_rect()
-                                         .chain()
+                            layout = renderer->safe_area_layout_guide_rect()
+                                         ->chain()
                                          .to(chaining::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
                                          .send_to(strings_frame_guide_rect)
                                          .sync();
@@ -50,43 +50,49 @@ struct sample::inputted_text::impl : base::impl {
                 .end();
     }
 
-    void update_text(ui::event const &event) {
-        if (event.phase() == ui::event_phase::began || event.phase() == ui::event_phase::changed) {
-            auto const key_code = event.get<ui::key>().key_code();
+    void update_text(ui::event_ptr const &event) {
+        if (event->phase() == ui::event_phase::began || event->phase() == ui::event_phase::changed) {
+            auto const key_code = event->get<ui::key>().key_code();
 
             switch (key_code) {
                 case 51: {  // delete key
-                    auto &text = this->_strings.text();
+                    auto &text = this->_strings->text();
                     if (text.size() > 0) {
-                        this->_strings.set_text(text.substr(0, text.size() - 1));
+                        this->_strings->set_text(text.substr(0, text.size() - 1));
                     }
                 } break;
 
-                default: { append_text(event.get<ui::key>().characters()); } break;
+                default: { append_text(event->get<ui::key>().characters()); } break;
             }
         }
     }
 
     void append_text(std::string text) {
-        this->_strings.set_text(this->_strings.text() + text);
+        this->_strings->set_text(this->_strings->text() + text);
     }
 
    private:
     chaining::any_observer_ptr _renderer_observer = nullptr;
-    ui::layout_guide_point _layout_guide_point;
+    ui::layout_guide_point_ptr _layout_guide_point = ui::layout_guide_point::make_shared();
 };
 
-sample::inputted_text::inputted_text(ui::font_atlas font_atlas) : base(std::make_shared<impl>(std::move(font_atlas))) {
-    impl_ptr<impl>()->prepare(*this);
-}
-
-sample::inputted_text::inputted_text(std::nullptr_t) : base(nullptr) {
+sample::inputted_text::inputted_text(ui::font_atlas_ptr const &font_atlas) : _impl(std::make_unique<impl>(font_atlas)) {
 }
 
 void sample::inputted_text::append_text(std::string text) {
-    impl_ptr<impl>()->append_text(std::move(text));
+    this->_impl->append_text(std::move(text));
 }
 
-ui::strings &sample::inputted_text::strings() {
-    return impl_ptr<impl>()->_strings;
+ui::strings_ptr const &sample::inputted_text::strings() {
+    return this->_impl->_strings;
+}
+
+void sample::inputted_text::_prepare(inputted_text_ptr const &shared) {
+    this->_impl->prepare(shared);
+}
+
+sample::inputted_text_ptr sample::inputted_text::make_shared(ui::font_atlas_ptr const &atlas) {
+    auto shared = std::shared_ptr<inputted_text>(new inputted_text{atlas});
+    shared->_prepare(shared);
+    return shared;
 }

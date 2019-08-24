@@ -12,7 +12,7 @@ using namespace yas;
 
 namespace yas::ui::metal_view {
 struct cpp {
-    ui::event_manager event_manager = nullptr;
+    ui::event_manager_ptr event_manager = nullptr;
 };
 }
 
@@ -45,11 +45,11 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
-- (ui::event_manager const &)event_manager {
+- (ui::event_manager_ptr const &)event_manager {
     return self->_cpp.event_manager;
 }
 
-- (void)set_event_manager:(ui::event_manager)manager {
+- (void)set_event_manager:(ui::event_manager_ptr)manager {
     self->_cpp.event_manager = std::move(manager);
 }
 
@@ -136,21 +136,21 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendCursorEvent:(NSEvent *)event {
     if (self->_cpp.event_manager) {
-        self->_cpp.event_manager.inputtable().input_cursor_event(
+        self->_cpp.event_manager->inputtable().input_cursor_event(
             ui::cursor_event{[self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
     if (self->_cpp.event_manager) {
-        self->_cpp.event_manager.inputtable().input_touch_event(
+        self->_cpp.event_manager->inputtable().input_touch_event(
             std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendKeyEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
     if (self->_cpp.event_manager) {
-        self->_cpp.event_manager.inputtable().input_key_event(
+        self->_cpp.event_manager->inputtable().input_key_event(
             std::move(phase),
             ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
                           to_string((__bridge CFStringRef)event.charactersIgnoringModifiers), event.timestamp});
@@ -159,8 +159,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendModifierEvent:(NSEvent *)event {
     if (self->_cpp.event_manager) {
-        self->_cpp.event_manager.inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags),
-                                                                   event.timestamp);
+        self->_cpp.event_manager->inputtable().input_modifier_event(ui::modifier_flags(event.modifierFlags),
+                                                                    event.timestamp);
     }
 }
 

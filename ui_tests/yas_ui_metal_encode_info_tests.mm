@@ -27,14 +27,14 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::metal_encode_info info{{nil, nil, nil}};
+    auto info = ui::metal_encode_info::make_shared({nil, nil, nil});
 
     XCTAssertTrue(info);
 
-    XCTAssertNil(info.renderPassDescriptor());
-    XCTAssertNil(info.pipelineStateWithTexture());
-    XCTAssertNil(info.pipelineStateWithoutTexture());
-    XCTAssertEqual(info.meshes().size(), 0);
+    XCTAssertNil(info->renderPassDescriptor());
+    XCTAssertNil(info->pipelineStateWithTexture());
+    XCTAssertNil(info->pipelineStateWithoutTexture());
+    XCTAssertEqual(info->meshes().size(), 0);
 }
 
 - (void)test_create_with_parameters {
@@ -46,8 +46,8 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"create_with_parameters"];
 
-    ui::metal_system metal_system{device.object()};
-    ui::renderer renderer{metal_system};
+    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto renderer = ui::renderer::make_shared(metal_system);
 
     auto pre_render_action = ui::action::make_shared();
 
@@ -55,44 +55,38 @@ using namespace yas;
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
 
-        ui::metal_encode_info info{{view.currentRenderPassDescriptor,
-                                    metal_system.testable().mtlRenderPipelineStateWithTexture(),
-                                    metal_system.testable().mtlRenderPipelineStateWithoutTexture()}};
+        auto info = ui::metal_encode_info::make_shared(
+            {view.currentRenderPassDescriptor, metal_system->testable().mtlRenderPipelineStateWithTexture(),
+             metal_system->testable().mtlRenderPipelineStateWithoutTexture()});
 
-        XCTAssertEqualObjects(info.renderPassDescriptor(), view.currentRenderPassDescriptor);
-        XCTAssertEqualObjects(info.pipelineStateWithTexture(),
-                              metal_system.testable().mtlRenderPipelineStateWithTexture());
-        XCTAssertEqualObjects(info.pipelineStateWithoutTexture(),
-                              metal_system.testable().mtlRenderPipelineStateWithoutTexture());
+        XCTAssertEqualObjects(info->renderPassDescriptor(), view.currentRenderPassDescriptor);
+        XCTAssertEqualObjects(info->pipelineStateWithTexture(),
+                              metal_system->testable().mtlRenderPipelineStateWithTexture());
+        XCTAssertEqualObjects(info->pipelineStateWithoutTexture(),
+                              metal_system->testable().mtlRenderPipelineStateWithoutTexture());
 
         [expectation fulfill];
 
         return true;
     });
 
-    renderer.insert_action(pre_render_action);
+    renderer->insert_action(pre_render_action);
 
-    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer->view_renderable()];
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
 
-- (void)test_create_null {
-    ui::metal_encode_info info{nullptr};
-
-    XCTAssertFalse(info);
-}
-
 - (void)test_set_mesh {
-    ui::metal_encode_info info{{nil, nil, nil}};
+    auto info = ui::metal_encode_info::make_shared({nil, nil, nil});
 
-    info.append_mesh(ui::mesh{});
+    info->append_mesh(ui::mesh::make_shared());
 
-    XCTAssertEqual(info.meshes().size(), 1);
+    XCTAssertEqual(info->meshes().size(), 1);
 
-    info.append_mesh(ui::mesh{});
+    info->append_mesh(ui::mesh::make_shared());
 
-    XCTAssertEqual(info.meshes().size(), 2);
+    XCTAssertEqual(info->meshes().size(), 2);
 }
 
 @end

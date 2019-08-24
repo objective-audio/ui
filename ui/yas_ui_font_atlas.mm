@@ -32,7 +32,7 @@ struct word_info {
 };
 }
 
-struct ui::font_atlas::impl : base::impl {
+struct ui::font_atlas::impl {
     cf_ref<CTFontRef> _ct_font_ref = nullptr;
     std::string _font_name;
     double _font_size;
@@ -40,8 +40,9 @@ struct ui::font_atlas::impl : base::impl {
     double _descent;
     double _leading;
     std::string _words;
-    std::optional<chaining::fetcher<ui::texture>> _texture_changed_fetcher = std::nullopt;
-    chaining::notifier<ui::texture> _texture_updated_sender;
+    chaining::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
+    chaining::notifier_ptr<ui::texture_ptr> _texture_updated_sender =
+        chaining::notifier<ui::texture_ptr>::make_shared();
 
     impl(std::string &&font_name, double const font_size, std::string &&words)
         : _ct_font_ref(cf_ref_with_move_object(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))),
@@ -54,27 +55,28 @@ struct ui::font_atlas::impl : base::impl {
         this->_leading = CTFontGetLeading(ct_font_obj);
     }
 
-    void prepare(ui::font_atlas &atlas) {
+    void prepare(ui::font_atlas_ptr const &atlas) {
         auto weak_atlas = to_weak(atlas);
 
         this->_word_tex_coords_receiver =
-            chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>([weak_atlas](auto const &pair) {
-                if (auto atlas = weak_atlas.lock()) {
-                    atlas.impl_ptr<impl>()->_word_infos.at(pair.second).rect.set_tex_coord(pair.first);
-                }
-            });
+            chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
+                [weak_atlas](auto const &pair) {
+                    if (auto atlas = weak_atlas.lock()) {
+                        atlas->_impl->_word_infos.at(pair.second).rect.set_tex_coord(pair.first);
+                    }
+                });
 
         this->_texture_updated_receiver =
-            chaining::perform_receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+            chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_atlas](ui::texture_ptr const &texture) {
                 if (auto atlas = weak_atlas.lock()) {
-                    atlas.impl_ptr<impl>()->_texture_updated_sender.notify(texture);
+                    atlas->_impl->_texture_updated_sender->notify(texture);
                 }
             });
 
-        this->_texture_setter_observer = this->_texture_setter.chain()
-                                             .guard([weak_atlas](ui::texture const &texture) {
+        this->_texture_setter_observer = this->_texture_setter->chain()
+                                             .guard([weak_atlas](ui::texture_ptr const &texture) {
                                                  if (auto atlas = weak_atlas.lock()) {
-                                                     return !is_same(atlas.texture(), texture);
+                                                     return atlas->texture() != texture;
                                                  }
                                                  return false;
                                              })
@@ -82,41 +84,41 @@ struct ui::font_atlas::impl : base::impl {
                                              .end();
 
         this->_texture_changed_receiver =
-            chaining::perform_receiver<ui::texture>([weak_atlas](ui::texture const &texture) {
+            chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_atlas](ui::texture_ptr const &texture) {
                 if (auto atlas = weak_atlas.lock()) {
-                    auto atlas_impl = atlas.impl_ptr<impl>();
+                    auto &atlas_impl = atlas->_impl;
 
-                    atlas_impl->_update_word_infos();
+                    atlas_impl->_update_word_infos(atlas);
 
                     if (texture) {
-                        atlas_impl->_texture_observer = texture.chain(texture::method::metal_texture_changed)
-                                                            .send_to(*atlas_impl->_texture_updated_receiver)
+                        atlas_impl->_texture_observer = texture->chain(texture::method::metal_texture_changed)
+                                                            .send_to(atlas_impl->_texture_updated_receiver)
                                                             .end();
                     } else {
                         atlas_impl->_texture_observer = nullptr;
                     }
 
-                    atlas_impl->_texture_changed_fetcher->broadcast();
+                    atlas_impl->_texture_changed_fetcher->push();
                 }
             });
 
-        this->_texture_changed_observer = this->_texture.chain().send_to(*this->_texture_changed_receiver).end();
+        this->_texture_changed_observer = this->_texture->chain().send_to(this->_texture_changed_receiver).end();
 
-        this->_texture_changed_fetcher = chaining::fetcher<ui::texture>([weak_atlas]() {
+        this->_texture_changed_fetcher = chaining::fetcher<ui::texture_ptr>::make_shared([weak_atlas]() {
             if (auto atlas = weak_atlas.lock()) {
-                return std::optional<ui::texture>{atlas.texture()};
+                return std::optional<ui::texture_ptr>{atlas->texture()};
             } else {
-                return std::optional<ui::texture>{std::nullopt};
+                return std::optional<ui::texture_ptr>{std::nullopt};
             }
         });
     }
 
-    ui::texture &texture() {
-        return this->_texture.raw();
+    ui::texture_ptr const &texture() {
+        return this->_texture->raw();
     }
 
-    void set_texture(ui::texture &&texture) {
-        this->_texture_setter.notify(texture);
+    void set_texture(ui::texture_ptr const &texture) {
+        this->_texture_setter->notify(texture);
     }
 
     ui::vertex2d_rect_t const &rect(std::string const &word) {
@@ -156,19 +158,19 @@ struct ui::font_atlas::impl : base::impl {
     }
 
    private:
-    chaining::value::holder<ui::texture> _texture{ui::texture{nullptr}};
+    chaining::value::holder_ptr<ui::texture_ptr> _texture =
+        chaining::value::holder<ui::texture_ptr>::make_shared(nullptr);
     std::vector<ui::word_info> _word_infos;
-    std::optional<chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>> _word_tex_coords_receiver =
-        std::nullopt;
+    chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<chaining::any_observer_ptr> _element_observers;
-    std::optional<chaining::perform_receiver<ui::texture>> _texture_updated_receiver = std::nullopt;
+    chaining::perform_receiver_ptr<ui::texture_ptr> _texture_updated_receiver = nullptr;
     chaining::any_observer_ptr _texture_observer = nullptr;
-    chaining::notifier<ui::texture> _texture_setter;
+    chaining::notifier_ptr<ui::texture_ptr> _texture_setter = chaining::notifier<ui::texture_ptr>::make_shared();
     chaining::any_observer_ptr _texture_setter_observer = nullptr;
     chaining::any_observer_ptr _texture_changed_observer = nullptr;
-    std::optional<chaining::perform_receiver<ui::texture>> _texture_changed_receiver = std::nullopt;
+    chaining::perform_receiver_ptr<ui::texture_ptr> _texture_changed_receiver = nullptr;
 
-    void _update_word_infos() {
+    void _update_word_infos(font_atlas_ptr const &atlas) {
         this->_element_observers.clear();
 
         auto &texture = this->texture();
@@ -178,7 +180,7 @@ struct ui::font_atlas::impl : base::impl {
             return;
         }
 
-        auto weak_atlas = to_weak(cast<ui::font_atlas>());
+        auto weak_atlas = to_weak(atlas);
         auto ct_font_obj = this->_ct_font_ref.object();
         auto const word_count = this->_words.size();
 
@@ -195,7 +197,7 @@ struct ui::font_atlas::impl : base::impl {
         CGFloat const ascent = CTFontGetAscent(ct_font_obj);
         CGFloat const descent = CTFontGetDescent(ct_font_obj);
         CGFloat const string_height = descent + ascent;
-        double const scale_factor = texture.scale_factor();
+        double const scale_factor = texture->scale_factor();
 
         for (auto const &idx : each_index<std::size_t>(word_count)) {
             ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
@@ -206,7 +208,7 @@ struct ui::font_atlas::impl : base::impl {
 
             this->_word_infos.at(idx).rect.set_position(image_region);
 
-            auto texture_element = texture.add_draw_handler(
+            auto texture_element = texture->add_draw_handler(
                 image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
                     CGContextSaveGState(ctx);
 
@@ -223,9 +225,9 @@ struct ui::font_atlas::impl : base::impl {
                 });
 
             this->_element_observers.emplace_back(
-                texture_element.chain_tex_coords()
+                texture_element->chain_tex_coords()
                     .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
-                    .send_to(*this->_word_tex_coords_receiver)
+                    .send_to(this->_word_tex_coords_receiver)
                     .sync());
 
             auto const &advance = advances[idx];
@@ -234,63 +236,70 @@ struct ui::font_atlas::impl : base::impl {
     }
 };
 
-ui::font_atlas::font_atlas(args args)
-    : base(std::make_shared<impl>(std::move(args.font_name), args.font_size, std::move(args.words))) {
-    impl_ptr<impl>()->prepare(*this);
-    set_texture(std::move(args.texture));
-}
-
-ui::font_atlas::font_atlas(std::nullptr_t) : base(nullptr) {
+ui::font_atlas::font_atlas(args &&args)
+    : _impl(std::make_shared<impl>(std::move(args.font_name), args.font_size, std::move(args.words))) {
 }
 
 ui::font_atlas::~font_atlas() = default;
 
 std::string const &ui::font_atlas::font_name() const {
-    return impl_ptr<impl>()->_font_name;
+    return this->_impl->_font_name;
 }
 
 double const &ui::font_atlas::font_size() const {
-    return impl_ptr<impl>()->_font_size;
+    return this->_impl->_font_size;
 }
 
 double const &ui::font_atlas::ascent() const {
-    return impl_ptr<impl>()->_ascent;
+    return this->_impl->_ascent;
 }
 
 double const &ui::font_atlas::descent() const {
-    return impl_ptr<impl>()->_descent;
+    return this->_impl->_descent;
 }
 
 double const &ui::font_atlas::leading() const {
-    return impl_ptr<impl>()->_leading;
+    return this->_impl->_leading;
 }
 
 std::string const &ui::font_atlas::words() const {
-    return impl_ptr<impl>()->_words;
+    return this->_impl->_words;
 }
 
-ui::texture const &ui::font_atlas::texture() const {
-    return impl_ptr<impl>()->texture();
+ui::texture_ptr const &ui::font_atlas::texture() const {
+    return this->_impl->texture();
 }
 
 ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {
-    return impl_ptr<impl>()->rect(word);
+    return this->_impl->rect(word);
 }
 
 ui::size ui::font_atlas::advance(std::string const &word) const {
-    return impl_ptr<impl>()->advance(word);
+    return this->_impl->advance(word);
 }
 
-void ui::font_atlas::set_texture(ui::texture texture) {
-    impl_ptr<impl>()->set_texture(std::move(texture));
+void ui::font_atlas::set_texture(ui::texture_ptr const &texture) {
+    this->_impl->set_texture(texture);
 }
 
-chaining::chain_sync_t<ui::texture> ui::font_atlas::chain_texture() const {
-    return impl_ptr<impl>()->_texture_changed_fetcher->chain();
+chaining::chain_sync_t<ui::texture_ptr> ui::font_atlas::chain_texture() const {
+    return this->_impl->_texture_changed_fetcher->chain();
 }
 
-chaining::chain_unsync_t<ui::texture> ui::font_atlas::chain_texture_updated() const {
-    return impl_ptr<impl>()->_texture_updated_sender.chain();
+chaining::chain_unsync_t<ui::texture_ptr> ui::font_atlas::chain_texture_updated() const {
+    return this->_impl->_texture_updated_sender->chain();
+}
+
+void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const &texture) {
+    this->_impl->prepare(atlas);
+    this->set_texture(texture);
+}
+
+ui::font_atlas_ptr ui::font_atlas::make_shared(args args) {
+    auto texture = args.texture;
+    auto shared = std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
+    shared->_prepare(shared, texture);
+    return shared;
 }
 
 #pragma mark -

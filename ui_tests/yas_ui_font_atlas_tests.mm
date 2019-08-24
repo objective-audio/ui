@@ -34,29 +34,23 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system metal_system{device.object()};
+    auto metal_system = ui::metal_system::make_shared(device.object());
 
-    ui::texture texture{{.point_size = {256, 256}, .scale_factor = 1.0}};
-    ui::font_atlas font_atlas{
-        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture}};
+    auto texture = ui::texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
+    auto font_atlas = ui::font_atlas::make_shared(
+        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    XCTAssertEqual(font_atlas.font_name(), "HelveticaNeue");
-    XCTAssertEqual(font_atlas.font_size(), 14.0);
-    XCTAssertEqual(font_atlas.words(), "abcde12345");
-    XCTAssertEqual(font_atlas.texture(), texture);
+    XCTAssertEqual(font_atlas->font_name(), "HelveticaNeue");
+    XCTAssertEqual(font_atlas->font_size(), 14.0);
+    XCTAssertEqual(font_atlas->words(), "abcde12345");
+    XCTAssertEqual(font_atlas->texture(), texture);
 
     auto ct_font_ref =
         cf_ref_with_move_object(CTFontCreateWithName(to_cf_object(std::string("HelveticaNeue")), 14.0, nullptr));
     auto ct_font_obj = ct_font_ref.object();
-    XCTAssertEqual(font_atlas.ascent(), CTFontGetAscent(ct_font_obj));
-    XCTAssertEqual(font_atlas.descent(), CTFontGetDescent(ct_font_obj));
-    XCTAssertEqual(font_atlas.leading(), CTFontGetLeading(ct_font_obj));
-}
-
-- (void)test_create_null {
-    ui::font_atlas atlas = nullptr;
-
-    XCTAssertFalse(atlas);
+    XCTAssertEqual(font_atlas->ascent(), CTFontGetAscent(ct_font_obj));
+    XCTAssertEqual(font_atlas->descent(), CTFontGetDescent(ct_font_obj));
+    XCTAssertEqual(font_atlas->leading(), CTFontGetLeading(ct_font_obj));
 }
 
 - (void)test_chain_texture {
@@ -66,25 +60,26 @@ using namespace yas;
         return;
     }
 
-    ui::font_atlas font_atlas{{.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}};
+    auto font_atlas =
+        ui::font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
 
-    ui::texture observed_texture = nullptr;
+    ui::texture_ptr observed_texture = nullptr;
 
-    auto observer = font_atlas.chain_texture()
-                        .perform([&observed_texture](ui::texture const &texture) { observed_texture = texture; })
+    auto observer = font_atlas->chain_texture()
+                        .perform([&observed_texture](ui::texture_ptr const &texture) { observed_texture = texture; })
                         .end();
 
-    ui::metal_system metal_system{device.object()};
+    auto metal_system = ui::metal_system::make_shared(device.object());
 
-    ui::texture texture{{.point_size = {256, 256}}};
-    font_atlas.set_texture(texture);
+    auto texture = ui::texture::make_shared({.point_size = {256, 256}});
+    font_atlas->set_texture(texture);
 
-    XCTAssertEqual(font_atlas.texture(), texture);
-    XCTAssertEqual(observed_texture, font_atlas.texture());
+    XCTAssertEqual(font_atlas->texture(), texture);
+    XCTAssertEqual(observed_texture, font_atlas->texture());
 
-    font_atlas.set_texture(nullptr);
+    font_atlas->set_texture(nullptr);
 
-    XCTAssertFalse(font_atlas.texture());
+    XCTAssertFalse(font_atlas->texture());
     XCTAssertFalse(observed_texture);
 }
 

@@ -5,18 +5,15 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
+#include "yas_ui_action.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-struct layout_guide : base, chaining::receiver<float> {
+struct layout_guide final : chaining::receiver<float>, action_target {
     class impl;
 
-    layout_guide();
-    explicit layout_guide(float const);
-    layout_guide(std::nullptr_t);
-
-    virtual ~layout_guide() final;
+    virtual ~layout_guide();
 
     void set_value(float const);
     float const &value() const;
@@ -27,22 +24,34 @@ struct layout_guide : base, chaining::receiver<float> {
     using chain_t = chaining::chain<float, float, true>;
 
     [[nodiscard]] chain_t chain() const;
-    [[nodiscard]] chaining::receivable_ptr<float> receivable() override;
+
+    void receive_value(float const &) override;
+
+    [[nodiscard]] static std::shared_ptr<layout_guide> make_shared();
+    [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
+
+   private:
+    std::unique_ptr<impl> _impl;
+
+    explicit layout_guide(float const);
+
+    layout_guide(layout_guide const &) = delete;
+    layout_guide(layout_guide &&) = delete;
+    layout_guide &operator=(layout_guide const &) = delete;
+    layout_guide &operator=(layout_guide &&) = delete;
+
+    void _prepare(std::shared_ptr<layout_guide> &);
 };
 
-struct layout_guide_point : base, chaining::receiver<ui::point> {
+struct layout_guide_point final : chaining::receiver<ui::point> {
     class impl;
 
-    layout_guide_point();
-    explicit layout_guide_point(ui::point);
-    layout_guide_point(std::nullptr_t);
+    virtual ~layout_guide_point();
 
-    virtual ~layout_guide_point() final;
-
-    ui::layout_guide &x();
-    ui::layout_guide &y();
-    ui::layout_guide const &x() const;
-    ui::layout_guide const &y() const;
+    ui::layout_guide_ptr &x();
+    ui::layout_guide_ptr &y();
+    ui::layout_guide_ptr const &x() const;
+    ui::layout_guide_ptr const &y() const;
 
     void set_point(ui::point);
     ui::point point() const;
@@ -53,23 +62,33 @@ struct layout_guide_point : base, chaining::receiver<ui::point> {
     using chain_t = chaining::chain<ui::point, float, true>;
 
     chain_t chain() const;
-    chaining::receivable_ptr<ui::point> receivable();
+
+    void receive_value(ui::point const &) override;
+
+    [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared();
+    [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
+
+   private:
+    std::unique_ptr<impl> _impl;
+
+    explicit layout_guide_point(ui::point &&);
+
+    layout_guide_point(layout_guide_point const &) = delete;
+    layout_guide_point(layout_guide_point &&) = delete;
+    layout_guide_point &operator=(layout_guide_point const &) = delete;
+    layout_guide_point &operator=(layout_guide_point &&) = delete;
 };
 
-struct layout_guide_range : base, chaining::receiver<ui::range> {
+struct layout_guide_range : chaining::receiver<ui::range> {
     class impl;
-
-    layout_guide_range();
-    explicit layout_guide_range(ui::range);
-    layout_guide_range(std::nullptr_t);
 
     virtual ~layout_guide_range() final;
 
-    layout_guide &min();
-    layout_guide &max();
-    layout_guide const &min() const;
-    layout_guide const &max() const;
-    layout_guide const &length() const;
+    layout_guide_ptr &min();
+    layout_guide_ptr &max();
+    layout_guide_ptr const &min() const;
+    layout_guide_ptr const &max() const;
+    layout_guide_ptr const &length() const;
 
     void set_range(ui::range const &);
     ui::range range() const;
@@ -80,10 +99,26 @@ struct layout_guide_range : base, chaining::receiver<ui::range> {
     using chain_t = chaining::chain<ui::range, float, true>;
 
     chain_t chain() const;
-    chaining::receivable_ptr<ui::range> receivable();
+
+    void receive_value(ui::range const &) override;
+
+    [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared();
+    [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
+
+   private:
+    std::unique_ptr<impl> _impl;
+
+    explicit layout_guide_range(ui::range &&);
+
+    layout_guide_range(layout_guide_range const &) = delete;
+    layout_guide_range(layout_guide_range &&) = delete;
+    layout_guide_range &operator=(layout_guide_range const &) = delete;
+    layout_guide_range &operator=(layout_guide_range &&) = delete;
+
+    void _prepare(std::shared_ptr<layout_guide_range> &range);
 };
 
-struct layout_guide_rect : base, chaining::receiver<ui::region> {
+struct layout_guide_rect final : chaining::receiver<ui::region> {
     class impl;
 
     struct ranges_args {
@@ -91,28 +126,23 @@ struct layout_guide_rect : base, chaining::receiver<ui::region> {
         ui::range vertical_range;
     };
 
-    layout_guide_rect();
-    explicit layout_guide_rect(ranges_args);
-    explicit layout_guide_rect(ui::region);
-    layout_guide_rect(std::nullptr_t);
+    virtual ~layout_guide_rect();
 
-    virtual ~layout_guide_rect() final;
+    layout_guide_range_ptr &horizontal_range();
+    layout_guide_range_ptr &vertical_range();
+    layout_guide_range_ptr const &horizontal_range() const;
+    layout_guide_range_ptr const &vertical_range() const;
 
-    layout_guide_range &horizontal_range();
-    layout_guide_range &vertical_range();
-    layout_guide_range const &horizontal_range() const;
-    layout_guide_range const &vertical_range() const;
-
-    layout_guide &left();
-    layout_guide &right();
-    layout_guide &bottom();
-    layout_guide &top();
-    layout_guide const &left() const;
-    layout_guide const &right() const;
-    layout_guide const &bottom() const;
-    layout_guide const &top() const;
-    layout_guide const &width() const;
-    layout_guide const &height() const;
+    layout_guide_ptr &left();
+    layout_guide_ptr &right();
+    layout_guide_ptr &bottom();
+    layout_guide_ptr &top();
+    layout_guide_ptr const &left() const;
+    layout_guide_ptr const &right() const;
+    layout_guide_ptr const &bottom() const;
+    layout_guide_ptr const &top() const;
+    layout_guide_ptr const &width() const;
+    layout_guide_ptr const &height() const;
 
     void set_horizontal_range(ui::range);
     void set_vertical_range(ui::range);
@@ -127,27 +157,43 @@ struct layout_guide_rect : base, chaining::receiver<ui::region> {
     using chain_t = chaining::chain<ui::region, float, true>;
 
     chain_t chain() const;
-    chaining::receivable_ptr<ui::region> receivable();
+
+    void receive_value(ui::region const &) override;
+
+    [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared();
+    [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ranges_args);
+    [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ui::region);
+
+   private:
+    std::unique_ptr<impl> _impl;
+
+    explicit layout_guide_rect(ranges_args);
+    explicit layout_guide_rect(ui::region);
+
+    layout_guide_rect(layout_guide_rect const &) = delete;
+    layout_guide_rect(layout_guide_rect &&) = delete;
+    layout_guide_rect &operator=(layout_guide_rect const &) = delete;
+    layout_guide_rect &operator=(layout_guide_rect &&) = delete;
 };
 
 struct layout_guide_pair {
-    ui::layout_guide source;
-    ui::layout_guide destination;
+    ui::layout_guide_ptr source;
+    ui::layout_guide_ptr destination;
 };
 
 struct layout_guide_point_pair {
-    ui::layout_guide_point source;
-    ui::layout_guide_point destination;
+    ui::layout_guide_point_ptr source;
+    ui::layout_guide_point_ptr destination;
 };
 
 struct layout_guide_range_pair {
-    ui::layout_guide_range source;
-    ui::layout_guide_range destination;
+    ui::layout_guide_range_ptr source;
+    ui::layout_guide_range_ptr destination;
 };
 
 struct layout_guide_rect_pair {
-    ui::layout_guide_rect source;
-    ui::layout_guide_rect destination;
+    ui::layout_guide_rect_ptr source;
+    ui::layout_guide_rect_ptr destination;
 };
 
 std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_point_pair);

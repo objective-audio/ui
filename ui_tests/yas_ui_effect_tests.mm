@@ -23,38 +23,31 @@ using namespace yas;
 }
 
 - (void)test_create_effect {
-    ui::effect effect;
+    auto effect = ui::effect::make_shared();
 
     XCTAssertTrue(effect);
-    XCTAssertFalse(effect.metal_handler());
-    XCTAssertTrue(effect.renderable());
-    XCTAssertTrue(effect.encodable());
-    XCTAssertTrue(effect.metal());
-}
-
-- (void)test_create_null {
-    ui::effect effect{nullptr};
-
-    XCTAssertFalse(effect);
+    XCTAssertFalse(effect->metal_handler());
+    XCTAssertTrue(effect->renderable());
+    XCTAssertTrue(effect->encodable());
+    XCTAssertTrue(effect->metal());
 }
 
 - (void)test_set_metal_handler {
-    ui::effect effect;
+    auto effect = ui::effect::make_shared();
 
     bool called = false;
-    auto handler = [&called](ui::texture &src, ui::texture &dst, ui::metal_system &, id<MTLCommandBuffer> const) {
-        called = true;
-    };
+    auto handler = [&called](ui::texture_ptr const &src, ui::texture_ptr const &dst, ui::metal_system_ptr const &,
+                             id<MTLCommandBuffer> const) { called = true; };
 
-    effect.set_metal_handler(std::move(handler));
+    effect->set_metal_handler(std::move(handler));
 
-    XCTAssertTrue(effect.metal_handler());
+    XCTAssertTrue(effect->metal_handler());
 
-    ui::texture src{nullptr};
-    ui::texture dst{nullptr};
-    ui::metal_system system{nullptr};
+    ui::texture_ptr src{nullptr};
+    ui::texture_ptr dst{nullptr};
+    ui::metal_system_ptr system{nullptr};
 
-    effect.metal_handler()(src, dst, system, nil);
+    effect->metal_handler()(src, dst, system, nil);
 
     XCTAssertTrue(called);
 }

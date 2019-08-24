@@ -12,11 +12,11 @@ ui::renderable_render_target::renderable_render_target(std::shared_ptr<impl> imp
 ui::renderable_render_target::renderable_render_target(std::nullptr_t) : protocol(nullptr) {
 }
 
-ui::mesh &ui::renderable_render_target::mesh() {
+ui::mesh_ptr const &ui::renderable_render_target::mesh() {
     return impl_ptr<impl>()->mesh();
 }
 
-ui::effect &ui::renderable_render_target::effect() {
+ui::effect_ptr const &ui::renderable_render_target::effect() {
     return impl_ptr<impl>()->effect();
 }
 

@@ -52,25 +52,25 @@ using namespace yas;
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    ui::mesh mesh1;
-    ui::mesh mesh2;
+    auto mesh1 = ui::mesh::make_shared();
+    auto mesh2 = ui::mesh::make_shared();
     batch->encodable().append_mesh(mesh1);
     batch->encodable().append_mesh(mesh2);
 
-    ui::metal_system metal_system{device.object()};
+    auto metal_system = ui::metal_system::make_shared(device.object());
 
-    ui::mesh mesh3;
-    ui::texture texture3{ui::texture::args{}};
-    mesh3.set_texture(texture3);
+    auto mesh3 = ui::mesh::make_shared();
+    auto texture3 = ui::texture::make_shared(ui::texture::args{});
+    mesh3->set_texture(texture3);
     batch->encodable().append_mesh(mesh3);
 
     batch->renderable()->commit_render_meshes_building();
 
     auto const &meshes = batch->renderable()->meshes();
     XCTAssertEqual(meshes.size(), 2);
-    XCTAssertFalse(meshes.at(0).texture());
-    XCTAssertTrue(meshes.at(1).texture());
-    XCTAssertEqual(meshes.at(1).texture(), texture3);
+    XCTAssertFalse(meshes.at(0)->texture());
+    XCTAssertTrue(meshes.at(1)->texture());
+    XCTAssertEqual(meshes.at(1)->texture(), texture3);
 
     batch->renderable()->clear_render_meshes();
 
@@ -84,14 +84,14 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system metal_system{device.object()};
+    auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch = ui::batch::make_shared();
 
-    ui::mesh mesh1;
-    mesh1.set_color({0.5f, 0.5f, 0.5f, 0.5f});
-    ui::mesh_data mesh_data1{{.vertex_count = 1, .index_count = 1}};
-    mesh_data1.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    auto mesh1 = ui::mesh::make_shared();
+    mesh1->set_color({0.5f, 0.5f, 0.5f, 0.5f});
+    auto mesh_data1 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh_data1->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 1.0f;
         vertex.position.y = 1.0f;
@@ -101,12 +101,12 @@ using namespace yas;
         auto &index = indices.at(0);
         index = 1;
     });
-    mesh1.set_mesh_data(mesh_data1);
+    mesh1->set_mesh_data(mesh_data1);
 
-    ui::mesh mesh2;
-    mesh2.set_use_mesh_color(true);
-    ui::mesh_data mesh_data2{{.vertex_count = 1, .index_count = 1}};
-    mesh_data2.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    auto mesh2 = ui::mesh::make_shared();
+    mesh2->set_use_mesh_color(true);
+    auto mesh_data2 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh_data2->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 2.0f;
         vertex.position.y = 2.0f;
@@ -120,10 +120,10 @@ using namespace yas;
         auto &index = indices.at(0);
         index = 1;
     });
-    mesh2.set_mesh_data(mesh_data2);
+    mesh2->set_mesh_data(mesh_data2);
 
-    mesh1.metal().metal_setup(metal_system);
-    mesh2.metal().metal_setup(metal_system);
+    mesh1->metal().metal_setup(metal_system);
+    mesh2->metal().metal_setup(metal_system);
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -135,16 +135,16 @@ using namespace yas;
     auto &meshes = batch->renderable()->meshes();
     XCTAssertEqual(meshes.size(), 1);
 
-    auto &render_mesh = meshes.at(0);
-    auto &render_mesh_data = render_mesh.mesh_data();
+    auto const &render_mesh = meshes.at(0);
+    auto &render_mesh_data = render_mesh->mesh_data();
 
-    XCTAssertEqual(render_mesh.renderable().render_vertex_count(), 2);
-    XCTAssertEqual(render_mesh.renderable().render_index_count(), 2);
-    XCTAssertEqual(render_mesh_data.vertex_count(), 2);
-    XCTAssertEqual(render_mesh_data.index_count(), 2);
+    XCTAssertEqual(render_mesh->renderable().render_vertex_count(), 2);
+    XCTAssertEqual(render_mesh->renderable().render_index_count(), 2);
+    XCTAssertEqual(render_mesh_data->vertex_count(), 2);
+    XCTAssertEqual(render_mesh_data->index_count(), 2);
 
-    auto const *vertices = render_mesh_data.vertices();
-    auto const *indices = render_mesh_data.indices();
+    auto const *vertices = render_mesh_data->vertices();
+    auto const *indices = render_mesh_data->indices();
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(vertices[0].position.y, 1.0f);
@@ -174,17 +174,17 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system metal_system{device.object()};
+    auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch = ui::batch::make_shared();
 
-    ui::mesh mesh;
-    ui::dynamic_mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
-    mesh.set_mesh_data(mesh_data);
+    auto mesh = ui::mesh::make_shared();
+    auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh->set_mesh_data(mesh_data);
 
-    mesh.metal().metal_setup(metal_system);
+    mesh->metal().metal_setup(metal_system);
 
-    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         vertices.at(0).position.x = 1.0f;
         indices.at(0) = 3;
     });
@@ -196,15 +196,15 @@ using namespace yas;
     auto &meshes = batch->renderable()->meshes();
     XCTAssertEqual(meshes.size(), 1);
 
-    auto &render_mesh = meshes.at(0);
-    auto &render_mesh_data = render_mesh.mesh_data();
-    auto const *vertices = render_mesh_data.vertices();
-    auto const *indices = render_mesh_data.indices();
+    auto const &render_mesh = meshes.at(0);
+    auto &render_mesh_data = render_mesh->mesh_data();
+    auto const *vertices = render_mesh_data->vertices();
+    auto const *indices = render_mesh_data->indices();
 
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(indices[0], 3);
 
-    mesh_data.write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         vertices.at(0).position.x = 11.0f;
         indices.at(0) = 13;
     });
@@ -223,15 +223,15 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system metal_system{device.object()};
+    auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch = ui::batch::make_shared();
 
-    ui::mesh mesh;
-    ui::mesh_data mesh_data{{.vertex_count = 1, .index_count = 1}};
-    mesh.set_mesh_data(mesh_data);
+    auto mesh = ui::mesh::make_shared();
+    auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh->set_mesh_data(mesh_data);
 
-    mesh.metal().metal_setup(metal_system);
+    mesh->metal().metal_setup(metal_system);
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 

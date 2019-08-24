@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B60DC9EF230D0AEB00EB803A /* yas_ui_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B60DC9EE230D0AEB00EB803A /* yas_ui_ptr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF85B21E4D7B600C65DB5 /* ui.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF85921E4D7B600C65DB5 /* ui.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF8D221E4D7E400C65DB5 /* yas_ui_renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF86021E4D7E300C65DB5 /* yas_ui_renderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF8D321E4D7E400C65DB5 /* yas_ui_event_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF86121E4D7E300C65DB5 /* yas_ui_event_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -131,6 +132,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B60DC9EE230D0AEB00EB803A /* yas_ui_ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_ptr.h; sourceTree = "<group>"; };
 		B65AF85621E4D7B600C65DB5 /* ui.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ui.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65AF85921E4D7B600C65DB5 /* ui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui.h; sourceTree = "<group>"; };
 		B65AF85A21E4D7B600C65DB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -390,6 +392,7 @@
 				B65AF89421E4D7E400C65DB5 /* yas_ui_node_protocol.mm */,
 				B65AF88D21E4D7E400C65DB5 /* yas_ui_node.h */,
 				B65AF89D21E4D7E400C65DB5 /* yas_ui_node.mm */,
+				B60DC9EE230D0AEB00EB803A /* yas_ui_ptr.h */,
 				B65AF89221E4D7E400C65DB5 /* yas_ui_rect_plane.h */,
 				B65AF8BC21E4D7E400C65DB5 /* yas_ui_rect_plane.mm */,
 				B65AF8B021E4D7E400C65DB5 /* yas_ui_render_encoder_protocol.h */,
@@ -474,6 +477,7 @@
 				B65AF91521E4D7E400C65DB5 /* yas_ui_mesh_data.h in Headers */,
 				B65AF93A21E4D7E400C65DB5 /* yas_ui_metal_protocol.h in Headers */,
 				B65AF8E721E4D7E400C65DB5 /* yas_ui_node_protocol.h in Headers */,
+				B60DC9EF230D0AEB00EB803A /* yas_ui_ptr.h in Headers */,
 				B65AF92E21E4D7E400C65DB5 /* yas_ui_event.h in Headers */,
 				B65AF92F21E4D7E400C65DB5 /* yas_ui_effect_protocol.h in Headers */,
 				B65AF85B21E4D7B600C65DB5 /* ui.h in Headers */,

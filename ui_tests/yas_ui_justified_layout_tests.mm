@@ -65,110 +65,110 @@ using namespace yas;
 }
 
 - (void)test_chain {
-    ui::layout_guide first_src_guide{1.0f};
-    ui::layout_guide second_src_guide{2.0f};
-    ui::layout_guide first_dst_guide;
-    ui::layout_guide second_dst_guide;
-    std::array<ui::layout_guide, 2> receivers{first_dst_guide, second_dst_guide};
+    auto first_src_guide = ui::layout_guide::make_shared(1.0f);
+    auto second_src_guide = ui::layout_guide::make_shared(2.0f);
+    auto first_dst_guide = ui::layout_guide::make_shared();
+    auto second_dst_guide = ui::layout_guide::make_shared();
+    std::array<ui::layout_guide_ptr, 2> receivers{first_dst_guide, second_dst_guide};
 
     auto layout =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<1>()).send_to(receivers).sync();
+        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<1>()).send_to(receivers).sync();
 
     XCTAssertTrue(layout);
 
-    XCTAssertEqual(first_dst_guide.value(), 1.0f);
-    XCTAssertEqual(second_dst_guide.value(), 2.0f);
+    XCTAssertEqual(first_dst_guide->value(), 1.0f);
+    XCTAssertEqual(second_dst_guide->value(), 2.0f);
 }
 
 - (void)test_chain_value_changed_one_dst {
-    ui::layout_guide first_src_guide{0.0f};
-    ui::layout_guide second_src_guide{0.0f};
-    ui::layout_guide dst_guide{100.0f};
+    auto first_src_guide = ui::layout_guide::make_shared(0.0f);
+    auto second_src_guide = ui::layout_guide::make_shared(0.0f);
+    auto dst_guide = ui::layout_guide::make_shared(100.0f);
 
-    auto layout = first_src_guide.chain()
-                      .combine(second_src_guide.chain())
+    auto layout = first_src_guide->chain()
+                      .combine(second_src_guide->chain())
                       .to(ui::justify<2>())
                       .to([](std::array<float, 3> const &values) { return values[1]; })
                       .send_to(dst_guide)
                       .sync();
 
-    XCTAssertEqual(dst_guide.value(), 0.0f);
+    XCTAssertEqual(dst_guide->value(), 0.0f);
 
-    second_src_guide.set_value(2.0f);
+    second_src_guide->set_value(2.0f);
 
-    XCTAssertEqual(dst_guide.value(), 1.0f);
+    XCTAssertEqual(dst_guide->value(), 1.0f);
 
-    first_src_guide.set_value(-4.0f);
+    first_src_guide->set_value(-4.0f);
 
-    XCTAssertEqual(dst_guide.value(), -1.0f);
+    XCTAssertEqual(dst_guide->value(), -1.0f);
 
-    first_src_guide.set_value(2.0f);
-    second_src_guide.set_value(0.0f);
+    first_src_guide->set_value(2.0f);
+    second_src_guide->set_value(0.0f);
 
-    XCTAssertEqual(dst_guide.value(), 1.0f);
+    XCTAssertEqual(dst_guide->value(), 1.0f);
 }
 
 - (void)test_chain_many_dst {
-    ui::layout_guide first_src_guide{-1.0f};
-    ui::layout_guide second_src_guide{3.0f};
-    ui::layout_guide dst_guide_0;
-    ui::layout_guide dst_guide_1;
-    ui::layout_guide dst_guide_2;
-    std::array<ui::layout_guide, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
+    auto first_src_guide = ui::layout_guide::make_shared(-1.0f);
+    auto second_src_guide = ui::layout_guide::make_shared(3.0f);
+    auto dst_guide_0 = ui::layout_guide::make_shared();
+    auto dst_guide_1 = ui::layout_guide::make_shared();
+    auto dst_guide_2 = ui::layout_guide::make_shared();
+    std::array<ui::layout_guide_ptr, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     auto layout =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>()).send_to(receivers).sync();
+        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<2>()).send_to(receivers).sync();
 
-    XCTAssertEqual(dst_guide_0.value(), -1.0f);
-    XCTAssertEqual(dst_guide_1.value(), 1.0f);
-    XCTAssertEqual(dst_guide_2.value(), 3.0f);
+    XCTAssertEqual(dst_guide_0->value(), -1.0f);
+    XCTAssertEqual(dst_guide_1->value(), 1.0f);
+    XCTAssertEqual(dst_guide_2->value(), 3.0f);
 }
 
 - (void)test_chain_with_array_receivers {
-    ui::layout_guide first_src_guide{0.0f};
-    ui::layout_guide second_src_guide{3.0f};
-    ui::layout_guide dst_guide_0;
-    ui::layout_guide dst_guide_1;
-    ui::layout_guide dst_guide_2;
-    std::array<ui::layout_guide, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
+    auto first_src_guide = ui::layout_guide::make_shared(0.0f);
+    auto second_src_guide = ui::layout_guide::make_shared(3.0f);
+    auto dst_guide_0 = ui::layout_guide::make_shared();
+    auto dst_guide_1 = ui::layout_guide::make_shared();
+    auto dst_guide_2 = ui::layout_guide::make_shared();
+    std::array<ui::layout_guide_ptr, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
     auto observer =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
+        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
 
-    XCTAssertEqual(dst_guide_0.value(), 0.0f);
-    XCTAssertEqual(dst_guide_1.value(), 1.0f);
-    XCTAssertEqual(dst_guide_2.value(), 3.0f);
+    XCTAssertEqual(dst_guide_0->value(), 0.0f);
+    XCTAssertEqual(dst_guide_1->value(), 1.0f);
+    XCTAssertEqual(dst_guide_2->value(), 3.0f);
 }
 
 - (void)test_chain_with_vector_receivers {
-    ui::layout_guide first_src_guide{0.0f};
-    ui::layout_guide second_src_guide{3.0f};
-    ui::layout_guide dst_guide_0;
-    ui::layout_guide dst_guide_1;
-    ui::layout_guide dst_guide_2;
-    std::vector<ui::layout_guide> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
+    auto first_src_guide = ui::layout_guide::make_shared(0.0f);
+    auto second_src_guide = ui::layout_guide::make_shared(3.0f);
+    auto dst_guide_0 = ui::layout_guide::make_shared();
+    auto dst_guide_1 = ui::layout_guide::make_shared();
+    auto dst_guide_2 = ui::layout_guide::make_shared();
+    std::vector<ui::layout_guide_ptr> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     std::array<float, 2> array{1.0f, 2.0f};
 
     auto observer =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
+        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
 
-    XCTAssertEqual(dst_guide_0.value(), 0.0f);
-    XCTAssertEqual(dst_guide_1.value(), 1.0f);
-    XCTAssertEqual(dst_guide_2.value(), 3.0f);
+    XCTAssertEqual(dst_guide_0->value(), 0.0f);
+    XCTAssertEqual(dst_guide_1->value(), 1.0f);
+    XCTAssertEqual(dst_guide_2->value(), 3.0f);
 }
 
 - (void)test_zero_ratio {
-    ui::layout_guide first_src_guide{0.0f};
-    ui::layout_guide second_src_guide{2.0f};
-    ui::layout_guide dst_guide;
+    auto first_src_guide = ui::layout_guide::make_shared(0.0f);
+    auto second_src_guide = ui::layout_guide::make_shared(2.0f);
+    auto dst_guide = ui::layout_guide::make_shared();
 
     auto observer =
-        first_src_guide.chain().combine(second_src_guide.chain()).to(ui::justify()).send_to(dst_guide).sync();
+        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify()).send_to(dst_guide).sync();
 
-    XCTAssertEqual(dst_guide.value(), 1.0f);
+    XCTAssertEqual(dst_guide->value(), 1.0f);
 }
 
 @end

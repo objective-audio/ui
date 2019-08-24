@@ -17,8 +17,8 @@ ui::renderable_effect::renderable_effect(std::shared_ptr<impl> impl) : protocol(
 ui::renderable_effect::renderable_effect(std::nullptr_t) : protocol(nullptr) {
 }
 
-void ui::renderable_effect::set_textures(ui::texture src, ui::texture dst) {
-    impl_ptr<impl>()->set_textures(std::move(src), std::move(dst));
+void ui::renderable_effect::set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) {
+    impl_ptr<impl>()->set_textures(src, dst);
 }
 
 ui::effect_updates_t const &ui::renderable_effect::updates() {

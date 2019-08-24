@@ -46,6 +46,7 @@
 		B65553851D6400C5000FB98F /* yas_sample_justified_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_justified_points.h; path = ../../ui_sample_common/yas_sample_justified_points.h; sourceTree = "<group>"; };
 		B65F6E4C1CC8804D007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
+		B6635DFF2310C7A5003D53D4 /* yas_sample_ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_sample_ptr.h; sourceTree = "<group>"; };
 		B67B89E51CDA212B0081848D /* yas_sample_big_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_big_button.h; path = ../../ui_sample_common/yas_sample_big_button.h; sourceTree = "<group>"; };
 		B67B89E61CDA212B0081848D /* yas_sample_big_button.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_big_button.mm; path = ../../ui_sample_common/yas_sample_big_button.mm; sourceTree = "<group>"; };
 		B67B89F71CDAFD9A0081848D /* yas_sample_cursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_cursor.h; path = ../../ui_sample_common/yas_sample_cursor.h; sourceTree = "<group>"; };
@@ -134,6 +135,7 @@
 				B6F501601C9BFF9800A0B4A1 /* Info.plist */,
 				B6F5015D1C9BFF9800A0B4A1 /* Main.storyboard */,
 				B6F501551C9BFF9800A0B4A1 /* Supporting Files */,
+				B6635DFF2310C7A5003D53D4 /* yas_sample_ptr.h */,
 				B6F73B911CDB1DBA009FD0DD /* yas_sample_bg.h */,
 				B6F73B901CDB1DBA009FD0DD /* yas_sample_bg.mm */,
 				B6C413F61CDC61610012095F /* yas_sample_big_button_text.h */,

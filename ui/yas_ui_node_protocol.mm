@@ -55,12 +55,12 @@ ui::renderable_node::renderable_node(std::shared_ptr<impl> impl) : protocol(std:
 ui::renderable_node::renderable_node(std::nullptr_t) : protocol(nullptr) {
 }
 
-ui::renderer ui::renderable_node::renderer() {
+ui::renderer_ptr ui::renderable_node::renderer() {
     return impl_ptr<impl>()->renderer();
 }
 
-void ui::renderable_node::set_renderer(ui::renderer renderer) {
-    impl_ptr<impl>()->set_renderer(std::move(renderer));
+void ui::renderable_node::set_renderer(ui::renderer_ptr const &renderer) {
+    impl_ptr<impl>()->set_renderer(renderer);
 }
 
 void ui::renderable_node::fetch_updates(ui::tree_updates &info) {

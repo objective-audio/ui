@@ -5,14 +5,21 @@
 #pragma once
 
 #include <ui/yas_ui_umbrella.h>
+#include "yas_sample_ptr.h"
 
 namespace yas::sample {
-struct modifier_text : base {
+struct modifier_text {
     class impl;
 
-    explicit modifier_text(ui::font_atlas, ui::layout_guide bottom_guide);
-    modifier_text(std::nullptr_t);
+    ui::strings_ptr const &strings();
 
-    ui::strings &strings();
+    static modifier_text_ptr make_shared(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
+
+   private:
+    std::unique_ptr<impl> _impl;
+
+    explicit modifier_text(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
+
+    void _prepare(modifier_text_ptr const &);
 };
 }  // namespace yas::sample

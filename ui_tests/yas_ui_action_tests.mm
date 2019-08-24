@@ -59,7 +59,7 @@ using namespace yas;
 }
 
 - (void)test_set_variables_to_action {
-    ui::node target;
+    auto target = ui::node::make_shared();
     auto const time = std::chrono::system_clock::now();
     auto action = ui::action::make_shared({.begin_time = time, .delay = 1.0});
 
@@ -76,7 +76,7 @@ using namespace yas;
 
 - (void)test_set_variables_to_continuous_action {
     auto action = ui::continuous_action::make_shared({.duration = 10.0});
-    ui::node target;
+    auto target = ui::node::make_shared();
 
     action->set_value_transformer(ui::ease_out_sine_transformer());
 

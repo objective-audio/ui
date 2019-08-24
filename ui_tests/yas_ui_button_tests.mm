@@ -56,10 +56,10 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system metal_system{device.object()};
-    ui::renderer renderer{metal_system};
+    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto renderer = ui::renderer::make_shared(metal_system);
     [[YASTestMetalViewController sharedViewController].view.window setFrame:CGRectMake(0, 0, 2, 2) display:YES];
-    [[YASTestMetalViewController sharedViewController] setRenderable:renderer.view_renderable()];
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer->view_renderable()];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
 
@@ -68,10 +68,10 @@ using namespace yas;
         [expectation fulfill];
         return true;
     });
-    renderer.insert_action(pre_render_action);
+    renderer->insert_action(pre_render_action);
 
     auto button = ui::button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});
-    renderer.root_node().add_sub_node(button->rect_plane().node());
+    renderer->root_node()->add_sub_node(button->rect_plane()->node());
 
     std::vector<ui::button::method> observed_methods;
 
@@ -81,34 +81,34 @@ using namespace yas;
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
-    ui::event_manager &event_manager = renderer.event_manager();
-    event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {0.0f, 0.0f}, 0});
+    ui::event_manager_ptr const &event_manager = renderer->event_manager();
+    event_manager->inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{1, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
     XCTAssertEqual(observed_methods.back(), ui::button::method::began);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{1, {0.1f, 0.0f}, 0});
+    event_manager->inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 2);
     XCTAssertEqual(observed_methods.back(), ui::button::method::moved);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::canceled, ui::touch_event{1, {0.1f, 0.0f}, 0});
+    event_manager->inputtable().input_touch_event(ui::event_phase::canceled, ui::touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 3);
     XCTAssertEqual(observed_methods.back(), ui::button::method::canceled);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {0.0f, 0.0f}, 0});
-    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {1.0f, 1.0f}, 0});
+    event_manager->inputtable().input_touch_event(ui::event_phase::began, ui::touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager->inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {1.0f, 1.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 5);
     XCTAssertEqual(observed_methods.back(), ui::button::method::leaved);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager->inputtable().input_touch_event(ui::event_phase::changed, ui::touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 6);
     XCTAssertEqual(observed_methods.back(), ui::button::method::entered);
 
-    event_manager.inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager->inputtable().input_touch_event(ui::event_phase::ended, ui::touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 7);
     XCTAssertEqual(observed_methods.back(), ui::button::method::ended);
@@ -117,13 +117,13 @@ using namespace yas;
 - (void)test_set_texture {
     auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
 
-    XCTAssertFalse(button->rect_plane().node().mesh().raw().texture());
+    XCTAssertFalse(button->rect_plane()->node()->mesh()->raw()->texture());
 
-    ui::texture texture{{.point_size = {8, 8}}};
+    auto texture = ui::texture::make_shared({.point_size = {8, 8}});
 
     button->set_texture(texture);
 
-    XCTAssertTrue(button->rect_plane().node().mesh().raw().texture());
+    XCTAssertTrue(button->rect_plane()->node()->mesh()->raw()->texture());
     XCTAssertEqual(button->texture(), texture);
 }
 

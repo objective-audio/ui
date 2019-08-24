@@ -5,19 +5,21 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
+#include "yas_ui_effect.h"
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
-class effect;
-
 struct blur {
     void set_sigma(double const);
     double sigma() const;
 
-    ui::effect &effect();
+    ui::effect_ptr &effect();
+
+    [[nodiscard]] static blur_ptr make_shared();
 
    private:
-    chaining::value::holder<double> _sigma{0.0};
-    std::unique_ptr<ui::effect> _effect;
+    chaining::value::holder_ptr<double> _sigma = chaining::value::holder<double>::make_shared(0.0);
+    ui::effect_ptr _effect;
     chaining::any_observer_ptr _sigma_observer = nullptr;
 
     blur();
@@ -29,8 +31,5 @@ struct blur {
 
     void _prepare(std::shared_ptr<blur> &);
     void _update_effect_handler();
-
-   public:
-    static std::shared_ptr<blur> make_shared();
 };
 }  // namespace yas::ui

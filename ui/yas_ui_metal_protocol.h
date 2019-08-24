@@ -27,13 +27,13 @@ using setup_metal_result = result<std::nullptr_t, setup_metal_error>;
 
 struct metal_object : protocol {
     struct impl : protocol::impl {
-        virtual ui::setup_metal_result metal_setup(ui::metal_system const &) = 0;
+        virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
     };
 
     explicit metal_object(std::shared_ptr<impl>);
     metal_object(std::nullptr_t);
 
-    ui::setup_metal_result metal_setup(ui::metal_system const &);
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
 };
 }  // namespace yas::ui
 

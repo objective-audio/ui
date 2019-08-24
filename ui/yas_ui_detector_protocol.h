@@ -6,15 +6,14 @@
 
 #include <cpp_utils/yas_flagset.h>
 #include <cpp_utils/yas_protocol.h>
+#include "yas_ui_collider.h"
 
 namespace yas::ui {
-class collider;
-
 struct updatable_detector : protocol {
     struct impl : protocol::impl {
         virtual bool is_updating() = 0;
         virtual void begin_update() = 0;
-        virtual void push_front_collider(ui::collider &&) = 0;
+        virtual void push_front_collider(ui::collider_ptr &&) = 0;
         virtual void end_update() = 0;
     };
 
@@ -23,7 +22,7 @@ struct updatable_detector : protocol {
 
     bool is_updating();
     void begin_update();
-    void push_front_collider(ui::collider);
+    void push_front_collider(ui::collider_ptr);
     void end_update();
 };
 }  // namespace yas::ui

@@ -10,7 +10,7 @@ using namespace yas;
 
 #pragma mark - ui::mesh_data::impl
 
-struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_data::impl {
+struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
     impl(mesh_data::args &&args)
         : _vertex_count(args.vertex_count),
           _vertices(args.vertex_count),
@@ -19,8 +19,8 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         this->_updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system const &metal_system) override {
-        if (!is_same(this->_metal_system, metal_system)) {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+        if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
             this->_vertex_buffer.set_object(nil);
             this->_index_buffer.set_object(nil);
@@ -29,7 +29,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         if (!this->_vertex_buffer) {
             auto const vertex_length = this->_vertices.size() * sizeof(ui::vertex2d_t) * this->dynamic_buffer_count();
 
-            this->_vertex_buffer = this->_metal_system.makable().make_mtl_buffer(vertex_length);
+            this->_vertex_buffer = this->_metal_system->makable().make_mtl_buffer(vertex_length);
 
             if (!this->_vertex_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_vertex_buffer_failed};
@@ -39,7 +39,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
         if (!this->_index_buffer) {
             auto const index_length = this->_indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
-            this->_index_buffer = this->_metal_system.makable().make_mtl_buffer(index_length);
+            this->_index_buffer = this->_metal_system->makable().make_mtl_buffer(index_length);
 
             if (!this->_index_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_index_buffer_failed};
@@ -107,7 +107,7 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
     std::vector<ui::vertex2d_t> _vertices;
     std::vector<ui::index2d_t> _indices;
 
-    ui::metal_system _metal_system = nullptr;
+    ui::metal_system_ptr _metal_system = nullptr;
 
    protected:
     std::size_t _dynamic_buffer_index = 0;
@@ -120,52 +120,53 @@ struct ui::mesh_data::impl : base::impl, metal_object::impl, renderable_mesh_dat
 
 #pragma mark - ui::mesh_data
 
-ui::mesh_data::mesh_data(args args) : base(std::make_shared<impl>(std::move(args))) {
+ui::mesh_data::mesh_data(args &&args) : _impl(std::make_shared<impl>(std::move(args))) {
 }
 
-ui::mesh_data::mesh_data(std::shared_ptr<impl> &&impl) : base(std::move(impl)) {
-}
-
-ui::mesh_data::mesh_data(std::nullptr_t) : base(nullptr) {
+ui::mesh_data::mesh_data(std::shared_ptr<impl> &&impl) : _impl(std::move(impl)) {
 }
 
 const ui::vertex2d_t *ui::mesh_data::vertices() const {
-    return impl_ptr<impl>()->_vertices.data();
+    return this->_impl->_vertices.data();
 }
 
 std::size_t ui::mesh_data::vertex_count() const {
-    return impl_ptr<impl>()->_vertex_count;
+    return this->_impl->_vertex_count;
 }
 
 const ui::index2d_t *ui::mesh_data::indices() const {
-    return impl_ptr<impl>()->_indices.data();
+    return this->_impl->_indices.data();
 }
 
 std::size_t ui::mesh_data::index_count() const {
-    return impl_ptr<impl>()->_index_count;
+    return this->_impl->_index_count;
 }
 
 void ui::mesh_data::write(
     std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
-    impl_ptr<impl>()->write(func);
+    this->_impl->write(func);
 }
 
-ui::metal_system const &ui::mesh_data::metal_system() {
-    return impl_ptr<impl>()->_metal_system;
+ui::metal_system_ptr const &ui::mesh_data::metal_system() {
+    return this->_impl->_metal_system;
 }
 
 ui::metal_object &ui::mesh_data::metal() {
     if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{impl_ptr<ui::metal_object::impl>()};
+        this->_metal_object = ui::metal_object{this->_impl};
     }
     return this->_metal_object;
 }
 
 ui::renderable_mesh_data &ui::mesh_data::renderable() {
     if (!this->_renderable) {
-        this->_renderable = ui::renderable_mesh_data{impl_ptr<ui::renderable_mesh_data::impl>()};
+        this->_renderable = ui::renderable_mesh_data{this->_impl};
     }
     return this->_renderable;
+}
+
+ui::mesh_data_ptr ui::mesh_data::make_shared(args args) {
+    return std::shared_ptr<mesh_data>(new mesh_data{std::move(args)});
 }
 
 #pragma mark - dynamic_mesh_data::impl
@@ -217,26 +218,27 @@ struct ui::dynamic_mesh_data::impl : ui::mesh_data::impl {
 
 #pragma mark - dynamic_mesh_data
 
-ui::dynamic_mesh_data::dynamic_mesh_data(mesh_data::args args) : mesh_data(std::make_shared<impl>(std::move(args))) {
-}
-
-ui::dynamic_mesh_data::dynamic_mesh_data(std::nullptr_t) : mesh_data(nullptr) {
+ui::dynamic_mesh_data::dynamic_mesh_data(mesh_data::args &&args) : mesh_data(std::make_shared<impl>(std::move(args))) {
 }
 
 ui::dynamic_mesh_data::~dynamic_mesh_data() = default;
 
 std::size_t ui::dynamic_mesh_data::max_vertex_count() const {
-    return impl_ptr<impl>()->_vertices.size();
+    return this->_impl->_vertices.size();
 }
 
 std::size_t ui::dynamic_mesh_data::max_index_count() const {
-    return impl_ptr<impl>()->_indices.size();
+    return this->_impl->_indices.size();
 }
 
 void ui::dynamic_mesh_data::set_vertex_count(std::size_t const count) {
-    impl_ptr<impl>()->set_vertex_count(count);
+    std::dynamic_pointer_cast<impl>(this->_impl)->set_vertex_count(count);
 }
 
 void ui::dynamic_mesh_data::set_index_count(std::size_t const count) {
-    impl_ptr<impl>()->set_index_count(count);
+    std::dynamic_pointer_cast<impl>(this->_impl)->set_index_count(count);
+}
+
+ui::dynamic_mesh_data_ptr ui::dynamic_mesh_data::make_shared(args args) {
+    return std::shared_ptr<dynamic_mesh_data>(new dynamic_mesh_data{std::move(args)});
 }

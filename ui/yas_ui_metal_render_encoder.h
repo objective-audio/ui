@@ -5,37 +5,45 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <cpp_utils/yas_base.h>
 #include <deque>
+#include "yas_ui_ptr.h"
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
-class metal_encode_info;
 class metal_system;
 
-struct metal_render_encoder : base {
+struct metal_render_encoder final {
     class impl;
 
     struct encode_result_t {
         std::size_t const encoded_mesh_count;
     };
 
-    metal_render_encoder();
-    metal_render_encoder(std::nullptr_t);
+    virtual ~metal_render_encoder();
 
-    virtual ~metal_render_encoder() final;
+    std::deque<ui::metal_encode_info_ptr> const &all_encode_infos();
 
-    std::deque<ui::metal_encode_info> const &all_encode_infos();
-
-    encode_result_t encode(ui::metal_system &metal_system, id<MTLCommandBuffer> const commandBuffer);
+    encode_result_t encode(std::shared_ptr<ui::metal_system> const &metal_system,
+                           id<MTLCommandBuffer> const commandBuffer);
 
     ui::render_encodable &encodable();
     ui::render_effectable &effectable();
     ui::render_stackable &stackable();
 
+    [[nodiscard]] static metal_render_encoder_ptr make_shared();
+
    private:
+    std::shared_ptr<impl> _impl;
+
     ui::render_encodable _encodable = nullptr;
     ui::render_effectable _effectable = nullptr;
     ui::render_stackable _stackable = nullptr;
+
+    metal_render_encoder();
+
+    metal_render_encoder(metal_render_encoder const &) = delete;
+    metal_render_encoder(metal_render_encoder &&) = delete;
+    metal_render_encoder &operator=(metal_render_encoder const &) = delete;
+    metal_render_encoder &operator=(metal_render_encoder &&) = delete;
 };
 }  // namespace yas::ui

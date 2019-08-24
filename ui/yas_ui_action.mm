@@ -15,7 +15,7 @@ using namespace std::chrono_literals;
 ui::action::action(action::args args) : _begin_time(std::move(args.begin_time)), _delay(args.delay) {
 }
 
-base ui::action::target() const {
+ui::action_target_ptr ui::action::target() const {
     return this->_target.lock();
 }
 
@@ -35,7 +35,7 @@ ui::action::completion_f const &ui::action::completion_handler() const {
     return this->_completion_handler;
 }
 
-void ui::action::set_target(base::weak<base> const &target) {
+void ui::action::set_target(action_target_wptr const &target) {
     this->_target = target;
 }
 

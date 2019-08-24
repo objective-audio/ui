@@ -30,11 +30,11 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system system{device.object()};
+    auto system = ui::metal_system::make_shared(device.object());
 
     XCTAssertTrue(system);
 
-    ui::testable_metal_system testable = system.testable();
+    ui::testable_metal_system testable = system->testable();
 
     XCTAssertNotNil(testable.mtlDevice());
     XCTAssertEqual(testable.sample_count(), 4);
@@ -47,20 +47,14 @@ using namespace yas;
         return;
     }
 
-    ui::metal_system system{device.object(), 1};
+    auto system = ui::metal_system::make_shared(device.object(), 1);
 
     XCTAssertTrue(system);
 
-    ui::testable_metal_system testable = system.testable();
+    ui::testable_metal_system testable = system->testable();
 
     XCTAssertNotNil(testable.mtlDevice());
     XCTAssertEqual(testable.sample_count(), 1);
-}
-
-- (void)test_create_null {
-    ui::metal_system system{nullptr};
-
-    XCTAssertFalse(system);
 }
 
 @end

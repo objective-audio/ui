@@ -23,41 +23,35 @@ using namespace yas;
 }
 
 - (void)test_create_render_target {
-    ui::render_target render_target;
+    auto render_target = ui::render_target::make_shared();
 
-    XCTAssertEqual(render_target.scale_factor(), 1.0);
+    XCTAssertEqual(render_target->scale_factor(), 1.0);
 
     // effectをセットしない場合はデフォルトでthrough_effectが入っている
-    XCTAssertTrue(render_target.effect());
+    XCTAssertTrue(render_target->effect());
 
-    XCTAssertTrue(render_target.renderable());
-    XCTAssertTrue(render_target.metal());
-}
-
-- (void)test_create_null {
-    ui::render_target render_target{nullptr};
-
-    XCTAssertFalse(render_target);
+    XCTAssertTrue(render_target->renderable());
+    XCTAssertTrue(render_target->metal());
 }
 
 - (void)test_set_scale_factor {
-    ui::render_target render_target;
+    auto render_target = ui::render_target::make_shared();
 
-    render_target.set_scale_factor(2.0);
+    render_target->set_scale_factor(2.0);
 
-    XCTAssertEqual(render_target.scale_factor(), 2.0);
+    XCTAssertEqual(render_target->scale_factor(), 2.0);
 }
 
 - (void)test_set_effect {
-    ui::render_target render_target;
+    auto render_target = ui::render_target::make_shared();
 
-    ui::effect effect;
+    auto effect = ui::effect::make_shared();
 
-    XCTAssertFalse(render_target.effect() == effect);
+    XCTAssertFalse(render_target->effect() == effect);
 
-    render_target.set_effect(effect);
+    render_target->set_effect(effect);
 
-    XCTAssertTrue(render_target.effect() == effect);
+    XCTAssertTrue(render_target->effect() == effect);
 }
 
 @end

@@ -6,34 +6,35 @@
 
 using namespace yas;
 
-struct sample::bg::impl : base::impl {
-    ui::rect_plane _rect_plane{1};
-    ui::layout_guide_rect _layout_guide_rect;
+struct sample::bg::impl {
+    ui::rect_plane_ptr _rect_plane = ui::rect_plane::make_shared(1);
+    ui::layout_guide_rect_ptr _layout_guide_rect = ui::layout_guide_rect::make_shared();
 
     impl() {
-        auto &node = this->_rect_plane.node();
-        node.color().set_value({.v = 0.75f});
+        auto &node = this->_rect_plane->node();
+        node->color()->set_value({.v = 0.75f});
     }
 
-    void prepare(sample::bg &bg) {
+    void prepare(std::shared_ptr<sample::bg> const &bg) {
         auto weak_bg = to_weak(bg);
 
-        this->_rect_observer = this->_layout_guide_rect.chain()
-                                   .guard([weak_bg](ui::region const &) { return !!weak_bg; })
+        this->_rect_observer = this->_layout_guide_rect->chain()
+                                   .guard([weak_bg](ui::region const &) { return !weak_bg.expired(); })
                                    .perform([weak_bg](ui::region const &value) {
-                                       weak_bg.lock().rect_plane().data().set_rect_position(value, 0);
+                                       weak_bg.lock()->rect_plane()->data()->set_rect_position(value, 0);
                                    })
                                    .end();
 
         this->_renderer_observer =
-            this->_rect_plane.node()
-                .chain_renderer()
-                .perform([weak_bg, layout = chaining::any_observer_ptr{nullptr}](ui::renderer const &value) mutable {
-                    if (sample::bg bg = weak_bg.lock()) {
-                        auto impl = bg.impl_ptr<sample::bg::impl>();
-                        if (ui::renderer renderer = value) {
+            this->_rect_plane->node()
+                ->chain_renderer()
+                .perform([weak_bg,
+                          layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
+                    if (auto bg = weak_bg.lock()) {
+                        auto &impl = bg->_impl;
+                        if (value) {
                             layout =
-                                renderer.safe_area_layout_guide_rect().chain().send_to(impl->_layout_guide_rect).sync();
+                                value->safe_area_layout_guide_rect()->chain().send_to(impl->_layout_guide_rect).sync();
                         } else {
                             layout = nullptr;
                         }
@@ -47,13 +48,19 @@ struct sample::bg::impl : base::impl {
     chaining::any_observer_ptr _rect_observer = nullptr;
 };
 
-sample::bg::bg() : base(std::make_shared<impl>()) {
-    impl_ptr<impl>()->prepare(*this);
+sample::bg::bg() : _impl(std::make_shared<impl>()) {
 }
 
-sample::bg::bg(std::nullptr_t) : base(nullptr) {
+ui::rect_plane_ptr const &sample::bg::rect_plane() {
+    return this->_impl->_rect_plane;
 }
 
-ui::rect_plane &sample::bg::rect_plane() {
-    return impl_ptr<impl>()->_rect_plane;
+void sample::bg::_prepare(std::shared_ptr<bg> const &shared) {
+    this->_impl->prepare(shared);
+}
+
+sample::bg_ptr sample::bg::make_shared() {
+    auto shared = std::shared_ptr<bg>(new bg{});
+    shared->_prepare(shared);
+    return shared;
 }

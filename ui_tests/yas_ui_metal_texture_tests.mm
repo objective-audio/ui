@@ -24,29 +24,29 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::metal_texture metal_texture{
-        ui::uint_size{1, 2}, {ui::texture_usage::shader_read}, ui::pixel_format::rgba8_unorm};
+    auto metal_texture = ui::metal_texture::make_shared(ui::uint_size{1, 2}, {ui::texture_usage::shader_read},
+                                                        ui::pixel_format::rgba8_unorm);
 
-    XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
-    XCTAssertNil(metal_texture.samplerState());
-    XCTAssertNil(metal_texture.texture());
-    XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
-    XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatRGBA8Unorm);
-    XCTAssertEqual(metal_texture.texture_usage(), MTLTextureUsageShaderRead);
-    XCTAssertFalse(metal_texture.metal_system());
+    XCTAssertEqual(metal_texture->size(), (ui::uint_size{1, 2}));
+    XCTAssertNil(metal_texture->samplerState());
+    XCTAssertNil(metal_texture->texture());
+    XCTAssertEqual(metal_texture->texture_type(), MTLTextureType2D);
+    XCTAssertEqual(metal_texture->pixel_format(), MTLPixelFormatRGBA8Unorm);
+    XCTAssertEqual(metal_texture->texture_usage(), MTLTextureUsageShaderRead);
+    XCTAssertFalse(metal_texture->metal_system());
 }
 
 - (void)test_create_for_render_target {
-    ui::metal_texture metal_texture{
-        ui::uint_size{1, 2}, {ui::texture_usage::render_target}, ui::pixel_format::bgra8_unorm};
+    auto metal_texture = ui::metal_texture::make_shared(ui::uint_size{1, 2}, {ui::texture_usage::render_target},
+                                                        ui::pixel_format::bgra8_unorm);
 
-    XCTAssertEqual(metal_texture.size(), (ui::uint_size{1, 2}));
-    XCTAssertNil(metal_texture.samplerState());
-    XCTAssertNil(metal_texture.texture());
-    XCTAssertEqual(metal_texture.texture_type(), MTLTextureType2D);
-    XCTAssertEqual(metal_texture.pixel_format(), MTLPixelFormatBGRA8Unorm);
-    XCTAssertEqual(metal_texture.texture_usage(), MTLTextureUsageRenderTarget);
-    XCTAssertFalse(metal_texture.metal_system());
+    XCTAssertEqual(metal_texture->size(), (ui::uint_size{1, 2}));
+    XCTAssertNil(metal_texture->samplerState());
+    XCTAssertNil(metal_texture->texture());
+    XCTAssertEqual(metal_texture->texture_type(), MTLTextureType2D);
+    XCTAssertEqual(metal_texture->pixel_format(), MTLPixelFormatBGRA8Unorm);
+    XCTAssertEqual(metal_texture->texture_usage(), MTLTextureUsageRenderTarget);
+    XCTAssertFalse(metal_texture->metal_system());
 }
 
 - (void)test_metal_setup {
@@ -56,15 +56,15 @@ using namespace yas;
         return;
     }
 
-    ui::metal_texture metal_texture{
-        ui::uint_size{1, 2}, {ui::texture_usage::shader_read}, ui::pixel_format::rgba8_unorm};
+    auto metal_texture = ui::metal_texture::make_shared(ui::uint_size{1, 2}, {ui::texture_usage::shader_read},
+                                                        ui::pixel_format::rgba8_unorm);
 
-    ui::metal_system metal_system{device.object()};
-    XCTAssertTrue(metal_texture.metal().metal_setup(metal_system));
+    auto metal_system = ui::metal_system::make_shared(device.object());
+    XCTAssertTrue(metal_texture->metal().metal_setup(metal_system));
 
-    XCTAssertTrue(metal_texture.metal_system());
-    XCTAssertNotNil(metal_texture.samplerState());
-    XCTAssertNotNil(metal_texture.texture());
+    XCTAssertTrue(metal_texture->metal_system());
+    XCTAssertNotNil(metal_texture->samplerState());
+    XCTAssertNotNil(metal_texture->texture());
 }
 
 @end
