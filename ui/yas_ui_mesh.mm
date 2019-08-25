@@ -19,7 +19,7 @@ using namespace yas;
 
 #pragma mark - ui::mesh::impl
 
-struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
+struct ui::mesh::impl : metal_object::impl {
     impl() {
         this->_updates.flags.set();
     }
@@ -38,13 +38,13 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
         return ui::setup_metal_result{nullptr};
     }
 
-    simd::float4x4 const &matrix() override {
+    simd::float4x4 const &matrix() {
         return this->_matrix;
     }
 
-    void set_matrix(simd::float4x4 &&matrix) override {
+    void set_matrix(simd::float4x4 const &matrix) {
         if (this->_matrix != matrix) {
-            this->_matrix = std::move(matrix);
+            this->_matrix = matrix;
 
             if (this->is_rendering_color_exists()) {
                 this->_updates.set(ui::mesh_update_reason::matrix);
@@ -52,25 +52,25 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
         }
     }
 
-    std::size_t render_vertex_count() override {
+    std::size_t render_vertex_count() {
         if (this->is_rendering_color_exists()) {
             return this->_mesh_data->vertex_count();
         }
         return 0;
     }
 
-    std::size_t render_index_count() override {
+    std::size_t render_index_count() {
         if (this->is_rendering_color_exists()) {
             return this->_mesh_data->index_count();
         }
         return 0;
     }
 
-    ui::mesh_updates_t const &updates() override {
+    ui::mesh_updates_t const &updates() {
         return this->_updates;
     }
 
-    bool pre_render() override {
+    bool pre_render() {
         if (this->_mesh_data) {
             this->_mesh_data->renderable()->update_render_buffer();
             return this->is_rendering_color_exists();
@@ -79,7 +79,7 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
         return false;
     }
 
-    void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) override {
+    void batch_render(ui::batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) {
         if (this->_needs_write(building_type)) {
             mesh_info.mesh_data->write([&src_mesh_data = this->_mesh_data, &matrix = this->_matrix,
                                         &color = this->_color, is_use_mesh_color = this->_use_mesh_color,
@@ -115,7 +115,7 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
         mesh_info.index_idx += this->_mesh_data->index_count();
     }
 
-    void clear_updates() override {
+    void clear_updates() {
         this->_updates.flags.reset();
 
         if (this->_mesh_data) {
@@ -193,7 +193,7 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
         }
     }
 
-    bool is_rendering_color_exists() override {
+    bool is_rendering_color_exists() {
         return this->_is_mesh_data_exists() && this->_is_color_exists();
     }
 
@@ -295,6 +295,42 @@ void ui::mesh::set_primitive_type(ui::primitive_type const type) {
     this->_impl->set_primitive_type(type);
 }
 
+simd::float4x4 const &ui::mesh::matrix() {
+    return this->_impl->matrix();
+}
+
+void ui::mesh::set_matrix(simd::float4x4 const &matrix) {
+    this->_impl->set_matrix(matrix);
+}
+
+std::size_t ui::mesh::render_vertex_count() {
+    return this->_impl->render_vertex_count();
+}
+
+std::size_t ui::mesh::render_index_count() {
+    return this->_impl->render_index_count();
+}
+
+ui::mesh_updates_t const &ui::mesh::updates() {
+    return this->_impl->updates();
+}
+
+bool ui::mesh::pre_render() {
+    return this->_impl->pre_render();
+}
+
+void ui::mesh::batch_render(batch_render_mesh_info &info, ui::batch_building_type const type) {
+    this->_impl->batch_render(info, type);
+}
+
+bool ui::mesh::is_rendering_color_exists() {
+    return this->_impl->is_rendering_color_exists();
+}
+
+void ui::mesh::clear_updates() {
+    this->_impl->clear_updates();
+}
+
 ui::mesh_data_ptr const &ui::mesh::mesh_data() {
     return this->_impl->mesh_data();
 }
@@ -312,9 +348,6 @@ ui::metal_object &ui::mesh::metal() {
     return this->_metal_object;
 }
 
-ui::renderable_mesh &ui::mesh::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_mesh{this->_impl};
-    }
-    return this->_renderable;
+ui::renderable_mesh_ptr ui::mesh::renderable() {
+    return std::dynamic_pointer_cast<renderable_mesh>(this->shared_from_this());
 }

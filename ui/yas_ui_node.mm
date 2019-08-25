@@ -155,13 +155,13 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
 
             if (auto const &render_encodable = render_info.render_encodable) {
                 if (auto const &mesh = this->_mesh->raw()) {
-                    mesh->renderable().set_matrix(mesh_matrix);
+                    mesh->renderable()->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
 
                 if (auto &render_target = this->_render_target->raw()) {
                     auto const &mesh = render_target->renderable().mesh();
-                    mesh->renderable().set_matrix(mesh_matrix);
+                    mesh->renderable()->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
             }
@@ -242,7 +242,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                 }
 
                 for (auto const &mesh : batch_renderable->meshes()) {
-                    mesh->renderable().set_matrix(mesh_matrix);
+                    mesh->renderable()->set_matrix(mesh_matrix);
                     render_info.render_encodable->append_mesh(mesh);
                 }
             } else {
@@ -306,7 +306,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
             tree_updates.node_updates.flags |= this->_updates.flags;
 
             if (auto const &mesh = this->_mesh->raw()) {
-                tree_updates.mesh_updates.flags |= mesh->renderable().updates().flags;
+                tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
 
                 if (auto const &mesh_data = mesh->mesh_data()) {
                     tree_updates.mesh_data_updates.flags |= mesh_data->renderable()->updates().flags;
@@ -319,7 +319,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                 auto &renderable = render_target->renderable();
                 auto const &mesh = renderable.mesh();
 
-                tree_updates.mesh_updates.flags |= mesh->renderable().updates().flags;
+                tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
 
                 if (auto &mesh_data = mesh->mesh_data()) {
                     tree_updates.mesh_data_updates.flags |= mesh_data->renderable()->updates().flags;
@@ -350,7 +350,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
         }
 
         if (auto const &mesh = this->_mesh->raw()) {
-            return mesh->renderable().is_rendering_color_exists();
+            return mesh->renderable()->is_rendering_color_exists();
         }
 
         return false;
@@ -361,7 +361,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
             this->_updates.flags.reset();
 
             if (auto const &mesh = this->_mesh->raw()) {
-                mesh->renderable().clear_updates();
+                mesh->renderable()->clear_updates();
             }
 
             if (auto &render_target = this->_render_target->raw()) {

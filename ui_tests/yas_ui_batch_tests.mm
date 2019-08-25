@@ -138,8 +138,8 @@ using namespace yas;
     auto const &render_mesh = meshes.at(0);
     auto &render_mesh_data = render_mesh->mesh_data();
 
-    XCTAssertEqual(render_mesh->renderable().render_vertex_count(), 2);
-    XCTAssertEqual(render_mesh->renderable().render_index_count(), 2);
+    XCTAssertEqual(render_mesh->renderable()->render_vertex_count(), 2);
+    XCTAssertEqual(render_mesh->renderable()->render_index_count(), 2);
     XCTAssertEqual(render_mesh_data->vertex_count(), 2);
     XCTAssertEqual(render_mesh_data->index_count(), 2);
 

@@ -61,8 +61,8 @@ struct ui::metal_render_encoder::impl {
             auto renderEncoder = render_encoder.object();
 
             for (auto &mesh : metal_encode_info->meshes()) {
-                auto &mesh_renderable = mesh->renderable();
-                if (mesh_renderable.pre_render()) {
+                auto const mesh_renderable = mesh->renderable();
+                if (mesh_renderable->pre_render()) {
                     metal_system->renderable()->mesh_encode(mesh, renderEncoder, metal_encode_info);
 
                     ++encoded_count;

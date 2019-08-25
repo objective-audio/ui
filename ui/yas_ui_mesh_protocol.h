@@ -6,7 +6,6 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
-#include <cpp_utils/yas_protocol.h>
 #include <simd/simd.h>
 #include <ostream>
 
@@ -29,32 +28,19 @@ enum class mesh_update_reason : std::size_t {
 
 using mesh_updates_t = flagset<mesh_update_reason>;
 
-struct renderable_mesh : protocol {
-    struct impl : protocol::impl {
-        virtual simd::float4x4 const &matrix() = 0;
-        virtual void set_matrix(simd::float4x4 &&) = 0;
-        virtual std::size_t render_vertex_count() = 0;
-        virtual std::size_t render_index_count() = 0;
-        virtual mesh_updates_t const &updates() = 0;
-        virtual bool pre_render() = 0;
-        virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
-        virtual bool is_rendering_color_exists() = 0;
-        virtual void clear_updates() = 0;
-    };
-
-    explicit renderable_mesh(std::shared_ptr<impl>);
-    renderable_mesh(std::nullptr_t);
-
-    simd::float4x4 const &matrix();
-    void set_matrix(simd::float4x4);
-    std::size_t render_vertex_count();
-    std::size_t render_index_count();
-    mesh_updates_t const &updates();
-    bool pre_render();
-    void batch_render(batch_render_mesh_info &, ui::batch_building_type const);
-    bool is_rendering_color_exists();
-    void clear_updates();
+struct renderable_mesh {
+    virtual simd::float4x4 const &matrix() = 0;
+    virtual void set_matrix(simd::float4x4 const &) = 0;
+    virtual std::size_t render_vertex_count() = 0;
+    virtual std::size_t render_index_count() = 0;
+    virtual mesh_updates_t const &updates() = 0;
+    virtual bool pre_render() = 0;
+    virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
+    virtual bool is_rendering_color_exists() = 0;
+    virtual void clear_updates() = 0;
 };
+
+using renderable_mesh_ptr = std::shared_ptr<renderable_mesh>;
 }  // namespace yas::ui
 
 namespace yas {

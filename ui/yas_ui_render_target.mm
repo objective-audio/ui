@@ -153,7 +153,7 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
 
     void clear_updates() override {
         this->_updates.flags.reset();
-        this->_mesh->renderable().clear_updates();
+        this->_mesh->renderable()->clear_updates();
         if (auto &effect = this->_effect->raw()) {
             effect->renderable()->clear_updates();
         }

@@ -19,9 +19,9 @@ struct ui::batch::impl : metal_object::impl {
         if (this->_building_type == ui::batch_building_type::rebuild) {
             ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
 
-            auto &renderable_mesh = mesh->renderable();
-            mesh_info.vertex_count += renderable_mesh.render_vertex_count();
-            mesh_info.index_count += renderable_mesh.render_index_count();
+            auto const renderable_mesh = mesh->renderable();
+            mesh_info.vertex_count += renderable_mesh->render_vertex_count();
+            mesh_info.index_count += renderable_mesh->render_index_count();
 
             mesh_info.src_meshes.emplace_back(std::move(mesh));
         }
@@ -56,9 +56,9 @@ struct ui::batch::impl : metal_object::impl {
             }
 
             for (auto const &src_mesh : mesh_info.src_meshes) {
-                auto &src_mesh_renderable = src_mesh->renderable();
-                if (src_mesh_renderable.pre_render()) {
-                    src_mesh->renderable().batch_render(mesh_info, this->_building_type);
+                auto const src_mesh_renderable = src_mesh->renderable();
+                if (src_mesh_renderable->pre_render()) {
+                    src_mesh_renderable->batch_render(mesh_info, this->_building_type);
                 }
             }
         }

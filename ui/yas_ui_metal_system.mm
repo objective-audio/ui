@@ -163,7 +163,7 @@ struct ui::metal_system::impl {
 
         if (auto uniforms_ptr =
                 (uniforms2d_t *)(&((uint8_t *)[currentUniformsBuffer contents])[this->_uniforms_buffer_offset])) {
-            uniforms_ptr->matrix = mesh->renderable().matrix();
+            uniforms_ptr->matrix = mesh->renderable()->matrix();
             uniforms_ptr->color = mesh->color();
             uniforms_ptr->use_mesh_color = mesh->is_use_mesh_color();
         }
@@ -176,7 +176,7 @@ struct ui::metal_system::impl {
         }
 
         auto &mesh_data = mesh->mesh_data();
-        auto const &renderable_mesh_data = mesh_data->renderable();
+        auto const renderable_mesh_data = mesh_data->renderable();
 
         [encoder setVertexBuffer:renderable_mesh_data->vertexBuffer()
                           offset:renderable_mesh_data->vertex_buffer_byte_offset()
