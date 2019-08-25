@@ -8,12 +8,12 @@
 
 using namespace yas;
 
-struct ui::effect::impl : encodable_effect::impl, metal_object::impl {
+struct ui::effect::impl : metal_object::impl {
     impl() {
         this->_updates.flags.set();
     }
 
-    void encode(id<MTLCommandBuffer> const commandBuffer) override {
+    void encode(id<MTLCommandBuffer> const commandBuffer) {
         if (!this->_metal_system || !this->_metal_handler) {
             return;
         }
@@ -81,11 +81,8 @@ ui::renderable_effect_ptr ui::effect::renderable() {
     return std::dynamic_pointer_cast<renderable_effect>(this->shared_from_this());
 }
 
-ui::encodable_effect &ui::effect::encodable() {
-    if (!this->_encodable) {
-        this->_encodable = ui::encodable_effect{this->_impl};
-    }
-    return this->_encodable;
+ui::encodable_effect_ptr ui::effect::encodable() {
+    return std::dynamic_pointer_cast<encodable_effect>(this->shared_from_this());
 }
 
 ui::metal_object &ui::effect::metal() {
@@ -105,6 +102,10 @@ ui::effect_updates_t &ui::effect::updates() {
 
 void ui::effect::clear_updates() {
     this->_impl->clear_updates();
+}
+
+void ui::effect::encode(id<MTLCommandBuffer> const commandBuffer) {
+    return this->_impl->encode(commandBuffer);
 }
 
 ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {

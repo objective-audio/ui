@@ -76,7 +76,7 @@ struct ui::metal_render_encoder::impl {
             [renderEncoder endEncoding];
 
             for (auto const &effect : metal_encode_info->effects()) {
-                effect->encodable().encode(commandBuffer);
+                effect->encodable()->encode(commandBuffer);
             }
         }
 

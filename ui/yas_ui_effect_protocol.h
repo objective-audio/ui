@@ -6,7 +6,6 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
-#include <cpp_utils/yas_protocol.h>
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {
@@ -29,16 +28,13 @@ struct renderable_effect {
 
 using renderable_effect_ptr = std::shared_ptr<renderable_effect>;
 
-struct encodable_effect : protocol {
-    struct impl : protocol::impl {
-        virtual void encode(id<MTLCommandBuffer> const) = 0;
-    };
+struct encodable_effect {
+    virtual ~encodable_effect() = default;
 
-    explicit encodable_effect(std::shared_ptr<impl>);
-    encodable_effect(std::nullptr_t);
-
-    void encode(id<MTLCommandBuffer> const);
+    virtual void encode(id<MTLCommandBuffer> const) = 0;
 };
+
+using encodable_effect_ptr = std::shared_ptr<encodable_effect>;
 }  // namespace yas::ui
 
 namespace yas {

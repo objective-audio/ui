@@ -13,7 +13,7 @@
 namespace yas::ui {
 class texture;
 
-struct effect final : renderable_effect, std::enable_shared_from_this<effect> {
+struct effect final : renderable_effect, encodable_effect, std::enable_shared_from_this<effect> {
     class impl;
 
     using metal_handler_f = std::function<void(ui::texture_ptr const &src, ui::texture_ptr const &dst,
@@ -22,8 +22,8 @@ struct effect final : renderable_effect, std::enable_shared_from_this<effect> {
     void set_metal_handler(metal_handler_f);
     metal_handler_f const &metal_handler() const;
 
-    ui::renderable_effect_ptr renderable();
-    ui::encodable_effect &encodable();
+    ui::renderable_effect_ptr renderable();                         
+    ui::encodable_effect_ptr encodable();
     ui::metal_object &metal();
 
     static effect::metal_handler_f const &through_metal_handler();
@@ -34,7 +34,6 @@ struct effect final : renderable_effect, std::enable_shared_from_this<effect> {
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::encodable_effect _encodable = nullptr;
     ui::metal_object _metal = nullptr;
 
     effect();
@@ -47,5 +46,6 @@ struct effect final : renderable_effect, std::enable_shared_from_this<effect> {
     void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) override;
     ui::effect_updates_t &updates() override;
     void clear_updates() override;
+    void encode(id<MTLCommandBuffer> const) override;
 };
 }  // namespace yas::ui

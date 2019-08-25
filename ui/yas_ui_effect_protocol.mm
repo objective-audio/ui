@@ -9,18 +9,6 @@
 
 using namespace yas;
 
-#pragma mark - encodable_effect
-
-ui::encodable_effect::encodable_effect(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::encodable_effect::encodable_effect(std::nullptr_t) : protocol(nullptr) {
-}
-
-void ui::encodable_effect::encode(id<MTLCommandBuffer> const commandBuffer) {
-    impl_ptr<impl>()->encode(commandBuffer);
-}
-
 #pragma mark -
 
 std::string yas::to_string(ui::effect_update_reason const &reason) {
