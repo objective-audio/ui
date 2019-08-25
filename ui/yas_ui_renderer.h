@@ -16,14 +16,13 @@
 #include "yas_ui_renderer_protocol.h"
 
 namespace yas::ui {
-class view_renderable;
 class uint_size;
 class action;
 class metal_system;
 class action_target;
 enum class system_type;
 
-struct renderer final {
+struct renderer final : view_renderable, std::enable_shared_from_this<renderer> {
     class impl;
 
     enum class method {
@@ -46,7 +45,7 @@ struct renderer final {
     ui::node_ptr const &root_node() const;
     ui::node_ptr &root_node();
 
-    ui::view_renderable &view_renderable();
+    ui::view_renderable_ptr view_renderable();
 
     ui::event_manager_ptr &event_manager();
 
@@ -75,11 +74,15 @@ struct renderer final {
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::view_renderable _view_renderable = nullptr;
-
     explicit renderer(std::shared_ptr<ui::metal_system> const &);
 
     void _prepare(renderer_ptr const &);
+
+    void view_configure(yas_objc_view *const view) override;
+    void view_size_will_change(yas_objc_view *const view, CGSize const size) override;
+    void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) override;
+    void view_render(yas_objc_view *const view) override;
+    void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) override;
 };
 }  // namespace yas::ui
 

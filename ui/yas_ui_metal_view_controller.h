@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initCommon NS_REQUIRES_SUPER;
 
-- (void)setRenderable:(yas::ui::view_renderable)renderer;
-- (yas::ui::view_renderable const &)renderable;
+- (void)setRenderable:(yas::ui::view_renderable_ptr const &)renderer;
+- (yas::ui::view_renderable_ptr const &)renderable;
 
 @end
 
