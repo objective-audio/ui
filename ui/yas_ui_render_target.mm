@@ -155,7 +155,7 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
         this->_updates.flags.reset();
         this->_mesh->renderable().clear_updates();
         if (auto &effect = this->_effect->raw()) {
-            effect->renderable().clear_updates();
+            effect->renderable()->clear_updates();
         }
     }
 
@@ -215,7 +215,7 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
 
     void _set_textures_to_effect() {
         if (auto const &effect = this->_effect->raw()) {
-            effect->renderable().set_textures(this->_src_texture, this->_dst_texture);
+            effect->renderable()->set_textures(this->_src_texture, this->_dst_texture);
         }
     }
 

@@ -19,20 +19,15 @@ enum class effect_update_reason : std::size_t {
 
 using effect_updates_t = flagset<effect_update_reason>;
 
-struct renderable_effect : protocol {
-    struct impl : protocol::impl {
-        virtual void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) = 0;
-        virtual ui::effect_updates_t &updates() = 0;
-        virtual void clear_updates() = 0;
-    };
+struct renderable_effect {
+    virtual ~renderable_effect() = default;
 
-    explicit renderable_effect(std::shared_ptr<impl>);
-    renderable_effect(std::nullptr_t);
-
-    void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst);
-    ui::effect_updates_t const &updates();
-    void clear_updates();
+    virtual void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) = 0;
+    virtual ui::effect_updates_t &updates() = 0;
+    virtual void clear_updates() = 0;
 };
+
+using renderable_effect_ptr = std::shared_ptr<renderable_effect>;
 
 struct encodable_effect : protocol {
     struct impl : protocol::impl {

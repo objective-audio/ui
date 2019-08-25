@@ -8,7 +8,7 @@
 
 using namespace yas;
 
-struct ui::effect::impl : renderable_effect::impl, encodable_effect::impl, metal_object::impl {
+struct ui::effect::impl : encodable_effect::impl, metal_object::impl {
     impl() {
         this->_updates.flags.set();
     }
@@ -32,7 +32,7 @@ struct ui::effect::impl : renderable_effect::impl, encodable_effect::impl, metal
         return this->_metal_handler;
     }
 
-    void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) override {
+    void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) {
         this->_src_texture = src;
         this->_dst_texture = dst;
         this->_set_updated(effect_update_reason::textures);
@@ -46,11 +46,11 @@ struct ui::effect::impl : renderable_effect::impl, encodable_effect::impl, metal
         return ui::setup_metal_result{nullptr};
     }
 
-    ui::effect_updates_t &updates() override {
+    ui::effect_updates_t &updates() {
         return this->_updates;
     }
 
-    void clear_updates() override {
+    void clear_updates() {
         this->_updates.flags.reset();
     }
 
@@ -77,11 +77,8 @@ ui::effect::metal_handler_f const &ui::effect::metal_handler() const {
     return this->_impl->metal_handler();
 }
 
-ui::renderable_effect &ui::effect::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_effect{this->_impl};
-    }
-    return this->_renderable;
+ui::renderable_effect_ptr ui::effect::renderable() {
+    return std::dynamic_pointer_cast<renderable_effect>(this->shared_from_this());
 }
 
 ui::encodable_effect &ui::effect::encodable() {
@@ -96,6 +93,18 @@ ui::metal_object &ui::effect::metal() {
         this->_metal = ui::metal_object{this->_impl};
     }
     return this->_metal;
+}
+
+void ui::effect::set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) {
+    this->_impl->set_textures(src, dst);
+}
+
+ui::effect_updates_t &ui::effect::updates() {
+    return this->_impl->updates();
+}
+
+void ui::effect::clear_updates() {
+    this->_impl->clear_updates();
 }
 
 ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {

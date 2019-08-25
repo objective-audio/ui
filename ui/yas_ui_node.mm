@@ -176,7 +176,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                 auto &renderable = render_target->renderable();
                 auto const &effect = renderable.effect();
                 if (!needs_render && effect) {
-                    needs_render = effect->renderable().updates().flags.any();
+                    needs_render = effect->renderable()->updates().flags.any();
                 }
 
                 if (!needs_render) {
@@ -326,7 +326,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                 }
 
                 if (auto &effect = renderable.effect()) {
-                    tree_updates.effect_updates.flags |= effect->renderable().updates().flags;
+                    tree_updates.effect_updates.flags |= effect->renderable()->updates().flags;
                 }
             }
 
