@@ -47,38 +47,6 @@ ui::batch_building_type ui::tree_updates::batch_building_type() const {
     return ui::batch_building_type::none;
 }
 
-#pragma mark - renderable_node
-
-ui::renderable_node::renderable_node(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::renderable_node::renderable_node(std::nullptr_t) : protocol(nullptr) {
-}
-
-ui::renderer_ptr ui::renderable_node::renderer() {
-    return impl_ptr<impl>()->renderer();
-}
-
-void ui::renderable_node::set_renderer(ui::renderer_ptr const &renderer) {
-    impl_ptr<impl>()->set_renderer(renderer);
-}
-
-void ui::renderable_node::fetch_updates(ui::tree_updates &info) {
-    return impl_ptr<impl>()->fetch_updates(info);
-}
-
-void ui::renderable_node::build_render_info(ui::render_info &info) {
-    impl_ptr<impl>()->build_render_info(info);
-}
-
-bool ui::renderable_node::is_rendering_color_exists() {
-    return impl_ptr<impl>()->is_rendering_color_exists();
-}
-
-void ui::renderable_node::clear_updates() {
-    impl_ptr<impl>()->clear_updates();
-}
-
 std::string yas::to_string(ui::node_update_reason const &reason) {
     switch (reason) {
         case ui::node_update_reason::geometry:

@@ -29,7 +29,7 @@ using namespace yas;
 
 #pragma mark - node::impl
 
-struct ui::node::impl : renderable_node::impl {
+struct ui::node::impl {
     void prepare(ui::node_ptr const &node) {
         auto weak_node = to_weak(node);
 
@@ -135,7 +135,7 @@ struct ui::node::impl : renderable_node::impl {
         }
     }
 
-    void build_render_info(ui::render_info &render_info) override {
+    void build_render_info(ui::render_info &render_info) {
         if (this->_enabled->raw()) {
             this->_update_local_matrix();
 
@@ -183,7 +183,7 @@ struct ui::node::impl : renderable_node::impl {
                     ui::tree_updates tree_updates;
 
                     for (auto &sub_node : this->_children) {
-                        sub_node->renderable().fetch_updates(tree_updates);
+                        sub_node->renderable()->fetch_updates(tree_updates);
                     }
 
                     needs_render = tree_updates.is_any_updated();
@@ -218,7 +218,7 @@ struct ui::node::impl : renderable_node::impl {
                 ui::tree_updates tree_updates;
 
                 for (auto const &sub_node : this->_children) {
-                    sub_node->renderable().fetch_updates(tree_updates);
+                    sub_node->renderable()->fetch_updates(tree_updates);
                 }
 
                 auto const building_type = tree_updates.batch_building_type();
@@ -293,15 +293,15 @@ struct ui::node::impl : renderable_node::impl {
         return ui::setup_metal_result{nullptr};
     }
 
-    ui::renderer_ptr renderer() override {
+    ui::renderer_ptr renderer() {
         return this->_renderer->raw().lock();
     }
 
-    void set_renderer(ui::renderer_ptr const &renderer) override {
+    void set_renderer(ui::renderer_ptr const &renderer) {
         this->_renderer->set_value(renderer);
     }
 
-    void fetch_updates(ui::tree_updates &tree_updates) override {
+    void fetch_updates(ui::tree_updates &tree_updates) {
         if (this->_enabled->raw()) {
             tree_updates.node_updates.flags |= this->_updates.flags;
 
@@ -331,20 +331,20 @@ struct ui::node::impl : renderable_node::impl {
             }
 
             for (auto &sub_node : this->_children) {
-                sub_node->renderable().fetch_updates(tree_updates);
+                sub_node->renderable()->fetch_updates(tree_updates);
             }
         } else if (this->_updates.test(ui::node_update_reason::enabled)) {
             tree_updates.node_updates.set(ui::node_update_reason::enabled);
         }
     }
 
-    bool is_rendering_color_exists() override {
+    bool is_rendering_color_exists() {
         if (!this->_enabled->raw()) {
             return false;
         }
 
         for (auto &sub_node : this->_children) {
-            if (sub_node->renderable().is_rendering_color_exists()) {
+            if (sub_node->renderable()->is_rendering_color_exists()) {
                 return true;
             }
         }
@@ -356,7 +356,7 @@ struct ui::node::impl : renderable_node::impl {
         return false;
     }
 
-    void clear_updates() override {
+    void clear_updates() {
         if (this->_enabled->raw()) {
             this->_updates.flags.reset();
 
@@ -369,7 +369,7 @@ struct ui::node::impl : renderable_node::impl {
             }
 
             for (auto &sub_node : this->_children) {
-                sub_node->renderable().clear_updates();
+                sub_node->renderable()->clear_updates();
             }
         } else {
             this->_updates.reset(ui::node_update_reason::enabled);
@@ -644,7 +644,7 @@ ui::node_ptr ui::node::parent() const {
     return this->_impl->_parent->raw().lock();
 }
 
-ui::renderer_ptr ui::node::renderer() const {
+ui::renderer_ptr ui::node::renderer() {
     return this->_impl->renderer();
 }
 
@@ -652,12 +652,8 @@ ui::metal_object_ptr ui::node::metal() {
     return std::dynamic_pointer_cast<metal_object>(this->shared_from_this());
 }
 
-ui::renderable_node &ui::node::renderable() {
-    if (!this->_renderable) {
-        auto renderable_impl = std::dynamic_pointer_cast<ui::renderable_node::impl>(this->_impl);
-        this->_renderable = ui::renderable_node{std::move(renderable_impl)};
-    }
-    return this->_renderable;
+ui::renderable_node_ptr ui::node::renderable() {
+    return std::dynamic_pointer_cast<renderable_node>(this->shared_from_this());
 }
 
 chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
@@ -737,6 +733,26 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
 ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
     return this->_impl->metal_setup(system);
+}
+
+void ui::node::set_renderer(ui::renderer_ptr const &renderer) {
+    this->_impl->set_renderer(renderer);
+}
+
+void ui::node::fetch_updates(ui::tree_updates &updates) {
+    this->_impl->fetch_updates(updates);
+}
+
+void ui::node::build_render_info(ui::render_info &info) {
+    this->_impl->build_render_info(info);
+}
+
+bool ui::node::is_rendering_color_exists() {
+    return this->_impl->is_rendering_color_exists();
+}
+
+void ui::node::clear_updates() {
+    this->_impl->clear_updates();
 }
 
 std::shared_ptr<ui::node> ui::node::make_shared() {

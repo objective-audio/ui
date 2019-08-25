@@ -5,7 +5,6 @@
 #pragma once
 
 #include <cpp_utils/yas_flagset.h>
-#include <cpp_utils/yas_protocol.h>
 #include "yas_ui_effect_protocol.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"
@@ -43,26 +42,16 @@ struct tree_updates {
     ui::batch_building_type batch_building_type() const;
 };
 
-struct renderable_node : protocol {
-    struct impl : protocol::impl {
-        virtual ui::renderer_ptr renderer() = 0;
-        virtual void set_renderer(ui::renderer_ptr const &) = 0;
-        virtual void fetch_updates(ui::tree_updates &) = 0;
-        virtual void build_render_info(ui::render_info &) = 0;
-        virtual bool is_rendering_color_exists() = 0;
-        virtual void clear_updates() = 0;
-    };
-
-    explicit renderable_node(std::shared_ptr<impl>);
-    renderable_node(std::nullptr_t);
-
-    ui::renderer_ptr renderer();
-    void set_renderer(ui::renderer_ptr const &);
-    void fetch_updates(ui::tree_updates &);
-    void build_render_info(ui::render_info &);
-    bool is_rendering_color_exists();
-    void clear_updates();
+struct renderable_node {
+    virtual ui::renderer_ptr renderer() = 0;
+    virtual void set_renderer(ui::renderer_ptr const &) = 0;
+    virtual void fetch_updates(ui::tree_updates &) = 0;
+    virtual void build_render_info(ui::render_info &) = 0;
+    virtual bool is_rendering_color_exists() = 0;
+    virtual void clear_updates() = 0;
 };
+
+using renderable_node_ptr = std::shared_ptr<renderable_node>;
 }  // namespace yas::ui
 
 namespace yas {

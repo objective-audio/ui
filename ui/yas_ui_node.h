@@ -11,6 +11,7 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
+#include "yas_ui_renderer_protocol.h"
 
 namespace yas::ui {
 class render_info;
@@ -22,7 +23,7 @@ class batch;
 class layout_guide;
 class layout_guide_point;
 
-struct node final : action_target, metal_object, std::enable_shared_from_this<node> {
+struct node final : action_target, metal_object, renderable_node, std::enable_shared_from_this<node> {
     class impl;
 
     enum class method {
@@ -64,10 +65,10 @@ struct node final : action_target, metal_object, std::enable_shared_from_this<no
     std::vector<ui::node_ptr> &children();
     ui::node_ptr parent() const;
 
-    ui::renderer_ptr renderer() const;
+    ui::renderer_ptr renderer() override;
 
     ui::metal_object_ptr metal();
-    ui::renderable_node &renderable();
+    ui::renderable_node_ptr renderable();
 
     using chain_pair_t = std::pair<method, node_ptr>;
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
@@ -87,8 +88,6 @@ struct node final : action_target, metal_object, std::enable_shared_from_this<no
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::renderable_node _renderable = nullptr;
-
     node();
 
     node(node const &) = delete;
@@ -99,6 +98,12 @@ struct node final : action_target, metal_object, std::enable_shared_from_this<no
     void _prepare(ui::node_ptr const &node);
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
+
+    void set_renderer(ui::renderer_ptr const &) override;
+    void fetch_updates(ui::tree_updates &) override;
+    void build_render_info(ui::render_info &) override;
+    bool is_rendering_color_exists() override;
+    void clear_updates() override;
 };
 }  // namespace yas::ui
 

@@ -199,7 +199,7 @@ struct ui::button::impl {
 
     void _update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
         auto &node = this->_rect_plane->node();
-        if (auto renderer = node->renderer()) {
+        if (auto const renderer = node->renderer()) {
             auto const &detector = renderer->detector();
 
             auto const &touch_event = event->get<ui::touch>();
@@ -233,7 +233,7 @@ struct ui::button::impl {
 
     void _leave_or_enter_or_move_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
         auto &node = this->_rect_plane->node();
-        if (auto renderer = node->renderer()) {
+        if (auto const renderer = node->renderer()) {
             auto const &detector = renderer->detector();
             auto const &touch_event = event->get<ui::touch>();
             bool const is_event_tracking = this->is_tracking(event);
