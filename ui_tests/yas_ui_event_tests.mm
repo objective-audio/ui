@@ -210,7 +210,7 @@ using namespace yas;
 
     XCTAssertEqual(event->phase(), ui::event_phase::none);
 
-    event->manageable().set_phase(ui::event_phase::began);
+    event->manageable()->set_phase(ui::event_phase::began);
 
     XCTAssertEqual(event->phase(), ui::event_phase::began);
 }
@@ -221,10 +221,10 @@ using namespace yas;
     auto touch_event2 = ui::event::make_shared(ui::touch_tag);
     auto touch_event3 = ui::event::make_shared(ui::touch_tag);
 
-    cursor_event->manageable().set<ui::cursor>(ui::cursor_event{{.v = 0.0f}, 10.0});
-    touch_event1->manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}, 10.0});
-    touch_event2->manageable().set<ui::touch>(ui::touch_event{1, {.v = 0.0f}, 11.0});
-    touch_event3->manageable().set<ui::touch>(ui::touch_event{2, {.v = 0.0f}, 12.0});
+    cursor_event->manageable()->set<ui::cursor>(ui::cursor_event{{.v = 0.0f}, 10.0});
+    touch_event1->manageable()->set<ui::touch>(ui::touch_event{1, {.v = 0.0f}, 10.0});
+    touch_event2->manageable()->set<ui::touch>(ui::touch_event{1, {.v = 0.0f}, 11.0});
+    touch_event3->manageable()->set<ui::touch>(ui::touch_event{2, {.v = 0.0f}, 12.0});
 
     XCTAssertTrue(*touch_event1 == *touch_event1);
     XCTAssertTrue(*touch_event1 == *touch_event2);
@@ -242,7 +242,7 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event->get<ui::cursor>()) == typeid(ui::cursor_event));
 
-    event->manageable().set<ui::cursor>(ui::cursor_event{{0.5f, 1.5f}, 100.0});
+    event->manageable()->set<ui::cursor>(ui::cursor_event{{0.5f, 1.5f}, 100.0});
 
     auto const &pos = event->get<ui::cursor>().position();
     XCTAssertEqual(pos.x, 0.5f);
@@ -256,7 +256,7 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event->get<ui::touch>()) == typeid(ui::touch_event));
 
-    event->manageable().set<ui::touch>(ui::touch_event{11, {2.5f, 3.5f}, 200.0});
+    event->manageable()->set<ui::touch>(ui::touch_event{11, {2.5f, 3.5f}, 200.0});
 
     auto const &value = event->get<ui::touch>();
     auto const &pos = value.position();
@@ -272,7 +272,7 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event->get<ui::key>()) == typeid(ui::key_event));
 
-    event->manageable().set<ui::key>(ui::key_event{23, "4", "5", 300.0});
+    event->manageable()->set<ui::key>(ui::key_event{23, "4", "5", 300.0});
 
     auto const &value = event->get<ui::key>();
     XCTAssertEqual(value.key_code(), 23);
@@ -287,7 +287,7 @@ using namespace yas;
 
     XCTAssertTrue(typeid(event->get<ui::modifier>()) == typeid(ui::modifier_event));
 
-    event->manageable().set<ui::modifier>(ui::modifier_event{ui::modifier_flags::command, 400.0});
+    event->manageable()->set<ui::modifier>(ui::modifier_event{ui::modifier_flags::command, 400.0});
 
     auto const &value = event->get<ui::modifier>();
     XCTAssertEqual(value.flag(), ui::modifier_flags::command);
