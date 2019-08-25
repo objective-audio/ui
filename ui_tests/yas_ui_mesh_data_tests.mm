@@ -169,7 +169,7 @@ using namespace yas;
 
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
-    XCTAssertTrue(mesh_data->metal().metal_setup(metal_system));
+    XCTAssertTrue(mesh_data->metal()->metal_setup(metal_system));
 }
 
 - (void)test_mesh_data_update_reason_to_string {

@@ -22,7 +22,7 @@ class batch;
 class layout_guide;
 class layout_guide_point;
 
-struct node final : action_target, std::enable_shared_from_this<node> {
+struct node final : action_target, metal_object, std::enable_shared_from_this<node> {
     class impl;
 
     enum class method {
@@ -66,7 +66,7 @@ struct node final : action_target, std::enable_shared_from_this<node> {
 
     ui::renderer_ptr renderer() const;
 
-    ui::metal_object &metal();
+    ui::metal_object_ptr metal();
     ui::renderable_node &renderable();
 
     using chain_pair_t = std::pair<method, node_ptr>;
@@ -86,7 +86,7 @@ struct node final : action_target, std::enable_shared_from_this<node> {
 
    private:
     std::shared_ptr<impl> _impl;
-    ui::metal_object _metal_object = nullptr;
+
     ui::renderable_node _renderable = nullptr;
 
     node();
@@ -97,6 +97,8 @@ struct node final : action_target, std::enable_shared_from_this<node> {
     node &operator=(node &&) = delete;
 
     void _prepare(ui::node_ptr const &node);
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 }  // namespace yas::ui
 

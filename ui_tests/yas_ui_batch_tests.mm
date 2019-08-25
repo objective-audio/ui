@@ -122,8 +122,8 @@ using namespace yas;
     });
     mesh2->set_mesh_data(mesh_data2);
 
-    mesh1->metal().metal_setup(metal_system);
-    mesh2->metal().metal_setup(metal_system);
+    mesh1->metal()->metal_setup(metal_system);
+    mesh2->metal()->metal_setup(metal_system);
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -182,7 +182,7 @@ using namespace yas;
     auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    mesh->metal().metal_setup(metal_system);
+    mesh->metal()->metal_setup(metal_system);
 
     mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         vertices.at(0).position.x = 1.0f;
@@ -231,7 +231,7 @@ using namespace yas;
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    mesh->metal().metal_setup(metal_system);
+    mesh->metal()->metal_setup(metal_system);
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -239,7 +239,7 @@ using namespace yas;
 
     batch->renderable()->commit_render_meshes_building();
 
-    XCTAssertTrue(batch->metal().metal_setup(metal_system));
+    XCTAssertTrue(batch->metal()->metal_setup(metal_system));
 }
 
 - (void)test_batch_building_type_to_string {

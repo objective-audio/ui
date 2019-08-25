@@ -507,7 +507,7 @@ struct test_render_encoder : ui::render_encodable, std::enable_shared_from_this<
     XCTAssertFalse(root_mesh_data->metal_system());
     XCTAssertFalse(sub_mesh_data->metal_system());
 
-    XCTAssertTrue(root_node->metal().metal_setup(metal_system));
+    XCTAssertTrue(root_node->metal()->metal_setup(metal_system));
 
     XCTAssertTrue(root_mesh_data->metal_system());
     XCTAssertTrue(sub_mesh_data->metal_system());

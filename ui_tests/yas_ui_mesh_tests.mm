@@ -150,7 +150,7 @@ using namespace yas;
     XCTAssertNil(mesh_data->renderable()->vertexBuffer());
     XCTAssertNil(mesh_data->renderable()->indexBuffer());
 
-    auto setup_result = mesh_data->metal().metal_setup(metal_system);
+    auto setup_result = mesh_data->metal()->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -177,7 +177,7 @@ using namespace yas;
     XCTAssertNil(mesh_data->renderable()->vertexBuffer());
     XCTAssertNil(mesh_data->renderable()->indexBuffer());
 
-    auto setup_result = mesh_data->metal().metal_setup(metal_system);
+    auto setup_result = mesh_data->metal()->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
@@ -203,7 +203,7 @@ using namespace yas;
 
     auto const renderable = mesh_data->renderable();
 
-    XCTAssertTrue(mesh_data->metal().metal_setup(metal_system));
+    XCTAssertTrue(mesh_data->metal()->metal_setup(metal_system));
 
     ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable->vertexBuffer() contents]);
     ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable->indexBuffer() contents]);
@@ -355,7 +355,7 @@ using namespace yas;
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    XCTAssertTrue(mesh->metal().metal_setup(metal_system));
+    XCTAssertTrue(mesh->metal()->metal_setup(metal_system));
 }
 
 - (void)test_mesh_update_reason_to_string {

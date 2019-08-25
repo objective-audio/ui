@@ -34,7 +34,7 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
 #pragma mark - ui::texture::impl
 
-struct ui::texture::impl : metal_object::impl {
+struct ui::texture::impl {
     chaining::value::holder_ptr<ui::uint_size> _point_size;
     chaining::value::holder_ptr<double> _scale_factor;
     uint32_t const _depth = 1;
@@ -89,7 +89,7 @@ struct ui::texture::impl : metal_object::impl {
             this->_metal_texture =
                 ui::metal_texture::make_shared(this->actual_size(), this->_usages, this->_pixel_format);
 
-            if (auto ul = unless(this->_metal_texture->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(this->_metal_texture->metal()->metal_setup(metal_system))) {
                 return ul.value;
             }
 
@@ -306,11 +306,8 @@ std::shared_ptr<chaining::receiver<double>> ui::texture::scale_factor_receiver()
     return std::dynamic_pointer_cast<chaining::receiver<double>>(this->_impl->_scale_factor);
 }
 
-ui::metal_object &ui::texture::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::texture::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
@@ -319,6 +316,10 @@ void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
 
 void ui::texture::_prepare(texture_ptr const &shared) {
     this->_impl->prepare(shared);
+}
+
+ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 ui::texture_ptr ui::texture::make_shared(args args) {

@@ -14,7 +14,7 @@
 
 using namespace yas;
 
-struct ui::batch::impl : metal_object::impl {
+struct ui::batch::impl {
     void append_mesh(ui::mesh_ptr const &mesh) {
         if (this->_building_type == ui::batch_building_type::rebuild) {
             ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
@@ -70,7 +70,7 @@ struct ui::batch::impl : metal_object::impl {
 
         if (auto &metal_system = this->_metal_system) {
             for (auto const &mesh : this->_render_meshes) {
-                if (auto ul = unless(mesh->metal().metal_setup(metal_system))) {
+                if (auto ul = unless(mesh->metal()->metal_setup(metal_system))) {
                     throw std::runtime_error("render_meshes setup failed.");
                 };
             }
@@ -84,7 +84,7 @@ struct ui::batch::impl : metal_object::impl {
         this->_render_mesh_infos.clear();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
         }
@@ -150,11 +150,12 @@ std::shared_ptr<ui::render_encodable> ui::batch::encodable() {
     return std::dynamic_pointer_cast<render_encodable>(shared_from_this());
 }
 
-ui::metal_object &ui::batch::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
+}
+
+ui::metal_object_ptr ui::batch::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 ui::batch_ptr ui::batch::make_shared() {

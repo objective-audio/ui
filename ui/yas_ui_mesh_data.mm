@@ -10,7 +10,7 @@ using namespace yas;
 
 #pragma mark - ui::mesh_data::impl
 
-struct ui::mesh_data::impl : metal_object::impl {
+struct ui::mesh_data::impl {
     impl(mesh_data::args &&args)
         : _vertex_count(args.vertex_count),
           _vertices(args.vertex_count),
@@ -19,7 +19,7 @@ struct ui::mesh_data::impl : metal_object::impl {
         this->_updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
             this->_vertex_buffer.set_object(nil);
@@ -151,11 +151,8 @@ ui::metal_system_ptr const &ui::mesh_data::metal_system() {
     return this->_impl->_metal_system;
 }
 
-ui::metal_object &ui::mesh_data::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::mesh_data::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 ui::renderable_mesh_data_ptr ui::mesh_data::renderable() {
@@ -188,6 +185,10 @@ void ui::mesh_data::update_render_buffer() {
 
 void ui::mesh_data::clear_updates() {
     this->_impl->clear_updates();
+}
+
+ui::setup_metal_result ui::mesh_data::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 ui::mesh_data_ptr ui::mesh_data::make_shared(args args) {

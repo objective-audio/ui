@@ -29,7 +29,7 @@ using namespace yas;
 
 #pragma mark - node::impl
 
-struct ui::node::impl : renderable_node::impl, metal_object::impl {
+struct ui::node::impl : renderable_node::impl {
     void prepare(ui::node_ptr const &node) {
         auto weak_node = to_weak(node);
 
@@ -255,37 +255,37 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
         }
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (auto const &mesh = this->_mesh->raw()) {
-            if (auto ul = unless(mesh->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(mesh->metal()->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
         if (auto &render_target = this->_render_target->raw()) {
-            if (auto ul = unless(render_target->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(render_target->metal()->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
-            if (auto ul = unless(render_target->renderable().mesh()->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(render_target->renderable().mesh()->metal()->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
             if (auto &effect = render_target->renderable().effect()) {
-                if (auto ul = unless(effect->metal().metal_setup(metal_system))) {
+                if (auto ul = unless(effect->metal()->metal_setup(metal_system))) {
                     return std::move(ul.value);
                 }
             }
         }
 
         if (auto &batch = this->_batch->raw()) {
-            if (auto ul = unless(batch->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(batch->metal()->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
         for (auto &sub_node : this->_children) {
-            if (auto ul = unless(sub_node->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(sub_node->metal()->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
@@ -648,12 +648,8 @@ ui::renderer_ptr ui::node::renderer() const {
     return this->_impl->renderer();
 }
 
-ui::metal_object &ui::node::metal() {
-    if (!this->_metal_object) {
-        auto metal_object_impl = std::dynamic_pointer_cast<ui::metal_object::impl>(this->_impl);
-        this->_metal_object = ui::metal_object{std::move(metal_object_impl)};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::node::metal() {
+    return std::dynamic_pointer_cast<metal_object>(this->shared_from_this());
 }
 
 ui::renderable_node &ui::node::renderable() {
@@ -737,6 +733,10 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
 
 void ui::node::_prepare(ui::node_ptr const &node) {
     this->_impl->prepare(node);
+}
+
+ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 std::shared_ptr<ui::node> ui::node::make_shared() {

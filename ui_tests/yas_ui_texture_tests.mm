@@ -58,7 +58,7 @@ using namespace yas;
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
-    texture->metal().metal_setup(metal_system);
+    texture->metal()->metal_setup(metal_system);
 
     auto draw_handler = [](CGContextRef const context) {
         auto const width = CGBitmapContextGetWidth(context);
@@ -108,7 +108,7 @@ using namespace yas;
 
     texture->remove_draw_handler(element);
 
-    texture->metal().metal_setup(metal_system);
+    texture->metal()->metal_setup(metal_system);
 
     XCTAssertFalse(called);
 }
@@ -136,7 +136,7 @@ using namespace yas;
 
     XCTAssertFalse(called);
 
-    texture->metal().metal_setup(metal_system);
+    texture->metal()->metal_setup(metal_system);
 
     XCTAssertTrue(called);
     XCTAssertFalse(element->tex_coords() == ui::uint_region::zero());
@@ -144,7 +144,7 @@ using namespace yas;
     called = false;
 
     texture->set_scale_factor(2.0);
-    texture->metal().metal_setup(metal_system);
+    texture->metal()->metal_setup(metal_system);
 
     XCTAssertTrue(called);
     XCTAssertFalse(element->tex_coords() == ui::uint_region::zero());
@@ -223,7 +223,7 @@ using namespace yas;
 
     received = std::nullopt;
 
-    texture->metal().metal_setup(metal_system);
+    texture->metal()->metal_setup(metal_system);
 
     XCTAssertTrue(received);
     XCTAssertEqual(*received, ui::texture::method::metal_texture_changed);
@@ -251,7 +251,7 @@ using namespace yas;
 
     called = false;
 
-    texture->metal().metal_setup(metal_system);
+    texture->metal()->metal_setup(metal_system);
 
     XCTAssertFalse(called);
 }

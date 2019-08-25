@@ -8,7 +8,7 @@
 
 using namespace yas;
 
-struct ui::effect::impl : metal_object::impl {
+struct ui::effect::impl {
     impl() {
         this->_updates.flags.set();
     }
@@ -38,7 +38,7 @@ struct ui::effect::impl : metal_object::impl {
         this->_set_updated(effect_update_reason::textures);
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
         }
@@ -85,11 +85,8 @@ ui::encodable_effect_ptr ui::effect::encodable() {
     return std::dynamic_pointer_cast<encodable_effect>(this->shared_from_this());
 }
 
-ui::metal_object &ui::effect::metal() {
-    if (!this->_metal) {
-        this->_metal = ui::metal_object{this->_impl};
-    }
-    return this->_metal;
+ui::metal_object_ptr ui::effect::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 void ui::effect::set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) {
@@ -106,6 +103,10 @@ void ui::effect::clear_updates() {
 
 void ui::effect::encode(id<MTLCommandBuffer> const commandBuffer) {
     return this->_impl->encode(commandBuffer);
+}
+
+ui::setup_metal_result ui::effect::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {

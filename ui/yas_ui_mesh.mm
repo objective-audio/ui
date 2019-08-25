@@ -19,19 +19,19 @@ using namespace yas;
 
 #pragma mark - ui::mesh::impl
 
-struct ui::mesh::impl : metal_object::impl {
+struct ui::mesh::impl {
     impl() {
         this->_updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_mesh_data) {
-            if (auto ul = unless(this->_mesh_data->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(this->_mesh_data->metal()->metal_setup(metal_system))) {
                 return ul.value;
             }
         }
         if (this->_texture) {
-            if (auto ul = unless(this->_texture->metal().metal_setup(metal_system))) {
+            if (auto ul = unless(this->_texture->metal()->metal_setup(metal_system))) {
                 return ul.value;
             }
         }
@@ -331,6 +331,10 @@ void ui::mesh::clear_updates() {
     this->_impl->clear_updates();
 }
 
+ui::setup_metal_result ui::mesh::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
+}
+
 ui::mesh_data_ptr const &ui::mesh::mesh_data() {
     return this->_impl->mesh_data();
 }
@@ -341,11 +345,8 @@ ui::mesh_ptr ui::mesh::make_shared() {
 
 #pragma mark - protocol
 
-ui::metal_object &ui::mesh::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::mesh::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 ui::renderable_mesh_ptr ui::mesh::renderable() {

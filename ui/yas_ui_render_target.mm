@@ -17,7 +17,7 @@ using namespace yas;
 
 #pragma mark - render_target::impl
 
-struct ui::render_target::impl : renderable_render_target::impl, metal_object::impl {
+struct ui::render_target::impl : renderable_render_target::impl {
     impl()
         : _src_texture(
               ui::texture::make_shared({.point_size = ui::uint_size::zero(),
@@ -123,16 +123,16 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
                                    .end();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
         }
 
-        if (auto ul = unless(this->_src_texture->metal().metal_setup(metal_system))) {
+        if (auto ul = unless(this->_src_texture->metal()->metal_setup(metal_system))) {
             return ul.value;
         }
 
-        if (auto ul = unless(this->_dst_texture->metal().metal_setup(metal_system))) {
+        if (auto ul = unless(this->_dst_texture->metal()->metal_setup(metal_system))) {
             return ul.value;
         }
 
@@ -269,11 +269,8 @@ ui::renderable_render_target &ui::render_target::renderable() {
     return this->_renderable;
 }
 
-ui::metal_object &ui::render_target::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::render_target::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
@@ -282,6 +279,10 @@ void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &rendere
 
 void ui::render_target::_prepare(ui::render_target_ptr const &shared) {
     this->_impl->prepare(shared);
+}
+
+ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 ui::render_target_ptr ui::render_target::make_shared() {

@@ -288,7 +288,7 @@ struct ui::metal_system::impl {
                                     .matrix = renderer->projection_matrix(),
                                     .mesh_matrix = renderer->projection_matrix()};
 
-        renderer->root_node()->metal().metal_setup(metal_system);
+        renderer->root_node()->metal()->metal_setup(metal_system);
         renderer->root_node()->renderable().build_render_info(render_info);
 
         auto result = metal_render_encoder->encode(metal_system, commandBuffer);

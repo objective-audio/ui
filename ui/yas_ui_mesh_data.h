@@ -12,7 +12,7 @@
 
 namespace yas::ui {
 
-struct mesh_data : renderable_mesh_data, std::enable_shared_from_this<mesh_data> {
+struct mesh_data : renderable_mesh_data, metal_object, std::enable_shared_from_this<mesh_data> {
     struct args {
         std::size_t vertex_count = 0;
         std::size_t index_count = 0;
@@ -27,7 +27,7 @@ struct mesh_data : renderable_mesh_data, std::enable_shared_from_this<mesh_data>
 
     std::shared_ptr<ui::metal_system> const &metal_system();
 
-    ui::metal_object &metal();
+    ui::metal_object_ptr metal();
     ui::renderable_mesh_data_ptr renderable();
 
     [[nodiscard]] static mesh_data_ptr make_shared(args);
@@ -40,8 +40,6 @@ struct mesh_data : renderable_mesh_data, std::enable_shared_from_this<mesh_data>
     mesh_data(std::shared_ptr<impl> &&);
 
    private:
-    ui::metal_object _metal_object = nullptr;
-
     mesh_data(args &&);
 
     mesh_data(mesh_data const &) = delete;
@@ -57,6 +55,8 @@ struct mesh_data : renderable_mesh_data, std::enable_shared_from_this<mesh_data>
     mesh_data_updates_t const &updates() override;
     void update_render_buffer() override;
     void clear_updates() override;
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 
 struct dynamic_mesh_data final : mesh_data {

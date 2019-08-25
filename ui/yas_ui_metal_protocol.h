@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <cpp_utils/yas_result.h>
 #include <ostream>
 
@@ -25,16 +24,11 @@ enum class setup_metal_error {
 
 using setup_metal_result = result<std::nullptr_t, setup_metal_error>;
 
-struct metal_object : protocol {
-    struct impl : protocol::impl {
-        virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
-    };
-
-    explicit metal_object(std::shared_ptr<impl>);
-    metal_object(std::nullptr_t);
-
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
+struct metal_object {
+    virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
 };
+
+using metal_object_ptr = std::shared_ptr<metal_object>;
 }  // namespace yas::ui
 
 namespace yas {
