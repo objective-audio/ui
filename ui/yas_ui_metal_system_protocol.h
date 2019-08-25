@@ -28,24 +28,15 @@ struct renderable_metal_system {
 
 using renderable_metal_system_ptr = std::shared_ptr<renderable_metal_system>;
 
-struct makable_metal_system : protocol {
-    struct impl : protocol::impl {
-        virtual objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) = 0;
-        virtual objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) = 0;
-        virtual objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) = 0;
-        virtual objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() = 0;
-        virtual objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) = 0;
-    };
-
-    explicit makable_metal_system(std::shared_ptr<impl>);
-    makable_metal_system(std::nullptr_t);
-
-    objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const);
-    objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const);
-    objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length);
-    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder();
-    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const);
+struct makable_metal_system {
+    virtual objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) = 0;
+    virtual objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) = 0;
+    virtual objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) = 0;
+    virtual objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() = 0;
+    virtual objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) = 0;
 };
+
+using makable_metal_system_ptr = std::shared_ptr<makable_metal_system>;
 
 struct testable_metal_system : protocol {
     struct impl : protocol::impl {

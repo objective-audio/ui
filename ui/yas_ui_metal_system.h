@@ -10,14 +10,14 @@
 
 namespace yas::ui {
 
-struct metal_system final : renderable_metal_system, std::enable_shared_from_this<metal_system> {
+struct metal_system final : renderable_metal_system, makable_metal_system, std::enable_shared_from_this<metal_system> {
     class impl;
 
     virtual ~metal_system();
 
     std::size_t last_encoded_mesh_count() const;
 
-    ui::makable_metal_system &makable();
+    ui::makable_metal_system_ptr makable();
     ui::renderable_metal_system_ptr renderable();
 
     ui::testable_metal_system testable();
@@ -27,8 +27,6 @@ struct metal_system final : renderable_metal_system, std::enable_shared_from_thi
 
    private:
     std::shared_ptr<impl> _impl;
-
-    ui::makable_metal_system _makable = nullptr;
 
     metal_system(id<MTLDevice> const, uint32_t const sample_count);
 
@@ -45,5 +43,11 @@ struct metal_system final : renderable_metal_system, std::enable_shared_from_thi
     void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
                      ui::metal_encode_info_ptr const &) override;
     void push_render_target(ui::render_stackable_ptr const &, ui::render_target_ptr const &) override;
+
+    objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) override;
+    objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) override;
+    objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override;
+    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override;
+    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) override;
 };
 }  // namespace yas::ui

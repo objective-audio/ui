@@ -47,7 +47,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
 
             textureDesc.usage = this->_texture_usage;
 
-            this->_texture_object = this->_metal_system->makable().make_mtl_texture(textureDesc);
+            this->_texture_object = this->_metal_system->makable()->make_mtl_texture(textureDesc);
 
             if (!this->_texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
@@ -74,7 +74,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
             samplerDesc.lodMaxClamp = FLT_MAX;
             samplerDesc.supportArgumentBuffers = true;
 
-            this->_sampler_object = this->_metal_system->makable().make_mtl_sampler_state(samplerDesc);
+            this->_sampler_object = this->_metal_system->makable()->make_mtl_sampler_state(samplerDesc);
 
             if (!this->_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
@@ -82,7 +82,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
         }
 
         if (!this->_argument_encoder_object) {
-            this->_argument_encoder_object = this->_metal_system->makable().make_mtl_argument_encoder();
+            this->_argument_encoder_object = this->_metal_system->makable()->make_mtl_argument_encoder();
 
             if (!this->_argument_encoder_object) {
                 return ui::setup_metal_result{setup_metal_error::create_argument_encoder_failed};
@@ -90,7 +90,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
 
             auto encoder = *this->_argument_encoder_object;
 
-            this->_argument_buffer_object = this->_metal_system->makable().make_mtl_buffer(encoder.encodedLength);
+            this->_argument_buffer_object = this->_metal_system->makable()->make_mtl_buffer(encoder.encodedLength);
 
             if (!this->_argument_buffer_object) {
                 return ui::setup_metal_result{setup_metal_error::create_argument_buffer_failed};

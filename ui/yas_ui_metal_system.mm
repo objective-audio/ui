@@ -26,7 +26,7 @@ static auto constexpr _uniforms_buffer_count = 3;
 
 #pragma mark - ui::metal_system::impl
 
-struct ui::metal_system::impl : makable_metal_system::impl, testable_metal_system::impl {
+struct ui::metal_system::impl : testable_metal_system::impl {
     impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
         auto const bundle = objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
@@ -217,24 +217,24 @@ struct ui::metal_system::impl : makable_metal_system::impl, testable_metal_syste
         return this->_pipeline_state_without_texture.object();
     }
 
-    objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const textureDesc) override {
+    objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const textureDesc) {
         return objc_ptr_with_move_object([mtlDevice() newTextureWithDescriptor:textureDesc]);
     }
 
-    objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const samplerDesc) override {
+    objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const samplerDesc) {
         return objc_ptr_with_move_object([mtlDevice() newSamplerStateWithDescriptor:samplerDesc]);
     }
 
-    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override {
+    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() {
         return objc_ptr_with_move_object([*this->_fragment_function_with_texture newArgumentEncoderWithBufferIndex:0]);
     }
 
-    objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override {
+    objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) {
         return objc_ptr_with_move_object(
             [mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
     }
 
-    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const sigma) override {
+    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const sigma) {
         return objc_ptr_with_move_object([[MPSImageGaussianBlur alloc] initWithDevice:this->mtlDevice() sigma:sigma]);
     }
 
@@ -308,12 +308,8 @@ std::size_t ui::metal_system::last_encoded_mesh_count() const {
     return this->_impl->last_encoded_mesh_count();
 }
 
-ui::makable_metal_system &ui::metal_system::makable() {
-    if (!this->_makable) {
-        this->_makable = ui::makable_metal_system{this->_impl};
-    }
-
-    return this->_makable;
+ui::makable_metal_system_ptr ui::metal_system::makable() {
+    return std::dynamic_pointer_cast<makable_metal_system>(this->shared_from_this());
 }
 
 ui::renderable_metal_system_ptr ui::metal_system::renderable() {
@@ -331,19 +327,43 @@ void ui::metal_system::_prepare(metal_system_ptr const &metal_system) {
 void ui::metal_system::view_configure(yas_objc_view *const view) {
     this->_impl->view_configure(view);
 }
+
 void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer_ptr const &renderer) {
     this->_impl->view_render(view, renderer);
 }
+
 void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
     this->_impl->prepare_uniforms_buffer(uniforms_count);
 }
+
 void ui::metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const commandEncoder,
                                    ui::metal_encode_info_ptr const &encode_info) {
     this->_impl->mesh_encode(mesh, commandEncoder, encode_info);
 }
+
 void ui::metal_system::push_render_target(ui::render_stackable_ptr const &stackable,
                                           ui::render_target_ptr const &render_target) {
     this->_impl->push_render_target(stackable, render_target);
+}
+
+objc_ptr<id<MTLTexture>> ui::metal_system::make_mtl_texture(MTLTextureDescriptor *const descriptor) {
+    return this->_impl->make_mtl_texture(descriptor);
+}
+
+objc_ptr<id<MTLSamplerState>> ui::metal_system::make_mtl_sampler_state(MTLSamplerDescriptor *const descriptor) {
+    return this->_impl->make_mtl_sampler_state(descriptor);
+}
+
+objc_ptr<id<MTLBuffer>> ui::metal_system::make_mtl_buffer(std::size_t const length) {
+    return this->_impl->make_mtl_buffer(length);
+}
+
+objc_ptr<id<MTLArgumentEncoder>> ui::metal_system::make_mtl_argument_encoder() {
+    return this->_impl->make_mtl_argument_encoder();
+}
+
+objc_ptr<MPSImageGaussianBlur *> ui::metal_system::make_mtl_blur(double const blur) {
+    return this->_impl->make_mtl_blur(blur);
 }
 
 ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device) {
