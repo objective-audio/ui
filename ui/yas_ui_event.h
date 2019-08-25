@@ -5,6 +5,7 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
+#include <cpp_utils/yas_protocol.h>
 #include "yas_ui_event_protocol.h"
 #include "yas_ui_ptr.h"
 
@@ -61,7 +62,7 @@ struct event {
     explicit event(modifier const &);
 };
 
-struct event_manager {
+struct event_manager : event_inputtable, std::enable_shared_from_this<event_manager> {
     class impl;
 
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
@@ -76,16 +77,19 @@ struct event_manager {
     [[nodiscard]] chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
 
-    ui::event_inputtable &inputtable();
+    ui::event_inputtable_ptr inputtable();
 
     [[nodiscard]] static event_manager_ptr make_shared();
 
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::event_inputtable _inputtable = nullptr;
-
     event_manager();
+
+    void input_cursor_event(cursor_event const &value) override;
+    void input_touch_event(event_phase const, touch_event const &) override;
+    void input_key_event(event_phase const, key_event const &) override;
+    void input_modifier_event(modifier_flags const &, double const) override;
 };
 }  // namespace yas::ui
 

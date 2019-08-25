@@ -127,8 +127,8 @@ ui::event_ptr ui::event::make_shared(modifier const &modifier) {
 
 #pragma mark - event_manager::impl
 
-struct ui::event_manager::impl : event_inputtable::impl {
-    void input_cursor_event(cursor_event &&value) override {
+struct ui::event_manager::impl {
+    void input_cursor_event(cursor_event const &value) {
         ui::event_phase phase;
 
         if (value.contains_in_window()) {
@@ -145,7 +145,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         if (this->_cursor_event) {
             auto manageable_event = this->_cursor_event->manageable();
             manageable_event.set_phase(phase);
-            manageable_event.set<cursor>(std::move(value));
+            manageable_event.set<cursor>(value);
 
             this->_notifier->notify({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
 
@@ -155,7 +155,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         }
     }
 
-    void input_touch_event(event_phase const phase, touch_event &&value) override {
+    void input_touch_event(event_phase const phase, touch_event const &value) {
         auto const identifer = value.identifier();
 
         if (phase == event_phase::began) {
@@ -170,7 +170,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
             auto &event = this->_touch_events.at(identifer);
             auto manageable_event = event->manageable();
             manageable_event.set_phase(phase);
-            manageable_event.set<touch>(std::move(value));
+            manageable_event.set<touch>(value);
 
             this->_notifier->notify({.method = event_manager::method::touch_changed, .event = event});
 
@@ -180,7 +180,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         }
     }
 
-    void input_key_event(event_phase const phase, key_event &&value) override {
+    void input_key_event(event_phase const phase, key_event const &value) {
         auto const key_code = value.key_code();
 
         if (phase == event_phase::began) {
@@ -204,7 +204,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         }
     }
 
-    void input_modifier_event(modifier_flags &&flags, double const timestamp) override {
+    void input_modifier_event(modifier_flags const &flags, double const timestamp) {
         static auto all_flags = {modifier_flags::alpha_shift, modifier_flags::shift,   modifier_flags::control,
                                  modifier_flags::alternate,   modifier_flags::command, modifier_flags::numeric_pad,
                                  modifier_flags::help,        modifier_flags::function};
@@ -293,11 +293,24 @@ chaining::chain_unsync_t<ui::event_manager::context> ui::event_manager::chain() 
     return this->_impl->chain();
 }
 
-ui::event_inputtable &ui::event_manager::inputtable() {
-    if (!this->_inputtable) {
-        this->_inputtable = ui::event_inputtable{this->_impl};
-    }
-    return this->_inputtable;
+ui::event_inputtable_ptr ui::event_manager::inputtable() {
+    return std::dynamic_pointer_cast<event_inputtable>(this->shared_from_this());
+}
+
+void ui::event_manager::input_cursor_event(cursor_event const &event) {
+    this->_impl->input_cursor_event(event);
+}
+
+void ui::event_manager::input_touch_event(event_phase const phase, touch_event const &event) {
+    this->_impl->input_touch_event(phase, event);
+}
+
+void ui::event_manager::input_key_event(event_phase const phase, key_event const &event) {
+    this->_impl->input_key_event(phase, event);
+}
+
+void ui::event_manager::input_modifier_event(modifier_flags const &flags, double const timestamp) {
+    this->_impl->input_modifier_event(flags, timestamp);
 }
 
 ui::event_manager_ptr ui::event_manager::make_shared() {

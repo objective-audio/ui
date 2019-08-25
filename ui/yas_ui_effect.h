@@ -22,7 +22,7 @@ struct effect final : renderable_effect, encodable_effect, std::enable_shared_fr
     void set_metal_handler(metal_handler_f);
     metal_handler_f const &metal_handler() const;
 
-    ui::renderable_effect_ptr renderable();                         
+    ui::renderable_effect_ptr renderable();
     ui::encodable_effect_ptr encodable();
     ui::metal_object &metal();
 

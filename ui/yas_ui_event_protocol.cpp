@@ -123,30 +123,6 @@ double ui::modifier_event::timestamp() const {
     return this->_timestamp;
 }
 
-#pragma mark - event_inputtable
-
-ui::event_inputtable::event_inputtable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::event_inputtable::event_inputtable(std::nullptr_t) : protocol(nullptr) {
-}
-
-void ui::event_inputtable::input_cursor_event(cursor_event value) {
-    impl_ptr<impl>()->input_cursor_event(std::move(value));
-}
-
-void ui::event_inputtable::input_touch_event(event_phase const phase, touch_event value) {
-    impl_ptr<impl>()->input_touch_event(phase, std::move(value));
-}
-
-void ui::event_inputtable::input_key_event(event_phase const phase, key_event value) {
-    impl_ptr<impl>()->input_key_event(phase, std::move(std::move(value)));
-}
-
-void ui::event_inputtable::input_modifier_event(modifier_flags flag, double const timestamp) {
-    impl_ptr<impl>()->input_modifier_event(std::move(flag), timestamp);
-}
-
 #pragma mark -
 
 std::string yas::to_string(ui::cursor_event const &event) {
