@@ -176,18 +176,18 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
         }
 
         auto &mesh_data = mesh->mesh_data();
-        auto &renderable_mesh_data = mesh_data->renderable();
+        auto const &renderable_mesh_data = mesh_data->renderable();
 
-        [encoder setVertexBuffer:renderable_mesh_data.vertexBuffer()
-                          offset:renderable_mesh_data.vertex_buffer_byte_offset()
+        [encoder setVertexBuffer:renderable_mesh_data->vertexBuffer()
+                          offset:renderable_mesh_data->vertex_buffer_byte_offset()
                          atIndex:0];
         [encoder setVertexBuffer:currentUniformsBuffer offset:this->_uniforms_buffer_offset atIndex:1];
 
         [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh->primitive_type())
                             indexCount:mesh_data->index_count()
                              indexType:MTLIndexTypeUInt32
-                           indexBuffer:renderable_mesh_data.indexBuffer()
-                     indexBufferOffset:renderable_mesh_data.index_buffer_byte_offset()];
+                           indexBuffer:renderable_mesh_data->indexBuffer()
+                     indexBufferOffset:renderable_mesh_data->index_buffer_byte_offset()];
 
         this->_uniforms_buffer_offset += sizeof(uniforms2d_t);
         assert(this->_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);

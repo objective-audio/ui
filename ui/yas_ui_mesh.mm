@@ -72,7 +72,7 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
 
     bool pre_render() override {
         if (this->_mesh_data) {
-            this->_mesh_data->renderable().update_render_buffer();
+            this->_mesh_data->renderable()->update_render_buffer();
             return this->is_rendering_color_exists();
         }
 
@@ -119,7 +119,7 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
         this->_updates.flags.reset();
 
         if (this->_mesh_data) {
-            this->_mesh_data->renderable().clear_updates();
+            this->_mesh_data->renderable()->clear_updates();
         }
     }
 
@@ -228,7 +228,7 @@ struct ui::mesh::impl : renderable_mesh::impl, metal_object::impl {
             if (this->_mesh_data) {
                 static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
 
-                if (this->_mesh_data->renderable().updates().and_test(_mesh_data_overwrite_updates)) {
+                if (this->_mesh_data->renderable()->updates().and_test(_mesh_data_overwrite_updates)) {
                     return true;
                 }
             }

@@ -147,8 +147,8 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    XCTAssertNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNil(mesh_data->renderable().indexBuffer());
+    XCTAssertNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNil(mesh_data->renderable()->indexBuffer());
 
     auto setup_result = mesh_data->metal().metal_setup(metal_system);
     XCTAssertTrue(setup_result);
@@ -157,10 +157,10 @@ using namespace yas;
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNotNil(mesh_data->renderable().indexBuffer());
-    XCTAssertEqual(mesh_data->renderable().vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
-    XCTAssertEqual(mesh_data->renderable().indexBuffer().length, 6 * sizeof(ui::index2d_t));
+    XCTAssertNotNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNotNil(mesh_data->renderable()->indexBuffer());
+    XCTAssertEqual(mesh_data->renderable()->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
+    XCTAssertEqual(mesh_data->renderable()->indexBuffer().length, 6 * sizeof(ui::index2d_t));
 }
 
 - (void)test_mesh_setup_metal_buffer_dynamic {
@@ -174,8 +174,8 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    XCTAssertNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNil(mesh_data->renderable().indexBuffer());
+    XCTAssertNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNil(mesh_data->renderable()->indexBuffer());
 
     auto setup_result = mesh_data->metal().metal_setup(metal_system);
     XCTAssertTrue(setup_result);
@@ -184,10 +184,10 @@ using namespace yas;
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNotNil(mesh_data->renderable().indexBuffer());
-    XCTAssertEqual(mesh_data->renderable().vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
-    XCTAssertEqual(mesh_data->renderable().indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
+    XCTAssertNotNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNotNil(mesh_data->renderable()->indexBuffer());
+    XCTAssertEqual(mesh_data->renderable()->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
+    XCTAssertEqual(mesh_data->renderable()->indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
 }
 
 - (void)test_write_to_buffer_dynamic {
@@ -201,12 +201,12 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    auto &renderable = mesh_data->renderable();
+    auto const &renderable = mesh_data->renderable();
 
     XCTAssertTrue(mesh_data->metal().metal_setup(metal_system));
 
-    ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable.vertexBuffer() contents]);
-    ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable.indexBuffer() contents]);
+    ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable->vertexBuffer() contents]);
+    ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable->indexBuffer() contents]);
 
     mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         for (auto const &idx : make_each_index(4)) {
@@ -222,16 +222,16 @@ using namespace yas;
         }
     });
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), 0);
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
 
-    auto vertex_ptr = &vertex_top_ptr[renderable.vertex_buffer_byte_offset() / sizeof(ui::vertex2d_t)];
-    auto index_ptr = &index_top_ptr[renderable.index_buffer_byte_offset() / sizeof(ui::index2d_t)];
+    auto vertex_ptr = &vertex_top_ptr[renderable->vertex_buffer_byte_offset() / sizeof(ui::vertex2d_t)];
+    auto index_ptr = &index_top_ptr[renderable->index_buffer_byte_offset() / sizeof(ui::index2d_t)];
 
     for (auto const &idx : make_each_index(4)) {
         float const value = idx;
@@ -259,10 +259,10 @@ using namespace yas;
         }
     });
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), 0);
 
     vertex_ptr = vertex_top_ptr;
     index_ptr = index_top_ptr;
@@ -279,17 +279,17 @@ using namespace yas;
         XCTAssertEqual(index_ptr[idx], idx + 1400);
     }
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), 0);
 
     mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {});
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
 }
 
 - (void)test_clear_updates {
@@ -298,12 +298,12 @@ using namespace yas;
     mesh->set_mesh_data(mesh_data);
 
     XCTAssertTrue(mesh->renderable().updates().flags.any());
-    XCTAssertTrue(mesh_data->renderable().updates().flags.any());
+    XCTAssertTrue(mesh_data->renderable()->updates().flags.any());
 
     mesh->renderable().clear_updates();
 
     XCTAssertFalse(mesh->renderable().updates().flags.any());
-    XCTAssertFalse(mesh_data->renderable().updates().flags.any());
+    XCTAssertFalse(mesh_data->renderable()->updates().flags.any());
 }
 
 - (void)test_updates {
