@@ -17,25 +17,16 @@ namespace yas::ui {
 class renderer;
 class render_target;
 
-struct renderable_metal_system : protocol {
-    struct impl : protocol::impl {
-        virtual void view_configure(yas_objc_view *const) = 0;
-        virtual void view_render(yas_objc_view *const view, ui::renderer_ptr const &) = 0;
-        virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
-        virtual void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
-                                 ui::metal_encode_info_ptr const &) = 0;
-        virtual void push_render_target(ui::render_stackable_ptr const &, ui::render_target_ptr const &) = 0;
-    };
-
-    explicit renderable_metal_system(std::shared_ptr<impl>);
-    renderable_metal_system(std::nullptr_t);
-
-    void view_configure(yas_objc_view *const);
-    void view_render(yas_objc_view *const view, ui::renderer_ptr const &);
-    void prepare_uniforms_buffer(uint32_t const uniforms_count);
-    void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const, ui::metal_encode_info_ptr const &);
-    void push_render_target(ui::render_stackable_ptr const &, ui::render_target_ptr const &);
+struct renderable_metal_system {
+    virtual void view_configure(yas_objc_view *const) = 0;
+    virtual void view_render(yas_objc_view *const view, ui::renderer_ptr const &) = 0;
+    virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
+    virtual void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
+                             ui::metal_encode_info_ptr const &) = 0;
+    virtual void push_render_target(ui::render_stackable_ptr const &, ui::render_target_ptr const &) = 0;
 };
+
+using renderable_metal_system_ptr = std::shared_ptr<renderable_metal_system>;
 
 struct makable_metal_system : protocol {
     struct impl : protocol::impl {

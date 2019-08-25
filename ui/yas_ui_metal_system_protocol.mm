@@ -35,36 +35,6 @@ objc_ptr<MPSImageGaussianBlur *> ui::makable_metal_system::make_mtl_blur(double 
     return impl_ptr<impl>()->make_mtl_blur(sigma);
 }
 
-#pragma mark - renderable_metal_system
-
-ui::renderable_metal_system::renderable_metal_system(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::renderable_metal_system::renderable_metal_system(std::nullptr_t) : protocol(nullptr) {
-}
-
-void ui::renderable_metal_system::view_configure(yas_objc_view *const view) {
-    impl_ptr<impl>()->view_configure(view);
-}
-
-void ui::renderable_metal_system::view_render(yas_objc_view *const view, ui::renderer_ptr const &renderer) {
-    impl_ptr<impl>()->view_render(view, renderer);
-}
-
-void ui::renderable_metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
-    impl_ptr<impl>()->prepare_uniforms_buffer(uniforms_count);
-}
-
-void ui::renderable_metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const encoder,
-                                              ui::metal_encode_info_ptr const &encode_info) {
-    impl_ptr<impl>()->mesh_encode(mesh, encoder, encode_info);
-}
-
-void ui::renderable_metal_system::push_render_target(ui::render_stackable_ptr const &stackable,
-                                                     ui::render_target_ptr const &render_target) {
-    impl_ptr<impl>()->push_render_target(stackable, render_target);
-}
-
 #pragma mark - testable_metal_system
 
 ui::testable_metal_system::testable_metal_system(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {

@@ -26,7 +26,7 @@ static auto constexpr _uniforms_buffer_count = 3;
 
 #pragma mark - ui::metal_system::impl
 
-struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_system::impl, testable_metal_system::impl {
+struct ui::metal_system::impl : makable_metal_system::impl, testable_metal_system::impl {
     impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
         auto const bundle = objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
@@ -92,7 +92,7 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
         this->_weak_metal_system = metal_system;
     }
 
-    void prepare_uniforms_buffer(uint32_t const uniforms_count) override {
+    void prepare_uniforms_buffer(uint32_t const uniforms_count) {
         bool needs_allocate = false;
         NSUInteger length = uniforms_count * sizeof(uniforms2d_t);
         length = length - length % ui::_uniforms_buffer_allocating_unit + ui::_uniforms_buffer_allocating_unit;
@@ -113,7 +113,7 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
         }
     }
 
-    void view_configure(yas_objc_view *const objc_view) override {
+    void view_configure(yas_objc_view *const objc_view) {
         if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
             return;
         }
@@ -123,7 +123,7 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
         view.sampleCount = this->_sample_count;
     }
 
-    void view_render(yas_objc_view *const objc_view, ui::renderer_ptr const &renderer) override {
+    void view_render(yas_objc_view *const objc_view, ui::renderer_ptr const &renderer) {
         if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
             return;
         }
@@ -158,7 +158,7 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
     }
 
     void mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const encoder,
-                     ui::metal_encode_info_ptr const &encode_info) override {
+                     ui::metal_encode_info_ptr const &encode_info) {
         auto const currentUniformsBuffer = this->_uniforms_buffers[this->_uniforms_buffer_index].object();
 
         if (auto uniforms_ptr =
@@ -193,8 +193,7 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
         assert(this->_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
     }
 
-    void push_render_target(ui::render_stackable_ptr const &stackable,
-                            ui::render_target_ptr const &render_target) override {
+    void push_render_target(ui::render_stackable_ptr const &stackable, ui::render_target_ptr const &render_target) {
         auto &renderable = render_target->renderable();
         stackable->push_encode_info(ui::metal_encode_info::make_shared(
             {.renderPassDescriptor = renderable.renderPassDescriptor(),
@@ -317,12 +316,8 @@ ui::makable_metal_system &ui::metal_system::makable() {
     return this->_makable;
 }
 
-ui::renderable_metal_system &ui::metal_system::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_metal_system{this->_impl};
-    }
-
-    return this->_renderable;
+ui::renderable_metal_system_ptr ui::metal_system::renderable() {
+    return std::dynamic_pointer_cast<renderable_metal_system>(this->shared_from_this());
 }
 
 ui::testable_metal_system ui::metal_system::testable() {
@@ -331,6 +326,24 @@ ui::testable_metal_system ui::metal_system::testable() {
 
 void ui::metal_system::_prepare(metal_system_ptr const &metal_system) {
     this->_impl->prepare(metal_system);
+}
+
+void ui::metal_system::view_configure(yas_objc_view *const view) {
+    this->_impl->view_configure(view);
+}
+void ui::metal_system::view_render(yas_objc_view *const view, ui::renderer_ptr const &renderer) {
+    this->_impl->view_render(view, renderer);
+}
+void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
+    this->_impl->prepare_uniforms_buffer(uniforms_count);
+}
+void ui::metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const commandEncoder,
+                                   ui::metal_encode_info_ptr const &encode_info) {
+    this->_impl->mesh_encode(mesh, commandEncoder, encode_info);
+}
+void ui::metal_system::push_render_target(ui::render_stackable_ptr const &stackable,
+                                          ui::render_target_ptr const &render_target) {
+    this->_impl->push_render_target(stackable, render_target);
 }
 
 ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device) {

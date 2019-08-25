@@ -174,7 +174,7 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
 
         auto target = this->_weak_render_target.lock();
         if (auto const &metal_system = this->_metal_system) {
-            metal_system->renderable().push_render_target(stackable, target);
+            metal_system->renderable()->push_render_target(stackable, target);
             return true;
         }
         return false;

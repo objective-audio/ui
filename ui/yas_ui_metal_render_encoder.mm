@@ -49,7 +49,7 @@ struct ui::metal_render_encoder::impl {
     }
 
     encode_result_t encode(ui::metal_system_ptr const &metal_system, id<MTLCommandBuffer> const commandBuffer) {
-        metal_system->renderable().prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
+        metal_system->renderable()->prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
 
         std::size_t encoded_count = 0;
 
@@ -63,7 +63,7 @@ struct ui::metal_render_encoder::impl {
             for (auto &mesh : metal_encode_info->meshes()) {
                 auto &mesh_renderable = mesh->renderable();
                 if (mesh_renderable.pre_render()) {
-                    metal_system->renderable().mesh_encode(mesh, renderEncoder, metal_encode_info);
+                    metal_system->renderable()->mesh_encode(mesh, renderEncoder, metal_encode_info);
 
                     ++encoded_count;
                 }
