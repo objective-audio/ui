@@ -56,14 +56,14 @@ using namespace yas;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
 
         auto info = ui::metal_encode_info::make_shared(
-            {view.currentRenderPassDescriptor, metal_system->testable().mtlRenderPipelineStateWithTexture(),
-             metal_system->testable().mtlRenderPipelineStateWithoutTexture()});
+            {view.currentRenderPassDescriptor, metal_system->testable()->mtlRenderPipelineStateWithTexture(),
+             metal_system->testable()->mtlRenderPipelineStateWithoutTexture()});
 
         XCTAssertEqualObjects(info->renderPassDescriptor(), view.currentRenderPassDescriptor);
         XCTAssertEqualObjects(info->pipelineStateWithTexture(),
-                              metal_system->testable().mtlRenderPipelineStateWithTexture());
+                              metal_system->testable()->mtlRenderPipelineStateWithTexture());
         XCTAssertEqualObjects(info->pipelineStateWithoutTexture(),
-                              metal_system->testable().mtlRenderPipelineStateWithoutTexture());
+                              metal_system->testable()->mtlRenderPipelineStateWithoutTexture());
 
         [expectation fulfill];
 

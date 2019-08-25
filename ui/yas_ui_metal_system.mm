@@ -26,7 +26,7 @@ static auto constexpr _uniforms_buffer_count = 3;
 
 #pragma mark - ui::metal_system::impl
 
-struct ui::metal_system::impl : testable_metal_system::impl {
+struct ui::metal_system::impl {
     impl(id<MTLDevice> const device, uint32_t const sample_count) : _device(device), _sample_count(sample_count) {
         this->_command_queue.move_object([device newCommandQueue]);
         auto const bundle = objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
@@ -201,19 +201,19 @@ struct ui::metal_system::impl : testable_metal_system::impl {
              .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}));
     }
 
-    id<MTLDevice> mtlDevice() override {
+    id<MTLDevice> mtlDevice() {
         return this->_device.object();
     }
 
-    uint32_t sample_count() override {
+    uint32_t sample_count() {
         return this->_sample_count;
     }
 
-    id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override {
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() {
         return this->_pipeline_state_with_texture.object();
     }
 
-    id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override {
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() {
         return this->_pipeline_state_without_texture.object();
     }
 
@@ -316,8 +316,8 @@ ui::renderable_metal_system_ptr ui::metal_system::renderable() {
     return std::dynamic_pointer_cast<renderable_metal_system>(this->shared_from_this());
 }
 
-ui::testable_metal_system ui::metal_system::testable() {
-    return ui::testable_metal_system{this->_impl};
+ui::testable_metal_system_ptr ui::metal_system::testable() {
+    return std::dynamic_pointer_cast<testable_metal_system>(this->shared_from_this());
 }
 
 void ui::metal_system::_prepare(metal_system_ptr const &metal_system) {
@@ -364,6 +364,22 @@ objc_ptr<id<MTLArgumentEncoder>> ui::metal_system::make_mtl_argument_encoder() {
 
 objc_ptr<MPSImageGaussianBlur *> ui::metal_system::make_mtl_blur(double const blur) {
     return this->_impl->make_mtl_blur(blur);
+}
+
+id<MTLDevice> ui::metal_system::mtlDevice() {
+    return this->_impl->mtlDevice();
+}
+
+uint32_t ui::metal_system::sample_count() {
+    return this->_impl->sample_count();
+}
+
+id<MTLRenderPipelineState> ui::metal_system::mtlRenderPipelineStateWithTexture() {
+    return this->_impl->mtlRenderPipelineStateWithTexture();
+}
+
+id<MTLRenderPipelineState> ui::metal_system::mtlRenderPipelineStateWithoutTexture() {
+    return this->_impl->mtlRenderPipelineStateWithoutTexture();
 }
 
 ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device) {

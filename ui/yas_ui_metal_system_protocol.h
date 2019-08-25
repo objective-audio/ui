@@ -18,6 +18,8 @@ class renderer;
 class render_target;
 
 struct renderable_metal_system {
+    virtual ~renderable_metal_system() = default;
+
     virtual void view_configure(yas_objc_view *const) = 0;
     virtual void view_render(yas_objc_view *const view, ui::renderer_ptr const &) = 0;
     virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
@@ -29,6 +31,8 @@ struct renderable_metal_system {
 using renderable_metal_system_ptr = std::shared_ptr<renderable_metal_system>;
 
 struct makable_metal_system {
+    virtual ~makable_metal_system() = default;
+
     virtual objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) = 0;
     virtual objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) = 0;
     virtual objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) = 0;
@@ -38,20 +42,14 @@ struct makable_metal_system {
 
 using makable_metal_system_ptr = std::shared_ptr<makable_metal_system>;
 
-struct testable_metal_system : protocol {
-    struct impl : protocol::impl {
-        virtual id<MTLDevice> mtlDevice() = 0;
-        virtual uint32_t sample_count() = 0;
-        virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() = 0;
-        virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() = 0;
-    };
+struct testable_metal_system {
+    virtual ~testable_metal_system() = default;
 
-    explicit testable_metal_system(std::shared_ptr<impl>);
-    testable_metal_system(std::nullptr_t);
-
-    id<MTLDevice> mtlDevice();
-    uint32_t sample_count();
-    id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture();
-    id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture();
+    virtual id<MTLDevice> mtlDevice() = 0;
+    virtual uint32_t sample_count() = 0;
+    virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() = 0;
+    virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() = 0;
 };
+
+using testable_metal_system_ptr = std::shared_ptr<testable_metal_system>;
 }  // namespace yas::ui

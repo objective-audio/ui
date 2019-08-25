@@ -10,7 +10,10 @@
 
 namespace yas::ui {
 
-struct metal_system final : renderable_metal_system, makable_metal_system, std::enable_shared_from_this<metal_system> {
+struct metal_system final : renderable_metal_system,
+                            makable_metal_system,
+                            testable_metal_system,
+                            std::enable_shared_from_this<metal_system> {
     class impl;
 
     virtual ~metal_system();
@@ -19,8 +22,7 @@ struct metal_system final : renderable_metal_system, makable_metal_system, std::
 
     ui::makable_metal_system_ptr makable();
     ui::renderable_metal_system_ptr renderable();
-
-    ui::testable_metal_system testable();
+    ui::testable_metal_system_ptr testable();
 
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const);
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const, uint32_t const sample_count);
@@ -49,5 +51,10 @@ struct metal_system final : renderable_metal_system, makable_metal_system, std::
     objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override;
     objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override;
     objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) override;
+
+    id<MTLDevice> mtlDevice() override;
+    uint32_t sample_count() override;
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
+    id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
 };
 }  // namespace yas::ui

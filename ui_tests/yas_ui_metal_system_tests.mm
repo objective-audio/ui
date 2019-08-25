@@ -34,10 +34,10 @@ using namespace yas;
 
     XCTAssertTrue(system);
 
-    ui::testable_metal_system testable = system->testable();
+    auto const testable = system->testable();
 
-    XCTAssertNotNil(testable.mtlDevice());
-    XCTAssertEqual(testable.sample_count(), 4);
+    XCTAssertNotNil(testable->mtlDevice());
+    XCTAssertEqual(testable->sample_count(), 4);
 }
 
 - (void)test_create_with_sample_count {
@@ -51,10 +51,10 @@ using namespace yas;
 
     XCTAssertTrue(system);
 
-    ui::testable_metal_system testable = system->testable();
+    auto const testable = system->testable();
 
-    XCTAssertNotNil(testable.mtlDevice());
-    XCTAssertEqual(testable.sample_count(), 1);
+    XCTAssertNotNil(testable->mtlDevice());
+    XCTAssertEqual(testable->sample_count(), 1);
 }
 
 @end
