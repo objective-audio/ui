@@ -9,18 +9,6 @@
 
 using namespace yas;
 
-#pragma mark - ui::render_encodable
-
-ui::render_encodable::render_encodable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::render_encodable::render_encodable(std::nullptr_t) : protocol(nullptr) {
-}
-
-void ui::render_encodable::append_mesh(ui::mesh_ptr const &mesh) {
-    impl_ptr<impl>()->append_mesh(mesh);
-}
-
 #pragma mark - ui::render_effectable
 
 ui::render_effectable::render_effectable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {

@@ -14,8 +14,8 @@
 
 using namespace yas;
 
-struct ui::batch::impl : render_encodable::impl, metal_object::impl {
-    void append_mesh(ui::mesh_ptr const &mesh) override {
+struct ui::batch::impl : metal_object::impl {
+    void append_mesh(ui::mesh_ptr const &mesh) {
         if (this->_building_type == ui::batch_building_type::rebuild) {
             ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
 
@@ -138,15 +138,16 @@ void ui::batch::clear_render_meshes() {
     this->_impl->clear_render_meshes();
 }
 
+void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
+    this->_impl->append_mesh(mesh);
+}
+
 std::shared_ptr<ui::renderable_batch> ui::batch::renderable() {
     return std::dynamic_pointer_cast<renderable_batch>(shared_from_this());
 }
 
-ui::render_encodable &ui::batch::encodable() {
-    if (!this->_encodable) {
-        this->_encodable = ui::render_encodable{this->_impl};
-    }
-    return this->_encodable;
+std::shared_ptr<ui::render_encodable> ui::batch::encodable() {
+    return std::dynamic_pointer_cast<render_encodable>(shared_from_this());
 }
 
 ui::metal_object &ui::batch::metal() {

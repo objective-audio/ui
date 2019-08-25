@@ -12,16 +12,13 @@
 namespace yas::ui {
 class renderer;
 
-struct render_encodable : protocol {
-    struct impl : protocol::impl {
-        virtual void append_mesh(ui::mesh_ptr const &mesh) = 0;
-    };
+struct render_encodable {
+    virtual ~render_encodable() = default;
 
-    explicit render_encodable(std::shared_ptr<impl>);
-    render_encodable(std::nullptr_t);
-
-    void append_mesh(ui::mesh_ptr const &);
+    virtual void append_mesh(ui::mesh_ptr const &mesh) = 0;
 };
+
+using render_encodable_ptr = std::shared_ptr<render_encodable>;
 
 struct render_effectable : protocol {
     struct impl : protocol::impl {

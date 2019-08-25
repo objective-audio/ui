@@ -54,15 +54,15 @@ using namespace yas;
 
     auto mesh1 = ui::mesh::make_shared();
     auto mesh2 = ui::mesh::make_shared();
-    batch->encodable().append_mesh(mesh1);
-    batch->encodable().append_mesh(mesh2);
+    batch->encodable()->append_mesh(mesh1);
+    batch->encodable()->append_mesh(mesh2);
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto mesh3 = ui::mesh::make_shared();
     auto texture3 = ui::texture::make_shared(ui::texture::args{});
     mesh3->set_texture(texture3);
-    batch->encodable().append_mesh(mesh3);
+    batch->encodable()->append_mesh(mesh3);
 
     batch->renderable()->commit_render_meshes_building();
 
@@ -127,8 +127,8 @@ using namespace yas;
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch->encodable().append_mesh(mesh1);
-    batch->encodable().append_mesh(mesh2);
+    batch->encodable()->append_mesh(mesh1);
+    batch->encodable()->append_mesh(mesh2);
 
     batch->renderable()->commit_render_meshes_building();
 
@@ -190,7 +190,7 @@ using namespace yas;
     });
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
-    batch->encodable().append_mesh(mesh);
+    batch->encodable()->append_mesh(mesh);
     batch->renderable()->commit_render_meshes_building();
 
     auto &meshes = batch->renderable()->meshes();
@@ -235,7 +235,7 @@ using namespace yas;
 
     batch->renderable()->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch->encodable().append_mesh(mesh);
+    batch->encodable()->append_mesh(mesh);
 
     batch->renderable()->commit_render_meshes_building();
 

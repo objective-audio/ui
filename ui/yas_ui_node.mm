@@ -156,13 +156,13 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
             if (auto &render_encodable = render_info.render_encodable) {
                 if (auto const &mesh = this->_mesh->raw()) {
                     mesh->renderable().set_matrix(mesh_matrix);
-                    render_encodable.append_mesh(mesh);
+                    render_encodable->append_mesh(mesh);
                 }
 
                 if (auto &render_target = this->_render_target->raw()) {
                     auto const &mesh = render_target->renderable().mesh();
                     mesh->renderable().set_matrix(mesh_matrix);
-                    render_encodable.append_mesh(mesh);
+                    render_encodable->append_mesh(mesh);
                 }
             }
 
@@ -243,7 +243,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
 
                 for (auto const &mesh : batch_renderable->meshes()) {
                     mesh->renderable().set_matrix(mesh_matrix);
-                    render_info.render_encodable.append_mesh(mesh);
+                    render_info.render_encodable->append_mesh(mesh);
                 }
             } else {
                 for (auto &sub_node : this->_children) {

@@ -73,7 +73,7 @@ using namespace yas;
     XCTAssertEqual(encode_info->meshes().size(), 0);
 
     auto mesh = ui::mesh::make_shared();
-    encoder->encodable().append_mesh(mesh);
+    encoder->encodable()->append_mesh(mesh);
 
     XCTAssertEqual(encode_info->meshes().size(), 1);
     XCTAssertEqual(encode_info->meshes().at(0), mesh);
