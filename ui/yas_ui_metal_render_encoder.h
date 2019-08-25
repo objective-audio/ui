@@ -14,6 +14,7 @@ class metal_system;
 
 struct metal_render_encoder final : render_encodable,
                                     render_effectable,
+                                    render_stackable,
                                     std::enable_shared_from_this<metal_render_encoder> {
     class impl;
 
@@ -30,14 +31,12 @@ struct metal_render_encoder final : render_encodable,
 
     ui::render_encodable_ptr encodable();
     ui::render_effectable_ptr effectable();
-    ui::render_stackable &stackable();
+    ui::render_stackable_ptr stackable();
 
     [[nodiscard]] static metal_render_encoder_ptr make_shared();
 
    private:
     std::shared_ptr<impl> _impl;
-
-    ui::render_stackable _stackable = nullptr;
 
     metal_render_encoder();
 
@@ -48,5 +47,8 @@ struct metal_render_encoder final : render_encodable,
 
     void append_mesh(ui::mesh_ptr const &mesh) override;
     void append_effect(ui::effect_ptr const &effect) override;
+    void push_encode_info(ui::metal_encode_info_ptr const &) override;
+    void pop_encode_info() override;
+    ui::metal_encode_info_ptr const &current_encode_info() override;
 };
 }  // namespace yas::ui

@@ -167,7 +167,7 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
         return _projection_matrix;
     }
 
-    bool push_encode_info(ui::render_stackable &stackable) override {
+    bool push_encode_info(ui::render_stackable_ptr const &stackable) override {
         if (!this->_is_size_enough()) {
             return false;
         }

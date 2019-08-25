@@ -190,7 +190,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                 }
 
                 if (needs_render) {
-                    auto &stackable = render_info.render_stackable;
+                    auto const &stackable = render_info.render_stackable;
 
                     if (render_target->renderable().push_encode_info(stackable)) {
                         ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
@@ -211,7 +211,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                             render_info.render_effectable->append_effect(effect);
                         }
 
-                        stackable.pop_encode_info();
+                        stackable->pop_encode_info();
                     }
                 }
             } else if (auto &batch = _batch->raw()) {

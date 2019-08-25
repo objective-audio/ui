@@ -36,6 +36,6 @@ simd::float4x4 const &ui::renderable_render_target::projection_matrix() {
     return impl_ptr<impl>()->projection_matrix();
 }
 
-bool ui::renderable_render_target::push_encode_info(ui::render_stackable &stackable) {
+bool ui::renderable_render_target::push_encode_info(ui::render_stackable_ptr const &stackable) {
     return impl_ptr<impl>()->push_encode_info(stackable);
 }

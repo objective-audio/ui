@@ -60,7 +60,7 @@ void ui::renderable_metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRe
     impl_ptr<impl>()->mesh_encode(mesh, encoder, encode_info);
 }
 
-void ui::renderable_metal_system::push_render_target(ui::render_stackable &stackable,
+void ui::renderable_metal_system::push_render_target(ui::render_stackable_ptr const &stackable,
                                                      ui::render_target_ptr const &render_target) {
     impl_ptr<impl>()->push_render_target(stackable, render_target);
 }

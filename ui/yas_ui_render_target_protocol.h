@@ -31,7 +31,7 @@ struct renderable_render_target : protocol {
         virtual void clear_updates() = 0;
         virtual MTLRenderPassDescriptor *renderPassDescriptor() = 0;
         virtual simd::float4x4 &projection_matrix() = 0;
-        virtual bool push_encode_info(ui::render_stackable &) = 0;
+        virtual bool push_encode_info(ui::render_stackable_ptr const &) = 0;
     };
 
     explicit renderable_render_target(std::shared_ptr<impl>);
@@ -43,6 +43,6 @@ struct renderable_render_target : protocol {
     void clear_updates();
     MTLRenderPassDescriptor *renderPassDescriptor();
     simd::float4x4 const &projection_matrix();
-    bool push_encode_info(ui::render_stackable &);
+    bool push_encode_info(ui::render_stackable_ptr const &);
 };
 }  // namespace yas::ui

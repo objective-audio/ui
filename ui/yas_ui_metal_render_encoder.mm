@@ -13,21 +13,21 @@
 
 using namespace yas;
 
-struct ui::metal_render_encoder::impl : render_stackable::impl {
+struct ui::metal_render_encoder::impl {
     std::deque<ui::metal_encode_info_ptr> &all_encode_infos() {
         return this->_all_encode_infos;
     }
 
-    void push_encode_info(ui::metal_encode_info_ptr const &info) override {
+    void push_encode_info(ui::metal_encode_info_ptr const &info) {
         this->_all_encode_infos.push_front(info);
         this->_current_encode_infos.push_front(info);
     }
 
-    void pop_encode_info() override {
+    void pop_encode_info() {
         this->_current_encode_infos.pop_front();
     }
 
-    ui::metal_encode_info_ptr const &current_encode_info() override {
+    ui::metal_encode_info_ptr const &current_encode_info() {
         if (this->_current_encode_infos.size() > 0) {
             return this->_current_encode_infos.front();
         } else {
@@ -118,6 +118,18 @@ void ui::metal_render_encoder::append_effect(ui::effect_ptr const &effect) {
     this->_impl->append_effect(effect);
 }
 
+void ui::metal_render_encoder::push_encode_info(ui::metal_encode_info_ptr const &info) {
+    this->_impl->push_encode_info(info);
+}
+
+void ui::metal_render_encoder::pop_encode_info() {
+    this->_impl->pop_encode_info();
+}
+
+ui::metal_encode_info_ptr const &ui::metal_render_encoder::current_encode_info() {
+    return this->_impl->current_encode_info();
+}
+
 ui::render_encodable_ptr ui::metal_render_encoder::encodable() {
     return std::dynamic_pointer_cast<render_encodable>(this->shared_from_this());
 }
@@ -126,11 +138,8 @@ ui::render_effectable_ptr ui::metal_render_encoder::effectable() {
     return std::dynamic_pointer_cast<render_effectable>(this->shared_from_this());
 }
 
-ui::render_stackable &ui::metal_render_encoder::stackable() {
-    if (!this->_stackable) {
-        this->_stackable = ui::render_stackable{this->_impl};
-    }
-    return this->_stackable;
+ui::render_stackable_ptr ui::metal_render_encoder::stackable() {
+    return std::dynamic_pointer_cast<render_stackable>(this->shared_from_this());
 }
 
 ui::metal_render_encoder_ptr ui::metal_render_encoder::make_shared() {

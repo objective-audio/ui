@@ -193,9 +193,10 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
         assert(this->_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
     }
 
-    void push_render_target(ui::render_stackable &stackable, ui::render_target_ptr const &render_target) override {
+    void push_render_target(ui::render_stackable_ptr const &stackable,
+                            ui::render_target_ptr const &render_target) override {
         auto &renderable = render_target->renderable();
-        stackable.push_encode_info(ui::metal_encode_info::make_shared(
+        stackable->push_encode_info(ui::metal_encode_info::make_shared(
             {.renderPassDescriptor = renderable.renderPassDescriptor(),
              .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
              .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}));
@@ -274,7 +275,7 @@ struct ui::metal_system::impl : makable_metal_system::impl, renderable_metal_sys
     void _render_nodes(ui::renderer_ptr const &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         auto metal_render_encoder = ui::metal_render_encoder::make_shared();
-        metal_render_encoder->stackable().push_encode_info(ui::metal_encode_info::make_shared(
+        metal_render_encoder->stackable()->push_encode_info(ui::metal_encode_info::make_shared(
             {.renderPassDescriptor = renderPassDesc,
              .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
              .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));

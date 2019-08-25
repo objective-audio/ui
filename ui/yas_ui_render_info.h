@@ -19,6 +19,6 @@ struct render_info {
     ui::detector_ptr detector = nullptr;
     ui::render_encodable_ptr render_encodable = nullptr;
     ui::render_effectable_ptr render_effectable = nullptr;
-    ui::render_stackable render_stackable = nullptr;
+    ui::render_stackable_ptr render_stackable = nullptr;
 };
 }  // namespace yas::ui
