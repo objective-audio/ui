@@ -4,25 +4,17 @@
 
 #pragma once
 
-#include <cpp_utils/yas_flagset.h>
-#include <cpp_utils/yas_protocol.h>
-#include "yas_ui_collider.h"
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
-struct updatable_detector : protocol {
-    struct impl : protocol::impl {
-        virtual bool is_updating() = 0;
-        virtual void begin_update() = 0;
-        virtual void push_front_collider(ui::collider_ptr &&) = 0;
-        virtual void end_update() = 0;
-    };
+struct updatable_detector {
+    virtual ~updatable_detector() = default;
 
-    explicit updatable_detector(std::shared_ptr<impl>);
-    updatable_detector(std::nullptr_t);
-
-    bool is_updating();
-    void begin_update();
-    void push_front_collider(ui::collider_ptr);
-    void end_update();
+    virtual bool is_updating() = 0;
+    virtual void begin_update() = 0;
+    virtual void push_front_collider(ui::collider_ptr const &) = 0;
+    virtual void end_update() = 0;
 };
+
+using updatable_detector_ptr = std::shared_ptr<updatable_detector>;
 }  // namespace yas::ui

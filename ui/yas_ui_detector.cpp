@@ -9,29 +9,29 @@ using namespace yas;
 
 #pragma mark - ui::detector::impl
 
-struct ui::detector::impl : updatable_detector::impl {
+struct ui::detector::impl {
     impl() {
         this->_updating = true;
     }
 
-    bool is_updating() override {
+    bool is_updating() {
         return this->_updating;
     }
 
-    void begin_update() override {
+    void begin_update() {
         this->_updating = true;
         this->_colliders.clear();
     }
 
-    void push_front_collider(ui::collider_ptr &&collider) override {
+    void push_front_collider(ui::collider_ptr const &collider) {
         if (!this->_updating) {
             throw "detector is not updating.";
         }
 
-        this->_colliders.emplace_front(std::move(collider));
+        this->_colliders.emplace_front(collider);
     }
 
-    void end_update() override {
+    void end_update() {
         this->_updating = false;
     }
 
@@ -73,11 +73,24 @@ bool ui::detector::detect(ui::point const &location, ui::collider_ptr const &col
     return this->_impl->detect(location, collider);
 }
 
-ui::updatable_detector &ui::detector::updatable() {
-    if (!this->_updatable) {
-        this->_updatable = ui::updatable_detector{this->_impl};
-    }
-    return this->_updatable;
+ui::updatable_detector_ptr ui::detector::updatable() {
+    return std::dynamic_pointer_cast<updatable_detector>(this->shared_from_this());
+}
+
+bool ui::detector::is_updating() {
+    return this->_impl->is_updating();
+}
+
+void ui::detector::begin_update() {
+    this->_impl->begin_update();
+}
+
+void ui::detector::push_front_collider(ui::collider_ptr const &collider) {
+    this->_impl->push_front_collider(collider);
+}
+
+void ui::detector::end_update() {
+    this->_impl->end_update();
 }
 
 ui::detector_ptr ui::detector::make_shared() {

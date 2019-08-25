@@ -142,18 +142,18 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
             this->_matrix = render_info.matrix * this->_local_matrix;
             auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
-            if (auto &collider = this->_collider->raw()) {
+            if (auto const &collider = this->_collider->raw()) {
                 collider->renderable()->set_matrix(this->_matrix);
 
                 if (auto &detector = render_info.detector) {
-                    auto &detector_updatable = detector->updatable();
-                    if (detector_updatable.is_updating()) {
-                        detector_updatable.push_front_collider(collider);
+                    auto const &detector_updatable = detector->updatable();
+                    if (detector_updatable->is_updating()) {
+                        detector_updatable->push_front_collider(collider);
                     }
                 }
             }
 
-            if (auto &render_encodable = render_info.render_encodable) {
+            if (auto const &render_encodable = render_info.render_encodable) {
                 if (auto const &mesh = this->_mesh->raw()) {
                     mesh->renderable().set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
@@ -166,7 +166,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                 }
             }
 
-            if (auto &render_target = this->_render_target->raw()) {
+            if (auto const &render_target = this->_render_target->raw()) {
                 bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
 
                 if (!needs_render) {
@@ -214,10 +214,10 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                         stackable->pop_encode_info();
                     }
                 }
-            } else if (auto &batch = _batch->raw()) {
+            } else if (auto const &batch = _batch->raw()) {
                 ui::tree_updates tree_updates;
 
-                for (auto &sub_node : this->_children) {
+                for (auto const &sub_node : this->_children) {
                     sub_node->renderable().fetch_updates(tree_updates);
                 }
 
@@ -246,7 +246,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                     render_info.render_encodable->append_mesh(mesh);
                 }
             } else {
-                for (auto &sub_node : this->_children) {
+                for (auto const &sub_node : this->_children) {
                     render_info.matrix = this->_matrix;
                     render_info.mesh_matrix = mesh_matrix;
                     sub_node->_impl->build_render_info(render_info);
