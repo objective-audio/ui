@@ -90,7 +90,9 @@ ui::shape_ptr ui::shape::make_shared(rect::type type) {
 
 #pragma mark - collider
 
-struct ui::collider::impl : renderable_collider::impl {
+struct ui::collider::impl {
+    simd::float4x4 _matrix = matrix_identity_float4x4;
+
     chaining::value::holder_ptr<ui::shape_ptr> _shape;
     chaining::value::holder_ptr<bool> _enabled = chaining::value::holder<bool>::make_shared(true);
 
@@ -105,17 +107,6 @@ struct ui::collider::impl : renderable_collider::impl {
         }
         return false;
     }
-
-    simd::float4x4 const &matrix() const override {
-        return this->_matrix;
-    }
-
-    void set_matrix(simd::float4x4 &&matrix) override {
-        this->_matrix = std::move(matrix);
-    }
-
-   private:
-    simd::float4x4 _matrix = matrix_identity_float4x4;
 };
 
 ui::collider::collider() : _impl(std::make_shared<impl>(nullptr)) {
@@ -162,12 +153,16 @@ chaining::receiver_ptr<bool> ui::collider::enabled_receiver() {
     return this->_impl->_enabled;
 }
 
-ui::renderable_collider &ui::collider::renderable() {
-    if (!this->_renderable) {
-        auto impl_ptr = std::dynamic_pointer_cast<ui::renderable_collider::impl>(this->_impl);
-        this->_renderable = ui::renderable_collider{impl_ptr};
-    }
-    return this->_renderable;
+simd::float4x4 const &ui::collider::matrix() const {
+    return this->_impl->_matrix;
+}
+
+void ui::collider::set_matrix(simd::float4x4 const &matrix) {
+    this->_impl->_matrix = std::move(matrix);
+}
+
+ui::renderable_collider_ptr ui::collider::renderable() {
+    return std::dynamic_pointer_cast<renderable_collider>(this->shared_from_this());
 }
 
 ui::collider_ptr ui::collider::make_shared() {

@@ -69,7 +69,7 @@ struct shape final {
     [[nodiscard]] static shape_ptr make_shared(rect::type);
 };
 
-struct collider final {
+struct collider final : renderable_collider, std::enable_shared_from_this<collider> {
     class impl;
 
     virtual ~collider();
@@ -88,7 +88,7 @@ struct collider final {
     [[nodiscard]] chaining::receiver_ptr<ui::shape_ptr> shape_receiver();
     [[nodiscard]] chaining::receiver_ptr<bool> enabled_receiver();
 
-    ui::renderable_collider &renderable();
+    ui::renderable_collider_ptr renderable();
 
     [[nodiscard]] static collider_ptr make_shared();
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
@@ -96,9 +96,10 @@ struct collider final {
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::renderable_collider _renderable = nullptr;
-
     collider();
     explicit collider(ui::shape_ptr &&);
+
+    simd::float4x4 const &matrix() const override;
+    void set_matrix(simd::float4x4 const &) override;
 };
 }  // namespace yas::ui

@@ -143,7 +143,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
             auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
             if (auto &collider = this->_collider->raw()) {
-                collider->renderable().set_matrix(this->_matrix);
+                collider->renderable()->set_matrix(this->_matrix);
 
                 if (auto &detector = render_info.detector) {
                     auto &detector_updatable = detector->updatable();
