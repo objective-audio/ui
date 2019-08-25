@@ -20,16 +20,13 @@ struct render_encodable {
 
 using render_encodable_ptr = std::shared_ptr<render_encodable>;
 
-struct render_effectable : protocol {
-    struct impl : protocol::impl {
-        virtual void append_effect(ui::effect_ptr const &effect) = 0;
-    };
+struct render_effectable {
+    virtual ~render_effectable() = default;
 
-    explicit render_effectable(std::shared_ptr<impl>);
-    render_effectable(std::nullptr_t);
-
-    void append_effect(ui::effect_ptr const &);
+    virtual void append_effect(ui::effect_ptr const &effect) = 0;
 };
+
+using render_effectable_ptr = std::shared_ptr<render_effectable>;
 
 struct render_stackable : protocol {
     struct impl : protocol::impl {

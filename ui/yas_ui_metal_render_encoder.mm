@@ -13,7 +13,7 @@
 
 using namespace yas;
 
-struct ui::metal_render_encoder::impl : render_effectable::impl, render_stackable::impl {
+struct ui::metal_render_encoder::impl : render_stackable::impl {
     std::deque<ui::metal_encode_info_ptr> &all_encode_infos() {
         return this->_all_encode_infos;
     }
@@ -42,7 +42,7 @@ struct ui::metal_render_encoder::impl : render_effectable::impl, render_stackabl
         }
     }
 
-    void append_effect(ui::effect_ptr const &effect) override {
+    void append_effect(ui::effect_ptr const &effect) {
         if (auto &info = this->current_encode_info()) {
             info->append_effect(std::move(effect));
         }
@@ -114,15 +114,16 @@ void ui::metal_render_encoder::append_mesh(ui::mesh_ptr const &mesh) {
     this->_impl->append_mesh(mesh);
 }
 
+void ui::metal_render_encoder::append_effect(ui::effect_ptr const &effect) {
+    this->_impl->append_effect(effect);
+}
+
 ui::render_encodable_ptr ui::metal_render_encoder::encodable() {
     return std::dynamic_pointer_cast<render_encodable>(this->shared_from_this());
 }
 
-ui::render_effectable &ui::metal_render_encoder::effectable() {
-    if (!this->_effectable) {
-        this->_effectable = ui::render_effectable{this->_impl};
-    }
-    return this->_effectable;
+ui::render_effectable_ptr ui::metal_render_encoder::effectable() {
+    return std::dynamic_pointer_cast<render_effectable>(this->shared_from_this());
 }
 
 ui::render_stackable &ui::metal_render_encoder::stackable() {

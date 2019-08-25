@@ -9,20 +9,6 @@
 
 using namespace yas;
 
-#pragma mark - ui::render_effectable
-
-ui::render_effectable::render_effectable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::render_effectable::render_effectable(std::nullptr_t) : protocol(nullptr) {
-}
-
-void ui::render_effectable::append_effect(ui::effect_ptr const &effect) {
-    impl_ptr<impl>()->append_effect(effect);
-}
-
-void append_effect(ui::effect_ptr);
-
 #pragma mark - ui::render_stackable
 
 ui::render_stackable::render_stackable(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {

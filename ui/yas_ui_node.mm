@@ -208,7 +208,7 @@ struct ui::node::impl : renderable_node::impl, metal_object::impl {
                         }
 
                         if (effect) {
-                            render_info.render_effectable.append_effect(effect);
+                            render_info.render_effectable->append_effect(effect);
                         }
 
                         stackable.pop_encode_info();
