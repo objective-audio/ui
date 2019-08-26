@@ -29,6 +29,8 @@ enum class mesh_update_reason : std::size_t {
 using mesh_updates_t = flagset<mesh_update_reason>;
 
 struct renderable_mesh {
+    virtual ~renderable_mesh() = default;
+
     virtual simd::float4x4 const &matrix() = 0;
     virtual void set_matrix(simd::float4x4 const &) = 0;
     virtual std::size_t render_vertex_count() = 0;

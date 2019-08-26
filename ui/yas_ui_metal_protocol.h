@@ -25,6 +25,8 @@ enum class setup_metal_error {
 using setup_metal_result = result<std::nullptr_t, setup_metal_error>;
 
 struct metal_object {
+    virtual ~metal_object() = default;
+
     virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
 };
 
