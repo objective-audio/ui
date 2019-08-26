@@ -94,7 +94,7 @@ struct collider final : renderable_collider, std::enable_shared_from_this<collid
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     collider();
     explicit collider(ui::shape_ptr &&);

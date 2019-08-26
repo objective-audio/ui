@@ -119,7 +119,7 @@ struct ui::metal_texture::impl {
 
 ui::metal_texture::metal_texture(ui::uint_size &&actual_size, ui::texture_usages_t const usages,
                                  ui::pixel_format const format)
-    : _impl(std::make_shared<impl>(std::move(actual_size), usages, format)) {
+    : _impl(std::make_unique<impl>(std::move(actual_size), usages, format)) {
 }
 
 ui::metal_texture::~metal_texture() = default;

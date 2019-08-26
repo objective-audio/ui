@@ -299,7 +299,7 @@ struct ui::metal_system::impl {
 #pragma mark - ui::metal_system
 
 ui::metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample_count)
-    : _impl(std::make_shared<impl>(device, sample_count)) {
+    : _impl(std::make_unique<impl>(device, sample_count)) {
 }
 
 ui::metal_system::~metal_system() = default;

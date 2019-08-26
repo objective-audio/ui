@@ -86,7 +86,7 @@ struct node final : action_target, metal_object, renderable_node, std::enable_sh
     [[nodiscard]] static std::shared_ptr<node> make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     node();
 

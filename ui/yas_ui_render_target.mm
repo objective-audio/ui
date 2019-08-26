@@ -231,7 +231,7 @@ struct ui::render_target::impl {
     std::vector<chaining::any_observer_ptr> _update_observers;
 };
 
-ui::render_target::render_target() : _impl(std::make_shared<impl>()) {
+ui::render_target::render_target() : _impl(std::make_unique<impl>()) {
 }
 
 ui::layout_guide_rect_ptr &ui::render_target::layout_guide_rect() {

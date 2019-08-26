@@ -66,7 +66,7 @@ struct ui::effect::impl {
     }
 };
 
-ui::effect::effect() : _impl(std::make_shared<impl>()) {
+ui::effect::effect() : _impl(std::make_unique<impl>()) {
 }
 
 void ui::effect::set_metal_handler(metal_handler_f handler) {

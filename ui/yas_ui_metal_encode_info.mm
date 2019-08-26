@@ -27,7 +27,7 @@ struct ui::metal_encode_info::impl {
     std::unordered_map<uintptr_t, ui::texture_ptr> _textures;
 };
 
-ui::metal_encode_info::metal_encode_info(args &&args) : _impl(std::make_shared<impl>(std::move(args))) {
+ui::metal_encode_info::metal_encode_info(args &&args) : _impl(std::make_unique<impl>(std::move(args))) {
 }
 
 ui::metal_encode_info::~metal_encode_info() = default;

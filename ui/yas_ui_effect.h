@@ -32,7 +32,7 @@ struct effect final : renderable_effect, encodable_effect, metal_object, std::en
     [[nodiscard]] static effect_ptr make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     effect();
 

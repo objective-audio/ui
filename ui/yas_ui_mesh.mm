@@ -250,7 +250,7 @@ struct ui::mesh::impl {
 
 #pragma mark - ui::mesh
 
-ui::mesh::mesh() : _impl(std::make_shared<impl>()) {
+ui::mesh::mesh() : _impl(std::make_unique<impl>()) {
 }
 
 ui::mesh::~mesh() = default;

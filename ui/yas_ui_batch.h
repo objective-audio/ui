@@ -22,7 +22,7 @@ struct batch final : renderable_batch, render_encodable, metal_object, std::enab
     [[nodiscard]] static batch_ptr make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     batch();
 

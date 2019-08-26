@@ -38,7 +38,7 @@ struct mesh final : renderable_mesh, metal_object, std::enable_shared_from_this<
     [[nodiscard]] static mesh_ptr make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     mesh();
 

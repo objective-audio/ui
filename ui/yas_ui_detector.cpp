@@ -60,7 +60,7 @@ struct ui::detector::impl {
 
 #pragma mark - ui::detector
 
-ui::detector::detector() : _impl(std::make_shared<impl>()) {
+ui::detector::detector() : _impl(std::make_unique<impl>()) {
 }
 
 ui::detector::~detector() = default;

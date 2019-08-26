@@ -237,7 +237,7 @@ struct ui::font_atlas::impl {
 };
 
 ui::font_atlas::font_atlas(args &&args)
-    : _impl(std::make_shared<impl>(std::move(args.font_name), args.font_size, std::move(args.words))) {
+    : _impl(std::make_unique<impl>(std::move(args.font_name), args.font_size, std::move(args.words))) {
 }
 
 ui::font_atlas::~font_atlas() = default;
