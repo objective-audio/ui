@@ -194,9 +194,9 @@ struct ui::metal_system::impl {
     }
 
     void push_render_target(ui::render_stackable_ptr const &stackable, ui::render_target_ptr const &render_target) {
-        auto &renderable = render_target->renderable();
+        auto const renderable = render_target->renderable();
         stackable->push_encode_info(ui::metal_encode_info::make_shared(
-            {.renderPassDescriptor = renderable.renderPassDescriptor(),
+            {.renderPassDescriptor = renderable->renderPassDescriptor(),
              .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
              .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}));
     }
