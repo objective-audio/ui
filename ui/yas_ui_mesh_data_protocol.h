@@ -21,6 +21,8 @@ enum class mesh_data_update_reason : std::size_t {
 using mesh_data_updates_t = flagset<mesh_data_update_reason>;
 
 struct renderable_mesh_data {
+    virtual ~renderable_mesh_data() = default;
+
     virtual std::size_t vertex_buffer_byte_offset() = 0;
     virtual std::size_t index_buffer_byte_offset() = 0;
     virtual id<MTLBuffer> vertexBuffer() = 0;
