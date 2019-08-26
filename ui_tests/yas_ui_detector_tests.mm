@@ -39,15 +39,15 @@ using namespace yas;
     auto collider2 =
         ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    detector->updatable().begin_update();
-    detector->updatable().push_front_collider(collider1);
-    detector->updatable().push_front_collider(collider2);
-    detector->updatable().end_update();
+    detector->updatable()->begin_update();
+    detector->updatable()->push_front_collider(collider1);
+    detector->updatable()->push_front_collider(collider2);
+    detector->updatable()->end_update();
 
     XCTAssertEqual(detector->detect({.v = 0.0f}), collider2);
 
-    detector->updatable().begin_update();
-    detector->updatable().end_update();
+    detector->updatable()->begin_update();
+    detector->updatable()->end_update();
 
     XCTAssertFalse(detector->detect({.v = 0.0f}));
 }
@@ -60,8 +60,8 @@ using namespace yas;
     auto collider2 =
         ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    detector->updatable().push_front_collider(collider1);
-    detector->updatable().push_front_collider(collider2);
+    detector->updatable()->push_front_collider(collider1);
+    detector->updatable()->push_front_collider(collider2);
 
     XCTAssertFalse(detector->detect({.v = 0.0f}, collider1));
     XCTAssertTrue(detector->detect({.v = 0.0f}, collider2));
@@ -70,19 +70,19 @@ using namespace yas;
 - (void)test_is_updating {
     auto detector = ui::detector::make_shared();
 
-    XCTAssertTrue(detector->updatable().is_updating());
+    XCTAssertTrue(detector->updatable()->is_updating());
 
-    detector->updatable().begin_update();
+    detector->updatable()->begin_update();
 
-    XCTAssertTrue(detector->updatable().is_updating());
+    XCTAssertTrue(detector->updatable()->is_updating());
 
-    detector->updatable().end_update();
+    detector->updatable()->end_update();
 
-    XCTAssertFalse(detector->updatable().is_updating());
+    XCTAssertFalse(detector->updatable()->is_updating());
 
-    detector->updatable().begin_update();
+    detector->updatable()->begin_update();
 
-    XCTAssertTrue(detector->updatable().is_updating());
+    XCTAssertTrue(detector->updatable()->is_updating());
 }
 
 @end

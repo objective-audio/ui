@@ -35,45 +35,45 @@ using namespace yas;
 
 - (void)test_push_and_pop_encode_info {
     auto encoder = ui::metal_render_encoder::make_shared();
-    auto &stackable = encoder->stackable();
+    auto const &stackable = encoder->stackable();
 
-    stackable.push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
+    stackable->push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
 
     XCTAssertEqual(encoder->all_encode_infos().size(), 1);
 
-    auto encode_info1 = stackable.current_encode_info();
+    auto encode_info1 = stackable->current_encode_info();
     XCTAssertTrue(encode_info1);
 
-    stackable.push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
+    stackable->push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
 
     XCTAssertEqual(encoder->all_encode_infos().size(), 2);
 
-    auto encode_info2 = stackable.current_encode_info();
+    auto encode_info2 = stackable->current_encode_info();
     XCTAssertTrue(encode_info2);
 
-    stackable.pop_encode_info();
+    stackable->pop_encode_info();
 
     XCTAssertEqual(encoder->all_encode_infos().size(), 2);
-    XCTAssertEqual(stackable.current_encode_info(), encode_info1);
+    XCTAssertEqual(stackable->current_encode_info(), encode_info1);
 
-    stackable.pop_encode_info();
+    stackable->pop_encode_info();
 
     XCTAssertEqual(encoder->all_encode_infos().size(), 2);
-    XCTAssertFalse(stackable.current_encode_info());
+    XCTAssertFalse(stackable->current_encode_info());
 }
 
 - (void)test_append_mesh {
     auto encoder = ui::metal_render_encoder::make_shared();
-    auto &stackable = encoder->stackable();
+    auto const &stackable = encoder->stackable();
 
-    stackable.push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
+    stackable->push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
 
-    auto encode_info = stackable.current_encode_info();
+    auto encode_info = stackable->current_encode_info();
 
     XCTAssertEqual(encode_info->meshes().size(), 0);
 
     auto mesh = ui::mesh::make_shared();
-    encoder->encodable().append_mesh(mesh);
+    encoder->encodable()->append_mesh(mesh);
 
     XCTAssertEqual(encode_info->meshes().size(), 1);
     XCTAssertEqual(encode_info->meshes().at(0), mesh);
@@ -93,7 +93,7 @@ using namespace yas;
     auto pre_render_action = ui::action::make_shared();
 
     pre_render_action->set_time_updater([&metal_system = renderer->metal_system(), expectation, self](auto const &) {
-        auto mtlDevice = metal_system->testable().mtlDevice();
+        auto mtlDevice = metal_system->testable()->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
@@ -102,24 +102,24 @@ using namespace yas;
         auto const commandBuffer = [commandQueue commandBuffer];
 
         auto encoder = ui::metal_render_encoder::make_shared();
-        auto &stackable = encoder->stackable();
+        auto const &stackable = encoder->stackable();
 
         auto encode_info = ui::metal_encode_info::make_shared(
-            {view.currentRenderPassDescriptor, metal_system->testable().mtlRenderPipelineStateWithTexture(),
-             metal_system->testable().mtlRenderPipelineStateWithoutTexture()});
+            {view.currentRenderPassDescriptor, metal_system->testable()->mtlRenderPipelineStateWithTexture(),
+             metal_system->testable()->mtlRenderPipelineStateWithoutTexture()});
 
-        stackable.push_encode_info(encode_info);
+        stackable->push_encode_info(encode_info);
 
         auto mesh1 = ui::mesh::make_shared();
         mesh1->set_mesh_data(ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1}));
-        mesh1->metal().metal_setup(metal_system);
+        mesh1->metal()->metal_setup(metal_system);
         encode_info->append_mesh(mesh1);
 
         auto mesh2 = ui::mesh::make_shared();
         mesh2->set_mesh_data(ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1}));
         auto texture = ui::texture::make_shared({.point_size = {1, 1}});
         mesh2->set_texture(texture);
-        mesh2->metal().metal_setup(metal_system);
+        mesh2->metal()->metal_setup(metal_system);
         encode_info->append_mesh(mesh2);
 
         encoder->encode(metal_system, commandBuffer);

@@ -10,19 +10,15 @@ using namespace yas;
 
 #pragma mark - event::impl
 
-struct ui::event::impl_base : manageable_event::impl {
+struct ui::event_impl_base {
     virtual std::type_info const &type() const = 0;
-    virtual bool is_equal(std::shared_ptr<impl_base> const &rhs) const = 0;
-
-    void set_phase(event_phase &&st) override {
-        this->phase = std::move(st);
-    }
+    virtual bool is_equal(std::shared_ptr<event_impl_base> const &rhs) const = 0;
 
     event_phase phase = ui::event_phase::none;
 };
 
 template <typename T>
-struct ui::event::impl : impl_base {
+struct ui::event::impl : ui::event_impl_base {
     typename T::type value;
 
     impl() {
@@ -35,7 +31,7 @@ struct ui::event::impl : impl_base {
 
     ~impl() = default;
 
-    bool is_equal(std::shared_ptr<impl_base> const &rhs) const override {
+    bool is_equal(std::shared_ptr<event_impl_base> const &rhs) const override {
         if (auto casted_rhs = std::dynamic_pointer_cast<impl>(rhs)) {
             auto &type_info = this->type();
             if (type_info == casted_rhs->type()) {
@@ -94,11 +90,8 @@ uintptr_t ui::event::identifier() const {
     return reinterpret_cast<uintptr_t>(this);
 }
 
-ui::manageable_event &ui::event::manageable() {
-    if (!this->_manageable) {
-        this->_manageable = ui::manageable_event{this->_impl};
-    }
-    return this->_manageable;
+ui::manageable_event_ptr ui::event::manageable() {
+    return std::dynamic_pointer_cast<manageable_event>(this->shared_from_this());
 }
 
 bool ui::event::operator==(event const &rhs) const {
@@ -107,6 +100,14 @@ bool ui::event::operator==(event const &rhs) const {
 
 bool ui::event::operator!=(event const &rhs) const {
     return !(*this == rhs);
+}
+
+void ui::event::set_phase(event_phase const &phase) {
+    this->_impl->phase = std::move(phase);
+}
+
+std::shared_ptr<ui::event_impl_base> ui::event::get_impl() {
+    return this->_impl;
 }
 
 ui::event_ptr ui::event::make_shared(cursor const &cursor) {
@@ -127,8 +128,8 @@ ui::event_ptr ui::event::make_shared(modifier const &modifier) {
 
 #pragma mark - event_manager::impl
 
-struct ui::event_manager::impl : event_inputtable::impl {
-    void input_cursor_event(cursor_event &&value) override {
+struct ui::event_manager::impl {
+    void input_cursor_event(cursor_event const &value) {
         ui::event_phase phase;
 
         if (value.contains_in_window()) {
@@ -144,8 +145,8 @@ struct ui::event_manager::impl : event_inputtable::impl {
 
         if (this->_cursor_event) {
             auto manageable_event = this->_cursor_event->manageable();
-            manageable_event.set_phase(phase);
-            manageable_event.set<cursor>(std::move(value));
+            manageable_event->set_phase(phase);
+            manageable_event->set<cursor>(value);
 
             this->_notifier->notify({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
 
@@ -155,7 +156,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         }
     }
 
-    void input_touch_event(event_phase const phase, touch_event &&value) override {
+    void input_touch_event(event_phase const phase, touch_event const &value) {
         auto const identifer = value.identifier();
 
         if (phase == event_phase::began) {
@@ -169,8 +170,8 @@ struct ui::event_manager::impl : event_inputtable::impl {
         if (this->_touch_events.count(identifer) > 0) {
             auto &event = this->_touch_events.at(identifer);
             auto manageable_event = event->manageable();
-            manageable_event.set_phase(phase);
-            manageable_event.set<touch>(std::move(value));
+            manageable_event->set_phase(phase);
+            manageable_event->set<touch>(value);
 
             this->_notifier->notify({.method = event_manager::method::touch_changed, .event = event});
 
@@ -180,7 +181,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         }
     }
 
-    void input_key_event(event_phase const phase, key_event &&value) override {
+    void input_key_event(event_phase const phase, key_event const &value) {
         auto const key_code = value.key_code();
 
         if (phase == event_phase::began) {
@@ -193,8 +194,8 @@ struct ui::event_manager::impl : event_inputtable::impl {
 
         if (this->_key_events.count(key_code) > 0) {
             auto const &event = this->_key_events.at(key_code);
-            event->manageable().set_phase(phase);
-            event->manageable().set<key>(value);
+            event->manageable()->set_phase(phase);
+            event->manageable()->set<key>(value);
 
             this->_notifier->notify({.method = event_manager::method::key_changed, .event = event});
 
@@ -204,7 +205,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
         }
     }
 
-    void input_modifier_event(modifier_flags &&flags, double const timestamp) override {
+    void input_modifier_event(modifier_flags const &flags, double const timestamp) {
         static auto all_flags = {modifier_flags::alpha_shift, modifier_flags::shift,   modifier_flags::control,
                                  modifier_flags::alternate,   modifier_flags::command, modifier_flags::numeric_pad,
                                  modifier_flags::help,        modifier_flags::function};
@@ -213,8 +214,8 @@ struct ui::event_manager::impl : event_inputtable::impl {
             if (flags & flag) {
                 if (this->_modifier_events.count(flag) == 0) {
                     ui::event_ptr event = ui::event::make_shared(modifier_tag);
-                    event->manageable().set<modifier>(ui::modifier_event{flag, timestamp});
-                    event->manageable().set_phase(ui::event_phase::began);
+                    event->manageable()->set<modifier>(ui::modifier_event{flag, timestamp});
+                    event->manageable()->set_phase(ui::event_phase::began);
                     this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
                     this->_notifier->notify(
@@ -223,7 +224,7 @@ struct ui::event_manager::impl : event_inputtable::impl {
             } else {
                 if (this->_modifier_events.count(flag) > 0) {
                     auto const &event = this->_modifier_events.at(flag);
-                    event->manageable().set_phase(ui::event_phase::ended);
+                    event->manageable()->set_phase(ui::event_phase::ended);
 
                     this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
 
@@ -253,15 +254,9 @@ struct ui::event_manager::impl : event_inputtable::impl {
 
 #pragma mark - manageable_event
 
-ui::manageable_event::manageable_event(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::manageable_event::manageable_event(std::nullptr_t) : protocol(nullptr) {
-}
-
 template <typename T>
 void ui::manageable_event::set(typename T::type value) {
-    if (auto ip = std::dynamic_pointer_cast<event::impl<T>>(impl_ptr<impl>())) {
+    if (auto ip = std::dynamic_pointer_cast<event::impl<T>>(this->get_impl())) {
         ip->value = std::move(value);
     } else {
         throw "dynamic_pointer_cast failed";
@@ -272,10 +267,6 @@ template void ui::manageable_event::set<ui::cursor>(ui::cursor::type);
 template void ui::manageable_event::set<ui::touch>(ui::touch::type);
 template void ui::manageable_event::set<ui::key>(ui::key::type);
 template void ui::manageable_event::set<ui::modifier>(ui::modifier::type);
-
-void ui::manageable_event::set_phase(event_phase phase) {
-    impl_ptr<impl>()->set_phase(std::move(phase));
-}
 
 #pragma mark - event_manager
 
@@ -293,11 +284,24 @@ chaining::chain_unsync_t<ui::event_manager::context> ui::event_manager::chain() 
     return this->_impl->chain();
 }
 
-ui::event_inputtable &ui::event_manager::inputtable() {
-    if (!this->_inputtable) {
-        this->_inputtable = ui::event_inputtable{this->_impl};
-    }
-    return this->_inputtable;
+ui::event_inputtable_ptr ui::event_manager::inputtable() {
+    return std::dynamic_pointer_cast<event_inputtable>(this->shared_from_this());
+}
+
+void ui::event_manager::input_cursor_event(cursor_event const &event) {
+    this->_impl->input_cursor_event(event);
+}
+
+void ui::event_manager::input_touch_event(event_phase const phase, touch_event const &event) {
+    this->_impl->input_touch_event(phase, event);
+}
+
+void ui::event_manager::input_key_event(event_phase const phase, key_event const &event) {
+    this->_impl->input_key_event(phase, event);
+}
+
+void ui::event_manager::input_modifier_event(modifier_flags const &flags, double const timestamp) {
+    this->_impl->input_modifier_event(flags, timestamp);
 }
 
 ui::event_manager_ptr ui::event_manager::make_shared() {

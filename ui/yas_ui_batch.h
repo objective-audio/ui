@@ -10,22 +10,19 @@
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
-struct batch final : renderable_batch, std::enable_shared_from_this<batch> {
+struct batch final : renderable_batch, render_encodable, metal_object, std::enable_shared_from_this<batch> {
     class impl;
 
     virtual ~batch();
 
     std::shared_ptr<ui::renderable_batch> renderable();
-    ui::render_encodable &encodable();
-    ui::metal_object &metal();
+    std::shared_ptr<ui::render_encodable> encodable();
+    ui::metal_object_ptr metal();
 
     [[nodiscard]] static batch_ptr make_shared();
 
    private:
     std::shared_ptr<impl> _impl;
-
-    ui::render_encodable _encodable = nullptr;
-    ui::metal_object _metal_object = nullptr;
 
     batch();
 
@@ -38,5 +35,8 @@ struct batch final : renderable_batch, std::enable_shared_from_this<batch> {
     void begin_render_meshes_building(batch_building_type const) override;
     void commit_render_meshes_building() override;
     void clear_render_meshes() override;
+    void append_mesh(ui::mesh_ptr const &) override;
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 }  // namespace yas::ui

@@ -6,7 +6,6 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
-#include <cpp_utils/yas_protocol.h>
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {
@@ -19,31 +18,23 @@ enum class effect_update_reason : std::size_t {
 
 using effect_updates_t = flagset<effect_update_reason>;
 
-struct renderable_effect : protocol {
-    struct impl : protocol::impl {
-        virtual void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) = 0;
-        virtual ui::effect_updates_t &updates() = 0;
-        virtual void clear_updates() = 0;
-    };
+struct renderable_effect {
+    virtual ~renderable_effect() = default;
 
-    explicit renderable_effect(std::shared_ptr<impl>);
-    renderable_effect(std::nullptr_t);
-
-    void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst);
-    ui::effect_updates_t const &updates();
-    void clear_updates();
+    virtual void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) = 0;
+    virtual ui::effect_updates_t &updates() = 0;
+    virtual void clear_updates() = 0;
 };
 
-struct encodable_effect : protocol {
-    struct impl : protocol::impl {
-        virtual void encode(id<MTLCommandBuffer> const) = 0;
-    };
+using renderable_effect_ptr = std::shared_ptr<renderable_effect>;
 
-    explicit encodable_effect(std::shared_ptr<impl>);
-    encodable_effect(std::nullptr_t);
+struct encodable_effect {
+    virtual ~encodable_effect() = default;
 
-    void encode(id<MTLCommandBuffer> const);
+    virtual void encode(id<MTLCommandBuffer> const) = 0;
 };
+
+using encodable_effect_ptr = std::shared_ptr<encodable_effect>;
 }  // namespace yas::ui
 
 namespace yas {

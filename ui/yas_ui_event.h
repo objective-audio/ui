@@ -9,23 +9,21 @@
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {
-struct manageable_event : protocol {
-    struct impl : protocol::impl {
-        virtual void set_phase(event_phase &&) = 0;
-    };
+class event_impl_base;
 
-    explicit manageable_event(std::shared_ptr<impl>);
-    manageable_event(std::nullptr_t);
+struct manageable_event {
+    virtual ~manageable_event() = default;
 
     template <typename T>
     void set(typename T::type);
 
-    void set_phase(event_phase);
+    virtual void set_phase(event_phase const &) = 0;
+    virtual std::shared_ptr<event_impl_base> get_impl() = 0;
 };
 
-struct event {
-    class impl_base;
+using manageable_event_ptr = std::shared_ptr<manageable_event>;
 
+struct event : manageable_event, std::enable_shared_from_this<event> {
     template <typename T>
     class impl;
 
@@ -40,7 +38,7 @@ struct event {
 
     uintptr_t identifier() const;
 
-    ui::manageable_event &manageable();
+    ui::manageable_event_ptr manageable();
 
     bool operator==(event const &) const;
     bool operator!=(event const &) const;
@@ -51,17 +49,18 @@ struct event {
     [[nodiscard]] static event_ptr make_shared(modifier const &);
 
    private:
-    std::shared_ptr<impl_base> _impl;
-
-    ui::manageable_event _manageable = nullptr;
+    std::shared_ptr<event_impl_base> _impl;
 
     explicit event(cursor const &);
     explicit event(touch const &);
     explicit event(key const &);
     explicit event(modifier const &);
+
+    void set_phase(event_phase const &) override;
+    std::shared_ptr<event_impl_base> get_impl() override;
 };
 
-struct event_manager {
+struct event_manager : event_inputtable, std::enable_shared_from_this<event_manager> {
     class impl;
 
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
@@ -76,16 +75,19 @@ struct event_manager {
     [[nodiscard]] chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
 
-    ui::event_inputtable &inputtable();
+    ui::event_inputtable_ptr inputtable();
 
     [[nodiscard]] static event_manager_ptr make_shared();
 
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::event_inputtable _inputtable = nullptr;
-
     event_manager();
+
+    void input_cursor_event(cursor_event const &value) override;
+    void input_touch_event(event_phase const, touch_event const &) override;
+    void input_key_event(event_phase const, key_event const &) override;
+    void input_modifier_event(modifier_flags const &, double const) override;
 };
 }  // namespace yas::ui
 

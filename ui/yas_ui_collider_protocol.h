@@ -4,20 +4,15 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <simd/simd.h>
 
 namespace yas::ui {
-struct renderable_collider : protocol {
-    struct impl : protocol::impl {
-        virtual simd::float4x4 const &matrix() const = 0;
-        virtual void set_matrix(simd::float4x4 &&) = 0;
-    };
+struct renderable_collider {
+    virtual ~renderable_collider() = default;
 
-    explicit renderable_collider(std::shared_ptr<impl>);
-    renderable_collider(std::nullptr_t);
-
-    simd::float4x4 const &matrix();
-    void set_matrix(simd::float4x4);
+    virtual simd::float4x4 const &matrix() const = 0;
+    virtual void set_matrix(simd::float4x4 const &) = 0;
 };
+
+using renderable_collider_ptr = std::shared_ptr<renderable_collider>;
 }  // namespace yas::ui

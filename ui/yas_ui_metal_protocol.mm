@@ -6,16 +6,6 @@
 
 using namespace yas;
 
-ui::metal_object::metal_object(std::shared_ptr<impl> impl) : protocol(std::move(impl)) {
-}
-
-ui::metal_object::metal_object(std::nullptr_t) : protocol(nullptr) {
-}
-
-ui::setup_metal_result ui::metal_object::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
-    return impl_ptr<impl>()->metal_setup(metal_system);
-}
-
 std::string yas::to_string(ui::setup_metal_error const error) {
     switch (error) {
         case ui::setup_metal_error::create_texture_descriptor_failed:

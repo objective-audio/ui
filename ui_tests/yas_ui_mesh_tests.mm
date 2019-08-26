@@ -37,7 +37,7 @@ using namespace yas;
     XCTAssertEqual(mesh->primitive_type(), ui::primitive_type::triangle);
     XCTAssertFalse(mesh->is_use_mesh_color());
 
-    auto matrix = mesh->renderable().matrix();
+    auto matrix = mesh->renderable()->matrix();
     auto identity_matrix = matrix_identity_float4x4;
     for (auto const &col : each_index<std::size_t>(4)) {
         for (auto const &row : each_index<std::size_t>(4)) {
@@ -105,7 +105,7 @@ using namespace yas;
 - (void)test_set_renderable_variables {
     auto mesh = ui::mesh::make_shared();
 
-    auto &renderable = mesh->renderable();
+    auto const renderable = mesh->renderable();
 
     simd::float4x4 matrix;
     matrix.columns[0] = {1.0f, 2.0f, 3.0f, 4.0f};
@@ -113,27 +113,27 @@ using namespace yas;
     matrix.columns[2] = {9.0f, 10.0f, 11.0f, 12.0f};
     matrix.columns[3] = {13.0f, 14.0f, 15.0f, 16.0f};
 
-    renderable.set_matrix(matrix);
+    renderable->set_matrix(matrix);
 
-    XCTAssertEqual(renderable.matrix().columns[0][0], 1.0f);
-    XCTAssertEqual(renderable.matrix().columns[0][1], 2.0f);
-    XCTAssertEqual(renderable.matrix().columns[0][2], 3.0f);
-    XCTAssertEqual(renderable.matrix().columns[0][3], 4.0f);
+    XCTAssertEqual(renderable->matrix().columns[0][0], 1.0f);
+    XCTAssertEqual(renderable->matrix().columns[0][1], 2.0f);
+    XCTAssertEqual(renderable->matrix().columns[0][2], 3.0f);
+    XCTAssertEqual(renderable->matrix().columns[0][3], 4.0f);
 
-    XCTAssertEqual(renderable.matrix().columns[1][0], 5.0f);
-    XCTAssertEqual(renderable.matrix().columns[1][1], 6.0f);
-    XCTAssertEqual(renderable.matrix().columns[1][2], 7.0f);
-    XCTAssertEqual(renderable.matrix().columns[1][3], 8.0f);
+    XCTAssertEqual(renderable->matrix().columns[1][0], 5.0f);
+    XCTAssertEqual(renderable->matrix().columns[1][1], 6.0f);
+    XCTAssertEqual(renderable->matrix().columns[1][2], 7.0f);
+    XCTAssertEqual(renderable->matrix().columns[1][3], 8.0f);
 
-    XCTAssertEqual(renderable.matrix().columns[2][0], 9.0f);
-    XCTAssertEqual(renderable.matrix().columns[2][1], 10.0f);
-    XCTAssertEqual(renderable.matrix().columns[2][2], 11.0f);
-    XCTAssertEqual(renderable.matrix().columns[2][3], 12.0f);
+    XCTAssertEqual(renderable->matrix().columns[2][0], 9.0f);
+    XCTAssertEqual(renderable->matrix().columns[2][1], 10.0f);
+    XCTAssertEqual(renderable->matrix().columns[2][2], 11.0f);
+    XCTAssertEqual(renderable->matrix().columns[2][3], 12.0f);
 
-    XCTAssertEqual(renderable.matrix().columns[3][0], 13.0f);
-    XCTAssertEqual(renderable.matrix().columns[3][1], 14.0f);
-    XCTAssertEqual(renderable.matrix().columns[3][2], 15.0f);
-    XCTAssertEqual(renderable.matrix().columns[3][3], 16.0f);
+    XCTAssertEqual(renderable->matrix().columns[3][0], 13.0f);
+    XCTAssertEqual(renderable->matrix().columns[3][1], 14.0f);
+    XCTAssertEqual(renderable->matrix().columns[3][2], 15.0f);
+    XCTAssertEqual(renderable->matrix().columns[3][3], 16.0f);
 }
 
 - (void)test_mesh_setup_metal_buffer_constant {
@@ -147,20 +147,20 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    XCTAssertNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNil(mesh_data->renderable().indexBuffer());
+    XCTAssertNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNil(mesh_data->renderable()->indexBuffer());
 
-    auto setup_result = mesh_data->metal().metal_setup(metal_system);
+    auto setup_result = mesh_data->metal()->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNotNil(mesh_data->renderable().indexBuffer());
-    XCTAssertEqual(mesh_data->renderable().vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
-    XCTAssertEqual(mesh_data->renderable().indexBuffer().length, 6 * sizeof(ui::index2d_t));
+    XCTAssertNotNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNotNil(mesh_data->renderable()->indexBuffer());
+    XCTAssertEqual(mesh_data->renderable()->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
+    XCTAssertEqual(mesh_data->renderable()->indexBuffer().length, 6 * sizeof(ui::index2d_t));
 }
 
 - (void)test_mesh_setup_metal_buffer_dynamic {
@@ -174,20 +174,20 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    XCTAssertNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNil(mesh_data->renderable().indexBuffer());
+    XCTAssertNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNil(mesh_data->renderable()->indexBuffer());
 
-    auto setup_result = mesh_data->metal().metal_setup(metal_system);
+    auto setup_result = mesh_data->metal()->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(mesh_data->renderable().vertexBuffer());
-    XCTAssertNotNil(mesh_data->renderable().indexBuffer());
-    XCTAssertEqual(mesh_data->renderable().vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
-    XCTAssertEqual(mesh_data->renderable().indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
+    XCTAssertNotNil(mesh_data->renderable()->vertexBuffer());
+    XCTAssertNotNil(mesh_data->renderable()->indexBuffer());
+    XCTAssertEqual(mesh_data->renderable()->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
+    XCTAssertEqual(mesh_data->renderable()->indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
 }
 
 - (void)test_write_to_buffer_dynamic {
@@ -201,12 +201,12 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    auto &renderable = mesh_data->renderable();
+    auto const renderable = mesh_data->renderable();
 
-    XCTAssertTrue(mesh_data->metal().metal_setup(metal_system));
+    XCTAssertTrue(mesh_data->metal()->metal_setup(metal_system));
 
-    ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable.vertexBuffer() contents]);
-    ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable.indexBuffer() contents]);
+    ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable->vertexBuffer() contents]);
+    ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable->indexBuffer() contents]);
 
     mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         for (auto const &idx : make_each_index(4)) {
@@ -222,16 +222,16 @@ using namespace yas;
         }
     });
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), 0);
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
 
-    auto vertex_ptr = &vertex_top_ptr[renderable.vertex_buffer_byte_offset() / sizeof(ui::vertex2d_t)];
-    auto index_ptr = &index_top_ptr[renderable.index_buffer_byte_offset() / sizeof(ui::index2d_t)];
+    auto vertex_ptr = &vertex_top_ptr[renderable->vertex_buffer_byte_offset() / sizeof(ui::vertex2d_t)];
+    auto index_ptr = &index_top_ptr[renderable->index_buffer_byte_offset() / sizeof(ui::index2d_t)];
 
     for (auto const &idx : make_each_index(4)) {
         float const value = idx;
@@ -259,10 +259,10 @@ using namespace yas;
         }
     });
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), 0);
 
     vertex_ptr = vertex_top_ptr;
     index_ptr = index_top_ptr;
@@ -279,17 +279,17 @@ using namespace yas;
         XCTAssertEqual(index_ptr[idx], idx + 1400);
     }
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), 0);
 
     mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {});
 
-    renderable.update_render_buffer();
+    renderable->update_render_buffer();
 
-    XCTAssertEqual(renderable.vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
-    XCTAssertEqual(renderable.index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
+    XCTAssertEqual(renderable->vertex_buffer_byte_offset(), sizeof(ui::vertex2d_t) * 4);
+    XCTAssertEqual(renderable->index_buffer_byte_offset(), sizeof(ui::index2d_t) * 6);
 }
 
 - (void)test_clear_updates {
@@ -297,13 +297,13 @@ using namespace yas;
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    XCTAssertTrue(mesh->renderable().updates().flags.any());
-    XCTAssertTrue(mesh_data->renderable().updates().flags.any());
+    XCTAssertTrue(mesh->renderable()->updates().flags.any());
+    XCTAssertTrue(mesh_data->renderable()->updates().flags.any());
 
-    mesh->renderable().clear_updates();
+    mesh->renderable()->clear_updates();
 
-    XCTAssertFalse(mesh->renderable().updates().flags.any());
-    XCTAssertFalse(mesh_data->renderable().updates().flags.any());
+    XCTAssertFalse(mesh->renderable()->updates().flags.any());
+    XCTAssertFalse(mesh_data->renderable()->updates().flags.any());
 }
 
 - (void)test_updates {
@@ -311,11 +311,11 @@ using namespace yas;
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    mesh->renderable().clear_updates();
+    mesh->renderable()->clear_updates();
     mesh->set_use_mesh_color(true);
 
-    XCTAssertEqual(mesh->renderable().updates().flags.count(), 1);
-    XCTAssertTrue(mesh->renderable().updates().test(ui::mesh_update_reason::use_mesh_color));
+    XCTAssertEqual(mesh->renderable()->updates().flags.count(), 1);
+    XCTAssertTrue(mesh->renderable()->updates().test(ui::mesh_update_reason::use_mesh_color));
 }
 
 - (void)test_is_rendering_color_exists {
@@ -324,22 +324,22 @@ using namespace yas;
     mesh->set_use_mesh_color(false);
     mesh->set_color(1.0f);
 
-    XCTAssertFalse(mesh->renderable().is_rendering_color_exists());
+    XCTAssertFalse(mesh->renderable()->is_rendering_color_exists());
 
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    XCTAssertTrue(mesh->renderable().is_rendering_color_exists());
+    XCTAssertTrue(mesh->renderable()->is_rendering_color_exists());
 
     mesh->set_use_mesh_color(false);
     mesh->set_color(0.0f);
 
-    XCTAssertFalse(mesh->renderable().is_rendering_color_exists());
+    XCTAssertFalse(mesh->renderable()->is_rendering_color_exists());
 
     mesh->set_use_mesh_color(true);
     mesh->set_color(0.0f);
 
-    XCTAssertTrue(mesh->renderable().is_rendering_color_exists());
+    XCTAssertTrue(mesh->renderable()->is_rendering_color_exists());
 }
 
 - (void)test_metal_setup {
@@ -355,7 +355,7 @@ using namespace yas;
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    XCTAssertTrue(mesh->metal().metal_setup(metal_system));
+    XCTAssertTrue(mesh->metal()->metal_setup(metal_system));
 }
 
 - (void)test_mesh_update_reason_to_string {

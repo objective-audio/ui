@@ -30,7 +30,7 @@ using namespace yas;
     XCTAssertFalse(collider->shape());
 
     XCTAssertTrue(collider->renderable());
-    XCTAssertTrue(collider->renderable().matrix() == simd::float4x4{matrix_identity_float4x4});
+    XCTAssertTrue(collider->renderable()->matrix() == simd::float4x4{matrix_identity_float4x4});
 }
 
 - (void)test_create_with_args {
@@ -111,14 +111,14 @@ using namespace yas;
 - (void)test_renderable_variables {
     auto collider = ui::collider::make_shared();
 
-    auto &renderable = collider->renderable();
+    auto const renderable = collider->renderable();
 
     simd::float4x4 matrix{simd::float4{1.0f, 2.0f, 3.0f, 4.0f}, simd::float4{5.0f, 6.0f, 7.0f, 8.0f},
                           simd::float4{9.0f, 10.0f, 11.0f, 12.0f}, simd::float4{13.0f, 14.0f, 15.0f, 16.0f}};
 
-    renderable.set_matrix(matrix);
+    renderable->set_matrix(matrix);
 
-    XCTAssertTrue(renderable.matrix() == matrix);
+    XCTAssertTrue(renderable->matrix() == matrix);
 }
 
 - (void)test_hit_test_enabled {

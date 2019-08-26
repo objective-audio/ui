@@ -32,7 +32,7 @@ using namespace yas;
 
 @end
 
-struct ui::renderer::impl : ui::view_renderable::impl {
+struct ui::renderer::impl {
     enum class update_result {
         no_change,
         changed,
@@ -74,11 +74,11 @@ struct ui::renderer::impl : ui::view_renderable::impl {
         return ui::system_type::none;
     }
 
-    void view_configure(yas_objc_view *const view) override {
+    void view_configure(yas_objc_view *const view) {
         switch (this->system_type()) {
             case ui::system_type::metal: {
                 if (auto metalView = objc_cast<YASUIMetalView>(view)) {
-                    this->_metal_system->renderable().view_configure(view);
+                    this->_metal_system->renderable()->view_configure(view);
                     this->_safe_area_insets = metalView.uiSafeAreaInsets;
                     auto const drawable_size = metalView.drawableSize;
                     this->view_size_will_change(view, drawable_size);
@@ -96,7 +96,7 @@ struct ui::renderer::impl : ui::view_renderable::impl {
         [view set_event_manager:this->_event_manager];
     }
 
-    void view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) override {
+    void view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) {
         if (!to_bool(this->system_type())) {
             throw "system not found.";
         }
@@ -121,7 +121,7 @@ struct ui::renderer::impl : ui::view_renderable::impl {
         }
     }
 
-    void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) override {
+    void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) {
         if (!to_bool(this->system_type())) {
             throw "system not found.";
         }
@@ -133,7 +133,7 @@ struct ui::renderer::impl : ui::view_renderable::impl {
         }
     }
 
-    void view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) override {
+    void view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) {
         this->_appearance->set_value(appearance);
     }
 
@@ -141,10 +141,10 @@ struct ui::renderer::impl : ui::view_renderable::impl {
         this->_action->updatable()->update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
-        this->_root_node->renderable().fetch_updates(tree_updates);
+        this->_root_node->renderable()->fetch_updates(tree_updates);
 
         if (tree_updates.is_collider_updated()) {
-            this->_detector->updatable().begin_update();
+            this->_detector->updatable()->begin_update();
         }
 
         if (tree_updates.is_any_updated()) {
@@ -154,7 +154,7 @@ struct ui::renderer::impl : ui::view_renderable::impl {
         return pre_render_result::none;
     }
 
-    void view_render(yas_objc_view *const view) override {
+    void view_render(yas_objc_view *const view) {
         if (!this->_metal_system) {
             throw "metal_system not found.";
         }
@@ -163,7 +163,7 @@ struct ui::renderer::impl : ui::view_renderable::impl {
 
         if (to_bool(pre_render())) {
             if (auto renderer = this->_weak_renderer.lock()) {
-                this->_metal_system->renderable().view_render(view, renderer);
+                this->_metal_system->renderable()->view_render(view, renderer);
             }
         }
 
@@ -171,8 +171,8 @@ struct ui::renderer::impl : ui::view_renderable::impl {
     }
 
     void post_render() {
-        this->_root_node->renderable().clear_updates();
-        this->_detector->updatable().end_update();
+        this->_root_node->renderable()->clear_updates();
+        this->_detector->updatable()->end_update();
     }
 
     void insert_action(std::shared_ptr<ui::action> action) {
@@ -307,11 +307,8 @@ ui::metal_system_ptr const &ui::renderer::metal_system() const {
     return this->_impl->_metal_system;
 }
 
-ui::view_renderable &ui::renderer::view_renderable() {
-    if (!this->_view_renderable) {
-        this->_view_renderable = ui::view_renderable{this->_impl};
-    }
-    return this->_view_renderable;
+ui::view_renderable_ptr ui::renderer::view_renderable() {
+    return std::dynamic_pointer_cast<ui::view_renderable>(this->shared_from_this());
 }
 
 ui::event_manager_ptr &ui::renderer::event_manager() {
@@ -377,7 +374,27 @@ chaining::chain_sync_t<ui::appearance> ui::renderer::chain_appearance() const {
 void ui::renderer::_prepare(renderer_ptr const &shared) {
     auto &imp = this->_impl;
     imp->_weak_renderer = shared;
-    imp->_root_node->renderable().set_renderer(shared);
+    imp->_root_node->renderable()->set_renderer(shared);
+}
+
+void ui::renderer::view_configure(yas_objc_view *const view) {
+    this->_impl->view_configure(view);
+}
+
+void ui::renderer::view_size_will_change(yas_objc_view *const view, CGSize const size) {
+    this->_impl->view_size_will_change(view, size);
+}
+
+void ui::renderer::view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) {
+    this->_impl->view_safe_area_insets_did_change(view, insets);
+}
+
+void ui::renderer::view_render(yas_objc_view *const view) {
+    this->_impl->view_render(view);
+}
+
+void ui::renderer::view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) {
+    this->_impl->view_appearance_did_change(view, appearance);
 }
 
 ui::renderer_ptr ui::renderer::make_shared() {

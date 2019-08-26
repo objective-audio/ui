@@ -11,7 +11,7 @@ using namespace yas;
 namespace yas::ui {
 namespace metal_view {
     struct cpp_variables {
-        ui::view_renderable renderable{nullptr};
+        ui::view_renderable_ptr renderable{nullptr};
     };
 }
 }
@@ -97,7 +97,7 @@ namespace metal_view {
 
 - (void)appearanceDidChange:(yas::ui::appearance)appearance {
     if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable.appearance_did_change(self.metalView, appearance);
+        self->_cpp.renderable->view_appearance_did_change(self.metalView, appearance);
     }
 }
 
@@ -105,17 +105,17 @@ namespace metal_view {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderable:(yas::ui::view_renderable)renderable {
+- (void)setRenderable:(yas::ui::view_renderable_ptr const &)renderable {
     self->_cpp.renderable = renderable;
 
     if (renderable) {
-        renderable.configure(self.metalView);
+        renderable->view_configure(self.metalView);
     } else {
         self.metalView.device = nil;
     }
 }
 
-- (yas::ui::view_renderable const &)renderable {
+- (yas::ui::view_renderable_ptr const &)renderable {
     return self->_cpp.renderable;
 }
 
@@ -133,13 +133,13 @@ namespace metal_view {
 
 - (void)mtkView:(YASUIMetalView *)view drawableSizeWillChange:(CGSize)size {
     if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable.size_will_change(self.metalView, size);
+        self->_cpp.renderable->view_size_will_change(self.metalView, size);
     }
 }
 
 - (void)drawInMTKView:(YASUIMetalView *)view {
     if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable.render(self.metalView);
+        self->_cpp.renderable->view_render(self.metalView);
     }
 }
 
@@ -147,7 +147,7 @@ namespace metal_view {
 
 - (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(yas_edge_insets)insets {
     if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable.safe_area_insets_did_change(self.metalView, insets);
+        self->_cpp.renderable->view_safe_area_insets_did_change(self.metalView, insets);
     }
 }
 

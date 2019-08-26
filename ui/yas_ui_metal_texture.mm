@@ -11,14 +11,14 @@ using namespace yas;
 
 #pragma mark - ui::metal_texture::impl
 
-struct ui::metal_texture::impl : ui::metal_object::impl {
+struct ui::metal_texture::impl {
     impl(ui::uint_size &&size, ui::texture_usages_t const usages, ui::pixel_format const format)
         : _size(std::move(size)),
           _texture_usage(to_mtl_texture_usage(usages)),
           _pixel_format(to_mtl_pixel_format(format)) {
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
             this->_texture_object.set_object(nil);
@@ -47,7 +47,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
 
             textureDesc.usage = this->_texture_usage;
 
-            this->_texture_object = this->_metal_system->makable().make_mtl_texture(textureDesc);
+            this->_texture_object = this->_metal_system->makable()->make_mtl_texture(textureDesc);
 
             if (!this->_texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
@@ -74,7 +74,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
             samplerDesc.lodMaxClamp = FLT_MAX;
             samplerDesc.supportArgumentBuffers = true;
 
-            this->_sampler_object = this->_metal_system->makable().make_mtl_sampler_state(samplerDesc);
+            this->_sampler_object = this->_metal_system->makable()->make_mtl_sampler_state(samplerDesc);
 
             if (!this->_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
@@ -82,7 +82,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
         }
 
         if (!this->_argument_encoder_object) {
-            this->_argument_encoder_object = this->_metal_system->makable().make_mtl_argument_encoder();
+            this->_argument_encoder_object = this->_metal_system->makable()->make_mtl_argument_encoder();
 
             if (!this->_argument_encoder_object) {
                 return ui::setup_metal_result{setup_metal_error::create_argument_encoder_failed};
@@ -90,7 +90,7 @@ struct ui::metal_texture::impl : ui::metal_object::impl {
 
             auto encoder = *this->_argument_encoder_object;
 
-            this->_argument_buffer_object = this->_metal_system->makable().make_mtl_buffer(encoder.encodedLength);
+            this->_argument_buffer_object = this->_metal_system->makable()->make_mtl_buffer(encoder.encodedLength);
 
             if (!this->_argument_buffer_object) {
                 return ui::setup_metal_result{setup_metal_error::create_argument_buffer_failed};
@@ -156,11 +156,12 @@ ui::metal_system_ptr const &ui::metal_texture::metal_system() {
     return this->_impl->_metal_system;
 }
 
-ui::metal_object &ui::metal_texture::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::metal_texture::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
+}
+
+ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 ui::metal_texture_ptr ui::metal_texture::make_shared(ui::uint_size size, ui::texture_usages_t const usages,

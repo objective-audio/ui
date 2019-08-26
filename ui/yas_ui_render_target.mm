@@ -17,7 +17,7 @@ using namespace yas;
 
 #pragma mark - render_target::impl
 
-struct ui::render_target::impl : renderable_render_target::impl, metal_object::impl {
+struct ui::render_target::impl {
     impl()
         : _src_texture(
               ui::texture::make_shared({.point_size = ui::uint_size::zero(),
@@ -123,58 +123,54 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
                                    .end();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
         }
 
-        if (auto ul = unless(this->_src_texture->metal().metal_setup(metal_system))) {
+        if (auto ul = unless(this->_src_texture->metal()->metal_setup(metal_system))) {
             return ul.value;
         }
 
-        if (auto ul = unless(this->_dst_texture->metal().metal_setup(metal_system))) {
+        if (auto ul = unless(this->_dst_texture->metal()->metal_setup(metal_system))) {
             return ul.value;
         }
 
         return ui::setup_metal_result{nullptr};
     }
 
-    ui::mesh_ptr const &mesh() override {
+    ui::mesh_ptr const &mesh() {
         return _mesh;
     }
 
-    ui::effect_ptr &effect() override {
-        return this->_effect->raw();
-    }
-
-    render_target_updates_t &updates() override {
+    render_target_updates_t &updates() {
         return this->_updates;
     }
 
-    void clear_updates() override {
+    void clear_updates() {
         this->_updates.flags.reset();
-        this->_mesh->renderable().clear_updates();
+        this->_mesh->renderable()->clear_updates();
         if (auto &effect = this->_effect->raw()) {
-            effect->renderable().clear_updates();
+            effect->renderable()->clear_updates();
         }
     }
 
-    MTLRenderPassDescriptor *renderPassDescriptor() override {
+    MTLRenderPassDescriptor *renderPassDescriptor() {
         return *_render_pass_descriptor;
     }
 
-    simd::float4x4 &projection_matrix() override {
+    simd::float4x4 &projection_matrix() {
         return _projection_matrix;
     }
 
-    bool push_encode_info(ui::render_stackable &stackable) override {
+    bool push_encode_info(ui::render_stackable_ptr const &stackable) {
         if (!this->_is_size_enough()) {
             return false;
         }
 
         auto target = this->_weak_render_target.lock();
         if (auto const &metal_system = this->_metal_system) {
-            metal_system->renderable().push_render_target(stackable, target);
+            metal_system->renderable()->push_render_target(stackable, target);
             return true;
         }
         return false;
@@ -215,7 +211,7 @@ struct ui::render_target::impl : renderable_render_target::impl, metal_object::i
 
     void _set_textures_to_effect() {
         if (auto const &effect = this->_effect->raw()) {
-            effect->renderable().set_textures(this->_src_texture, this->_dst_texture);
+            effect->renderable()->set_textures(this->_src_texture, this->_dst_texture);
         }
     }
 
@@ -254,7 +250,7 @@ void ui::render_target::set_effect(ui::effect_ptr effect) {
     this->_impl->_effect_setter->notify(effect);
 }
 
-ui::effect_ptr const &ui::render_target::effect() const {
+ui::effect_ptr const &ui::render_target::effect() {
     return this->_impl->_effect->raw();
 }
 
@@ -262,18 +258,12 @@ std::shared_ptr<chaining::receiver<double>> ui::render_target::scale_factor_rece
     return this->_impl->_scale_factor;
 }
 
-ui::renderable_render_target &ui::render_target::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_render_target{this->_impl};
-    }
-    return this->_renderable;
+ui::renderable_render_target_ptr ui::render_target::renderable() {
+    return std::dynamic_pointer_cast<renderable_render_target>(this->shared_from_this());
 }
 
-ui::metal_object &ui::render_target::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::render_target::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
@@ -282,6 +272,34 @@ void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &rendere
 
 void ui::render_target::_prepare(ui::render_target_ptr const &shared) {
     this->_impl->prepare(shared);
+}
+
+ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
+}
+
+ui::mesh_ptr const &ui::render_target::mesh() {
+    return this->_impl->mesh();
+}
+
+ui::render_target_updates_t &ui::render_target::updates() {
+    return this->_impl->updates();
+}
+
+void ui::render_target::clear_updates() {
+    this->_impl->clear_updates();
+}
+
+MTLRenderPassDescriptor *ui::render_target::renderPassDescriptor() {
+    return this->_impl->renderPassDescriptor();
+}
+
+simd::float4x4 &ui::render_target::projection_matrix() {
+    return this->_impl->projection_matrix();
+}
+
+bool ui::render_target::push_encode_info(ui::render_stackable_ptr const &stackable) {
+    return this->_impl->push_encode_info(stackable);
 }
 
 ui::render_target_ptr ui::render_target::make_shared() {

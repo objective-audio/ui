@@ -10,7 +10,7 @@ using namespace yas;
 
 #pragma mark - ui::mesh_data::impl
 
-struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
+struct ui::mesh_data::impl {
     impl(mesh_data::args &&args)
         : _vertex_count(args.vertex_count),
           _vertices(args.vertex_count),
@@ -19,7 +19,7 @@ struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
         this->_updates.flags.set();
     }
 
-    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) override {
+    ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_metal_system != metal_system) {
             this->_metal_system = metal_system;
             this->_vertex_buffer.set_object(nil);
@@ -29,7 +29,7 @@ struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
         if (!this->_vertex_buffer) {
             auto const vertex_length = this->_vertices.size() * sizeof(ui::vertex2d_t) * this->dynamic_buffer_count();
 
-            this->_vertex_buffer = this->_metal_system->makable().make_mtl_buffer(vertex_length);
+            this->_vertex_buffer = this->_metal_system->makable()->make_mtl_buffer(vertex_length);
 
             if (!this->_vertex_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_vertex_buffer_failed};
@@ -39,7 +39,7 @@ struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
         if (!this->_index_buffer) {
             auto const index_length = this->_indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
-            this->_index_buffer = this->_metal_system->makable().make_mtl_buffer(index_length);
+            this->_index_buffer = this->_metal_system->makable()->make_mtl_buffer(index_length);
 
             if (!this->_index_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_index_buffer_failed};
@@ -49,7 +49,7 @@ struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
         return ui::setup_metal_result{nullptr};
     }
 
-    void update_render_buffer() override {
+    void update_render_buffer() {
         if (this->_updates.test(ui::mesh_data_update_reason::render_buffer)) {
             this->_dynamic_buffer_index = (this->_dynamic_buffer_index + 1) % this->dynamic_buffer_count();
 
@@ -65,27 +65,27 @@ struct ui::mesh_data::impl : metal_object::impl, renderable_mesh_data::impl {
         }
     }
 
-    void clear_updates() override {
+    virtual void clear_updates() {
         this->_updates.flags.reset();
     }
 
-    std::size_t vertex_buffer_byte_offset() override {
+    virtual std::size_t vertex_buffer_byte_offset() {
         return 0;
     }
 
-    std::size_t index_buffer_byte_offset() override {
+    virtual std::size_t index_buffer_byte_offset() {
         return 0;
     }
 
-    id<MTLBuffer> vertexBuffer() override {
+    virtual id<MTLBuffer> vertexBuffer() {
         return this->_vertex_buffer.object();
     }
 
-    id<MTLBuffer> indexBuffer() override {
+    virtual id<MTLBuffer> indexBuffer() {
         return this->_index_buffer.object();
     }
 
-    mesh_data_updates_t const &updates() override {
+    virtual mesh_data_updates_t const &updates() {
         return this->_updates;
     }
 
@@ -151,18 +151,44 @@ ui::metal_system_ptr const &ui::mesh_data::metal_system() {
     return this->_impl->_metal_system;
 }
 
-ui::metal_object &ui::mesh_data::metal() {
-    if (!this->_metal_object) {
-        this->_metal_object = ui::metal_object{this->_impl};
-    }
-    return this->_metal_object;
+ui::metal_object_ptr ui::mesh_data::metal() {
+    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
-ui::renderable_mesh_data &ui::mesh_data::renderable() {
-    if (!this->_renderable) {
-        this->_renderable = ui::renderable_mesh_data{this->_impl};
-    }
-    return this->_renderable;
+ui::renderable_mesh_data_ptr ui::mesh_data::renderable() {
+    return std::dynamic_pointer_cast<renderable_mesh_data>(this->shared_from_this());
+}
+
+std::size_t ui::mesh_data::vertex_buffer_byte_offset() {
+    return this->_impl->vertex_buffer_byte_offset();
+}
+
+std::size_t ui::mesh_data::index_buffer_byte_offset() {
+    return this->_impl->index_buffer_byte_offset();
+}
+
+id<MTLBuffer> ui::mesh_data::vertexBuffer() {
+    return this->_impl->vertexBuffer();
+}
+
+id<MTLBuffer> ui::mesh_data::indexBuffer() {
+    return this->_impl->indexBuffer();
+}
+
+ui::mesh_data_updates_t const &ui::mesh_data::updates() {
+    return this->_impl->updates();
+}
+
+void ui::mesh_data::update_render_buffer() {
+    this->_impl->update_render_buffer();
+}
+
+void ui::mesh_data::clear_updates() {
+    this->_impl->clear_updates();
+}
+
+ui::setup_metal_result ui::mesh_data::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+    return this->_impl->metal_setup(system);
 }
 
 ui::mesh_data_ptr ui::mesh_data::make_shared(args args) {

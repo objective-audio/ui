@@ -10,14 +10,13 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-
-struct detector final {
+struct detector final : updatable_detector, std::enable_shared_from_this<detector> {
     virtual ~detector();
 
     ui::collider_ptr detect(ui::point const &) const;
     bool detect(ui::point const &, ui::collider_ptr const &) const;
 
-    ui::updatable_detector &updatable();
+    ui::updatable_detector_ptr updatable();
 
     [[nodiscard]] static detector_ptr make_shared();
 
@@ -26,8 +25,11 @@ struct detector final {
 
     std::shared_ptr<impl> _impl;
 
-    ui::updatable_detector _updatable = nullptr;
-
     detector();
+
+    bool is_updating() override;
+    void begin_update() override;
+    void push_front_collider(ui::collider_ptr const &) override;
+    void end_update() override;
 };
 }  // namespace yas::ui

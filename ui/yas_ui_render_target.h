@@ -14,7 +14,7 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-struct render_target {
+struct render_target : metal_object, renderable_render_target, std::enable_shared_from_this<render_target> {
     class impl;
 
     ui::layout_guide_rect_ptr &layout_guide_rect();
@@ -23,12 +23,12 @@ struct render_target {
     double scale_factor() const;
 
     void set_effect(ui::effect_ptr);
-    ui::effect_ptr const &effect() const;
+    ui::effect_ptr const &effect() override;
 
     std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
 
-    ui::renderable_render_target &renderable();
-    ui::metal_object &metal();
+    ui::renderable_render_target_ptr renderable();
+    ui::metal_object_ptr metal();
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -36,9 +36,6 @@ struct render_target {
 
    private:
     std::shared_ptr<impl> _impl;
-
-    ui::metal_object _metal_object = nullptr;
-    ui::renderable_render_target _renderable = nullptr;
 
     render_target();
 
@@ -48,5 +45,14 @@ struct render_target {
     render_target &operator=(render_target &&) = delete;
 
     void _prepare(render_target_ptr const &);
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
+
+    ui::mesh_ptr const &mesh() override;
+    render_target_updates_t &updates() override;
+    void clear_updates() override;
+    MTLRenderPassDescriptor *renderPassDescriptor() override;
+    simd::float4x4 &projection_matrix() override;
+    bool push_encode_info(ui::render_stackable_ptr const &) override;
 };
 }  // namespace yas::ui

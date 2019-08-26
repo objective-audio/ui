@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <string>
 #include "yas_ui_types.h"
 
@@ -119,22 +118,16 @@ static touch constexpr touch_tag{};
 static key constexpr key_tag{};
 static modifier constexpr modifier_tag{};
 
-struct event_inputtable : protocol {
-    struct impl : protocol::impl {
-        virtual void input_cursor_event(cursor_event &&value) = 0;
-        virtual void input_touch_event(event_phase const, touch_event &&) = 0;
-        virtual void input_key_event(event_phase const, key_event &&) = 0;
-        virtual void input_modifier_event(modifier_flags &&, double const) = 0;
-    };
+struct event_inputtable {
+    virtual ~event_inputtable() = default;
 
-    explicit event_inputtable(std::shared_ptr<impl>);
-    event_inputtable(std::nullptr_t);
-
-    void input_cursor_event(cursor_event);
-    void input_touch_event(event_phase const, touch_event);
-    void input_key_event(event_phase const, key_event);
-    void input_modifier_event(modifier_flags, double const timestamp);
+    virtual void input_cursor_event(cursor_event const &) = 0;
+    virtual void input_touch_event(event_phase const, touch_event const &) = 0;
+    virtual void input_key_event(event_phase const, key_event const &) = 0;
+    virtual void input_modifier_event(modifier_flags const &, double const timestamp) = 0;
 };
+
+using event_inputtable_ptr = std::shared_ptr<event_inputtable>;
 }  // namespace yas::ui
 
 namespace yas {

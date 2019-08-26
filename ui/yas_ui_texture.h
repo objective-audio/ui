@@ -17,7 +17,7 @@ class image;
 class metal_texture;
 class texture_element;
 
-struct texture {
+struct texture : metal_object, std::enable_shared_from_this<texture> {
     class impl;
 
     struct args {
@@ -54,7 +54,7 @@ struct texture {
     [[nodiscard]] chaining::chain_relayed_unsync_t<texture_ptr, chain_pair_t> chain(method const &) const;
     [[nodiscard]] std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
 
-    ui::metal_object &metal();
+    ui::metal_object_ptr metal();
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -63,11 +63,11 @@ struct texture {
    private:
     std::shared_ptr<impl> _impl;
 
-    ui::metal_object _metal_object = nullptr;
-
     explicit texture(args &&);
 
     void _prepare(texture_ptr const &);
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 }  // namespace yas::ui
 
