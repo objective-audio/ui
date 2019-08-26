@@ -72,7 +72,7 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     [[nodiscard]] static renderer_ptr make_shared(ui::metal_system_ptr const &);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);
 

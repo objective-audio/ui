@@ -96,7 +96,7 @@ struct ui::metal_render_encoder::impl {
     }
 };
 
-ui::metal_render_encoder::metal_render_encoder() : _impl(std::make_shared<impl>()) {
+ui::metal_render_encoder::metal_render_encoder() : _impl(std::make_unique<impl>()) {
 }
 
 ui::metal_render_encoder::~metal_render_encoder() = default;

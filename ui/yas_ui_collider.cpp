@@ -109,10 +109,10 @@ struct ui::collider::impl {
     }
 };
 
-ui::collider::collider() : _impl(std::make_shared<impl>(nullptr)) {
+ui::collider::collider() : _impl(std::make_unique<impl>(nullptr)) {
 }
 
-ui::collider::collider(ui::shape_ptr &&shape) : _impl(std::make_shared<impl>(std::move(shape))) {
+ui::collider::collider(ui::shape_ptr &&shape) : _impl(std::make_unique<impl>(std::move(shape))) {
 }
 
 ui::collider::~collider() = default;

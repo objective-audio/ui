@@ -270,7 +270,7 @@ struct ui::renderer::impl {
 
 #pragma mark - renderer
 
-ui::renderer::renderer(ui::metal_system_ptr const &metal_system) : _impl(std::make_shared<impl>(metal_system)) {
+ui::renderer::renderer(ui::metal_system_ptr const &metal_system) : _impl(std::make_unique<impl>(metal_system)) {
 }
 
 ui::renderer::~renderer() = default;

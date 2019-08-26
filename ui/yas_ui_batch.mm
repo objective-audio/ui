@@ -117,7 +117,7 @@ struct ui::batch::impl {
     }
 };
 
-ui::batch::batch() : _impl(std::make_shared<impl>()) {
+ui::batch::batch() : _impl(std::make_unique<impl>()) {
 }
 
 ui::batch::~batch() = default;

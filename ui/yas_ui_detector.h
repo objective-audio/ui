@@ -23,7 +23,7 @@ struct detector final : updatable_detector, std::enable_shared_from_this<detecto
    private:
     class impl;
 
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     detector();
 

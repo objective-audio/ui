@@ -270,7 +270,7 @@ template void ui::manageable_event::set<ui::modifier>(ui::modifier::type);
 
 #pragma mark - event_manager
 
-ui::event_manager::event_manager() : _impl(std::make_shared<impl>()) {
+ui::event_manager::event_manager() : _impl(std::make_unique<impl>()) {
 }
 
 ui::event_manager::~event_manager() = default;

@@ -35,7 +35,7 @@ struct render_target : metal_object, renderable_render_target, std::enable_share
     [[nodiscard]] static render_target_ptr make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     render_target();
 

@@ -43,7 +43,7 @@ struct font_atlas final {
     [[nodiscard]] static font_atlas_ptr make_shared(args);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     font_atlas(args &&);
 

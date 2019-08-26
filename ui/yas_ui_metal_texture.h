@@ -34,7 +34,7 @@ struct metal_texture : metal_object, std::enable_shared_from_this<metal_texture>
                                                        ui::pixel_format const);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     metal_texture(ui::uint_size &&, ui::texture_usages_t const, ui::pixel_format const);
 

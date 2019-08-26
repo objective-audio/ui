@@ -36,7 +36,7 @@ struct metal_render_encoder final : render_encodable,
     [[nodiscard]] static metal_render_encoder_ptr make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     metal_render_encoder();
 

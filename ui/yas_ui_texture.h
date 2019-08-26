@@ -61,7 +61,7 @@ struct texture : metal_object, std::enable_shared_from_this<texture> {
     [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     explicit texture(args &&);
 

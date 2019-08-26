@@ -39,7 +39,7 @@ struct metal_encode_info final {
     [[nodiscard]] static metal_encode_info_ptr make_shared(args);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     metal_encode_info(args &&);
 

@@ -243,7 +243,7 @@ struct ui::texture::impl {
 };
 
 ui::texture::texture(args &&args)
-    : _impl(std::make_shared<impl>(std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
+    : _impl(std::make_unique<impl>(std::move(args.point_size), args.scale_factor, args.draw_padding, args.usages,
                                    args.pixel_format)) {
 }
 

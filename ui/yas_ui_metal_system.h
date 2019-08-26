@@ -28,7 +28,7 @@ struct metal_system final : renderable_metal_system,
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const, uint32_t const sample_count);
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     metal_system(id<MTLDevice> const, uint32_t const sample_count);
 

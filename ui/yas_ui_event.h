@@ -80,7 +80,7 @@ struct event_manager : event_inputtable, std::enable_shared_from_this<event_mana
     [[nodiscard]] static event_manager_ptr make_shared();
 
    private:
-    std::shared_ptr<impl> _impl;
+    std::unique_ptr<impl> _impl;
 
     event_manager();
 
