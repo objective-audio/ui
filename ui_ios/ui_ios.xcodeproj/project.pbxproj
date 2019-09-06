@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B60DC9F1230D0B7F00EB803A /* yas_ui_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B60DC9F0230D0B7F00EB803A /* yas_ui_ptr.h */; };
+		B60DC9F1230D0B7F00EB803A /* yas_ui_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B60DC9F0230D0B7F00EB803A /* yas_ui_ptr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61E354D21E6303700DF35C3 /* ui.h in Headers */ = {isa = PBXBuildFile; fileRef = B61E354B21E6303700DF35C3 /* ui.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61E35C421E6307500DF35C3 /* yas_ui_renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B61E355221E6307500DF35C3 /* yas_ui_renderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61E35C521E6307500DF35C3 /* yas_ui_event_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B61E355321E6307500DF35C3 /* yas_ui_event_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
