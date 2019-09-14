@@ -6,6 +6,10 @@
 
 using namespace yas;
 
+std::shared_ptr<ui::metal_object> ui::metal_object::cast(std::shared_ptr<metal_object> const &metal_object) {
+    return metal_object;
+}
+
 std::string yas::to_string(ui::setup_metal_error const error) {
     switch (error) {
         case ui::setup_metal_error::create_texture_descriptor_failed:

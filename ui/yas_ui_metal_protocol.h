@@ -28,6 +28,8 @@ struct metal_object {
     virtual ~metal_object() = default;
 
     virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
+
+    static std::shared_ptr<metal_object> cast(std::shared_ptr<metal_object> const &);
 };
 
 using metal_object_ptr = std::shared_ptr<metal_object>;
