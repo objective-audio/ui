@@ -38,7 +38,7 @@ using namespace yas;
 
     XCTAssertTrue(std::dynamic_pointer_cast<ui::renderable_batch>(batch));
     XCTAssertTrue(std::dynamic_pointer_cast<ui::render_encodable>(batch));
-    XCTAssertTrue(batch->metal());
+    XCTAssertTrue(std::dynamic_pointer_cast<ui::metal_object>(batch));
 }
 
 - (void)test_render_mesh_building {
@@ -247,7 +247,7 @@ using namespace yas;
 
     batch_renderable->commit_render_meshes_building();
 
-    XCTAssertTrue(batch->metal()->metal_setup(metal_system));
+    XCTAssertTrue(std::dynamic_pointer_cast<ui::metal_object>(batch)->metal_setup(metal_system));
 }
 
 - (void)test_batch_building_type_to_string {

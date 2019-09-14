@@ -13,8 +13,6 @@ namespace yas::ui {
 struct batch final : renderable_batch, render_encodable, metal_object {
     virtual ~batch();
 
-    ui::metal_object_ptr metal();
-
     [[nodiscard]] static batch_ptr make_shared();
 
    private:

@@ -280,7 +280,7 @@ struct ui::node::impl {
         }
 
         if (auto &batch = this->_batch->raw()) {
-            if (auto ul = unless(batch->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(std::dynamic_pointer_cast<ui::metal_object>(batch)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }

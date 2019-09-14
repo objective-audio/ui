@@ -146,10 +146,6 @@ ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> 
     return this->_impl->metal_setup(system);
 }
 
-ui::metal_object_ptr ui::batch::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->_weak_batch.lock());
-}
-
 ui::batch_ptr ui::batch::make_shared() {
     auto shared = std::shared_ptr<batch>(new batch{});
     shared->_weak_batch = shared;
