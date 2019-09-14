@@ -30,7 +30,7 @@ using namespace yas;
 - (void)test_create {
     auto encoder = ui::metal_render_encoder::make_shared();
 
-    XCTAssertTrue(encoder->encodable());
+    XCTAssertTrue(ui::render_encodable::cast(encoder));
 }
 
 - (void)test_push_and_pop_encode_info {
@@ -73,7 +73,7 @@ using namespace yas;
     XCTAssertEqual(encode_info->meshes().size(), 0);
 
     auto mesh = ui::mesh::make_shared();
-    encoder->encodable()->append_mesh(mesh);
+    ui::render_encodable::cast(encoder)->append_mesh(mesh);
 
     XCTAssertEqual(encode_info->meshes().size(), 1);
     XCTAssertEqual(encode_info->meshes().at(0), mesh);

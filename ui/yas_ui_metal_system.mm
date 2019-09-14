@@ -298,7 +298,7 @@ struct ui::metal_system::impl {
         auto metal_system = this->_weak_metal_system.lock();
 
         ui::render_info render_info{.detector = renderer->detector(),
-                                    .render_encodable = metal_render_encoder->encodable(),
+                                    .render_encodable = render_encodable::cast(metal_render_encoder),
                                     .render_effectable = metal_render_encoder->effectable(),
                                     .render_stackable = metal_render_encoder->stackable(),
                                     .matrix = renderer->projection_matrix(),

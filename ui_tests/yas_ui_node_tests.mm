@@ -532,7 +532,7 @@ struct test_render_encoder : ui::render_encodable {
     auto render_encoder = test::test_render_encoder::make_shared();
 
     ui::render_info render_info{.detector = detector,
-                                .render_encodable = std::dynamic_pointer_cast<ui::render_encodable>(render_encoder),
+                                .render_encodable = ui::render_encodable::cast(render_encoder),
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 

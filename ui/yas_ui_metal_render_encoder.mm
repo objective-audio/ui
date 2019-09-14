@@ -130,10 +130,6 @@ ui::metal_encode_info_ptr const &ui::metal_render_encoder::current_encode_info()
     return this->_impl->current_encode_info();
 }
 
-ui::render_encodable_ptr ui::metal_render_encoder::encodable() {
-    return std::dynamic_pointer_cast<render_encodable>(this->shared_from_this());
-}
-
 ui::render_effectable_ptr ui::metal_render_encoder::effectable() {
     return std::dynamic_pointer_cast<render_effectable>(this->shared_from_this());
 }
