@@ -69,7 +69,7 @@ struct shape final {
     [[nodiscard]] static shape_ptr make_shared(rect::type);
 };
 
-struct collider final : renderable_collider, std::enable_shared_from_this<collider> {
+struct collider final : renderable_collider {
     virtual ~collider();
 
     void set_shape(ui::shape_ptr);
@@ -95,8 +95,8 @@ struct collider final : renderable_collider, std::enable_shared_from_this<collid
     class impl;
 
     std::unique_ptr<impl> _impl;
+    std::weak_ptr<collider> _weak_collider;
 
-    collider();
     explicit collider(ui::shape_ptr &&);
 
     simd::float4x4 const &matrix() const override;
