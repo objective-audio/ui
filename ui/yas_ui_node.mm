@@ -65,20 +65,21 @@ struct ui::node::impl {
 
         // batch
 
-        auto batch_observer = this->_batch->chain()
-                                  .perform([prev_batch = std::shared_ptr<ui::batch>{nullptr}](
-                                               std::shared_ptr<ui::batch> const &batch) mutable {
-                                      if (prev_batch) {
-                                          prev_batch->renderable()->clear_render_meshes();
-                                      }
+        auto batch_observer =
+            this->_batch->chain()
+                .perform([prev_batch =
+                              std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
+                    if (prev_batch) {
+                        std::dynamic_pointer_cast<renderable_batch>(prev_batch)->clear_render_meshes();
+                    }
 
-                                      if (batch) {
-                                          batch->renderable()->clear_render_meshes();
-                                      }
+                    if (batch) {
+                        std::dynamic_pointer_cast<renderable_batch>(batch)->clear_render_meshes();
+                    }
 
-                                      prev_batch = batch;
-                                  })
-                                  .end();
+                    prev_batch = batch;
+                })
+                .end();
 
         auto batch_chain = this->_batch->chain().to_value(ui::node_update_reason::batch);
 
@@ -224,7 +225,7 @@ struct ui::node::impl {
                 auto const building_type = tree_updates.batch_building_type();
 
                 ui::render_info batch_render_info{.detector = render_info.detector};
-                auto batch_renderable = batch->renderable();
+                auto const batch_renderable = std::dynamic_pointer_cast<renderable_batch>(batch);
 
                 if (to_bool(building_type)) {
                     batch_render_info.render_encodable = batch->encodable();

@@ -13,7 +13,6 @@ namespace yas::ui {
 struct batch final : renderable_batch, render_encodable, metal_object {
     virtual ~batch();
 
-    std::shared_ptr<ui::renderable_batch> renderable();
     std::shared_ptr<ui::render_encodable> encodable();
     ui::metal_object_ptr metal();
 
