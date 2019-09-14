@@ -6,6 +6,10 @@
 
 using namespace yas;
 
+ui::renderable_batch_ptr ui::renderable_batch::cast(renderable_batch_ptr const &renderable) {
+    return renderable;
+}
+
 std::string yas::to_string(ui::batch_building_type const &type) {
     switch (type) {
         case ui::batch_building_type::rebuild:

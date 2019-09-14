@@ -65,21 +65,20 @@ struct ui::node::impl {
 
         // batch
 
-        auto batch_observer =
-            this->_batch->chain()
-                .perform([prev_batch =
-                              std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
-                    if (prev_batch) {
-                        std::dynamic_pointer_cast<renderable_batch>(prev_batch)->clear_render_meshes();
-                    }
+        auto batch_observer = this->_batch->chain()
+                                  .perform([prev_batch = std::shared_ptr<ui::batch>{nullptr}](
+                                               std::shared_ptr<ui::batch> const &batch) mutable {
+                                      if (prev_batch) {
+                                          renderable_batch::cast(prev_batch)->clear_render_meshes();
+                                      }
 
-                    if (batch) {
-                        std::dynamic_pointer_cast<renderable_batch>(batch)->clear_render_meshes();
-                    }
+                                      if (batch) {
+                                          renderable_batch::cast(batch)->clear_render_meshes();
+                                      }
 
-                    prev_batch = batch;
-                })
-                .end();
+                                      prev_batch = batch;
+                                  })
+                                  .end();
 
         auto batch_chain = this->_batch->chain().to_value(ui::node_update_reason::batch);
 

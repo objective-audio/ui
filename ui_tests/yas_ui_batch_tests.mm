@@ -36,7 +36,7 @@ using namespace yas;
 
     XCTAssertTrue(batch);
 
-    XCTAssertTrue(std::dynamic_pointer_cast<ui::renderable_batch>(batch));
+    XCTAssertTrue(ui::renderable_batch::cast(batch));
     XCTAssertTrue(std::dynamic_pointer_cast<ui::render_encodable>(batch));
     XCTAssertTrue(ui::metal_object::cast(batch));
 }
@@ -49,7 +49,7 @@ using namespace yas;
     }
 
     auto batch = ui::batch::make_shared();
-    auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_renderable = ui::renderable_batch::cast(batch);
     auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
@@ -89,7 +89,7 @@ using namespace yas;
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch = ui::batch::make_shared();
-    auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_renderable = ui::renderable_batch::cast(batch);
     auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     auto mesh1 = ui::mesh::make_shared();
@@ -181,7 +181,7 @@ using namespace yas;
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch = ui::batch::make_shared();
-    auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_renderable = ui::renderable_batch::cast(batch);
     auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     auto mesh = ui::mesh::make_shared();
@@ -232,7 +232,7 @@ using namespace yas;
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch = ui::batch::make_shared();
-    auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_renderable = ui::renderable_batch::cast(batch);
     auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     auto mesh = ui::mesh::make_shared();

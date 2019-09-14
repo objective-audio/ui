@@ -17,6 +17,9 @@ enum class batch_building_type {
     overwrite,
 };
 
+class renderable_batch;
+using renderable_batch_ptr = std::shared_ptr<renderable_batch>;
+
 struct renderable_batch {
     virtual ~renderable_batch() = default;
 
@@ -24,6 +27,8 @@ struct renderable_batch {
     virtual void begin_render_meshes_building(batch_building_type const) = 0;
     virtual void commit_render_meshes_building() = 0;
     virtual void clear_render_meshes() = 0;
+
+    static renderable_batch_ptr cast(renderable_batch_ptr const &);
 };
 }  // namespace yas::ui
 
