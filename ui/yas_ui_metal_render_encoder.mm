@@ -130,10 +130,6 @@ ui::metal_encode_info_ptr const &ui::metal_render_encoder::current_encode_info()
     return this->_impl->current_encode_info();
 }
 
-ui::render_stackable_ptr ui::metal_render_encoder::stackable() {
-    return std::dynamic_pointer_cast<render_stackable>(this->shared_from_this());
-}
-
 ui::metal_render_encoder_ptr ui::metal_render_encoder::make_shared() {
     return std::shared_ptr<metal_render_encoder>(new metal_render_encoder{});
 }

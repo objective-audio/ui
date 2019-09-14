@@ -35,7 +35,7 @@ using namespace yas;
 
 - (void)test_push_and_pop_encode_info {
     auto encoder = ui::metal_render_encoder::make_shared();
-    auto const &stackable = encoder->stackable();
+    auto const stackable = ui::render_stackable::cast(encoder);
 
     stackable->push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
 
@@ -64,7 +64,7 @@ using namespace yas;
 
 - (void)test_append_mesh {
     auto encoder = ui::metal_render_encoder::make_shared();
-    auto const &stackable = encoder->stackable();
+    auto const stackable = ui::render_stackable::cast(encoder);
 
     stackable->push_encode_info(ui::metal_encode_info::make_shared({nil, nil, nil}));
 
@@ -102,7 +102,7 @@ using namespace yas;
         auto const commandBuffer = [commandQueue commandBuffer];
 
         auto encoder = ui::metal_render_encoder::make_shared();
-        auto const &stackable = encoder->stackable();
+        auto const stackable = ui::render_stackable::cast(encoder);
 
         auto encode_info = ui::metal_encode_info::make_shared(
             {view.currentRenderPassDescriptor, metal_system->testable()->mtlRenderPipelineStateWithTexture(),

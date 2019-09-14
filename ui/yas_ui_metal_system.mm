@@ -290,17 +290,18 @@ struct ui::metal_system::impl {
     void _render_nodes(ui::renderer_ptr const &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         auto metal_render_encoder = ui::metal_render_encoder::make_shared();
-        metal_render_encoder->stackable()->push_encode_info(ui::metal_encode_info::make_shared(
-            {.renderPassDescriptor = renderPassDesc,
-             .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
-             .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));
+        render_stackable::cast(metal_render_encoder)
+            ->push_encode_info(ui::metal_encode_info::make_shared(
+                {.renderPassDescriptor = renderPassDesc,
+                 .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
+                 .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));
 
         auto metal_system = this->_weak_metal_system.lock();
 
         ui::render_info render_info{.detector = renderer->detector(),
                                     .render_encodable = render_encodable::cast(metal_render_encoder),
                                     .render_effectable = render_effectable::cast(metal_render_encoder),
-                                    .render_stackable = metal_render_encoder->stackable(),
+                                    .render_stackable = render_stackable::cast(metal_render_encoder),
                                     .matrix = renderer->projection_matrix(),
                                     .mesh_matrix = renderer->projection_matrix()};
 

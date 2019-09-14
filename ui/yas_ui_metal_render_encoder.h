@@ -27,8 +27,6 @@ struct metal_render_encoder final : render_encodable,
     encode_result_t encode(std::shared_ptr<ui::metal_system> const &metal_system,
                            id<MTLCommandBuffer> const commandBuffer);
 
-    ui::render_stackable_ptr stackable();
-
     [[nodiscard]] static metal_render_encoder_ptr make_shared();
 
    private:
