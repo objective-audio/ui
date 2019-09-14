@@ -16,8 +16,6 @@ struct metal_render_encoder final : render_encodable,
                                     render_effectable,
                                     render_stackable,
                                     std::enable_shared_from_this<metal_render_encoder> {
-    class impl;
-
     struct encode_result_t {
         std::size_t const encoded_mesh_count;
     };
@@ -36,6 +34,8 @@ struct metal_render_encoder final : render_encodable,
     [[nodiscard]] static metal_render_encoder_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     metal_render_encoder();

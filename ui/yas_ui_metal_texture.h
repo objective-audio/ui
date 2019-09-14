@@ -14,8 +14,6 @@ class uint_size;
 class metal_system;
 
 struct metal_texture : metal_object, std::enable_shared_from_this<metal_texture> {
-    class impl;
-
     virtual ~metal_texture() final;
 
     ui::uint_size size() const;
@@ -34,6 +32,8 @@ struct metal_texture : metal_object, std::enable_shared_from_this<metal_texture>
                                                        ui::pixel_format const);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     metal_texture(ui::uint_size &&, ui::texture_usages_t const, ui::pixel_format const);

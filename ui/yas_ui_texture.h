@@ -18,8 +18,6 @@ class metal_texture;
 class texture_element;
 
 struct texture : metal_object, std::enable_shared_from_this<texture> {
-    class impl;
-
     struct args {
         ui::uint_size point_size;
         double scale_factor = 1.0;
@@ -61,6 +59,8 @@ struct texture : metal_object, std::enable_shared_from_this<texture> {
     [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit texture(args &&);

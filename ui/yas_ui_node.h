@@ -24,8 +24,6 @@ class layout_guide;
 class layout_guide_point;
 
 struct node final : action_target, metal_object, renderable_node, std::enable_shared_from_this<node> {
-    class impl;
-
     enum class method {
         added_to_super,
         removed_from_super,
@@ -86,6 +84,8 @@ struct node final : action_target, metal_object, renderable_node, std::enable_sh
     [[nodiscard]] static std::shared_ptr<node> make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     node();

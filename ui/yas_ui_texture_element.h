@@ -13,8 +13,6 @@ namespace yas::ui {
 class image;
 
 struct texture_element {
-    class impl;
-
     ui::draw_pair_t const &draw_pair() const;
 
     void set_tex_coords(ui::uint_region const &);

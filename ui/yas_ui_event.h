@@ -61,8 +61,6 @@ struct event : manageable_event, std::enable_shared_from_this<event> {
 };
 
 struct event_manager : event_inputtable, std::enable_shared_from_this<event_manager> {
-    class impl;
-
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
 
     struct context {
@@ -80,6 +78,8 @@ struct event_manager : event_inputtable, std::enable_shared_from_this<event_mana
     [[nodiscard]] static event_manager_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     event_manager();

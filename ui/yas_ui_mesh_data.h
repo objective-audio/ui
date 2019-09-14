@@ -60,8 +60,6 @@ struct mesh_data : renderable_mesh_data, metal_object, std::enable_shared_from_t
 };
 
 struct dynamic_mesh_data final : mesh_data {
-    class impl;
-
     virtual ~dynamic_mesh_data();
 
     std::size_t max_vertex_count() const;
@@ -73,6 +71,8 @@ struct dynamic_mesh_data final : mesh_data {
     [[nodiscard]] static dynamic_mesh_data_ptr make_shared(args);
 
    private:
+    class impl;
+
     dynamic_mesh_data(args &&);
 
     dynamic_mesh_data(dynamic_mesh_data const &) = delete;

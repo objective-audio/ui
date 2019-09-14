@@ -24,8 +24,6 @@ namespace layout_action {
 [[nodiscard]] std::shared_ptr<ui::continuous_action> make_action(layout_action::args);
 
 struct layout_animator {
-    class impl;
-
     struct args {
         ui::renderer_wptr renderer;
         std::vector<ui::layout_guide_pair> layout_guide_pairs;
@@ -38,6 +36,8 @@ struct layout_animator {
     [[nodiscard]] static layout_animator_ptr make_shared(args);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit layout_animator(args);

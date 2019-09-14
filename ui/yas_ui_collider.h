@@ -70,8 +70,6 @@ struct shape final {
 };
 
 struct collider final : renderable_collider, std::enable_shared_from_this<collider> {
-    class impl;
-
     virtual ~collider();
 
     void set_shape(ui::shape_ptr);
@@ -94,6 +92,8 @@ struct collider final : renderable_collider, std::enable_shared_from_this<collid
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     collider();

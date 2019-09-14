@@ -14,8 +14,6 @@ struct metal_system final : renderable_metal_system,
                             makable_metal_system,
                             testable_metal_system,
                             std::enable_shared_from_this<metal_system> {
-    class impl;
-
     virtual ~metal_system();
 
     std::size_t last_encoded_mesh_count() const;
@@ -28,6 +26,8 @@ struct metal_system final : renderable_metal_system,
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const, uint32_t const sample_count);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     metal_system(id<MTLDevice> const, uint32_t const sample_count);

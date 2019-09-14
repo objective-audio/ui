@@ -15,8 +15,6 @@
 
 namespace yas::ui {
 struct render_target : metal_object, renderable_render_target, std::enable_shared_from_this<render_target> {
-    class impl;
-
     ui::layout_guide_rect_ptr &layout_guide_rect();
 
     void set_scale_factor(double const);
@@ -35,6 +33,8 @@ struct render_target : metal_object, renderable_render_target, std::enable_share
     [[nodiscard]] static render_target_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     render_target();

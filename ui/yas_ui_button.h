@@ -16,8 +16,6 @@ class touch_event;
 class texture;
 
 struct button final : std::enable_shared_from_this<button> {
-    class impl;
-
     enum class method {
         began,
         entered,
@@ -55,6 +53,8 @@ struct button final : std::enable_shared_from_this<button> {
     [[nodiscard]] static button_ptr make_shared(ui::region const &, std::size_t const state_count);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     button(ui::region const &region, std::size_t const state_count);

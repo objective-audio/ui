@@ -15,8 +15,6 @@ namespace yas::ui {
 class texture;
 
 struct metal_encode_info final {
-    class impl;
-
     struct args {
         MTLRenderPassDescriptor *renderPassDescriptor = nil;
         id<MTLRenderPipelineState> pipelineStateWithTexture = nil;
@@ -39,6 +37,8 @@ struct metal_encode_info final {
     [[nodiscard]] static metal_encode_info_ptr make_shared(args);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     metal_encode_info(args &&);

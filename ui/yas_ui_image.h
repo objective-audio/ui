@@ -11,8 +11,6 @@
 
 namespace yas::ui {
 struct image final {
-    class impl;
-
     struct args {
         ui::uint_size point_size;
         double scale_factor = 1.0;
@@ -33,6 +31,8 @@ struct image final {
     [[nodiscard]] static image_ptr make_shared(args const &);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     image(args const &);

@@ -11,8 +11,6 @@
 
 namespace yas::ui {
 struct layout_guide final : chaining::receiver<float>, action_target {
-    class impl;
-
     virtual ~layout_guide();
 
     void set_value(float const);
@@ -31,6 +29,8 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit layout_guide(float const);
@@ -44,8 +44,6 @@ struct layout_guide final : chaining::receiver<float>, action_target {
 };
 
 struct layout_guide_point final : chaining::receiver<ui::point> {
-    class impl;
-
     virtual ~layout_guide_point();
 
     ui::layout_guide_ptr &x();
@@ -69,6 +67,8 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit layout_guide_point(ui::point &&);
@@ -80,8 +80,6 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
 };
 
 struct layout_guide_range : chaining::receiver<ui::range> {
-    class impl;
-
     virtual ~layout_guide_range() final;
 
     layout_guide_ptr &min();
@@ -106,6 +104,8 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit layout_guide_range(ui::range &&);
@@ -119,8 +119,6 @@ struct layout_guide_range : chaining::receiver<ui::range> {
 };
 
 struct layout_guide_rect final : chaining::receiver<ui::region> {
-    class impl;
-
     struct ranges_args {
         ui::range horizontal_range;
         ui::range vertical_range;
@@ -165,6 +163,8 @@ struct layout_guide_rect final : chaining::receiver<ui::region> {
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ui::region);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit layout_guide_rect(ranges_args);

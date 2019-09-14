@@ -11,8 +11,6 @@
 namespace yas::ui {
 
 struct font_atlas final {
-    class impl;
-
     enum class method { texture_changed, texture_updated };
 
     struct args {
@@ -43,6 +41,8 @@ struct font_atlas final {
     [[nodiscard]] static font_atlas_ptr make_shared(args);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     font_atlas(args &&);

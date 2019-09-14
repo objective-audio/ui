@@ -14,8 +14,6 @@ namespace yas::ui {
 class texture;
 
 struct effect final : renderable_effect, encodable_effect, metal_object, std::enable_shared_from_this<effect> {
-    class impl;
-
     using metal_handler_f = std::function<void(ui::texture_ptr const &src, ui::texture_ptr const &dst,
                                                std::shared_ptr<ui::metal_system> const &, id<MTLCommandBuffer> const)>;
 
@@ -32,6 +30,8 @@ struct effect final : renderable_effect, encodable_effect, metal_object, std::en
     [[nodiscard]] static effect_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     effect();
