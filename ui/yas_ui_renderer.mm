@@ -138,7 +138,7 @@ struct ui::renderer::impl {
     }
 
     pre_render_result pre_render() {
-        this->_action->updatable()->update(std::chrono::system_clock::now());
+        ui::updatable_action::cast(this->_action)->update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
         this->_root_node->renderable()->fetch_updates(tree_updates);

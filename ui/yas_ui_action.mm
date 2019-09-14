@@ -10,6 +10,12 @@ using namespace yas;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
+#pragma mark - updatable_action
+
+ui::updatable_action_ptr ui::updatable_action::cast(ui::updatable_action_ptr const &updatable) {
+    return updatable;
+}
+
 #pragma mark - action
 
 ui::action::action(action::args args) : _begin_time(std::move(args.begin_time)), _delay(args.delay) {
@@ -64,10 +70,6 @@ bool ui::action::update(time_point_t const &time) {
 
 ui::duration_t ui::action::time_diff(time_point_t const &time) {
     return time - this->_begin_time - this->_delay;
-}
-
-std::shared_ptr<ui::updatable_action> ui::action::updatable() {
-    return std::dynamic_pointer_cast<updatable_action>(this->_weak_action.lock());
 }
 
 std::shared_ptr<ui::action> ui::action::make_shared() {
@@ -182,8 +184,8 @@ void ui::parallel_action::prepare(args &&args) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action->_actions;
 
-            for (auto &action : to_vector(actions)) {
-                if (action->updatable()->update(time)) {
+            for (auto const &action : to_vector(actions)) {
+                if (updatable_action::cast(action)->update(time)) {
                     actions.erase(action);
                 }
             }

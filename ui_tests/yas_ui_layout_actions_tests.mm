@@ -30,7 +30,7 @@ using namespace std::chrono_literals;
     auto action = ui::make_action(
         {.target = target, .begin_value = 0.0f, .end_value = 1.0f, .continuous_action = std::move(args)});
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 

@@ -35,7 +35,7 @@ using namespace yas;
                                    .end_position = {1.0f, 1.0f},
                                    .continuous_action = std::move(args)});
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 
@@ -63,7 +63,7 @@ using namespace yas;
                                    .is_shortest = false,
                                    .continuous_action = std::move(args)});
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 
@@ -88,7 +88,7 @@ using namespace yas;
                                    .is_shortest = true,
                                    .continuous_action = std::move(args)});
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 
@@ -113,7 +113,7 @@ using namespace yas;
                                    .is_shortest = true,
                                    .continuous_action = std::move(args)});
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 
@@ -137,7 +137,7 @@ using namespace yas;
                                    .end_scale = {1.0f, 1.0f},
                                    .continuous_action = std::move(args)});
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 
@@ -166,7 +166,7 @@ using namespace yas;
 
     auto mesh = ui::mesh::make_shared();
     target->mesh()->set_value(mesh);
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 
@@ -196,7 +196,7 @@ using namespace yas;
 
     auto mesh = ui::mesh::make_shared();
     target->mesh()->set_value(mesh);
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
 

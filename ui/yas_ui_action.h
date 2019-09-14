@@ -20,10 +20,15 @@ struct action_target {
     virtual ~action_target() = default;
 };
 
+class updatable_action;
+using updatable_action_ptr = std::shared_ptr<updatable_action>;
+
 struct updatable_action {
     virtual ~updatable_action() = default;
 
     virtual bool update(time_point_t const &time) = 0;
+
+    static updatable_action_ptr cast(updatable_action_ptr const &);
 };
 
 struct action : updatable_action {
@@ -45,8 +50,6 @@ struct action : updatable_action {
     void set_target(action_target_wptr const &);
     void set_time_updater(time_update_f);
     void set_completion_handler(completion_f);
-
-    std::shared_ptr<ui::updatable_action> updatable();
 
     [[nodiscard]] static action_ptr make_shared();
     [[nodiscard]] static action_ptr make_shared(args);
