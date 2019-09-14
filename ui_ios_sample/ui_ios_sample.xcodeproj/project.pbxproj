@@ -72,6 +72,7 @@
 		B65F6E441CC87E03007C3523 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		B65F6E491CC88042007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4A1CC88042007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
+		B6993B952321ECB6008EEE09 /* yas_sample_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_ptr.h; path = ../../ui_sample_common/yas_sample_ptr.h; sourceTree = "<group>"; };
 		B69AC8851FE1646E00503564 /* yas_sample_draw_call_text.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = yas_sample_draw_call_text.hpp; path = ../../ui_sample_common/yas_sample_draw_call_text.hpp; sourceTree = "<group>"; };
 		B69AC8861FE1646F00503564 /* yas_sample_draw_call_text.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_draw_call_text.mm; path = ../../ui_sample_common/yas_sample_draw_call_text.mm; sourceTree = "<group>"; };
 		B6B678521FF0C61100BDC824 /* MetalPerformanceShaders.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalPerformanceShaders.framework; path = System/Library/Frameworks/MetalPerformanceShaders.framework; sourceTree = SDKROOT; };
@@ -170,6 +171,7 @@
 				B60428381D3B2F820076769D /* yas_sample_soft_keyboard.mm */,
 				B6F73B9F1CDB7D7E009FD0DD /* yas_sample_touch_holder.h */,
 				B6F73BA01CDB7D7E009FD0DD /* yas_sample_touch_holder.mm */,
+				B6993B952321ECB6008EEE09 /* yas_sample_ptr.h */,
 				B65F6E491CC88042007C3523 /* YASSampleMetalViewController.h */,
 				B65F6E4A1CC88042007C3523 /* YASSampleMetalViewController.mm */,
 			);

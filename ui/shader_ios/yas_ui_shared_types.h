@@ -18,6 +18,6 @@ namespace ui {
         simd::float4x4 matrix;
         simd::float4 color = 1.0f;
         bool use_mesh_color = false;
-    } __attribute__((aligned(16)));
+    };
 }  // namespace ui
 }  // namespace yas
