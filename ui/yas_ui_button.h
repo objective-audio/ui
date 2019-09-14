@@ -15,7 +15,7 @@ namespace yas::ui {
 class touch_event;
 class texture;
 
-struct button final : std::enable_shared_from_this<button> {
+struct button final {
     enum class method {
         began,
         entered,
@@ -59,7 +59,7 @@ struct button final : std::enable_shared_from_this<button> {
 
     button(ui::region const &region, std::size_t const state_count);
 
-    void _prepare();
+    void _prepare(button_ptr const &);
 };
 }  // namespace yas::ui
 
