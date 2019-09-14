@@ -73,10 +73,6 @@ bool ui::detector::detect(ui::point const &location, ui::collider_ptr const &col
     return this->_impl->detect(location, collider);
 }
 
-ui::updatable_detector_ptr ui::detector::updatable() {
-    return std::dynamic_pointer_cast<updatable_detector>(this->shared_from_this());
-}
-
 bool ui::detector::is_updating() {
     return this->_impl->is_updating();
 }

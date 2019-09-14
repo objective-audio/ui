@@ -14,17 +14,13 @@
 using namespace yas;
 
 namespace yas::test {
-struct test_render_encoder : ui::render_encodable, std::enable_shared_from_this<test_render_encoder> {
-    ui::render_encodable_ptr encodable() {
-        return std::dynamic_pointer_cast<ui::render_encodable>(shared_from_this());
-    }
-
+struct test_render_encoder : ui::render_encodable {
     std::vector<ui::mesh_ptr> const &meshes() {
         return this->_meshes;
     }
 
     void append_mesh(ui::mesh_ptr const &mesh) override {
-        _meshes.emplace_back(mesh);
+        this->_meshes.emplace_back(mesh);
     }
 
     static std::shared_ptr<test_render_encoder> make_shared() {
@@ -536,7 +532,7 @@ struct test_render_encoder : ui::render_encodable, std::enable_shared_from_this<
     auto render_encoder = test::test_render_encoder::make_shared();
 
     ui::render_info render_info{.detector = detector,
-                                .render_encodable = render_encoder->encodable(),
+                                .render_encodable = std::dynamic_pointer_cast<ui::render_encodable>(render_encoder),
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 

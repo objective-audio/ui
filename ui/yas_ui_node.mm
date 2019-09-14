@@ -145,8 +145,8 @@ struct ui::node::impl {
             if (auto const &collider = this->_collider->raw()) {
                 collider->renderable()->set_matrix(this->_matrix);
 
-                if (auto &detector = render_info.detector) {
-                    auto const &detector_updatable = detector->updatable();
+                if (auto const &detector = render_info.detector) {
+                    auto const detector_updatable = std::dynamic_pointer_cast<updatable_detector>(detector);
                     if (detector_updatable->is_updating()) {
                         detector_updatable->push_front_collider(collider);
                     }

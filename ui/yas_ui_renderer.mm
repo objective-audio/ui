@@ -144,7 +144,7 @@ struct ui::renderer::impl {
         this->_root_node->renderable()->fetch_updates(tree_updates);
 
         if (tree_updates.is_collider_updated()) {
-            this->_detector->updatable()->begin_update();
+            std::dynamic_pointer_cast<updatable_detector>(this->_detector)->begin_update();
         }
 
         if (tree_updates.is_any_updated()) {
@@ -172,7 +172,7 @@ struct ui::renderer::impl {
 
     void post_render() {
         this->_root_node->renderable()->clear_updates();
-        this->_detector->updatable()->end_update();
+        std::dynamic_pointer_cast<updatable_detector>(this->_detector)->end_update();
     }
 
     void insert_action(std::shared_ptr<ui::action> action) {
