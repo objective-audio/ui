@@ -67,7 +67,7 @@ ui::duration_t ui::action::time_diff(time_point_t const &time) {
 }
 
 std::shared_ptr<ui::updatable_action> ui::action::updatable() {
-    return std::dynamic_pointer_cast<updatable_action>(shared_from_this());
+    return std::dynamic_pointer_cast<updatable_action>(this->_weak_action.lock());
 }
 
 std::shared_ptr<ui::action> ui::action::make_shared() {
@@ -75,7 +75,9 @@ std::shared_ptr<ui::action> ui::action::make_shared() {
 }
 
 std::shared_ptr<ui::action> ui::action::make_shared(args args) {
-    return std::shared_ptr<action>(new action{std::move(args)});
+    auto shared = std::shared_ptr<action>(new action{std::move(args)});
+    shared->_weak_action = shared;
+    return shared;
 }
 
 #pragma mark - continuous_action
@@ -114,7 +116,7 @@ void ui::continuous_action::set_value_transformer(transform_f transformer) {
 }
 
 void ui::continuous_action::prepare() {
-    set_time_updater([weak_action = to_weak(std::dynamic_pointer_cast<continuous_action>(shared_from_this()))](
+    set_time_updater([weak_action = to_weak(std::dynamic_pointer_cast<continuous_action>(this->_weak_action.lock()))](
                          time_point_t const &time) {
         if (auto action = weak_action.lock()) {
             auto const duration = action->_duration;
@@ -150,6 +152,7 @@ std::shared_ptr<ui::continuous_action> ui::continuous_action::make_shared() {
 
 std::shared_ptr<ui::continuous_action> ui::continuous_action::make_shared(args args) {
     auto shared = std::shared_ptr<continuous_action>(new continuous_action{std::move(args)});
+    shared->_weak_action = shared;
     shared->prepare();
     return shared;
 }
@@ -174,22 +177,22 @@ void ui::parallel_action::erase_action(std::shared_ptr<action> const &action) {
 }
 
 void ui::parallel_action::prepare(args &&args) {
-    set_time_updater(
-        [weak_action = to_weak(std::dynamic_pointer_cast<parallel_action>(shared_from_this()))](auto const &time) {
-            if (auto parallel_action = weak_action.lock()) {
-                auto &actions = parallel_action->_actions;
+    set_time_updater([weak_action = to_weak(std::dynamic_pointer_cast<parallel_action>(this->_weak_action.lock()))](
+                         auto const &time) {
+        if (auto parallel_action = weak_action.lock()) {
+            auto &actions = parallel_action->_actions;
 
-                for (auto &action : to_vector(actions)) {
-                    if (action->updatable()->update(time)) {
-                        actions.erase(action);
-                    }
+            for (auto &action : to_vector(actions)) {
+                if (action->updatable()->update(time)) {
+                    actions.erase(action);
                 }
-
-                return actions.size() == 0;
             }
 
-            return true;
-        });
+            return actions.size() == 0;
+        }
+
+        return true;
+    });
 
     set_target(std::move(args.target));
 
@@ -202,6 +205,7 @@ std::shared_ptr<ui::parallel_action> ui::parallel_action::make_shared() {
 
 std::shared_ptr<ui::parallel_action> ui::parallel_action::make_shared(args args) {
     auto shared = std::shared_ptr<parallel_action>(new parallel_action{std::move(args.action)});
+    shared->_weak_action = shared;
     shared->prepare(std::move(args));
     return shared;
 }

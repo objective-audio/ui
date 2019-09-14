@@ -26,7 +26,7 @@ struct updatable_action {
     virtual bool update(time_point_t const &time) = 0;
 };
 
-struct action : std::enable_shared_from_this<action>, updatable_action {
+struct action : updatable_action {
     struct args {
         time_point_t begin_time = std::chrono::system_clock::now();
         double delay = 0.0;
@@ -52,6 +52,7 @@ struct action : std::enable_shared_from_this<action>, updatable_action {
     [[nodiscard]] static action_ptr make_shared(args);
 
    protected:
+    std::weak_ptr<action> _weak_action;
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
