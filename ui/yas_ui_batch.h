@@ -19,7 +19,6 @@ struct batch final : renderable_batch, render_encodable, metal_object {
     class impl;
 
     std::unique_ptr<impl> _impl;
-    std::weak_ptr<batch> _weak_batch;
 
     batch();
 

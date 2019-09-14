@@ -147,7 +147,5 @@ ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> 
 }
 
 ui::batch_ptr ui::batch::make_shared() {
-    auto shared = std::shared_ptr<batch>(new batch{});
-    shared->_weak_batch = shared;
-    return shared;
+    return std::shared_ptr<batch>(new batch{});
 }
