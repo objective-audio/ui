@@ -86,8 +86,6 @@ struct collider final : renderable_collider {
     [[nodiscard]] chaining::receiver_ptr<ui::shape_ptr> shape_receiver();
     [[nodiscard]] chaining::receiver_ptr<bool> enabled_receiver();
 
-    ui::renderable_collider_ptr renderable();
-
     [[nodiscard]] static collider_ptr make_shared();
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
 
@@ -95,7 +93,6 @@ struct collider final : renderable_collider {
     class impl;
 
     std::unique_ptr<impl> _impl;
-    std::weak_ptr<collider> _weak_collider;
 
     explicit collider(ui::shape_ptr &&);
 

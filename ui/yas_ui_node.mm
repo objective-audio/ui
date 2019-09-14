@@ -143,7 +143,7 @@ struct ui::node::impl {
             auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
             if (auto const &collider = this->_collider->raw()) {
-                collider->renderable()->set_matrix(this->_matrix);
+                std::dynamic_pointer_cast<renderable_collider>(collider)->set_matrix(this->_matrix);
 
                 if (auto const &detector = render_info.detector) {
                     auto const detector_updatable = std::dynamic_pointer_cast<updatable_detector>(detector);
