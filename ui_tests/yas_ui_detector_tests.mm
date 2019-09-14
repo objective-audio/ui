@@ -27,8 +27,7 @@ using namespace yas;
 
     XCTAssertTrue(detector);
 
-    auto const updatable = std::dynamic_pointer_cast<ui::updatable_detector>(detector);
-    XCTAssertTrue(updatable);
+    XCTAssertTrue(ui::updatable_detector::cast(detector));
 }
 
 - (void)test_detect {
@@ -41,7 +40,7 @@ using namespace yas;
     auto collider2 =
         ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    auto const updatable = std::dynamic_pointer_cast<ui::updatable_detector>(detector);
+    auto const updatable = ui::updatable_detector::cast(detector);
     updatable->begin_update();
     updatable->push_front_collider(collider1);
     updatable->push_front_collider(collider2);
@@ -63,7 +62,7 @@ using namespace yas;
     auto collider2 =
         ui::collider::make_shared(ui::shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    auto const updatable = std::dynamic_pointer_cast<ui::updatable_detector>(detector);
+    auto const updatable = ui::updatable_detector::cast(detector);
     updatable->push_front_collider(collider1);
     updatable->push_front_collider(collider2);
 
@@ -73,7 +72,7 @@ using namespace yas;
 
 - (void)test_is_updating {
     auto detector = ui::detector::make_shared();
-    auto const updatable = std::dynamic_pointer_cast<ui::updatable_detector>(detector);
+    auto const updatable = ui::updatable_detector::cast(detector);
 
     XCTAssertTrue(updatable->is_updating());
 
