@@ -22,6 +22,21 @@ using namespace yas;
 namespace yas::ui {
 static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
 static auto constexpr _uniforms_buffer_count = 3;
+
+#if TARGET_OS_MAC
+static size_t constexpr _uniforms2d_align = 256;
+#else
+static size_t constexpr _uniforms2d_align = 16;
+#endif
+static size_t constexpr _uniforms2d_size = []() {
+    size_t const size = sizeof(uniforms2d_t);
+    size_t const mod = size % _uniforms2d_align;
+    if (mod > 0) {
+        return size - mod + _uniforms2d_align;
+    } else {
+        return size;
+    }
+}();
 }
 
 #pragma mark - ui::metal_system::impl
@@ -94,7 +109,7 @@ struct ui::metal_system::impl {
 
     void prepare_uniforms_buffer(uint32_t const uniforms_count) {
         bool needs_allocate = false;
-        NSUInteger length = uniforms_count * sizeof(uniforms2d_t);
+        NSUInteger length = uniforms_count * ui::_uniforms2d_size;
         length = length - length % ui::_uniforms_buffer_allocating_unit + ui::_uniforms_buffer_allocating_unit;
 
         if (auto &current_buffer = this->_uniforms_buffers[this->_uniforms_buffer_index]) {
@@ -189,8 +204,8 @@ struct ui::metal_system::impl {
                            indexBuffer:renderable_mesh_data->indexBuffer()
                      indexBufferOffset:renderable_mesh_data->index_buffer_byte_offset()];
 
-        this->_uniforms_buffer_offset += sizeof(uniforms2d_t);
-        assert(this->_uniforms_buffer_offset + sizeof(uniforms2d_t) < currentUniformsBuffer.length);
+        this->_uniforms_buffer_offset += ui::_uniforms2d_size;
+        assert(this->_uniforms_buffer_offset + ui::_uniforms2d_size < currentUniformsBuffer.length);
     }
 
     void push_render_target(ui::render_stackable_ptr const &stackable, ui::render_target_ptr const &render_target) {
