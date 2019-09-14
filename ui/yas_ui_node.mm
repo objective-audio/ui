@@ -228,7 +228,7 @@ struct ui::node::impl {
                 auto const batch_renderable = std::dynamic_pointer_cast<renderable_batch>(batch);
 
                 if (to_bool(building_type)) {
-                    batch_render_info.render_encodable = batch->encodable();
+                    batch_render_info.render_encodable = std::dynamic_pointer_cast<render_encodable>(batch);
                     batch_renderable->begin_render_meshes_building(building_type);
                 }
 

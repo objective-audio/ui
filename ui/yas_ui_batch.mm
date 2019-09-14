@@ -142,10 +142,6 @@ void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
     this->_impl->append_mesh(mesh);
 }
 
-std::shared_ptr<ui::render_encodable> ui::batch::encodable() {
-    return std::dynamic_pointer_cast<render_encodable>(this->_weak_batch.lock());
-}
-
 ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
     return this->_impl->metal_setup(system);
 }

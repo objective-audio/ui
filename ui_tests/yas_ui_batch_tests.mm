@@ -37,7 +37,7 @@ using namespace yas;
     XCTAssertTrue(batch);
 
     XCTAssertTrue(std::dynamic_pointer_cast<ui::renderable_batch>(batch));
-    XCTAssertTrue(batch->encodable());
+    XCTAssertTrue(std::dynamic_pointer_cast<ui::render_encodable>(batch));
     XCTAssertTrue(batch->metal());
 }
 
@@ -50,20 +50,21 @@ using namespace yas;
 
     auto batch = ui::batch::make_shared();
     auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
     auto mesh1 = ui::mesh::make_shared();
     auto mesh2 = ui::mesh::make_shared();
-    batch->encodable()->append_mesh(mesh1);
-    batch->encodable()->append_mesh(mesh2);
+    batch_encodable->append_mesh(mesh1);
+    batch_encodable->append_mesh(mesh2);
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto mesh3 = ui::mesh::make_shared();
     auto texture3 = ui::texture::make_shared(ui::texture::args{});
     mesh3->set_texture(texture3);
-    batch->encodable()->append_mesh(mesh3);
+    batch_encodable->append_mesh(mesh3);
 
     batch_renderable->commit_render_meshes_building();
 
@@ -89,6 +90,7 @@ using namespace yas;
 
     auto batch = ui::batch::make_shared();
     auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     auto mesh1 = ui::mesh::make_shared();
     mesh1->set_color({0.5f, 0.5f, 0.5f, 0.5f});
@@ -129,8 +131,8 @@ using namespace yas;
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch->encodable()->append_mesh(mesh1);
-    batch->encodable()->append_mesh(mesh2);
+    batch_encodable->append_mesh(mesh1);
+    batch_encodable->append_mesh(mesh2);
 
     batch_renderable->commit_render_meshes_building();
 
@@ -180,6 +182,7 @@ using namespace yas;
 
     auto batch = ui::batch::make_shared();
     auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     auto mesh = ui::mesh::make_shared();
     auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
@@ -193,7 +196,7 @@ using namespace yas;
     });
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
-    batch->encodable()->append_mesh(mesh);
+    batch_encodable->append_mesh(mesh);
     batch_renderable->commit_render_meshes_building();
 
     auto &meshes = batch_renderable->meshes();
@@ -230,6 +233,7 @@ using namespace yas;
 
     auto batch = ui::batch::make_shared();
     auto batch_renderable = std::dynamic_pointer_cast<ui::renderable_batch>(batch);
+    auto batch_encodable = std::dynamic_pointer_cast<ui::render_encodable>(batch);
 
     auto mesh = ui::mesh::make_shared();
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
@@ -239,7 +243,7 @@ using namespace yas;
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
-    batch->encodable()->append_mesh(mesh);
+    batch_encodable->append_mesh(mesh);
 
     batch_renderable->commit_render_meshes_building();
 
