@@ -55,7 +55,6 @@ struct action : updatable_action {
     [[nodiscard]] static action_ptr make_shared(args);
 
    protected:
-    std::weak_ptr<action> _weak_action;
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
@@ -105,7 +104,7 @@ struct continuous_action final : action {
 
     explicit continuous_action(args &&args);
 
-    void prepare();
+    void prepare(continuous_action_ptr const &);
 };
 
 struct parallel_action final : action {
@@ -131,7 +130,7 @@ struct parallel_action final : action {
 
     explicit parallel_action(action::args &&);
 
-    void prepare(args &&);
+    void prepare(parallel_action_ptr const &, args &&);
 };
 
 [[nodiscard]] ui::parallel_action_ptr make_action_sequence(std::vector<std::shared_ptr<action>> actions,

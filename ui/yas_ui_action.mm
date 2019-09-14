@@ -77,9 +77,7 @@ std::shared_ptr<ui::action> ui::action::make_shared() {
 }
 
 std::shared_ptr<ui::action> ui::action::make_shared(args args) {
-    auto shared = std::shared_ptr<action>(new action{std::move(args)});
-    shared->_weak_action = shared;
-    return shared;
+    return std::shared_ptr<action>(new action{std::move(args)});
 }
 
 #pragma mark - continuous_action
@@ -117,9 +115,8 @@ void ui::continuous_action::set_value_transformer(transform_f transformer) {
     this->_value_transformer = std::move(transformer);
 }
 
-void ui::continuous_action::prepare() {
-    set_time_updater([weak_action = to_weak(std::dynamic_pointer_cast<continuous_action>(this->_weak_action.lock()))](
-                         time_point_t const &time) {
+void ui::continuous_action::prepare(continuous_action_ptr const &action) {
+    set_time_updater([weak_action = to_weak(action)](time_point_t const &time) {
         if (auto action = weak_action.lock()) {
             auto const duration = action->_duration;
             bool finished = false;
@@ -154,8 +151,7 @@ std::shared_ptr<ui::continuous_action> ui::continuous_action::make_shared() {
 
 std::shared_ptr<ui::continuous_action> ui::continuous_action::make_shared(args args) {
     auto shared = std::shared_ptr<continuous_action>(new continuous_action{std::move(args)});
-    shared->_weak_action = shared;
-    shared->prepare();
+    shared->prepare(shared);
     return shared;
 }
 
@@ -178,9 +174,8 @@ void ui::parallel_action::erase_action(std::shared_ptr<action> const &action) {
     this->_actions.erase(action);
 }
 
-void ui::parallel_action::prepare(args &&args) {
-    set_time_updater([weak_action = to_weak(std::dynamic_pointer_cast<parallel_action>(this->_weak_action.lock()))](
-                         auto const &time) {
+void ui::parallel_action::prepare(parallel_action_ptr const &action, args &&args) {
+    set_time_updater([weak_action = to_weak(action)](auto const &time) {
         if (auto parallel_action = weak_action.lock()) {
             auto &actions = parallel_action->_actions;
 
@@ -207,8 +202,7 @@ std::shared_ptr<ui::parallel_action> ui::parallel_action::make_shared() {
 
 std::shared_ptr<ui::parallel_action> ui::parallel_action::make_shared(args args) {
     auto shared = std::shared_ptr<parallel_action>(new parallel_action{std::move(args.action)});
-    shared->_weak_action = shared;
-    shared->prepare(std::move(args));
+    shared->prepare(shared, std::move(args));
     return shared;
 }
 
