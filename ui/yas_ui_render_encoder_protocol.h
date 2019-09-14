@@ -38,8 +38,6 @@ struct render_effectable {
     }
 };
 
-using render_effectable_ptr = std::shared_ptr<render_effectable>;
-
 struct render_stackable {
     virtual ~render_stackable() = default;
 
@@ -51,6 +49,4 @@ struct render_stackable {
         return stackable;
     }
 };
-
-using render_stackable_ptr = std::shared_ptr<render_stackable>;
 }  // namespace yas::ui

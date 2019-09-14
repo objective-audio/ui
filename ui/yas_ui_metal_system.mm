@@ -299,7 +299,7 @@ struct ui::metal_system::impl {
 
         ui::render_info render_info{.detector = renderer->detector(),
                                     .render_encodable = render_encodable::cast(metal_render_encoder),
-                                    .render_effectable = metal_render_encoder->effectable(),
+                                    .render_effectable = render_effectable::cast(metal_render_encoder),
                                     .render_stackable = metal_render_encoder->stackable(),
                                     .matrix = renderer->projection_matrix(),
                                     .mesh_matrix = renderer->projection_matrix()};
