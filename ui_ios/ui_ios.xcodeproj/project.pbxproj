@@ -299,7 +299,7 @@
 		B61E355121E6307500DF35C3 /* ui */ = {
 			isa = PBXGroup;
 			children = (
-				B61E357A21E6307500DF35C3 /* shader_ios */,
+				B61E357A21E6307500DF35C3 /* shader */,
 				B61E359B21E6307500DF35C3 /* yas_ui_action.h */,
 				B61E356F21E6307500DF35C3 /* yas_ui_action.mm */,
 				B61E358121E6307500DF35C3 /* yas_ui_angle.cpp */,
@@ -408,13 +408,13 @@
 			path = ../../ui;
 			sourceTree = "<group>";
 		};
-		B61E357A21E6307500DF35C3 /* shader_ios */ = {
+		B61E357A21E6307500DF35C3 /* shader */ = {
 			isa = PBXGroup;
 			children = (
 				B61E357B21E6307500DF35C3 /* yas_ui_shared_types.h */,
 				B61E357C21E6307500DF35C3 /* yas_ui_shaders.metal */,
 			);
-			path = shader_ios;
+			path = shader;
 			sourceTree = "<group>";
 		};
 		B6DE34BD21E6313800E49BCB /* Frameworks */ = {
