@@ -10,7 +10,7 @@
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
-struct batch final : renderable_batch, render_encodable, metal_object, std::enable_shared_from_this<batch> {
+struct batch final : renderable_batch, render_encodable, metal_object {
     virtual ~batch();
 
     std::shared_ptr<ui::renderable_batch> renderable();
@@ -23,6 +23,7 @@ struct batch final : renderable_batch, render_encodable, metal_object, std::enab
     class impl;
 
     std::unique_ptr<impl> _impl;
+    std::weak_ptr<batch> _weak_batch;
 
     batch();
 

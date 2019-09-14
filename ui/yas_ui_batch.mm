@@ -143,11 +143,11 @@ void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
 }
 
 std::shared_ptr<ui::renderable_batch> ui::batch::renderable() {
-    return std::dynamic_pointer_cast<renderable_batch>(shared_from_this());
+    return std::dynamic_pointer_cast<renderable_batch>(this->_weak_batch.lock());
 }
 
 std::shared_ptr<ui::render_encodable> ui::batch::encodable() {
-    return std::dynamic_pointer_cast<render_encodable>(shared_from_this());
+    return std::dynamic_pointer_cast<render_encodable>(this->_weak_batch.lock());
 }
 
 ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
@@ -155,9 +155,11 @@ ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> 
 }
 
 ui::metal_object_ptr ui::batch::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
+    return std::dynamic_pointer_cast<ui::metal_object>(this->_weak_batch.lock());
 }
 
 ui::batch_ptr ui::batch::make_shared() {
-    return std::shared_ptr<batch>(new batch{});
+    auto shared = std::shared_ptr<batch>(new batch{});
+    shared->_weak_batch = shared;
+    return shared;
 }
