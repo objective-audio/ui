@@ -297,7 +297,7 @@
 		B65AF85F21E4D7E300C65DB5 /* ui */ = {
 			isa = PBXGroup;
 			children = (
-				B65AF8AB21E4D7E400C65DB5 /* shader_mac */,
+				B65AF8AB21E4D7E400C65DB5 /* shader */,
 				B65AF8A821E4D7E400C65DB5 /* yas_ui_action.h */,
 				B65AF87D21E4D7E400C65DB5 /* yas_ui_action.mm */,
 				B65AF88E21E4D7E400C65DB5 /* yas_ui_angle.cpp */,
@@ -406,13 +406,13 @@
 			path = ../../ui;
 			sourceTree = "<group>";
 		};
-		B65AF8AB21E4D7E400C65DB5 /* shader_mac */ = {
+		B65AF8AB21E4D7E400C65DB5 /* shader */ = {
 			isa = PBXGroup;
 			children = (
 				B65AF8AC21E4D7E400C65DB5 /* yas_ui_shared_types.h */,
 				B65AF8AD21E4D7E400C65DB5 /* yas_ui_shaders.metal */,
 			);
-			path = shader_mac;
+			path = shader;
 			sourceTree = "<group>";
 		};
 		B65AF94221E4D84900C65DB5 /* Frameworks */ = {
