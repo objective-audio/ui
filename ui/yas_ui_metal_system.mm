@@ -23,16 +23,16 @@ namespace yas::ui {
 static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
 static auto constexpr _uniforms_buffer_count = 3;
 
-#if TARGET_OS_MAC
+#if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
 static size_t constexpr _uniforms2d_align = 256;
 #else
 static size_t constexpr _uniforms2d_align = 16;
 #endif
 static size_t constexpr _uniforms2d_size = []() {
     size_t const size = sizeof(uniforms2d_t);
-    size_t const mod = size % _uniforms2d_align;
+    size_t const mod = size % ui::_uniforms2d_align;
     if (mod > 0) {
-        return size - mod + _uniforms2d_align;
+        return size - mod + ui::_uniforms2d_align;
     } else {
         return size;
     }
