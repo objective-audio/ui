@@ -27,9 +27,9 @@ using namespace yas;
 
     XCTAssertTrue(effect);
     XCTAssertFalse(effect->metal_handler());
-    XCTAssertTrue(effect->renderable());
-    XCTAssertTrue(effect->encodable());
-    XCTAssertTrue(effect->metal());
+    XCTAssertTrue(ui::renderable_effect::cast(effect));
+    XCTAssertTrue(ui::encodable_effect::cast(effect));
+    XCTAssertTrue(ui::metal_object::cast(effect));
 }
 
 - (void)test_set_metal_handler {

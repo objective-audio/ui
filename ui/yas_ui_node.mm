@@ -176,7 +176,7 @@ struct ui::node::impl {
                 auto const renderable = render_target->renderable();
                 auto const &effect = renderable->effect();
                 if (!needs_render && effect) {
-                    needs_render = effect->renderable()->updates().flags.any();
+                    needs_render = renderable_effect::cast(effect)->updates().flags.any();
                 }
 
                 if (!needs_render) {
@@ -272,7 +272,7 @@ struct ui::node::impl {
             }
 
             if (auto &effect = render_target->renderable()->effect()) {
-                if (auto ul = unless(effect->metal()->metal_setup(metal_system))) {
+                if (auto ul = unless(metal_object::cast(effect)->metal_setup(metal_system))) {
                     return std::move(ul.value);
                 }
             }
@@ -326,7 +326,7 @@ struct ui::node::impl {
                 }
 
                 if (auto &effect = renderable->effect()) {
-                    tree_updates.effect_updates.flags |= effect->renderable()->updates().flags;
+                    tree_updates.effect_updates.flags |= renderable_effect::cast(effect)->updates().flags;
                 }
             }
 

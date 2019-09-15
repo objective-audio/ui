@@ -151,7 +151,7 @@ struct ui::render_target::impl {
         this->_updates.flags.reset();
         this->_mesh->renderable()->clear_updates();
         if (auto &effect = this->_effect->raw()) {
-            effect->renderable()->clear_updates();
+            renderable_effect::cast(effect)->clear_updates();
         }
     }
 
@@ -211,7 +211,7 @@ struct ui::render_target::impl {
 
     void _set_textures_to_effect() {
         if (auto const &effect = this->_effect->raw()) {
-            effect->renderable()->set_textures(this->_src_texture, this->_dst_texture);
+            renderable_effect::cast(effect)->set_textures(this->_src_texture, this->_dst_texture);
         }
     }
 
