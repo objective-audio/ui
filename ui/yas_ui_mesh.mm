@@ -31,7 +31,7 @@ struct ui::mesh::impl {
             }
         }
         if (this->_texture) {
-            if (auto ul = unless(this->_texture->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(this->_texture)->metal_setup(metal_system))) {
                 return ul.value;
             }
         }

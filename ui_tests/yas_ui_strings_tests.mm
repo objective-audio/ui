@@ -107,7 +107,7 @@ using namespace yas;
 
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 0);
 
-    texture->metal()->metal_setup(metal_system);
+    ui::metal_object::cast(texture)->metal_setup(metal_system);
 
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 9);
 }

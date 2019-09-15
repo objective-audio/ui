@@ -17,7 +17,7 @@ class image;
 class metal_texture;
 class texture_element;
 
-struct texture : metal_object, std::enable_shared_from_this<texture> {
+struct texture : metal_object {
     struct args {
         ui::uint_size point_size;
         double scale_factor = 1.0;
@@ -51,8 +51,6 @@ struct texture : metal_object, std::enable_shared_from_this<texture> {
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain() const;
     [[nodiscard]] chaining::chain_relayed_unsync_t<texture_ptr, chain_pair_t> chain(method const &) const;
     [[nodiscard]] std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
-
-    ui::metal_object_ptr metal();
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 

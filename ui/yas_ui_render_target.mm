@@ -128,11 +128,11 @@ struct ui::render_target::impl {
             this->_metal_system = metal_system;
         }
 
-        if (auto ul = unless(this->_src_texture->metal()->metal_setup(metal_system))) {
+        if (auto ul = unless(ui::metal_object::cast(this->_src_texture)->metal_setup(metal_system))) {
             return ul.value;
         }
 
-        if (auto ul = unless(this->_dst_texture->metal()->metal_setup(metal_system))) {
+        if (auto ul = unless(ui::metal_object::cast(this->_dst_texture)->metal_setup(metal_system))) {
             return ul.value;
         }
 
