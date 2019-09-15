@@ -61,7 +61,7 @@ struct event : manageable_event {
     std::shared_ptr<event_impl_base> get_impl() override;
 };
 
-struct event_manager : event_inputtable, std::enable_shared_from_this<event_manager> {
+struct event_manager : event_inputtable {
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
 
     struct context {
@@ -73,8 +73,6 @@ struct event_manager : event_inputtable, std::enable_shared_from_this<event_mana
 
     [[nodiscard]] chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
-
-    ui::event_inputtable_ptr inputtable();
 
     [[nodiscard]] static event_manager_ptr make_shared();
 

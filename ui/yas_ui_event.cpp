@@ -288,10 +288,6 @@ chaining::chain_unsync_t<ui::event_manager::context> ui::event_manager::chain() 
     return this->_impl->chain();
 }
 
-ui::event_inputtable_ptr ui::event_manager::inputtable() {
-    return std::dynamic_pointer_cast<event_inputtable>(this->shared_from_this());
-}
-
 void ui::event_manager::input_cursor_event(cursor_event const &event) {
     this->_impl->input_cursor_event(event);
 }

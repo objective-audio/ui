@@ -118,6 +118,9 @@ static touch constexpr touch_tag{};
 static key constexpr key_tag{};
 static modifier constexpr modifier_tag{};
 
+class event_inputtable;
+using event_inputtable_ptr = std::shared_ptr<event_inputtable>;
+
 struct event_inputtable {
     virtual ~event_inputtable() = default;
 
@@ -125,9 +128,11 @@ struct event_inputtable {
     virtual void input_touch_event(event_phase const, touch_event const &) = 0;
     virtual void input_key_event(event_phase const, key_event const &) = 0;
     virtual void input_modifier_event(modifier_flags const &, double const timestamp) = 0;
-};
 
-using event_inputtable_ptr = std::shared_ptr<event_inputtable>;
+    static event_inputtable_ptr cast(event_inputtable_ptr const &inputtable) {
+        return inputtable;
+    }
+};
 }  // namespace yas::ui
 
 namespace yas {
