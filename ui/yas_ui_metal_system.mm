@@ -23,10 +23,10 @@ namespace yas::ui {
 static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
 static auto constexpr _uniforms_buffer_count = 3;
 
-#if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
-static size_t constexpr _uniforms2d_required_align = 256;
-#else
+#if (TARGET_OS_IPHONE && TARGET_OS_EMBEDDED)
 static size_t constexpr _uniforms2d_required_align = 4;
+#else
+static size_t constexpr _uniforms2d_required_align = 256;
 #endif
 static size_t constexpr _uniforms2d_size = []() {
     size_t const reqired_align = MAX(ui::_uniforms2d_required_align, _Alignof(uniforms2d_t));
