@@ -12,10 +12,7 @@
 namespace yas::ui {
 class metal_system;
 
-struct metal_render_encoder final : render_encodable,
-                                    render_effectable,
-                                    render_stackable,
-                                    std::enable_shared_from_this<metal_render_encoder> {
+struct metal_render_encoder final : render_encodable, render_effectable, render_stackable {
     struct encode_result_t {
         std::size_t const encoded_mesh_count;
     };
