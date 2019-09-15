@@ -13,7 +13,7 @@ struct blur {
     void set_sigma(double const);
     double sigma() const;
 
-    ui::effect_ptr &effect();
+    ui::effect_ptr const &effect();
 
     [[nodiscard]] static blur_ptr make_shared();
 

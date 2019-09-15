@@ -21,7 +21,7 @@ double ui::blur::sigma() const {
     return this->_sigma->raw();
 }
 
-ui::effect_ptr &ui::blur::effect() {
+ui::effect_ptr const &ui::blur::effect() {
     return this->_effect;
 }
 

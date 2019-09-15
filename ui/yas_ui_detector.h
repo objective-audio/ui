@@ -13,7 +13,7 @@ namespace yas::ui {
 struct detector final : updatable_detector {
     virtual ~detector();
 
-    ui::collider_ptr detect(ui::point const &) const;
+    std::optional<ui::collider_ptr> detect(ui::point const &) const;
     bool detect(ui::point const &, ui::collider_ptr const &) const;
 
     [[nodiscard]] static detector_ptr make_shared();
