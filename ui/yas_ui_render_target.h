@@ -14,7 +14,7 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-struct render_target : metal_object, renderable_render_target, std::enable_shared_from_this<render_target> {
+struct render_target : metal_object, renderable_render_target {
     ui::layout_guide_rect_ptr &layout_guide_rect();
 
     void set_scale_factor(double const);
@@ -24,9 +24,6 @@ struct render_target : metal_object, renderable_render_target, std::enable_share
     ui::effect_ptr const &effect() override;
 
     std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
-
-    ui::renderable_render_target_ptr renderable();
-    ui::metal_object_ptr metal();
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 

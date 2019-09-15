@@ -258,14 +258,6 @@ std::shared_ptr<chaining::receiver<double>> ui::render_target::scale_factor_rece
     return this->_impl->_scale_factor;
 }
 
-ui::renderable_render_target_ptr ui::render_target::renderable() {
-    return std::dynamic_pointer_cast<renderable_render_target>(this->shared_from_this());
-}
-
-ui::metal_object_ptr ui::render_target::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
     this->_impl->sync_scale_from_renderer(renderer, *this);
 }

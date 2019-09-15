@@ -30,8 +30,8 @@ using namespace yas;
     // effectをセットしない場合はデフォルトでthrough_effectが入っている
     XCTAssertTrue(render_target->effect());
 
-    XCTAssertTrue(render_target->renderable());
-    XCTAssertTrue(render_target->metal());
+    XCTAssertTrue(ui::renderable_render_target::cast(render_target));
+    XCTAssertTrue(ui::metal_object::cast(render_target));
 }
 
 - (void)test_set_scale_factor {

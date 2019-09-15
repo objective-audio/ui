@@ -160,7 +160,7 @@ struct ui::node::impl {
                 }
 
                 if (auto &render_target = this->_render_target->raw()) {
-                    auto const &mesh = render_target->renderable()->mesh();
+                    auto const &mesh = ui::renderable_render_target::cast(render_target)->mesh();
                     renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
@@ -170,10 +170,10 @@ struct ui::node::impl {
                 bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
 
                 if (!needs_render) {
-                    needs_render = render_target->renderable()->updates().flags.any();
+                    needs_render = ui::renderable_render_target::cast(render_target)->updates().flags.any();
                 }
 
-                auto const renderable = render_target->renderable();
+                auto const renderable = ui::renderable_render_target::cast(render_target);
                 auto const &effect = renderable->effect();
                 if (!needs_render && effect) {
                     needs_render = renderable_effect::cast(effect)->updates().flags.any();
@@ -192,7 +192,7 @@ struct ui::node::impl {
                 if (needs_render) {
                     auto const &stackable = render_info.render_stackable;
 
-                    if (render_target->renderable()->push_encode_info(stackable)) {
+                    if (ui::renderable_render_target::cast(render_target)->push_encode_info(stackable)) {
                         ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
                                                            .render_effectable = render_info.render_effectable,
                                                            .render_stackable = render_info.render_stackable,
@@ -263,15 +263,16 @@ struct ui::node::impl {
         }
 
         if (auto &render_target = this->_render_target->raw()) {
-            if (auto ul = unless(render_target->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(render_target)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
-            if (auto ul = unless(metal_object::cast(render_target->renderable()->mesh())->metal_setup(metal_system))) {
+            if (auto ul = unless(metal_object::cast(ui::renderable_render_target::cast(render_target)->mesh())
+                                     ->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
-            if (auto &effect = render_target->renderable()->effect()) {
+            if (auto &effect = ui::renderable_render_target::cast(render_target)->effect()) {
                 if (auto ul = unless(metal_object::cast(effect)->metal_setup(metal_system))) {
                     return std::move(ul.value);
                 }
@@ -314,9 +315,10 @@ struct ui::node::impl {
             }
 
             if (auto &render_target = this->_render_target->raw()) {
-                tree_updates.render_target_updates.flags |= render_target->renderable()->updates().flags;
+                auto const renderable = ui::renderable_render_target::cast(render_target);
 
-                auto const renderable = render_target->renderable();
+                tree_updates.render_target_updates.flags |= renderable->updates().flags;
+
                 auto const &mesh = renderable->mesh();
 
                 tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
@@ -365,7 +367,7 @@ struct ui::node::impl {
             }
 
             if (auto &render_target = this->_render_target->raw()) {
-                render_target->renderable()->clear_updates();
+                ui::renderable_render_target::cast(render_target)->clear_updates();
             }
 
             for (auto &sub_node : this->_children) {

@@ -22,6 +22,9 @@ enum class render_target_update_reason : std::size_t {
 
 using render_target_updates_t = flagset<render_target_update_reason>;
 
+class renderable_render_target;
+using renderable_render_target_ptr = std::shared_ptr<renderable_render_target>;
+
 struct renderable_render_target {
     virtual ~renderable_render_target() = default;
 
@@ -32,7 +35,9 @@ struct renderable_render_target {
     virtual MTLRenderPassDescriptor *renderPassDescriptor() = 0;
     virtual simd::float4x4 &projection_matrix() = 0;
     virtual bool push_encode_info(ui::render_stackable_ptr const &) = 0;
-};
 
-using renderable_render_target_ptr = std::shared_ptr<renderable_render_target>;
+    static renderable_render_target_ptr cast(renderable_render_target_ptr const &render_target) {
+        return render_target;
+    }
+};
 }  // namespace yas::ui
