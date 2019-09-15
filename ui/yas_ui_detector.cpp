@@ -35,13 +35,13 @@ struct ui::detector::impl {
         this->_updating = false;
     }
 
-    ui::collider_ptr detect(ui::point const &location) {
+    std::optional<ui::collider_ptr> detect(ui::point const &location) {
         for (auto const &collider : this->_colliders) {
             if (collider->hit_test(location)) {
                 return collider;
             }
         }
-        return nullptr;
+        return std::nullopt;
     }
 
     bool detect(ui::point const &location, ui::collider_ptr const &collider) {
@@ -65,7 +65,7 @@ ui::detector::detector() : _impl(std::make_unique<impl>()) {
 
 ui::detector::~detector() = default;
 
-ui::collider_ptr ui::detector::detect(ui::point const &location) const {
+std::optional<ui::collider_ptr> ui::detector::detect(ui::point const &location) const {
     return this->_impl->detect(location);
 }
 
