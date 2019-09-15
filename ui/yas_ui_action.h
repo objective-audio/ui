@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <chrono>
 #include <unordered_set>
 #include <vector>
@@ -24,9 +23,11 @@ struct updatable_action {
     virtual ~updatable_action() = default;
 
     virtual bool update(time_point_t const &time) = 0;
+
+    static updatable_action_ptr cast(updatable_action_ptr const &);
 };
 
-struct action : std::enable_shared_from_this<action>, updatable_action {
+struct action : updatable_action {
     struct args {
         time_point_t begin_time = std::chrono::system_clock::now();
         double delay = 0.0;
@@ -45,8 +46,6 @@ struct action : std::enable_shared_from_this<action>, updatable_action {
     void set_target(action_target_wptr const &);
     void set_time_updater(time_update_f);
     void set_completion_handler(completion_f);
-
-    std::shared_ptr<ui::updatable_action> updatable();
 
     [[nodiscard]] static action_ptr make_shared();
     [[nodiscard]] static action_ptr make_shared(args);
@@ -101,7 +100,7 @@ struct continuous_action final : action {
 
     explicit continuous_action(args &&args);
 
-    void prepare();
+    void prepare(continuous_action_ptr const &);
 };
 
 struct parallel_action final : action {
@@ -127,7 +126,7 @@ struct parallel_action final : action {
 
     explicit parallel_action(action::args &&);
 
-    void prepare(args &&);
+    void prepare(parallel_action_ptr const &, args &&);
 };
 
 [[nodiscard]] ui::parallel_action_ptr make_action_sequence(std::vector<std::shared_ptr<action>> actions,

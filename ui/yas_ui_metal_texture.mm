@@ -47,7 +47,7 @@ struct ui::metal_texture::impl {
 
             textureDesc.usage = this->_texture_usage;
 
-            this->_texture_object = this->_metal_system->makable()->make_mtl_texture(textureDesc);
+            this->_texture_object = ui::makable_metal_system::cast(this->_metal_system)->make_mtl_texture(textureDesc);
 
             if (!this->_texture_object) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
@@ -74,7 +74,8 @@ struct ui::metal_texture::impl {
             samplerDesc.lodMaxClamp = FLT_MAX;
             samplerDesc.supportArgumentBuffers = true;
 
-            this->_sampler_object = this->_metal_system->makable()->make_mtl_sampler_state(samplerDesc);
+            this->_sampler_object =
+                ui::makable_metal_system::cast(this->_metal_system)->make_mtl_sampler_state(samplerDesc);
 
             if (!this->_sampler_object.object()) {
                 return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
@@ -82,7 +83,8 @@ struct ui::metal_texture::impl {
         }
 
         if (!this->_argument_encoder_object) {
-            this->_argument_encoder_object = this->_metal_system->makable()->make_mtl_argument_encoder();
+            this->_argument_encoder_object =
+                ui::makable_metal_system::cast(this->_metal_system)->make_mtl_argument_encoder();
 
             if (!this->_argument_encoder_object) {
                 return ui::setup_metal_result{setup_metal_error::create_argument_encoder_failed};
@@ -90,7 +92,8 @@ struct ui::metal_texture::impl {
 
             auto encoder = *this->_argument_encoder_object;
 
-            this->_argument_buffer_object = this->_metal_system->makable()->make_mtl_buffer(encoder.encodedLength);
+            this->_argument_buffer_object =
+                ui::makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(encoder.encodedLength);
 
             if (!this->_argument_buffer_object) {
                 return ui::setup_metal_result{setup_metal_error::create_argument_buffer_failed};
@@ -154,10 +157,6 @@ MTLTextureUsage ui::metal_texture::texture_usage() const {
 
 ui::metal_system_ptr const &ui::metal_texture::metal_system() {
     return this->_impl->_metal_system;
-}
-
-ui::metal_object_ptr ui::metal_texture::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {

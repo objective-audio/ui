@@ -14,8 +14,6 @@ namespace yas::ui {
 enum class layout_alignment;
 
 struct strings final {
-    class impl;
-
     struct args {
         std::size_t max_word_count = 16;
         std::string text;
@@ -51,6 +49,8 @@ struct strings final {
     [[nodiscard]] static strings_ptr make_shared(args);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit strings(args);

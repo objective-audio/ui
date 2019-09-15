@@ -78,7 +78,7 @@ struct ui::renderer::impl {
         switch (this->system_type()) {
             case ui::system_type::metal: {
                 if (auto metalView = objc_cast<YASUIMetalView>(view)) {
-                    this->_metal_system->renderable()->view_configure(view);
+                    ui::renderable_metal_system::cast(this->_metal_system)->view_configure(view);
                     this->_safe_area_insets = metalView.uiSafeAreaInsets;
                     auto const drawable_size = metalView.drawableSize;
                     this->view_size_will_change(view, drawable_size);
@@ -138,13 +138,13 @@ struct ui::renderer::impl {
     }
 
     pre_render_result pre_render() {
-        this->_action->updatable()->update(std::chrono::system_clock::now());
+        ui::updatable_action::cast(this->_action)->update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
-        this->_root_node->renderable()->fetch_updates(tree_updates);
+        ui::renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
         if (tree_updates.is_collider_updated()) {
-            this->_detector->updatable()->begin_update();
+            updatable_detector::cast(this->_detector)->begin_update();
         }
 
         if (tree_updates.is_any_updated()) {
@@ -163,7 +163,7 @@ struct ui::renderer::impl {
 
         if (to_bool(pre_render())) {
             if (auto renderer = this->_weak_renderer.lock()) {
-                this->_metal_system->renderable()->view_render(view, renderer);
+                ui::renderable_metal_system::cast(this->_metal_system)->view_render(view, renderer);
             }
         }
 
@@ -171,8 +171,8 @@ struct ui::renderer::impl {
     }
 
     void post_render() {
-        this->_root_node->renderable()->clear_updates();
-        this->_detector->updatable()->end_update();
+        ui::renderable_node::cast(this->_root_node)->clear_updates();
+        updatable_detector::cast(this->_detector)->end_update();
     }
 
     void insert_action(std::shared_ptr<ui::action> action) {
@@ -307,10 +307,6 @@ ui::metal_system_ptr const &ui::renderer::metal_system() const {
     return this->_impl->_metal_system;
 }
 
-ui::view_renderable_ptr ui::renderer::view_renderable() {
-    return std::dynamic_pointer_cast<ui::view_renderable>(this->shared_from_this());
-}
-
 ui::event_manager_ptr &ui::renderer::event_manager() {
     return this->_impl->_event_manager;
 }
@@ -374,7 +370,7 @@ chaining::chain_sync_t<ui::appearance> ui::renderer::chain_appearance() const {
 void ui::renderer::_prepare(renderer_ptr const &shared) {
     auto &imp = this->_impl;
     imp->_weak_renderer = shared;
-    imp->_root_node->renderable()->set_renderer(shared);
+    ui::renderable_node::cast(imp->_root_node)->set_renderer(shared);
 }
 
 void ui::renderer::view_configure(yas_objc_view *const view) {

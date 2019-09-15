@@ -26,12 +26,12 @@ struct ui::mesh::impl {
 
     ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (this->_mesh_data) {
-            if (auto ul = unless(this->_mesh_data->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(this->_mesh_data)->metal_setup(metal_system))) {
                 return ul.value;
             }
         }
         if (this->_texture) {
-            if (auto ul = unless(this->_texture->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(this->_texture)->metal_setup(metal_system))) {
                 return ul.value;
             }
         }
@@ -72,7 +72,7 @@ struct ui::mesh::impl {
 
     bool pre_render() {
         if (this->_mesh_data) {
-            this->_mesh_data->renderable()->update_render_buffer();
+            ui::renderable_mesh_data::cast(this->_mesh_data)->update_render_buffer();
             return this->is_rendering_color_exists();
         }
 
@@ -119,7 +119,7 @@ struct ui::mesh::impl {
         this->_updates.flags.reset();
 
         if (this->_mesh_data) {
-            this->_mesh_data->renderable()->clear_updates();
+            ui::renderable_mesh_data::cast(this->_mesh_data)->clear_updates();
         }
     }
 
@@ -228,7 +228,9 @@ struct ui::mesh::impl {
             if (this->_mesh_data) {
                 static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
 
-                if (this->_mesh_data->renderable()->updates().and_test(_mesh_data_overwrite_updates)) {
+                if (ui::renderable_mesh_data::cast(this->_mesh_data)
+                        ->updates()
+                        .and_test(_mesh_data_overwrite_updates)) {
                     return true;
                 }
             }
@@ -341,14 +343,4 @@ ui::mesh_data_ptr const &ui::mesh::mesh_data() {
 
 ui::mesh_ptr ui::mesh::make_shared() {
     return std::shared_ptr<mesh>(new mesh{});
-}
-
-#pragma mark - protocol
-
-ui::metal_object_ptr ui::mesh::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
-ui::renderable_mesh_ptr ui::mesh::renderable() {
-    return std::dynamic_pointer_cast<renderable_mesh>(this->shared_from_this());
 }

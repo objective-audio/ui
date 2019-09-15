@@ -12,12 +12,7 @@
 namespace yas::ui {
 class metal_system;
 
-struct metal_render_encoder final : render_encodable,
-                                    render_effectable,
-                                    render_stackable,
-                                    std::enable_shared_from_this<metal_render_encoder> {
-    class impl;
-
+struct metal_render_encoder final : render_encodable, render_effectable, render_stackable {
     struct encode_result_t {
         std::size_t const encoded_mesh_count;
     };
@@ -29,13 +24,11 @@ struct metal_render_encoder final : render_encodable,
     encode_result_t encode(std::shared_ptr<ui::metal_system> const &metal_system,
                            id<MTLCommandBuffer> const commandBuffer);
 
-    ui::render_encodable_ptr encodable();
-    ui::render_effectable_ptr effectable();
-    ui::render_stackable_ptr stackable();
-
     [[nodiscard]] static metal_render_encoder_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     metal_render_encoder();

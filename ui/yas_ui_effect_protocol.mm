@@ -9,6 +9,14 @@
 
 using namespace yas;
 
+ui::renderable_effect_ptr ui::renderable_effect::cast(renderable_effect_ptr const &renderable) {
+    return renderable;
+}
+
+ui::encodable_effect_ptr ui::encodable_effect::cast(encodable_effect_ptr const &encodable) {
+    return encodable;
+}
+
 #pragma mark -
 
 std::string yas::to_string(ui::effect_update_reason const &reason) {

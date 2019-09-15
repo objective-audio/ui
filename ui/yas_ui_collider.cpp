@@ -109,9 +109,6 @@ struct ui::collider::impl {
     }
 };
 
-ui::collider::collider() : _impl(std::make_unique<impl>(nullptr)) {
-}
-
 ui::collider::collider(ui::shape_ptr &&shape) : _impl(std::make_unique<impl>(std::move(shape))) {
 }
 
@@ -161,12 +158,8 @@ void ui::collider::set_matrix(simd::float4x4 const &matrix) {
     this->_impl->_matrix = std::move(matrix);
 }
 
-ui::renderable_collider_ptr ui::collider::renderable() {
-    return std::dynamic_pointer_cast<renderable_collider>(this->shared_from_this());
-}
-
 ui::collider_ptr ui::collider::make_shared() {
-    return std::shared_ptr<collider>(new ui::collider{});
+    return make_shared(nullptr);
 }
 
 ui::collider_ptr ui::collider::make_shared(ui::shape_ptr shape) {

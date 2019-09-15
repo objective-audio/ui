@@ -14,7 +14,9 @@ struct updatable_detector {
     virtual void begin_update() = 0;
     virtual void push_front_collider(ui::collider_ptr const &) = 0;
     virtual void end_update() = 0;
-};
 
-using updatable_detector_ptr = std::shared_ptr<updatable_detector>;
+    static updatable_detector_ptr cast(updatable_detector_ptr const &updatable) {
+        return updatable;
+    }
+};
 }  // namespace yas::ui

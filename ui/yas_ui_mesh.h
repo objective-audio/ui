@@ -13,9 +13,7 @@ namespace yas::ui {
 class texture;
 enum class primitive_type;
 
-struct mesh final : renderable_mesh, metal_object, std::enable_shared_from_this<mesh> {
-    class impl;
-
+struct mesh final : renderable_mesh, metal_object {
     virtual ~mesh();
 
     ui::mesh_data_ptr const &mesh_data() const;
@@ -32,12 +30,11 @@ struct mesh final : renderable_mesh, metal_object, std::enable_shared_from_this<
     void set_use_mesh_color(bool const);
     void set_primitive_type(ui::primitive_type const);
 
-    ui::metal_object_ptr metal();
-    ui::renderable_mesh_ptr renderable();
-
     [[nodiscard]] static mesh_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     mesh();

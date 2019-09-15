@@ -23,8 +23,6 @@ class action_target;
 enum class system_type;
 
 struct renderer final : view_renderable, std::enable_shared_from_this<renderer> {
-    class impl;
-
     enum class method {
         will_render,
         view_size_changed,
@@ -44,8 +42,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     ui::node_ptr const &root_node() const;
     ui::node_ptr &root_node();
-
-    ui::view_renderable_ptr view_renderable();
 
     ui::event_manager_ptr &event_manager();
 
@@ -72,6 +68,8 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     [[nodiscard]] static renderer_ptr make_shared(ui::metal_system_ptr const &);
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);

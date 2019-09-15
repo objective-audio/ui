@@ -32,6 +32,8 @@ struct ui::button::impl {
 
     void prepare(std::shared_ptr<ui::button> const &button) {
         auto const weak_button = to_weak(button);
+        this->_weak_button = weak_button;
+
         auto &node = this->_rect_plane->node();
 
         this->_leave_or_enter_or_move_tracking_receiver = chaining::perform_receiver<>::make_shared([weak_button] {
@@ -128,6 +130,7 @@ struct ui::button::impl {
         }
     }
 
+    std::weak_ptr<button> _weak_button;
     ui::rect_plane_ptr _rect_plane;
     ui::layout_guide_rect_ptr _layout_guide_rect;
     chaining::notifier_ptr<chain_pair_t> _notify_sender = chaining::notifier<chain_pair_t>::make_shared();
@@ -298,7 +301,7 @@ std::size_t ui::button::state_index() const {
 }
 
 void ui::button::cancel_tracking() {
-    this->_impl->cancel_tracking(shared_from_this());
+    this->_impl->cancel_tracking(this->_impl->_weak_button.lock());
 }
 
 chaining::chain_unsync_t<ui::button::chain_pair_t> ui::button::chain() const {
@@ -320,8 +323,8 @@ ui::layout_guide_rect_ptr const &ui::button::layout_guide_rect() {
     return this->_impl->_layout_guide_rect;
 }
 
-void ui::button::_prepare() {
-    this->_impl->prepare(shared_from_this());
+void ui::button::_prepare(button_ptr const &shared) {
+    this->_impl->prepare(shared);
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region) {
@@ -330,7 +333,7 @@ ui::button_ptr ui::button::make_shared(ui::region const &region) {
 
 ui::button_ptr ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
     auto shared = std::shared_ptr<button>(new button{region, state_count});
-    shared->_prepare();
+    shared->_prepare(shared);
     return shared;
 }
 

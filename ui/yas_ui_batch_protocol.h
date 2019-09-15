@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <ostream>
 #include <string>
 #include <vector>
 #include "yas_ui_mesh.h"
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 enum class batch_building_type {
@@ -24,6 +24,8 @@ struct renderable_batch {
     virtual void begin_render_meshes_building(batch_building_type const) = 0;
     virtual void commit_render_meshes_building() = 0;
     virtual void clear_render_meshes() = 0;
+
+    static renderable_batch_ptr cast(renderable_batch_ptr const &);
 };
 }  // namespace yas::ui
 

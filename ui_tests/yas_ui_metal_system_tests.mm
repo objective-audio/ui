@@ -34,7 +34,7 @@ using namespace yas;
 
     XCTAssertTrue(system);
 
-    auto const testable = system->testable();
+    auto const testable = ui::testable_metal_system::cast(system);
 
     XCTAssertNotNil(testable->mtlDevice());
     XCTAssertEqual(testable->sample_count(), 4);
@@ -51,7 +51,7 @@ using namespace yas;
 
     XCTAssertTrue(system);
 
-    auto const testable = system->testable();
+    auto const testable = ui::testable_metal_system::cast(system);
 
     XCTAssertNotNil(testable->mtlDevice());
     XCTAssertEqual(testable->sample_count(), 1);

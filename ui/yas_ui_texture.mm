@@ -89,7 +89,7 @@ struct ui::texture::impl {
             this->_metal_texture =
                 ui::metal_texture::make_shared(this->actual_size(), this->_usages, this->_pixel_format);
 
-            if (auto ul = unless(this->_metal_texture->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(this->_metal_texture)->metal_setup(metal_system))) {
                 return ul.value;
             }
 
@@ -304,10 +304,6 @@ chaining::chain_relayed_unsync_t<ui::texture_ptr, ui::texture::chain_pair_t> ui:
 
 std::shared_ptr<chaining::receiver<double>> ui::texture::scale_factor_receiver() {
     return std::dynamic_pointer_cast<chaining::receiver<double>>(this->_impl->_scale_factor);
-}
-
-ui::metal_object_ptr ui::texture::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {

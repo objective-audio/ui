@@ -69,11 +69,11 @@ struct ui::node::impl {
                                   .perform([prev_batch = std::shared_ptr<ui::batch>{nullptr}](
                                                std::shared_ptr<ui::batch> const &batch) mutable {
                                       if (prev_batch) {
-                                          prev_batch->renderable()->clear_render_meshes();
+                                          renderable_batch::cast(prev_batch)->clear_render_meshes();
                                       }
 
                                       if (batch) {
-                                          batch->renderable()->clear_render_meshes();
+                                          renderable_batch::cast(batch)->clear_render_meshes();
                                       }
 
                                       prev_batch = batch;
@@ -143,10 +143,10 @@ struct ui::node::impl {
             auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
             if (auto const &collider = this->_collider->raw()) {
-                collider->renderable()->set_matrix(this->_matrix);
+                ui::renderable_collider::cast(collider)->set_matrix(this->_matrix);
 
-                if (auto &detector = render_info.detector) {
-                    auto const &detector_updatable = detector->updatable();
+                if (auto const &detector = render_info.detector) {
+                    auto const detector_updatable = updatable_detector::cast(detector);
                     if (detector_updatable->is_updating()) {
                         detector_updatable->push_front_collider(collider);
                     }
@@ -155,13 +155,13 @@ struct ui::node::impl {
 
             if (auto const &render_encodable = render_info.render_encodable) {
                 if (auto const &mesh = this->_mesh->raw()) {
-                    mesh->renderable()->set_matrix(mesh_matrix);
+                    renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
 
                 if (auto &render_target = this->_render_target->raw()) {
-                    auto const &mesh = render_target->renderable()->mesh();
-                    mesh->renderable()->set_matrix(mesh_matrix);
+                    auto const &mesh = ui::renderable_render_target::cast(render_target)->mesh();
+                    renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
             }
@@ -170,20 +170,20 @@ struct ui::node::impl {
                 bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
 
                 if (!needs_render) {
-                    needs_render = render_target->renderable()->updates().flags.any();
+                    needs_render = ui::renderable_render_target::cast(render_target)->updates().flags.any();
                 }
 
-                auto const renderable = render_target->renderable();
+                auto const renderable = ui::renderable_render_target::cast(render_target);
                 auto const &effect = renderable->effect();
                 if (!needs_render && effect) {
-                    needs_render = effect->renderable()->updates().flags.any();
+                    needs_render = renderable_effect::cast(effect)->updates().flags.any();
                 }
 
                 if (!needs_render) {
                     ui::tree_updates tree_updates;
 
                     for (auto &sub_node : this->_children) {
-                        sub_node->renderable()->fetch_updates(tree_updates);
+                        ui::renderable_node::cast(sub_node)->fetch_updates(tree_updates);
                     }
 
                     needs_render = tree_updates.is_any_updated();
@@ -192,7 +192,7 @@ struct ui::node::impl {
                 if (needs_render) {
                     auto const &stackable = render_info.render_stackable;
 
-                    if (render_target->renderable()->push_encode_info(stackable)) {
+                    if (ui::renderable_render_target::cast(render_target)->push_encode_info(stackable)) {
                         ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
                                                            .render_effectable = render_info.render_effectable,
                                                            .render_stackable = render_info.render_stackable,
@@ -218,16 +218,16 @@ struct ui::node::impl {
                 ui::tree_updates tree_updates;
 
                 for (auto const &sub_node : this->_children) {
-                    sub_node->renderable()->fetch_updates(tree_updates);
+                    ui::renderable_node::cast(sub_node)->fetch_updates(tree_updates);
                 }
 
                 auto const building_type = tree_updates.batch_building_type();
 
                 ui::render_info batch_render_info{.detector = render_info.detector};
-                auto batch_renderable = batch->renderable();
+                auto const batch_renderable = std::dynamic_pointer_cast<renderable_batch>(batch);
 
                 if (to_bool(building_type)) {
-                    batch_render_info.render_encodable = batch->encodable();
+                    batch_render_info.render_encodable = render_encodable::cast(batch);
                     batch_renderable->begin_render_meshes_building(building_type);
                 }
 
@@ -242,7 +242,7 @@ struct ui::node::impl {
                 }
 
                 for (auto const &mesh : batch_renderable->meshes()) {
-                    mesh->renderable()->set_matrix(mesh_matrix);
+                    renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_info.render_encodable->append_mesh(mesh);
                 }
             } else {
@@ -257,35 +257,36 @@ struct ui::node::impl {
 
     ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (auto const &mesh = this->_mesh->raw()) {
-            if (auto ul = unless(mesh->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
         if (auto &render_target = this->_render_target->raw()) {
-            if (auto ul = unless(render_target->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(render_target)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
-            if (auto ul = unless(render_target->renderable()->mesh()->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(metal_object::cast(ui::renderable_render_target::cast(render_target)->mesh())
+                                     ->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
-            if (auto &effect = render_target->renderable()->effect()) {
-                if (auto ul = unless(effect->metal()->metal_setup(metal_system))) {
+            if (auto &effect = ui::renderable_render_target::cast(render_target)->effect()) {
+                if (auto ul = unless(metal_object::cast(effect)->metal_setup(metal_system))) {
                     return std::move(ul.value);
                 }
             }
         }
 
         if (auto &batch = this->_batch->raw()) {
-            if (auto ul = unless(batch->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(std::dynamic_pointer_cast<ui::metal_object>(batch)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
 
         for (auto &sub_node : this->_children) {
-            if (auto ul = unless(sub_node->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(sub_node)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
@@ -306,32 +307,33 @@ struct ui::node::impl {
             tree_updates.node_updates.flags |= this->_updates.flags;
 
             if (auto const &mesh = this->_mesh->raw()) {
-                tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
+                tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
                 if (auto const &mesh_data = mesh->mesh_data()) {
-                    tree_updates.mesh_data_updates.flags |= mesh_data->renderable()->updates().flags;
+                    tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
                 }
             }
 
             if (auto &render_target = this->_render_target->raw()) {
-                tree_updates.render_target_updates.flags |= render_target->renderable()->updates().flags;
+                auto const renderable = ui::renderable_render_target::cast(render_target);
 
-                auto const renderable = render_target->renderable();
+                tree_updates.render_target_updates.flags |= renderable->updates().flags;
+
                 auto const &mesh = renderable->mesh();
 
-                tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
+                tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
                 if (auto &mesh_data = mesh->mesh_data()) {
-                    tree_updates.mesh_data_updates.flags |= mesh_data->renderable()->updates().flags;
+                    tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
                 }
 
                 if (auto &effect = renderable->effect()) {
-                    tree_updates.effect_updates.flags |= effect->renderable()->updates().flags;
+                    tree_updates.effect_updates.flags |= renderable_effect::cast(effect)->updates().flags;
                 }
             }
 
             for (auto &sub_node : this->_children) {
-                sub_node->renderable()->fetch_updates(tree_updates);
+                ui::renderable_node::cast(sub_node)->fetch_updates(tree_updates);
             }
         } else if (this->_updates.test(ui::node_update_reason::enabled)) {
             tree_updates.node_updates.set(ui::node_update_reason::enabled);
@@ -344,13 +346,13 @@ struct ui::node::impl {
         }
 
         for (auto &sub_node : this->_children) {
-            if (sub_node->renderable()->is_rendering_color_exists()) {
+            if (ui::renderable_node::cast(sub_node)->is_rendering_color_exists()) {
                 return true;
             }
         }
 
         if (auto const &mesh = this->_mesh->raw()) {
-            return mesh->renderable()->is_rendering_color_exists();
+            return renderable_mesh::cast(mesh)->is_rendering_color_exists();
         }
 
         return false;
@@ -361,15 +363,15 @@ struct ui::node::impl {
             this->_updates.flags.reset();
 
             if (auto const &mesh = this->_mesh->raw()) {
-                mesh->renderable()->clear_updates();
+                renderable_mesh::cast(mesh)->clear_updates();
             }
 
             if (auto &render_target = this->_render_target->raw()) {
-                render_target->renderable()->clear_updates();
+                ui::renderable_render_target::cast(render_target)->clear_updates();
             }
 
             for (auto &sub_node : this->_children) {
-                sub_node->renderable()->clear_updates();
+                ui::renderable_node::cast(sub_node)->clear_updates();
             }
         } else {
             this->_updates.reset(ui::node_update_reason::enabled);
@@ -618,18 +620,15 @@ chaining::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_targe
 }
 
 void ui::node::add_sub_node(ui::node_ptr sub_node) {
-    auto shared = this->shared_from_this();
-    this->_impl->add_sub_node(std::move(sub_node), shared);
+    this->_impl->add_sub_node(std::move(sub_node), this->_weak_node.lock());
 }
 
 void ui::node::add_sub_node(ui::node_ptr sub_node, std::size_t const idx) {
-    auto shared = this->shared_from_this();
-    this->_impl->add_sub_node(std::move(sub_node), idx, shared);
+    this->_impl->add_sub_node(std::move(sub_node), idx, this->_weak_node.lock());
 }
 
 void ui::node::remove_from_super_node() {
-    auto shared = this->shared_from_this();
-    this->_impl->remove_from_super_node(shared);
+    this->_impl->remove_from_super_node(this->_weak_node.lock());
 }
 
 std::vector<ui::node_ptr> const &ui::node::children() const {
@@ -646,14 +645,6 @@ ui::node_ptr ui::node::parent() const {
 
 ui::renderer_ptr ui::node::renderer() {
     return this->_impl->renderer();
-}
-
-ui::metal_object_ptr ui::node::metal() {
-    return std::dynamic_pointer_cast<metal_object>(this->shared_from_this());
-}
-
-ui::renderable_node_ptr ui::node::renderable() {
-    return std::dynamic_pointer_cast<renderable_node>(this->shared_from_this());
 }
 
 chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
@@ -690,7 +681,7 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     auto &position = this->_impl->_position;
-    auto weak_node = to_weak(this->shared_from_this());
+    auto weak_node = this->_weak_node;
 
     this->_impl->_x_observer = guide.chain()
                                    .guard([weak_node](float const &) { return !weak_node.expired(); })
@@ -705,7 +696,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
 
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     auto &position = this->_impl->_position;
-    auto weak_node = to_weak(this->shared_from_this());
+    auto weak_node = this->_weak_node;
 
     this->_impl->_y_observer = guide.chain()
                                    .guard([weak_node](float const &) { return !weak_node.expired(); })
@@ -728,6 +719,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
 }
 
 void ui::node::_prepare(ui::node_ptr const &node) {
+    this->_weak_node = node;
     this->_impl->prepare(node);
 }
 

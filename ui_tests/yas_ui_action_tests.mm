@@ -39,7 +39,7 @@ using namespace yas;
     XCTAssertTrue(begin_time <= time);
     XCTAssertTrue((time + -100ms) < begin_time);
 
-    XCTAssertTrue(action->updatable());
+    XCTAssertTrue(ui::updatable_action::cast(action));
 }
 
 - (void)test_create_continuous_action {
@@ -52,7 +52,7 @@ using namespace yas;
 - (void)test_updatable_finished {
     auto const begin_time = std::chrono::system_clock::now();
     auto action = ui::continuous_action::make_shared({.duration = 1.0, .action = {.begin_time = begin_time}});
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     XCTAssertFalse(updatable->update(begin_time + 999ms));
     XCTAssertTrue(updatable->update(begin_time + 1000ms));
@@ -87,7 +87,7 @@ using namespace yas;
 - (void)test_begin_time {
     auto time = std::chrono::system_clock::now();
     auto action = ui::action::make_shared({.begin_time = time + 1s});
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     XCTAssertFalse(updatable->update(time));
     XCTAssertFalse(updatable->update(time + 999ms));
@@ -97,7 +97,7 @@ using namespace yas;
 - (void)test_completion_handler {
     auto time = std::chrono::system_clock::now();
     auto action = ui::continuous_action::make_shared({.duration = 1.0, .action = {.begin_time = time}});
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     bool completed = false;
     action->set_completion_handler([&completed]() { completed = true; });
@@ -121,7 +121,7 @@ using namespace yas;
 
     auto action = ui::continuous_action::make_shared(std::move(args));
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     bool completed = false;
     double updated_value = -1.0f;
@@ -154,7 +154,7 @@ using namespace yas;
     ui::continuous_action::args args = {.duration = 1.0, .loop_count = 2, .action = {.begin_time = time}};
     auto action = ui::continuous_action::make_shared(std::move(args));
 
-    auto updatable = action->updatable();
+    auto const updatable = ui::updatable_action::cast(action);
 
     bool completed = false;
     double updated_value = -1.0f;
@@ -206,25 +206,25 @@ using namespace yas;
 
     XCTAssertEqual(parallel_action->actions().size(), 3);
 
-    XCTAssertFalse(parallel_action->updatable()->update(time));
+    XCTAssertFalse(ui::updatable_action::cast(parallel_action)->update(time));
     XCTAssertEqual(parallel_action->actions().size(), 3);
 
-    XCTAssertFalse(parallel_action->updatable()->update(time + 999ms));
+    XCTAssertFalse(ui::updatable_action::cast(parallel_action)->update(time + 999ms));
     XCTAssertEqual(parallel_action->actions().size(), 3);
 
-    XCTAssertFalse(parallel_action->updatable()->update(time + 1s));
+    XCTAssertFalse(ui::updatable_action::cast(parallel_action)->update(time + 1s));
     XCTAssertEqual(parallel_action->actions().size(), 2);
 
-    XCTAssertFalse(parallel_action->updatable()->update(time + 1999ms));
+    XCTAssertFalse(ui::updatable_action::cast(parallel_action)->update(time + 1999ms));
     XCTAssertEqual(parallel_action->actions().size(), 2);
 
-    XCTAssertFalse(parallel_action->updatable()->update(time + 2s));
+    XCTAssertFalse(ui::updatable_action::cast(parallel_action)->update(time + 2s));
     XCTAssertEqual(parallel_action->actions().size(), 1);
 
-    XCTAssertFalse(parallel_action->updatable()->update(time + 2999ms));
+    XCTAssertFalse(ui::updatable_action::cast(parallel_action)->update(time + 2999ms));
     XCTAssertEqual(parallel_action->actions().size(), 1);
 
-    XCTAssertTrue(parallel_action->updatable()->update(time + 3s));
+    XCTAssertTrue(ui::updatable_action::cast(parallel_action)->update(time + 3s));
     XCTAssertEqual(parallel_action->actions().size(), 0);
 }
 
@@ -250,7 +250,7 @@ using namespace yas;
     auto action_sequence =
         ui::make_action_sequence({first_action, continuous_action1, end_action, continuous_action2}, time + 1s);
     action_sequence->set_completion_handler([&sequence_completed] { sequence_completed = true; });
-    auto updatable = action_sequence->updatable();
+    auto const updatable = ui::updatable_action::cast(action_sequence);
 
     XCTAssertFalse(updatable->update(time));
 

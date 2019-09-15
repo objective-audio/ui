@@ -9,6 +9,7 @@
 #include <simd/simd.h>
 #include "yas_ui_effect.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
@@ -32,7 +33,9 @@ struct renderable_render_target {
     virtual MTLRenderPassDescriptor *renderPassDescriptor() = 0;
     virtual simd::float4x4 &projection_matrix() = 0;
     virtual bool push_encode_info(ui::render_stackable_ptr const &) = 0;
-};
 
-using renderable_render_target_ptr = std::shared_ptr<renderable_render_target>;
+    static renderable_render_target_ptr cast(renderable_render_target_ptr const &render_target) {
+        return render_target;
+    }
+};
 }  // namespace yas::ui

@@ -38,7 +38,7 @@ using namespace yas;
     XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer->scale_factor(), 0.0);
 
-    XCTAssertTrue(renderer->view_renderable());
+    XCTAssertTrue(ui::view_renderable::cast(renderer));
     XCTAssertTrue(renderer->event_manager());
     XCTAssertTrue(renderer->detector());
 
@@ -111,7 +111,7 @@ using namespace yas;
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
 
-    renderer->view_renderable()->view_configure(view);
+    ui::view_renderable::cast(renderer)->view_configure(view);
 
     double const scale_factor = renderer->scale_factor();
     XCTAssertEqual(view.sampleCount, 4);
@@ -157,7 +157,7 @@ using namespace yas;
 
     XCTAssertEqual(notified, 0.0f);
 
-    renderer->view_renderable()->view_configure(view);
+    ui::view_renderable::cast(renderer)->view_configure(view);
 
     XCTAssertEqual(notified, renderer->scale_factor());
 }

@@ -24,17 +24,18 @@ struct renderable_effect {
     virtual void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) = 0;
     virtual ui::effect_updates_t &updates() = 0;
     virtual void clear_updates() = 0;
-};
 
-using renderable_effect_ptr = std::shared_ptr<renderable_effect>;
+    static renderable_effect_ptr cast(renderable_effect_ptr const &);
+};
 
 struct encodable_effect {
     virtual ~encodable_effect() = default;
 
     virtual void encode(id<MTLCommandBuffer> const) = 0;
+
+    static encodable_effect_ptr cast(encodable_effect_ptr const &);
 };
 
-using encodable_effect_ptr = std::shared_ptr<encodable_effect>;
 }  // namespace yas::ui
 
 namespace yas {

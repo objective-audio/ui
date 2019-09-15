@@ -19,11 +19,11 @@ struct manageable_event {
 
     virtual void set_phase(event_phase const &) = 0;
     virtual std::shared_ptr<event_impl_base> get_impl() = 0;
+
+    static manageable_event_ptr cast(manageable_event_ptr const &);
 };
 
-using manageable_event_ptr = std::shared_ptr<manageable_event>;
-
-struct event : manageable_event, std::enable_shared_from_this<event> {
+struct event : manageable_event {
     template <typename T>
     class impl;
 
@@ -37,8 +37,6 @@ struct event : manageable_event, std::enable_shared_from_this<event> {
     typename T::type const &get() const;
 
     uintptr_t identifier() const;
-
-    ui::manageable_event_ptr manageable();
 
     bool operator==(event const &) const;
     bool operator!=(event const &) const;
@@ -60,9 +58,7 @@ struct event : manageable_event, std::enable_shared_from_this<event> {
     std::shared_ptr<event_impl_base> get_impl() override;
 };
 
-struct event_manager : event_inputtable, std::enable_shared_from_this<event_manager> {
-    class impl;
-
+struct event_manager : event_inputtable {
     enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
 
     struct context {
@@ -75,11 +71,11 @@ struct event_manager : event_inputtable, std::enable_shared_from_this<event_mana
     [[nodiscard]] chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
 
-    ui::event_inputtable_ptr inputtable();
-
     [[nodiscard]] static event_manager_ptr make_shared();
 
    private:
+    class impl;
+
     std::unique_ptr<impl> _impl;
 
     event_manager();

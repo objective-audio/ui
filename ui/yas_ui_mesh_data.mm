@@ -29,7 +29,7 @@ struct ui::mesh_data::impl {
         if (!this->_vertex_buffer) {
             auto const vertex_length = this->_vertices.size() * sizeof(ui::vertex2d_t) * this->dynamic_buffer_count();
 
-            this->_vertex_buffer = this->_metal_system->makable()->make_mtl_buffer(vertex_length);
+            this->_vertex_buffer = ui::makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(vertex_length);
 
             if (!this->_vertex_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_vertex_buffer_failed};
@@ -39,7 +39,7 @@ struct ui::mesh_data::impl {
         if (!this->_index_buffer) {
             auto const index_length = this->_indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
-            this->_index_buffer = this->_metal_system->makable()->make_mtl_buffer(index_length);
+            this->_index_buffer = ui::makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(index_length);
 
             if (!this->_index_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_index_buffer_failed};
@@ -149,14 +149,6 @@ void ui::mesh_data::write(
 
 ui::metal_system_ptr const &ui::mesh_data::metal_system() {
     return this->_impl->_metal_system;
-}
-
-ui::metal_object_ptr ui::mesh_data::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
-ui::renderable_mesh_data_ptr ui::mesh_data::renderable() {
-    return std::dynamic_pointer_cast<renderable_mesh_data>(this->shared_from_this());
 }
 
 std::size_t ui::mesh_data::vertex_buffer_byte_offset() {

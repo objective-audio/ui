@@ -6,6 +6,10 @@
 
 using namespace yas;
 
+ui::renderable_mesh_ptr ui::renderable_mesh::cast(renderable_mesh_ptr const &mesh) {
+    return mesh;
+}
+
 std::string yas::to_string(ui::mesh_update_reason const &reason) {
     switch (reason) {
         case ui::mesh_update_reason::mesh_data:

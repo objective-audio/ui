@@ -77,18 +77,6 @@ ui::effect::metal_handler_f const &ui::effect::metal_handler() const {
     return this->_impl->metal_handler();
 }
 
-ui::renderable_effect_ptr ui::effect::renderable() {
-    return std::dynamic_pointer_cast<renderable_effect>(this->shared_from_this());
-}
-
-ui::encodable_effect_ptr ui::effect::encodable() {
-    return std::dynamic_pointer_cast<encodable_effect>(this->shared_from_this());
-}
-
-ui::metal_object_ptr ui::effect::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
 void ui::effect::set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) {
     this->_impl->set_textures(src, dst);
 }

@@ -8,8 +8,6 @@
 
 using namespace yas;
 
-#pragma mark - node_update_info
-
 bool ui::tree_updates::is_any_updated() const {
     return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any() ||
            this->render_target_updates.flags.any() || this->effect_updates.flags.any();
@@ -45,6 +43,10 @@ ui::batch_building_type ui::tree_updates::batch_building_type() const {
     }
 
     return ui::batch_building_type::none;
+}
+
+ui::renderable_node_ptr ui::renderable_node::cast(renderable_node_ptr const &node) {
+    return node;
 }
 
 std::string yas::to_string(ui::node_update_reason const &reason) {

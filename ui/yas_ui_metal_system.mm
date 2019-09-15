@@ -179,7 +179,7 @@ struct ui::metal_system::impl {
 
         if (auto uniforms_ptr =
                 (uniforms2d_t *)(&((uint8_t *)[currentUniformsBuffer contents])[this->_uniforms_buffer_offset])) {
-            uniforms_ptr->matrix = mesh->renderable()->matrix();
+            uniforms_ptr->matrix = ui::renderable_mesh::cast(mesh)->matrix();
             uniforms_ptr->color = mesh->color();
             uniforms_ptr->use_mesh_color = mesh->is_use_mesh_color();
         }
@@ -192,7 +192,7 @@ struct ui::metal_system::impl {
         }
 
         auto &mesh_data = mesh->mesh_data();
-        auto const renderable_mesh_data = mesh_data->renderable();
+        auto const renderable_mesh_data = ui::renderable_mesh_data::cast(mesh_data);
 
         [encoder setVertexBuffer:renderable_mesh_data->vertexBuffer()
                           offset:renderable_mesh_data->vertex_buffer_byte_offset()
@@ -210,7 +210,7 @@ struct ui::metal_system::impl {
     }
 
     void push_render_target(ui::render_stackable_ptr const &stackable, ui::render_target_ptr const &render_target) {
-        auto const renderable = render_target->renderable();
+        auto const renderable = ui::renderable_render_target::cast(render_target);
         stackable->push_encode_info(ui::metal_encode_info::make_shared(
             {.renderPassDescriptor = renderable->renderPassDescriptor(),
              .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
@@ -290,22 +290,23 @@ struct ui::metal_system::impl {
     void _render_nodes(ui::renderer_ptr const &renderer, id<MTLCommandBuffer> const commandBuffer,
                        MTLRenderPassDescriptor *const renderPassDesc) {
         auto metal_render_encoder = ui::metal_render_encoder::make_shared();
-        metal_render_encoder->stackable()->push_encode_info(ui::metal_encode_info::make_shared(
-            {.renderPassDescriptor = renderPassDesc,
-             .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
-             .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));
+        render_stackable::cast(metal_render_encoder)
+            ->push_encode_info(ui::metal_encode_info::make_shared(
+                {.renderPassDescriptor = renderPassDesc,
+                 .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
+                 .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));
 
         auto metal_system = this->_weak_metal_system.lock();
 
         ui::render_info render_info{.detector = renderer->detector(),
-                                    .render_encodable = metal_render_encoder->encodable(),
-                                    .render_effectable = metal_render_encoder->effectable(),
-                                    .render_stackable = metal_render_encoder->stackable(),
+                                    .render_encodable = render_encodable::cast(metal_render_encoder),
+                                    .render_effectable = render_effectable::cast(metal_render_encoder),
+                                    .render_stackable = render_stackable::cast(metal_render_encoder),
                                     .matrix = renderer->projection_matrix(),
                                     .mesh_matrix = renderer->projection_matrix()};
 
-        renderer->root_node()->metal()->metal_setup(metal_system);
-        renderer->root_node()->renderable()->build_render_info(render_info);
+        ui::metal_object::cast(renderer->root_node())->metal_setup(metal_system);
+        ui::renderable_node::cast(renderer->root_node())->build_render_info(render_info);
 
         auto result = metal_render_encoder->encode(metal_system, commandBuffer);
         this->_last_encoded_mesh_count = result.encoded_mesh_count;
@@ -322,18 +323,6 @@ ui::metal_system::~metal_system() = default;
 
 std::size_t ui::metal_system::last_encoded_mesh_count() const {
     return this->_impl->last_encoded_mesh_count();
-}
-
-ui::makable_metal_system_ptr ui::metal_system::makable() {
-    return std::dynamic_pointer_cast<makable_metal_system>(this->shared_from_this());
-}
-
-ui::renderable_metal_system_ptr ui::metal_system::renderable() {
-    return std::dynamic_pointer_cast<renderable_metal_system>(this->shared_from_this());
-}
-
-ui::testable_metal_system_ptr ui::metal_system::testable() {
-    return std::dynamic_pointer_cast<testable_metal_system>(this->shared_from_this());
 }
 
 void ui::metal_system::_prepare(metal_system_ptr const &metal_system) {

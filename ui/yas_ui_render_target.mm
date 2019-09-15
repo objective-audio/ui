@@ -128,11 +128,11 @@ struct ui::render_target::impl {
             this->_metal_system = metal_system;
         }
 
-        if (auto ul = unless(this->_src_texture->metal()->metal_setup(metal_system))) {
+        if (auto ul = unless(ui::metal_object::cast(this->_src_texture)->metal_setup(metal_system))) {
             return ul.value;
         }
 
-        if (auto ul = unless(this->_dst_texture->metal()->metal_setup(metal_system))) {
+        if (auto ul = unless(ui::metal_object::cast(this->_dst_texture)->metal_setup(metal_system))) {
             return ul.value;
         }
 
@@ -149,9 +149,9 @@ struct ui::render_target::impl {
 
     void clear_updates() {
         this->_updates.flags.reset();
-        this->_mesh->renderable()->clear_updates();
+        renderable_mesh::cast(this->_mesh)->clear_updates();
         if (auto &effect = this->_effect->raw()) {
-            effect->renderable()->clear_updates();
+            renderable_effect::cast(effect)->clear_updates();
         }
     }
 
@@ -170,7 +170,7 @@ struct ui::render_target::impl {
 
         auto target = this->_weak_render_target.lock();
         if (auto const &metal_system = this->_metal_system) {
-            metal_system->renderable()->push_render_target(stackable, target);
+            ui::renderable_metal_system::cast(metal_system)->push_render_target(stackable, target);
             return true;
         }
         return false;
@@ -211,7 +211,7 @@ struct ui::render_target::impl {
 
     void _set_textures_to_effect() {
         if (auto const &effect = this->_effect->raw()) {
-            effect->renderable()->set_textures(this->_src_texture, this->_dst_texture);
+            renderable_effect::cast(effect)->set_textures(this->_src_texture, this->_dst_texture);
         }
     }
 
@@ -256,14 +256,6 @@ ui::effect_ptr const &ui::render_target::effect() {
 
 std::shared_ptr<chaining::receiver<double>> ui::render_target::scale_factor_receiver() {
     return this->_impl->_scale_factor;
-}
-
-ui::renderable_render_target_ptr ui::render_target::renderable() {
-    return std::dynamic_pointer_cast<renderable_render_target>(this->shared_from_this());
-}
-
-ui::metal_object_ptr ui::render_target::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
 }
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
