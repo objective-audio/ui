@@ -309,7 +309,7 @@ struct ui::node::impl {
                 tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
 
                 if (auto const &mesh_data = mesh->mesh_data()) {
-                    tree_updates.mesh_data_updates.flags |= mesh_data->renderable()->updates().flags;
+                    tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
                 }
             }
 
@@ -322,7 +322,7 @@ struct ui::node::impl {
                 tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
 
                 if (auto &mesh_data = mesh->mesh_data()) {
-                    tree_updates.mesh_data_updates.flags |= mesh_data->renderable()->updates().flags;
+                    tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
                 }
 
                 if (auto &effect = renderable->effect()) {

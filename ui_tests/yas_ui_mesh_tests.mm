@@ -147,20 +147,20 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    XCTAssertNil(mesh_data->renderable()->vertexBuffer());
-    XCTAssertNil(mesh_data->renderable()->indexBuffer());
+    XCTAssertNil(ui::renderable_mesh_data::cast(mesh_data)->vertexBuffer());
+    XCTAssertNil(ui::renderable_mesh_data::cast(mesh_data)->indexBuffer());
 
-    auto setup_result = mesh_data->metal()->metal_setup(metal_system);
+    auto setup_result = ui::metal_object::cast(mesh_data)->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(mesh_data->renderable()->vertexBuffer());
-    XCTAssertNotNil(mesh_data->renderable()->indexBuffer());
-    XCTAssertEqual(mesh_data->renderable()->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
-    XCTAssertEqual(mesh_data->renderable()->indexBuffer().length, 6 * sizeof(ui::index2d_t));
+    XCTAssertNotNil(ui::renderable_mesh_data::cast(mesh_data)->vertexBuffer());
+    XCTAssertNotNil(ui::renderable_mesh_data::cast(mesh_data)->indexBuffer());
+    XCTAssertEqual(ui::renderable_mesh_data::cast(mesh_data)->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t));
+    XCTAssertEqual(ui::renderable_mesh_data::cast(mesh_data)->indexBuffer().length, 6 * sizeof(ui::index2d_t));
 }
 
 - (void)test_mesh_setup_metal_buffer_dynamic {
@@ -174,20 +174,20 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    XCTAssertNil(mesh_data->renderable()->vertexBuffer());
-    XCTAssertNil(mesh_data->renderable()->indexBuffer());
+    XCTAssertNil(ui::renderable_mesh_data::cast(mesh_data)->vertexBuffer());
+    XCTAssertNil(ui::renderable_mesh_data::cast(mesh_data)->indexBuffer());
 
-    auto setup_result = mesh_data->metal()->metal_setup(metal_system);
+    auto setup_result = ui::metal_object::cast(mesh_data)->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(mesh_data->renderable()->vertexBuffer());
-    XCTAssertNotNil(mesh_data->renderable()->indexBuffer());
-    XCTAssertEqual(mesh_data->renderable()->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
-    XCTAssertEqual(mesh_data->renderable()->indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
+    XCTAssertNotNil(ui::renderable_mesh_data::cast(mesh_data)->vertexBuffer());
+    XCTAssertNotNil(ui::renderable_mesh_data::cast(mesh_data)->indexBuffer());
+    XCTAssertEqual(ui::renderable_mesh_data::cast(mesh_data)->vertexBuffer().length, 4 * sizeof(ui::vertex2d_t) * 2);
+    XCTAssertEqual(ui::renderable_mesh_data::cast(mesh_data)->indexBuffer().length, 6 * sizeof(ui::index2d_t) * 2);
 }
 
 - (void)test_write_to_buffer_dynamic {
@@ -201,9 +201,9 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    auto const renderable = mesh_data->renderable();
+    auto const renderable = ui::renderable_mesh_data::cast(mesh_data);
 
-    XCTAssertTrue(mesh_data->metal()->metal_setup(metal_system));
+    XCTAssertTrue(ui::metal_object::cast(mesh_data)->metal_setup(metal_system));
 
     ui::vertex2d_t *vertex_top_ptr = static_cast<ui::vertex2d_t *>([renderable->vertexBuffer() contents]);
     ui::index2d_t *index_top_ptr = static_cast<ui::index2d_t *>([renderable->indexBuffer() contents]);
@@ -298,12 +298,12 @@ using namespace yas;
     mesh->set_mesh_data(mesh_data);
 
     XCTAssertTrue(mesh->renderable()->updates().flags.any());
-    XCTAssertTrue(mesh_data->renderable()->updates().flags.any());
+    XCTAssertTrue(ui::renderable_mesh_data::cast(mesh_data)->updates().flags.any());
 
     mesh->renderable()->clear_updates();
 
     XCTAssertFalse(mesh->renderable()->updates().flags.any());
-    XCTAssertFalse(mesh_data->renderable()->updates().flags.any());
+    XCTAssertFalse(ui::renderable_mesh_data::cast(mesh_data)->updates().flags.any());
 }
 
 - (void)test_updates {

@@ -151,14 +151,6 @@ ui::metal_system_ptr const &ui::mesh_data::metal_system() {
     return this->_impl->_metal_system;
 }
 
-ui::metal_object_ptr ui::mesh_data::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
-ui::renderable_mesh_data_ptr ui::mesh_data::renderable() {
-    return std::dynamic_pointer_cast<renderable_mesh_data>(this->shared_from_this());
-}
-
 std::size_t ui::mesh_data::vertex_buffer_byte_offset() {
     return this->_impl->vertex_buffer_byte_offset();
 }

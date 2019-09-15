@@ -20,6 +20,9 @@ enum class mesh_data_update_reason : std::size_t {
 
 using mesh_data_updates_t = flagset<mesh_data_update_reason>;
 
+class renderable_mesh_data;
+using renderable_mesh_data_ptr = std::shared_ptr<renderable_mesh_data>;
+
 struct renderable_mesh_data {
     virtual ~renderable_mesh_data() = default;
 
@@ -31,9 +34,11 @@ struct renderable_mesh_data {
     virtual mesh_data_updates_t const &updates() = 0;
     virtual void update_render_buffer() = 0;
     virtual void clear_updates() = 0;
-};
 
-using renderable_mesh_data_ptr = std::shared_ptr<renderable_mesh_data>;
+    static renderable_mesh_data_ptr cast(renderable_mesh_data_ptr const &mesh_data) {
+        return mesh_data;
+    }
+};
 }  // namespace yas::ui
 
 namespace yas {

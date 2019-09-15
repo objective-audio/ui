@@ -192,7 +192,7 @@ struct ui::metal_system::impl {
         }
 
         auto &mesh_data = mesh->mesh_data();
-        auto const renderable_mesh_data = mesh_data->renderable();
+        auto const renderable_mesh_data = ui::renderable_mesh_data::cast(mesh_data);
 
         [encoder setVertexBuffer:renderable_mesh_data->vertexBuffer()
                           offset:renderable_mesh_data->vertex_buffer_byte_offset()
