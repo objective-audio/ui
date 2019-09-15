@@ -132,7 +132,7 @@ using namespace yas;
 
     renderer->insert_action(pre_render_action);
 
-    [[YASTestMetalViewController sharedViewController] setRenderable:renderer->view_renderable()];
+    [[YASTestMetalViewController sharedViewController] setRenderable:renderer];
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }

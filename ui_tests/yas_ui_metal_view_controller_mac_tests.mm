@@ -65,7 +65,7 @@ using namespace yas;
 
     XCTAssertFalse(viewController.renderable);
 
-    [viewController setRenderable:renderer->view_renderable()];
+    [viewController setRenderable:renderer];
 
     XCTAssertTrue(viewController.renderable);
 }
@@ -85,7 +85,7 @@ using namespace yas;
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
 
-    [viewController setRenderable:renderer->view_renderable()];
+    [viewController setRenderable:renderer];
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{16, 16}));
 
