@@ -13,7 +13,7 @@ namespace yas::ui {
 class uint_size;
 class metal_system;
 
-struct metal_texture : metal_object, std::enable_shared_from_this<metal_texture> {
+struct metal_texture : metal_object {
     virtual ~metal_texture() final;
 
     ui::uint_size size() const;
@@ -25,8 +25,6 @@ struct metal_texture : metal_object, std::enable_shared_from_this<metal_texture>
     MTLTextureUsage texture_usage() const;
 
     std::shared_ptr<ui::metal_system> const &metal_system();
-
-    ui::metal_object_ptr metal();
 
     [[nodiscard]] static metal_texture_ptr make_shared(ui::uint_size actual_size, ui::texture_usages_t const,
                                                        ui::pixel_format const);

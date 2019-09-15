@@ -60,7 +60,7 @@ using namespace yas;
                                                         ui::pixel_format::rgba8_unorm);
 
     auto metal_system = ui::metal_system::make_shared(device.object());
-    XCTAssertTrue(metal_texture->metal()->metal_setup(metal_system));
+    XCTAssertTrue(ui::metal_object::cast(metal_texture)->metal_setup(metal_system));
 
     XCTAssertTrue(metal_texture->metal_system());
     XCTAssertNotNil(metal_texture->samplerState());

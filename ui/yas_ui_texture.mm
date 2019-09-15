@@ -89,7 +89,7 @@ struct ui::texture::impl {
             this->_metal_texture =
                 ui::metal_texture::make_shared(this->actual_size(), this->_usages, this->_pixel_format);
 
-            if (auto ul = unless(this->_metal_texture->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(ui::metal_object::cast(this->_metal_texture)->metal_setup(metal_system))) {
                 return ul.value;
             }
 

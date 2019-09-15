@@ -159,10 +159,6 @@ ui::metal_system_ptr const &ui::metal_texture::metal_system() {
     return this->_impl->_metal_system;
 }
 
-ui::metal_object_ptr ui::metal_texture::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
 ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
     return this->_impl->metal_setup(system);
 }
