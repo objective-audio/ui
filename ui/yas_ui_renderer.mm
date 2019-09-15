@@ -307,10 +307,6 @@ ui::metal_system_ptr const &ui::renderer::metal_system() const {
     return this->_impl->_metal_system;
 }
 
-ui::view_renderable_ptr ui::renderer::view_renderable() {
-    return std::dynamic_pointer_cast<ui::view_renderable>(this->shared_from_this());
-}
-
 ui::event_manager_ptr &ui::renderer::event_manager() {
     return this->_impl->_event_manager;
 }

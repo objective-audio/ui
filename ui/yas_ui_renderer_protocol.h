@@ -10,6 +10,9 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
+class view_renderable;
+using view_renderable_ptr = std::shared_ptr<view_renderable>;
+
 struct view_renderable {
     virtual ~view_renderable() = default;
 
@@ -18,7 +21,9 @@ struct view_renderable {
     virtual void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) = 0;
     virtual void view_render(yas_objc_view *const view) = 0;
     virtual void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) = 0;
-};
 
-using view_renderable_ptr = std::shared_ptr<view_renderable>;
+    static view_renderable_ptr cast(view_renderable_ptr const &renderable) {
+        return renderable;
+    }
+};
 }  // namespace yas::ui

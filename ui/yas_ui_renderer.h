@@ -43,8 +43,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::node_ptr const &root_node() const;
     ui::node_ptr &root_node();
 
-    ui::view_renderable_ptr view_renderable();
-
     ui::event_manager_ptr &event_manager();
 
     std::vector<std::shared_ptr<ui::action>> actions() const;
