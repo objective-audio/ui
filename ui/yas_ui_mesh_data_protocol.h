@@ -7,6 +7,7 @@
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
 #include <ostream>
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 enum class mesh_data_update_reason : std::size_t {
@@ -19,9 +20,6 @@ enum class mesh_data_update_reason : std::size_t {
 };
 
 using mesh_data_updates_t = flagset<mesh_data_update_reason>;
-
-class renderable_mesh_data;
-using renderable_mesh_data_ptr = std::shared_ptr<renderable_mesh_data>;
 
 struct renderable_mesh_data {
     virtual ~renderable_mesh_data() = default;

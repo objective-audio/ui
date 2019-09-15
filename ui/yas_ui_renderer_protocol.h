@@ -7,12 +7,10 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <MetalKit/MetalKit.h>
 #include <objc_utils/yas_objc_macros.h>
+#include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-class view_renderable;
-using view_renderable_ptr = std::shared_ptr<view_renderable>;
-
 struct view_renderable {
     virtual ~view_renderable() = default;
 

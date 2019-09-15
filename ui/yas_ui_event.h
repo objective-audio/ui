@@ -11,9 +11,6 @@
 namespace yas::ui {
 class event_impl_base;
 
-class manageable_event;
-using manageable_event_ptr = std::shared_ptr<manageable_event>;
-
 struct manageable_event {
     virtual ~manageable_event() = default;
 

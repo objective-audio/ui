@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
@@ -117,9 +118,6 @@ static cursor constexpr cursor_tag{};
 static touch constexpr touch_tag{};
 static key constexpr key_tag{};
 static modifier constexpr modifier_tag{};
-
-class event_inputtable;
-using event_inputtable_ptr = std::shared_ptr<event_inputtable>;
 
 struct event_inputtable {
     virtual ~event_inputtable() = default;

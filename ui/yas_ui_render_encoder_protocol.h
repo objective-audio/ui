@@ -9,13 +9,6 @@
 #include "yas_ui_metal_encode_info.h"
 
 namespace yas::ui {
-class render_encodable;
-class render_effectable;
-class render_stackable;
-using render_encodable_ptr = std::shared_ptr<render_encodable>;
-using render_effectable_ptr = std::shared_ptr<render_effectable>;
-using render_stackable_ptr = std::shared_ptr<render_stackable>;
-
 struct render_encodable {
     virtual ~render_encodable() = default;
 
@@ -25,8 +18,6 @@ struct render_encodable {
         return encodable;
     }
 };
-
-using render_encodable_ptr = std::shared_ptr<render_encodable>;
 
 struct render_effectable {
     virtual ~render_effectable() = default;

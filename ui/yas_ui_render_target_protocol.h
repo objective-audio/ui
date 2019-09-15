@@ -9,6 +9,7 @@
 #include <simd/simd.h>
 #include "yas_ui_effect.h"
 #include "yas_ui_mesh.h"
+#include "yas_ui_ptr.h"
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
@@ -21,9 +22,6 @@ enum class render_target_update_reason : std::size_t {
 };
 
 using render_target_updates_t = flagset<render_target_update_reason>;
-
-class renderable_render_target;
-using renderable_render_target_ptr = std::shared_ptr<renderable_render_target>;
 
 struct renderable_render_target {
     virtual ~renderable_render_target() = default;

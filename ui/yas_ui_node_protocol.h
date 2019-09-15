@@ -42,9 +42,6 @@ struct tree_updates {
     ui::batch_building_type batch_building_type() const;
 };
 
-class renderable_node;
-using renderable_node_ptr = std::shared_ptr<renderable_node>;
-
 struct renderable_node {
     virtual ~renderable_node() = default;
 

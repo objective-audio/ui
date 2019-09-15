@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <chrono>
 #include <unordered_set>
 #include <vector>
@@ -19,9 +18,6 @@ using duration_t = std::chrono::duration<double>;
 struct action_target {
     virtual ~action_target() = default;
 };
-
-class updatable_action;
-using updatable_action_ptr = std::shared_ptr<updatable_action>;
 
 struct updatable_action {
     virtual ~updatable_action() = default;

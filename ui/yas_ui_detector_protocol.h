@@ -7,9 +7,6 @@
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {
-class updatable_detector;
-using updatable_detector_ptr = std::shared_ptr<updatable_detector>;
-
 struct updatable_detector {
     virtual ~updatable_detector() = default;
 

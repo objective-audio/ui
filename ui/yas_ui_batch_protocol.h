@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <cpp_utils/yas_protocol.h>
 #include <ostream>
 #include <string>
 #include <vector>
 #include "yas_ui_mesh.h"
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 enum class batch_building_type {
@@ -16,9 +16,6 @@ enum class batch_building_type {
     rebuild,
     overwrite,
 };
-
-class renderable_batch;
-using renderable_batch_ptr = std::shared_ptr<renderable_batch>;
 
 struct renderable_batch {
     virtual ~renderable_batch() = default;

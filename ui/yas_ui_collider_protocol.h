@@ -5,11 +5,9 @@
 #pragma once
 
 #include <simd/simd.h>
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
-class renderable_collider;
-using renderable_collider_ptr = std::shared_ptr<renderable_collider>;
-
 struct renderable_collider {
     virtual ~renderable_collider() = default;
 

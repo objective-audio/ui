@@ -7,23 +7,12 @@
 #include <Metal/Metal.h>
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
 #include <cpp_utils/yas_objc_ptr.h>
-#include <cpp_utils/yas_protocol.h>
 #include <objc_utils/yas_objc_macros.h>
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_encode_info.h"
 #include "yas_ui_render_encoder_protocol.h"
 
 namespace yas::ui {
-class renderer;
-class render_target;
-class renderable_metal_system;
-class makable_metal_system;
-class testable_metal_system;
-
-using renderable_metal_system_ptr = std::shared_ptr<renderable_metal_system>;
-using makable_metal_system_ptr = std::shared_ptr<makable_metal_system>;
-using testable_metal_system_ptr = std::shared_ptr<testable_metal_system>;
-
 struct renderable_metal_system {
     virtual ~renderable_metal_system() = default;
 

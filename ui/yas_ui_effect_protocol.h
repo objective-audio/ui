@@ -18,11 +18,6 @@ enum class effect_update_reason : std::size_t {
 
 using effect_updates_t = flagset<effect_update_reason>;
 
-class renderable_effect;
-class encodable_effect;
-using renderable_effect_ptr = std::shared_ptr<renderable_effect>;
-using encodable_effect_ptr = std::shared_ptr<encodable_effect>;
-
 struct renderable_effect {
     virtual ~renderable_effect() = default;
 

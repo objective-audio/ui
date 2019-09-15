@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_result.h>
 #include <ostream>
+#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 class metal_system;
@@ -29,10 +30,8 @@ struct metal_object {
 
     virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
 
-    static std::shared_ptr<metal_object> cast(std::shared_ptr<metal_object> const &);
+    static metal_object_ptr cast(metal_object_ptr const &);
 };
-
-using metal_object_ptr = std::shared_ptr<metal_object>;
 }  // namespace yas::ui
 
 namespace yas {
