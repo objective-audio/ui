@@ -141,7 +141,7 @@ struct ui::renderer::impl {
         ui::updatable_action::cast(this->_action)->update(std::chrono::system_clock::now());
 
         ui::tree_updates tree_updates;
-        this->_root_node->renderable()->fetch_updates(tree_updates);
+        ui::renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
         if (tree_updates.is_collider_updated()) {
             updatable_detector::cast(this->_detector)->begin_update();
@@ -171,7 +171,7 @@ struct ui::renderer::impl {
     }
 
     void post_render() {
-        this->_root_node->renderable()->clear_updates();
+        ui::renderable_node::cast(this->_root_node)->clear_updates();
         updatable_detector::cast(this->_detector)->end_update();
     }
 
@@ -374,7 +374,7 @@ chaining::chain_sync_t<ui::appearance> ui::renderer::chain_appearance() const {
 void ui::renderer::_prepare(renderer_ptr const &shared) {
     auto &imp = this->_impl;
     imp->_weak_renderer = shared;
-    imp->_root_node->renderable()->set_renderer(shared);
+    ui::renderable_node::cast(imp->_root_node)->set_renderer(shared);
 }
 
 void ui::renderer::view_configure(yas_objc_view *const view) {

@@ -305,8 +305,8 @@ struct ui::metal_system::impl {
                                     .matrix = renderer->projection_matrix(),
                                     .mesh_matrix = renderer->projection_matrix()};
 
-        renderer->root_node()->metal()->metal_setup(metal_system);
-        renderer->root_node()->renderable()->build_render_info(render_info);
+        ui::metal_object::cast(renderer->root_node())->metal_setup(metal_system);
+        ui::renderable_node::cast(renderer->root_node())->build_render_info(render_info);
 
         auto result = metal_render_encoder->encode(metal_system, commandBuffer);
         this->_last_encoded_mesh_count = result.encoded_mesh_count;

@@ -73,8 +73,8 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertTrue(node->is_enabled()->raw());
 
-    XCTAssertTrue(node->renderable());
-    XCTAssertTrue(node->metal());
+    XCTAssertTrue(ui::renderable_node::cast(node));
+    XCTAssertTrue(ui::metal_object::cast(node));
 }
 
 - (void)test_set_variables {
@@ -250,7 +250,7 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     auto renderer = ui::renderer::make_shared();
 
-    auto const renderable = node->renderable();
+    auto const renderable = ui::renderable_node::cast(node);
 
     XCTAssertFalse(renderable->renderer());
 
@@ -325,11 +325,11 @@ struct test_render_encoder : ui::render_encodable {
 
     auto renderer = ui::renderer::make_shared();
 
-    node->renderable()->set_renderer(renderer);
+    ui::renderable_node::cast(node)->set_renderer(renderer);
 
     XCTAssertEqual(notified, renderer);
 
-    node->renderable()->set_renderer(nullptr);
+    ui::renderable_node::cast(node)->set_renderer(nullptr);
 
     XCTAssertTrue(!notified);
 }
@@ -349,16 +349,16 @@ struct test_render_encoder : ui::render_encodable {
     ui::tree_updates updates;
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertFalse(updates.is_any_updated());
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
     node->angle()->set_value({1.0f});
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 1);
     XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::geometry));
@@ -366,10 +366,10 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertFalse(updates.mesh_data_updates.flags.any());
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
     mesh->set_use_mesh_color(true);
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertFalse(updates.node_updates.flags.any());
     XCTAssertEqual(updates.mesh_updates.flags.count(), 1);
@@ -377,10 +377,10 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertFalse(updates.mesh_data_updates.flags.any());
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
     mesh_data->set_vertex_count(1);
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertFalse(updates.node_updates.flags.any());
     XCTAssertFalse(updates.mesh_updates.flags.any());
@@ -388,10 +388,10 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertTrue(updates.mesh_data_updates.test(ui::mesh_data_update_reason::vertex_count));
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
     sub_node->is_enabled()->set_value(false);
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 1);
     XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
@@ -405,12 +405,12 @@ struct test_render_encoder : ui::render_encodable {
     ui::tree_updates updates;
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->clear_updates();
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertFalse(updates.is_any_updated());
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
     // nodeのパラメータを変更する
     node->mesh()->set_value(ui::mesh::make_shared());
@@ -427,7 +427,7 @@ struct test_render_encoder : ui::render_encodable {
     node->add_sub_node(sub_node);
 
     // enabledがfalseの時はenabled以外の変更はフェッチされない
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 1);
     XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
@@ -435,12 +435,12 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertFalse(updates.mesh_data_updates.flags.any());
 
     updates = ui::tree_updates{};
-    node->renderable()->clear_updates();
+    ui::renderable_node::cast(node)->clear_updates();
 
     node->is_enabled()->set_value(true);
 
     // enabledをtrueにするとフェッチされる
-    node->renderable()->fetch_updates(updates);
+    ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 6);
     XCTAssertTrue(updates.node_updates.test(ui::node_update_reason::enabled));
@@ -456,24 +456,24 @@ struct test_render_encoder : ui::render_encodable {
 - (void)test_is_rendering_color_exists {
     auto node = ui::node::make_shared();
 
-    XCTAssertFalse(node->renderable()->is_rendering_color_exists());
+    XCTAssertFalse(ui::renderable_node::cast(node)->is_rendering_color_exists());
 
     auto mesh = ui::mesh::make_shared();
     mesh->set_mesh_data(ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1}));
     node->mesh()->set_value(mesh);
 
-    XCTAssertTrue(node->renderable()->is_rendering_color_exists());
+    XCTAssertTrue(ui::renderable_node::cast(node)->is_rendering_color_exists());
 
     node->mesh()->set_value(nullptr);
     auto sub_node = ui::node::make_shared();
     sub_node->mesh()->set_value(mesh);
     node->add_sub_node(sub_node);
 
-    XCTAssertTrue(node->renderable()->is_rendering_color_exists());
+    XCTAssertTrue(ui::renderable_node::cast(node)->is_rendering_color_exists());
 
     node->is_enabled()->set_value(false);
 
-    XCTAssertFalse(node->renderable()->is_rendering_color_exists());
+    XCTAssertFalse(ui::renderable_node::cast(node)->is_rendering_color_exists());
 }
 
 - (void)test_metal_setup {
@@ -503,7 +503,7 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertFalse(root_mesh_data->metal_system());
     XCTAssertFalse(sub_mesh_data->metal_system());
 
-    XCTAssertTrue(root_node->metal()->metal_setup(metal_system));
+    XCTAssertTrue(ui::metal_object::cast(root_node)->metal_setup(metal_system));
 
     XCTAssertTrue(root_mesh_data->metal_system());
     XCTAssertTrue(sub_mesh_data->metal_system());
@@ -536,7 +536,7 @@ struct test_render_encoder : ui::render_encodable {
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 
-    node->renderable()->build_render_info(render_info);
+    ui::renderable_node::cast(node)->build_render_info(render_info);
 
     XCTAssertEqual(render_encoder->meshes().size(), 3);
     XCTAssertEqual(render_encoder->meshes().at(0), node->mesh()->raw());

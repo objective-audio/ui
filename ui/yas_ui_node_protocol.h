@@ -42,6 +42,9 @@ struct tree_updates {
     ui::batch_building_type batch_building_type() const;
 };
 
+class renderable_node;
+using renderable_node_ptr = std::shared_ptr<renderable_node>;
+
 struct renderable_node {
     virtual ~renderable_node() = default;
 
@@ -51,9 +54,9 @@ struct renderable_node {
     virtual void build_render_info(ui::render_info &) = 0;
     virtual bool is_rendering_color_exists() = 0;
     virtual void clear_updates() = 0;
-};
 
-using renderable_node_ptr = std::shared_ptr<renderable_node>;
+    static renderable_node_ptr cast(renderable_node_ptr const &);
+};
 }  // namespace yas::ui
 
 namespace yas {

@@ -23,7 +23,7 @@ class batch;
 class layout_guide;
 class layout_guide_point;
 
-struct node final : action_target, metal_object, renderable_node, std::enable_shared_from_this<node> {
+struct node final : action_target, metal_object, renderable_node {
     enum class method {
         added_to_super,
         removed_from_super,
@@ -65,9 +65,6 @@ struct node final : action_target, metal_object, renderable_node, std::enable_sh
 
     ui::renderer_ptr renderer() override;
 
-    ui::metal_object_ptr metal();
-    ui::renderable_node_ptr renderable();
-
     using chain_pair_t = std::pair<method, node_ptr>;
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(std::vector<method> const &) const;
@@ -87,6 +84,7 @@ struct node final : action_target, metal_object, renderable_node, std::enable_sh
     class impl;
 
     std::unique_ptr<impl> _impl;
+    std::weak_ptr<node> _weak_node;
 
     node();
 
