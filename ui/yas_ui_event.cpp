@@ -8,6 +8,12 @@
 
 using namespace yas;
 
+#pragma mark - manageable_event
+
+ui::manageable_event_ptr ui::manageable_event::cast(manageable_event_ptr const &manageable) {
+    return manageable;
+}
+
 #pragma mark - event::impl
 
 struct ui::event_impl_base {
@@ -90,10 +96,6 @@ uintptr_t ui::event::identifier() const {
     return reinterpret_cast<uintptr_t>(this);
 }
 
-ui::manageable_event_ptr ui::event::manageable() {
-    return std::dynamic_pointer_cast<manageable_event>(this->shared_from_this());
-}
-
 bool ui::event::operator==(event const &rhs) const {
     return rhs._impl != nullptr && this->_impl->is_equal(rhs._impl);
 }
@@ -144,7 +146,7 @@ struct ui::event_manager::impl {
         }
 
         if (this->_cursor_event) {
-            auto manageable_event = this->_cursor_event->manageable();
+            auto manageable_event = ui::manageable_event::cast(this->_cursor_event);
             manageable_event->set_phase(phase);
             manageable_event->set<cursor>(value);
 
@@ -169,7 +171,7 @@ struct ui::event_manager::impl {
 
         if (this->_touch_events.count(identifer) > 0) {
             auto &event = this->_touch_events.at(identifer);
-            auto manageable_event = event->manageable();
+            auto const manageable_event = ui::manageable_event::cast(event);
             manageable_event->set_phase(phase);
             manageable_event->set<touch>(value);
 
@@ -194,8 +196,9 @@ struct ui::event_manager::impl {
 
         if (this->_key_events.count(key_code) > 0) {
             auto const &event = this->_key_events.at(key_code);
-            event->manageable()->set_phase(phase);
-            event->manageable()->set<key>(value);
+            auto const manageable = ui::manageable_event::cast(event);
+            manageable->set_phase(phase);
+            manageable->set<key>(value);
 
             this->_notifier->notify({.method = event_manager::method::key_changed, .event = event});
 
@@ -213,9 +216,10 @@ struct ui::event_manager::impl {
         for (auto const &flag : all_flags) {
             if (flags & flag) {
                 if (this->_modifier_events.count(flag) == 0) {
-                    ui::event_ptr event = ui::event::make_shared(modifier_tag);
-                    event->manageable()->set<modifier>(ui::modifier_event{flag, timestamp});
-                    event->manageable()->set_phase(ui::event_phase::began);
+                    ui::event_ptr const event = ui::event::make_shared(modifier_tag);
+                    auto manageable = ui::manageable_event::cast(event);
+                    manageable->set<modifier>(ui::modifier_event{flag, timestamp});
+                    manageable->set_phase(ui::event_phase::began);
                     this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
                     this->_notifier->notify(
@@ -224,7 +228,7 @@ struct ui::event_manager::impl {
             } else {
                 if (this->_modifier_events.count(flag) > 0) {
                     auto const &event = this->_modifier_events.at(flag);
-                    event->manageable()->set_phase(ui::event_phase::ended);
+                    ui::manageable_event::cast(event)->set_phase(ui::event_phase::ended);
 
                     this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
 

@@ -11,6 +11,9 @@
 namespace yas::ui {
 class event_impl_base;
 
+class manageable_event;
+using manageable_event_ptr = std::shared_ptr<manageable_event>;
+
 struct manageable_event {
     virtual ~manageable_event() = default;
 
@@ -19,11 +22,11 @@ struct manageable_event {
 
     virtual void set_phase(event_phase const &) = 0;
     virtual std::shared_ptr<event_impl_base> get_impl() = 0;
+
+    static manageable_event_ptr cast(manageable_event_ptr const &);
 };
 
-using manageable_event_ptr = std::shared_ptr<manageable_event>;
-
-struct event : manageable_event, std::enable_shared_from_this<event> {
+struct event : manageable_event {
     template <typename T>
     class impl;
 
@@ -37,8 +40,6 @@ struct event : manageable_event, std::enable_shared_from_this<event> {
     typename T::type const &get() const;
 
     uintptr_t identifier() const;
-
-    ui::manageable_event_ptr manageable();
 
     bool operator==(event const &) const;
     bool operator!=(event const &) const;
