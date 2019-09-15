@@ -93,7 +93,7 @@ using namespace yas;
     auto pre_render_action = ui::action::make_shared();
 
     pre_render_action->set_time_updater([&metal_system = renderer->metal_system(), expectation, self](auto const &) {
-        auto mtlDevice = metal_system->testable()->mtlDevice();
+        auto mtlDevice = ui::testable_metal_system::cast(metal_system)->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
@@ -105,8 +105,9 @@ using namespace yas;
         auto const stackable = ui::render_stackable::cast(encoder);
 
         auto encode_info = ui::metal_encode_info::make_shared(
-            {view.currentRenderPassDescriptor, metal_system->testable()->mtlRenderPipelineStateWithTexture(),
-             metal_system->testable()->mtlRenderPipelineStateWithoutTexture()});
+            {view.currentRenderPassDescriptor,
+             ui::testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithTexture(),
+             ui::testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithoutTexture()});
 
         stackable->push_encode_info(encode_info);
 

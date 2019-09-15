@@ -29,7 +29,7 @@ struct ui::mesh_data::impl {
         if (!this->_vertex_buffer) {
             auto const vertex_length = this->_vertices.size() * sizeof(ui::vertex2d_t) * this->dynamic_buffer_count();
 
-            this->_vertex_buffer = this->_metal_system->makable()->make_mtl_buffer(vertex_length);
+            this->_vertex_buffer = ui::makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(vertex_length);
 
             if (!this->_vertex_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_vertex_buffer_failed};
@@ -39,7 +39,7 @@ struct ui::mesh_data::impl {
         if (!this->_index_buffer) {
             auto const index_length = this->_indices.size() * sizeof(ui::index2d_t) * dynamic_buffer_count();
 
-            this->_index_buffer = this->_metal_system->makable()->make_mtl_buffer(index_length);
+            this->_index_buffer = ui::makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(index_length);
 
             if (!this->_index_buffer) {
                 return ui::setup_metal_result{ui::setup_metal_error::create_index_buffer_failed};

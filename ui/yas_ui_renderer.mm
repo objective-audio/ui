@@ -78,7 +78,7 @@ struct ui::renderer::impl {
         switch (this->system_type()) {
             case ui::system_type::metal: {
                 if (auto metalView = objc_cast<YASUIMetalView>(view)) {
-                    this->_metal_system->renderable()->view_configure(view);
+                    ui::renderable_metal_system::cast(this->_metal_system)->view_configure(view);
                     this->_safe_area_insets = metalView.uiSafeAreaInsets;
                     auto const drawable_size = metalView.drawableSize;
                     this->view_size_will_change(view, drawable_size);
@@ -163,7 +163,7 @@ struct ui::renderer::impl {
 
         if (to_bool(pre_render())) {
             if (auto renderer = this->_weak_renderer.lock()) {
-                this->_metal_system->renderable()->view_render(view, renderer);
+                ui::renderable_metal_system::cast(this->_metal_system)->view_render(view, renderer);
             }
         }
 

@@ -325,18 +325,6 @@ std::size_t ui::metal_system::last_encoded_mesh_count() const {
     return this->_impl->last_encoded_mesh_count();
 }
 
-ui::makable_metal_system_ptr ui::metal_system::makable() {
-    return std::dynamic_pointer_cast<makable_metal_system>(this->shared_from_this());
-}
-
-ui::renderable_metal_system_ptr ui::metal_system::renderable() {
-    return std::dynamic_pointer_cast<renderable_metal_system>(this->shared_from_this());
-}
-
-ui::testable_metal_system_ptr ui::metal_system::testable() {
-    return std::dynamic_pointer_cast<testable_metal_system>(this->shared_from_this());
-}
-
 void ui::metal_system::_prepare(metal_system_ptr const &metal_system) {
     this->_impl->prepare(metal_system);
 }

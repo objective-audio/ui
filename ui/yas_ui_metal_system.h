@@ -10,17 +10,10 @@
 
 namespace yas::ui {
 
-struct metal_system final : renderable_metal_system,
-                            makable_metal_system,
-                            testable_metal_system,
-                            std::enable_shared_from_this<metal_system> {
+struct metal_system final : renderable_metal_system, makable_metal_system, testable_metal_system {
     virtual ~metal_system();
 
     std::size_t last_encoded_mesh_count() const;
-
-    ui::makable_metal_system_ptr makable();
-    ui::renderable_metal_system_ptr renderable();
-    ui::testable_metal_system_ptr testable();
 
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const);
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const, uint32_t const sample_count);

@@ -48,7 +48,7 @@ void ui::blur::_update_effect_handler() {
             if (!prev_scale_factor || scale_factor != *prev_scale_factor) {
                 prev_scale_factor = scale_factor;
                 double const blur_sigma = sigma * scale_factor;
-                blur = metal_system->makable()->make_mtl_blur(blur_sigma);
+                blur = ui::makable_metal_system::cast(metal_system)->make_mtl_blur(blur_sigma);
             }
 
             auto const srcTexture = src_texture->metal_texture()->texture();
