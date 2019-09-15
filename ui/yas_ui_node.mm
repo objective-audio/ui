@@ -155,13 +155,13 @@ struct ui::node::impl {
 
             if (auto const &render_encodable = render_info.render_encodable) {
                 if (auto const &mesh = this->_mesh->raw()) {
-                    mesh->renderable()->set_matrix(mesh_matrix);
+                    renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
 
                 if (auto &render_target = this->_render_target->raw()) {
                     auto const &mesh = render_target->renderable()->mesh();
-                    mesh->renderable()->set_matrix(mesh_matrix);
+                    renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_encodable->append_mesh(mesh);
                 }
             }
@@ -242,7 +242,7 @@ struct ui::node::impl {
                 }
 
                 for (auto const &mesh : batch_renderable->meshes()) {
-                    mesh->renderable()->set_matrix(mesh_matrix);
+                    renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                     render_info.render_encodable->append_mesh(mesh);
                 }
             } else {
@@ -257,7 +257,7 @@ struct ui::node::impl {
 
     ui::setup_metal_result metal_setup(ui::metal_system_ptr const &metal_system) {
         if (auto const &mesh = this->_mesh->raw()) {
-            if (auto ul = unless(mesh->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
@@ -267,7 +267,7 @@ struct ui::node::impl {
                 return std::move(ul.value);
             }
 
-            if (auto ul = unless(render_target->renderable()->mesh()->metal()->metal_setup(metal_system))) {
+            if (auto ul = unless(metal_object::cast(render_target->renderable()->mesh())->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
 
@@ -306,7 +306,7 @@ struct ui::node::impl {
             tree_updates.node_updates.flags |= this->_updates.flags;
 
             if (auto const &mesh = this->_mesh->raw()) {
-                tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
+                tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
                 if (auto const &mesh_data = mesh->mesh_data()) {
                     tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
@@ -319,7 +319,7 @@ struct ui::node::impl {
                 auto const renderable = render_target->renderable();
                 auto const &mesh = renderable->mesh();
 
-                tree_updates.mesh_updates.flags |= mesh->renderable()->updates().flags;
+                tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
                 if (auto &mesh_data = mesh->mesh_data()) {
                     tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
@@ -350,7 +350,7 @@ struct ui::node::impl {
         }
 
         if (auto const &mesh = this->_mesh->raw()) {
-            return mesh->renderable()->is_rendering_color_exists();
+            return renderable_mesh::cast(mesh)->is_rendering_color_exists();
         }
 
         return false;
@@ -361,7 +361,7 @@ struct ui::node::impl {
             this->_updates.flags.reset();
 
             if (auto const &mesh = this->_mesh->raw()) {
-                mesh->renderable()->clear_updates();
+                renderable_mesh::cast(mesh)->clear_updates();
             }
 
             if (auto &render_target = this->_render_target->raw()) {

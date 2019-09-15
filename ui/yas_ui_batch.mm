@@ -19,7 +19,7 @@ struct ui::batch::impl {
         if (this->_building_type == ui::batch_building_type::rebuild) {
             ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
 
-            auto const renderable_mesh = mesh->renderable();
+            auto const renderable_mesh = renderable_mesh::cast(mesh);
             mesh_info.vertex_count += renderable_mesh->render_vertex_count();
             mesh_info.index_count += renderable_mesh->render_index_count();
 
@@ -56,7 +56,7 @@ struct ui::batch::impl {
             }
 
             for (auto const &src_mesh : mesh_info.src_meshes) {
-                auto const src_mesh_renderable = src_mesh->renderable();
+                auto const src_mesh_renderable = renderable_mesh::cast(src_mesh);
                 if (src_mesh_renderable->pre_render()) {
                     src_mesh_renderable->batch_render(mesh_info, this->_building_type);
                 }
@@ -70,7 +70,7 @@ struct ui::batch::impl {
 
         if (auto &metal_system = this->_metal_system) {
             for (auto const &mesh : this->_render_meshes) {
-                if (auto ul = unless(mesh->metal()->metal_setup(metal_system))) {
+                if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
                     throw std::runtime_error("render_meshes setup failed.");
                 };
             }

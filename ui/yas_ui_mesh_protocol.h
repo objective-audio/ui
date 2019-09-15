@@ -10,8 +10,6 @@
 #include <ostream>
 
 namespace yas::ui {
-class metal_system;
-class metal_encode_info;
 class batch_render_mesh_info;
 enum class batch_building_type;
 
@@ -28,6 +26,9 @@ enum class mesh_update_reason : std::size_t {
 
 using mesh_updates_t = flagset<mesh_update_reason>;
 
+class renderable_mesh;
+using renderable_mesh_ptr = std::shared_ptr<renderable_mesh>;
+
 struct renderable_mesh {
     virtual ~renderable_mesh() = default;
 
@@ -40,9 +41,9 @@ struct renderable_mesh {
     virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
     virtual bool is_rendering_color_exists() = 0;
     virtual void clear_updates() = 0;
-};
 
-using renderable_mesh_ptr = std::shared_ptr<renderable_mesh>;
+    static renderable_mesh_ptr cast(renderable_mesh_ptr const &);
+};
 }  // namespace yas::ui
 
 namespace yas {

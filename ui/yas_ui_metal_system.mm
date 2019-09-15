@@ -179,7 +179,7 @@ struct ui::metal_system::impl {
 
         if (auto uniforms_ptr =
                 (uniforms2d_t *)(&((uint8_t *)[currentUniformsBuffer contents])[this->_uniforms_buffer_offset])) {
-            uniforms_ptr->matrix = mesh->renderable()->matrix();
+            uniforms_ptr->matrix = ui::renderable_mesh::cast(mesh)->matrix();
             uniforms_ptr->color = mesh->color();
             uniforms_ptr->use_mesh_color = mesh->is_use_mesh_color();
         }

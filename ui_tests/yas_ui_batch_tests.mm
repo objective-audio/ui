@@ -126,8 +126,8 @@ using namespace yas;
     });
     mesh2->set_mesh_data(mesh_data2);
 
-    mesh1->metal()->metal_setup(metal_system);
-    mesh2->metal()->metal_setup(metal_system);
+    ui::metal_object::cast(mesh1)->metal_setup(metal_system);
+    ui::metal_object::cast(mesh2)->metal_setup(metal_system);
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
 
@@ -142,8 +142,8 @@ using namespace yas;
     auto const &render_mesh = meshes.at(0);
     auto &render_mesh_data = render_mesh->mesh_data();
 
-    XCTAssertEqual(render_mesh->renderable()->render_vertex_count(), 2);
-    XCTAssertEqual(render_mesh->renderable()->render_index_count(), 2);
+    XCTAssertEqual(ui::renderable_mesh::cast(render_mesh)->render_vertex_count(), 2);
+    XCTAssertEqual(ui::renderable_mesh::cast(render_mesh)->render_index_count(), 2);
     XCTAssertEqual(render_mesh_data->vertex_count(), 2);
     XCTAssertEqual(render_mesh_data->index_count(), 2);
 
@@ -188,7 +188,7 @@ using namespace yas;
     auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    mesh->metal()->metal_setup(metal_system);
+    ui::metal_object::cast(mesh)->metal_setup(metal_system);
 
     mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
         vertices.at(0).position.x = 1.0f;
@@ -239,7 +239,7 @@ using namespace yas;
     auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    mesh->metal()->metal_setup(metal_system);
+    ui::metal_object::cast(mesh)->metal_setup(metal_system);
 
     batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
 

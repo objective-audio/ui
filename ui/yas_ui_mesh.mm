@@ -344,13 +344,3 @@ ui::mesh_data_ptr const &ui::mesh::mesh_data() {
 ui::mesh_ptr ui::mesh::make_shared() {
     return std::shared_ptr<mesh>(new mesh{});
 }
-
-#pragma mark - protocol
-
-ui::metal_object_ptr ui::mesh::metal() {
-    return std::dynamic_pointer_cast<ui::metal_object>(this->shared_from_this());
-}
-
-ui::renderable_mesh_ptr ui::mesh::renderable() {
-    return std::dynamic_pointer_cast<renderable_mesh>(this->shared_from_this());
-}

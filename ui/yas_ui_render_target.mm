@@ -149,7 +149,7 @@ struct ui::render_target::impl {
 
     void clear_updates() {
         this->_updates.flags.reset();
-        this->_mesh->renderable()->clear_updates();
+        renderable_mesh::cast(this->_mesh)->clear_updates();
         if (auto &effect = this->_effect->raw()) {
             renderable_effect::cast(effect)->clear_updates();
         }
