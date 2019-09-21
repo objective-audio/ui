@@ -9,17 +9,17 @@
 
 namespace yas::sample {
 struct cursor {
-    class impl;
-
     ui::node_ptr const &node();
 
     static cursor_ptr make_shared();
 
    private:
-    std::unique_ptr<impl> _impl;
+    ui::node_ptr _node = ui::node::make_shared();
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 
     cursor();
 
     void _prepare(cursor_ptr const &);
+    void _setup_node();
 };
 }  // namespace yas::sample
