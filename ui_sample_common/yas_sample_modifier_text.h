@@ -9,17 +9,18 @@
 
 namespace yas::sample {
 struct modifier_text {
-    class impl;
-
     ui::strings_ptr const &strings();
 
     static modifier_text_ptr make_shared(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
 
    private:
-    std::unique_ptr<impl> _impl;
+    ui::strings_ptr _strings;
+    ui::layout_guide_ptr _bottom_guide;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 
     explicit modifier_text(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
 
     void _prepare(modifier_text_ptr const &);
+    void _update_text(ui::event_ptr const &event, std::unordered_set<ui::modifier_flags> &flags);
 };
 }  // namespace yas::sample
