@@ -13,7 +13,7 @@
 #include "yas_sample_big_button_text.h"
 #include "yas_sample_cursor.h"
 #include "yas_sample_cursor_over_planes.h"
-#include "yas_sample_draw_call_text.hpp"
+#include "yas_sample_draw_call_text.h"
 #include "yas_sample_inputted_text.h"
 #include "yas_sample_justified_points.h"
 #include "yas_sample_modifier_text.h"

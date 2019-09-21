@@ -37,7 +37,7 @@
 		B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_soft_keyboard.mm; path = ../../ui_sample_common/yas_sample_soft_keyboard.mm; sourceTree = "<group>"; };
 		B60428271D3904D70076769D /* yas_sample_soft_keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_soft_keyboard.h; path = ../../ui_sample_common/yas_sample_soft_keyboard.h; sourceTree = "<group>"; };
 		B60F3FE91FC7B8A6008493DC /* yas_sample_draw_call_text.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_draw_call_text.mm; path = ../../ui_sample_common/yas_sample_draw_call_text.mm; sourceTree = "<group>"; };
-		B60F3FEA1FC7B8A6008493DC /* yas_sample_draw_call_text.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = yas_sample_draw_call_text.hpp; path = ../../ui_sample_common/yas_sample_draw_call_text.hpp; sourceTree = "<group>"; };
+		B60F3FEA1FC7B8A6008493DC /* yas_sample_draw_call_text.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yas_sample_draw_call_text.h; path = ../../ui_sample_common/yas_sample_draw_call_text.h; sourceTree = "<group>"; };
 		B61E343C21E6285800DF35C3 /* chaining.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = chaining.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B61E343E21E6285800DF35C3 /* cpp_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = cpp_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B61E344021E6285800DF35C3 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,7 +146,7 @@
 				B67B89FA1CDAFD9A0081848D /* yas_sample_cursor_over_planes.mm */,
 				B67B89F71CDAFD9A0081848D /* yas_sample_cursor.h */,
 				B67B89F81CDAFD9A0081848D /* yas_sample_cursor.mm */,
-				B60F3FEA1FC7B8A6008493DC /* yas_sample_draw_call_text.hpp */,
+				B60F3FEA1FC7B8A6008493DC /* yas_sample_draw_call_text.h */,
 				B60F3FE91FC7B8A6008493DC /* yas_sample_draw_call_text.mm */,
 				B67B89FD1CDAFD9A0081848D /* yas_sample_inputted_text.h */,
 				B67B89FE1CDAFD9A0081848D /* yas_sample_inputted_text.mm */,
