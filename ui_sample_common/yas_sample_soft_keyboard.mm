@@ -12,49 +12,17 @@ using namespace yas;
 
 namespace yas::sample {
 struct soft_key {
-    struct impl {
-        impl(std::string &&key, float const width, ui::font_atlas_ptr const &atlas)
-            : _button(ui::button::make_shared({.size = {width, width}})),
-              _strings(ui::strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
-            this->_button->rect_plane()->node()->mesh()->raw()->set_use_mesh_color(true);
-            this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
-            this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
-
-            this->_strings->set_text(key);
-            this->_strings->set_alignment(ui::layout_alignment::mid);
-
-            this->_button->rect_plane()->node()->add_sub_node(this->_strings->rect_plane()->node());
-
-            auto const &font_atlas = this->_strings->font_atlas();
-            float const strings_offset_y = std::roundf((width + font_atlas->ascent() + font_atlas->descent()) * 0.5f);
-
-            this->_strings->frame_layout_guide_rect()->set_region(
-                {.origin = {.y = strings_offset_y}, .size = {.width = width}});
-        }
-
-        std::shared_ptr<ui::button> _button;
-        ui::strings_ptr _strings;
-    };
-
-    std::unique_ptr<impl> _impl;
-
-   private:
-    soft_key(std::string &&key, float const width, ui::font_atlas_ptr const &atlas)
-        : _impl(std::make_unique<impl>(std::move(key), width, atlas)) {
-    }
-
-   public:
-    std::shared_ptr<ui::button> &button() {
-        return this->_impl->_button;
+    std::shared_ptr<ui::button> const &button() {
+        return this->_button;
     }
 
     ui::strings_ptr const &strings() const {
-        return this->_impl->_strings;
+        return this->_strings;
     }
 
     void set_enabled(bool const enabled, bool const animated = false) {
         auto const &button_node = button()->rect_plane()->node();
-        auto const &strings_node = this->_impl->_strings->rect_plane()->node();
+        auto const &strings_node = this->_strings->rect_plane()->node();
         auto renderer = button_node->renderer();
 
         button_node->collider()->raw()->set_enabled(enabled);
@@ -77,6 +45,29 @@ struct soft_key {
 
     static soft_key_ptr make_shared(std::string key, float const width, ui::font_atlas_ptr const &atlas) {
         return std::shared_ptr<soft_key>(new soft_key(std::move(key), width, atlas));
+    }
+
+   private:
+    std::shared_ptr<ui::button> _button;
+    ui::strings_ptr _strings;
+
+    soft_key(std::string &&key, float const width, ui::font_atlas_ptr const &atlas)
+        : _button(ui::button::make_shared({.size = {width, width}})),
+          _strings(ui::strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
+        this->_button->rect_plane()->node()->mesh()->raw()->set_use_mesh_color(true);
+        this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
+        this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
+
+        this->_strings->set_text(std::move(key));
+        this->_strings->set_alignment(ui::layout_alignment::mid);
+
+        this->_button->rect_plane()->node()->add_sub_node(this->_strings->rect_plane()->node());
+
+        auto const &font_atlas = this->_strings->font_atlas();
+        float const strings_offset_y = std::roundf((width + font_atlas->ascent() + font_atlas->descent()) * 0.5f);
+
+        this->_strings->frame_layout_guide_rect()->set_region(
+            {.origin = {.y = strings_offset_y}, .size = {.width = width}});
     }
 };
 }
