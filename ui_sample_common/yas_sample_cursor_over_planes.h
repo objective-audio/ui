@@ -9,17 +9,18 @@
 
 namespace yas::sample {
 struct cursor_over_planes {
-    class impl;
-
     ui::node_ptr const &node();
 
     static cursor_over_planes_ptr make_shared();
 
    private:
-    std::unique_ptr<impl> _impl;
+    ui::node_ptr root_node = ui::node::make_shared();
+    std::vector<ui::node_ptr> _nodes;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
 
     cursor_over_planes();
 
     void _prepare(cursor_over_planes_ptr const &);
+    void _setup_nodes();
 };
 }  // namespace yas::sample
