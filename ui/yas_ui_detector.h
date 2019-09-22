@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <deque>
 #include "yas_ui_collider.h"
 #include "yas_ui_detector_protocol.h"
 #include "yas_ui_ptr.h"
@@ -19,9 +20,8 @@ struct detector final : updatable_detector {
     [[nodiscard]] static detector_ptr make_shared();
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    std::deque<ui::collider_ptr> _colliders;
+    bool _updating = true;
 
     detector();
 
