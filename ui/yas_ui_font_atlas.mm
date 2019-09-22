@@ -13,12 +13,6 @@
 #include "yas_ui_math.h"
 #include "yas_ui_texture_element.h"
 
-#if TARGET_OS_IPHONE
-#include <UIKit/UIKit.h>
-#elif TARGET_OS_MAC
-#include <AppKit/AppKit.h>
-#endif
-
 using namespace yas;
 
 #pragma mark - font_atlas::impl
@@ -216,7 +210,9 @@ struct ui::font_atlas::impl {
                     CGContextScaleCTM(ctx, 1.0, -1.0);
                     CGContextTranslateCTM(ctx, 0.0, CTFontGetDescent(ct_font_obj));
                     CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyph, nullptr);
-                    CGContextSetFillColorWithColor(ctx, [yas_objc_color whiteColor].CGColor);
+                    auto color = CGColorCreateGenericGray(1.0, 1.0);
+                    CGContextSetFillColorWithColor(ctx, color);
+                    CGColorRelease(color);
                     CGContextAddPath(ctx, path);
                     CGContextFillPath(ctx);
                     CGPathRelease(path);
