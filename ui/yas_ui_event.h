@@ -74,9 +74,12 @@ struct event_manager : event_inputtable {
     [[nodiscard]] static event_manager_ptr make_shared();
 
    private:
-    class impl;
+    event_ptr _cursor_event{nullptr};
+    std::unordered_map<uintptr_t, event_ptr> _touch_events;
+    std::unordered_map<uint16_t, event_ptr> _key_events;
+    std::unordered_map<uint32_t, event_ptr> _modifier_events;
 
-    std::unique_ptr<impl> _impl;
+    chaining::notifier_ptr<context> _notifier = chaining::notifier<context>::make_shared();
 
     event_manager();
 
