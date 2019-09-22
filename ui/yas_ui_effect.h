@@ -26,9 +26,11 @@ struct effect final : renderable_effect, encodable_effect, metal_object {
     [[nodiscard]] static effect_ptr make_shared();
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    ui::texture_ptr _src_texture = nullptr;
+    ui::texture_ptr _dst_texture = nullptr;
+    ui::metal_system_ptr _metal_system = nullptr;
+    ui::effect_updates_t _updates;
+    metal_handler_f _metal_handler = nullptr;
 
     effect();
 
