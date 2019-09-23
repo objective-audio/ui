@@ -111,102 +111,72 @@ std::shared_ptr<ui::layout_guide> ui::layout_guide::make_shared(float const valu
     return shared;
 }
 
-#pragma mark - ui::layout_guide_point::impl
-
-struct ui::layout_guide_point::impl {
-    layout_guide_ptr _x_guide;
-    layout_guide_ptr _y_guide;
-
-    impl(ui::point &&origin)
-        : _x_guide(layout_guide::make_shared(origin.x)), _y_guide(layout_guide::make_shared(origin.y)) {
-    }
-
-    void set_point(ui::point &&point) {
-        this->push_notify_waiting();
-
-        this->_x_guide->set_value(std::move(point.x));
-        this->_y_guide->set_value(std::move(point.y));
-
-        this->pop_notify_waiting();
-    }
-
-    ui::point point() {
-        return ui::point{_x_guide->value(), _y_guide->value()};
-    }
-
-    void push_notify_waiting() {
-        this->_x_guide->push_notify_waiting();
-        this->_y_guide->push_notify_waiting();
-    }
-
-    void pop_notify_waiting() {
-        this->_x_guide->pop_notify_waiting();
-        this->_y_guide->pop_notify_waiting();
-    }
-
-    chain_t chain() {
-        auto cache = this->point();
-
-        return this->_x_guide->chain()
-            .pair(this->_y_guide->chain())
-            .to([cache](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
-                if (pair.first) {
-                    cache.x = *pair.first;
-                }
-                if (pair.second) {
-                    cache.y = *pair.second;
-                }
-                return cache;
-            });
-    }
-};
-
 #pragma mark - ui::layout_guide_point
 
-ui::layout_guide_point::layout_guide_point(ui::point &&origin) : _impl(std::make_unique<impl>(std::move(origin))) {
+ui::layout_guide_point::layout_guide_point(ui::point &&origin)
+    : _x_guide(layout_guide::make_shared(origin.x)), _y_guide(layout_guide::make_shared(origin.y)) {
 }
 
 ui::layout_guide_point::~layout_guide_point() = default;
 
 ui::layout_guide_ptr &ui::layout_guide_point::x() {
-    return this->_impl->_x_guide;
+    return this->_x_guide;
 }
 
 ui::layout_guide_ptr &ui::layout_guide_point::y() {
-    return this->_impl->_y_guide;
+    return this->_y_guide;
 }
 
 ui::layout_guide_ptr const &ui::layout_guide_point::x() const {
-    return this->_impl->_x_guide;
+    return this->_x_guide;
 }
 
 ui::layout_guide_ptr const &ui::layout_guide_point::y() const {
-    return this->_impl->_y_guide;
+    return this->_y_guide;
 }
 
 void ui::layout_guide_point::set_point(ui::point point) {
-    this->_impl->set_point(std::move(point));
+    this->push_notify_waiting();
+
+    this->_x_guide->set_value(std::move(point.x));
+    this->_y_guide->set_value(std::move(point.y));
+
+    this->pop_notify_waiting();
 }
 
 ui::point ui::layout_guide_point::point() const {
-    return this->_impl->point();
+    return ui::point{_x_guide->value(), _y_guide->value()};
 }
 
 void ui::layout_guide_point::push_notify_waiting() {
-    this->_impl->push_notify_waiting();
+    this->_x_guide->push_notify_waiting();
+    this->_y_guide->push_notify_waiting();
 }
 
 void ui::layout_guide_point::pop_notify_waiting() {
-    this->_impl->pop_notify_waiting();
+    this->_x_guide->pop_notify_waiting();
+    this->_y_guide->pop_notify_waiting();
 }
 
 ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
-    return this->_impl->chain();
+    auto cache = this->point();
+
+    return this->_x_guide->chain()
+        .pair(this->_y_guide->chain())
+        .to([cache](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
+            if (pair.first) {
+                cache.x = *pair.first;
+            }
+            if (pair.second) {
+                cache.y = *pair.second;
+            }
+            return cache;
+        });
 }
 
 void ui::layout_guide_point::receive_value(ui::point const &point) {
     auto copied = point;
-    this->_impl->set_point(std::move(copied));
+    this->set_point(std::move(copied));
 }
 
 std::shared_ptr<ui::layout_guide_point> ui::layout_guide_point::make_shared() {

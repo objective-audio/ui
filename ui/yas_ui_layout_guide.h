@@ -67,9 +67,8 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    layout_guide_ptr _x_guide;
+    layout_guide_ptr _y_guide;
 
     explicit layout_guide_point(ui::point &&);
 
