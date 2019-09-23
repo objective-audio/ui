@@ -5,14 +5,12 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <cpp_utils/yas_objc_ptr.h>
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-class uint_size;
-class metal_system;
-
 struct metal_texture : metal_object {
     virtual ~metal_texture() final;
 
@@ -30,9 +28,15 @@ struct metal_texture : metal_object {
                                                        ui::pixel_format const);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    ui::uint_size _size;
+    MTLTextureUsage const _texture_usage;
+    ui::metal_system_ptr _metal_system = nullptr;
+    objc_ptr<id<MTLSamplerState>> _sampler_object;
+    objc_ptr<id<MTLTexture>> _texture_object;
+    objc_ptr<id<MTLArgumentEncoder>> _argument_encoder_object;
+    objc_ptr<id<MTLBuffer>> _argument_buffer_object;
+    MTLPixelFormat const _pixel_format = MTLPixelFormatBGRA8Unorm;
+    MTLTextureType _target = MTLTextureType2D;
 
     metal_texture(ui::uint_size &&, ui::texture_usages_t const, ui::pixel_format const);
 
