@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cpp_utils/yas_objc_ptr.h>
 #include <vector>
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_metal_protocol.h"
@@ -11,7 +12,6 @@
 #include "yas_ui_types.h"
 
 namespace yas::ui {
-
 struct mesh_data : renderable_mesh_data, metal_object {
     struct args {
         std::size_t vertex_count = 0;
@@ -23,21 +23,29 @@ struct mesh_data : renderable_mesh_data, metal_object {
     ui::index2d_t const *indices() const;
     std::size_t index_count() const;
 
-    void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
+    virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
 
     std::shared_ptr<ui::metal_system> const &metal_system();
 
     [[nodiscard]] static mesh_data_ptr make_shared(args);
 
    protected:
-    class impl;
+    std::size_t _vertex_count;
+    std::size_t _index_count;
+    std::vector<ui::vertex2d_t> _vertices;
+    std::vector<ui::index2d_t> _indices;
+    std::size_t _dynamic_buffer_index = 0;
+    mesh_data_updates_t _updates;
 
-    std::shared_ptr<impl> _impl;
+    mesh_data(args &&);
 
-    mesh_data(std::shared_ptr<impl> &&);
+    virtual std::size_t dynamic_buffer_count();
 
    private:
-    mesh_data(args &&);
+    ui::metal_system_ptr _metal_system = nullptr;
+
+    objc_ptr<id<MTLBuffer>> _vertex_buffer;
+    objc_ptr<id<MTLBuffer>> _index_buffer;
 
     mesh_data(mesh_data const &) = delete;
     mesh_data(mesh_data &&) = delete;
@@ -65,16 +73,21 @@ struct dynamic_mesh_data final : mesh_data {
     void set_vertex_count(std::size_t const);
     void set_index_count(std::size_t const);
 
+    void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override;
+
     [[nodiscard]] static dynamic_mesh_data_ptr make_shared(args);
 
    private:
-    class impl;
-
     dynamic_mesh_data(args &&);
 
     dynamic_mesh_data(dynamic_mesh_data const &) = delete;
     dynamic_mesh_data(dynamic_mesh_data &&) = delete;
     dynamic_mesh_data &operator=(dynamic_mesh_data const &) = delete;
     dynamic_mesh_data &operator=(dynamic_mesh_data &&) = delete;
+
+    std::size_t vertex_buffer_byte_offset() override;
+    std::size_t index_buffer_byte_offset() override;
+
+    std::size_t dynamic_buffer_count() override;
 };
 }  // namespace yas::ui
