@@ -47,7 +47,7 @@ MTLTextureUsage ui::metal_texture::texture_usage() const {
     return this->_texture_usage;
 }
 
-ui::metal_system_ptr const &ui::metal_texture::metal_system() {
+ui::metal_system_ptr const &ui::metal_texture::metal_system() const {
     return this->_metal_system;
 }
 
