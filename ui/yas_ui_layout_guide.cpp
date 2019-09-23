@@ -187,138 +187,99 @@ std::shared_ptr<ui::layout_guide_point> ui::layout_guide_point::make_shared(ui::
     return std::shared_ptr<layout_guide_point>(new layout_guide_point{std::move(point)});
 }
 
-#pragma mark - ui::layout_guide_range::impl
-
-struct ui::layout_guide_range::impl {
-    layout_guide_ptr _min_guide;
-    layout_guide_ptr _max_guide;
-    layout_guide_ptr _length_guide;
-    chaining::any_observer_ptr _min_observer = nullptr;
-    chaining::any_observer_ptr _max_observer = nullptr;
-
-    impl(ui::range &&range)
-        : _min_guide(layout_guide::make_shared(range.min())),
-          _max_guide(layout_guide::make_shared(range.max())),
-          _length_guide(layout_guide::make_shared(range.length)) {
-    }
-
-    void prepare(ui::layout_guide_range_ptr &range) {
-        auto weak_range = to_weak(range);
-
-        this->_min_observer =
-            this->_min_guide->chain()
-                .guard([weak_range](float const &) { return !weak_range.expired(); })
-                .to([weak_range](float const &min) { return weak_range.lock()->max()->value() - min; })
-                .send_to(this->_length_guide)
-                .end();
-
-        this->_max_observer =
-            this->_max_guide->chain()
-                .guard([weak_range](float const &) { return !weak_range.expired(); })
-                .to([weak_range](float const &max) { return max - weak_range.lock()->min()->value(); })
-                .send_to(this->_length_guide)
-                .end();
-    }
-
-    void set_range(ui::range const &range) {
-        this->push_notify_waiting();
-
-        this->_min_guide->set_value(range.min());
-        this->_max_guide->set_value(range.max());
-
-        this->pop_notify_waiting();
-    }
-
-    ui::range range() {
-        auto const &min = this->_min_guide->value();
-        auto const &max = this->_max_guide->value();
-
-        return ui::range{.location = min, .length = max - min};
-    }
-
-    void push_notify_waiting() {
-        this->_min_guide->push_notify_waiting();
-        this->_max_guide->push_notify_waiting();
-        this->_length_guide->push_notify_waiting();
-    }
-
-    void pop_notify_waiting() {
-        this->_min_guide->pop_notify_waiting();
-        this->_max_guide->pop_notify_waiting();
-        this->_length_guide->pop_notify_waiting();
-    }
-
-    chain_t chain() {
-        ui::range const range = this->range();
-
-        return this->_min_guide->chain()
-            .pair(this->_max_guide->chain())
-            .to([min_cache = range.min(),
-                 max_cache = range.max()](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
-                if (pair.first) {
-                    min_cache = *pair.first;
-                }
-                if (pair.second) {
-                    max_cache = *pair.second;
-                }
-                return ui::range{min_cache, max_cache - min_cache};
-            });
-    }
-};
-
 #pragma mark - ui::layout_guide_range
 
-ui::layout_guide_range::layout_guide_range(ui::range &&range) : _impl(std::make_unique<impl>(std::move(range))) {
+ui::layout_guide_range::layout_guide_range(ui::range &&range)
+    : _min_guide(layout_guide::make_shared(range.min())),
+      _max_guide(layout_guide::make_shared(range.max())),
+      _length_guide(layout_guide::make_shared(range.length)) {
 }
 
 ui::layout_guide_range::~layout_guide_range() = default;
 
 ui::layout_guide_ptr &ui::layout_guide_range::min() {
-    return this->_impl->_min_guide;
+    return this->_min_guide;
 }
 
 ui::layout_guide_ptr &ui::layout_guide_range::max() {
-    return this->_impl->_max_guide;
+    return this->_max_guide;
 }
 
 ui::layout_guide_ptr const &ui::layout_guide_range::min() const {
-    return this->_impl->_min_guide;
+    return this->_min_guide;
 }
 
 ui::layout_guide_ptr const &ui::layout_guide_range::max() const {
-    return this->_impl->_max_guide;
+    return this->_max_guide;
 }
 
 ui::layout_guide_ptr const &ui::layout_guide_range::length() const {
-    return this->_impl->_length_guide;
+    return this->_length_guide;
 }
 
 void ui::layout_guide_range::set_range(ui::range const &range) {
-    this->_impl->set_range(range);
+    this->push_notify_waiting();
+
+    this->_min_guide->set_value(range.min());
+    this->_max_guide->set_value(range.max());
+
+    this->pop_notify_waiting();
 }
 
 ui::range ui::layout_guide_range::range() const {
-    return this->_impl->range();
+    auto const &min = this->_min_guide->value();
+    auto const &max = this->_max_guide->value();
+
+    return ui::range{.location = min, .length = max - min};
 }
 
 void ui::layout_guide_range::push_notify_waiting() {
-    this->_impl->push_notify_waiting();
+    this->_min_guide->push_notify_waiting();
+    this->_max_guide->push_notify_waiting();
+    this->_length_guide->push_notify_waiting();
 }
 
 void ui::layout_guide_range::pop_notify_waiting() {
-    this->_impl->pop_notify_waiting();
+    this->_min_guide->pop_notify_waiting();
+    this->_max_guide->pop_notify_waiting();
+    this->_length_guide->pop_notify_waiting();
 }
 
 ui::layout_guide_range::chain_t ui::layout_guide_range::chain() const {
-    return this->_impl->chain();
+    ui::range const range = this->range();
+
+    return this->_min_guide->chain()
+        .pair(this->_max_guide->chain())
+        .to([min_cache = range.min(),
+             max_cache = range.max()](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
+            if (pair.first) {
+                min_cache = *pair.first;
+            }
+            if (pair.second) {
+                max_cache = *pair.second;
+            }
+            return ui::range{min_cache, max_cache - min_cache};
+        });
 }
 
 void ui::layout_guide_range::receive_value(ui::range const &value) {
-    this->_impl->set_range(value);
+    this->set_range(value);
 }
 
 void ui::layout_guide_range::_prepare(layout_guide_range_ptr &range) {
-    this->_impl->prepare(range);
+    auto weak_range = to_weak(range);
+
+    this->_min_observer = this->_min_guide->chain()
+                              .guard([weak_range](float const &) { return !weak_range.expired(); })
+                              .to([weak_range](float const &min) { return weak_range.lock()->max()->value() - min; })
+                              .send_to(this->_length_guide)
+                              .end();
+
+    this->_max_observer = this->_max_guide->chain()
+                              .guard([weak_range](float const &) { return !weak_range.expired(); })
+                              .to([weak_range](float const &max) { return max - weak_range.lock()->min()->value(); })
+                              .send_to(this->_length_guide)
+                              .end();
 }
 
 std::shared_ptr<ui::layout_guide_range> ui::layout_guide_range::make_shared() {
@@ -331,78 +292,11 @@ std::shared_ptr<ui::layout_guide_range> ui::layout_guide_range::make_shared(ui::
     return shared;
 }
 
-#pragma mark - ui::layout_guide_rect::impl
-
-struct ui::layout_guide_rect::impl {
-    layout_guide_range_ptr _vertical_range;
-    layout_guide_range_ptr _horizontal_range;
-
-    impl(ranges_args &&args)
-        : _vertical_range(layout_guide_range::make_shared(std::move(args.vertical_range))),
-          _horizontal_range(layout_guide_range::make_shared(std::move(args.horizontal_range))) {
-    }
-
-    void set_vertical_range(ui::range &&range) {
-        this->_vertical_range->set_range(std::move(range));
-    }
-
-    void set_horizontal_range(ui::range &&range) {
-        this->_horizontal_range->set_range(std::move(range));
-    }
-
-    void set_ranges(ranges_args &&args) {
-        this->_vertical_range->push_notify_waiting();
-        this->_horizontal_range->push_notify_waiting();
-
-        this->set_vertical_range(std::move(args.vertical_range));
-        this->set_horizontal_range(std::move(args.horizontal_range));
-
-        this->_vertical_range->pop_notify_waiting();
-        this->_horizontal_range->pop_notify_waiting();
-    }
-
-    void set_region(ui::region const &region) {
-        this->set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
-    }
-
-    ui::region region() {
-        auto h_range = this->_horizontal_range->range();
-        auto v_range = this->_vertical_range->range();
-
-        return ui::make_region(h_range, v_range);
-    }
-
-    void push_notify_waiting() {
-        this->_vertical_range->push_notify_waiting();
-        this->_horizontal_range->push_notify_waiting();
-    }
-
-    void pop_notify_waiting() {
-        this->_vertical_range->pop_notify_waiting();
-        this->_horizontal_range->pop_notify_waiting();
-    }
-
-    chain_t chain() {
-        ui::region const region = this->region();
-
-        return this->_vertical_range->chain()
-            .pair(this->_horizontal_range->chain())
-            .to([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
-                    std::pair<std::optional<ui::range>, std::optional<ui::range>> const &pair) mutable {
-                if (pair.first) {
-                    v_cache = *pair.first;
-                }
-                if (pair.second) {
-                    h_cache = *pair.second;
-                }
-                return ui::make_region(h_cache, v_cache);
-            });
-    }
-};
-
 #pragma mark - ui::layout_guide_rect
 
-ui::layout_guide_rect::layout_guide_rect(ranges_args args) : _impl(std::make_unique<impl>(std::move(args))) {
+ui::layout_guide_rect::layout_guide_rect(ranges_args args)
+    : _vertical_range(layout_guide_range::make_shared(std::move(args.vertical_range))),
+      _horizontal_range(layout_guide_range::make_shared(std::move(args.horizontal_range))) {
 }
 
 ui::layout_guide_rect::layout_guide_rect(ui::region region)
@@ -412,19 +306,19 @@ ui::layout_guide_rect::layout_guide_rect(ui::region region)
 ui::layout_guide_rect::~layout_guide_rect() = default;
 
 ui::layout_guide_range_ptr &ui::layout_guide_rect::horizontal_range() {
-    return this->_impl->_horizontal_range;
+    return this->_horizontal_range;
 }
 
 ui::layout_guide_range_ptr &ui::layout_guide_rect::vertical_range() {
-    return this->_impl->_vertical_range;
+    return this->_vertical_range;
 }
 
 ui::layout_guide_range_ptr const &ui::layout_guide_rect::horizontal_range() const {
-    return this->_impl->_horizontal_range;
+    return this->_horizontal_range;
 }
 
 ui::layout_guide_range_ptr const &ui::layout_guide_rect::vertical_range() const {
-    return this->_impl->_vertical_range;
+    return this->_vertical_range;
 }
 
 ui::layout_guide_ptr &ui::layout_guide_rect::left() {
@@ -468,39 +362,64 @@ ui::layout_guide_ptr const &ui::layout_guide_rect::height() const {
 }
 
 void ui::layout_guide_rect::set_horizontal_range(ui::range range) {
-    this->_impl->set_horizontal_range(std::move(range));
+    this->_horizontal_range->set_range(std::move(range));
 }
 
 void ui::layout_guide_rect::set_vertical_range(ui::range range) {
-    this->_impl->set_vertical_range(std::move(range));
+    this->_vertical_range->set_range(std::move(range));
 }
 
 void ui::layout_guide_rect::set_ranges(ranges_args args) {
-    this->_impl->set_ranges(std::move(args));
+    this->_vertical_range->push_notify_waiting();
+    this->_horizontal_range->push_notify_waiting();
+
+    this->set_vertical_range(std::move(args.vertical_range));
+    this->set_horizontal_range(std::move(args.horizontal_range));
+
+    this->_vertical_range->pop_notify_waiting();
+    this->_horizontal_range->pop_notify_waiting();
 }
 
 void ui::layout_guide_rect::set_region(ui::region const &region) {
-    this->_impl->set_region(region);
+    this->set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
 }
 
 ui::region ui::layout_guide_rect::region() const {
-    return this->_impl->region();
+    auto h_range = this->_horizontal_range->range();
+    auto v_range = this->_vertical_range->range();
+
+    return ui::make_region(h_range, v_range);
 }
 
 void ui::layout_guide_rect::push_notify_waiting() {
-    this->_impl->push_notify_waiting();
+    this->_vertical_range->push_notify_waiting();
+    this->_horizontal_range->push_notify_waiting();
 }
 
 void ui::layout_guide_rect::pop_notify_waiting() {
-    this->_impl->pop_notify_waiting();
+    this->_vertical_range->pop_notify_waiting();
+    this->_horizontal_range->pop_notify_waiting();
 }
 
 ui::layout_guide_rect::chain_t ui::layout_guide_rect::chain() const {
-    return this->_impl->chain();
+    ui::region const region = this->region();
+
+    return this->_vertical_range->chain()
+        .pair(this->_horizontal_range->chain())
+        .to([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
+                std::pair<std::optional<ui::range>, std::optional<ui::range>> const &pair) mutable {
+            if (pair.first) {
+                v_cache = *pair.first;
+            }
+            if (pair.second) {
+                h_cache = *pair.second;
+            }
+            return ui::make_region(h_cache, v_cache);
+        });
 }
 
 void ui::layout_guide_rect::receive_value(ui::region const &region) {
-    this->_impl->set_region(region);
+    this->set_region(region);
 }
 
 std::shared_ptr<ui::layout_guide_rect> ui::layout_guide_rect::make_shared() {
