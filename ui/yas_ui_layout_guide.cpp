@@ -7,121 +7,98 @@
 
 using namespace yas;
 
-#pragma mark - ui::layout_guide::impl
-
-struct ui::layout_guide::impl {
-    chaining::value::holder_ptr<float> _value;
-    layout_guide_wptr _weak_ptr;
-
-    impl(float const value) : _value(chaining::value::holder<float>::make_shared(value)) {
-    }
-
-    void push_notify_waiting() {
-        this->_wait_sender->notify(true);
-    }
-
-    void pop_notify_waiting() {
-        this->_wait_sender->notify(false);
-    }
-
-    chain_t chain() {
-        auto weak_guide = this->_weak_ptr;
-
-        auto old_cache = std::make_shared<std::optional<float>>();
-
-        return this->_value->chain()
-            .guard([weak_guide](float const &) { return !weak_guide.expired(); })
-            .pair(this->_wait_sender->chain().guard([count = int32_t(0)](bool const &is_wait) mutable {
-                if (is_wait) {
-                    ++count;
-                    return (count == 1);
-                } else {
-                    --count;
-                    if (count < 0) {
-                        std::underflow_error("");
-                    }
-                    return (count == 0);
-                }
-            }))
-            .to([cache = std::optional<float>(), old_cache, is_wait = false,
-                 weak_guide](std::pair<std::optional<float>, std::optional<bool>> const &pair) mutable {
-                bool is_continue = false;
-
-                if (pair.first) {
-                    // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
-                    cache = *pair.first;
-                    is_continue = !is_wait;
-                } else if (pair.second) {
-                    // waitフラグが来た場合
-                    is_wait = *pair.second;
-
-                    auto &guide_impl = weak_guide.lock()->_impl;
-
-                    if (is_wait) {
-                        // wait開始ならキャッシュをクリアしてフロー中断
-                        cache = std::nullopt;
-                        is_continue = false;
-                        *old_cache = guide_impl->_value->raw();
-                    } else {
-                        // wait終了ならキャッシュに値があればフロー継続
-                        is_continue = !!cache;
-                        if (!is_continue) {
-                            *old_cache = std::nullopt;
-                        }
-                    }
-                }
-
-                return std::make_pair(cache, is_continue);
-            })
-            .guard([](auto const &pair) { return pair.second; })
-            .guard([old_cache](auto const &pair) {
-                if (!*old_cache) {
-                    return true;
-                }
-                float const old_value = **old_cache;
-                *old_cache = std::nullopt;
-                return old_value != *pair.first;
-            })
-            .to([](std::pair<std::optional<float>, bool> const &pair) { return *pair.first; });
-    }
-
-   private:
-    chaining::notifier_ptr<bool> _wait_sender = chaining::notifier<bool>::make_shared();
-};
-
 #pragma mark - ui::layout_guide
 
-ui::layout_guide::layout_guide(float const value) : _impl(std::make_unique<impl>(value)) {
+ui::layout_guide::layout_guide(float const value)
+    : _value(chaining::value::holder<float>::make_shared(value)),
+      _wait_sender(chaining::notifier<bool>::make_shared()) {
 }
 
 ui::layout_guide::~layout_guide() = default;
 
 void ui::layout_guide::set_value(float const value) {
-    this->_impl->_value->set_value(value);
+    this->_value->set_value(value);
 }
 
 float const &ui::layout_guide::value() const {
-    return this->_impl->_value->raw();
+    return this->_value->raw();
 }
 
 void ui::layout_guide::push_notify_waiting() {
-    this->_impl->push_notify_waiting();
+    this->_wait_sender->notify(true);
 }
 
 void ui::layout_guide::pop_notify_waiting() {
-    this->_impl->pop_notify_waiting();
+    this->_wait_sender->notify(false);
 }
 
 ui::layout_guide::chain_t ui::layout_guide::chain() const {
-    return this->_impl->chain();
+    auto weak_guide = this->_weak_ptr;
+
+    auto old_cache = std::make_shared<std::optional<float>>();
+
+    return this->_value->chain()
+        .guard([weak_guide](float const &) { return !weak_guide.expired(); })
+        .pair(this->_wait_sender->chain().guard([count = int32_t(0)](bool const &is_wait) mutable {
+            if (is_wait) {
+                ++count;
+                return (count == 1);
+            } else {
+                --count;
+                if (count < 0) {
+                    std::underflow_error("");
+                }
+                return (count == 0);
+            }
+        }))
+        .to([cache = std::optional<float>(), old_cache, is_wait = false,
+             weak_guide](std::pair<std::optional<float>, std::optional<bool>> const &pair) mutable {
+            bool is_continue = false;
+
+            if (pair.first) {
+                // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
+                cache = *pair.first;
+                is_continue = !is_wait;
+            } else if (pair.second) {
+                // waitフラグが来た場合
+                is_wait = *pair.second;
+
+                auto const guide = weak_guide.lock();
+
+                if (is_wait) {
+                    // wait開始ならキャッシュをクリアしてフロー中断
+                    cache = std::nullopt;
+                    is_continue = false;
+                    *old_cache = guide->_value->raw();
+                } else {
+                    // wait終了ならキャッシュに値があればフロー継続
+                    is_continue = !!cache;
+                    if (!is_continue) {
+                        *old_cache = std::nullopt;
+                    }
+                }
+            }
+
+            return std::make_pair(cache, is_continue);
+        })
+        .guard([](auto const &pair) { return pair.second; })
+        .guard([old_cache](auto const &pair) {
+            if (!*old_cache) {
+                return true;
+            }
+            float const old_value = **old_cache;
+            *old_cache = std::nullopt;
+            return old_value != *pair.first;
+        })
+        .to([](std::pair<std::optional<float>, bool> const &pair) { return *pair.first; });
 }
 
 void ui::layout_guide::receive_value(float const &value) {
-    return this->_impl->_value->set_value(value);
+    return this->_value->set_value(value);
 }
 
 void ui::layout_guide::_prepare(std::shared_ptr<layout_guide> &guide) {
-    this->_impl->_weak_ptr = guide;
+    this->_weak_ptr = guide;
 }
 
 std::shared_ptr<ui::layout_guide> ui::layout_guide::make_shared() {

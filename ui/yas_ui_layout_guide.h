@@ -29,9 +29,9 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    chaining::value::holder_ptr<float> _value;
+    layout_guide_wptr _weak_ptr;
+    chaining::notifier_ptr<bool> _wait_sender;
 
     explicit layout_guide(float const);
 
