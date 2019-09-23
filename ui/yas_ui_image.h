@@ -31,9 +31,10 @@ struct image final {
     [[nodiscard]] static image_ptr make_shared(args const &);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    uint_size _point_size;
+    double _scale_factor;
+    uint_size _actual_size;
+    CGContextRef _bitmap_context;
 
     image(args const &);
 
