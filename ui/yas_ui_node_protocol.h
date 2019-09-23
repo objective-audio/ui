@@ -45,7 +45,7 @@ struct tree_updates {
 struct renderable_node {
     virtual ~renderable_node() = default;
 
-    virtual ui::renderer_ptr renderer() = 0;
+    virtual ui::renderer_ptr renderer() const = 0;
     virtual void set_renderer(ui::renderer_ptr const &) = 0;
     virtual void fetch_updates(ui::tree_updates &) = 0;
     virtual void build_render_info(ui::render_info &) = 0;

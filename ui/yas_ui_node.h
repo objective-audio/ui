@@ -11,6 +11,7 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_node_protocol.h"
+#include "yas_ui_renderer.h"
 #include "yas_ui_renderer_protocol.h"
 
 namespace yas::ui {
@@ -55,15 +56,15 @@ struct node final : action_target, metal_object, renderable_node {
     chaining::value::holder_ptr<std::shared_ptr<ui::batch>> &batch();
     chaining::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
 
-    void add_sub_node(ui::node_ptr);
-    void add_sub_node(ui::node_ptr, std::size_t const);
+    void add_sub_node(ui::node_ptr const &);
+    void add_sub_node(ui::node_ptr const &, std::size_t const);
     void remove_from_super_node();
 
     std::vector<ui::node_ptr> const &children() const;
     std::vector<ui::node_ptr> &children();
     ui::node_ptr parent() const;
 
-    ui::renderer_ptr renderer() override;
+    ui::renderer_ptr renderer() const override;
 
     using chain_pair_t = std::pair<method, node_ptr>;
     [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
@@ -81,10 +82,38 @@ struct node final : action_target, metal_object, renderable_node {
     [[nodiscard]] static std::shared_ptr<node> make_shared();
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
     std::weak_ptr<node> _weak_node;
+
+    chaining::value::holder_ptr<ui::node_wptr> _parent;
+    chaining::value::holder_ptr<ui::renderer_wptr> _renderer;
+
+    chaining::value::holder_ptr<ui::point> _position;
+    chaining::value::holder_ptr<ui::angle> _angle;
+    chaining::value::holder_ptr<ui::size> _scale;
+    chaining::value::holder_ptr<ui::color> _color;
+    chaining::value::holder_ptr<float> _alpha;
+    chaining::value::holder_ptr<ui::mesh_ptr> _mesh;
+    chaining::value::holder_ptr<ui::collider_ptr> _collider;
+    chaining::value::holder_ptr<std::shared_ptr<ui::batch>> _batch;
+    chaining::value::holder_ptr<ui::render_target_ptr> _render_target;
+    chaining::value::holder_ptr<bool> _enabled;
+
+    chaining::any_observer_ptr _x_observer = nullptr;
+    chaining::any_observer_ptr _y_observer = nullptr;
+    chaining::any_observer_ptr _position_observer = nullptr;
+
+    std::vector<ui::node_ptr> _children;
+
+    mutable simd::float4x4 _matrix = matrix_identity_float4x4;
+    mutable simd::float4x4 _local_matrix = matrix_identity_float4x4;
+
+    std::vector<chaining::any_observer_ptr> _update_observers;
+    mutable std::unordered_map<ui::node::method, chaining::any_observer_ptr> _dispatch_observers;
+    chaining::notifier_ptr<chain_pair_t> _dispatch_sender;
+    chaining::perform_receiver_ptr<ui::node::method> _dispatch_receiver = nullptr;
+    chaining::notifier_ptr<ui::node::method> _notify_sender;
+
+    node_updates_t _updates;
 
     node();
 
@@ -102,6 +131,14 @@ struct node final : action_target, metal_object, renderable_node {
     void build_render_info(ui::render_info &) override;
     bool is_rendering_color_exists() override;
     void clear_updates() override;
+
+    void _add_sub_node(ui::node_ptr &sub_node, ui::node_ptr const &node);
+    void _remove_sub_node(ui::node_ptr const &sub_node);
+    void _set_renderer_recursively(ui::renderer_ptr const &);
+    void _update_mesh_color();
+    void _set_updated(ui::node_update_reason const);
+    void _update_local_matrix() const;
+    void _update_matrix() const;
 };
 }  // namespace yas::ui
 
