@@ -9,7 +9,6 @@
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {
-
 struct metal_system final : renderable_metal_system, makable_metal_system, testable_metal_system {
     virtual ~metal_system();
 
@@ -19,9 +18,34 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     [[nodiscard]] static metal_system_ptr make_shared(id<MTLDevice> const, uint32_t const sample_count);
 
    private:
-    class impl;
+    uint32_t _sample_count;
 
-    std::unique_ptr<impl> _impl;
+    static auto constexpr _uniforms_buffer_count = 3;
+    objc_ptr<id<MTLBuffer>> _uniforms_buffers[_uniforms_buffer_count];
+    uint8_t _uniforms_buffer_index = 0;
+    uint32_t _uniforms_buffer_offset = 0;
+
+    MTLPixelFormat _depth_pixel_format = MTLPixelFormatInvalid;
+    MTLPixelFormat _stencil_pixel_format = MTLPixelFormatInvalid;
+
+    objc_ptr<id<MTLDevice>> _device;
+    objc_ptr<id<MTLCommandQueue>> _command_queue;
+    objc_ptr<id<MTLLibrary>> _default_library;
+
+    objc_ptr<dispatch_semaphore_t> _inflight_semaphore;
+
+    objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_with_texture;
+    objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_without_texture;
+    objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_with_texture;
+    objc_ptr<id<MTLRenderPipelineState>> _pipeline_state_without_texture;
+
+    objc_ptr<id<MTLFunction>> _fragment_function_with_texture;
+    objc_ptr<id<MTLFunction>> _fragment_function_without_texture;
+    objc_ptr<id<MTLFunction>> _vertex_function;
+
+    std::size_t _last_encoded_mesh_count = 0;
+
+    std::weak_ptr<metal_system> _weak_metal_system;
 
     metal_system(id<MTLDevice> const, uint32_t const sample_count);
 
@@ -49,5 +73,7 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     uint32_t sample_count() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
+
+    void _render_nodes(ui::renderer_ptr const &, id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
 };
 }  // namespace yas::ui
