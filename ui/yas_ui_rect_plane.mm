@@ -229,33 +229,20 @@ ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(std::size_t const rect_
     return shared;
 }
 
-#pragma mark - ui::rect_plane::impl
-
-struct yas::ui::rect_plane::impl {
-    impl(ui::rect_plane_data_ptr const &plane_data) : _rect_plane_data(plane_data) {
-    }
-
-    ui::node_ptr _node = ui::node::make_shared();
-    ui::rect_plane_data_ptr _rect_plane_data;
-};
-
 #pragma mark - ui::rect_plane
 
-ui::rect_plane::rect_plane(ui::rect_plane_data_ptr const &rect_plane_data)
-    : _impl(std::make_unique<impl>(rect_plane_data)) {
+ui::rect_plane::rect_plane(ui::rect_plane_data_ptr const &plane_data) : _rect_plane_data(plane_data) {
     auto mesh = ui::mesh::make_shared();
     mesh->set_mesh_data(this->data()->dynamic_mesh_data());
     this->node()->mesh()->set_value(std::move(mesh));
 }
 
-ui::rect_plane::~rect_plane() = default;
-
 ui::node_ptr &ui::rect_plane::node() {
-    return this->_impl->_node;
+    return this->_node;
 }
 
 ui::rect_plane_data_ptr const &ui::rect_plane::data() {
-    return this->_impl->_rect_plane_data;
+    return this->_rect_plane_data;
 }
 
 ui::rect_plane_ptr ui::rect_plane::make_shared(rect_plane_data_ptr const &rect_plane_data) {
