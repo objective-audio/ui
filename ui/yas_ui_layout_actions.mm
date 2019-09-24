@@ -72,7 +72,7 @@ void ui::layout_animator::_prepare(ui::layout_animator_ptr const &animator) {
                                                                    .end_value = value,
                                                                    .continuous_action = {.duration = args.duration}});
                                     action->set_value_transformer(animator->value_transformer());
-                                    renderer->insert_action(std::move(action));
+                                    renderer->insert_action(action);
                                 }
                             })
                             .end();

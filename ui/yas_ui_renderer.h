@@ -43,10 +43,10 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::node_ptr const &root_node() const;
     ui::node_ptr &root_node();
 
-    ui::event_manager_ptr &event_manager();
+    ui::event_manager_ptr const &event_manager() const;
 
     std::vector<std::shared_ptr<ui::action>> actions() const;
-    void insert_action(std::shared_ptr<ui::action>);
+    void insert_action(std::shared_ptr<ui::action> const &);
     void erase_action(std::shared_ptr<ui::action> const &);
     void erase_action(std::shared_ptr<ui::action_target> const &target);
 
@@ -68,9 +68,35 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     [[nodiscard]] static renderer_ptr make_shared(ui::metal_system_ptr const &);
 
    private:
-    class impl;
+    enum class update_result {
+        no_change,
+        changed,
+    };
 
-    std::unique_ptr<impl> _impl;
+    enum class pre_render_result {
+        none,
+        updated,
+    };
+
+    ui::metal_system_ptr _metal_system;
+    std::weak_ptr<renderer> _weak_renderer;
+
+    ui::uint_size _view_size;
+    ui::uint_size _drawable_size;
+    double _scale_factor{0.0f};
+    chaining::value::holder_ptr<double> _scale_factor_notify;
+    yas_edge_insets _safe_area_insets;
+    chaining::value::holder_ptr<ui::appearance> _appearance;
+    simd::float4x4 _projection_matrix;
+
+    ui::node_ptr _root_node;
+    std::shared_ptr<ui::parallel_action> _action;
+    ui::detector_ptr _detector;
+    ui::event_manager_ptr _event_manager;
+    ui::layout_guide_rect_ptr _view_layout_guide_rect;
+    ui::layout_guide_rect_ptr _safe_area_layout_guide_rect;
+
+    chaining::notifier_ptr<std::nullptr_t> _will_render_notifier;
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);
 
@@ -81,6 +107,15 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) override;
     void view_render(yas_objc_view *const view) override;
     void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) override;
+
+    pre_render_result _pre_render();
+    void _post_render();
+    update_result _update_view_size(CGSize const v_size, CGSize const d_size);
+    update_result _update_scale_factor();
+    update_result _update_safe_area_insets(yas_edge_insets const insets);
+    void _update_layout_guide_rect();
+    void _update_safe_area_layout_guide_rect();
+    bool _is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2);
 };
 }  // namespace yas::ui
 
