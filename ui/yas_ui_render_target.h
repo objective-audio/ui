@@ -30,9 +30,28 @@ struct render_target : metal_object, renderable_render_target {
     [[nodiscard]] static render_target_ptr make_shared();
 
    private:
-    class impl;
+    ui::layout_guide_rect_ptr _layout_guide_rect;
+    chaining::value::holder_ptr<ui::effect_ptr> _effect;
+    chaining::notifier_ptr<ui::effect_ptr> _effect_setter;
+    chaining::value::holder_ptr<double> _scale_factor;
 
-    std::unique_ptr<impl> _impl;
+    std::weak_ptr<render_target> _weak_render_target;
+    ui::rect_plane_data_ptr _data;
+    ui::mesh_ptr _mesh = ui::mesh::make_shared();
+    ui::texture_ptr _src_texture;
+    ui::texture_ptr _dst_texture;
+    chaining::any_observer_ptr _src_texture_observer = nullptr;
+    chaining::any_observer_ptr _dst_texture_observer = nullptr;
+    objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
+    simd::float4x4 _projection_matrix;
+    chaining::any_observer_ptr _scale_observer = nullptr;
+    chaining::any_observer_ptr _rect_observer = nullptr;
+    chaining::any_observer_ptr _effect_observer = nullptr;
+
+    ui::metal_system_ptr _metal_system = nullptr;
+
+    render_target_updates_t _updates;
+    std::vector<chaining::any_observer_ptr> _update_observers;
 
     render_target();
 
@@ -51,5 +70,10 @@ struct render_target : metal_object, renderable_render_target {
     MTLRenderPassDescriptor *renderPassDescriptor() override;
     simd::float4x4 &projection_matrix() override;
     bool push_encode_info(ui::render_stackable_ptr const &) override;
+
+    void _set_updated(ui::render_target_update_reason const reason);
+    bool _is_size_updated();
+    void _set_textures_to_effect();
+    bool _is_size_enough();
 };
 }  // namespace yas::ui
