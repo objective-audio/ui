@@ -50,13 +50,15 @@ struct rect_plane_data final {
                                                          std::size_t const max_index_count);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    ui::dynamic_mesh_data_ptr _dynamic_mesh_data;
+    std::vector<chaining::any_observer_ptr> _element_observers;
+    chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver;
 
     explicit rect_plane_data(ui::dynamic_mesh_data_ptr mesh_data);
 
     void _prepare(rect_plane_data_ptr const &);
+    void _observe_rect_tex_coords(ui::rect_plane_data &, ui::texture_element_ptr const &, std::size_t const rect_idx,
+                                  tex_coords_transform_f &&);
 };
 
 struct rect_plane final {
