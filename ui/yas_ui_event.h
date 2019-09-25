@@ -54,6 +54,11 @@ struct event : manageable_event {
     explicit event(key const &);
     explicit event(modifier const &);
 
+    event(event const &) = delete;
+    event(event &&) = delete;
+    event &operator=(event const &) = delete;
+    event &operator=(event &&) = delete;
+
     void set_phase(event_phase const &) override;
     std::shared_ptr<event_impl_base> get_impl() override;
 };
@@ -82,6 +87,11 @@ struct event_manager : event_inputtable {
     chaining::notifier_ptr<context> _notifier = chaining::notifier<context>::make_shared();
 
     event_manager();
+
+    event_manager(event_manager const &) = delete;
+    event_manager(event_manager &&) = delete;
+    event_manager &operator=(event_manager const &) = delete;
+    event_manager &operator=(event_manager &&) = delete;
 
     void input_cursor_event(cursor_event const &value) override;
     void input_touch_event(event_phase const, touch_event const &) override;

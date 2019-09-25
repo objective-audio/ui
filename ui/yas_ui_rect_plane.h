@@ -56,6 +56,11 @@ struct rect_plane_data final {
 
     explicit rect_plane_data(ui::dynamic_mesh_data_ptr mesh_data);
 
+    rect_plane_data(rect_plane_data const &) = delete;
+    rect_plane_data(rect_plane_data &&) = delete;
+    rect_plane_data &operator=(rect_plane_data const &) = delete;
+    rect_plane_data &operator=(rect_plane_data &&) = delete;
+
     void _prepare(rect_plane_data_ptr const &);
     void _observe_rect_tex_coords(ui::rect_plane_data &, ui::texture_element_ptr const &, std::size_t const rect_idx,
                                   tex_coords_transform_f &&);
@@ -75,5 +80,10 @@ struct rect_plane final {
     ui::rect_plane_data_ptr _rect_plane_data;
 
     explicit rect_plane(rect_plane_data_ptr const &);
+
+    rect_plane(rect_plane const &) = delete;
+    rect_plane(rect_plane &&) = delete;
+    rect_plane &operator=(rect_plane const &) = delete;
+    rect_plane &operator=(rect_plane &&) = delete;
 };
 }  // namespace yas::ui

@@ -44,6 +44,11 @@ struct layout_animator {
 
     explicit layout_animator(args);
 
+    layout_animator(layout_animator const &) = delete;
+    layout_animator(layout_animator &&) = delete;
+    layout_animator &operator=(layout_animator const &) = delete;
+    layout_animator &operator=(layout_animator &&) = delete;
+
     void _prepare(ui::layout_animator_ptr const &);
 };
 }  // namespace yas::ui

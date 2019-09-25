@@ -40,6 +40,11 @@ struct metal_texture : metal_object {
 
     metal_texture(ui::uint_size &&, ui::texture_usages_t const, ui::pixel_format const);
 
+    metal_texture(metal_texture const &) = delete;
+    metal_texture(metal_texture &&) = delete;
+    metal_texture &operator=(metal_texture const &) = delete;
+    metal_texture &operator=(metal_texture &&) = delete;
+
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 }  // namespace yas::ui

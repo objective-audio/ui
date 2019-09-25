@@ -67,6 +67,11 @@ struct button final {
 
     button(ui::region const &region, std::size_t const state_count);
 
+    button(button const &) = delete;
+    button(button &&) = delete;
+    button &operator=(button const &) = delete;
+    button &operator=(button &&) = delete;
+
     void _prepare(button_ptr const &);
     bool _is_tracking();
     bool _is_tracking(ui::event_ptr const &);

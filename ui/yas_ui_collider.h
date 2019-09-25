@@ -63,6 +63,11 @@ struct shape final {
     explicit shape(circle::type &&);
     explicit shape(rect::type &&);
 
+    shape(shape const &) = delete;
+    shape(shape &&) = delete;
+    shape &operator=(shape const &) = delete;
+    shape &operator=(shape &&) = delete;
+
    public:
     [[nodiscard]] static shape_ptr make_shared(anywhere::type);
     [[nodiscard]] static shape_ptr make_shared(circle::type);

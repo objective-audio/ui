@@ -80,6 +80,11 @@ struct texture : metal_object {
 
     explicit texture(args &&);
 
+    texture(texture const &) = delete;
+    texture(texture &&) = delete;
+    texture &operator=(texture const &) = delete;
+    texture &operator=(texture &&) = delete;
+
     void _prepare(texture_ptr const &);
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;

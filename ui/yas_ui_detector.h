@@ -25,6 +25,11 @@ struct detector final : updatable_detector {
 
     detector();
 
+    detector(detector const &) = delete;
+    detector(detector &&) = delete;
+    detector &operator=(detector const &) = delete;
+    detector &operator=(detector &&) = delete;
+
     bool is_updating() override;
     void begin_update() override;
     void push_front_collider(ui::collider_ptr const &) override;

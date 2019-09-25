@@ -68,6 +68,11 @@ struct strings final {
 
     explicit strings(args);
 
+    strings(strings const &) = delete;
+    strings(strings &&) = delete;
+    strings &operator=(strings const &) = delete;
+    strings &operator=(strings &&) = delete;
+
     void _prepare(strings_ptr const &);
     void _prepare_receivers(ui::strings_wptr const &);
     void _prepare_chains(ui::strings_wptr const &);

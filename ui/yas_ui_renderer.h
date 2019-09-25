@@ -100,6 +100,11 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);
 
+    renderer(renderer const &) = delete;
+    renderer(renderer &&) = delete;
+    renderer &operator=(renderer const &) = delete;
+    renderer &operator=(renderer &&) = delete;
+
     void _prepare(renderer_ptr const &);
 
     void view_configure(yas_objc_view *const view) override;
