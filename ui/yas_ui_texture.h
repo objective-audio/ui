@@ -16,6 +16,8 @@ namespace yas::ui {
 class image;
 class metal_texture;
 class texture_element;
+enum class draw_image_error;
+using draw_image_result = result<uint_region, draw_image_error>;
 
 struct texture : metal_object {
     struct args {
@@ -57,15 +59,38 @@ struct texture : metal_object {
     [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
-    class impl;
+    chaining::value::holder_ptr<ui::uint_size> _point_size;
+    chaining::value::holder_ptr<double> _scale_factor;
+    uint32_t const _depth = 1;
+    bool const _has_alpha = false;
+    ui::texture_usages_t const _usages;
+    ui::pixel_format const _pixel_format;
 
-    std::unique_ptr<impl> _impl;
+    ui::metal_texture_ptr _metal_texture = nullptr;
+
+    ui::metal_system_ptr _metal_system = nullptr;
+    uint32_t _max_line_height = 0;
+    uint32_t const _draw_actual_padding;
+    uint_point _draw_actual_pos;
+    std::vector<texture_element_ptr> _texture_elements;
+    chaining::any_observer_ptr _scale_observer = nullptr;
+    chaining::any_observer_ptr _properties_observer = nullptr;
+    chaining::notifier_ptr<chain_pair_t> _notify_sender = chaining::notifier<chain_pair_t>::make_shared();
+    chaining::perform_receiver_ptr<method> _notify_receiver = nullptr;
 
     explicit texture(args &&);
 
     void _prepare(texture_ptr const &);
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
+
+    draw_image_result _reserve_image_size(image_ptr const &image);
+    draw_image_result _replace_image(image_ptr const &image, uint_point const origin);
+    void _prepare_draw_pos(uint_size const size);
+    void _move_draw_pos(uint_size const size);
+    bool _can_draw(uint_size const size);
+    void _add_images_to_metal_texture();
+    void _add_image_to_metal_texture(texture_element_ptr const &element);
 };
 }  // namespace yas::ui
 
