@@ -59,6 +59,11 @@ struct action : updatable_action {
 
     explicit action(args);
 
+    action(action const &) = delete;
+    action(action &&) = delete;
+    action &operator=(action const &) = delete;
+    action &operator=(action &&) = delete;
+
     duration_t time_diff(time_point_t const &time);
 
    private:
@@ -100,6 +105,11 @@ struct continuous_action final : action {
 
     explicit continuous_action(args &&args);
 
+    continuous_action(continuous_action const &) = delete;
+    continuous_action(continuous_action &&) = delete;
+    continuous_action &operator=(continuous_action const &) = delete;
+    continuous_action &operator=(continuous_action &&) = delete;
+
     void prepare(continuous_action_ptr const &);
 };
 
@@ -125,6 +135,11 @@ struct parallel_action final : action {
     std::unordered_set<std::shared_ptr<action>> _actions;
 
     explicit parallel_action(action::args &&);
+
+    parallel_action(parallel_action const &) = delete;
+    parallel_action(parallel_action &&) = delete;
+    parallel_action &operator=(parallel_action const &) = delete;
+    parallel_action &operator=(parallel_action &&) = delete;
 
     void prepare(parallel_action_ptr const &, args &&);
 };

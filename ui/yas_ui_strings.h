@@ -49,12 +49,35 @@ struct strings final {
     [[nodiscard]] static strings_ptr make_shared(args);
 
    private:
-    class impl;
+    std::shared_ptr<ui::collection_layout> _collection_layout;
+    ui::rect_plane_ptr _rect_plane;
+    chaining::perform_receiver_ptr<std::string> _text_receiver = nullptr;
 
-    std::unique_ptr<impl> _impl;
+    chaining::value::holder_ptr<std::string> _text;
+    chaining::value::holder_ptr<ui::font_atlas_ptr> _font_atlas;
+    chaining::value::holder_ptr<std::optional<float>> _line_height;
+
+    ui::strings_wptr _weak_strings;
+    std::size_t const _max_word_count = 0;
+    chaining::perform_receiver_ptr<ui::texture_ptr> _texture_receiver = nullptr;
+    chaining::perform_receiver_ptr<ui::font_atlas_ptr> _update_texture_receiver = nullptr;
+    chaining::perform_receiver_ptr<std::nullptr_t> _update_layout_receiver = nullptr;
+    chaining::any_observer_ptr _texture_observer = nullptr;
+    std::vector<chaining::any_observer_ptr> _property_observers;
+    std::vector<chaining::any_observer_ptr> _cell_rect_observers;
 
     explicit strings(args);
 
+    strings(strings const &) = delete;
+    strings(strings &&) = delete;
+    strings &operator=(strings const &) = delete;
+    strings &operator=(strings &&) = delete;
+
     void _prepare(strings_ptr const &);
+    void _prepare_receivers(ui::strings_wptr const &);
+    void _prepare_chains(ui::strings_wptr const &);
+    void _update_texture_chaining();
+    void _update_layout();
+    float _cell_height();
 };
 }  // namespace yas::ui

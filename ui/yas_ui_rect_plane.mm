@@ -11,51 +11,15 @@
 
 using namespace yas;
 
-#pragma mark - rect_plane_data::impl
-
-struct ui::rect_plane_data::impl {
-    ui::dynamic_mesh_data_ptr _dynamic_mesh_data;
-    std::vector<chaining::any_observer_ptr> _element_observers;
-    chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver;
-
-    impl(ui::dynamic_mesh_data_ptr &&data) : _dynamic_mesh_data(std::move(data)) {
-    }
-
-    void prepare(ui::rect_plane_data_ptr const &data) {
-        this->_rect_tex_coords_receiver =
-            chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
-                [weak_data = to_weak(data)](auto const &pair) {
-                    if (auto data = weak_data.lock()) {
-                        data->set_rect_tex_coords(pair.first, pair.second);
-                    }
-                });
-    }
-
-    void observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element_ptr const &element,
-                                 std::size_t const rect_idx, tex_coords_transform_f &&transformer) {
-        auto chain = element->chain_tex_coords();
-
-        if (transformer) {
-            chain = chain.to(std::move(transformer));
-        }
-
-        this->_element_observers.emplace_back(
-            chain.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
-                .send_to(this->_rect_tex_coords_receiver)
-                .sync());
-    }
-};
-
 #pragma mark - rect_plane_data
 
-ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data_ptr mesh_data)
-    : _impl(std::make_unique<impl>(std::move(mesh_data))) {
+ui::rect_plane_data::rect_plane_data(ui::dynamic_mesh_data_ptr mesh_data) : _dynamic_mesh_data(std::move(mesh_data)) {
 }
 
 ui::rect_plane_data::~rect_plane_data() = default;
 
 std::size_t ui::rect_plane_data::max_rect_count() const {
-    auto const max_index_count = this->_impl->_dynamic_mesh_data->max_index_count();
+    auto const max_index_count = this->_dynamic_mesh_data->max_index_count();
     if (max_index_count > 0) {
         return max_index_count / 6;
     }
@@ -63,7 +27,7 @@ std::size_t ui::rect_plane_data::max_rect_count() const {
 }
 
 std::size_t ui::rect_plane_data::rect_count() const {
-    auto const index_count = this->_impl->_dynamic_mesh_data->index_count();
+    auto const index_count = this->_dynamic_mesh_data->index_count();
     if (index_count > 0) {
         return index_count / 6;
     }
@@ -175,28 +139,47 @@ void ui::rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::s
 }
 
 void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element_ptr const &element, std::size_t const rect_idx) {
-    this->_impl->observe_rect_tex_coords(*this, element, rect_idx, nullptr);
+    this->_observe_rect_tex_coords(*this, element, rect_idx, nullptr);
 }
 
 void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element_ptr const &element, std::size_t const rect_idx,
                                                   tex_coords_transform_f transformer) {
-    this->_impl->observe_rect_tex_coords(*this, element, rect_idx, std::move(transformer));
+    this->_observe_rect_tex_coords(*this, element, rect_idx, std::move(transformer));
 }
 
 void ui::rect_plane_data::clear_observers() {
-    this->_impl->_element_observers.clear();
+    this->_element_observers.clear();
 }
 
 ui::dynamic_mesh_data_ptr const &ui::rect_plane_data::dynamic_mesh_data() {
-    return this->_impl->_dynamic_mesh_data;
+    return this->_dynamic_mesh_data;
 }
 
 chaining::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
-    return *this->_impl->_rect_tex_coords_receiver;
+    return *this->_rect_tex_coords_receiver;
 }
 
-void ui::rect_plane_data::_prepare(rect_plane_data_ptr const &shared) {
-    this->_impl->prepare(shared);
+void ui::rect_plane_data::_prepare(rect_plane_data_ptr const &data) {
+    this->_rect_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
+        [weak_data = to_weak(data)](auto const &pair) {
+            if (auto data = weak_data.lock()) {
+                data->set_rect_tex_coords(pair.first, pair.second);
+            }
+        });
+}
+
+void ui::rect_plane_data::_observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element_ptr const &element,
+                                                   std::size_t const rect_idx, tex_coords_transform_f &&transformer) {
+    auto chain = element->chain_tex_coords();
+
+    if (transformer) {
+        chain = chain.to(std::move(transformer));
+    }
+
+    this->_element_observers.emplace_back(
+        chain.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
+            .send_to(this->_rect_tex_coords_receiver)
+            .sync());
 }
 
 ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(ui::dynamic_mesh_data_ptr mesh_data) {
@@ -229,33 +212,20 @@ ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(std::size_t const rect_
     return shared;
 }
 
-#pragma mark - ui::rect_plane::impl
-
-struct yas::ui::rect_plane::impl {
-    impl(ui::rect_plane_data_ptr const &plane_data) : _rect_plane_data(plane_data) {
-    }
-
-    ui::node_ptr _node = ui::node::make_shared();
-    ui::rect_plane_data_ptr _rect_plane_data;
-};
-
 #pragma mark - ui::rect_plane
 
-ui::rect_plane::rect_plane(ui::rect_plane_data_ptr const &rect_plane_data)
-    : _impl(std::make_unique<impl>(rect_plane_data)) {
+ui::rect_plane::rect_plane(ui::rect_plane_data_ptr const &plane_data) : _rect_plane_data(plane_data) {
     auto mesh = ui::mesh::make_shared();
     mesh->set_mesh_data(this->data()->dynamic_mesh_data());
     this->node()->mesh()->set_value(std::move(mesh));
 }
 
-ui::rect_plane::~rect_plane() = default;
-
 ui::node_ptr &ui::rect_plane::node() {
-    return this->_impl->_node;
+    return this->_node;
 }
 
 ui::rect_plane_data_ptr const &ui::rect_plane::data() {
-    return this->_impl->_rect_plane_data;
+    return this->_rect_plane_data;
 }
 
 ui::rect_plane_ptr ui::rect_plane::make_shared(rect_plane_data_ptr const &rect_plane_data) {

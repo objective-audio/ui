@@ -90,72 +90,59 @@ ui::shape_ptr ui::shape::make_shared(rect::type type) {
 
 #pragma mark - collider
 
-struct ui::collider::impl {
-    simd::float4x4 _matrix = matrix_identity_float4x4;
-
-    chaining::value::holder_ptr<ui::shape_ptr> _shape;
-    chaining::value::holder_ptr<bool> _enabled = chaining::value::holder<bool>::make_shared(true);
-
-    impl(ui::shape_ptr &&shape) : _shape(chaining::value::holder<ui::shape_ptr>::make_shared(std::move(shape))) {
-    }
-
-    bool hit_test(ui::point const &loc) {
-        auto const &shape = this->_shape->raw();
-        if (shape && this->_enabled->raw()) {
-            auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
-            return shape->hit_test({pos.x, pos.y});
-        }
-        return false;
-    }
-};
-
-ui::collider::collider(ui::shape_ptr &&shape) : _impl(std::make_unique<impl>(std::move(shape))) {
+ui::collider::collider(ui::shape_ptr &&shape)
+    : _shape(chaining::value::holder<ui::shape_ptr>::make_shared(std::move(shape))) {
 }
 
 ui::collider::~collider() = default;
 
 void ui::collider::set_shape(ui::shape_ptr shape) {
-    this->_impl->_shape->set_value(std::move(shape));
+    this->_shape->set_value(std::move(shape));
 }
 
 ui::shape_ptr const &ui::collider::shape() const {
-    return this->_impl->_shape->raw();
+    return this->_shape->raw();
 }
 
 void ui::collider::set_enabled(bool const enabled) {
-    this->_impl->_enabled->set_value(enabled);
+    this->_enabled->set_value(enabled);
 }
 
 bool ui::collider::is_enabled() const {
-    return this->_impl->_enabled->raw();
+    return this->_enabled->raw();
 }
 
-bool ui::collider::hit_test(ui::point const &pos) const {
-    return this->_impl->hit_test(pos);
+bool ui::collider::hit_test(ui::point const &loc) const {
+    auto const &shape = this->_shape->raw();
+    if (shape && this->_enabled->raw()) {
+        auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
+        return shape->hit_test({pos.x, pos.y});
+    }
+    return false;
 }
 
 chaining::chain_sync_t<ui::shape_ptr> ui::collider::chain_shape() const {
-    return this->_impl->_shape->chain();
+    return this->_shape->chain();
 }
 
 chaining::chain_sync_t<bool> ui::collider::chain_enabled() const {
-    return this->_impl->_enabled->chain();
+    return this->_enabled->chain();
 }
 
 chaining::receiver_ptr<ui::shape_ptr> ui::collider::shape_receiver() {
-    return this->_impl->_shape;
+    return this->_shape;
 }
 
 chaining::receiver_ptr<bool> ui::collider::enabled_receiver() {
-    return this->_impl->_enabled;
+    return this->_enabled;
 }
 
 simd::float4x4 const &ui::collider::matrix() const {
-    return this->_impl->_matrix;
+    return this->_matrix;
 }
 
 void ui::collider::set_matrix(simd::float4x4 const &matrix) {
-    this->_impl->_matrix = std::move(matrix);
+    this->_matrix = std::move(matrix);
 }
 
 ui::collider_ptr ui::collider::make_shared() {

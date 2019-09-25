@@ -128,134 +128,6 @@ ui::event_ptr ui::event::make_shared(modifier const &modifier) {
     return std::shared_ptr<event>(new event{modifier});
 }
 
-#pragma mark - event_manager::impl
-
-struct ui::event_manager::impl {
-    void input_cursor_event(cursor_event const &value) {
-        ui::event_phase phase;
-
-        if (value.contains_in_window()) {
-            if (this->_cursor_event) {
-                phase = event_phase::changed;
-            } else {
-                phase = event_phase::began;
-                this->_cursor_event = ui::event::make_shared(cursor_tag);
-            }
-        } else {
-            phase = event_phase::ended;
-        }
-
-        if (this->_cursor_event) {
-            auto manageable_event = ui::manageable_event::cast(this->_cursor_event);
-            manageable_event->set_phase(phase);
-            manageable_event->set<cursor>(value);
-
-            this->_notifier->notify({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
-
-            if (phase == event_phase::ended) {
-                this->_cursor_event = nullptr;
-            }
-        }
-    }
-
-    void input_touch_event(event_phase const phase, touch_event const &value) {
-        auto const identifer = value.identifier();
-
-        if (phase == event_phase::began) {
-            if (this->_touch_events.count(identifer) > 0) {
-                return;
-            }
-            ui::event_ptr event = ui::event::make_shared(touch_tag);
-            this->_touch_events.emplace(std::make_pair(identifer, std::move(event)));
-        }
-
-        if (this->_touch_events.count(identifer) > 0) {
-            auto &event = this->_touch_events.at(identifer);
-            auto const manageable_event = ui::manageable_event::cast(event);
-            manageable_event->set_phase(phase);
-            manageable_event->set<touch>(value);
-
-            this->_notifier->notify({.method = event_manager::method::touch_changed, .event = event});
-
-            if (phase == event_phase::ended || phase == event_phase::canceled) {
-                this->_touch_events.erase(identifer);
-            }
-        }
-    }
-
-    void input_key_event(event_phase const phase, key_event const &value) {
-        auto const key_code = value.key_code();
-
-        if (phase == event_phase::began) {
-            if (this->_key_events.count(key_code) > 0) {
-                return;
-            }
-            ui::event_ptr event = ui::event::make_shared(key_tag);
-            this->_key_events.emplace(std::make_pair(key_code, std::move(event)));
-        }
-
-        if (this->_key_events.count(key_code) > 0) {
-            auto const &event = this->_key_events.at(key_code);
-            auto const manageable = ui::manageable_event::cast(event);
-            manageable->set_phase(phase);
-            manageable->set<key>(value);
-
-            this->_notifier->notify({.method = event_manager::method::key_changed, .event = event});
-
-            if (phase == event_phase::ended || phase == event_phase::canceled) {
-                this->_key_events.erase(key_code);
-            }
-        }
-    }
-
-    void input_modifier_event(modifier_flags const &flags, double const timestamp) {
-        static auto all_flags = {modifier_flags::alpha_shift, modifier_flags::shift,   modifier_flags::control,
-                                 modifier_flags::alternate,   modifier_flags::command, modifier_flags::numeric_pad,
-                                 modifier_flags::help,        modifier_flags::function};
-
-        for (auto const &flag : all_flags) {
-            if (flags & flag) {
-                if (this->_modifier_events.count(flag) == 0) {
-                    ui::event_ptr const event = ui::event::make_shared(modifier_tag);
-                    auto manageable = ui::manageable_event::cast(event);
-                    manageable->set<modifier>(ui::modifier_event{flag, timestamp});
-                    manageable->set_phase(ui::event_phase::began);
-                    this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
-
-                    this->_notifier->notify(
-                        {.method = event_manager::method::modifier_changed, .event = this->_modifier_events.at(flag)});
-                }
-            } else {
-                if (this->_modifier_events.count(flag) > 0) {
-                    auto const &event = this->_modifier_events.at(flag);
-                    ui::manageable_event::cast(event)->set_phase(ui::event_phase::ended);
-
-                    this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
-
-                    this->_modifier_events.erase(flag);
-                }
-            }
-        }
-    }
-
-    chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &method) {
-        return this->_notifier->chain()
-            .guard([method](context const &context) { return context.method == method; })
-            .to([](ui::event_manager::context const &context) { return context.event; });
-    }
-
-    chaining::chain_unsync_t<context> chain() {
-        return this->_notifier->chain();
-    }
-
-    event_ptr _cursor_event{nullptr};
-    std::unordered_map<uintptr_t, event_ptr> _touch_events;
-    std::unordered_map<uint16_t, event_ptr> _key_events;
-    std::unordered_map<uint32_t, event_ptr> _modifier_events;
-
-    chaining::notifier_ptr<context> _notifier = chaining::notifier<context>::make_shared();
-};
-
 #pragma mark - manageable_event
 
 template <typename T>
@@ -274,34 +146,127 @@ template void ui::manageable_event::set<ui::modifier>(ui::modifier::type);
 
 #pragma mark - event_manager
 
-ui::event_manager::event_manager() : _impl(std::make_unique<impl>()) {
+ui::event_manager::event_manager() {
 }
 
 ui::event_manager::~event_manager() = default;
 
 chaining::chain_relayed_unsync_t<ui::event_ptr, ui::event_manager::context> ui::event_manager::chain(
     method const &method) const {
-    return this->_impl->chain(method);
+    return this->_notifier->chain()
+        .guard([method](context const &context) { return context.method == method; })
+        .to([](ui::event_manager::context const &context) { return context.event; });
 }
 
 chaining::chain_unsync_t<ui::event_manager::context> ui::event_manager::chain() const {
-    return this->_impl->chain();
+    return this->_notifier->chain();
 }
 
-void ui::event_manager::input_cursor_event(cursor_event const &event) {
-    this->_impl->input_cursor_event(event);
+void ui::event_manager::input_cursor_event(cursor_event const &value) {
+    ui::event_phase phase;
+
+    if (value.contains_in_window()) {
+        if (this->_cursor_event) {
+            phase = event_phase::changed;
+        } else {
+            phase = event_phase::began;
+            this->_cursor_event = ui::event::make_shared(cursor_tag);
+        }
+    } else {
+        phase = event_phase::ended;
+    }
+
+    if (this->_cursor_event) {
+        auto manageable_event = ui::manageable_event::cast(this->_cursor_event);
+        manageable_event->set_phase(phase);
+        manageable_event->set<cursor>(value);
+
+        this->_notifier->notify({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
+
+        if (phase == event_phase::ended) {
+            this->_cursor_event = nullptr;
+        }
+    }
 }
 
-void ui::event_manager::input_touch_event(event_phase const phase, touch_event const &event) {
-    this->_impl->input_touch_event(phase, event);
+void ui::event_manager::input_touch_event(event_phase const phase, touch_event const &value) {
+    auto const identifer = value.identifier();
+
+    if (phase == event_phase::began) {
+        if (this->_touch_events.count(identifer) > 0) {
+            return;
+        }
+        ui::event_ptr event = ui::event::make_shared(touch_tag);
+        this->_touch_events.emplace(std::make_pair(identifer, std::move(event)));
+    }
+
+    if (this->_touch_events.count(identifer) > 0) {
+        auto &event = this->_touch_events.at(identifer);
+        auto const manageable_event = ui::manageable_event::cast(event);
+        manageable_event->set_phase(phase);
+        manageable_event->set<touch>(value);
+
+        this->_notifier->notify({.method = event_manager::method::touch_changed, .event = event});
+
+        if (phase == event_phase::ended || phase == event_phase::canceled) {
+            this->_touch_events.erase(identifer);
+        }
+    }
 }
 
-void ui::event_manager::input_key_event(event_phase const phase, key_event const &event) {
-    this->_impl->input_key_event(phase, event);
+void ui::event_manager::input_key_event(event_phase const phase, key_event const &value) {
+    auto const key_code = value.key_code();
+
+    if (phase == event_phase::began) {
+        if (this->_key_events.count(key_code) > 0) {
+            return;
+        }
+        ui::event_ptr event = ui::event::make_shared(key_tag);
+        this->_key_events.emplace(std::make_pair(key_code, std::move(event)));
+    }
+
+    if (this->_key_events.count(key_code) > 0) {
+        auto const &event = this->_key_events.at(key_code);
+        auto const manageable = ui::manageable_event::cast(event);
+        manageable->set_phase(phase);
+        manageable->set<key>(value);
+
+        this->_notifier->notify({.method = event_manager::method::key_changed, .event = event});
+
+        if (phase == event_phase::ended || phase == event_phase::canceled) {
+            this->_key_events.erase(key_code);
+        }
+    }
 }
 
 void ui::event_manager::input_modifier_event(modifier_flags const &flags, double const timestamp) {
-    this->_impl->input_modifier_event(flags, timestamp);
+    static auto all_flags = {modifier_flags::alpha_shift, modifier_flags::shift,   modifier_flags::control,
+                             modifier_flags::alternate,   modifier_flags::command, modifier_flags::numeric_pad,
+                             modifier_flags::help,        modifier_flags::function};
+
+    for (auto const &flag : all_flags) {
+        if (flags & flag) {
+            if (this->_modifier_events.count(flag) == 0) {
+                ui::event_ptr const event = ui::event::make_shared(modifier_tag);
+                auto manageable = ui::manageable_event::cast(event);
+                manageable->set<modifier>(ui::modifier_event{flag, timestamp});
+                manageable->set_phase(ui::event_phase::began);
+                this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
+
+                this->_notifier->notify(
+                    {.method = event_manager::method::modifier_changed, .event = this->_modifier_events.at(flag)});
+            }
+        } else {
+            if (this->_modifier_events.count(flag) > 0) {
+                auto const &event = this->_modifier_events.at(flag);
+                ui::manageable_event::cast(event)->set_phase(ui::event_phase::ended);
+
+                this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
+
+                this->_modifier_events.erase(flag);
+            }
+        }
+    }
 }
 
 ui::event_manager_ptr ui::event_manager::make_shared() {

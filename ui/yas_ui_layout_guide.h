@@ -29,9 +29,9 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    chaining::value::holder_ptr<float> _value;
+    layout_guide_wptr _weak_ptr;
+    chaining::notifier_ptr<bool> _wait_sender;
 
     explicit layout_guide(float const);
 
@@ -67,9 +67,8 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    layout_guide_ptr _x_guide;
+    layout_guide_ptr _y_guide;
 
     explicit layout_guide_point(ui::point &&);
 
@@ -104,9 +103,11 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    layout_guide_ptr _min_guide;
+    layout_guide_ptr _max_guide;
+    layout_guide_ptr _length_guide;
+    chaining::any_observer_ptr _min_observer = nullptr;
+    chaining::any_observer_ptr _max_observer = nullptr;
 
     explicit layout_guide_range(ui::range &&);
 
@@ -163,9 +164,8 @@ struct layout_guide_rect final : chaining::receiver<ui::region> {
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ui::region);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    layout_guide_range_ptr _vertical_range;
+    layout_guide_range_ptr _horizontal_range;
 
     explicit layout_guide_rect(ranges_args);
     explicit layout_guide_rect(ui::region);

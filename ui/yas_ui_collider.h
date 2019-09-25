@@ -63,6 +63,11 @@ struct shape final {
     explicit shape(circle::type &&);
     explicit shape(rect::type &&);
 
+    shape(shape const &) = delete;
+    shape(shape &&) = delete;
+    shape &operator=(shape const &) = delete;
+    shape &operator=(shape &&) = delete;
+
    public:
     [[nodiscard]] static shape_ptr make_shared(anywhere::type);
     [[nodiscard]] static shape_ptr make_shared(circle::type);
@@ -90,9 +95,10 @@ struct collider final : renderable_collider {
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
 
    private:
-    class impl;
+    simd::float4x4 _matrix = matrix_identity_float4x4;
 
-    std::unique_ptr<impl> _impl;
+    chaining::value::holder_ptr<ui::shape_ptr> _shape;
+    chaining::value::holder_ptr<bool> _enabled = chaining::value::holder<bool>::make_shared(true);
 
     explicit collider(ui::shape_ptr &&);
 

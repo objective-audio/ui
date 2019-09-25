@@ -27,9 +27,8 @@ struct metal_render_encoder final : render_encodable, render_effectable, render_
     [[nodiscard]] static metal_render_encoder_ptr make_shared();
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    std::deque<ui::metal_encode_info_ptr> _all_encode_infos;
+    std::deque<ui::metal_encode_info_ptr> _current_encode_infos;
 
     metal_render_encoder();
 
@@ -43,5 +42,7 @@ struct metal_render_encoder final : render_encodable, render_effectable, render_
     void push_encode_info(ui::metal_encode_info_ptr const &) override;
     void pop_encode_info() override;
     ui::metal_encode_info_ptr const &current_encode_info() override;
+
+    uint32_t _mesh_count_in_all_encode_infos() const;
 };
 }  // namespace yas::ui

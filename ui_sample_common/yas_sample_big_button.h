@@ -9,8 +9,6 @@
 
 namespace yas::sample {
 struct big_button {
-    class impl;
-
     void set_texture(ui::texture_ptr const &);
 
     std::shared_ptr<ui::button> &button();
@@ -18,7 +16,9 @@ struct big_button {
     static big_button_ptr make_shared();
 
    private:
-    std::unique_ptr<impl> _impl;
+    float const _radius = 60;
+    std::shared_ptr<ui::button> _button = ui::button::make_shared(
+        {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}});
 
     big_button();
 };

@@ -8,27 +8,26 @@
 
 using namespace yas;
 
-struct sample::modifier_text::impl {
-    ui::strings_ptr _strings;
-    ui::layout_guide_ptr _bottom_guide;
+sample::modifier_text::modifier_text(ui::font_atlas_ptr const &font_atlas, ui::layout_guide_ptr const &bottom_guide)
+    : _strings(ui::strings::make_shared(
+          {.font_atlas = font_atlas, .max_word_count = 64, .alignment = ui::layout_alignment::max})),
+      _bottom_guide(bottom_guide) {
+}
 
-    impl(ui::font_atlas_ptr const &font_atlas, ui::layout_guide_ptr const &bottom_guide)
-        : _strings(ui::strings::make_shared(
-              {.font_atlas = font_atlas, .max_word_count = 64, .alignment = ui::layout_alignment::max})),
-          _bottom_guide(bottom_guide) {
-    }
+ui::strings_ptr const &sample::modifier_text::strings() {
+    return this->_strings;
+}
 
-    void prepare(sample::modifier_text_ptr const &text) {
-        auto &node = this->_strings->rect_plane()->node();
+void sample::modifier_text::_prepare(modifier_text_ptr const &text) {
+    auto &node = this->_strings->rect_plane()->node();
 
-        this->_renderer_observer =
-            node->chain_renderer()
-                .perform([weak_text = to_weak(text), event_observer = chaining::any_observer_ptr{nullptr},
-                          left_layout = chaining::any_observer_ptr{nullptr},
-                          right_layout = chaining::any_observer_ptr{nullptr},
-                          bottom_layout = chaining::any_observer_ptr{nullptr},
-                          strings_observer =
-                              chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+    this->_renderer_observer =
+        node->chain_renderer()
+            .perform(
+                [weak_text = to_weak(text), event_observer = chaining::any_observer_ptr{nullptr},
+                 left_layout = chaining::any_observer_ptr{nullptr}, right_layout = chaining::any_observer_ptr{nullptr},
+                 bottom_layout = chaining::any_observer_ptr{nullptr},
+                 strings_observer = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                     if (auto text = weak_text.lock()) {
                         if (renderer) {
                             event_observer = renderer->event_manager()
@@ -36,15 +35,12 @@ struct sample::modifier_text::impl {
                                                  .perform([weak_text, flags = std::unordered_set<ui::modifier_flags>{}](
                                                               ui::event_ptr const &event) mutable {
                                                      if (auto text = weak_text.lock()) {
-                                                         auto &text_impl = text->_impl;
-
-                                                         text_impl->_update_text(event, flags);
+                                                         text->_update_text(event, flags);
                                                      }
                                                  })
                                                  .end();
 
-                            auto &text_impl = text->_impl;
-                            auto const &strings = text_impl->_strings;
+                            auto const &strings = text->_strings;
                             auto &strings_guide_rect = strings->frame_layout_guide_rect();
                             auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
 
@@ -60,7 +56,7 @@ struct sample::modifier_text::impl {
                                                .send_to(strings_guide_rect->right())
                                                .sync();
 
-                            bottom_layout = text_impl->_bottom_guide->chain()
+                            bottom_layout = text->_bottom_guide->chain()
                                                 .to(chaining::add(4.0f))
                                                 .send_to(strings_guide_rect->bottom())
                                                 .sync();
@@ -101,42 +97,26 @@ struct sample::modifier_text::impl {
                         }
                     }
                 })
-                .end();
-    }
-
-   private:
-    chaining::any_observer_ptr _renderer_observer = nullptr;
-
-    void _update_text(ui::event_ptr const &event, std::unordered_set<ui::modifier_flags> &flags) {
-        auto flag = event->get<ui::modifier>().flag();
-
-        if (event->phase() == ui::event_phase::began) {
-            flags.insert(flag);
-        } else if (event->phase() == ui::event_phase::ended) {
-            flags.erase(flag);
-        }
-
-        std::vector<std::string> flag_texts;
-        flag_texts.reserve(flags.size());
-
-        for (auto const &flg : flags) {
-            flag_texts.emplace_back(to_string(flg));
-        }
-
-        this->_strings->set_text(joined(flag_texts, " + "));
-    }
-};
-
-sample::modifier_text::modifier_text(ui::font_atlas_ptr const &font_atlas, ui::layout_guide_ptr const &bottom_guide)
-    : _impl(std::make_unique<impl>(font_atlas, bottom_guide)) {
+            .end();
 }
 
-ui::strings_ptr const &sample::modifier_text::strings() {
-    return this->_impl->_strings;
-}
+void sample::modifier_text::_update_text(ui::event_ptr const &event, std::unordered_set<ui::modifier_flags> &flags) {
+    auto flag = event->get<ui::modifier>().flag();
 
-void sample::modifier_text::_prepare(modifier_text_ptr const &shared) {
-    this->_impl->prepare(shared);
+    if (event->phase() == ui::event_phase::began) {
+        flags.insert(flag);
+    } else if (event->phase() == ui::event_phase::ended) {
+        flags.erase(flag);
+    }
+
+    std::vector<std::string> flag_texts;
+    flag_texts.reserve(flags.size());
+
+    for (auto const &flg : flags) {
+        flag_texts.emplace_back(to_string(flg));
+    }
+
+    this->_strings->set_text(joined(flag_texts, " + "));
 }
 
 sample::modifier_text_ptr sample::modifier_text::make_shared(ui::font_atlas_ptr const &atlas,

@@ -13,7 +13,6 @@
 
 namespace yas::ui {
 class touch_event;
-class texture;
 
 struct button final {
     enum class method {
@@ -53,13 +52,38 @@ struct button final {
     [[nodiscard]] static button_ptr make_shared(ui::region const &, std::size_t const state_count);
 
    private:
-    class impl;
+    std::weak_ptr<button> _weak_button;
+    ui::rect_plane_ptr _rect_plane;
+    ui::layout_guide_rect_ptr _layout_guide_rect;
+    chaining::notifier_ptr<chain_pair_t> _notify_sender = chaining::notifier<chain_pair_t>::make_shared();
+    std::size_t _state_idx = 0;
+    std::size_t _state_count;
 
-    std::unique_ptr<impl> _impl;
+    chaining::any_observer_ptr _renderer_observer = nullptr;
+    ui::event_ptr _tracking_event = nullptr;
+    chaining::any_observer_ptr _rect_observer = nullptr;
+    chaining::perform_receiver_ptr<> _leave_or_enter_or_move_tracking_receiver = nullptr;
+    chaining::perform_receiver_ptr<> _cancel_tracking_receiver = nullptr;
 
     button(ui::region const &region, std::size_t const state_count);
 
+    button(button const &) = delete;
+    button(button &&) = delete;
+    button &operator=(button const &) = delete;
+    button &operator=(button &&) = delete;
+
     void _prepare(button_ptr const &);
+    bool _is_tracking();
+    bool _is_tracking(ui::event_ptr const &);
+    void _set_tracking_event(ui::event_ptr const &);
+    void _update_rect_positions(ui::region const &region, std::size_t const state_count);
+    void _update_rect_index();
+    std::vector<chaining::any_observer_ptr> _make_leave_chains();
+    std::vector<chaining::any_observer_ptr> _make_collider_chains();
+    void _update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
+    void _leave_or_enter_or_move_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
+    void _cancel_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
+    void _send_notify(method const method, ui::event_ptr const &event, std::shared_ptr<button> const &button);
 };
 }  // namespace yas::ui
 

@@ -30,17 +30,24 @@ struct layout_animator {
         double duration = 0.3;
     };
 
+    ~layout_animator();
+
     void set_value_transformer(ui::transform_f);
     ui::transform_f const &value_transformer() const;
 
     [[nodiscard]] static layout_animator_ptr make_shared(args);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    args _args;
+    ui::transform_f _value_transformer;
+    std::vector<chaining::any_observer_ptr> _observers;
 
     explicit layout_animator(args);
+
+    layout_animator(layout_animator const &) = delete;
+    layout_animator(layout_animator &&) = delete;
+    layout_animator &operator=(layout_animator const &) = delete;
+    layout_animator &operator=(layout_animator &&) = delete;
 
     void _prepare(ui::layout_animator_ptr const &);
 };

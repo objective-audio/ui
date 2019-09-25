@@ -73,6 +73,11 @@ struct collection_layout {
 
     collection_layout(args);
 
+    collection_layout(collection_layout const &) = delete;
+    collection_layout(collection_layout &&) = delete;
+    collection_layout &operator=(collection_layout const &) = delete;
+    collection_layout &operator=(collection_layout &&) = delete;
+
     void _prepare(std::shared_ptr<collection_layout> const &);
     void _push_notify_waiting();
     void _pop_notify_waiting();

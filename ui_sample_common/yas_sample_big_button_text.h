@@ -9,8 +9,6 @@
 
 namespace yas::sample {
 struct big_button_text {
-    class impl;
-
     void set_status(ui::button::method const);
 
     ui::strings_ptr const &strings();
@@ -18,10 +16,13 @@ struct big_button_text {
     static big_button_text_ptr make_shared(ui::font_atlas_ptr const &atlas);
 
    private:
-    std::unique_ptr<impl> _impl;
+    ui::strings_ptr _strings;
+    ui::button::method _status;
+    chaining::any_observer_ptr _strings_observer = nullptr;
 
     explicit big_button_text(ui::font_atlas_ptr const &atlas);
 
     void _prepare(big_button_text_ptr const &);
+    void _update_strings_position();
 };
 }  // namespace yas::sample

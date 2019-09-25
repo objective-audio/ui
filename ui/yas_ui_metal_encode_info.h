@@ -32,14 +32,17 @@ struct metal_encode_info final {
 
     std::vector<ui::mesh_ptr> const &meshes() const;
     std::vector<ui::effect_ptr> const &effects() const;
-    std::unordered_map<uintptr_t, ui::texture_ptr> &textures() const;
+    std::unordered_map<uintptr_t, ui::texture_ptr> const &textures() const;
 
     [[nodiscard]] static metal_encode_info_ptr make_shared(args);
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
+    objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_with_texture;
+    objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_without_texture;
+    std::vector<ui::mesh_ptr> _meshes;
+    std::vector<ui::effect_ptr> _effects;
+    std::unordered_map<uintptr_t, ui::texture_ptr> _textures;
 
     metal_encode_info(args &&);
 

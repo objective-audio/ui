@@ -22,20 +22,24 @@ struct mesh final : renderable_mesh, metal_object {
     bool is_use_mesh_color() const;
     ui::primitive_type const &primitive_type() const;
 
-    ui::mesh_data_ptr const &mesh_data();
-
-    void set_mesh_data(ui::mesh_data_ptr);
+    void set_mesh_data(ui::mesh_data_ptr const &);
     void set_texture(ui::texture_ptr const &);
-    void set_color(simd::float4);
+    void set_color(simd::float4 const &);
     void set_use_mesh_color(bool const);
     void set_primitive_type(ui::primitive_type const);
 
     [[nodiscard]] static mesh_ptr make_shared();
 
    private:
-    class impl;
+    ui::mesh_data_ptr _mesh_data = nullptr;
+    ui::texture_ptr _texture = nullptr;
+    ui::primitive_type _primitive_type = ui::primitive_type::triangle;
+    simd::float4 _color = 1.0f;
+    bool _use_mesh_color = false;
 
-    std::unique_ptr<impl> _impl;
+    simd::float4x4 _matrix = matrix_identity_float4x4;
+
+    mesh_updates_t _updates;
 
     mesh();
 
@@ -55,5 +59,9 @@ struct mesh final : renderable_mesh, metal_object {
     void clear_updates() override;
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
+
+    bool _is_mesh_data_exists();
+    bool _is_color_exists();
+    bool _needs_write(ui::batch_building_type const &);
 };
 }  // namespace yas::ui

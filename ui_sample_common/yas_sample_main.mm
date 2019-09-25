@@ -54,7 +54,7 @@ void sample::main::setup() {
                                               .end_position = {32.0f, 0.0f},
                                               .continuous_action = {.duration = 5.0, .loop_count = 0}});
     button_pos_action->set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
-    this->renderer->insert_action(std::move(button_pos_action));
+    this->renderer->insert_action(button_pos_action);
 
     auto texture = ui::texture::make_shared({.point_size = {1024, 1024}});
     texture->sync_scale_from_renderer(this->renderer);
@@ -74,7 +74,7 @@ void sample::main::setup() {
         }
     });
     blur_action->set_value_transformer(ui::ping_pong_transformer());
-    this->renderer->insert_action(std::move(blur_action));
+    this->renderer->insert_action(blur_action);
 
     auto &view_guide = this->renderer->view_layout_guide_rect();
     auto &target_guide = render_target->layout_guide_rect();
