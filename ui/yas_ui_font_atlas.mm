@@ -225,10 +225,16 @@ void ui::font_atlas::_update_word_infos(font_atlas_ptr const &atlas) {
                 CGContextTranslateCTM(ctx, 0.0, height);
                 CGContextScaleCTM(ctx, 1.0, -1.0);
                 CGContextTranslateCTM(ctx, 0.0, CTFontGetDescent(ct_font_obj));
+
                 CGPathRef path = CTFontCreatePathForGlyph(ct_font_obj, glyph, nullptr);
-                auto color = CGColorCreateGenericGray(1.0, 1.0);
+
+                auto color_space = CGColorSpaceCreateDeviceRGB();
+                CGFloat const components[4] = {1.0, 1.0, 1.0, 1.0};
+                auto color = CGColorCreate(color_space, components);
+                CGColorSpaceRelease(color_space);
                 CGContextSetFillColorWithColor(ctx, color);
                 CGColorRelease(color);
+
                 CGContextAddPath(ctx, path);
                 CGContextFillPath(ctx);
                 CGPathRelease(path);
