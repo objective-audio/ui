@@ -89,17 +89,17 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
         }
     });
 
-    this->_pool += this->frame_guide_rect->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->_border_guide_rect->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->row_spacing->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->col_spacing->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->alignment->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->direction->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->row_order->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->col_order->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->preferred_cell_count->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->default_cell_size->chain().send_null_to(this->_layout_receiver).end();
-    this->_pool += this->lines->chain().send_null_to(this->_layout_receiver).end();
+    this->frame_guide_rect->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->_border_guide_rect->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->row_spacing->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->col_spacing->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->alignment->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->direction->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->row_order->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->col_order->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->preferred_cell_count->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->default_cell_size->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->lines->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
 
     this->_update_layout();
 }
