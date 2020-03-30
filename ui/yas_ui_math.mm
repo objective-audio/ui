@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_math.h"
-#include <GLKit/GLKit.h>
 #include <cmath>
 
 using namespace yas;

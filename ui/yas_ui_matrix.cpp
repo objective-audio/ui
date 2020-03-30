@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_matrix.h"
-#include <GLKit/GLKMath.h>
 
 using namespace simd;
 using namespace yas;
