@@ -14,7 +14,6 @@
 		B65F6DA81CC87D12007C3523 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B65F6DA61CC87D12007C3523 /* Main.storyboard */; };
 		B65F6DAA1CC87D12007C3523 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B65F6DA91CC87D12007C3523 /* Assets.xcassets */; };
 		B65F6DAD1CC87D12007C3523 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B65F6DAB1CC87D12007C3523 /* LaunchScreen.storyboard */; };
-		B65F6E431CC87DFF007C3523 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65F6E421CC87DFF007C3523 /* GLKit.framework */; };
 		B65F6E451CC87E03007C3523 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65F6E441CC87E03007C3523 /* MetalKit.framework */; };
 		B65F6E4B1CC88042007C3523 /* YASSampleMetalViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F6E4A1CC88042007C3523 /* YASSampleMetalViewController.mm */; };
 		B69AC8871FE1646F00503564 /* yas_sample_draw_call_text.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69AC8861FE1646F00503564 /* yas_sample_draw_call_text.mm */; };
@@ -111,7 +110,6 @@
 				B6DE35DC21E76F4100E49BCB /* chaining.framework in Frameworks */,
 				B65F6E451CC87E03007C3523 /* MetalKit.framework in Frameworks */,
 				B6DE35DA21E76F4100E49BCB /* ui.framework in Frameworks */,
-				B65F6E431CC87DFF007C3523 /* GLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

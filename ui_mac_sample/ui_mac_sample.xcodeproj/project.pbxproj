@@ -29,7 +29,6 @@
 		B6F501571C9BFF9800A0B4A1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F501561C9BFF9800A0B4A1 /* main.m */; };
 		B6F5015C1C9BFF9800A0B4A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6F5015B1C9BFF9800A0B4A1 /* Assets.xcassets */; };
 		B6F5015F1C9BFF9800A0B4A1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6F5015D1C9BFF9800A0B4A1 /* Main.storyboard */; };
-		B6F501B51C9C009D00A0B4A1 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6F501B41C9C009D00A0B4A1 /* GLKit.framework */; };
 		B6F73B921CDB1DBB009FD0DD /* yas_sample_bg.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F73B901CDB1DBA009FD0DD /* yas_sample_bg.mm */; };
 /* End PBXBuildFile section */
 
@@ -88,7 +87,6 @@
 				B61E344321E6285800DF35C3 /* ui.framework in Frameworks */,
 				B6B678501FF0C60000BDC824 /* MetalPerformanceShaders.framework in Frameworks */,
 				B6ABA5DB1CB402EF008C7714 /* MetalKit.framework in Frameworks */,
-				B6F501B51C9C009D00A0B4A1 /* GLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

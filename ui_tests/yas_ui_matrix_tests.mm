@@ -52,7 +52,7 @@ using namespace yas;
     XCTAssertEqualWithAccuracy(v.y, -1.0f, 0.001f);
 }
 
-- (void)test_rotate {
+- (void)test_rotation {
     auto v = ui::matrix::rotation(90.0f) * float4{1.0f, 0.0f, 0.0f, 1.0f};
     XCTAssertEqualWithAccuracy(v.x, 0.0f, 0.001f);
     XCTAssertEqualWithAccuracy(v.y, 1.0f, 0.001f);
