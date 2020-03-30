@@ -36,5 +36,13 @@ float4x4 ui::matrix::rotation(float const degree) {
 
 float4x4 ui::matrix::ortho(float const left, float const right, float const bottom, float const top, float const near,
                            float const far) {
-    return to_float4x4(GLKMatrix4MakeOrtho(left, right, bottom, top, near, far));
+    float ral = right + left;
+    float rsl = right - left;
+    float tab = top + bottom;
+    float tsb = top - bottom;
+    float fan = far + near;
+    float fsn = far - near;
+
+    return float4x4{float4{2.0f / rsl, 0.0f, 0.0f, 0.0f}, float4{0.0f, 2.0f / tsb, 0.0f, 0.0f},
+                    float4{0.0f, 0.0f, -2.0f / fsn, 0.0f}, float4{-ral / rsl, -tab / tsb, -fan / fsn, 1.0f}};
 }
