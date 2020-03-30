@@ -26,7 +26,12 @@ float4x4 ui::matrix::translation(float const x, float const y) {
 }
 
 float4x4 ui::matrix::rotation(float const degree) {
-    return to_float4x4(GLKMatrix4MakeZRotation(degree * M_PI / 180.0f));
+    float radians = degree * M_PI / 180.0f;
+    float cos = cosf(radians);
+    float sin = sinf(radians);
+
+    return float4x4{float4{cos, sin, 0.0f, 0.0f}, float4{-sin, cos, 0.0f, 0.0f}, float4{0.0f, 0.0f, 1.0f, 0.0f},
+                    float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
 float4x4 ui::matrix::ortho(float const left, float const right, float const bottom, float const top, float const near,
