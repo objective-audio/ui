@@ -16,7 +16,8 @@ static float4x4 to_float4x4(GLKMatrix4 const &m) {
 }  // namespace yas
 
 float4x4 ui::matrix::scale(float const x, float const y) {
-    return to_float4x4(GLKMatrix4MakeScale(x, y, 1.0f));
+    return float4x4{float4{x, 0.0f, 0.0f, 0.0f}, float4{0.0f, y, 0.0f, 0.0f}, float4{0.0f, 0.0f, 1.0f, 0.0f},
+                    float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
 float4x4 ui::matrix::translation(float const x, float const y) {
