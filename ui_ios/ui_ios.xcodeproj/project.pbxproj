@@ -119,7 +119,6 @@
 		B6DE34C721E6314700E49BCB /* MetalPerformanceShaders.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C421E6314700E49BCB /* MetalPerformanceShaders.framework */; };
 		B6DE34C821E6314700E49BCB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C521E6314700E49BCB /* Metal.framework */; };
 		B6DE34C921E6314700E49BCB /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C621E6314700E49BCB /* MetalKit.framework */; };
-		B6DE34CB21E6314E00E49BCB /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34CA21E6314E00E49BCB /* GLKit.framework */; };
 		B6DE34CF21E6319400E49BCB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34CE21E6319400E49BCB /* CoreGraphics.framework */; };
 		B6DE34D521E6322600E49BCB /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34D421E6322600E49BCB /* CoreText.framework */; };
 		B6DE34D621E6323900E49BCB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34D021E631D900E49BCB /* UIKit.framework */; };
@@ -256,7 +255,6 @@
 				B6DE34D621E6323900E49BCB /* UIKit.framework in Frameworks */,
 				B6DE34D521E6322600E49BCB /* CoreText.framework in Frameworks */,
 				B6DE34CF21E6319400E49BCB /* CoreGraphics.framework in Frameworks */,
-				B6DE34CB21E6314E00E49BCB /* GLKit.framework in Frameworks */,
 				B6DE34C721E6314700E49BCB /* MetalPerformanceShaders.framework in Frameworks */,
 				B6DE34C821E6314700E49BCB /* Metal.framework in Frameworks */,
 				B6DE34C921E6314700E49BCB /* MetalKit.framework in Frameworks */,

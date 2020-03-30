@@ -121,7 +121,6 @@
 		B65AF94E21E4DC4800C65DB5 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF94B21E4DC4800C65DB5 /* Metal.framework */; };
 		B65AF95021E4DC5200C65DB5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF94F21E4DC5200C65DB5 /* AppKit.framework */; };
 		B65AF95221E4DC5800C65DB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */; };
-		B65AF95421E4DC6000C65DB5 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95321E4DC6000C65DB5 /* GLKit.framework */; };
 		B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -242,7 +241,6 @@
 		B65AF94B21E4DC4800C65DB5 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		B65AF94F21E4DC5200C65DB5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		B65AF95321E4DC6000C65DB5 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -252,7 +250,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */,
-				B65AF95421E4DC6000C65DB5 /* GLKit.framework in Frameworks */,
 				B65AF95221E4DC5800C65DB5 /* CoreGraphics.framework in Frameworks */,
 				B65AF95021E4DC5200C65DB5 /* AppKit.framework in Frameworks */,
 				B65AF94C21E4DC4800C65DB5 /* MetalKit.framework in Frameworks */,
@@ -419,7 +416,6 @@
 			isa = PBXGroup;
 			children = (
 				B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */,
-				B65AF95321E4DC6000C65DB5 /* GLKit.framework */,
 				B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */,
 				B65AF94F21E4DC5200C65DB5 /* AppKit.framework */,
 				B65AF94B21E4DC4800C65DB5 /* Metal.framework */,
