@@ -6,6 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
+
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {

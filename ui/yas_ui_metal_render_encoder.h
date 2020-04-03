@@ -5,7 +5,9 @@
 #pragma once
 
 #include <Metal/Metal.h>
+
 #include <deque>
+
 #include "yas_ui_ptr.h"
 #include "yas_ui_render_encoder_protocol.h"
 

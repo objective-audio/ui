@@ -94,13 +94,13 @@ ui::metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample
 
     pipelineStateDesc.sampleCount = 1;
 
-    this->_pipeline_state_without_texture.move_object(
-        [device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
+    this->_pipeline_state_without_texture.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc
+                                                                                             error:nil]);
 
     pipelineStateDesc.fragmentFunction = fragmentProgramWithTexture;
 
-    this->_pipeline_state_with_texture.move_object(
-        [device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
+    this->_pipeline_state_with_texture.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc
+                                                                                          error:nil]);
 }
 
 ui::metal_system::~metal_system() = default;
@@ -232,8 +232,8 @@ objc_ptr<id<MTLSamplerState>> ui::metal_system::make_mtl_sampler_state(MTLSample
 }
 
 objc_ptr<id<MTLBuffer>> ui::metal_system::make_mtl_buffer(std::size_t const length) {
-    return objc_ptr_with_move_object(
-        [mtlDevice() newBufferWithLength:length options:MTLResourceOptionCPUCacheModeDefault]);
+    return objc_ptr_with_move_object([mtlDevice() newBufferWithLength:length
+                                                              options:MTLResourceOptionCPUCacheModeDefault]);
 }
 
 objc_ptr<id<MTLArgumentEncoder>> ui::metal_system::make_mtl_argument_encoder() {

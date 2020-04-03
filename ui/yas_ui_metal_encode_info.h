@@ -5,8 +5,10 @@
 #pragma once
 
 #include <Metal/Metal.h>
+
 #include <unordered_map>
 #include <vector>
+
 #include "yas_ui_effect.h"
 #include "yas_ui_mesh.h"
 #include "yas_ui_ptr.h"

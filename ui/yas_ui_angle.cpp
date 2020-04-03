@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_angle.h"
+
 #include <cmath>
 
 using namespace yas;

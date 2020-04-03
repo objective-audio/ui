@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+
 #include "yas_ui_ptr.h"
 #include "yas_ui_types.h"
 

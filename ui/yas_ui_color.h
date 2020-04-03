@@ -5,6 +5,7 @@
 #pragma once
 
 #include <simd/simd.h>
+
 #include <ostream>
 #include <string>
 

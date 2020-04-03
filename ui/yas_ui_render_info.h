@@ -6,7 +6,9 @@
 
 #include <Metal/Metal.h>
 #include <simd/simd.h>
+
 #include <deque>
+
 #include "yas_ui_batch.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_metal_system.h"

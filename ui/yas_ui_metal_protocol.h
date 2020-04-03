@@ -5,7 +5,9 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
+
 #include <ostream>
+
 #include "yas_ui_ptr.h"
 
 namespace yas::ui {
