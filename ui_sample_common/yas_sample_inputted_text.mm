@@ -66,7 +66,9 @@ void sample::inputted_text::_update_text(ui::event_ptr const &event) {
                 }
             } break;
 
-            default: { append_text(event->get<ui::key>().characters()); } break;
+            default: {
+                append_text(event->get<ui::key>().characters());
+            } break;
         }
     }
 }

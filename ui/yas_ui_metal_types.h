@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
+
 #include "yas_ui_types.h"
 
 namespace yas {

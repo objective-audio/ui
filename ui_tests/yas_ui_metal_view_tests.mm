@@ -33,8 +33,8 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto view_ptr =
-        objc_ptr_with_move_object([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256) device:nil]);
+    auto view_ptr = objc_ptr_with_move_object([[YASUIMetalView alloc] initWithFrame:CGRectMake(0.0, 0.0, 256, 256)
+                                                                             device:nil]);
     auto view = view_ptr.object();
 
     XCTAssertNotNil(view);

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cpp_utils/yas_flagset.h>
+
 #include "yas_ui_effect_protocol.h"
 #include "yas_ui_mesh_data_protocol.h"
 #include "yas_ui_mesh_protocol.h"

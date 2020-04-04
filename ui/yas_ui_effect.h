@@ -5,7 +5,9 @@
 #pragma once
 
 #include <Metal/Metal.h>
+
 #include <functional>
+
 #include "yas_ui_effect_protocol.h"
 #include "yas_ui_metal_protocol.h"
 #include "yas_ui_ptr.h"
