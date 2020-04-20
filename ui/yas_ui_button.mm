@@ -237,8 +237,9 @@ void ui::button::_update_tracking(ui::event_ptr const &event, std::shared_ptr<bu
             } break;
             case ui::event_phase::ended:
                 if (this->_is_tracking(event)) {
+                    auto const send_evnet = event;
                     this->_set_tracking_event(nullptr);
-                    this->_send_notify(method::ended, event, button);
+                    this->_send_notify(method::ended, send_evnet, button);
                 }
                 break;
             case ui::event_phase::canceled:
@@ -271,8 +272,9 @@ void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event, st
 
 void ui::button::_cancel_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
     if (this->_is_tracking(event)) {
+        auto const send_event = event;
         this->_set_tracking_event(nullptr);
-        this->_send_notify(method::canceled, event, button);
+        this->_send_notify(method::canceled, send_event, button);
     }
 }
 
