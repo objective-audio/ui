@@ -3,6 +3,9 @@
 //
 
 #include "yas_ui_metal_view_controller.h"
+#include <chaining/yas_chaining_umbrella.h>
+#include <objc_utils/yas_objc_unowned.h>
+#include "yas_ui_color.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,6 +15,7 @@ namespace yas::ui {
 namespace metal_view {
     struct cpp_variables {
         ui::view_renderable_ptr renderable{nullptr};
+        chaining::observer_pool pool;
     };
 }
 }
@@ -110,8 +114,18 @@ namespace metal_view {
 
     if (renderable) {
         renderable->view_configure(self.metalView);
+
+        auto unowned = [[YASUnownedObject<YASUIMetalViewController *> alloc] initWithObject:self];
+        renderable->clear_color()
+            ->chain()
+            .perform([unowned](auto const &color) {
+                unowned.object.metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, 1.0);
+            })
+            .sync()
+            ->add_to(self->_cpp.pool);
     } else {
         self.metalView.device = nil;
+        self->_cpp.pool.invalidate();
     }
 }
 

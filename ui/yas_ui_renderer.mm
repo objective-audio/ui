@@ -10,6 +10,7 @@
 #include <simd/simd.h>
 #include <chrono>
 #include "yas_ui_action.h"
+#include "yas_ui_color.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_math.h"
 #include "yas_ui_matrix.h"
@@ -41,6 +42,7 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _scale_factor_notify(chaining::value::holder<double>::make_shared(0.0f)),
       _safe_area_insets({.top = 0, .left = 0, .bottom = 0, .right = 0}),
       _appearance(chaining::value::holder<ui::appearance>::make_shared(ui::appearance::normal)),
+      _clear_color(chaining::value::holder<ui::color>::make_shared(ui::black_color())),
       _projection_matrix(matrix_identity_float4x4),
       _root_node(ui::node::make_shared()),
       _action(ui::parallel_action::make_shared()),
@@ -49,6 +51,10 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _view_layout_guide_rect(ui::layout_guide_rect::make_shared()),
       _safe_area_layout_guide_rect(ui::layout_guide_rect::make_shared()),
       _will_render_notifier(chaining::notifier<std::nullptr_t>::make_shared()) {
+    this->_clear_color->chain()
+        .perform([this](auto const &) { this->_clear_color_updated = true; })
+        .end()
+        ->add_to(this->_pool);
 }
 
 ui::renderer::~renderer() = default;
@@ -138,6 +144,14 @@ ui::layout_guide_rect_ptr &ui::renderer::safe_area_layout_guide_rect() {
 
 ui::appearance ui::renderer::appearance() const {
     return this->_appearance->raw();
+}
+
+chaining::value::holder_ptr<ui::color> const &ui::renderer::clear_color() const {
+    return this->_clear_color;
+}
+
+chaining::value::holder_ptr<ui::color> &ui::renderer::clear_color() {
+    return this->_clear_color;
 }
 
 chaining::chain_unsync_t<std::nullptr_t> ui::renderer::chain_will_render() const {
@@ -246,7 +260,7 @@ ui::renderer::pre_render_result ui::renderer::_pre_render() {
         updatable_detector::cast(this->_detector)->begin_update();
     }
 
-    if (tree_updates.is_any_updated()) {
+    if (this->_clear_color_updated || tree_updates.is_any_updated()) {
         return pre_render_result::updated;
     }
 
@@ -255,7 +269,8 @@ ui::renderer::pre_render_result ui::renderer::_pre_render() {
 
 void ui::renderer::_post_render() {
     ui::renderable_node::cast(this->_root_node)->clear_updates();
-    updatable_detector::cast(this->_detector)->end_update();
+    ui::updatable_detector::cast(this->_detector)->end_update();
+    this->_clear_color_updated = false;
 }
 
 ui::renderer::update_result ui::renderer::_update_view_size(CGSize const v_size, CGSize const d_size) {
