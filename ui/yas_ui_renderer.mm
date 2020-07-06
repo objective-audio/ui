@@ -51,6 +51,10 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _view_layout_guide_rect(ui::layout_guide_rect::make_shared()),
       _safe_area_layout_guide_rect(ui::layout_guide_rect::make_shared()),
       _will_render_notifier(chaining::notifier<std::nullptr_t>::make_shared()) {
+    this->_clear_color->chain()
+        .perform([this](auto const &) { this->_clear_color_updated = true; })
+        .end()
+        ->add_to(this->_pool);
 }
 
 ui::renderer::~renderer() = default;
@@ -256,7 +260,7 @@ ui::renderer::pre_render_result ui::renderer::_pre_render() {
         updatable_detector::cast(this->_detector)->begin_update();
     }
 
-    if (tree_updates.is_any_updated()) {
+    if (this->_clear_color_updated || tree_updates.is_any_updated()) {
         return pre_render_result::updated;
     }
 
@@ -265,7 +269,8 @@ ui::renderer::pre_render_result ui::renderer::_pre_render() {
 
 void ui::renderer::_post_render() {
     ui::renderable_node::cast(this->_root_node)->clear_updates();
-    updatable_detector::cast(this->_detector)->end_update();
+    ui::updatable_detector::cast(this->_detector)->end_update();
+    this->_clear_color_updated = false;
 }
 
 ui::renderer::update_result ui::renderer::_update_view_size(CGSize const v_size, CGSize const d_size) {

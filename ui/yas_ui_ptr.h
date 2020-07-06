@@ -43,6 +43,7 @@ class renderer;
 class strings;
 class texture_element;
 class texture;
+class color;
 
 class renderable_render_target;
 class updatable_action;
