@@ -10,6 +10,7 @@
 #include <simd/simd.h>
 #include <chrono>
 #include "yas_ui_action.h"
+#include "yas_ui_color.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_math.h"
 #include "yas_ui_matrix.h"
@@ -41,6 +42,7 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _scale_factor_notify(chaining::value::holder<double>::make_shared(0.0f)),
       _safe_area_insets({.top = 0, .left = 0, .bottom = 0, .right = 0}),
       _appearance(chaining::value::holder<ui::appearance>::make_shared(ui::appearance::normal)),
+      _clear_color(chaining::value::holder<ui::color>::make_shared(ui::black_color())),
       _projection_matrix(matrix_identity_float4x4),
       _root_node(ui::node::make_shared()),
       _action(ui::parallel_action::make_shared()),
@@ -138,6 +140,14 @@ ui::layout_guide_rect_ptr &ui::renderer::safe_area_layout_guide_rect() {
 
 ui::appearance ui::renderer::appearance() const {
     return this->_appearance->raw();
+}
+
+chaining::value::holder_ptr<ui::color> const &ui::renderer::clear_color() const {
+    return this->_clear_color;
+}
+
+chaining::value::holder_ptr<ui::color> &ui::renderer::clear_color() {
+    return this->_clear_color;
 }
 
 chaining::chain_unsync_t<std::nullptr_t> ui::renderer::chain_will_render() const {
