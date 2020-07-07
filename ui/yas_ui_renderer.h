@@ -20,7 +20,6 @@ class uint_size;
 class action;
 class metal_system;
 class action_target;
-class color;
 enum class system_type;
 
 struct renderer final : view_renderable, std::enable_shared_from_this<renderer> {
@@ -62,9 +61,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     ui::appearance appearance() const;
 
-    chaining::value::holder_ptr<ui::color> const &clear_color() const override;
-    chaining::value::holder_ptr<ui::color> &clear_color();
-
     [[nodiscard]] chaining::chain_unsync_t<std::nullptr_t> chain_will_render() const;
     [[nodiscard]] chaining::chain_sync_t<double> chain_scale_factor() const;
     [[nodiscard]] chaining::chain_sync_t<ui::appearance> chain_appearance() const;
@@ -92,8 +88,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     chaining::value::holder_ptr<double> _scale_factor_notify;
     yas_edge_insets _safe_area_insets;
     chaining::value::holder_ptr<ui::appearance> _appearance;
-    chaining::value::holder_ptr<ui::color> _clear_color;
-    bool _clear_color_updated = true;
     simd::float4x4 _projection_matrix;
 
     ui::background_ptr _background;
