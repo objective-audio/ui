@@ -114,9 +114,9 @@
 		B61E363121E6307500DF35C3 /* yas_ui_matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61E35C121E6307500DF35C3 /* yas_ui_matrix.cpp */; };
 		B61E363321E6307500DF35C3 /* yas_ui_node_actions.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61E35C321E6307500DF35C3 /* yas_ui_node_actions.mm */; };
 		B69609F424B3AC3600F9962D /* yas_ui_background_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609F024B3AC3500F9962D /* yas_ui_background_protocol.mm */; };
-		B69609F524B3AC3600F9962D /* yas_ui_background_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609F124B3AC3500F9962D /* yas_ui_background_protocol.h */; };
+		B69609F524B3AC3600F9962D /* yas_ui_background_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609F124B3AC3500F9962D /* yas_ui_background_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69609F624B3AC3600F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609F224B3AC3500F9962D /* yas_ui_background.mm */; };
-		B69609F724B3AC3600F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609F324B3AC3500F9962D /* yas_ui_background.h */; };
+		B69609F724B3AC3600F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609F324B3AC3500F9962D /* yas_ui_background.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DE34BF21E6313800E49BCB /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34BE21E6313800E49BCB /* chaining.framework */; };
 		B6DE34C121E6313800E49BCB /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C021E6313800E49BCB /* cpp_utils.framework */; };
 		B6DE34C321E6313800E49BCB /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C221E6313800E49BCB /* objc_utils.framework */; };

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B608AB4824B4B2B500B5A18F /* yas_ui_background_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609EB24B3A27A00F9962D /* yas_ui_background_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B60DC9EF230D0AEB00EB803A /* yas_ui_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B60DC9EE230D0AEB00EB803A /* yas_ui_ptr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF85B21E4D7B600C65DB5 /* ui.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF85921E4D7B600C65DB5 /* ui.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF8D221E4D7E400C65DB5 /* yas_ui_renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF86021E4D7E300C65DB5 /* yas_ui_renderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -123,7 +124,7 @@
 		B65AF95221E4DC5800C65DB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */; };
 		B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */; };
 		B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609E724B39FB200F9962D /* yas_ui_background.mm */; };
-		B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609E824B39FB200F9962D /* yas_ui_background.h */; };
+		B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609E824B39FB200F9962D /* yas_ui_background.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69609EE24B3A4C300F9962D /* yas_ui_background_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609EC24B3A4C300F9962D /* yas_ui_background_protocol.mm */; };
 /* End PBXBuildFile section */
 
@@ -449,6 +450,7 @@
 				B65AF93D21E4D7E400C65DB5 /* yas_ui_chaining_utils.h in Headers */,
 				B65AF93321E4D7E400C65DB5 /* yas_ui_texture_protocol.h in Headers */,
 				B65AF91821E4D7E400C65DB5 /* yas_ui_metal_types.h in Headers */,
+				B608AB4824B4B2B500B5A18F /* yas_ui_background_protocol.h in Headers */,
 				B65AF8E421E4D7E400C65DB5 /* yas_ui_render_info.h in Headers */,
 				B65AF90921E4D7E400C65DB5 /* yas_ui_mesh.h in Headers */,
 				B65AF90D21E4D7E400C65DB5 /* yas_ui_metal_system.h in Headers */,
