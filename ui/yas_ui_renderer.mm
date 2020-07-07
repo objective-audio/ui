@@ -242,6 +242,9 @@ void ui::renderer::view_appearance_did_change(yas_objc_view *const view, ui::app
 ui::renderer::pre_render_result ui::renderer::_pre_render() {
     ui::updatable_action::cast(this->_action)->update(std::chrono::system_clock::now());
 
+    ui::background_updates_t bg_updates;
+    ui::renderable_background::cast(this->_background)->fetch_updates(bg_updates);
+
     ui::tree_updates tree_updates;
     ui::renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
@@ -249,7 +252,7 @@ ui::renderer::pre_render_result ui::renderer::_pre_render() {
         updatable_detector::cast(this->_detector)->begin_update();
     }
 
-    if (tree_updates.is_any_updated()) {
+    if (bg_updates.flags.any() || tree_updates.is_any_updated()) {
         return pre_render_result::updated;
     }
 
@@ -257,6 +260,7 @@ ui::renderer::pre_render_result ui::renderer::_pre_render() {
 }
 
 void ui::renderer::_post_render() {
+    ui::renderable_background::cast(this->_background)->clear_updates();
     ui::renderable_node::cast(this->_root_node)->clear_updates();
     ui::updatable_detector::cast(this->_detector)->end_update();
 }
