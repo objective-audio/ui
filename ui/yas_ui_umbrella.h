@@ -5,6 +5,7 @@
 #pragma once
 
 #include "yas_ui_angle.h"
+#include "yas_ui_background.h"
 #include "yas_ui_batch.h"
 #include "yas_ui_blur.h"
 #include "yas_ui_button.h"

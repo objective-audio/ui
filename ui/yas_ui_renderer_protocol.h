@@ -21,8 +21,6 @@ struct view_renderable {
     virtual void view_render(yas_objc_view *const view) = 0;
     virtual void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) = 0;
 
-    virtual chaining::value::holder_ptr<ui::color> const &clear_color() const = 0;
-
     static view_renderable_ptr cast(view_renderable_ptr const &renderable) {
         return renderable;
     }

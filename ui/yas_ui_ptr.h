@@ -44,6 +44,7 @@ class strings;
 class texture_element;
 class texture;
 class color;
+class background;
 
 class renderable_render_target;
 class updatable_action;
@@ -64,6 +65,7 @@ class render_encodable;
 class render_effectable;
 class render_stackable;
 class view_renderable;
+class renderable_background;
 
 using action_target_ptr = std::shared_ptr<action_target>;
 using action_target_wptr = std::weak_ptr<action_target>;
@@ -109,6 +111,7 @@ using strings_ptr = std::shared_ptr<strings>;
 using strings_wptr = std::weak_ptr<strings>;
 using texture_element_ptr = std::shared_ptr<texture_element>;
 using texture_ptr = std::shared_ptr<texture>;
+using background_ptr = std::shared_ptr<background>;
 
 using renderable_render_target_ptr = std::shared_ptr<renderable_render_target>;
 using updatable_action_ptr = std::shared_ptr<updatable_action>;
@@ -129,4 +132,5 @@ using render_encodable_ptr = std::shared_ptr<render_encodable>;
 using render_effectable_ptr = std::shared_ptr<render_effectable>;
 using render_stackable_ptr = std::shared_ptr<render_stackable>;
 using view_renderable_ptr = std::shared_ptr<view_renderable>;
+using renderable_background_ptr = std::shared_ptr<renderable_background>;
 }  // namespace yas::ui

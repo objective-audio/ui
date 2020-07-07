@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B608AB4824B4B2B500B5A18F /* yas_ui_background_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609EB24B3A27A00F9962D /* yas_ui_background_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B60DC9EF230D0AEB00EB803A /* yas_ui_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B60DC9EE230D0AEB00EB803A /* yas_ui_ptr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF85B21E4D7B600C65DB5 /* ui.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF85921E4D7B600C65DB5 /* ui.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65AF8D221E4D7E400C65DB5 /* yas_ui_renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B65AF86021E4D7E300C65DB5 /* yas_ui_renderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -122,6 +123,9 @@
 		B65AF95021E4DC5200C65DB5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF94F21E4DC5200C65DB5 /* AppKit.framework */; };
 		B65AF95221E4DC5800C65DB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */; };
 		B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */; };
+		B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609E724B39FB200F9962D /* yas_ui_background.mm */; };
+		B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609E824B39FB200F9962D /* yas_ui_background.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B69609EE24B3A4C300F9962D /* yas_ui_background_protocol.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609EC24B3A4C300F9962D /* yas_ui_background_protocol.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -242,6 +246,10 @@
 		B65AF94F21E4DC5200C65DB5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		B69609E724B39FB200F9962D /* yas_ui_background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background.mm; sourceTree = "<group>"; };
+		B69609E824B39FB200F9962D /* yas_ui_background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_background.h; sourceTree = "<group>"; };
+		B69609EB24B3A27A00F9962D /* yas_ui_background_protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_background_protocol.h; sourceTree = "<group>"; };
+		B69609EC24B3A4C300F9962D /* yas_ui_background_protocol.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background_protocol.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -299,6 +307,10 @@
 				B65AF87D21E4D7E400C65DB5 /* yas_ui_action.mm */,
 				B65AF88E21E4D7E400C65DB5 /* yas_ui_angle.cpp */,
 				B65AF89121E4D7E400C65DB5 /* yas_ui_angle.h */,
+				B69609EB24B3A27A00F9962D /* yas_ui_background_protocol.h */,
+				B69609EC24B3A4C300F9962D /* yas_ui_background_protocol.mm */,
+				B69609E824B39FB200F9962D /* yas_ui_background.h */,
+				B69609E724B39FB200F9962D /* yas_ui_background.mm */,
 				B65AF8AE21E4D7E400C65DB5 /* yas_ui_batch_protocol.h */,
 				B65AF88421E4D7E400C65DB5 /* yas_ui_batch_protocol.mm */,
 				B65AF87021E4D7E400C65DB5 /* yas_ui_batch_render_mesh_info.h */,
@@ -353,8 +365,8 @@
 				B65AF87421E4D7E400C65DB5 /* yas_ui_mesh.mm */,
 				B65AF8C121E4D7E400C65DB5 /* yas_ui_metal_encode_info.h */,
 				B65AF8A921E4D7E400C65DB5 /* yas_ui_metal_encode_info.mm */,
-				B65AF8CA21E4D7E400C65DB5 /* yas_ui_metal_protocol.h */,
 				B65AF89621E4D7E400C65DB5 /* yas_ui_metal_protocol.cpp */,
+				B65AF8CA21E4D7E400C65DB5 /* yas_ui_metal_protocol.h */,
 				B65AF8CB21E4D7E400C65DB5 /* yas_ui_metal_render_encoder.h */,
 				B65AF88B21E4D7E400C65DB5 /* yas_ui_metal_render_encoder.mm */,
 				B65AF89F21E4D7E400C65DB5 /* yas_ui_metal_system_protocol.h */,
@@ -438,11 +450,13 @@
 				B65AF93D21E4D7E400C65DB5 /* yas_ui_chaining_utils.h in Headers */,
 				B65AF93321E4D7E400C65DB5 /* yas_ui_texture_protocol.h in Headers */,
 				B65AF91821E4D7E400C65DB5 /* yas_ui_metal_types.h in Headers */,
+				B608AB4824B4B2B500B5A18F /* yas_ui_background_protocol.h in Headers */,
 				B65AF8E421E4D7E400C65DB5 /* yas_ui_render_info.h in Headers */,
 				B65AF90921E4D7E400C65DB5 /* yas_ui_mesh.h in Headers */,
 				B65AF90D21E4D7E400C65DB5 /* yas_ui_metal_system.h in Headers */,
 				B65AF92421E4D7E400C65DB5 /* yas_ui_matrix.h in Headers */,
 				B65AF92A21E4D7E400C65DB5 /* yas_ui_texture_element.h in Headers */,
+				B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */,
 				B65AF8D521E4D7E400C65DB5 /* yas_ui_image.h in Headers */,
 				B65AF91921E4D7E400C65DB5 /* yas_ui_action.h in Headers */,
 				B65AF92021E4D7E400C65DB5 /* yas_ui_render_encoder_protocol.h in Headers */,
@@ -598,6 +612,7 @@
 				B65AF93E21E4D7E400C65DB5 /* yas_ui_collider.cpp in Sources */,
 				B65AF8EF21E4D7E400C65DB5 /* yas_ui_action.mm in Sources */,
 				B65AF93721E4D7E400C65DB5 /* yas_ui_color.cpp in Sources */,
+				B69609EE24B3A4C300F9962D /* yas_ui_background_protocol.mm in Sources */,
 				B65AF90E21E4D7E400C65DB5 /* yas_ui_node.mm in Sources */,
 				B65AF8E621E4D7E400C65DB5 /* yas_ui_mesh.mm in Sources */,
 				B65AF8F721E4D7E400C65DB5 /* yas_ui_effect_protocol.mm in Sources */,
@@ -611,6 +626,7 @@
 				B65AF93921E4D7E400C65DB5 /* yas_ui_metal_texture.mm in Sources */,
 				B65AF90A21E4D7E400C65DB5 /* yas_ui_types.cpp in Sources */,
 				B65AF91D21E4D7E400C65DB5 /* yas_ui_shaders.metal in Sources */,
+				B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
