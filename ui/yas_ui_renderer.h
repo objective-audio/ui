@@ -44,7 +44,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::background_ptr const &background() const;
 
     ui::node_ptr const &root_node() const;
-    ui::node_ptr &root_node();
 
     ui::event_manager_ptr const &event_manager() const;
 

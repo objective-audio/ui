@@ -85,10 +85,6 @@ ui::node_ptr const &ui::renderer::root_node() const {
     return this->_root_node;
 }
 
-ui::node_ptr &ui::renderer::root_node() {
-    return this->_root_node;
-}
-
 ui::system_type ui::renderer::system_type() const {
     if (this->_metal_system) {
         return ui::system_type::metal;
