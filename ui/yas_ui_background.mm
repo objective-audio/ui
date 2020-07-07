@@ -37,8 +37,8 @@ std::shared_ptr<ui::background> ui::background::make_shared() {
     return std::shared_ptr<background>(new background{});
 }
 
-void ui::background::fetch_updates(ui::background_updates_t &updates) {
-    updates.flags |= this->_updates.flags;
+ui::background_updates_t const &ui::background::updates() const {
+    return this->_updates;
 }
 
 void ui::background::clear_updates() {

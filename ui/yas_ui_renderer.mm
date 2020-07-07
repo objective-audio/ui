@@ -249,8 +249,7 @@ void ui::renderer::view_appearance_did_change(yas_objc_view *const view, ui::app
 ui::renderer::pre_render_result ui::renderer::_pre_render() {
     ui::updatable_action::cast(this->_action)->update(std::chrono::system_clock::now());
 
-    ui::background_updates_t bg_updates;
-    ui::renderable_background::cast(this->_background)->fetch_updates(bg_updates);
+    auto const bg_updates = ui::renderable_background::cast(this->_background)->updates();
 
     ui::tree_updates tree_updates;
     ui::renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);

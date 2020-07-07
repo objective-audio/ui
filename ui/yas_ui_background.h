@@ -34,7 +34,7 @@ struct background final : renderable_background {
     background &operator=(background const &) = delete;
     background &operator=(background &&) = delete;
 
-    void fetch_updates(ui::background_updates_t &) override;
+    ui::background_updates_t const &updates() const override;
     void clear_updates() override;
 };
 }  // namespace yas::ui
