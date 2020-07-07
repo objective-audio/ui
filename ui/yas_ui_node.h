@@ -35,27 +35,18 @@ struct node final : action_target, metal_object, renderable_node {
     virtual ~node();
 
     chaining::value::holder_ptr<ui::point> const &position() const;
-    chaining::value::holder_ptr<ui::point> &position();
     chaining::value::holder_ptr<ui::angle> const &angle() const;
-    chaining::value::holder_ptr<ui::angle> &angle();
     chaining::value::holder_ptr<ui::size> const &scale() const;
-    chaining::value::holder_ptr<ui::size> &scale();
     chaining::value::holder_ptr<ui::color> const &color() const;
-    chaining::value::holder_ptr<ui::color> &color();
     chaining::value::holder_ptr<float> const &alpha() const;
-    chaining::value::holder_ptr<float> &alpha();
     chaining::value::holder_ptr<bool> const &is_enabled() const;
-    chaining::value::holder_ptr<bool> &is_enabled();
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
     chaining::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
-    chaining::value::holder_ptr<ui::mesh_ptr> &mesh();
     chaining::value::holder_ptr<ui::collider_ptr> const &collider() const;
-    chaining::value::holder_ptr<ui::collider_ptr> &collider();
     chaining::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
-    chaining::value::holder_ptr<std::shared_ptr<ui::batch>> &batch();
     chaining::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
 
     void add_sub_node(ui::node_ptr const &);

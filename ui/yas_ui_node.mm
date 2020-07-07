@@ -51,15 +51,7 @@ chaining::value::holder_ptr<ui::point> const &ui::node::position() const {
     return this->_position;
 }
 
-chaining::value::holder_ptr<ui::point> &ui::node::position() {
-    return this->_position;
-}
-
 chaining::value::holder_ptr<ui::angle> const &ui::node::angle() const {
-    return this->_angle;
-}
-
-chaining::value::holder_ptr<ui::angle> &ui::node::angle() {
     return this->_angle;
 }
 
@@ -67,15 +59,7 @@ chaining::value::holder_ptr<ui::size> const &ui::node::scale() const {
     return this->_scale;
 }
 
-chaining::value::holder_ptr<ui::size> &ui::node::scale() {
-    return this->_scale;
-}
-
 chaining::value::holder_ptr<ui::color> const &ui::node::color() const {
-    return this->_color;
-}
-
-chaining::value::holder_ptr<ui::color> &ui::node::color() {
     return this->_color;
 }
 
@@ -83,15 +67,7 @@ chaining::value::holder_ptr<float> const &ui::node::alpha() const {
     return this->_alpha;
 }
 
-chaining::value::holder_ptr<float> &ui::node::alpha() {
-    return this->_alpha;
-}
-
 chaining::value::holder_ptr<bool> const &ui::node::is_enabled() const {
-    return this->_enabled;
-}
-
-chaining::value::holder_ptr<bool> &ui::node::is_enabled() {
     return this->_enabled;
 }
 
@@ -109,23 +85,11 @@ chaining::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
     return this->_mesh;
 }
 
-chaining::value::holder_ptr<ui::mesh_ptr> &ui::node::mesh() {
-    return this->_mesh;
-}
-
 chaining::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {
     return this->_collider;
 }
 
-chaining::value::holder_ptr<ui::collider_ptr> &ui::node::collider() {
-    return this->_collider;
-}
-
 chaining::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
-    return this->_batch;
-}
-
-chaining::value::holder_ptr<std::shared_ptr<ui::batch>> &ui::node::batch() {
     return this->_batch;
 }
 
