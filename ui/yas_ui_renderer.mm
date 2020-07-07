@@ -10,6 +10,7 @@
 #include <simd/simd.h>
 #include <chrono>
 #include "yas_ui_action.h"
+#include "yas_ui_background.h"
 #include "yas_ui_color.h"
 #include "yas_ui_detector.h"
 #include "yas_ui_math.h"
@@ -44,6 +45,7 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _appearance(chaining::value::holder<ui::appearance>::make_shared(ui::appearance::normal)),
       _clear_color(chaining::value::holder<ui::color>::make_shared(ui::black_color())),
       _projection_matrix(matrix_identity_float4x4),
+      _background(ui::background::make_shared()),
       _root_node(ui::node::make_shared()),
       _action(ui::parallel_action::make_shared()),
       _detector(ui::detector::make_shared()),
@@ -73,6 +75,10 @@ double ui::renderer::scale_factor() const {
 
 simd::float4x4 const &ui::renderer::projection_matrix() const {
     return this->_projection_matrix;
+}
+
+ui::background_ptr const &ui::renderer::background() const {
+    return this->_background;
 }
 
 ui::node_ptr const &ui::renderer::root_node() const {

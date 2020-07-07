@@ -41,6 +41,8 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::system_type system_type() const;
     std::shared_ptr<ui::metal_system> const &metal_system() const;
 
+    ui::background_ptr const &background() const;
+
     ui::node_ptr const &root_node() const;
     ui::node_ptr &root_node();
 
@@ -95,6 +97,7 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     bool _clear_color_updated = true;
     simd::float4x4 _projection_matrix;
 
+    ui::background_ptr _background;
     ui::node_ptr _root_node;
     std::shared_ptr<ui::parallel_action> _action;
     ui::detector_ptr _detector;
