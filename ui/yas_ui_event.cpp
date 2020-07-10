@@ -137,7 +137,7 @@ void ui::manageable_event::set(typename T::type value) {
     if (auto ip = std::dynamic_pointer_cast<event::impl<T>>(this->get_impl())) {
         ip->value = std::move(value);
     } else {
-        throw "dynamic_pointer_cast failed";
+        throw std::invalid_argument("dynamic_pointer_cast failed");
     }
 }
 

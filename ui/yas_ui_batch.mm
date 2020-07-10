@@ -33,7 +33,7 @@ void ui::batch::begin_render_meshes_building(batch_building_type const type) {
 
 void ui::batch::commit_render_meshes_building() {
     if (!to_bool(this->_building_type)) {
-        throw "don't commit if batch_building_type is none.";
+        throw std::runtime_error("don't commit if batch_building_type is none.");
     }
 
     for (auto &mesh_info : this->_render_mesh_infos) {

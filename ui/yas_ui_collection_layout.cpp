@@ -73,7 +73,7 @@ ui::collection_layout::collection_layout(args args)
                                .sync()),
       borders(std::move(args.borders)) {
     if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
-        throw "borders value is negative.";
+        throw std::runtime_error("borders value is negative.");
     }
 }
 

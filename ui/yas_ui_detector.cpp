@@ -42,7 +42,7 @@ void ui::detector::begin_update() {
 
 void ui::detector::push_front_collider(ui::collider_ptr const &collider) {
     if (!this->_updating) {
-        throw "detector is not updating.";
+        throw std::runtime_error("detector is not updating.");
     }
 
     this->_colliders.emplace_front(collider);
