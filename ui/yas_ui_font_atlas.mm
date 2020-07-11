@@ -85,7 +85,7 @@ ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {
 
 ui::size ui::font_atlas::advance(std::string const &word) const {
     if (word.size() != 1) {
-        throw "word size is not equal to one.";
+        throw std::invalid_argument("word size is not equal to one.");
     }
 
     if (word == "\n" || word == "\r") {

@@ -33,7 +33,7 @@ void ui::batch::begin_render_meshes_building(batch_building_type const type) {
 
 void ui::batch::commit_render_meshes_building() {
     if (!to_bool(this->_building_type)) {
-        throw "don't commit if batch_building_type is none.";
+        throw std::runtime_error("don't commit if batch_building_type is none.");
     }
 
     for (auto &mesh_info : this->_render_mesh_infos) {
@@ -84,7 +84,7 @@ void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
         mesh_info.vertex_count += renderable_mesh->render_vertex_count();
         mesh_info.index_count += renderable_mesh->render_index_count();
 
-        mesh_info.src_meshes.emplace_back(std::move(mesh));
+        mesh_info.src_meshes.push_back(mesh);
     }
 }
 

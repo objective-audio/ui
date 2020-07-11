@@ -170,12 +170,12 @@ void ui::renderer::view_configure(yas_objc_view *const view) {
                 this->view_size_will_change(view, drawable_size);
                 this->_appearance->set_value(metalView.uiAppearance);
             } else {
-                throw "view not for metal.";
+                throw std::runtime_error("view not for metal.");
             }
         } break;
 
         case ui::system_type::none: {
-            throw "system not found.";
+            throw std::runtime_error("system not found.");
         } break;
     }
 
@@ -184,7 +184,7 @@ void ui::renderer::view_configure(yas_objc_view *const view) {
 
 void ui::renderer::view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) {
     if (!to_bool(this->system_type())) {
-        throw "system not found.";
+        throw std::runtime_error("system not found.");
     }
 
     auto const view_size = view.bounds.size;
@@ -209,7 +209,7 @@ void ui::renderer::view_size_will_change(yas_objc_view *const view, CGSize const
 
 void ui::renderer::view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) {
     if (!to_bool(this->system_type())) {
-        throw "system not found.";
+        throw std::runtime_error("system not found.");
     }
 
     auto const update_result = this->_update_safe_area_insets(insets);
@@ -221,7 +221,7 @@ void ui::renderer::view_safe_area_insets_did_change(yas_objc_view *const view, y
 
 void ui::renderer::view_render(yas_objc_view *const view) {
     if (!this->_metal_system) {
-        throw "metal_system not found.";
+        throw std::runtime_error("metal_system not found.");
     }
 
     this->_will_render_notifier->notify(nullptr);

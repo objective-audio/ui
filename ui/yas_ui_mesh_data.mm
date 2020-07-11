@@ -38,7 +38,7 @@ void ui::mesh_data::write(
     if (this->_updates.flags.any()) {
         func(_vertices, _indices);
     } else {
-        throw "write failed.";
+        throw std::runtime_error("write failed.");
     }
 }
 
