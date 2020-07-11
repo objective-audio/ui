@@ -84,7 +84,7 @@ void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
         mesh_info.vertex_count += renderable_mesh->render_vertex_count();
         mesh_info.index_count += renderable_mesh->render_index_count();
 
-        mesh_info.src_meshes.emplace_back(std::move(mesh));
+        mesh_info.src_meshes.push_back(mesh);
     }
 }
 
