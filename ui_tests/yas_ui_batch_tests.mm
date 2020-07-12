@@ -56,15 +56,25 @@ using namespace yas;
 
     auto mesh1 = ui::mesh::make_shared();
     auto mesh2 = ui::mesh::make_shared();
+    auto mesh_data1 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto mesh_data2 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh1->set_mesh_data(mesh_data1);
+    mesh2->set_mesh_data(mesh_data2);
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto mesh3 = ui::mesh::make_shared();
+    auto mesh_data3 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh3->set_mesh_data(mesh_data3);
     auto texture3 = ui::texture::make_shared(ui::texture::args{});
     mesh3->set_texture(texture3);
     batch_encodable->append_mesh(mesh3);
+
+    ui::metal_object::cast(mesh1)->metal_setup(metal_system);
+    ui::metal_object::cast(mesh2)->metal_setup(metal_system);
+    ui::metal_object::cast(mesh3)->metal_setup(metal_system);
 
     batch_renderable->commit_render_meshes_building();
 
