@@ -12,7 +12,7 @@ namespace yas::ui {
 class color;
 
 struct background final : renderable_background {
-    ~background();
+    virtual ~background();
 
     [[nodiscard]] chaining::value::holder_ptr<ui::color> const &color() const;
     [[nodiscard]] chaining::value::holder_ptr<float> const &alpha() const;
