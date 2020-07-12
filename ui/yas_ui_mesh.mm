@@ -72,10 +72,14 @@ void ui::mesh::set_color(simd::float4 const &color) {
         this->_color = color;
 
         if (this->_is_mesh_data_exists() && !this->_use_mesh_color) {
-            this->_updates.set(ui::mesh_update_reason::color);
+            bool const is_alpha_exists = color[3] != 0.0f;
 
-            bool const is_next_alpha_exists = color[3] != 0.0f;
-            if (is_prev_alpha_exists != is_next_alpha_exists) {
+            if (is_prev_alpha_exists == is_alpha_exists) {
+                if (is_alpha_exists) {
+                    this->_updates.set(ui::mesh_update_reason::color);
+                }
+            } else {
+                this->_updates.set(ui::mesh_update_reason::color);
                 this->_updates.set(ui::mesh_update_reason::alpha_exists);
             }
         }
