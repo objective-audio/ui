@@ -56,8 +56,16 @@ void ui::batch::commit_render_meshes_building() {
     }
 
     if (this->_building_type == ui::batch_building_type::rebuild) {
-        this->_render_meshes = yas::to_vector<ui::mesh_ptr>(
-            this->_render_mesh_infos, [](auto const &mesh_info) { return mesh_info.render_mesh; });
+        std::vector<ui::mesh_ptr> render_meshes;
+        render_meshes.reserve(this->_render_mesh_infos.size());
+        for (ui::batch_render_mesh_info const &mesh_info : this->_render_mesh_infos) {
+            auto const &render_mesh = mesh_info.render_mesh;
+            auto const &mesh_data = render_mesh->mesh_data();
+            if (mesh_data && mesh_data->data_exists()) {
+                render_meshes.push_back(render_mesh);
+            }
+        }
+        this->_render_meshes = std::move(render_meshes);
     }
 
     if (auto &metal_system = this->_metal_system) {
