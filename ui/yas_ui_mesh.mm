@@ -67,10 +67,21 @@ void ui::mesh::set_texture(ui::texture_ptr const &texture) {
 
 void ui::mesh::set_color(simd::float4 const &color) {
     if (!yas::is_equal(this->_color, color)) {
+        bool const is_prev_alpha_exists = this->_color[3] != 0.0f;
+
         this->_color = color;
 
         if (this->_is_mesh_data_exists() && !this->_use_mesh_color) {
-            this->_updates.set(ui::mesh_update_reason::color);
+            bool const is_alpha_exists = color[3] != 0.0f;
+
+            if (is_prev_alpha_exists == is_alpha_exists) {
+                if (is_alpha_exists) {
+                    this->_updates.set(ui::mesh_update_reason::color);
+                }
+            } else {
+                this->_updates.set(ui::mesh_update_reason::color);
+                this->_updates.set(ui::mesh_update_reason::alpha_exists);
+            }
         }
     }
 }
@@ -204,8 +215,7 @@ bool ui::mesh::_is_mesh_data_exists() {
 
 bool ui::mesh::_is_color_exists() {
     if (!this->_use_mesh_color) {
-        static simd::float4 const _clear_color = 0.0f;
-        if (yas::is_equal(this->_color, _clear_color)) {
+        if (this->_color[3] == 0.0f) {
             return false;
         }
     }

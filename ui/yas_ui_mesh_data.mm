@@ -33,6 +33,10 @@ std::size_t ui::mesh_data::index_count() const {
     return this->_index_count;
 }
 
+bool ui::mesh_data::data_exists() const {
+    return this->_vertex_count > 0 && this->_index_count > 0;
+}
+
 void ui::mesh_data::write(
     std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) {
     if (this->_updates.flags.any()) {

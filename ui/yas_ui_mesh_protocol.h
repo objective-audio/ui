@@ -19,6 +19,7 @@ enum class mesh_update_reason : std::size_t {
     texture,
     primitive_type,
     color,
+    alpha_exists,
     use_mesh_color,
     matrix,
 
