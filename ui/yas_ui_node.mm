@@ -332,7 +332,7 @@ ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> c
     }
 
     if (auto &batch = this->_batch->raw()) {
-        if (auto ul = unless(std::dynamic_pointer_cast<ui::metal_object>(batch)->metal_setup(metal_system))) {
+        if (auto ul = unless(ui::metal_object::cast(batch)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
@@ -477,7 +477,7 @@ void ui::node::build_render_info(ui::render_info &render_info) {
             auto const building_type = tree_updates.batch_building_type();
 
             ui::render_info batch_render_info{.detector = render_info.detector};
-            auto const batch_renderable = std::dynamic_pointer_cast<renderable_batch>(batch);
+            auto const batch_renderable = renderable_batch::cast(batch);
 
             if (to_bool(building_type)) {
                 batch_render_info.render_encodable = render_encodable::cast(batch);
