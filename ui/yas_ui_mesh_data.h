@@ -25,6 +25,8 @@ struct mesh_data : renderable_mesh_data, metal_object {
     ui::index2d_t const *indices() const;
     std::size_t index_count() const;
 
+    bool data_exists() const;
+
     virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
 
     std::shared_ptr<ui::metal_system> const &metal_system();
