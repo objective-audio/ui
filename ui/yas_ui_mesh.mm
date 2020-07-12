@@ -211,8 +211,7 @@ bool ui::mesh::_is_mesh_data_exists() {
 
 bool ui::mesh::_is_color_exists() {
     if (!this->_use_mesh_color) {
-        static simd::float4 const _clear_color = 0.0f;
-        if (yas::is_equal(this->_color, _clear_color)) {
+        if (this->_color[3] == 0.0f) {
             return false;
         }
     }
