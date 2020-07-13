@@ -57,7 +57,7 @@ void ui::mesh::set_texture(ui::texture_ptr const &texture) {
     if (this->_texture != texture) {
         this->_texture = texture;
 
-        if (this->is_rendering_color_exists()) {
+        if (this->_is_mesh_data_exists()) {
             this->_updates.set(ui::mesh_update_reason::texture);
         }
     }
@@ -87,7 +87,7 @@ void ui::mesh::set_primitive_type(ui::primitive_type const type) {
     if (this->_primitive_type != type) {
         this->_primitive_type = type;
 
-        if (this->is_rendering_color_exists()) {
+        if (this->_is_mesh_data_exists()) {
             this->_updates.set(ui::mesh_update_reason::primitive_type);
         }
     }
