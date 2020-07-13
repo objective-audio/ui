@@ -49,9 +49,7 @@ void ui::mesh::set_mesh_data(ui::mesh_data_ptr const &mesh_data) {
     if (this->_mesh_data != mesh_data) {
         this->_mesh_data = std::move(mesh_data);
 
-        if (this->_is_color_exists()) {
-            this->_updates.set(ui::mesh_update_reason::mesh_data);
-        }
+        this->_updates.set(ui::mesh_update_reason::mesh_data);
     }
 }
 
@@ -59,7 +57,7 @@ void ui::mesh::set_texture(ui::texture_ptr const &texture) {
     if (this->_texture != texture) {
         this->_texture = texture;
 
-        if (this->is_rendering_color_exists()) {
+        if (this->_is_mesh_data_exists()) {
             this->_updates.set(ui::mesh_update_reason::texture);
         }
     }
@@ -67,21 +65,10 @@ void ui::mesh::set_texture(ui::texture_ptr const &texture) {
 
 void ui::mesh::set_color(simd::float4 const &color) {
     if (!yas::is_equal(this->_color, color)) {
-        bool const is_prev_alpha_exists = this->_color[3] != 0.0f;
-
         this->_color = color;
 
         if (this->_is_mesh_data_exists() && !this->_use_mesh_color) {
-            bool const is_alpha_exists = color[3] != 0.0f;
-
-            if (is_prev_alpha_exists == is_alpha_exists) {
-                if (is_alpha_exists) {
-                    this->_updates.set(ui::mesh_update_reason::color);
-                }
-            } else {
-                this->_updates.set(ui::mesh_update_reason::color);
-                this->_updates.set(ui::mesh_update_reason::alpha_exists);
-            }
+            this->_updates.set(ui::mesh_update_reason::color);
         }
     }
 }
@@ -100,7 +87,7 @@ void ui::mesh::set_primitive_type(ui::primitive_type const type) {
     if (this->_primitive_type != type) {
         this->_primitive_type = type;
 
-        if (this->is_rendering_color_exists()) {
+        if (this->_is_mesh_data_exists()) {
             this->_updates.set(ui::mesh_update_reason::primitive_type);
         }
     }
@@ -184,7 +171,7 @@ void ui::mesh::batch_render(batch_render_mesh_info &mesh_info, ui::batch_buildin
 }
 
 bool ui::mesh::is_rendering_color_exists() {
-    return this->_is_mesh_data_exists() && this->_is_color_exists();
+    return this->_is_mesh_data_exists();
 }
 
 void ui::mesh::clear_updates() {
@@ -210,16 +197,7 @@ ui::setup_metal_result ui::mesh::metal_setup(std::shared_ptr<ui::metal_system> c
 }
 
 bool ui::mesh::_is_mesh_data_exists() {
-    return this->_mesh_data && this->_mesh_data->index_count() > 0;
-}
-
-bool ui::mesh::_is_color_exists() {
-    if (!this->_use_mesh_color) {
-        if (this->_color[3] == 0.0f) {
-            return false;
-        }
-    }
-    return true;
+    return this->_mesh_data && this->_mesh_data->index_count() > 0 && this->_mesh_data->vertex_count() > 0;
 }
 
 bool ui::mesh::_needs_write(ui::batch_building_type const &building_type) {

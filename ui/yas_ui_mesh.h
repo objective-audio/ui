@@ -61,7 +61,6 @@ struct mesh final : renderable_mesh, metal_object {
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     bool _is_mesh_data_exists();
-    bool _is_color_exists();
     bool _needs_write(ui::batch_building_type const &);
 };
 }  // namespace yas::ui

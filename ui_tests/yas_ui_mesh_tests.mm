@@ -334,12 +334,17 @@ using namespace yas;
     mesh->set_use_mesh_color(false);
     mesh->set_color(0.0f);
 
-    XCTAssertFalse(ui::renderable_mesh::cast(mesh)->is_rendering_color_exists());
+    XCTAssertTrue(ui::renderable_mesh::cast(mesh)->is_rendering_color_exists());
 
     mesh->set_use_mesh_color(true);
     mesh->set_color(0.0f);
 
     XCTAssertTrue(ui::renderable_mesh::cast(mesh)->is_rendering_color_exists());
+
+    auto empty_mesh_data = ui::mesh_data::make_shared({});
+    mesh->set_mesh_data(empty_mesh_data);
+
+    XCTAssertFalse(ui::renderable_mesh::cast(mesh)->is_rendering_color_exists());
 }
 
 - (void)test_metal_setup {

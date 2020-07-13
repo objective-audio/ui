@@ -20,8 +20,6 @@ std::string yas::to_string(ui::mesh_update_reason const &reason) {
             return "primitive_type";
         case ui::mesh_update_reason::color:
             return "color";
-        case ui::mesh_update_reason::alpha_exists:
-            return "alpha_exists";
         case ui::mesh_update_reason::use_mesh_color:
             return "use_mesh_color";
         case ui::mesh_update_reason::matrix:

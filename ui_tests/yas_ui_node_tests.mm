@@ -829,15 +829,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 1.0f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 2.0f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.x, 3.0f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.y, 4.0f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.5f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.6f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.7f);
-            XCTAssertEqual(rendered_vertex_0.color[3], 0.8f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 1.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 2.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 3.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 4.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.5f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.6f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.7f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.8f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -848,15 +848,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_1.position.x, 10.0f);
-            XCTAssertEqual(rendered_vertex_1.position.y, 20.0f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.x, 30.0f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.y, 40.0f);
-            XCTAssertEqual(rendered_vertex_1.color[0], 0.1f);
-            XCTAssertEqual(rendered_vertex_1.color[1], 0.2f);
-            XCTAssertEqual(rendered_vertex_1.color[2], 0.3f);
-            XCTAssertEqual(rendered_vertex_1.color[3], 0.4f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 10.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 20.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 30.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 40.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.1f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.2f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.3f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.4f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -867,15 +867,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_2 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_2.position.x, 100.0f);
-            XCTAssertEqual(rendered_vertex_2.position.y, 200.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.x, 300.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.y, 400.0f);
-            XCTAssertEqual(rendered_vertex_2.color[0], 0.01f);
-            XCTAssertEqual(rendered_vertex_2.color[1], 0.02f);
-            XCTAssertEqual(rendered_vertex_2.color[2], 0.03f);
-            XCTAssertEqual(rendered_vertex_2.color[3], 0.04f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 100.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 200.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 300.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 400.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.01f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.02f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.03f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.04f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -912,15 +912,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 1.5f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 2.5f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.x, 3.5f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.y, 4.5f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.51f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.61f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.71f);
-            XCTAssertEqual(rendered_vertex_0.color[3], 0.8f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 1.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 2.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 3.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 4.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.51f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.61f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.71f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.8f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -931,15 +931,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_1.position.x, 10.0f);
-            XCTAssertEqual(rendered_vertex_1.position.y, 20.0f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.x, 30.0f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.y, 40.0f);
-            XCTAssertEqual(rendered_vertex_1.color[0], 0.1f);
-            XCTAssertEqual(rendered_vertex_1.color[1], 0.2f);
-            XCTAssertEqual(rendered_vertex_1.color[2], 0.3f);
-            XCTAssertEqual(rendered_vertex_1.color[3], 0.4f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 10.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 20.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 30.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 40.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.1f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.2f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.3f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.4f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -950,15 +950,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_2 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_2.position.x, 100.0f);
-            XCTAssertEqual(rendered_vertex_2.position.y, 200.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.x, 300.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.y, 400.0f);
-            XCTAssertEqual(rendered_vertex_2.color[0], 0.01f);
-            XCTAssertEqual(rendered_vertex_2.color[1], 0.02f);
-            XCTAssertEqual(rendered_vertex_2.color[2], 0.03f);
-            XCTAssertEqual(rendered_vertex_2.color[3], 0.04f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 100.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 200.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 300.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 400.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.01f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.02f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.03f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.04f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -992,15 +992,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 1.5f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 2.5f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.x, 3.5f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.y, 4.5f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.51f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.61f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.71f);
-            XCTAssertEqual(rendered_vertex_0.color[3], 0.8f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 1.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 2.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 3.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 4.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.51f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.61f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.71f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.8f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -1011,15 +1011,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_1.position.x, 10.5f);
-            XCTAssertEqual(rendered_vertex_1.position.y, 20.5f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.x, 30.5f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.y, 40.5f);
-            XCTAssertEqual(rendered_vertex_1.color[0], 0.15f);
-            XCTAssertEqual(rendered_vertex_1.color[1], 0.25f);
-            XCTAssertEqual(rendered_vertex_1.color[2], 0.35f);
-            XCTAssertEqual(rendered_vertex_1.color[3], 0.45f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 10.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 20.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 30.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 40.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.15f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.25f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.35f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.45f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -1030,15 +1030,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_2 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_2.position.x, 100.0f);
-            XCTAssertEqual(rendered_vertex_2.position.y, 200.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.x, 300.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.y, 400.0f);
-            XCTAssertEqual(rendered_vertex_2.color[0], 0.01f);
-            XCTAssertEqual(rendered_vertex_2.color[1], 0.02f);
-            XCTAssertEqual(rendered_vertex_2.color[2], 0.03f);
-            XCTAssertEqual(rendered_vertex_2.color[3], 0.04f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 100.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 200.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 300.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 400.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.01f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.02f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.03f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.04f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -1072,15 +1072,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 1.5f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 2.5f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.x, 3.5f);
-            XCTAssertEqual(rendered_vertex_0.tex_coord.y, 4.5f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.51f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.61f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.71f);
-            XCTAssertEqual(rendered_vertex_0.color[3], 0.8f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 1.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 2.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 3.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 4.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.51f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.61f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.71f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.8f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -1091,15 +1091,15 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_1.position.x, 10.5f);
-            XCTAssertEqual(rendered_vertex_1.position.y, 20.5f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.x, 30.5f);
-            XCTAssertEqual(rendered_vertex_1.tex_coord.y, 40.5f);
-            XCTAssertEqual(rendered_vertex_1.color[0], 0.15f);
-            XCTAssertEqual(rendered_vertex_1.color[1], 0.25f);
-            XCTAssertEqual(rendered_vertex_1.color[2], 0.35f);
-            XCTAssertEqual(rendered_vertex_1.color[3], 0.45f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 10.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 20.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 30.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 40.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.15f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.25f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.35f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.45f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
@@ -1110,19 +1110,98 @@ struct test_render_encoder : ui::render_encodable {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
             XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
-            auto const &rendered_vertex_2 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_2.position.x, 111.0f);
-            XCTAssertEqual(rendered_vertex_2.position.y, 222.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.x, 333.0f);
-            XCTAssertEqual(rendered_vertex_2.tex_coord.y, 444.0f);
-            XCTAssertEqual(rendered_vertex_2.color[0], 0.05f);
-            XCTAssertEqual(rendered_vertex_2.color[1], 0.06f);
-            XCTAssertEqual(rendered_vertex_2.color[2], 0.07f);
-            XCTAssertEqual(rendered_vertex_2.color[3], 0.08f);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 111.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 222.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 333.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 444.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.05f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.06f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.07f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.08f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 1);
             auto const &rendered_indices = rendered_mesh_data->indices();
             XCTAssertEqual(rendered_indices[0], 4);
+        }
+
+        ui::renderable_node::cast(parent_batch_node)->clear_updates();
+    }
+
+    mesh_node1b->is_enabled()->set_value(false);
+
+    {
+        auto render_encoder = render();
+
+        XCTAssertEqual(render_encoder->meshes().size(), 2);
+
+        if (auto const &rendered_mesh = render_encoder->meshes().at(0)) {
+            auto const &rendered_mesh_data = rendered_mesh->mesh_data();
+            XCTAssertTrue(rendered_mesh->is_use_mesh_color());
+            XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 1.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 2.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 3.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 4.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.51f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.61f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.71f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.8f);
+
+            XCTAssertEqual(rendered_mesh_data->index_count(), 1);
+            auto const &rendered_indices = rendered_mesh_data->indices();
+            XCTAssertEqual(rendered_indices[0], 2);
+        }
+
+        if (auto const &rendered_mesh = render_encoder->meshes().at(1)) {
+            auto const &rendered_mesh_data = rendered_mesh->mesh_data();
+            XCTAssertTrue(rendered_mesh->is_use_mesh_color());
+            XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 111.0f);
+            XCTAssertEqual(rendered_vertex.position.y, 222.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 333.0f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 444.0f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.05f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.06f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.07f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.08f);
+
+            XCTAssertEqual(rendered_mesh_data->index_count(), 1);
+            auto const &rendered_indices = rendered_mesh_data->indices();
+            XCTAssertEqual(rendered_indices[0], 4);
+        }
+
+        ui::renderable_node::cast(parent_batch_node)->clear_updates();
+    }
+
+    mesh_node1a->is_enabled()->set_value(false);
+    mesh_node1b->is_enabled()->set_value(true);
+    mesh_node2->is_enabled()->set_value(false);
+
+    {
+        auto render_encoder = render();
+
+        XCTAssertEqual(render_encoder->meshes().size(), 1);
+
+        if (auto const &rendered_mesh = render_encoder->meshes().at(0)) {
+            auto const &rendered_mesh_data = rendered_mesh->mesh_data();
+            XCTAssertTrue(rendered_mesh->is_use_mesh_color());
+            XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
+            auto const &rendered_vertex = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex.position.x, 10.5f);
+            XCTAssertEqual(rendered_vertex.position.y, 20.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.x, 30.5f);
+            XCTAssertEqual(rendered_vertex.tex_coord.y, 40.5f);
+            XCTAssertEqual(rendered_vertex.color[0], 0.15f);
+            XCTAssertEqual(rendered_vertex.color[1], 0.25f);
+            XCTAssertEqual(rendered_vertex.color[2], 0.35f);
+            XCTAssertEqual(rendered_vertex.color[3], 0.45f);
+
+            XCTAssertEqual(rendered_mesh_data->index_count(), 1);
+            auto const &rendered_indices = rendered_mesh_data->indices();
+            XCTAssertEqual(rendered_indices[0], 3);
         }
 
         ui::renderable_node::cast(parent_batch_node)->clear_updates();
@@ -1206,19 +1285,27 @@ struct test_render_encoder : ui::render_encodable {
 
         if (auto const &rendered_mesh = render_encoder->meshes().at(0)) {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
-            XCTAssertTrue(rendered_mesh->is_use_mesh_color());
-            XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
+            XCTAssertEqual(rendered_mesh_data->vertex_count(), 2);
             auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 3.0f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 4.0f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.5f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.6f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.7f);
-            XCTAssertEqual(rendered_vertex_0.color[3], 1.0f);
+            XCTAssertEqual(rendered_vertex_0.position.x, 1.0f);
+            XCTAssertEqual(rendered_vertex_0.position.y, 2.0f);
+            XCTAssertEqual(rendered_vertex_0.color[0], 0.1f);
+            XCTAssertEqual(rendered_vertex_0.color[1], 0.2f);
+            XCTAssertEqual(rendered_vertex_0.color[2], 0.3f);
+            XCTAssertEqual(rendered_vertex_0.color[3], 0.0f);
 
-            XCTAssertEqual(rendered_mesh_data->index_count(), 1);
+            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[1];
+            XCTAssertEqual(rendered_vertex_1.position.x, 3.0f);
+            XCTAssertEqual(rendered_vertex_1.position.y, 4.0f);
+            XCTAssertEqual(rendered_vertex_1.color[0], 0.5f);
+            XCTAssertEqual(rendered_vertex_1.color[1], 0.6f);
+            XCTAssertEqual(rendered_vertex_1.color[2], 0.7f);
+            XCTAssertEqual(rendered_vertex_1.color[3], 1.0f);
+
+            XCTAssertEqual(rendered_mesh_data->index_count(), 2);
             auto const &rendered_indices = rendered_mesh_data->indices();
             XCTAssertEqual(rendered_indices[0], 0);
+            XCTAssertEqual(rendered_indices[1], 1);
         }
 
         ui::renderable_node::cast(batch_node)->clear_updates();
@@ -1233,22 +1320,11 @@ struct test_render_encoder : ui::render_encodable {
 
         if (auto const &rendered_mesh = render_encoder->meshes().at(0)) {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
-            XCTAssertTrue(rendered_mesh->is_use_mesh_color());
             XCTAssertEqual(rendered_mesh_data->vertex_count(), 2);
             auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 1.0f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 2.0f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.1f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.2f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.3f);
             XCTAssertEqual(rendered_vertex_0.color[3], 0.5f);
 
             auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[1];
-            XCTAssertEqual(rendered_vertex_1.position.x, 3.0f);
-            XCTAssertEqual(rendered_vertex_1.position.y, 4.0f);
-            XCTAssertEqual(rendered_vertex_1.color[0], 0.5f);
-            XCTAssertEqual(rendered_vertex_1.color[1], 0.6f);
-            XCTAssertEqual(rendered_vertex_1.color[2], 0.7f);
             XCTAssertEqual(rendered_vertex_1.color[3], 1.0f);
 
             XCTAssertEqual(rendered_mesh_data->index_count(), 2);
@@ -1269,19 +1345,14 @@ struct test_render_encoder : ui::render_encodable {
 
         if (auto const &rendered_mesh = render_encoder->meshes().at(0)) {
             auto const &rendered_mesh_data = rendered_mesh->mesh_data();
-            XCTAssertTrue(rendered_mesh->is_use_mesh_color());
-            XCTAssertEqual(rendered_mesh_data->vertex_count(), 1);
+            XCTAssertEqual(rendered_mesh_data->vertex_count(), 2);
             auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
-            XCTAssertEqual(rendered_vertex_0.position.x, 1.0f);
-            XCTAssertEqual(rendered_vertex_0.position.y, 2.0f);
-            XCTAssertEqual(rendered_vertex_0.color[0], 0.1f);
-            XCTAssertEqual(rendered_vertex_0.color[1], 0.2f);
-            XCTAssertEqual(rendered_vertex_0.color[2], 0.3f);
             XCTAssertEqual(rendered_vertex_0.color[3], 0.5f);
 
-            XCTAssertEqual(rendered_mesh_data->index_count(), 1);
-            auto const &rendered_indices = rendered_mesh_data->indices();
-            XCTAssertEqual(rendered_indices[0], 0);
+            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[1];
+            XCTAssertEqual(rendered_vertex_1.color[3], 0.0f);
+
+            XCTAssertEqual(rendered_mesh_data->index_count(), 2);
         }
 
         ui::renderable_node::cast(batch_node)->clear_updates();
@@ -1292,7 +1363,19 @@ struct test_render_encoder : ui::render_encodable {
     {
         auto render_encoder = render();
 
-        XCTAssertEqual(render_encoder->meshes().size(), 0);
+        XCTAssertEqual(render_encoder->meshes().size(), 1);
+
+        if (auto const &rendered_mesh = render_encoder->meshes().at(0)) {
+            auto const &rendered_mesh_data = rendered_mesh->mesh_data();
+            XCTAssertEqual(rendered_mesh_data->vertex_count(), 2);
+            auto const &rendered_vertex_0 = rendered_mesh_data->vertices()[0];
+            XCTAssertEqual(rendered_vertex_0.color[3], 0.0f);
+
+            auto const &rendered_vertex_1 = rendered_mesh_data->vertices()[1];
+            XCTAssertEqual(rendered_vertex_1.color[3], 0.0f);
+
+            XCTAssertEqual(rendered_mesh_data->index_count(), 2);
+        }
 
         ui::renderable_node::cast(batch_node)->clear_updates();
     }
