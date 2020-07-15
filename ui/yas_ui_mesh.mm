@@ -135,6 +135,12 @@ bool ui::mesh::pre_render() {
 }
 
 void ui::mesh::batch_render(batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) {
+    auto const next_vertex_idx = mesh_info.vertex_idx + this->_mesh_data->vertex_count();
+    auto const next_index_idx = mesh_info.index_idx + this->_mesh_data->index_count();
+
+    assert(next_vertex_idx <= mesh_info.vertex_count);
+    assert(next_index_idx <= mesh_info.index_count);
+
     if (this->_needs_write(building_type)) {
         mesh_info.mesh_data->write([&src_mesh_data = this->_mesh_data, &matrix = this->_matrix, &color = this->_color,
                                     is_use_mesh_color = this->_use_mesh_color,
@@ -166,8 +172,8 @@ void ui::mesh::batch_render(batch_render_mesh_info &mesh_info, ui::batch_buildin
         });
     }
 
-    mesh_info.vertex_idx += this->_mesh_data->vertex_count();
-    mesh_info.index_idx += this->_mesh_data->index_count();
+    mesh_info.vertex_idx = next_vertex_idx;
+    mesh_info.index_idx = next_index_idx;
 }
 
 bool ui::mesh::is_rendering_color_exists() {
