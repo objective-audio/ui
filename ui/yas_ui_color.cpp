@@ -6,6 +6,18 @@
 
 using namespace yas;
 
+namespace yas::ui {
+static float limit_value(float const value) {
+    if (value < 0.0f) {
+        return 0.0f;
+    } else if (value > 1.0f) {
+        return 1.0f;
+    } else {
+        return value;
+    }
+}
+}  // namespace yas::ui
+
 bool ui::color::operator==(ui::color const &rhs) const {
     return this->red == rhs.red && this->green == rhs.green && this->blue == rhs.blue;
 }
@@ -110,4 +122,33 @@ ui::color const &yas::ui::purple_color() {
 ui::color const &yas::ui::brown_color() {
     static ui::color const _color{.red = 0.6f, .green = 0.4f, .blue = 0.2f};
     return _color;
+}
+
+ui::color yas::ui::hsb_color(float const hue, float const saturation, float const brightness) {
+    float const hue_times_six = ui::limit_value(hue) * 6.0f;
+    float const hue_fraction = hue_times_six - std::floor(hue_times_six);
+    int64_t const int_hue = (int64_t)hue_times_six % 6;
+    float const limited_saturation = ui::limit_value(saturation);
+
+    float const max = ui::limit_value(brightness);
+    float const min = max * (1.0f - limited_saturation);
+    float const fraction = (int_hue % 2) ? (1.0f - hue_fraction) : hue_fraction;
+    float const interpolation = min + (max - min) * fraction;
+
+    switch (int_hue) {
+        case 0:
+            return ui::color{.red = max, .green = interpolation, .blue = min};
+        case 1:
+            return ui::color{.red = interpolation, .green = max, .blue = min};
+        case 2:
+            return ui::color{.red = min, .green = max, .blue = interpolation};
+        case 3:
+            return ui::color{.red = min, .green = interpolation, .blue = max};
+        case 4:
+            return ui::color{.red = interpolation, .green = min, .blue = max};
+        case 5:
+            return ui::color{.red = max, .green = min, .blue = interpolation};
+        default:
+            throw std::runtime_error("unreachable");
+    }
 }

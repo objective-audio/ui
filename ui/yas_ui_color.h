@@ -42,6 +42,8 @@ ui::color const &magenta_color();
 ui::color const &orange_color();
 ui::color const &purple_color();
 ui::color const &brown_color();
+
+ui::color hsb_color(float const hue, float const saturation, float const brightness);
 }  // namespace yas::ui
 
 namespace yas {
