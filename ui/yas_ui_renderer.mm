@@ -197,7 +197,7 @@ void ui::renderer::view_size_will_change(yas_objc_view *const view, CGSize const
         update_safe_area_result = this->_update_safe_area_insets(metalView.uiSafeAreaInsets);
     }
 
-    if (to_bool(update_view_size_result)) {
+    if (to_bool(update_view_size_result) || to_bool(update_safe_area_result)) {
         this->_update_layout_guide_rect();
         this->_update_safe_area_layout_guide_rect();
 
