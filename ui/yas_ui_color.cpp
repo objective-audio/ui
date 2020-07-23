@@ -160,9 +160,10 @@ ui::color yas::ui::hsl_color(float const hue, float const saturation, float cons
     float const limited_saturation = ui::limit_value(saturation);
     float const limited_lightness = ui::limit_value(lightness);
 
-    float const lightness_multiplier = limited_lightness >= 0.5f ? 1.0f - limited_lightness : limited_lightness;
-    float const max = 2.55f * (limited_lightness + lightness_multiplier * limited_saturation);
-    float const min = 2.55f * (limited_lightness - lightness_multiplier * limited_saturation);
+    float const abs = std::fabs(2.0f * limited_lightness - 1.0f);
+    float const diff = limited_saturation * (1.0f - abs) * 0.5f;
+    float const max = limited_lightness + diff;
+    float const min = limited_lightness - diff;
 
     float const fraction = (int_hue % 2) ? (1.0f - hue_fraction) : hue_fraction;
     float const interpolation = min + (max - min) * fraction;
