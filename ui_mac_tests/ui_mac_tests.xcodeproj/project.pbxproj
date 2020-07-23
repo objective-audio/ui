@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B608AB4A24B4B75400B5A18F /* yas_ui_background_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B608AB4924B4B75400B5A18F /* yas_ui_background_tests.mm */; };
+		B629886924C9208F00719420 /* yas_ui_hsb_color_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B629886824C9208F00719420 /* yas_ui_hsb_color_tests.mm */; };
 		B6DE354821E634A700E49BCB /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE354721E634A700E49BCB /* chaining.framework */; };
 		B6DE354A21E634A700E49BCB /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE354921E634A700E49BCB /* cpp_utils.framework */; };
 		B6DE354C21E634A700E49BCB /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE354B21E634A700E49BCB /* objc_utils.framework */; };
@@ -75,6 +76,7 @@
 
 /* Begin PBXFileReference section */
 		B608AB4924B4B75400B5A18F /* yas_ui_background_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background_tests.mm; sourceTree = "<group>"; };
+		B629886824C9208F00719420 /* yas_ui_hsb_color_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_hsb_color_tests.mm; sourceTree = "<group>"; };
 		B6DE34E921E633CF00E49BCB /* ui_mac_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ui_mac_tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DE34EE21E633CF00E49BCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6DE34F321E6347600E49BCB /* yas_ui_effect_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_effect_tests.mm; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 				B6DE351321E6347600E49BCB /* yas_ui_layout_guide_tests.mm */,
 				B6DE351421E6347600E49BCB /* yas_ui_collection_layout_tests.mm */,
 				B6DE351521E6347600E49BCB /* yas_ui_color_tests.mm */,
+				B629886824C9208F00719420 /* yas_ui_hsb_color_tests.mm */,
 				B6DE351621E6347600E49BCB /* yas_ui_metal_texture_tests.mm */,
 				B6DE351721E6347600E49BCB /* yas_ui_renderer_tests.mm */,
 				B6DE351821E6347600E49BCB /* yas_ui_layout_actions_tests.mm */,
@@ -433,6 +436,7 @@
 				B608AB4A24B4B75400B5A18F /* yas_ui_background_tests.mm in Sources */,
 				B6F4B95C21E6D3C20038DC6D /* yas_ui_metal_protocol_tests.mm in Sources */,
 				B6F4B95821E6D3C10038DC6D /* yas_ui_action_tests.mm in Sources */,
+				B629886924C9208F00719420 /* yas_ui_hsb_color_tests.mm in Sources */,
 				B6F4B96721E6D3C20038DC6D /* yas_ui_color_tests.mm in Sources */,
 				B6F4B96321E6D3C20038DC6D /* yas_ui_matrix_tests.mm in Sources */,
 				B6F4B96621E6D3C20038DC6D /* yas_ui_collection_layout_tests.mm in Sources */,
