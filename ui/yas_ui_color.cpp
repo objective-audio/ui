@@ -152,3 +152,36 @@ ui::color yas::ui::hsb_color(float const hue, float const saturation, float cons
             throw std::runtime_error("unreachable");
     }
 }
+
+ui::color yas::ui::hsl_color(float const hue, float const saturation, float const lightness) {
+    float const hue_times_six = ui::limit_value(hue) * 6.0f;
+    float const hue_fraction = hue_times_six - std::floor(hue_times_six);
+    int64_t const int_hue = (int64_t)hue_times_six % 6;
+    float const limited_saturation = ui::limit_value(saturation);
+    float const limited_lightness = ui::limit_value(lightness);
+
+    float const abs = std::fabs(2.0f * limited_lightness - 1.0f);
+    float const diff = limited_saturation * (1.0f - abs) * 0.5f;
+    float const max = limited_lightness + diff;
+    float const min = limited_lightness - diff;
+
+    float const fraction = (int_hue % 2) ? (1.0f - hue_fraction) : hue_fraction;
+    float const interpolation = min + (max - min) * fraction;
+
+    switch (int_hue) {
+        case 0:
+            return ui::color{.red = max, .green = interpolation, .blue = min};
+        case 1:
+            return ui::color{.red = interpolation, .green = max, .blue = min};
+        case 2:
+            return ui::color{.red = min, .green = max, .blue = interpolation};
+        case 3:
+            return ui::color{.red = min, .green = interpolation, .blue = max};
+        case 4:
+            return ui::color{.red = interpolation, .green = min, .blue = max};
+        case 5:
+            return ui::color{.red = max, .green = min, .blue = interpolation};
+        default:
+            throw std::runtime_error("unreachable");
+    }
+}
