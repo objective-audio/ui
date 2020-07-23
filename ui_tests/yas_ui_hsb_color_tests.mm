@@ -13,7 +13,7 @@ using namespace yas;
 
 @implementation yas_ui_hsb_color_tests
 
-- (void)test_hsb_white_color {
+- (void)test_white_color {
     {
         auto const color = ui::hsb_color(0.0f, 0.0f, 1.0f);
         XCTAssertEqual(color.red, 1.0f);
@@ -36,7 +36,7 @@ using namespace yas;
     }
 }
 
-- (void)test_hsb_black_color {
+- (void)test_black_color {
     {
         auto const color = ui::hsb_color(0.0f, 0.0f, 0.0f);
         XCTAssertEqual(color.red, 0.0f);
@@ -82,7 +82,7 @@ using namespace yas;
     }
 }
 
-- (void)test_hsb_red_color {
+- (void)test_red_color {
     {
         auto const color = ui::hsb_color(0.0f, 1.0f, 1.0f);
         XCTAssertEqual(color.red, 1.0f);
@@ -98,77 +98,77 @@ using namespace yas;
     }
 }
 
-- (void)test_hsb_red_yellow_color {
+- (void)test_red_yellow_color {
     auto const color = ui::hsb_color(0.25f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 1.0f);
     XCTAssertEqual(color.green, 0.25f);
     XCTAssertEqual(color.blue, 0.0f);
 }
 
-- (void)test_hsb_yellow_color {
+- (void)test_yellow_color {
     auto const color = ui::hsb_color(1.0f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 1.0f);
     XCTAssertEqual(color.green, 1.0f);
     XCTAssertEqual(color.blue, 0.0f);
 }
 
-- (void)test_hsb_yellow_green_color {
+- (void)test_yellow_green_color {
     auto const color = ui::hsb_color(1.25f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.75f);
     XCTAssertEqual(color.green, 1.0f);
     XCTAssertEqual(color.blue, 0.0f);
 }
 
-- (void)test_hsb_green_color {
+- (void)test_green_color {
     auto const color = ui::hsb_color(2.0f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.0f);
     XCTAssertEqual(color.green, 1.0f);
     XCTAssertEqual(color.blue, 0.0f);
 }
 
-- (void)test_hsb_green_cyan_color {
+- (void)test_green_cyan_color {
     auto const color = ui::hsb_color(2.25f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.0f);
     XCTAssertEqual(color.green, 1.0f);
     XCTAssertEqual(color.blue, 0.25f);
 }
 
-- (void)test_hsb_cyan_color {
+- (void)test_cyan_color {
     auto const color = ui::hsb_color(3.0f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.0f);
     XCTAssertEqual(color.green, 1.0f);
     XCTAssertEqual(color.blue, 1.0f);
 }
 
-- (void)test_hsb_cyan_blue_color {
+- (void)test_cyan_blue_color {
     auto const color = ui::hsb_color(3.25f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.0f);
     XCTAssertEqual(color.green, 0.75f);
     XCTAssertEqual(color.blue, 1.0f);
 }
 
-- (void)test_hsb_blue_color {
+- (void)test_blue_color {
     auto const color = ui::hsb_color(4.0f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.0f);
     XCTAssertEqual(color.green, 0.0f);
     XCTAssertEqual(color.blue, 1.0f);
 }
 
-- (void)test_hsb_blue_magenta_color {
+- (void)test_blue_magenta_color {
     auto const color = ui::hsb_color(4.25f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 0.25f);
     XCTAssertEqual(color.green, 0.0f);
     XCTAssertEqual(color.blue, 1.0f);
 }
 
-- (void)test_hsb_magenta_color {
+- (void)test_magenta_color {
     auto const color = ui::hsb_color(5.0f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 1.0f);
     XCTAssertEqual(color.green, 0.0f);
     XCTAssertEqual(color.blue, 1.0f);
 }
 
-- (void)test_hsb_magenta_red_color {
+- (void)test_magenta_red_color {
     auto const color = ui::hsb_color(5.25f / 6.0f, 1.0f, 1.0f);
     XCTAssertEqual(color.red, 1.0f);
     XCTAssertEqual(color.green, 0.0f);
