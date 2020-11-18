@@ -5,8 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
-
-#include "yas_ui_types.h"
+#include <ui/yas_ui_types.h>
 
 namespace yas {
 ui::uint_point to_uint_point(MTLOrigin const);

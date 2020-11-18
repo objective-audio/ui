@@ -6,8 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
-
-#include "yas_ui_ptr.h"
+#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 enum class effect_update_reason : std::size_t {

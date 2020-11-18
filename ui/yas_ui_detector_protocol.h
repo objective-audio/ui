@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_ui_ptr.h"
+#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 struct updatable_detector {

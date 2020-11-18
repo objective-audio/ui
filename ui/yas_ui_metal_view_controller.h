@@ -5,8 +5,8 @@
 #pragma once
 
 #include <cpp_utils/yas_objc_ptr.h>
-#include "yas_ui_metal_view.h"
-#include "yas_ui_renderer_protocol.h"
+#include <ui/yas_ui_metal_view.h>
+#include <ui/yas_ui_renderer_protocol.h>
 #if TARGET_OS_IPHONE
 #include <UIKit/UIKit.h>
 #elif TARGET_OS_MAC

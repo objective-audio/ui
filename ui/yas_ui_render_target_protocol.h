@@ -7,11 +7,10 @@
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
-
-#include "yas_ui_effect.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_render_encoder_protocol.h"
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_render_encoder_protocol.h>
 
 namespace yas::ui {
 enum class render_target_update_reason : std::size_t {

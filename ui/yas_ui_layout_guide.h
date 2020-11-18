@@ -5,10 +5,9 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-
-#include "yas_ui_action.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_types.h"
+#include <ui/yas_ui_action.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 struct layout_guide final : chaining::receiver<float>, action_target {

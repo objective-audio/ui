@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "yas_ui_ptr.h"
-#include "yas_ui_texture.h"
-#include "yas_ui_types.h"
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_texture.h>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 class word_info;

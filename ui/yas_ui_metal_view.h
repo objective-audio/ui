@@ -6,7 +6,7 @@
 
 #include <MetalKit/MetalKit.h>
 #include <objc_utils/yas_objc_macros.h>
-#include "yas_ui_types.h"
+#include <ui/yas_ui_types.h>
 
 #if TARGET_OS_IPHONE
 #elif TARGET_OS_MAC

@@ -5,14 +5,13 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-
-#include "yas_ui_effect.h"
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_metal_protocol.h"
-#include "yas_ui_metal_system.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_render_target_protocol.h"
-#include "yas_ui_types.h"
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_metal_protocol.h>
+#include <ui/yas_ui_metal_system.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_render_target_protocol.h>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 struct render_target : metal_object, renderable_render_target {

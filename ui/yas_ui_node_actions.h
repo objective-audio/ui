@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "yas_ui_action.h"
-#include "yas_ui_angle.h"
-#include "yas_ui_color.h"
-#include "yas_ui_node.h"
+#include <ui/yas_ui_action.h>
+#include <ui/yas_ui_angle.h>
+#include <ui/yas_ui_color.h>
+#include <ui/yas_ui_node.h>
 
 namespace yas::ui {
 namespace translate_action {

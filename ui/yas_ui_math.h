@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_ui_types.h"
+#include <ui/yas_ui_types.h>
 
 namespace yas {
 float roundf(float const value, double const scale);

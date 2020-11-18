@@ -5,12 +5,11 @@
 #pragma once
 
 #include <cpp_utils/yas_flagset.h>
-
-#include "yas_ui_effect_protocol.h"
-#include "yas_ui_mesh_data_protocol.h"
-#include "yas_ui_mesh_protocol.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_render_target_protocol.h"
+#include <ui/yas_ui_effect_protocol.h>
+#include <ui/yas_ui_mesh_data_protocol.h>
+#include <ui/yas_ui_mesh_protocol.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_render_target_protocol.h>
 
 namespace yas::ui {
 class render_info;

@@ -5,8 +5,7 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-
-#include "yas_ui_background_protocol.h"
+#include <ui/yas_ui_background_protocol.h>
 
 namespace yas::ui {
 class color;

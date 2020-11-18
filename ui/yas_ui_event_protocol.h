@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <string>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_types.h>
 
-#include "yas_ui_ptr.h"
-#include "yas_ui_types.h"
+#include <string>
 
 namespace yas::ui {
 enum class event_phase {

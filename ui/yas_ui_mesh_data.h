@@ -5,13 +5,12 @@
 #pragma once
 
 #include <cpp_utils/yas_objc_ptr.h>
+#include <ui/yas_ui_mesh_data_protocol.h>
+#include <ui/yas_ui_metal_protocol.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_types.h>
 
 #include <vector>
-
-#include "yas_ui_mesh_data_protocol.h"
-#include "yas_ui_metal_protocol.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_types.h"
 
 namespace yas::ui {
 struct mesh_data : renderable_mesh_data, metal_object {

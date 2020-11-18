@@ -7,9 +7,9 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_shared_types.h>
 #include <ostream>
 #include <string>
-#include "yas_ui_shared_types.h"
 
 namespace yas::ui {
 enum class system_type {

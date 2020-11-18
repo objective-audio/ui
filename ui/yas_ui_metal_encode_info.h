@@ -5,13 +5,12 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_ptr.h>
 
 #include <unordered_map>
 #include <vector>
-
-#include "yas_ui_effect.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 class texture;
