@@ -6,11 +6,10 @@
 
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_flagset.h>
-
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_rect_plane.h"
-#include "yas_ui_types.h"
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 class touch_event;

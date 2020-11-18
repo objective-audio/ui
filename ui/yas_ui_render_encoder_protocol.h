@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "yas_ui_effect.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_metal_encode_info.h"
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_metal_encode_info.h>
 
 namespace yas::ui {
 struct render_encodable {

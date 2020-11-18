@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "yas_ui_batch_protocol.h"
-#include "yas_ui_metal_protocol.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_render_encoder_protocol.h"
+#include <ui/yas_ui_batch_protocol.h>
+#include <ui/yas_ui_metal_protocol.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_render_encoder_protocol.h>
 
 namespace yas::ui {
 struct batch final : renderable_batch, render_encodable, metal_object {

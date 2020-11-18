@@ -5,10 +5,9 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
+#include <ui/yas_ui_ptr.h>
 
 #include <ostream>
-
-#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 class metal_system;

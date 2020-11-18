@@ -5,9 +5,8 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-
-#include "yas_ui_event_protocol.h"
-#include "yas_ui_ptr.h"
+#include <ui/yas_ui_event_protocol.h>
+#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 class event_impl_base;

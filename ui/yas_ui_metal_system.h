@@ -5,9 +5,8 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-
-#include "yas_ui_metal_system_protocol.h"
-#include "yas_ui_ptr.h"
+#include <ui/yas_ui_metal_system_protocol.h>
+#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 struct metal_system final : renderable_metal_system, makable_metal_system, testable_metal_system {

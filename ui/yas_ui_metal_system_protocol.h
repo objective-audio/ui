@@ -8,10 +8,9 @@
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
 #include <cpp_utils/yas_objc_ptr.h>
 #include <objc_utils/yas_objc_macros.h>
-
-#include "yas_ui_mesh.h"
-#include "yas_ui_metal_encode_info.h"
-#include "yas_ui_render_encoder_protocol.h"
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_metal_encode_info.h>
+#include <ui/yas_ui_render_encoder_protocol.h>
 
 namespace yas::ui {
 struct renderable_metal_system {

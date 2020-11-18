@@ -5,8 +5,7 @@
 #pragma once
 
 #include <simd/simd.h>
-
-#include "yas_ui_ptr.h"
+#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 struct renderable_collider {

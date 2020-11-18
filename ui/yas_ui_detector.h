@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <deque>
+#include <ui/yas_ui_collider.h>
+#include <ui/yas_ui_detector_protocol.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_types.h>
 
-#include "yas_ui_collider.h"
-#include "yas_ui_detector_protocol.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_types.h"
+#include <deque>
 
 namespace yas::ui {
 struct detector final : updatable_detector {

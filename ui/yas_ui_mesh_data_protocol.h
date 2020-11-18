@@ -6,10 +6,9 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_flagset.h>
+#include <ui/yas_ui_ptr.h>
 
 #include <ostream>
-
-#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 enum class mesh_data_update_reason : std::size_t {

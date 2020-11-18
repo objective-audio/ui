@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "yas_ui_font_atlas.h"
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_layout_types.h"
-#include "yas_ui_ptr.h"
-#include "yas_ui_rect_plane.h"
+#include <ui/yas_ui_font_atlas.h>
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_layout_types.h>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_rect_plane.h>
 
 namespace yas::ui {
 enum class layout_alignment;

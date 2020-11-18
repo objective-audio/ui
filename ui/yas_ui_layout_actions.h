@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "yas_ui_action.h"
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_ptr.h"
+#include <ui/yas_ui_action.h>
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 class renderer;

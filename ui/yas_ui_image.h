@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <functional>
+#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_texture_protocol.h>
+#include <ui/yas_ui_types.h>
 
-#include "yas_ui_ptr.h"
-#include "yas_ui_texture_protocol.h"
-#include "yas_ui_types.h"
+#include <functional>
 
 namespace yas::ui {
 struct image final {

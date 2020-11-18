@@ -4,12 +4,12 @@
 
 #pragma once
 
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_ptr.h>
+
 #include <ostream>
 #include <string>
 #include <vector>
-
-#include "yas_ui_mesh.h"
-#include "yas_ui_ptr.h"
 
 namespace yas::ui {
 enum class batch_building_type {

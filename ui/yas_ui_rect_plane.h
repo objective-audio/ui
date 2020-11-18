@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <vector>
+#include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_node.h>
+#include <ui/yas_ui_texture_element.h>
+#include <ui/yas_ui_types.h>
 
-#include "yas_ui_mesh_data.h"
-#include "yas_ui_node.h"
-#include "yas_ui_texture_element.h"
-#include "yas_ui_types.h"
+#include <vector>
 
 namespace yas::ui {
 class color;
