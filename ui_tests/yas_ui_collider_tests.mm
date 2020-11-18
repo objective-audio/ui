@@ -88,7 +88,7 @@ using namespace yas;
 
     XCTAssertTrue(collider->hit_test({.v = 0.0f}));
     XCTAssertTrue(collider->hit_test({.v = -0.5f}));
-    XCTAssertTrue(collider->hit_test({.v = 0.5f}));
+    XCTAssertTrue(collider->hit_test({.v = 0.49f}));
 
     XCTAssertFalse(collider->hit_test({-0.51f, 0.0f}));
     XCTAssertFalse(collider->hit_test({0.51f, 0.0f}));
@@ -100,10 +100,10 @@ using namespace yas;
     auto collider = ui::collider::make_shared(ui::shape::make_shared({.center = 0.0f, .radius = 0.5f}));
 
     XCTAssertTrue(collider->hit_test({.v = 0.0f}));
-    XCTAssertTrue(collider->hit_test({-0.5f, 0.0f}));
-    XCTAssertTrue(collider->hit_test({0.5f, 0.0f}));
-    XCTAssertTrue(collider->hit_test({0.0f, -0.5f}));
-    XCTAssertTrue(collider->hit_test({0.0f, 0.5f}));
+    XCTAssertTrue(collider->hit_test({-0.49f, 0.0f}));
+    XCTAssertTrue(collider->hit_test({0.49f, 0.0f}));
+    XCTAssertTrue(collider->hit_test({0.0f, -0.49f}));
+    XCTAssertTrue(collider->hit_test({0.0f, 0.49f}));
 
     XCTAssertFalse(collider->hit_test({.v = -0.4f}));
     XCTAssertFalse(collider->hit_test({.v = 0.4f}));
