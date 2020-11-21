@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/yas_ui_metal_types.h>
+#import <ui/ui.h>
 
 using namespace yas;
 

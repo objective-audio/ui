@@ -3,10 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/yas_ui_angle.h>
-#import <ui/yas_ui_mesh.h>
-#import <ui/yas_ui_node.h>
-#import <ui/yas_ui_node_actions.h>
+#import <ui/ui.h>
 #import <unordered_set>
 
 using namespace std::chrono_literals;

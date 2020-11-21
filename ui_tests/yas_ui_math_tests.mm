@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/yas_ui_math.h>
+#import <ui/ui.h>
 
 using namespace yas;
 
