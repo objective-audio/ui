@@ -5,8 +5,7 @@
 #import <AppKit/AppKit.h>
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_each_index.h>
-#import <ui/yas_ui_image.h>
-#import <ui/yas_ui_types.h>
+#import <ui/ui.h>
 
 using namespace yas;
 

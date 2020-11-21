@@ -4,12 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_each_index.h>
-#import <ui/yas_ui_color.h>
-#import <ui/yas_ui_mesh.h>
-#import <ui/yas_ui_mesh_data.h>
-#import <ui/yas_ui_node.h>
-#import <ui/yas_ui_rect_plane.h>
-#import <ui/yas_ui_texture.h>
+#import <ui/ui.h>
 
 using namespace yas;
 

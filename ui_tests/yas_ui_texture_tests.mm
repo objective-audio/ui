@@ -5,10 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_objc_ptr.h>
 #import <objc_utils/yas_objc_macros.h>
-#import <ui/yas_ui_image.h>
-#import <ui/yas_ui_metal_texture.h>
-#import <ui/yas_ui_texture.h>
-#import <ui/yas_ui_texture_element.h>
+#import <ui/ui.h>
 #import <iostream>
 #import <sstream>
 

@@ -8,7 +8,7 @@
 #import <cpp_utils/yas_cf_utils.h>
 #import <cpp_utils/yas_each_index.h>
 #import <cpp_utils/yas_objc_ptr.h>
-#import <ui/yas_ui_font_atlas.h>
+#import <ui/ui.h>
 #import <iostream>
 
 using namespace yas;

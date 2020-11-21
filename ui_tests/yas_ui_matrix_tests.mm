@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_each_index.h>
-#import <ui/yas_ui_matrix.h>
+#import <ui/ui.h>
 #import <iostream>
 
 using namespace simd;

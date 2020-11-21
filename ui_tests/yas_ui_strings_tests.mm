@@ -3,11 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/yas_ui_collection_layout.h>
-#import <ui/yas_ui_font_atlas.h>
-#import <ui/yas_ui_layout_guide.h>
-#import <ui/yas_ui_rect_plane.h>
-#import <ui/yas_ui_strings.h>
+#import <ui/ui.h>
 #import <iostream>
 
 using namespace yas;

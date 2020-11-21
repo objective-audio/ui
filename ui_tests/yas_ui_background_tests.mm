@@ -3,8 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/yas_ui_background.h>
-#import <ui/yas_ui_color.h>
+#import <ui/ui.h>
 
 using namespace yas;
 

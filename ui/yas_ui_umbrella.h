@@ -18,10 +18,12 @@
 #include <ui/yas_ui_font_atlas.h>
 #include <ui/yas_ui_image.h>
 #include <ui/yas_ui_layout_actions.h>
+#include <ui/yas_ui_math.h>
 #include <ui/yas_ui_matrix.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_metal_protocol.h>
+#include <ui/yas_ui_metal_render_encoder.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_texture.h>
 #include <ui/yas_ui_metal_types.h>
@@ -29,6 +31,7 @@
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_node_actions.h>
 #include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_render_info.h>
 #include <ui/yas_ui_render_target.h>
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_shared_types.h>

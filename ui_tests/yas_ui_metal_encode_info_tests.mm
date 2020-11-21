@@ -4,8 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_objc_ptr.h>
-#import <ui/yas_ui_metal_encode_info.h>
-#import <ui/yas_ui_umbrella.h>
+#import <ui/ui.h>
 #import <iostream>
 #import "yas_test_metal_view_controller.h"
 

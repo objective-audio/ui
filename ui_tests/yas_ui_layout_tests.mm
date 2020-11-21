@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <chaining/yas_chaining_utils.h>
-#import <ui/yas_ui_layout_guide.h>
+#import <ui/ui.h>
 
 using namespace yas;
 

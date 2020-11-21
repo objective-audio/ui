@@ -5,13 +5,7 @@
 #import <Metal/Metal.h>
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_objc_ptr.h>
-#import <ui/yas_ui_batch.h>
-#import <ui/yas_ui_batch_protocol.h>
-#import <ui/yas_ui_mesh.h>
-#import <ui/yas_ui_mesh_data.h>
-#import <ui/yas_ui_metal_system.h>
-#import <ui/yas_ui_node.h>
-#import <ui/yas_ui_texture.h>
+#import <ui/ui.h>
 #import <iostream>
 #import <sstream>
 
