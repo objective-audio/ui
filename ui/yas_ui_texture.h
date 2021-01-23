@@ -77,8 +77,7 @@ struct texture : metal_object {
     std::vector<texture_element_ptr> _texture_elements;
     chaining::any_observer_ptr _scale_observer = nullptr;
     chaining::any_observer_ptr _properties_observer = nullptr;
-    chaining::notifier_ptr<chain_pair_t> _notify_sender = chaining::notifier<chain_pair_t>::make_shared();
-    chaining::perform_receiver_ptr<method> _notify_receiver = nullptr;
+    chaining::notifier_ptr<chain_pair_t> _notifier = chaining::notifier<chain_pair_t>::make_shared();
 
     explicit texture(args &&);
 

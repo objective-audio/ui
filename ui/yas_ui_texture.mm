@@ -95,7 +95,7 @@ ui::metal_texture_ptr const &ui::texture::metal_texture() const {
 }
 
 chaining::chain_unsync_t<ui::texture::chain_pair_t> ui::texture::chain() const {
-    return this->_notify_sender->chain();
+    return this->_notifier->chain();
 }
 
 chaining::chain_relayed_unsync_t<ui::texture_ptr, ui::texture::chain_pair_t> ui::texture::chain(
@@ -117,12 +117,6 @@ void ui::texture::_prepare(texture_ptr const &texture) {
     auto weak_texture = to_weak(texture);
     this->_weak_texture = weak_texture;
 
-    this->_notify_receiver = chaining::perform_receiver<method>::make_shared([weak_texture](method const &method) {
-        if (auto texture = weak_texture.lock()) {
-            texture->_notify_sender->notify(std::make_pair(method, texture));
-        }
-    });
-
     auto point_size_chain = this->_point_size->chain().to_null();
     auto scale_factor_chain = this->_scale_factor->chain().to_null();
 
@@ -133,9 +127,8 @@ void ui::texture::_prepare(texture_ptr const &texture) {
                 auto const texture = weak_texture.lock();
                 texture->_metal_texture = nullptr;
                 texture->_draw_actual_pos = {texture->_draw_actual_padding, texture->_draw_actual_padding};
+                texture->_notifier->notify(std::make_pair(method::size_updated, texture));
             })
-            .to_value(method::size_updated)
-            .send_to(this->_notify_receiver)
             .end();
 }
 
@@ -154,7 +147,9 @@ ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system
 
         this->_add_images_to_metal_texture();
 
-        this->_notify_receiver->receive_value(method::metal_texture_changed);
+        if (auto texture = this->_weak_texture.lock()) {
+            texture->_notifier->notify(std::make_pair(method::metal_texture_changed, texture));
+        }
     }
 
     return ui::setup_metal_result{nullptr};
