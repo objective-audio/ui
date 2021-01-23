@@ -41,8 +41,7 @@ ui::node::node()
       _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
       _enabled(chaining::value::holder<bool>::make_shared(true)),
-      _dispatch_sender(chaining::notifier<chain_pair_t>::make_shared()),
-      _notify_sender(chaining::notifier<ui::node::method>::make_shared()) {
+      _dispatch_sender(chaining::notifier<chain_pair_t>::make_shared()) {
 }
 
 ui::node::~node() = default;
@@ -137,23 +136,24 @@ chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::metho
 
 chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui::node::method> const &methods) const {
     for (auto const &method : methods) {
-        if (this->_dispatch_observers.count(method) > 0) {
+        if (this->_dispatch_cancellers.count(method) > 0) {
             continue;
         }
 
-        chaining::any_observer_ptr observer = nullptr;
+        observing::canceller_ptr canceller = nullptr;
 
         switch (method) {
             case ui::node::method::added_to_super:
             case ui::node::method::removed_from_super:
-                observer = this->_notify_sender->chain()
-                               .guard([method](node::method const &value) { return method == value; })
-                               .send_to(this->_dispatch_receiver)
-                               .end();
+                canceller = this->_notifier->observe([this, method](node::method const &value) {
+                    if (method == value) {
+                        this->_dispatch_receiver->receive_value(method);
+                    }
+                });
                 break;
         }
 
-        this->_dispatch_observers.emplace(method, std::move(observer));
+        this->_dispatch_cancellers.emplace(method, std::move(canceller));
     }
 
     return this->_dispatch_sender->chain().guard(
@@ -551,7 +551,7 @@ void ui::node::_add_sub_node(ui::node_ptr &sub_node, ui::node_ptr const &node) {
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
-    sub_node->_notify_sender->notify(method::added_to_super);
+    sub_node->_notifier->notify(method::added_to_super);
 
     this->_set_updated(ui::node_update_reason::children);
 }
@@ -563,7 +563,7 @@ void ui::node::_remove_sub_node(ui::node_ptr const &sub_node) {
 
     erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node == sub_node; });
 
-    sub_node->_notify_sender->notify(method::removed_from_super);
+    sub_node->_notifier->notify(method::removed_from_super);
 
     this->_set_updated(ui::node_update_reason::children);
 }
