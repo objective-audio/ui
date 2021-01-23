@@ -112,7 +112,9 @@ ui::size ui::font_atlas::advance(std::string const &word) const {
 }
 
 void ui::font_atlas::set_texture(ui::texture_ptr const &texture) {
-    this->_texture_setter->notify(texture);
+    if (this->texture() != texture) {
+        this->_texture->set_value(texture);
+    }
 }
 
 chaining::chain_sync_t<ui::texture_ptr> ui::font_atlas::chain_texture() const {
@@ -139,16 +141,6 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
                 atlas->_texture_updated_sender->notify(texture);
             }
         });
-
-    this->_texture_setter_observer = this->_texture_setter->chain()
-                                         .guard([weak_atlas](ui::texture_ptr const &texture) {
-                                             if (auto atlas = weak_atlas.lock()) {
-                                                 return atlas->texture() != texture;
-                                             }
-                                             return false;
-                                         })
-                                         .send_to(this->_texture)
-                                         .end();
 
     this->_texture_changed_receiver =
         chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_atlas](ui::texture_ptr const &texture) {

@@ -63,8 +63,6 @@ struct font_atlas final {
     std::vector<chaining::any_observer_ptr> _element_observers;
     chaining::perform_receiver_ptr<ui::texture_ptr> _texture_updated_receiver = nullptr;
     chaining::any_observer_ptr _texture_observer = nullptr;
-    chaining::notifier_ptr<ui::texture_ptr> _texture_setter = chaining::notifier<ui::texture_ptr>::make_shared();
-    chaining::any_observer_ptr _texture_setter_observer = nullptr;
     chaining::any_observer_ptr _texture_changed_observer = nullptr;
     chaining::perform_receiver_ptr<ui::texture_ptr> _texture_changed_receiver = nullptr;
 
