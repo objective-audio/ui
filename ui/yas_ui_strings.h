@@ -63,6 +63,7 @@ struct strings final {
     chaining::perform_receiver_ptr<ui::font_atlas_ptr> _update_texture_receiver = nullptr;
     chaining::perform_receiver_ptr<std::nullptr_t> _update_layout_receiver = nullptr;
     chaining::any_observer_ptr _texture_observer = nullptr;
+    std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
     std::vector<chaining::any_observer_ptr> _property_observers;
     std::vector<chaining::any_observer_ptr> _cell_rect_observers;
 

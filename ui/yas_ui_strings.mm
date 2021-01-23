@@ -150,14 +150,16 @@ void ui::strings::_update_texture_chaining() {
             this->_texture_observer = font_atlas->chain_texture()
                                           .guard([weak_strings](auto const &) { return !weak_strings.expired(); })
                                           .send_to(this->_texture_receiver)
-                                          .merge(font_atlas->chain_texture_updated())
                                           .to_null()
                                           .send_to(this->_update_layout_receiver)
                                           .sync();
+            this->_texture_canceller = font_atlas->observe_texture_updated(
+                [this](auto const &) { this->_update_layout_receiver->receive_value(nullptr); });
         }
     } else {
         this->_rect_plane->node()->mesh()->value()->set_texture(nullptr);
         this->_texture_observer = nullptr;
+        this->_texture_canceller = std::nullopt;
     }
 }
 

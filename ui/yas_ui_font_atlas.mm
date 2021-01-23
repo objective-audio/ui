@@ -121,8 +121,8 @@ chaining::chain_sync_t<ui::texture_ptr> ui::font_atlas::chain_texture() const {
     return this->_texture_changed_fetcher->chain();
 }
 
-chaining::chain_unsync_t<ui::texture_ptr> ui::font_atlas::chain_texture_updated() const {
-    return this->_texture_updated_sender->chain();
+observing::canceller_ptr ui::font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
+    return this->_texture_updated_notifier->observe(std::move(handler));
 }
 
 void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const &texture) {
@@ -138,7 +138,7 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
     this->_texture_updated_receiver =
         chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_atlas](ui::texture_ptr const &texture) {
             if (auto atlas = weak_atlas.lock()) {
-                atlas->_texture_updated_sender->notify(texture);
+                atlas->_texture_updated_notifier->notify(texture);
             }
         });
 
