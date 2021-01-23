@@ -193,13 +193,9 @@ using namespace yas;
 - (void)test_text_receiver {
     auto strings = ui::strings::make_shared();
 
-    auto sender = chaining::notifier<std::string>::make_shared();
-
-    auto observer = sender->chain().send_to(strings->text_receiver()).end();
-
     XCTAssertEqual(strings->text(), "");
 
-    sender->notify("test_text");
+    strings->text_receiver()->receive_value("test_text");
 
     XCTAssertEqual(strings->text(), "test_text");
 }
