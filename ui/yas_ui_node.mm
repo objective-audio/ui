@@ -40,8 +40,7 @@ ui::node::node()
       _collider(chaining::value::holder<ui::collider_ptr>::make_shared(nullptr)),
       _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
-      _enabled(chaining::value::holder<bool>::make_shared(true)),
-      _dispatch_sender(chaining::notifier<chain_pair_t>::make_shared()) {
+      _enabled(chaining::value::holder<bool>::make_shared(true)) {
 }
 
 ui::node::~node() = default;
