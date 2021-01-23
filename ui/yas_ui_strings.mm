@@ -145,21 +145,23 @@ void ui::strings::_prepare_chains(ui::strings_wptr const &weak_strings) {
 
 void ui::strings::_update_texture_chaining() {
     if (auto &font_atlas = this->_font_atlas->value()) {
-        if (!this->_texture_observer) {
+        if (!this->_texture_canceller.has_value()) {
             auto &weak_strings = this->_weak_strings;
-            this->_texture_observer = font_atlas->chain_texture()
-                                          .guard([weak_strings](auto const &) { return !weak_strings.expired(); })
-                                          .send_to(this->_texture_receiver)
-                                          .to_null()
-                                          .send_to(this->_update_layout_receiver)
-                                          .sync();
-            this->_texture_canceller = font_atlas->observe_texture_updated(
+            this->_texture_canceller = font_atlas->observe_texture([weak_strings, this](auto const &texture) {
+                if (!weak_strings.expired()) {
+                    this->_texture_receiver->receive_value(texture);
+                    this->_update_layout_receiver->receive_value(nullptr);
+                }
+            });
+        }
+        if (!this->_texture_updated_canceller.has_value()) {
+            this->_texture_updated_canceller = font_atlas->observe_texture_updated(
                 [this](auto const &) { this->_update_layout_receiver->receive_value(nullptr); });
         }
     } else {
         this->_rect_plane->node()->mesh()->value()->set_texture(nullptr);
-        this->_texture_observer = nullptr;
         this->_texture_canceller = std::nullopt;
+        this->_texture_updated_canceller = std::nullopt;
     }
 }
 

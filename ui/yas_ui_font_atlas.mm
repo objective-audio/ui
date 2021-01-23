@@ -117,8 +117,9 @@ void ui::font_atlas::set_texture(ui::texture_ptr const &texture) {
     }
 }
 
-chaining::chain_sync_t<ui::texture_ptr> ui::font_atlas::chain_texture() const {
-    return this->_texture_changed_fetcher->chain();
+observing::canceller_ptr ui::font_atlas::observe_texture(observing::caller<texture_ptr>::handler_f &&handler,
+                                                         bool const sync) {
+    return this->_texture_changed_fetcher->observe(std::move(handler), sync);
 }
 
 observing::canceller_ptr ui::font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
@@ -161,7 +162,7 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
 
     this->_texture_changed_observer = this->_texture->chain().send_to(this->_texture_changed_receiver).end();
 
-    this->_texture_changed_fetcher = chaining::fetcher<ui::texture_ptr>::make_shared([weak_atlas]() {
+    this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared([weak_atlas]() {
         if (auto atlas = weak_atlas.lock()) {
             return std::optional<ui::texture_ptr>{atlas->texture()};
         } else {

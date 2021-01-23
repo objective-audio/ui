@@ -36,7 +36,8 @@ struct font_atlas final {
 
     void set_texture(ui::texture_ptr const &);
 
-    [[nodiscard]] chaining::chain_sync_t<ui::texture_ptr> chain_texture() const;
+    [[nodiscard]] observing::canceller_ptr observe_texture(observing::caller<texture_ptr>::handler_f &&,
+                                                           bool const sync = true);
     [[nodiscard]] observing::canceller_ptr observe_texture_updated(observing::caller<texture_ptr>::handler_f &&);
 
     [[nodiscard]] static font_atlas_ptr make_shared(args);
@@ -52,7 +53,7 @@ struct font_atlas final {
     double _descent;
     double _leading;
     std::string _words;
-    chaining::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
+    observing::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
     observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =
         observing::notifier<ui::texture_ptr>::make_shared();
 
