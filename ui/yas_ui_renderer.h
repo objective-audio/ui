@@ -61,7 +61,7 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     ui::appearance appearance() const;
 
-    [[nodiscard]] chaining::chain_unsync_t<std::nullptr_t> chain_will_render() const;
+    [[nodiscard]] observing::canceller_ptr observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] chaining::chain_sync_t<double> chain_scale_factor() const;
     [[nodiscard]] chaining::chain_sync_t<ui::appearance> chain_appearance() const;
 
@@ -98,7 +98,8 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::layout_guide_rect_ptr _view_layout_guide_rect;
     ui::layout_guide_rect_ptr _safe_area_layout_guide_rect;
 
-    chaining::notifier_ptr<std::nullptr_t> _will_render_notifier;
+    observing::notifier_ptr<std::nullptr_t> const _will_render_notifier =
+        observing::notifier<std::nullptr_t>::make_shared();
     chaining::observer_pool _pool;
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);

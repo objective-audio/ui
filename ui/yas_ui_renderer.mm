@@ -50,8 +50,7 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _detector(ui::detector::make_shared()),
       _event_manager(ui::event_manager::make_shared()),
       _view_layout_guide_rect(ui::layout_guide_rect::make_shared()),
-      _safe_area_layout_guide_rect(ui::layout_guide_rect::make_shared()),
-      _will_render_notifier(chaining::notifier<std::nullptr_t>::make_shared()) {
+      _safe_area_layout_guide_rect(ui::layout_guide_rect::make_shared()) {
 }
 
 ui::renderer::~renderer() = default;
@@ -143,8 +142,8 @@ ui::appearance ui::renderer::appearance() const {
     return this->_appearance->value();
 }
 
-chaining::chain_unsync_t<std::nullptr_t> ui::renderer::chain_will_render() const {
-    return this->_will_render_notifier->chain();
+observing::canceller_ptr ui::renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+    return this->_will_render_notifier->observe(std::move(handler));
 }
 
 chaining::chain_sync_t<double> ui::renderer::chain_scale_factor() const {
