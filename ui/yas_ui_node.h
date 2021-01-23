@@ -59,8 +59,9 @@ struct node final : action_target, metal_object, renderable_node {
     ui::renderer_ptr renderer() const override;
 
     using chain_pair_t = std::pair<method, node_ptr>;
-    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
-    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(std::vector<method> const &) const;
+    [[nodiscard]] observing::canceller_ptr observe(method const &, observing::caller<chain_pair_t>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe(std::vector<method> const &,
+                                                   observing::caller<chain_pair_t>::handler_f &&);
 
     [[nodiscard]] chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> chain_renderer() const;
     [[nodiscard]] chaining::chain_relayed_sync_t<ui::node_ptr, ui::node_wptr> chain_parent() const;
@@ -101,7 +102,7 @@ struct node final : action_target, metal_object, renderable_node {
 
     std::vector<chaining::any_observer_ptr> _update_observers;
     mutable std::unordered_map<ui::node::method, observing::canceller_ptr> _dispatch_cancellers;
-    chaining::notifier_ptr<chain_pair_t> const _dispatch_sender = chaining::notifier<chain_pair_t>::make_shared();
+    observing::notifier_ptr<chain_pair_t> const _dispatch_notifier = observing::notifier<chain_pair_t>::make_shared();
     observing::notifier_ptr<ui::node::method> const _notifier = observing::notifier<ui::node::method>::make_shared();
 
     node_updates_t _updates;

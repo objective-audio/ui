@@ -129,11 +129,12 @@ ui::renderer_ptr ui::node::renderer() const {
     return this->_renderer->value().lock();
 }
 
-chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
-    return this->chain(std::vector<ui::node::method>{method});
+observing::canceller_ptr ui::node::observe(method const &method, observing::caller<chain_pair_t>::handler_f &&handler) {
+    return this->observe(std::vector<node::method>{method}, std::move(handler));
 }
 
-chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui::node::method> const &methods) const {
+observing::canceller_ptr ui::node::observe(std::vector<method> const &methods,
+                                           observing::caller<chain_pair_t>::handler_f &&handler) {
     for (auto const &method : methods) {
         if (this->_dispatch_cancellers.count(method) > 0) {
             continue;
@@ -147,7 +148,7 @@ chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui:
                 canceller = this->_notifier->observe([this, method](node::method const &value) {
                     if (method == value) {
                         if (auto node = this->_weak_node.lock()) {
-                            this->_dispatch_sender->notify(std::make_pair(method, node));
+                            this->_dispatch_notifier->notify(std::make_pair(method, node));
                         }
                     }
                 });
@@ -157,8 +158,11 @@ chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui:
         this->_dispatch_cancellers.emplace(method, std::move(canceller));
     }
 
-    return this->_dispatch_sender->chain().guard(
-        [methods](chain_pair_t const &pair) { return contains(methods, pair.first); });
+    return this->_dispatch_notifier->observe([methods, handler = std::move(handler)](auto const &pair) {
+        if (contains(methods, pair.first)) {
+            handler(pair);
+        }
+    });
 }
 
 chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> ui::node::chain_renderer() const {
