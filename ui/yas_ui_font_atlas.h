@@ -53,7 +53,7 @@ struct font_atlas final {
     double _leading;
     std::string _words;
     chaining::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
-    observing::notifier_ptr<ui::texture_ptr> _texture_updated_notifier =
+    observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =
         observing::notifier<ui::texture_ptr>::make_shared();
 
     chaining::value::holder_ptr<ui::texture_ptr> _texture =
