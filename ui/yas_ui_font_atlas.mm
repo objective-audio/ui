@@ -72,7 +72,7 @@ std::string const &ui::font_atlas::words() const {
 }
 
 ui::texture_ptr const &ui::font_atlas::texture() const {
-    return this->_texture->raw();
+    return this->_texture->value();
 }
 
 ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {

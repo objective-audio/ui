@@ -119,7 +119,7 @@ void ui::collection_layout::_pop_notify_waiting() {
 
 void ui::collection_layout::_update_layout() {
     auto frame_region = this->_direction_swapped_region_if_horizontal(this->frame_guide_rect->region());
-    auto const &preferred_cell_count = this->preferred_cell_count->raw();
+    auto const &preferred_cell_count = this->preferred_cell_count->value();
 
     if (preferred_cell_count == 0) {
         this->cell_guide_rects.clear();
@@ -196,7 +196,7 @@ void ui::collection_layout::_update_layout() {
     for (auto const &row_regions : regions) {
         if (row_regions.size() > 0) {
             auto align_offset = 0.0f;
-            auto const alignment = this->alignment->raw();
+            auto const alignment = this->alignment->value();
 
             if (alignment != ui::layout_alignment::min) {
                 auto const content_width =
@@ -228,7 +228,7 @@ std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell
     std::size_t top_idx = 0;
     std::size_t line_idx = 0;
 
-    for (auto const &line : this->lines->raw()) {
+    for (auto const &line : this->lines->value()) {
         if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
             return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
         }
@@ -242,7 +242,7 @@ std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell
 ui::size ui::collection_layout::_cell_size(std::size_t const idx) {
     std::size_t find_idx = 0;
 
-    for (auto const &line : this->lines->raw()) {
+    for (auto const &line : this->lines->value()) {
         std::size_t const line_idx = idx - find_idx;
         std::size_t const line_cell_count = line.cell_sizes.size();
 
@@ -253,7 +253,7 @@ ui::size ui::collection_layout::_cell_size(std::size_t const idx) {
         find_idx += line_cell_count;
     }
 
-    return this->default_cell_size->raw();
+    return this->default_cell_size->value();
 }
 
 bool ui::collection_layout::_is_top_of_new_line(std::size_t const idx) {
@@ -270,18 +270,18 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
     ui::size result;
     auto const &cell_size = _cell_size(idx);
 
-    switch (this->direction->raw()) {
+    switch (this->direction->value()) {
         case ui::layout_direction::horizontal:
             result = ui::size{cell_size.height, cell_size.width};
         case ui::layout_direction::vertical:
             result = cell_size;
     }
 
-    if (this->row_order->raw() == ui::layout_order::descending) {
+    if (this->row_order->value() == ui::layout_order::descending) {
         result.height *= -1.0f;
     }
 
-    if (this->col_order->raw() == ui::layout_order::descending) {
+    if (this->col_order->value() == ui::layout_order::descending) {
         result.width *= -1.0;
     }
 
@@ -293,16 +293,16 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
 }
 
 float ui::collection_layout::_transformed_col_diff(std::size_t const idx) {
-    auto diff = fabsf(_transformed_cell_size(idx).width) + this->col_spacing->raw();
-    if (this->col_order->raw() == ui::layout_order::descending) {
+    auto diff = fabsf(_transformed_cell_size(idx).width) + this->col_spacing->value();
+    if (this->col_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
     return diff;
 }
 
 float ui::collection_layout::_transformed_row_cell_diff(std::size_t const idx) {
-    auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->row_spacing->raw();
-    if (this->row_order->raw() == ui::layout_order::descending) {
+    auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->row_spacing->value();
+    if (this->row_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
     return diff;
@@ -310,7 +310,7 @@ float ui::collection_layout::_transformed_row_cell_diff(std::size_t const idx) {
 
 float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const idx) {
     auto diff = 0.0f;
-    auto const &lines = this->lines->raw();
+    auto const &lines = this->lines->value();
 
     if (auto cell_location = _cell_location(idx)) {
         auto line_idx = cell_location->line_idx;
@@ -318,7 +318,7 @@ float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const id
         while (line_idx > 0) {
             --line_idx;
 
-            diff += lines.at(line_idx).new_line_min_offset + this->row_spacing->raw();
+            diff += lines.at(line_idx).new_line_min_offset + this->row_spacing->value();
 
             if (lines.at(line_idx).cell_sizes.size() > 0) {
                 break;
@@ -326,7 +326,7 @@ float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const id
         }
     }
 
-    if (this->row_order->raw() == ui::layout_order::descending) {
+    if (this->row_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
 
@@ -337,7 +337,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
     auto const original = _direction_swapped_region_if_horizontal(this->_border_guide_rect->region());
     ui::region result{.size = original.size};
 
-    switch (this->row_order->raw()) {
+    switch (this->row_order->value()) {
         case ui::layout_order::ascending: {
             result.origin.y = original.origin.y;
         } break;
@@ -347,7 +347,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
         } break;
     }
 
-    switch (this->col_order->raw()) {
+    switch (this->col_order->value()) {
         case ui::layout_order::ascending: {
             result.origin.x = original.origin.x;
         } break;
@@ -361,7 +361,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
 }
 
 ui::region ui::collection_layout::_direction_swapped_region_if_horizontal(ui::region const &region) {
-    if (this->direction->raw() == ui::layout_direction::horizontal) {
+    if (this->direction->value() == ui::layout_direction::horizontal) {
         return ui::region{.origin = {region.origin.y, region.origin.x},
                           .size = {region.size.height, region.size.width}};
     } else {

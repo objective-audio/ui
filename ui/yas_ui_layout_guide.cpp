@@ -22,7 +22,7 @@ void ui::layout_guide::set_value(float const value) {
 }
 
 float const &ui::layout_guide::value() const {
-    return this->_value->raw();
+    return this->_value->value();
 }
 
 void ui::layout_guide::push_notify_waiting() {
@@ -70,7 +70,7 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
                     // wait開始ならキャッシュをクリアしてフロー中断
                     cache = std::nullopt;
                     is_continue = false;
-                    *old_cache = guide->_value->raw();
+                    *old_cache = guide->_value->value();
                 } else {
                     // wait終了ならキャッシュに値があればフロー継続
                     is_continue = !!cache;

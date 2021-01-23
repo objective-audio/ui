@@ -36,18 +36,18 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->position()->raw().x, 0.0f);
-    XCTAssertEqual(target->position()->raw().y, -1.0f);
+    XCTAssertEqual(target->position()->value().x, 0.0f);
+    XCTAssertEqual(target->position()->value().y, -1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->position()->raw().x, 0.5f);
-    XCTAssertEqual(target->position()->raw().y, 0.0f);
+    XCTAssertEqual(target->position()->value().x, 0.5f);
+    XCTAssertEqual(target->position()->value().y, 0.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->position()->raw().x, 1.0f);
-    XCTAssertEqual(target->position()->raw().y, 1.0f);
+    XCTAssertEqual(target->position()->value().x, 1.0f);
+    XCTAssertEqual(target->position()->value().y, 1.0f);
 }
 
 - (void)test_update_rotate_action {
@@ -64,15 +64,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 0.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 0.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 180.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 180.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 360.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 360.0f);
 }
 
 - (void)test_update_rotate_action_shortest_1 {
@@ -89,15 +89,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 360.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 360.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 315.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 315.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 270.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 270.0f);
 }
 
 - (void)test_update_rotate_action_shortest_2 {
@@ -114,15 +114,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 180.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 180.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 135.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 135.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->angle()->raw().degrees, 90.0f);
+    XCTAssertEqual(target->angle()->value().degrees, 90.0f);
 }
 
 - (void)test_update_scale_action {
@@ -138,18 +138,18 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->scale()->raw().width, 0.0f);
-    XCTAssertEqual(target->scale()->raw().height, -1.0f);
+    XCTAssertEqual(target->scale()->value().width, 0.0f);
+    XCTAssertEqual(target->scale()->value().height, -1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->scale()->raw().width, 0.5f);
-    XCTAssertEqual(target->scale()->raw().height, 0.0f);
+    XCTAssertEqual(target->scale()->value().width, 0.5f);
+    XCTAssertEqual(target->scale()->value().height, 0.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->scale()->raw().width, 1.0f);
-    XCTAssertEqual(target->scale()->raw().height, 1.0f);
+    XCTAssertEqual(target->scale()->value().width, 1.0f);
+    XCTAssertEqual(target->scale()->value().height, 1.0f);
 }
 
 - (void)test_update_color_action {
@@ -167,21 +167,21 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->color()->raw().red, 0.0f);
-    XCTAssertEqual(target->color()->raw().green, 0.25f);
-    XCTAssertEqual(target->color()->raw().blue, 0.5f);
+    XCTAssertEqual(target->color()->value().red, 0.0f);
+    XCTAssertEqual(target->color()->value().green, 0.25f);
+    XCTAssertEqual(target->color()->value().blue, 0.5f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->color()->raw().red, 0.5f);
-    XCTAssertEqual(target->color()->raw().green, 0.5f);
-    XCTAssertEqual(target->color()->raw().blue, 0.5f);
+    XCTAssertEqual(target->color()->value().red, 0.5f);
+    XCTAssertEqual(target->color()->value().green, 0.5f);
+    XCTAssertEqual(target->color()->value().blue, 0.5f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->color()->raw().red, 1.0f);
-    XCTAssertEqual(target->color()->raw().green, 0.75f);
-    XCTAssertEqual(target->color()->raw().blue, 0.5f);
+    XCTAssertEqual(target->color()->value().red, 1.0f);
+    XCTAssertEqual(target->color()->value().green, 0.75f);
+    XCTAssertEqual(target->color()->value().blue, 0.5f);
 }
 
 - (void)test_update_alpha_action {
@@ -197,15 +197,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->alpha()->raw(), 1.0f);
+    XCTAssertEqual(target->alpha()->value(), 1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->alpha()->raw(), 0.5f);
+    XCTAssertEqual(target->alpha()->value(), 0.5f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->alpha()->raw(), 0.0f);
+    XCTAssertEqual(target->alpha()->value(), 0.0f);
 }
 
 @end

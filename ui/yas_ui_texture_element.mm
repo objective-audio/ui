@@ -18,7 +18,7 @@ void ui::texture_element::set_tex_coords(ui::uint_region const &tex_coords) {
 }
 
 ui::uint_region const &ui::texture_element::tex_coords() const {
-    return this->_tex_coords->raw();
+    return this->_tex_coords->value();
 }
 
 chaining::chain_sync_t<ui::uint_region> ui::texture_element::chain_tex_coords() const {

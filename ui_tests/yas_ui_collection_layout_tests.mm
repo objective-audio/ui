@@ -27,16 +27,16 @@ using namespace yas;
     XCTAssertTrue(layout);
 
     XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
-    XCTAssertEqual(layout->preferred_cell_count->raw(), 0);
-    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{1.0f, 1.0f}));
-    XCTAssertEqual(layout->lines->raw().size(), 0);
-    XCTAssertEqual(layout->row_spacing->raw(), 0.0f);
-    XCTAssertEqual(layout->col_spacing->raw(), 0.0f);
+    XCTAssertEqual(layout->preferred_cell_count->value(), 0);
+    XCTAssertTrue(layout->default_cell_size->value() == (ui::size{1.0f, 1.0f}));
+    XCTAssertEqual(layout->lines->value().size(), 0);
+    XCTAssertEqual(layout->row_spacing->value(), 0.0f);
+    XCTAssertEqual(layout->col_spacing->value(), 0.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
-    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::min);
-    XCTAssertEqual(layout->direction->raw(), ui::layout_direction::vertical);
-    XCTAssertEqual(layout->row_order->raw(), ui::layout_order::ascending);
-    XCTAssertEqual(layout->col_order->raw(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::min);
+    XCTAssertEqual(layout->direction->value(), ui::layout_direction::vertical);
+    XCTAssertEqual(layout->row_order->value(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->col_order->value(), ui::layout_order::ascending);
 }
 
 - (void)test_create_with_args {
@@ -56,20 +56,20 @@ using namespace yas;
     XCTAssertTrue(layout);
 
     XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
-    XCTAssertEqual(layout->preferred_cell_count->raw(), 10);
-    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{2.5f, 3.5f}));
-    XCTAssertEqual(layout->lines->raw().size(), 1);
-    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 2);
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
-    XCTAssertEqual(layout->lines->raw().at(0).new_line_min_offset, 3.9f);
-    XCTAssertEqual(layout->row_spacing->raw(), 4.0f);
-    XCTAssertEqual(layout->col_spacing->raw(), 4.0f);
+    XCTAssertEqual(layout->preferred_cell_count->value(), 10);
+    XCTAssertTrue(layout->default_cell_size->value() == (ui::size{2.5f, 3.5f}));
+    XCTAssertEqual(layout->lines->value().size(), 1);
+    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 2);
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
+    XCTAssertEqual(layout->lines->value().at(0).new_line_min_offset, 3.9f);
+    XCTAssertEqual(layout->row_spacing->value(), 4.0f);
+    XCTAssertEqual(layout->col_spacing->value(), 4.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
-    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::max);
-    XCTAssertEqual(layout->direction->raw(), ui::layout_direction::horizontal);
-    XCTAssertEqual(layout->row_order->raw(), ui::layout_order::descending);
-    XCTAssertEqual(layout->col_order->raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->direction->value(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->row_order->value(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order->value(), ui::layout_order::descending);
 }
 
 - (void)test_cell_layout_guide_rects {
@@ -110,15 +110,15 @@ using namespace yas;
     auto layout = ui::collection_layout::make_shared(
         {.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 1);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 1);
 
     layout->preferred_cell_count->set_value(5);
 
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 4);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 4);
 
     layout->preferred_cell_count->set_value(2);
 
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 2);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 2);
 }
 
 - (void)test_chain_actual_cell_count {
@@ -196,21 +196,21 @@ using namespace yas;
                                                       .direction = ui::layout_direction::vertical});
 
     // フレームの高さが0ならセルを作る範囲の制限をかけない
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 8);
 
     layout->frame_guide_rect->set_region({.size = {0.0f, 0.5f}});
 
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 0);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 0);
 
     layout->direction->set_value(ui::layout_direction::horizontal);
 
     // セルの並びを横にすれば高さの制限は受けない
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 8);
 
     layout->frame_guide_rect->set_region({.size = {0.0f, 0.5f}});
 
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 8);
 }
 
 - (void)test_limiting_col {
@@ -220,35 +220,35 @@ using namespace yas;
                                                       .direction = ui::layout_direction::horizontal});
 
     // フレームの幅が0ならセルを作る範囲の制限をかけない
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 8);
 
     layout->frame_guide_rect->set_region({.size = {0.5f, 0.0f}});
 
     // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 0);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 0);
 
     layout->direction->set_value(ui::layout_direction::vertical);
 
     // セルの並びを縦にすれば高さの制限は受けない
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 8);
 
     layout->frame_guide_rect->set_region({.size = {0.5f, 0.0f}});
 
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 8);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 8);
 }
 
 - (void)test_set_preferred_cell_count {
     auto layout = ui::collection_layout::make_shared({.preferred_cell_count = 2});
 
-    XCTAssertEqual(layout->preferred_cell_count->raw(), 2);
+    XCTAssertEqual(layout->preferred_cell_count->value(), 2);
 
     layout->preferred_cell_count->set_value(3);
 
-    XCTAssertEqual(layout->preferred_cell_count->raw(), 3);
+    XCTAssertEqual(layout->preferred_cell_count->value(), 3);
 
     layout->preferred_cell_count->set_value(0);
 
-    XCTAssertEqual(layout->preferred_cell_count->raw(), 0);
+    XCTAssertEqual(layout->preferred_cell_count->value(), 0);
 }
 
 - (void)test_set_default_cell_size {
@@ -256,7 +256,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->default_cell_size->value() == (ui::size{1.0f, 1.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -267,7 +267,7 @@ using namespace yas;
 
     layout->default_cell_size->set_value({2.0f, 3.0f});
 
-    XCTAssertTrue(layout->default_cell_size->raw() == (ui::size{2.0f, 3.0f}));
+    XCTAssertTrue(layout->default_cell_size->value() == (ui::size{2.0f, 3.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -282,19 +282,19 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->lines->raw().size(), 0);
+    XCTAssertEqual(layout->lines->value().size(), 0);
 
     layout->lines->set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}},
                                .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines->raw().size(), 1);
-    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 5);
+    XCTAssertEqual(layout->lines->value().size(), 1);
+    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 5);
 
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines->raw().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -326,9 +326,9 @@ using namespace yas;
     layout->lines->set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
                               {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines->raw().size(), 2);
-    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 3);
-    XCTAssertEqual(layout->lines->raw().at(1).cell_sizes.size(), 2);
+    XCTAssertEqual(layout->lines->value().size(), 2);
+    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout->lines->value().at(1).cell_sizes.size(), 2);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -363,9 +363,9 @@ using namespace yas;
     layout->lines->set_value({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
                               {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines->raw().size(), 2);
-    XCTAssertEqual(layout->lines->raw().at(0).cell_sizes.size(), 3);
-    XCTAssertEqual(layout->lines->raw().at(1).cell_sizes.size(), 2);
+    XCTAssertEqual(layout->lines->value().size(), 2);
+    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout->lines->value().at(1).cell_sizes.size(), 2);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -399,7 +399,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->actual_cell_count()->raw(), 3);
+    XCTAssertEqual(layout->actual_cell_count()->value(), 3);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 1.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 2.0f);
@@ -423,7 +423,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->row_spacing->raw(), 0.0f);
+    XCTAssertEqual(layout->row_spacing->value(), 0.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -434,7 +434,7 @@ using namespace yas;
 
     layout->row_spacing->set_value(1.0f);
 
-    XCTAssertEqual(layout->row_spacing->raw(), 1.0f);
+    XCTAssertEqual(layout->row_spacing->value(), 1.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -450,7 +450,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects;
 
-    XCTAssertEqual(layout->col_spacing->raw(), 0.0f);
+    XCTAssertEqual(layout->col_spacing->value(), 0.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -461,7 +461,7 @@ using namespace yas;
 
     layout->col_spacing->set_value(1.0f);
 
-    XCTAssertEqual(layout->col_spacing->raw(), 1.0f);
+    XCTAssertEqual(layout->col_spacing->value(), 1.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -476,11 +476,11 @@ using namespace yas;
 
     layout->alignment->set_value(ui::layout_alignment::mid);
 
-    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::mid);
+    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::mid);
 
     layout->alignment->set_value(ui::layout_alignment::max);
 
-    XCTAssertEqual(layout->alignment->raw(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::max);
 }
 
 - (void)test_alignment_mid {
@@ -520,7 +520,7 @@ using namespace yas;
 
     layout->direction->set_value(ui::layout_direction::horizontal);
 
-    XCTAssertEqual(layout->direction->raw(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->direction->value(), ui::layout_direction::horizontal);
 }
 
 - (void)test_set_row_order {
@@ -528,7 +528,7 @@ using namespace yas;
 
     layout->row_order->set_value(ui::layout_order::descending);
 
-    XCTAssertEqual(layout->row_order->raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->row_order->value(), ui::layout_order::descending);
 }
 
 - (void)test_set_col_order {
@@ -536,7 +536,7 @@ using namespace yas;
 
     layout->col_order->set_value(ui::layout_order::descending);
 
-    XCTAssertEqual(layout->col_order->raw(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order->value(), ui::layout_order::descending);
 }
 
 - (void)test_vertical_each_ascending_order {

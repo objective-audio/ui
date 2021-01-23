@@ -56,7 +56,7 @@ void ui::render_target::set_scale_factor(double const scale_factor) {
 }
 
 double ui::render_target::scale_factor() const {
-    return this->_scale_factor->raw();
+    return this->_scale_factor->value();
 }
 
 void ui::render_target::set_effect(ui::effect_ptr effect) {
@@ -64,7 +64,7 @@ void ui::render_target::set_effect(ui::effect_ptr effect) {
 }
 
 ui::effect_ptr const &ui::render_target::effect() {
-    return this->_effect->raw();
+    return this->_effect->value();
 }
 
 std::shared_ptr<chaining::receiver<double>> ui::render_target::scale_factor_receiver() {
@@ -178,7 +178,7 @@ ui::render_target_updates_t &ui::render_target::updates() {
 void ui::render_target::clear_updates() {
     this->_updates.flags.reset();
     renderable_mesh::cast(this->_mesh)->clear_updates();
-    if (auto &effect = this->_effect->raw()) {
+    if (auto &effect = this->_effect->value()) {
         renderable_effect::cast(effect)->clear_updates();
     }
 }
@@ -215,7 +215,7 @@ bool ui::render_target::_is_size_updated() {
 }
 
 void ui::render_target::_set_textures_to_effect() {
-    if (auto const &effect = this->_effect->raw()) {
+    if (auto const &effect = this->_effect->value()) {
         renderable_effect::cast(effect)->set_textures(this->_src_texture, this->_dst_texture);
     }
 }

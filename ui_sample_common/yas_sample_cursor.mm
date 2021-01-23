@@ -37,7 +37,7 @@ static chaining::any_observer_ptr _make_event_observer(ui::node_ptr const &node,
                         for (auto child_node : node->children()) {
                             auto make_fade_action = [](ui::node_ptr const &node, float const alpha) {
                                 return ui::make_action({.target = node,
-                                                        .begin_alpha = node->alpha()->raw(),
+                                                        .begin_alpha = node->alpha()->value(),
                                                         .end_alpha = alpha,
                                                         .continuous_action = {.duration = 0.5}});
                             };

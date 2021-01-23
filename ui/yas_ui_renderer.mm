@@ -140,7 +140,7 @@ ui::layout_guide_rect_ptr &ui::renderer::safe_area_layout_guide_rect() {
 }
 
 ui::appearance ui::renderer::appearance() const {
-    return this->_appearance->raw();
+    return this->_appearance->value();
 }
 
 chaining::chain_unsync_t<std::nullptr_t> ui::renderer::chain_will_render() const {
@@ -229,8 +229,8 @@ void ui::renderer::view_render(yas_objc_view *const view) {
     if (to_bool(_pre_render())) {
         if ([view isKindOfClass:[YASUIMetalView class]]) {
             auto const metalView = (YASUIMetalView *)view;
-            auto const &color = this->background()->color()->raw();
-            auto const &alpha = this->background()->alpha()->raw();
+            auto const &color = this->background()->color()->value();
+            auto const &alpha = this->background()->alpha()->value();
             metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
         }
 

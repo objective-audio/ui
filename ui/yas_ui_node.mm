@@ -110,7 +110,7 @@ void ui::node::add_sub_node(ui::node_ptr const &sub_node, std::size_t const idx)
 }
 
 void ui::node::remove_from_super_node() {
-    if (auto parent = this->_parent->raw().lock()) {
+    if (auto parent = this->_parent->value().lock()) {
         parent->_remove_sub_node(this->_weak_node.lock());
     }
 }
@@ -124,11 +124,11 @@ std::vector<ui::node_ptr> &ui::node::children() {
 }
 
 ui::node_ptr ui::node::parent() const {
-    return this->_parent->raw().lock();
+    return this->_parent->value().lock();
 }
 
 ui::renderer_ptr ui::node::renderer() const {
-    return this->_renderer->raw().lock();
+    return this->_renderer->value().lock();
 }
 
 chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
@@ -192,7 +192,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     this->_x_observer = guide.chain()
                             .guard([weak_node](float const &) { return !weak_node.expired(); })
                             .to([weak_node](float const &x) {
-                                return ui::point{x, weak_node.lock()->position()->raw().y};
+                                return ui::point{x, weak_node.lock()->position()->value().y};
                             })
                             .send_to(position)
                             .sync();
@@ -207,7 +207,7 @@ void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     this->_y_observer = guide.chain()
                             .guard([weak_node](float const &) { return !weak_node.expired(); })
                             .to([weak_node](float const &y) {
-                                return ui::point{weak_node.lock()->position()->raw().x, y};
+                                return ui::point{weak_node.lock()->position()->value().x, y};
                             })
                             .send_to(position)
                             .sync();
@@ -308,13 +308,13 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 }
 
 ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
-    if (auto const &mesh = this->_mesh->raw()) {
+    if (auto const &mesh = this->_mesh->value()) {
         if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
 
-    if (auto &render_target = this->_render_target->raw()) {
+    if (auto &render_target = this->_render_target->value()) {
         if (auto ul = unless(ui::metal_object::cast(render_target)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
@@ -331,7 +331,7 @@ ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> c
         }
     }
 
-    if (auto &batch = this->_batch->raw()) {
+    if (auto &batch = this->_batch->value()) {
         if (auto ul = unless(ui::metal_object::cast(batch)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
@@ -351,10 +351,10 @@ void ui::node::set_renderer(ui::renderer_ptr const &renderer) {
 }
 
 void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
-    if (this->_enabled->raw()) {
+    if (this->_enabled->value()) {
         tree_updates.node_updates.flags |= this->_updates.flags;
 
-        if (auto const &mesh = this->_mesh->raw()) {
+        if (auto const &mesh = this->_mesh->value()) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
             if (auto const &mesh_data = mesh->mesh_data()) {
@@ -362,7 +362,7 @@ void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
             }
         }
 
-        if (auto &render_target = this->_render_target->raw()) {
+        if (auto &render_target = this->_render_target->value()) {
             auto const renderable = ui::renderable_render_target::cast(render_target);
 
             tree_updates.render_target_updates.flags |= renderable->updates().flags;
@@ -389,13 +389,13 @@ void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
 }
 
 void ui::node::build_render_info(ui::render_info &render_info) {
-    if (this->_enabled->raw()) {
+    if (this->_enabled->value()) {
         this->_update_local_matrix();
 
         this->_matrix = render_info.matrix * this->_local_matrix;
         auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
-        if (auto const &collider = this->_collider->raw()) {
+        if (auto const &collider = this->_collider->value()) {
             ui::renderable_collider::cast(collider)->set_matrix(this->_matrix);
 
             if (auto const &detector = render_info.detector) {
@@ -407,19 +407,19 @@ void ui::node::build_render_info(ui::render_info &render_info) {
         }
 
         if (auto const &render_encodable = render_info.render_encodable) {
-            if (auto const &mesh = this->_mesh->raw()) {
+            if (auto const &mesh = this->_mesh->value()) {
                 renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                 render_encodable->append_mesh(mesh);
             }
 
-            if (auto &render_target = this->_render_target->raw()) {
+            if (auto &render_target = this->_render_target->value()) {
                 auto const &mesh = ui::renderable_render_target::cast(render_target)->mesh();
                 renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                 render_encodable->append_mesh(mesh);
             }
         }
 
-        if (auto const &render_target = this->_render_target->raw()) {
+        if (auto const &render_target = this->_render_target->value()) {
             bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
 
             if (!needs_render) {
@@ -467,7 +467,7 @@ void ui::node::build_render_info(ui::render_info &render_info) {
                     stackable->pop_encode_info();
                 }
             }
-        } else if (auto const &batch = _batch->raw()) {
+        } else if (auto const &batch = _batch->value()) {
             ui::tree_updates tree_updates;
 
             for (auto const &sub_node : this->_children) {
@@ -509,7 +509,7 @@ void ui::node::build_render_info(ui::render_info &render_info) {
 }
 
 bool ui::node::is_rendering_color_exists() {
-    if (!this->_enabled->raw()) {
+    if (!this->_enabled->value()) {
         return false;
     }
 
@@ -519,7 +519,7 @@ bool ui::node::is_rendering_color_exists() {
         }
     }
 
-    if (auto const &mesh = this->_mesh->raw()) {
+    if (auto const &mesh = this->_mesh->value()) {
         return renderable_mesh::cast(mesh)->is_rendering_color_exists();
     }
 
@@ -527,14 +527,14 @@ bool ui::node::is_rendering_color_exists() {
 }
 
 void ui::node::clear_updates() {
-    if (this->_enabled->raw()) {
+    if (this->_enabled->value()) {
         this->_updates.flags.reset();
 
-        if (auto const &mesh = this->_mesh->raw()) {
+        if (auto const &mesh = this->_mesh->value()) {
             renderable_mesh::cast(mesh)->clear_updates();
         }
 
-        if (auto &render_target = this->_render_target->raw()) {
+        if (auto &render_target = this->_render_target->value()) {
             ui::renderable_render_target::cast(render_target)->clear_updates();
         }
 
@@ -549,7 +549,7 @@ void ui::node::clear_updates() {
 void ui::node::_add_sub_node(ui::node_ptr &sub_node, ui::node_ptr const &node) {
     ui::node_wptr weak_node = node;
     sub_node->_parent->set_value(std::move(weak_node));
-    sub_node->_set_renderer_recursively(this->_renderer->raw().lock());
+    sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
     sub_node->_notify_sender->notify(method::added_to_super);
 
@@ -577,9 +577,9 @@ void ui::node::_set_renderer_recursively(ui::renderer_ptr const &renderer) {
 }
 
 void ui::node::_update_mesh_color() {
-    if (auto const &mesh = this->_mesh->raw()) {
-        auto const &color = this->_color->raw();
-        auto const &alpha = this->_alpha->raw();
+    if (auto const &mesh = this->_mesh->value()) {
+        auto const &color = this->_color->value();
+        auto const &alpha = this->_alpha->value();
         mesh->set_color({color.red, color.green, color.blue, alpha});
     }
 }
@@ -590,16 +590,16 @@ void ui::node::_set_updated(ui::node_update_reason const reason) {
 
 void ui::node::_update_local_matrix() const {
     if (this->_updates.test(ui::node_update_reason::geometry)) {
-        auto const &position = this->_position->raw();
-        auto const &angle = this->_angle->raw();
-        auto const &scale = this->_scale->raw();
+        auto const &position = this->_position->value();
+        auto const &angle = this->_angle->value();
+        auto const &scale = this->_scale->value();
         this->_local_matrix = matrix::translation(position.x, position.y) * matrix::rotation(angle.degrees) *
                               matrix::scale(scale.width, scale.height);
     }
 }
 
 void ui::node::_update_matrix() const {
-    if (auto locked_parent = this->_parent->raw().lock()) {
+    if (auto locked_parent = this->_parent->value().lock()) {
         this->_matrix = locked_parent->matrix();
     } else {
         if (auto locked_renderer = this->renderer()) {
