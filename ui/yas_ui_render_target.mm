@@ -18,7 +18,6 @@ using namespace yas;
 ui::render_target::render_target()
     : _layout_guide_rect(ui::layout_guide_rect::make_shared()),
       _effect(chaining::value::holder<ui::effect_ptr>::make_shared(nullptr)),
-      _effect_setter(chaining::notifier<ui::effect_ptr>::make_shared()),
       _scale_factor(chaining::value::holder<double>::make_shared(1.0)),
       _data(ui::rect_plane_data::make_shared(1)),
       _src_texture(
@@ -38,11 +37,6 @@ ui::render_target::render_target()
     this->_mesh->set_texture(this->_dst_texture);
 
     this->_effect->set_value(ui::effect::make_through_effect());
-    this->_effect_observer =
-        this->_effect_setter->chain()
-            .to([](ui::effect_ptr const &effect) { return effect ?: ui::effect::make_through_effect(); })
-            .send_to(this->_effect)
-            .end();
 
     this->_set_textures_to_effect();
 }
@@ -60,7 +54,7 @@ double ui::render_target::scale_factor() const {
 }
 
 void ui::render_target::set_effect(ui::effect_ptr effect) {
-    this->_effect_setter->notify(effect);
+    this->_effect->set_value(effect ?: ui::effect::make_through_effect());
 }
 
 ui::effect_ptr const &ui::render_target::effect() {

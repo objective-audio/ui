@@ -32,7 +32,6 @@ struct render_target : metal_object, renderable_render_target {
    private:
     ui::layout_guide_rect_ptr _layout_guide_rect;
     chaining::value::holder_ptr<ui::effect_ptr> _effect;
-    chaining::notifier_ptr<ui::effect_ptr> _effect_setter;
     chaining::value::holder_ptr<double> _scale_factor;
 
     std::weak_ptr<render_target> _weak_render_target;
