@@ -44,18 +44,18 @@ uintptr_t ui::texture::identifier() const {
 }
 
 ui::uint_size ui::texture::point_size() const {
-    return this->_point_size->raw();
+    return this->_point_size->value();
 }
 
 ui::uint_size ui::texture::actual_size() const {
-    ui::uint_size const &point_size = this->_point_size->raw();
-    double const &scale_factor = this->_scale_factor->raw();
+    ui::uint_size const &point_size = this->_point_size->value();
+    double const &scale_factor = this->_scale_factor->value();
     return {static_cast<uint32_t>(point_size.width * scale_factor),
             static_cast<uint32_t>(point_size.height * scale_factor)};
 }
 
 double ui::texture::scale_factor() const {
-    return this->_scale_factor->raw();
+    return this->_scale_factor->value();
 }
 
 uint32_t ui::texture::depth() const {
@@ -245,7 +245,7 @@ void ui::texture::_add_image_to_metal_texture(texture_element_ptr const &element
     auto const &point_size = pair.first;
     auto const &draw_handler = pair.second;
 
-    auto image = ui::image::make_shared({.point_size = point_size, .scale_factor = this->_scale_factor->raw()});
+    auto image = ui::image::make_shared({.point_size = point_size, .scale_factor = this->_scale_factor->value()});
 
     if (auto reserve_result = this->_reserve_image_size(image)) {
         if (draw_handler) {

@@ -25,7 +25,7 @@ struct soft_key {
         auto const &strings_node = this->_strings->rect_plane()->node();
         auto renderer = button_node->renderer();
 
-        button_node->collider()->raw()->set_enabled(enabled);
+        button_node->collider()->value()->set_enabled(enabled);
 
         float const alpha = enabled ? 1.0f : 0.0f;
 
@@ -34,9 +34,9 @@ struct soft_key {
 
         if (animated) {
             renderer->insert_action(ui::make_action(
-                {.target = button_node, .begin_alpha = button_node->alpha()->raw(), .end_alpha = alpha}));
+                {.target = button_node, .begin_alpha = button_node->alpha()->value(), .end_alpha = alpha}));
             renderer->insert_action(ui::make_action(
-                {.target = strings_node, .begin_alpha = strings_node->alpha()->raw(), .end_alpha = alpha}));
+                {.target = strings_node, .begin_alpha = strings_node->alpha()->value(), .end_alpha = alpha}));
         } else {
             button_node->alpha()->set_value(alpha);
             strings_node->alpha()->set_value(alpha);
@@ -54,7 +54,7 @@ struct soft_key {
     soft_key(std::string &&key, float const width, ui::font_atlas_ptr const &atlas)
         : _button(ui::button::make_shared({.size = {width, width}})),
           _strings(ui::strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
-        this->_button->rect_plane()->node()->mesh()->raw()->set_use_mesh_color(true);
+        this->_button->rect_plane()->node()->mesh()->value()->set_use_mesh_color(true);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
@@ -286,7 +286,7 @@ void sample::soft_keyboard::_update_soft_key_count() {
         return;
     }
 
-    auto const layout_count = this->_collection_layout->actual_cell_count()->raw();
+    auto const layout_count = this->_collection_layout->actual_cell_count()->value();
 
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {
@@ -322,7 +322,7 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
         return;
     }
 
-    auto const layout_count = this->_collection_layout->actual_cell_count()->raw();
+    auto const layout_count = this->_collection_layout->actual_cell_count()->value();
 
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {

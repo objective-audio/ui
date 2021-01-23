@@ -18,7 +18,7 @@ void ui::blur::set_sigma(double const sigma) {
 }
 
 double ui::blur::sigma() const {
-    return this->_sigma->raw();
+    return this->_sigma->value();
 }
 
 ui::effect_ptr const &ui::blur::effect() const {
@@ -35,7 +35,7 @@ void ui::blur::_prepare(std::shared_ptr<ui::blur> &blur) {
 }
 
 void ui::blur::_update_effect_handler() {
-    double const sigma = this->_sigma->raw();
+    double const sigma = this->_sigma->value();
 
     if (sigma > 0.0) {
         this->_effect->set_metal_handler([sigma, prev_scale_factor = std::optional<double>{std::nullopt},

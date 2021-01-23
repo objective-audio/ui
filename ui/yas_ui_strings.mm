@@ -44,19 +44,19 @@ void ui::strings::set_alignment(ui::layout_alignment const alignment) {
 }
 
 std::string const &ui::strings::text() const {
-    return this->_text->raw();
+    return this->_text->value();
 }
 
 ui::font_atlas_ptr const &ui::strings::font_atlas() const {
-    return this->_font_atlas->raw();
+    return this->_font_atlas->value();
 }
 
 std::optional<float> const &ui::strings::line_height() const {
-    return this->_line_height->raw();
+    return this->_line_height->value();
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {
-    return this->_collection_layout->alignment->raw();
+    return this->_collection_layout->alignment->value();
 }
 
 ui::layout_guide_rect_ptr &ui::strings::frame_layout_guide_rect() {
@@ -100,7 +100,7 @@ void ui::strings::_prepare_receivers(ui::strings_wptr const &weak_strings) {
     this->_texture_receiver =
         chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_strings](ui::texture_ptr const &texture) {
             if (auto strings = weak_strings.lock()) {
-                strings->rect_plane()->node()->mesh()->raw()->set_texture(texture);
+                strings->rect_plane()->node()->mesh()->value()->set_texture(texture);
             }
         });
 
@@ -144,7 +144,7 @@ void ui::strings::_prepare_chains(ui::strings_wptr const &weak_strings) {
 }
 
 void ui::strings::_update_texture_chaining() {
-    if (auto &font_atlas = this->_font_atlas->raw()) {
+    if (auto &font_atlas = this->_font_atlas->value()) {
         if (!this->_texture_observer) {
             auto &weak_strings = this->_weak_strings;
             this->_texture_observer = font_atlas->chain_texture()
@@ -156,7 +156,7 @@ void ui::strings::_update_texture_chaining() {
                                           .sync();
         }
     } else {
-        this->_rect_plane->node()->mesh()->raw()->set_texture(nullptr);
+        this->_rect_plane->node()->mesh()->value()->set_texture(nullptr);
         this->_texture_observer = nullptr;
     }
 }
@@ -164,14 +164,14 @@ void ui::strings::_update_texture_chaining() {
 void ui::strings::_update_layout() {
     this->_cell_rect_observers.clear();
 
-    auto const &font_atlas = this->_font_atlas->raw();
+    auto const &font_atlas = this->_font_atlas->value();
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
         this->_collection_layout->preferred_cell_count->set_value(0);
         this->_rect_plane->data()->set_rect_count(0);
         return;
     }
 
-    auto const &src_text = this->_text->raw();
+    auto const &src_text = this->_text->value();
     auto const word_count = font_atlas ? std::min(src_text.size(), this->_max_word_count) : 0;
     std::string eliminated_text;
     eliminated_text.reserve(word_count);
@@ -201,7 +201,7 @@ void ui::strings::_update_layout() {
     this->_collection_layout->lines->set_value(std::move(lines));
     this->_collection_layout->preferred_cell_count->set_value(eliminated_text.size());
 
-    auto const actual_cell_count = this->_collection_layout->actual_cell_count()->raw();
+    auto const actual_cell_count = this->_collection_layout->actual_cell_count()->value();
 
     this->_rect_plane->data()->set_rect_count(actual_cell_count);
 
@@ -247,11 +247,11 @@ void ui::strings::_update_layout() {
 }
 
 float ui::strings::_cell_height() {
-    auto const &line_height = this->_line_height->raw();
+    auto const &line_height = this->_line_height->value();
     if (line_height) {
         return *line_height;
     } else {
-        if (auto const &font_atlas = this->_font_atlas->raw()) {
+        if (auto const &font_atlas = this->_font_atlas->value()) {
             return font_atlas->ascent() + font_atlas->descent() + font_atlas->leading();
         } else {
             return 0.0f;

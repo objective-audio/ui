@@ -102,7 +102,7 @@ void ui::collider::set_shape(ui::shape_ptr shape) {
 }
 
 ui::shape_ptr const &ui::collider::shape() const {
-    return this->_shape->raw();
+    return this->_shape->value();
 }
 
 void ui::collider::set_enabled(bool const enabled) {
@@ -110,12 +110,12 @@ void ui::collider::set_enabled(bool const enabled) {
 }
 
 bool ui::collider::is_enabled() const {
-    return this->_enabled->raw();
+    return this->_enabled->value();
 }
 
 bool ui::collider::hit_test(ui::point const &loc) const {
-    auto const &shape = this->_shape->raw();
-    if (shape && this->_enabled->raw()) {
+    auto const &shape = this->_shape->value();
+    if (shape && this->_enabled->value()) {
         auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
         return shape->hit_test({pos.x, pos.y});
     }
