@@ -73,8 +73,7 @@ struct event_manager : event_inputtable {
 
     virtual ~event_manager() final;
 
-    [[nodiscard]] chaining::chain_relayed_unsync_t<event_ptr, context> chain(method const &) const;
-    [[nodiscard]] chaining::chain_unsync_t<context> chain() const;
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<context>::handler_f &&);
 
     [[nodiscard]] static event_manager_ptr make_shared();
 
@@ -84,7 +83,7 @@ struct event_manager : event_inputtable {
     std::unordered_map<uint16_t, event_ptr> _key_events;
     std::unordered_map<uint32_t, event_ptr> _modifier_events;
 
-    chaining::notifier_ptr<context> _notifier = chaining::notifier<context>::make_shared();
+    observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
 
     event_manager();
 

@@ -153,15 +153,8 @@ ui::event_manager::event_manager() {
 
 ui::event_manager::~event_manager() = default;
 
-chaining::chain_relayed_unsync_t<ui::event_ptr, ui::event_manager::context> ui::event_manager::chain(
-    method const &method) const {
-    return this->_notifier->chain()
-        .guard([method](context const &context) { return context.method == method; })
-        .to([](ui::event_manager::context const &context) { return context.event; });
-}
-
-chaining::chain_unsync_t<ui::event_manager::context> ui::event_manager::chain() const {
-    return this->_notifier->chain();
+observing::canceller_ptr ui::event_manager::observe(observing::caller<context>::handler_f &&handler) {
+    return this->_notifier->observe(std::move(handler));
 }
 
 void ui::event_manager::input_cursor_event(cursor_event const &value) {
