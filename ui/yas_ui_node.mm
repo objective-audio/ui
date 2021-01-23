@@ -147,7 +147,9 @@ chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui:
             case ui::node::method::removed_from_super:
                 canceller = this->_notifier->observe([this, method](node::method const &value) {
                     if (method == value) {
-                        this->_dispatch_receiver->receive_value(method);
+                        if (auto node = this->_weak_node.lock()) {
+                            this->_dispatch_sender->notify(std::make_pair(method, node));
+                        }
                     }
                 });
                 break;
@@ -296,15 +298,6 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     this->_update_observers.emplace_back(std::move(mesh_color_observer));
     this->_update_observers.emplace_back(std::move(batch_observer));
     this->_update_observers.emplace_back(std::move(updates_observer));
-
-    // dispatch
-
-    this->_dispatch_receiver =
-        chaining::perform_receiver<ui::node::method>::make_shared([weak_node](ui::node::method const &method) {
-            if (auto node = weak_node.lock()) {
-                node->_dispatch_sender->notify(std::make_pair(method, node));
-            }
-        });
 }
 
 ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {

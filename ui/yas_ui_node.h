@@ -102,7 +102,6 @@ struct node final : action_target, metal_object, renderable_node {
     std::vector<chaining::any_observer_ptr> _update_observers;
     mutable std::unordered_map<ui::node::method, observing::canceller_ptr> _dispatch_cancellers;
     chaining::notifier_ptr<chain_pair_t> _dispatch_sender;
-    chaining::perform_receiver_ptr<ui::node::method> _dispatch_receiver = nullptr;
     observing::notifier_ptr<ui::node::method> const _notifier = observing::notifier<ui::node::method>::make_shared();
 
     node_updates_t _updates;
