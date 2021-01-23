@@ -61,15 +61,8 @@ void ui::button::cancel_tracking() {
     }
 }
 
-chaining::chain_unsync_t<ui::button::chain_pair_t> ui::button::chain() const {
-    return this->_notify_sender->chain();
-}
-
-chaining::chain_relayed_unsync_t<ui::button::context, ui::button::chain_pair_t> ui::button::chain(
-    method const method) const {
-    return this->_notify_sender->chain()
-        .guard([method](chain_pair_t const &pair) { return pair.first == method; })
-        .to([](chain_pair_t const &pair) { return pair.second; });
+observing::canceller_ptr ui::button::observe(observing::caller<chain_pair_t>::handler_f &&handler) {
+    return this->_notifier->observe(std::move(handler));
 }
 
 ui::rect_plane_ptr const &ui::button::rect_plane() {
@@ -279,7 +272,7 @@ void ui::button::_cancel_tracking(ui::event_ptr const &event, std::shared_ptr<bu
 }
 
 void ui::button::_send_notify(method const method, ui::event_ptr const &event, std::shared_ptr<button> const &button) {
-    this->_notify_sender->notify(std::make_pair(method, context{.button = button, .touch = event->get<ui::touch>()}));
+    this->_notifier->notify(std::make_pair(method, context{.button = button, .touch = event->get<ui::touch>()}));
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region) {

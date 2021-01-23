@@ -33,7 +33,7 @@ struct soft_keyboard {
     std::shared_ptr<ui::collection_layout> _collection_layout = nullptr;
     std::vector<chaining::any_observer_ptr> _frame_layouts;
 
-    std::vector<chaining::any_observer_ptr> _soft_key_observers;
+    std::vector<observing::canceller_ptr> _soft_key_cancellers;
     chaining::any_observer_ptr _renderer_observer = nullptr;
     chaining::any_observer_ptr _actual_cell_count_observer = nullptr;
     ui::layout_animator_ptr _cell_interporator = nullptr;

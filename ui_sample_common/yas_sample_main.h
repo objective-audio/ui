@@ -49,7 +49,7 @@ struct main {
 
     std::shared_ptr<ui::batch> _batch = ui::batch::make_shared();
 
-    chaining::any_observer_ptr _button_observer = nullptr;
+    observing::canceller_ptr _button_canceller = nullptr;
     observing::canceller_ptr _keyboard_canceller = nullptr;
 
     ui::node_ptr _render_target_node = ui::node::make_shared();

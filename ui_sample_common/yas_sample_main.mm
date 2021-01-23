@@ -32,14 +32,12 @@ void sample::main::setup() {
     this->_big_button_text->strings()->frame_layout_guide_rect()->set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
-    this->_button_observer = this->_big_button->button()
-                                 ->chain()
-                                 .perform([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
-                                     if (auto text = weak_text.lock()) {
-                                         text->set_status(pair.first);
-                                     }
-                                 })
-                                 .end();
+    this->_button_canceller =
+        this->_big_button->button()->observe([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
+            if (auto text = weak_text.lock()) {
+                text->set_status(pair.first);
+            }
+        });
 
     this->_keyboard_canceller =
         this->_soft_keyboard->observe([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
