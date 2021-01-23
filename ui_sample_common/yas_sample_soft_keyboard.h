@@ -17,13 +17,13 @@ struct soft_keyboard {
 
     ui::node_ptr const &node();
 
-    chaining::chain_unsync_t<std::string> chain() const;
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<std::string>::handler_f &&);
 
     static soft_keyboard_ptr make_shared(ui::font_atlas_ptr const &);
 
    private:
     ui::node_ptr _root_node = ui::node::make_shared();
-    chaining::notifier_ptr<std::string> _key_sender = chaining::notifier<std::string>::make_shared();
+    observing::notifier_ptr<std::string> _key_notifier = observing::notifier<std::string>::make_shared();
 
     std::weak_ptr<soft_keyboard> _weak_keyboard;
 

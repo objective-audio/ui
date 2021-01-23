@@ -87,8 +87,8 @@ ui::node_ptr const &sample::soft_keyboard::node() {
     return this->_root_node;
 }
 
-chaining::chain_unsync_t<std::string> sample::soft_keyboard::chain() const {
-    return this->_key_sender->chain();
+observing::canceller_ptr sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
+    return this->_key_notifier->observe(std::move(handler));
 }
 
 void sample::soft_keyboard::_prepare(soft_keyboard_ptr const &keyboard) {
@@ -155,7 +155,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
                 ->chain(ui::button::method::ended)
                 .perform([weak_keyboard = this->_weak_keyboard, key](auto const &context) {
                     if (auto keyboard = weak_keyboard.lock()) {
-                        keyboard->_key_sender->notify(key);
+                        keyboard->_key_notifier->notify(key);
                     }
                 })
                 .end();
