@@ -59,6 +59,8 @@ struct texture : metal_object {
     [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
+    std::weak_ptr<ui::texture> _weak_texture;
+
     chaining::value::holder_ptr<ui::uint_size> _point_size;
     chaining::value::holder_ptr<double> _scale_factor;
     uint32_t const _depth = 1;

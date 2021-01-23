@@ -115,6 +115,7 @@ void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
 
 void ui::texture::_prepare(texture_ptr const &texture) {
     auto weak_texture = to_weak(texture);
+    this->_weak_texture = weak_texture;
 
     this->_notify_receiver = chaining::perform_receiver<method>::make_shared([weak_texture](method const &method) {
         if (auto texture = weak_texture.lock()) {
