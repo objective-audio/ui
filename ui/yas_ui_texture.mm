@@ -115,12 +115,10 @@ void ui::texture::_prepare(texture_ptr const &texture) {
 
     this->_properties_observer =
         point_size_chain.merge(std::move(scale_factor_chain))
-            .guard([weak_texture](auto const &) { return !weak_texture.expired(); })
-            .perform([weak_texture](auto const &) {
-                auto const texture = weak_texture.lock();
-                texture->_metal_texture = nullptr;
-                texture->_draw_actual_pos = {texture->_draw_actual_padding, texture->_draw_actual_padding};
-                texture->_notifier->notify(std::make_pair(method::size_updated, texture));
+            .perform([this](auto const &) {
+                this->_metal_texture = nullptr;
+                this->_draw_actual_pos = {this->_draw_actual_padding, this->_draw_actual_padding};
+                this->_notifier->notify(std::make_pair(method::size_updated, this->_weak_texture.lock()));
             })
             .end();
 }
