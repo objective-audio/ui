@@ -53,8 +53,8 @@ ui::font_atlas::font_atlas(args &&args)
     this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
         [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
 
-    this->_texture_changed_receiver =
-        chaining::perform_receiver<ui::texture_ptr>::make_shared([this](ui::texture_ptr const &texture) {
+    this->_texture_changed_canceller = this->_texture->observe(
+        [this](ui::texture_ptr const &texture) {
             this->_update_word_infos();
 
             if (texture) {
@@ -68,10 +68,8 @@ ui::font_atlas::font_atlas(args &&args)
             }
 
             this->_texture_changed_fetcher->push();
-        });
-
-    this->_texture_changed_canceller = this->_texture->observe(
-        [this](ui::texture_ptr const &texture) { this->_texture_changed_receiver->receive_value(texture); }, false);
+        },
+        false);
 
     this->set_texture(args.texture);
 }

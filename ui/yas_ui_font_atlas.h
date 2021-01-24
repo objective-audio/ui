@@ -65,7 +65,6 @@ struct font_atlas final {
     chaining::perform_receiver_ptr<ui::texture_ptr> _texture_updated_receiver = nullptr;
     std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
     observing::canceller_ptr _texture_changed_canceller = nullptr;
-    chaining::perform_receiver_ptr<ui::texture_ptr> _texture_changed_receiver = nullptr;
 
     font_atlas(args &&);
 
