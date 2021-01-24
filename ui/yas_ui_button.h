@@ -78,7 +78,7 @@ struct button final {
     void _update_rect_positions(ui::region const &region, std::size_t const state_count);
     void _update_rect_index();
     std::vector<chaining::any_observer_ptr> _make_leave_chains();
-    std::vector<chaining::any_observer_ptr> _make_collider_chains();
+    std::vector<observing::canceller_ptr> _make_collider_chains();
     void _update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
     void _leave_or_enter_or_move_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
     void _cancel_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);

@@ -60,7 +60,7 @@ struct shape final {
     [[nodiscard]] static shape_ptr make_shared(anywhere::type);
     [[nodiscard]] static shape_ptr make_shared(circle::type);
     [[nodiscard]] static shape_ptr make_shared(rect::type);
-    
+
    private:
     std::shared_ptr<impl_base> _impl;
 
@@ -85,11 +85,10 @@ struct collider final : renderable_collider {
 
     bool hit_test(ui::point const &) const;
 
-    [[nodiscard]] chaining::chain_sync_t<ui::shape_ptr> chain_shape() const;
-    [[nodiscard]] chaining::chain_sync_t<bool> chain_enabled() const;
-
-    [[nodiscard]] chaining::receiver_ptr<ui::shape_ptr> shape_receiver();
-    [[nodiscard]] chaining::receiver_ptr<bool> enabled_receiver();
+    [[nodiscard]] observing::canceller_ptr observe_shape(observing::caller<ui::shape_ptr>::handler_f &&,
+                                                         bool const sync = true);
+    [[nodiscard]] observing::canceller_ptr observe_enabled(observing::caller<bool>::handler_f &&,
+                                                           bool const sync = true);
 
     [[nodiscard]] static collider_ptr make_shared();
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
@@ -97,8 +96,8 @@ struct collider final : renderable_collider {
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
 
-    chaining::value::holder_ptr<ui::shape_ptr> _shape;
-    chaining::value::holder_ptr<bool> _enabled = chaining::value::holder<bool>::make_shared(true);
+    observing::value::holder_ptr<ui::shape_ptr> const _shape;
+    observing::value::holder_ptr<bool> const _enabled = observing::value::holder<bool>::make_shared(true);
 
     explicit collider(ui::shape_ptr &&);
 

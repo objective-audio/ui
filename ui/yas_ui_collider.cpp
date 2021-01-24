@@ -92,7 +92,7 @@ ui::shape_ptr ui::shape::make_shared(rect::type type) {
 #pragma mark - collider
 
 ui::collider::collider(ui::shape_ptr &&shape)
-    : _shape(chaining::value::holder<ui::shape_ptr>::make_shared(std::move(shape))) {
+    : _shape(observing::value::holder<ui::shape_ptr>::make_shared(std::move(shape))) {
 }
 
 ui::collider::~collider() = default;
@@ -122,20 +122,13 @@ bool ui::collider::hit_test(ui::point const &loc) const {
     return false;
 }
 
-chaining::chain_sync_t<ui::shape_ptr> ui::collider::chain_shape() const {
-    return this->_shape->chain();
+observing::canceller_ptr ui::collider::observe_shape(observing::caller<ui::shape_ptr>::handler_f &&handler,
+                                                     bool const sync) {
+    return this->_shape->observe(std::move(handler), sync);
 }
 
-chaining::chain_sync_t<bool> ui::collider::chain_enabled() const {
-    return this->_enabled->chain();
-}
-
-chaining::receiver_ptr<ui::shape_ptr> ui::collider::shape_receiver() {
-    return this->_shape;
-}
-
-chaining::receiver_ptr<bool> ui::collider::enabled_receiver() {
-    return this->_enabled;
+observing::canceller_ptr ui::collider::observe_enabled(observing::caller<bool>::handler_f &&handler, bool const sync) {
+    return this->_enabled->observe(std::move(handler), sync);
 }
 
 simd::float4x4 const &ui::collider::matrix() const {
