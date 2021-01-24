@@ -33,8 +33,8 @@ std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 ui::texture::texture(args &&args)
     : _draw_actual_padding(args.draw_padding * args.scale_factor),
       _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
-      _point_size(chaining::value::holder<ui::uint_size>::make_shared(std::move(args.point_size))),
-      _scale_factor(chaining::value::holder<double>::make_shared(std::move(args.scale_factor))),
+      _point_size(std::move(args.point_size)),
+      _scale_factor(std::move(args.scale_factor)),
       _usages(args.usages),
       _pixel_format(args.pixel_format) {
 }
@@ -44,18 +44,18 @@ uintptr_t ui::texture::identifier() const {
 }
 
 ui::uint_size ui::texture::point_size() const {
-    return this->_point_size->value();
+    return this->_point_size;
 }
 
 ui::uint_size ui::texture::actual_size() const {
-    ui::uint_size const &point_size = this->_point_size->value();
-    double const &scale_factor = this->_scale_factor->value();
+    ui::uint_size const &point_size = this->_point_size;
+    double const &scale_factor = this->_scale_factor;
     return {static_cast<uint32_t>(point_size.width * scale_factor),
             static_cast<uint32_t>(point_size.height * scale_factor)};
 }
 
 double ui::texture::scale_factor() const {
-    return this->_scale_factor->value();
+    return this->_scale_factor;
 }
 
 uint32_t ui::texture::depth() const {
@@ -67,11 +67,17 @@ bool ui::texture::has_alpha() const {
 }
 
 void ui::texture::set_point_size(ui::uint_size size) {
-    this->_point_size->set_value(std::move(size));
+    if (this->_point_size != size) {
+        this->_point_size = size;
+        this->_size_updated();
+    }
 }
 
 void ui::texture::set_scale_factor(double const scale_factor) {
-    this->_scale_factor->set_value(scale_factor);
+    if (this->_scale_factor != scale_factor) {
+        this->_scale_factor = scale_factor;
+        this->_size_updated();
+    }
 }
 
 ui::texture_element_ptr const &ui::texture::add_draw_handler(ui::uint_size size, ui::draw_handler_f handler) {
@@ -98,29 +104,13 @@ observing::canceller_ptr ui::texture::observe(observing::caller<chain_pair_t>::h
     return this->_notifier->observe(std::move(handler));
 }
 
-std::shared_ptr<chaining::receiver<double>> ui::texture::scale_factor_receiver() {
-    return std::dynamic_pointer_cast<chaining::receiver<double>>(this->_scale_factor);
-}
-
 void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
-    this->_scale_observer = renderer->chain_scale_factor().send_to(this->scale_factor_receiver()).sync();
+    this->_scale_observer =
+        renderer->chain_scale_factor().perform([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 void ui::texture::_prepare(texture_ptr const &texture) {
-    auto weak_texture = to_weak(texture);
-    this->_weak_texture = weak_texture;
-
-    auto point_size_chain = this->_point_size->chain().to_null();
-    auto scale_factor_chain = this->_scale_factor->chain().to_null();
-
-    this->_properties_observer =
-        point_size_chain.merge(std::move(scale_factor_chain))
-            .perform([this](auto const &) {
-                this->_metal_texture = nullptr;
-                this->_draw_actual_pos = {this->_draw_actual_padding, this->_draw_actual_padding};
-                this->_notifier->notify(std::make_pair(method::size_updated, this->_weak_texture.lock()));
-            })
-            .end();
+    this->_weak_texture = texture;
 }
 
 ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
@@ -232,7 +222,7 @@ void ui::texture::_add_image_to_metal_texture(texture_element_ptr const &element
     auto const &point_size = pair.first;
     auto const &draw_handler = pair.second;
 
-    auto image = ui::image::make_shared({.point_size = point_size, .scale_factor = this->_scale_factor->value()});
+    auto image = ui::image::make_shared({.point_size = point_size, .scale_factor = this->_scale_factor});
 
     if (auto reserve_result = this->_reserve_image_size(image)) {
         if (draw_handler) {
@@ -242,6 +232,12 @@ void ui::texture::_add_image_to_metal_texture(texture_element_ptr const &element
             this->_replace_image(image, tex_coords.origin);
         }
     }
+}
+
+void ui::texture::_size_updated() {
+    this->_metal_texture = nullptr;
+    this->_draw_actual_pos = {this->_draw_actual_padding, this->_draw_actual_padding};
+    this->_notifier->notify(std::make_pair(method::size_updated, this->_weak_texture.lock()));
 }
 
 ui::texture_ptr ui::texture::make_shared(args args) {

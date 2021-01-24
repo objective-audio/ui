@@ -51,7 +51,6 @@ struct texture : metal_object {
 
     using chain_pair_t = std::pair<method, texture_ptr>;
     [[nodiscard]] observing::canceller_ptr observe(observing::caller<chain_pair_t>::handler_f &&);
-    [[nodiscard]] std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -60,8 +59,8 @@ struct texture : metal_object {
    private:
     std::weak_ptr<ui::texture> _weak_texture;
 
-    chaining::value::holder_ptr<ui::uint_size> _point_size;
-    chaining::value::holder_ptr<double> _scale_factor;
+    ui::uint_size _point_size;
+    double _scale_factor;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -96,6 +95,7 @@ struct texture : metal_object {
     bool _can_draw(uint_size const size);
     void _add_images_to_metal_texture();
     void _add_image_to_metal_texture(texture_element_ptr const &element);
+    void _size_updated();
 };
 }  // namespace yas::ui
 
