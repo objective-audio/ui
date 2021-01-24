@@ -18,7 +18,7 @@ using namespace yas;
 ui::render_target::render_target()
     : _layout_guide_rect(ui::layout_guide_rect::make_shared()),
       _effect(ui::effect::make_through_effect()),
-      _scale_factor(chaining::value::holder<double>::make_shared(1.0)),
+      _scale_factor(1.0),
       _data(ui::rect_plane_data::make_shared(1)),
       _src_texture(
           ui::texture::make_shared({.point_size = ui::uint_size::zero(),
@@ -65,14 +65,6 @@ ui::render_target::render_target()
         }
     });
 
-    this->_update_observers.emplace_back(this->_scale_factor->chain()
-                                             .perform([this](double const &scale_factor) {
-                                                 this->_src_texture->set_scale_factor(scale_factor);
-                                                 this->_dst_texture->set_scale_factor(scale_factor);
-                                                 this->_set_updated(render_target_update_reason::scale_factor);
-                                             })
-                                             .end());
-
     this->_rect_observer = this->_layout_guide_rect->chain()
                                .perform([this](ui::region const &region) {
                                    ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
@@ -96,11 +88,17 @@ ui::layout_guide_rect_ptr &ui::render_target::layout_guide_rect() {
 }
 
 void ui::render_target::set_scale_factor(double const scale_factor) {
-    this->_scale_factor->set_value(scale_factor);
+    if (this->_scale_factor != scale_factor) {
+        this->_scale_factor = scale_factor;
+
+        this->_src_texture->set_scale_factor(scale_factor);
+        this->_dst_texture->set_scale_factor(scale_factor);
+        this->_set_updated(render_target_update_reason::scale_factor);
+    }
 }
 
 double ui::render_target::scale_factor() const {
-    return this->_scale_factor->value();
+    return this->_scale_factor;
 }
 
 void ui::render_target::set_effect(ui::effect_ptr effect) {
@@ -118,7 +116,7 @@ ui::effect_ptr const &ui::render_target::effect() {
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
     this->_scale_canceller =
-        renderer->observe_scale_factor([this](double const &scale) { this->_scale_factor->set_value(scale); });
+        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); });
 }
 
 ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
