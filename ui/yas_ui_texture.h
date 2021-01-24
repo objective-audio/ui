@@ -50,8 +50,7 @@ struct texture : metal_object {
     std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
     using chain_pair_t = std::pair<method, texture_ptr>;
-    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain() const;
-    [[nodiscard]] chaining::chain_relayed_unsync_t<texture_ptr, chain_pair_t> chain(method const &) const;
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<chain_pair_t>::handler_f &&);
     [[nodiscard]] std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
@@ -77,7 +76,7 @@ struct texture : metal_object {
     std::vector<texture_element_ptr> _texture_elements;
     chaining::any_observer_ptr _scale_observer = nullptr;
     chaining::any_observer_ptr _properties_observer = nullptr;
-    chaining::notifier_ptr<chain_pair_t> _notifier = chaining::notifier<chain_pair_t>::make_shared();
+    observing::notifier_ptr<chain_pair_t> const _notifier = observing::notifier<chain_pair_t>::make_shared();
 
     explicit texture(args &&);
 

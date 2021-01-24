@@ -149,11 +149,15 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
                 atlas->_update_word_infos(atlas);
 
                 if (texture) {
-                    atlas->_texture_observer = texture->chain(texture::method::metal_texture_changed)
-                                                   .send_to(atlas->_texture_updated_receiver)
-                                                   .end();
+                    atlas->_texture_canceller = texture->observe([weak_atlas](auto const &pair) {
+                        if (pair.first == texture::method::metal_texture_changed) {
+                            if (auto atlas = weak_atlas.lock()) {
+                                atlas->_texture_updated_receiver->receive_value(pair.second);
+                            }
+                        }
+                    });
                 } else {
-                    atlas->_texture_observer = nullptr;
+                    atlas->_texture_canceller = std::nullopt;
                 }
 
                 atlas->_texture_changed_fetcher->push();

@@ -63,7 +63,7 @@ struct font_atlas final {
     chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<chaining::any_observer_ptr> _element_observers;
     chaining::perform_receiver_ptr<ui::texture_ptr> _texture_updated_receiver = nullptr;
-    chaining::any_observer_ptr _texture_observer = nullptr;
+    std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
     chaining::any_observer_ptr _texture_changed_observer = nullptr;
     chaining::perform_receiver_ptr<ui::texture_ptr> _texture_changed_receiver = nullptr;
 

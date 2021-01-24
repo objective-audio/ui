@@ -94,15 +94,8 @@ ui::metal_texture_ptr const &ui::texture::metal_texture() const {
     return this->_metal_texture;
 }
 
-chaining::chain_unsync_t<ui::texture::chain_pair_t> ui::texture::chain() const {
-    return this->_notifier->chain();
-}
-
-chaining::chain_relayed_unsync_t<ui::texture_ptr, ui::texture::chain_pair_t> ui::texture::chain(
-    method const &method) const {
-    return this->chain()
-        .guard([method](chain_pair_t const &pair) { return pair.first == method; })
-        .to([](chain_pair_t const &pair) { return pair.second; });
+observing::canceller_ptr ui::texture::observe(observing::caller<chain_pair_t>::handler_f &&handler) {
+    return this->_notifier->observe(std::move(handler));
 }
 
 std::shared_ptr<chaining::receiver<double>> ui::texture::scale_factor_receiver() {

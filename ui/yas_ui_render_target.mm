@@ -74,36 +74,36 @@ void ui::render_target::_prepare(ui::render_target_ptr const &target) {
 
     auto weak_target = to_weak(target);
 
-    this->_src_texture_observer =
-        this->_src_texture->chain(ui::texture::method::metal_texture_changed)
-            .perform([weak_target](ui::texture_ptr const &texture) {
-                if (ui::render_target_ptr const target = weak_target.lock()) {
-                    auto renderPassDescriptor = *target->_render_pass_descriptor;
+    this->_src_texture_canceller = this->_src_texture->observe([weak_target](auto const &pair) {
+        if (pair.first == ui::texture::method::metal_texture_changed) {
+            ui::texture_ptr const &texture = pair.second;
+            if (ui::render_target_ptr const target = weak_target.lock()) {
+                auto renderPassDescriptor = *target->_render_pass_descriptor;
 
-                    if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
-                        auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
-                        auto colorDesc = *color_desc;
-                        colorDesc.texture = metal_texture->texture();
-                        colorDesc.loadAction = MTLLoadActionClear;
-                        colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+                if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
+                    auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
+                    auto colorDesc = *color_desc;
+                    colorDesc.texture = metal_texture->texture();
+                    colorDesc.loadAction = MTLLoadActionClear;
+                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 
-                        [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-                    } else {
-                        [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
-                    }
+                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+                } else {
+                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
                 }
-            })
-            .end();
+            }
+        }
+    });
 
-    this->_dst_texture_observer =
-        this->_dst_texture->chain(ui::texture::method::size_updated)
-            .perform([weak_target](ui::texture_ptr const &texture) {
-                if (ui::render_target_ptr target = weak_target.lock()) {
-                    target->_data->set_rect_tex_coords(
-                        ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
-                }
-            })
-            .end();
+    this->_dst_texture_canceller = this->_dst_texture->observe([weak_target](auto const &pair) {
+        if (pair.first == ui::texture::method::size_updated) {
+            ui::texture_ptr const &texture = pair.second;
+            if (ui::render_target_ptr target = weak_target.lock()) {
+                target->_data->set_rect_tex_coords(
+                    ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
+            }
+        }
+    });
 
     this->_update_observers.emplace_back(this->_effect->chain()
                                              .perform([weak_target](ui::effect_ptr const &) {
