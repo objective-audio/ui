@@ -29,7 +29,7 @@ using namespace yas;
 #pragma mark - node
 
 ui::node::node()
-    : _parent(chaining::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
+    : _parent(observing::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
       _renderer(chaining::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
       _position(chaining::value::holder<ui::point>::make_shared({.v = 0.0f})),
       _scale(chaining::value::holder<ui::size>::make_shared({.v = 1.0f})),
@@ -175,12 +175,12 @@ chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> ui::node::ch
     });
 }
 
-chaining::chain_relayed_sync_t<ui::node_ptr, ui::node_wptr> ui::node::chain_parent() const {
-    return this->_parent->chain().to([](ui::node_wptr const &weak_node) {
+observing::canceller_ptr ui::node::observe_parent(observing::caller<ui::node_ptr>::handler_f &&handler) {
+    return this->_parent->observe([handler = std::move(handler)](ui::node_wptr const &weak_node) {
         if (auto node = weak_node.lock()) {
-            return node;
+            handler(node);
         } else {
-            return ui::node_ptr{nullptr};
+            handler(nullptr);
         }
     });
 }

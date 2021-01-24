@@ -64,7 +64,7 @@ struct node final : action_target, metal_object, renderable_node {
                                                    observing::caller<chain_pair_t>::handler_f &&);
 
     [[nodiscard]] chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> chain_renderer() const;
-    [[nodiscard]] chaining::chain_relayed_sync_t<ui::node_ptr, ui::node_wptr> chain_parent() const;
+    [[nodiscard]] observing::canceller_ptr observe_parent(observing::caller<ui::node_ptr>::handler_f &&);
 
     ui::point convert_position(ui::point const &) const;
 
@@ -77,7 +77,7 @@ struct node final : action_target, metal_object, renderable_node {
    private:
     std::weak_ptr<node> _weak_node;
 
-    chaining::value::holder_ptr<ui::node_wptr> _parent;
+    observing::value::holder_ptr<ui::node_wptr> _parent;
     chaining::value::holder_ptr<ui::renderer_wptr> _renderer;
 
     chaining::value::holder_ptr<ui::point> _position;
