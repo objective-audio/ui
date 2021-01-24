@@ -13,18 +13,18 @@ class color;
 struct background final : renderable_background {
     virtual ~background();
 
-    [[nodiscard]] chaining::value::holder_ptr<ui::color> const &color() const;
-    [[nodiscard]] chaining::value::holder_ptr<float> const &alpha() const;
+    [[nodiscard]] observing::value::holder_ptr<ui::color> const &color() const;
+    [[nodiscard]] observing::value::holder_ptr<float> const &alpha() const;
 
     [[nodiscard]] static std::shared_ptr<background> make_shared();
 
    private:
-    chaining::value::holder_ptr<ui::color> _color;
-    chaining::value::holder_ptr<float> _alpha;
+    observing::value::holder_ptr<ui::color> _color;
+    observing::value::holder_ptr<float> _alpha;
 
     background_updates_t _updates;
 
-    chaining::observer_pool _pool;
+    observing::canceller_pool _pool;
 
     background();
 
