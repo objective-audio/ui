@@ -74,7 +74,6 @@ struct texture : metal_object {
     uint_point _draw_actual_pos;
     std::vector<texture_element_ptr> _texture_elements;
     observing::canceller_ptr _scale_canceller = nullptr;
-    chaining::any_observer_ptr _properties_observer = nullptr;
     observing::notifier_ptr<chain_pair_t> const _notifier = observing::notifier<chain_pair_t>::make_shared();
 
     explicit texture(args &&);
