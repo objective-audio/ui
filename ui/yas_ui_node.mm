@@ -36,7 +36,7 @@ ui::node::node()
       _angle(chaining::value::holder<ui::angle>::make_shared({0.0f})),
       _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
-      _mesh(chaining::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
+      _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
       _collider(chaining::value::holder<ui::collider_ptr>::make_shared(nullptr)),
       _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
@@ -79,7 +79,7 @@ simd::float4x4 const &ui::node::local_matrix() const {
     return this->_local_matrix;
 }
 
-chaining::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
+observing::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
     return this->_mesh;
 }
 
@@ -247,10 +247,10 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     // mesh and mesh_color
 
-    auto mesh_observer = this->_mesh->chain()
-                             .guard([weak_node](auto const &) { return !weak_node.expired(); })
-                             .perform([weak_node](auto const &) { weak_node.lock()->_update_mesh_color(); })
-                             .to_value(ui::node_update_reason::mesh);
+    auto mesh_canceller = this->_mesh->observe([this](auto const &) {
+        this->_update_mesh_color();
+        this->_set_updated(ui::node_update_reason::mesh);
+    });
 
     auto color_canceller = this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false);
     auto alpha_canceller = this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false);
@@ -285,17 +285,16 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     auto updates_observer =
         pos_chain.merge(std::move(angle_chain))
             .merge(std::move(scale_chain))
-            .merge(std::move(mesh_observer))
             .merge(std::move(collider_chain))
             .merge(std::move(batch_chain))
             .merge(std::move(render_target_chain))
             .perform([weak_node](ui::node_update_reason const &reason) { weak_node.lock()->_set_updated(reason); })
             .end();
 
-    this->_update_observers.reserve(2);
     this->_update_observers.emplace_back(std::move(enabled_canceller));
     this->_update_observers.emplace_back(std::move(color_canceller));
     this->_update_observers.emplace_back(std::move(alpha_canceller));
+    this->_update_observers.emplace_back(std::move(mesh_canceller));
     this->_update_observers.emplace_back(std::move(batch_observer));
     this->_update_observers.emplace_back(std::move(updates_observer));
 }

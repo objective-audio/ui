@@ -43,7 +43,7 @@ struct node final : action_target, metal_object, renderable_node {
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
-    chaining::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
+    observing::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
     chaining::value::holder_ptr<ui::collider_ptr> const &collider() const;
     chaining::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
     chaining::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
@@ -85,7 +85,7 @@ struct node final : action_target, metal_object, renderable_node {
     chaining::value::holder_ptr<ui::size> _scale;
     observing::value::holder_ptr<ui::color> _color;
     observing::value::holder_ptr<float> _alpha;
-    chaining::value::holder_ptr<ui::mesh_ptr> _mesh;
+    observing::value::holder_ptr<ui::mesh_ptr> _mesh;
     chaining::value::holder_ptr<ui::collider_ptr> _collider;
     chaining::value::holder_ptr<std::shared_ptr<ui::batch>> _batch;
     chaining::value::holder_ptr<ui::render_target_ptr> _render_target;
