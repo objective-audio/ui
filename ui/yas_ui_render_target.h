@@ -41,7 +41,7 @@ struct render_target : metal_object, renderable_render_target {
     observing::canceller_ptr _dst_texture_canceller = nullptr;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    chaining::any_observer_ptr _scale_observer = nullptr;
+    observing::canceller_ptr _scale_canceller = nullptr;
     chaining::any_observer_ptr _rect_observer = nullptr;
     chaining::any_observer_ptr _effect_observer = nullptr;
 

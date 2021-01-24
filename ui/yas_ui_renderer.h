@@ -62,7 +62,8 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::appearance appearance() const;
 
     [[nodiscard]] observing::canceller_ptr observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
-    [[nodiscard]] chaining::chain_sync_t<double> chain_scale_factor() const;
+    [[nodiscard]] observing::canceller_ptr observe_scale_factor(observing::caller<double>::handler_f &&,
+                                                                bool const sync = true);
     [[nodiscard]] chaining::chain_sync_t<ui::appearance> chain_appearance() const;
 
     [[nodiscard]] static renderer_ptr make_shared();
@@ -85,7 +86,7 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     ui::uint_size _view_size;
     ui::uint_size _drawable_size;
     double _scale_factor{0.0f};
-    chaining::value::holder_ptr<double> _scale_factor_notify;
+    observing::value::holder_ptr<double> _scale_factor_notify;
     yas_edge_insets _safe_area_insets;
     chaining::value::holder_ptr<ui::appearance> _appearance;
     simd::float4x4 _projection_matrix;

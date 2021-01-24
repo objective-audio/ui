@@ -121,9 +121,8 @@ ui::effect_ptr const &ui::render_target::effect() {
 }
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
-    this->_scale_observer = renderer->chain_scale_factor()
-                                .perform([this](double const &scale) { this->_scale_factor->set_value(scale); })
-                                .sync();
+    this->_scale_canceller =
+        renderer->observe_scale_factor([this](double const &scale) { this->_scale_factor->set_value(scale); });
 }
 
 ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {

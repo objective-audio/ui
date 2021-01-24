@@ -73,7 +73,7 @@ struct texture : metal_object {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element_ptr> _texture_elements;
-    chaining::any_observer_ptr _scale_observer = nullptr;
+    observing::canceller_ptr _scale_canceller = nullptr;
     chaining::any_observer_ptr _properties_observer = nullptr;
     observing::notifier_ptr<chain_pair_t> const _notifier = observing::notifier<chain_pair_t>::make_shared();
 

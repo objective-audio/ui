@@ -40,7 +40,7 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
     : _metal_system(metal_system),
       _view_size({.width = 0, .height = 0}),
       _drawable_size({.width = 0, .height = 0}),
-      _scale_factor_notify(chaining::value::holder<double>::make_shared(0.0f)),
+      _scale_factor_notify(observing::value::holder<double>::make_shared(0.0f)),
       _safe_area_insets({.top = 0, .left = 0, .bottom = 0, .right = 0}),
       _appearance(chaining::value::holder<ui::appearance>::make_shared(ui::appearance::normal)),
       _projection_matrix(matrix_identity_float4x4),
@@ -146,8 +146,9 @@ observing::canceller_ptr ui::renderer::observe_will_render(observing::caller<std
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-chaining::chain_sync_t<double> ui::renderer::chain_scale_factor() const {
-    return this->_scale_factor_notify->chain();
+observing::canceller_ptr ui::renderer::observe_scale_factor(observing::caller<double>::handler_f &&handler,
+                                                            bool const sync) {
+    return this->_scale_factor_notify->observe(std::move(handler), sync);
 }
 
 chaining::chain_sync_t<ui::appearance> ui::renderer::chain_appearance() const {
