@@ -64,7 +64,8 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     [[nodiscard]] observing::canceller_ptr observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] observing::canceller_ptr observe_scale_factor(observing::caller<double>::handler_f &&,
                                                                 bool const sync = true);
-    [[nodiscard]] chaining::chain_sync_t<ui::appearance> chain_appearance() const;
+    [[nodiscard]] observing::canceller_ptr observe_appearance(observing::caller<ui::appearance>::handler_f &&,
+                                                              bool const sync = true);
 
     [[nodiscard]] static renderer_ptr make_shared();
     [[nodiscard]] static renderer_ptr make_shared(ui::metal_system_ptr const &);
@@ -88,7 +89,7 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     double _scale_factor{0.0f};
     observing::value::holder_ptr<double> _scale_factor_notify;
     yas_edge_insets _safe_area_insets;
-    chaining::value::holder_ptr<ui::appearance> _appearance;
+    observing::value::holder_ptr<ui::appearance> _appearance;
     simd::float4x4 _projection_matrix;
 
     ui::background_ptr _background;
@@ -101,7 +102,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier =
         observing::notifier<std::nullptr_t>::make_shared();
-    chaining::observer_pool _pool;
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);
 
