@@ -38,7 +38,7 @@ struct node final : action_target, metal_object, renderable_node {
     chaining::value::holder_ptr<ui::size> const &scale() const;
     chaining::value::holder_ptr<ui::color> const &color() const;
     chaining::value::holder_ptr<float> const &alpha() const;
-    chaining::value::holder_ptr<bool> const &is_enabled() const;
+    observing::value::holder_ptr<bool> const &is_enabled() const;
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
@@ -89,7 +89,7 @@ struct node final : action_target, metal_object, renderable_node {
     chaining::value::holder_ptr<ui::collider_ptr> _collider;
     chaining::value::holder_ptr<std::shared_ptr<ui::batch>> _batch;
     chaining::value::holder_ptr<ui::render_target_ptr> _render_target;
-    chaining::value::holder_ptr<bool> _enabled;
+    observing::value::holder_ptr<bool> _enabled;
 
     chaining::any_observer_ptr _x_observer = nullptr;
     chaining::any_observer_ptr _y_observer = nullptr;
@@ -100,7 +100,7 @@ struct node final : action_target, metal_object, renderable_node {
     mutable simd::float4x4 _matrix = matrix_identity_float4x4;
     mutable simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<chaining::any_observer_ptr> _update_observers;
+    std::vector<chaining::invalidatable_ptr> _update_observers;
     mutable std::unordered_map<ui::node::method, observing::canceller_ptr> _dispatch_cancellers;
     observing::notifier_ptr<chain_pair_t> const _dispatch_notifier = observing::notifier<chain_pair_t>::make_shared();
     observing::notifier_ptr<ui::node::method> const _notifier = observing::notifier<ui::node::method>::make_shared();

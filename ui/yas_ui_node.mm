@@ -40,7 +40,7 @@ ui::node::node()
       _collider(chaining::value::holder<ui::collider_ptr>::make_shared(nullptr)),
       _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
-      _enabled(chaining::value::holder<bool>::make_shared(true)) {
+      _enabled(observing::value::holder<bool>::make_shared(true)) {
 }
 
 ui::node::~node() = default;
@@ -65,7 +65,7 @@ chaining::value::holder_ptr<float> const &ui::node::alpha() const {
     return this->_alpha;
 }
 
-chaining::value::holder_ptr<bool> const &ui::node::is_enabled() const {
+observing::value::holder_ptr<bool> const &ui::node::is_enabled() const {
     return this->_enabled;
 }
 
@@ -236,7 +236,8 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     // enabled
 
-    auto enabled_observer = this->_enabled->chain().to_value(ui::node_update_reason::enabled);
+    auto enabled_canceller =
+        this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false);
 
     // geometry
 
@@ -287,8 +288,7 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     auto render_target_chain = this->_render_target->chain().to_value(ui::node_update_reason::render_target);
 
     auto updates_observer =
-        enabled_observer.merge(std::move(pos_chain))
-            .merge(std::move(angle_chain))
+        pos_chain.merge(std::move(angle_chain))
             .merge(std::move(scale_chain))
             .merge(std::move(mesh_observer))
             .merge(std::move(collider_chain))
@@ -298,6 +298,7 @@ void ui::node::_prepare(ui::node_ptr const &node) {
             .end();
 
     this->_update_observers.reserve(2);
+    this->_update_observers.emplace_back(std::move(enabled_canceller));
     this->_update_observers.emplace_back(std::move(mesh_color_observer));
     this->_update_observers.emplace_back(std::move(batch_observer));
     this->_update_observers.emplace_back(std::move(updates_observer));

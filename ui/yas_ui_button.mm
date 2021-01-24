@@ -97,7 +97,7 @@ void ui::button::_prepare(button_ptr const &button) {
 
     this->_renderer_observer = node->chain_renderer()
                                    .perform([event_canceller = observing::canceller_ptr{nullptr},
-                                             leave_observers = std::vector<chaining::any_observer_ptr>(),
+                                             leave_observers = std::vector<chaining::invalidatable_ptr>(),
                                              collider_observers = std::vector<observing::canceller_ptr>(),
                                              weak_button](ui::renderer_ptr const &value) mutable {
                                        if (auto renderer = value) {
@@ -164,10 +164,10 @@ void ui::button::_update_rect_index() {
     this->_rect_plane->data()->set_rect_index(0, idx);
 }
 
-std::vector<chaining::any_observer_ptr> ui::button::_make_leave_chains() {
+std::vector<chaining::invalidatable_ptr> ui::button::_make_leave_chains() {
     ui::node_ptr &node = this->_rect_plane->node();
 
-    std::vector<chaining::any_observer_ptr> observers;
+    std::vector<chaining::invalidatable_ptr> observers;
     observers.emplace_back(
         node->position()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
     observers.emplace_back(node->angle()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
@@ -178,11 +178,11 @@ std::vector<chaining::any_observer_ptr> ui::button::_make_leave_chains() {
                                .guard([](ui::collider_ptr const &value) { return !value; })
                                .send_null_to(this->_cancel_tracking_receiver)
                                .end());
-    observers.emplace_back(node->is_enabled()
-                               ->chain()
-                               .guard([](bool const &value) { return !value; })
-                               .send_null_to(this->_cancel_tracking_receiver)
-                               .end());
+    observers.emplace_back(node->is_enabled()->observe([this](bool const &value) {
+        if (!value) {
+            this->_cancel_tracking_receiver->receive_value(nullptr);
+        }
+    }));
 
     return observers;
 }
