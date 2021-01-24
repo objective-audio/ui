@@ -46,7 +46,7 @@ struct node final : action_target, metal_object, renderable_node {
     observing::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
     observing::value::holder_ptr<ui::collider_ptr> const &collider() const;
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
-    chaining::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
+    observing::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
 
     void add_sub_node(ui::node_ptr const &);
     void add_sub_node(ui::node_ptr const &, std::size_t const);
@@ -88,7 +88,7 @@ struct node final : action_target, metal_object, renderable_node {
     observing::value::holder_ptr<ui::mesh_ptr> _mesh;
     observing::value::holder_ptr<ui::collider_ptr> _collider;
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> _batch;
-    chaining::value::holder_ptr<ui::render_target_ptr> _render_target;
+    observing::value::holder_ptr<ui::render_target_ptr> _render_target;
     observing::value::holder_ptr<bool> _enabled;
 
     chaining::any_observer_ptr _x_observer = nullptr;

@@ -39,7 +39,7 @@ ui::node::node()
       _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
       _collider(observing::value::holder<ui::collider_ptr>::make_shared(nullptr)),
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
-      _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
+      _render_target(observing::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
 }
 
@@ -91,7 +91,7 @@ observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch(
     return this->_batch;
 }
 
-chaining::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_target() const {
+observing::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_target() const {
     return this->_render_target;
 }
 
@@ -280,11 +280,11 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     // render_target
 
-    auto render_target_chain = this->_render_target->chain().to_value(ui::node_update_reason::render_target);
+    auto render_target_canceller = this->_render_target->observe(
+        [this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false);
 
     auto updates_observer = pos_chain.merge(std::move(angle_chain))
                                 .merge(std::move(scale_chain))
-                                .merge(std::move(render_target_chain))
                                 .perform([this](ui::node_update_reason const &reason) { this->_set_updated(reason); })
                                 .end();
 
@@ -293,6 +293,7 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     this->_update_observers.emplace_back(std::move(alpha_canceller));
     this->_update_observers.emplace_back(std::move(mesh_canceller));
     this->_update_observers.emplace_back(std::move(batch_canceller));
+    this->_update_observers.emplace_back(std::move(render_target_canceller));
     this->_update_observers.emplace_back(std::move(updates_observer));
 }
 
