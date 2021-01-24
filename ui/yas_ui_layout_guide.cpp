@@ -34,69 +34,77 @@ void ui::layout_guide::pop_notify_waiting() {
 }
 
 ui::layout_guide::chain_t ui::layout_guide::chain() const {
-    auto weak_guide = this->_weak_ptr;
-
+    auto cache = std::make_shared<std::optional<float>>();
     auto old_cache = std::make_shared<std::optional<float>>();
+    auto is_wait = std::make_shared<bool>(false);
 
-    auto wait_sender_chain = this->_wait_sender->chain().guard([count = int32_t(0)](bool const &is_wait) mutable {
-        if (is_wait) {
-            ++count;
-            return (count == 1);
-        } else {
-            --count;
-            if (count < 0) {
-                std::underflow_error("");
-            }
-            return (count == 0);
+    auto value_chain = this->_value->chain().guard([cache, old_cache, is_wait](float const &value) {
+        // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
+        *cache = value;
+
+        if (*is_wait) {
+            return false;
         }
+
+        if (*old_cache) {
+            float const old_value = **old_cache;
+            *old_cache = std::nullopt;
+            if (old_value == **cache) {
+                return false;
+            }
+        }
+
+        return true;
     });
 
-    return this->_value->chain()
-        .guard([weak_guide](float const &) { return !weak_guide.expired(); })
-        .pair(std::move(wait_sender_chain))
-        .to([cache = std::optional<float>(), old_cache, is_wait = false,
-             weak_guide](std::pair<std::optional<float>, std::optional<bool>> const &pair) mutable {
-            bool is_continue = false;
-
-            if (pair.first) {
-                // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
-                cache = *pair.first;
-                is_continue = !is_wait;
-            } else if (pair.second) {
-                // waitフラグが来た場合
-                is_wait = *pair.second;
-
-                auto const guide = weak_guide.lock();
-
-                if (is_wait) {
-                    // wait開始ならキャッシュをクリアしてフロー中断
-                    cache = std::nullopt;
-                    is_continue = false;
-                    *old_cache = guide->_value->value();
-                } else {
-                    // wait終了ならキャッシュに値があればフロー継続
-                    is_continue = !!cache;
-                    if (!is_continue) {
-                        *old_cache = std::nullopt;
-                    }
+    auto wait_sender_chain = this->_wait_sender->chain().guard(
+        [count = int32_t(0), is_wait, cache, old_cache, this](bool const &value) mutable {
+            if (value) {
+                ++count;
+                if (count != 1) {
+                    return false;
+                }
+            } else {
+                --count;
+                if (count < 0) {
+                    std::underflow_error("");
+                }
+                if (count != 0) {
+                    return false;
                 }
             }
 
-            return std::make_pair(cache, is_continue);
-        })
-        .guard([old_cache](auto const &pair) {
-            if (!pair.second) {
+            // waitフラグが来た場合
+            *is_wait = value;
+
+            if (value) {
+                // wait開始ならキャッシュをクリアしてフロー中断
+                *cache = std::nullopt;
+                *old_cache = this->_value->value();
+
                 return false;
+            } else {
+                // wait終了ならキャッシュに値があればフロー継続
+
+                if (!*cache) {
+                    *old_cache = std::nullopt;
+                    return false;
+                }
             }
 
-            if (!*old_cache) {
-                return true;
+            if (*old_cache) {
+                float const old_value = **old_cache;
+                *old_cache = std::nullopt;
+                if (old_value == **cache) {
+                    return false;
+                }
             }
-            float const old_value = **old_cache;
-            *old_cache = std::nullopt;
-            return old_value != *pair.first;
-        })
-        .to([](std::pair<std::optional<float>, bool> const &pair) { return *pair.first; });
+
+            return true;
+        });
+
+    return value_chain.pair(std::move(wait_sender_chain))
+        .to([cache](std::pair<std::optional<float>, std::optional<bool>> const &pair) { return **cache; });
 }
 
 void ui::layout_guide::receive_value(float const &value) {
