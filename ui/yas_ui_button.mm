@@ -153,7 +153,7 @@ void ui::button::_update_rect_positions(ui::region const &region, std::size_t co
         this->_rect_plane->data()->set_rect_position(region, yas_each_index(each));
     }
 
-    ui::collider_ptr &collider = this->_rect_plane->node()->collider()->value();
+    ui::collider_ptr const &collider = this->_rect_plane->node()->collider()->value();
     if (!collider->shape() || (collider->shape()->type_info() == typeid(ui::shape::rect))) {
         collider->set_shape(ui::shape::make_shared({.rect = region}));
     }
@@ -173,11 +173,13 @@ std::vector<chaining::invalidatable_ptr> ui::button::_make_leave_chains() {
     observers.emplace_back(node->angle()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
     observers.emplace_back(node->scale()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
 
-    observers.emplace_back(node->collider()
-                               ->chain()
-                               .guard([](ui::collider_ptr const &value) { return !value; })
-                               .send_null_to(this->_cancel_tracking_receiver)
-                               .end());
+    observers.emplace_back(node->collider()->observe(
+        [this](ui::collider_ptr const &value) {
+            if (!value) {
+                this->_cancel_tracking_receiver->receive_value(nullptr);
+            }
+        },
+        false));
     observers.emplace_back(node->is_enabled()->observe([this](bool const &value) {
         if (!value) {
             this->_cancel_tracking_receiver->receive_value(nullptr);

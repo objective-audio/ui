@@ -37,7 +37,7 @@ ui::node::node()
       _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
-      _collider(chaining::value::holder<ui::collider_ptr>::make_shared(nullptr)),
+      _collider(observing::value::holder<ui::collider_ptr>::make_shared(nullptr)),
       _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
@@ -83,7 +83,7 @@ observing::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
     return this->_mesh;
 }
 
-chaining::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {
+observing::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {
     return this->_collider;
 }
 
@@ -257,7 +257,8 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     // collider
 
-    auto collider_chain = this->_collider->chain().to_value(ui::node_update_reason::collider);
+    auto collider_chain =
+        this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); });
 
     // batch
 
@@ -282,14 +283,12 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     auto render_target_chain = this->_render_target->chain().to_value(ui::node_update_reason::render_target);
 
-    auto updates_observer =
-        pos_chain.merge(std::move(angle_chain))
-            .merge(std::move(scale_chain))
-            .merge(std::move(collider_chain))
-            .merge(std::move(batch_chain))
-            .merge(std::move(render_target_chain))
-            .perform([this](ui::node_update_reason const &reason) { this->_set_updated(reason); })
-            .end();
+    auto updates_observer = pos_chain.merge(std::move(angle_chain))
+                                .merge(std::move(scale_chain))
+                                .merge(std::move(batch_chain))
+                                .merge(std::move(render_target_chain))
+                                .perform([this](ui::node_update_reason const &reason) { this->_set_updated(reason); })
+                                .end();
 
     this->_update_observers.emplace_back(std::move(enabled_canceller));
     this->_update_observers.emplace_back(std::move(color_canceller));
