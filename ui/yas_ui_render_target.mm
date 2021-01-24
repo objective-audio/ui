@@ -17,7 +17,7 @@ using namespace yas;
 
 ui::render_target::render_target()
     : _layout_guide_rect(ui::layout_guide_rect::make_shared()),
-      _effect(chaining::value::holder<ui::effect_ptr>::make_shared(nullptr)),
+      _effect(ui::effect::make_through_effect()),
       _scale_factor(chaining::value::holder<double>::make_shared(1.0)),
       _data(ui::rect_plane_data::make_shared(1)),
       _src_texture(
@@ -35,8 +35,6 @@ ui::render_target::render_target()
     this->_render_pass_descriptor = objc_ptr_with_move_object([MTLRenderPassDescriptor new]);
     this->_mesh->set_mesh_data(this->_data->dynamic_mesh_data());
     this->_mesh->set_texture(this->_dst_texture);
-
-    this->_effect->set_value(ui::effect::make_through_effect());
 
     this->_set_textures_to_effect();
 
@@ -66,13 +64,6 @@ ui::render_target::render_target()
                 ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
         }
     });
-
-    this->_update_observers.emplace_back(this->_effect->chain()
-                                             .perform([this](ui::effect_ptr const &) {
-                                                 this->_set_updated(render_target_update_reason::effect);
-                                                 this->_set_textures_to_effect();
-                                             })
-                                             .end());
 
     this->_update_observers.emplace_back(this->_scale_factor->chain()
                                              .perform([this](double const &scale_factor) {
@@ -113,11 +104,16 @@ double ui::render_target::scale_factor() const {
 }
 
 void ui::render_target::set_effect(ui::effect_ptr effect) {
-    this->_effect->set_value(effect ?: ui::effect::make_through_effect());
+    if (this->_effect != effect) {
+        this->_effect = effect ?: ui::effect::make_through_effect();
+
+        this->_set_updated(render_target_update_reason::effect);
+        this->_set_textures_to_effect();
+    }
 }
 
 ui::effect_ptr const &ui::render_target::effect() {
-    return this->_effect->value();
+    return this->_effect;
 }
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
@@ -152,7 +148,7 @@ ui::render_target_updates_t &ui::render_target::updates() {
 void ui::render_target::clear_updates() {
     this->_updates.flags.reset();
     renderable_mesh::cast(this->_mesh)->clear_updates();
-    if (auto &effect = this->_effect->value()) {
+    if (auto &effect = this->_effect) {
         renderable_effect::cast(effect)->clear_updates();
     }
 }
@@ -189,7 +185,7 @@ bool ui::render_target::_is_size_updated() {
 }
 
 void ui::render_target::_set_textures_to_effect() {
-    if (auto const &effect = this->_effect->value()) {
+    if (auto const &effect = this->_effect) {
         renderable_effect::cast(effect)->set_textures(this->_src_texture, this->_dst_texture);
     }
 }
