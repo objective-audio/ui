@@ -145,7 +145,7 @@ observing::canceller_ptr ui::font_atlas::observe_texture_updated(observing::call
 }
 
 void ui::font_atlas::_update_word_infos() {
-    this->_element_observers.clear();
+    this->_element_cancellers.clear();
 
     auto &texture = this->texture();
 
@@ -205,11 +205,10 @@ void ui::font_atlas::_update_word_infos() {
                 CGContextRestoreGState(ctx);
             });
 
-        this->_element_observers.emplace_back(
-            texture_element->chain_tex_coords()
-                .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
-                .perform([this](auto const &pair) { this->_word_infos.at(pair.second).rect.set_tex_coord(pair.first); })
-                .sync());
+        this->_element_cancellers.emplace_back(
+            texture_element->observe_tex_coords([this, idx](ui::uint_region const &tex_coords) {
+                this->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
+            }));
 
         auto const &advance = advances[idx];
         this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};

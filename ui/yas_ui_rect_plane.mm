@@ -148,38 +148,23 @@ void ui::rect_plane_data::observe_rect_tex_coords(ui::texture_element_ptr const 
 }
 
 void ui::rect_plane_data::clear_observers() {
-    this->_element_observers.clear();
+    this->_element_cancellers.clear();
 }
 
 ui::dynamic_mesh_data_ptr const &ui::rect_plane_data::dynamic_mesh_data() {
     return this->_dynamic_mesh_data;
 }
 
-chaining::receiver<std::pair<ui::uint_region, std::size_t>> &ui::rect_plane_data::rect_tex_coords_receiver() {
-    return *this->_rect_tex_coords_receiver;
-}
-
 void ui::rect_plane_data::_prepare(rect_plane_data_ptr const &data) {
-    this->_rect_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
-        [weak_data = to_weak(data)](auto const &pair) {
-            if (auto data = weak_data.lock()) {
-                data->set_rect_tex_coords(pair.first, pair.second);
-            }
-        });
 }
 
 void ui::rect_plane_data::_observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element_ptr const &element,
                                                    std::size_t const rect_idx, tex_coords_transform_f &&transformer) {
-    auto chain = element->chain_tex_coords();
-
-    if (transformer) {
-        chain = chain.to(std::move(transformer));
-    }
-
-    this->_element_observers.emplace_back(
-        chain.to([rect_idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, rect_idx); })
-            .send_to(this->_rect_tex_coords_receiver)
-            .sync());
+    this->_element_cancellers.emplace_back(element->observe_tex_coords(
+        [this, rect_idx, transformer = std::move(transformer)](ui::uint_region const &tex_coords) {
+            auto transformed = transformer ? transformer(tex_coords) : tex_coords;
+            this->set_rect_tex_coords(transformed, rect_idx);
+        }));
 }
 
 ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(ui::dynamic_mesh_data_ptr mesh_data) {

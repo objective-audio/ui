@@ -18,14 +18,15 @@ struct texture_element {
     void set_tex_coords(ui::uint_region const &);
     ui::uint_region const &tex_coords() const;
 
-    [[nodiscard]] chaining::chain_sync_t<uint_region> chain_tex_coords() const;
+    [[nodiscard]] observing::canceller_ptr observe_tex_coords(observing::caller<uint_region>::handler_f &&,
+                                                              bool const sync = true);
 
     [[nodiscard]] static texture_element_ptr make_shared(draw_pair_t &&);
 
    private:
     draw_pair_t const _draw_pair;
-    chaining::value::holder_ptr<ui::uint_region> _tex_coords =
-        chaining::value::holder<ui::uint_region>::make_shared(ui::uint_region::zero());
+    observing::value::holder_ptr<ui::uint_region> const _tex_coords =
+        observing::value::holder<ui::uint_region>::make_shared(ui::uint_region::zero());
 
     texture_element(draw_pair_t &&);
 
