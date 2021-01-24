@@ -57,6 +57,10 @@ struct shape final {
     template <typename T>
     typename T::type const &get() const;
 
+    [[nodiscard]] static shape_ptr make_shared(anywhere::type);
+    [[nodiscard]] static shape_ptr make_shared(circle::type);
+    [[nodiscard]] static shape_ptr make_shared(rect::type);
+    
    private:
     std::shared_ptr<impl_base> _impl;
 
@@ -68,11 +72,6 @@ struct shape final {
     shape(shape &&) = delete;
     shape &operator=(shape const &) = delete;
     shape &operator=(shape &&) = delete;
-
-   public:
-    [[nodiscard]] static shape_ptr make_shared(anywhere::type);
-    [[nodiscard]] static shape_ptr make_shared(circle::type);
-    [[nodiscard]] static shape_ptr make_shared(rect::type);
 };
 
 struct collider final : renderable_collider {
