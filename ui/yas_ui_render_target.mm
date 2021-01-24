@@ -120,12 +120,10 @@ ui::effect_ptr const &ui::render_target::effect() {
     return this->_effect->value();
 }
 
-std::shared_ptr<chaining::receiver<double>> ui::render_target::scale_factor_receiver() {
-    return this->_scale_factor;
-}
-
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
-    this->_scale_observer = renderer->chain_scale_factor().send_to(this->scale_factor_receiver()).sync();
+    this->_scale_observer = renderer->chain_scale_factor()
+                                .perform([this](double const &scale) { this->_scale_factor->set_value(scale); })
+                                .sync();
 }
 
 ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {

@@ -23,8 +23,6 @@ struct render_target : metal_object, renderable_render_target {
     void set_effect(ui::effect_ptr);
     ui::effect_ptr const &effect() override;
 
-    std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
-
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
     [[nodiscard]] static render_target_ptr make_shared();
