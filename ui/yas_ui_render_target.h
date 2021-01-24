@@ -59,8 +59,6 @@ struct render_target : metal_object, renderable_render_target {
     render_target &operator=(render_target const &) = delete;
     render_target &operator=(render_target &&) = delete;
 
-    void _prepare(render_target_ptr const &);
-
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     ui::mesh_ptr const &mesh() override;

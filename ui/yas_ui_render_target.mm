@@ -39,6 +39,65 @@ ui::render_target::render_target()
     this->_effect->set_value(ui::effect::make_through_effect());
 
     this->_set_textures_to_effect();
+
+    this->_src_texture_canceller = this->_src_texture->observe([this](auto const &pair) {
+        if (pair.first == ui::texture::method::metal_texture_changed) {
+            ui::texture_ptr const &texture = pair.second;
+            auto const renderPassDescriptor = *this->_render_pass_descriptor;
+
+            if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
+                auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
+                auto colorDesc = *color_desc;
+                colorDesc.texture = metal_texture->texture();
+                colorDesc.loadAction = MTLLoadActionClear;
+                colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+
+                [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+            } else {
+                [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+            }
+        }
+    });
+
+    this->_dst_texture_canceller = this->_dst_texture->observe([this](auto const &pair) {
+        if (pair.first == ui::texture::method::size_updated) {
+            ui::texture_ptr const &texture = pair.second;
+            this->_data->set_rect_tex_coords(
+                ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
+        }
+    });
+
+    this->_update_observers.emplace_back(this->_effect->chain()
+                                             .perform([this](ui::effect_ptr const &) {
+                                                 this->_set_updated(render_target_update_reason::effect);
+                                                 this->_set_textures_to_effect();
+                                             })
+                                             .end());
+
+    this->_update_observers.emplace_back(this->_scale_factor->chain()
+                                             .perform([this](double const &scale_factor) {
+                                                 this->_src_texture->set_scale_factor(scale_factor);
+                                                 this->_dst_texture->set_scale_factor(scale_factor);
+                                                 this->_set_updated(render_target_update_reason::scale_factor);
+                                             })
+                                             .end());
+
+    this->_rect_observer = this->_layout_guide_rect->chain()
+                               .perform([this](ui::region const &region) {
+                                   ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                                                      .height = static_cast<uint32_t>(region.size.height)};
+
+                                   this->_src_texture->set_point_size(size);
+                                   this->_dst_texture->set_point_size(size);
+
+                                   this->_projection_matrix = ui::matrix::ortho(
+                                       region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+
+                                   this->_data->set_rect_position(region, 0);
+
+                                   this->_set_updated(render_target_update_reason::region);
+                               })
+                               .end();
 }
 
 ui::layout_guide_rect_ptr &ui::render_target::layout_guide_rect() {
@@ -67,82 +126,6 @@ std::shared_ptr<chaining::receiver<double>> ui::render_target::scale_factor_rece
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
     this->_scale_observer = renderer->chain_scale_factor().send_to(this->scale_factor_receiver()).sync();
-}
-
-void ui::render_target::_prepare(ui::render_target_ptr const &target) {
-    this->_weak_render_target = target;
-
-    auto weak_target = to_weak(target);
-
-    this->_src_texture_canceller = this->_src_texture->observe([weak_target](auto const &pair) {
-        if (pair.first == ui::texture::method::metal_texture_changed) {
-            ui::texture_ptr const &texture = pair.second;
-            if (ui::render_target_ptr const target = weak_target.lock()) {
-                auto renderPassDescriptor = *target->_render_pass_descriptor;
-
-                if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
-                    auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
-                    auto colorDesc = *color_desc;
-                    colorDesc.texture = metal_texture->texture();
-                    colorDesc.loadAction = MTLLoadActionClear;
-                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
-
-                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-                } else {
-                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
-                }
-            }
-        }
-    });
-
-    this->_dst_texture_canceller = this->_dst_texture->observe([weak_target](auto const &pair) {
-        if (pair.first == ui::texture::method::size_updated) {
-            ui::texture_ptr const &texture = pair.second;
-            if (ui::render_target_ptr target = weak_target.lock()) {
-                target->_data->set_rect_tex_coords(
-                    ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
-            }
-        }
-    });
-
-    this->_update_observers.emplace_back(this->_effect->chain()
-                                             .perform([weak_target](ui::effect_ptr const &) {
-                                                 if (auto target = weak_target.lock()) {
-                                                     target->_set_updated(render_target_update_reason::effect);
-                                                     target->_set_textures_to_effect();
-                                                 }
-                                             })
-                                             .end());
-
-    this->_update_observers.emplace_back(this->_scale_factor->chain()
-                                             .perform([weak_target](double const &scale_factor) {
-                                                 if (auto target = weak_target.lock()) {
-                                                     target->_src_texture->set_scale_factor(scale_factor);
-                                                     target->_dst_texture->set_scale_factor(scale_factor);
-                                                     target->_set_updated(render_target_update_reason::scale_factor);
-                                                 }
-                                             })
-                                             .end());
-
-    this->_rect_observer = this->_layout_guide_rect->chain()
-                               .guard([weak_target](ui::region const &) { return !weak_target.expired(); })
-                               .perform([weak_target](ui::region const &region) {
-                                   auto const target = weak_target.lock();
-
-                                   ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                                                      .height = static_cast<uint32_t>(region.size.height)};
-
-                                   target->_src_texture->set_point_size(size);
-                                   target->_dst_texture->set_point_size(size);
-
-                                   target->_projection_matrix = ui::matrix::ortho(
-                                       region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
-
-                                   target->_data->set_rect_position(region, 0);
-
-                                   target->_set_updated(render_target_update_reason::region);
-                               })
-                               .end();
 }
 
 ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
@@ -226,6 +209,6 @@ bool ui::render_target::_is_size_enough() {
 
 ui::render_target_ptr ui::render_target::make_shared() {
     auto shared = std::shared_ptr<render_target>(new render_target{});
-    shared->_prepare(shared);
+    shared->_weak_render_target = shared;
     return shared;
 }
