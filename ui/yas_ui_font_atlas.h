@@ -49,9 +49,9 @@ struct font_atlas final {
 
     std::string const _font_name;
     double const _font_size;
-    double _ascent;
-    double _descent;
-    double _leading;
+    double const _ascent;
+    double const _descent;
+    double const _leading;
     std::string const _words;
     observing::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
     observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =

@@ -38,13 +38,11 @@ ui::font_atlas::font_atlas(args &&args)
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
       _font_size(args.font_size),
+      _ascent(CTFontGetAscent(this->_impl->_ct_font_ref.object())),
+      _descent(CTFontGetDescent(this->_impl->_ct_font_ref.object())),
+      _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
       _words(std::move(args.words)),
       _texture(observing::value::holder<ui::texture_ptr>::make_shared(args.texture)) {
-    auto ct_font_obj = this->_impl->_ct_font_ref.object();
-    this->_ascent = CTFontGetAscent(ct_font_obj);
-    this->_descent = CTFontGetDescent(ct_font_obj);
-    this->_leading = CTFontGetLeading(ct_font_obj);
-
     this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
         [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
 
