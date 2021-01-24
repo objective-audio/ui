@@ -288,7 +288,7 @@ void ui::node::_prepare(ui::node_ptr const &node) {
             .merge(std::move(collider_chain))
             .merge(std::move(batch_chain))
             .merge(std::move(render_target_chain))
-            .perform([weak_node](ui::node_update_reason const &reason) { weak_node.lock()->_set_updated(reason); })
+            .perform([this](ui::node_update_reason const &reason) { this->_set_updated(reason); })
             .end();
 
     this->_update_observers.emplace_back(std::move(enabled_canceller));
