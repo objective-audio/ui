@@ -57,7 +57,7 @@ struct font_atlas final {
     observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =
         observing::notifier<ui::texture_ptr>::make_shared();
 
-    chaining::value::holder_ptr<ui::texture_ptr> _texture =
+    chaining::value::holder_ptr<ui::texture_ptr> const _texture =
         chaining::value::holder<ui::texture_ptr>::make_shared(nullptr);
     std::vector<ui::word_info> _word_infos;
     chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;

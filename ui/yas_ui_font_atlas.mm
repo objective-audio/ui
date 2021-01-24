@@ -143,6 +143,14 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
             }
         });
 
+    this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared([weak_atlas]() {
+        if (auto atlas = weak_atlas.lock()) {
+            return std::optional<ui::texture_ptr>{atlas->texture()};
+        } else {
+            return std::optional<ui::texture_ptr>{std::nullopt};
+        }
+    });
+
     this->_texture_changed_receiver =
         chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_atlas](ui::texture_ptr const &texture) {
             if (auto atlas = weak_atlas.lock()) {
@@ -165,14 +173,6 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
         });
 
     this->_texture_changed_observer = this->_texture->chain().send_to(this->_texture_changed_receiver).end();
-
-    this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared([weak_atlas]() {
-        if (auto atlas = weak_atlas.lock()) {
-            return std::optional<ui::texture_ptr>{atlas->texture()};
-        } else {
-            return std::optional<ui::texture_ptr>{std::nullopt};
-        }
-    });
 
     this->set_texture(texture);
 }
