@@ -27,8 +27,7 @@ void sample::modifier_text::_prepare(modifier_text_ptr const &text) {
                       left_layout = chaining::any_observer_ptr{nullptr},
                       right_layout = chaining::any_observer_ptr{nullptr},
                       bottom_layout = chaining::any_observer_ptr{nullptr},
-                      strings_observer =
-                          chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+                      strings_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 if (auto text = weak_text.lock()) {
                     if (renderer) {
                         event_canceller = renderer->event_manager()->observe(
@@ -80,21 +79,20 @@ void sample::modifier_text::_prepare(modifier_text_ptr const &text) {
 
                         strings_handler(strings);
 
-                        strings_observer =
-                            strings->chain_font_atlas()
-                                .perform([strings_handler = std::move(strings_handler),
-                                          weak_strings = to_weak(strings)](ui::font_atlas_ptr const &value) mutable {
-                                    if (auto strings = weak_strings.lock()) {
-                                        strings_handler(strings);
-                                    }
-                                })
-                                .end();
+                        strings_canceller = strings->observe_font_atlas(
+                            [strings_handler = std::move(strings_handler),
+                             weak_strings = to_weak(strings)](ui::font_atlas_ptr const &value) mutable {
+                                if (auto strings = weak_strings.lock()) {
+                                    strings_handler(strings);
+                                }
+                            },
+                            false);
                     } else {
                         event_canceller = nullptr;
                         left_layout = nullptr;
                         right_layout = nullptr;
                         bottom_layout = nullptr;
-                        strings_observer = nullptr;
+                        strings_canceller = nullptr;
                     }
                 }
             })

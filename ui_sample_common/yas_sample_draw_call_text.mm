@@ -24,8 +24,7 @@ void sample::draw_call_text::_prepare(draw_call_text_ptr const &text) {
             .perform([weak_text = to_weak(text), left_layout = chaining::any_observer_ptr{nullptr},
                       right_layout = chaining::any_observer_ptr{nullptr},
                       bottom_layout = chaining::any_observer_ptr{nullptr},
-                      strings_observer =
-                          chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+                      strings_observer = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 if (auto text = weak_text.lock()) {
                     if (renderer) {
                         auto const &strings = text->strings();
@@ -68,15 +67,14 @@ void sample::draw_call_text::_prepare(draw_call_text_ptr const &text) {
 
                         strings_handler(strings);
 
-                        strings_observer =
-                            strings->chain_font_atlas()
-                                .perform([strings_handler = std::move(strings_handler),
-                                          weak_strings = to_weak(strings)](ui::font_atlas_ptr const &) mutable {
-                                    if (auto strings = weak_strings.lock()) {
-                                        strings_handler(strings);
-                                    }
-                                })
-                                .end();
+                        strings_observer = strings->observe_font_atlas(
+                            [strings_handler = std::move(strings_handler),
+                             weak_strings = to_weak(strings)](ui::font_atlas_ptr const &) mutable {
+                                if (auto strings = weak_strings.lock()) {
+                                    strings_handler(strings);
+                                }
+                            },
+                            false);
                     } else {
                         left_layout = nullptr;
                         right_layout = nullptr;

@@ -21,14 +21,12 @@ ui::strings_ptr const &sample::big_button_text::strings() {
 }
 
 void sample::big_button_text::_prepare(big_button_text_ptr const &shared) {
-    this->_strings_observer = shared->strings()
-                                  ->chain_font_atlas()
-                                  .perform([weak_text = to_weak(shared)](ui::font_atlas_ptr const &) {
-                                      if (auto text = weak_text.lock()) {
-                                          text->_update_strings_position();
-                                      }
-                                  })
-                                  .sync();
+    this->_strings_observer =
+        shared->strings()->observe_font_atlas([weak_text = to_weak(shared)](ui::font_atlas_ptr const &) {
+            if (auto text = weak_text.lock()) {
+                text->_update_strings_position();
+            }
+        });
 }
 
 void sample::big_button_text::_update_strings_position() {
