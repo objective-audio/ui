@@ -38,7 +38,7 @@ ui::node::node()
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
       _collider(observing::value::holder<ui::collider_ptr>::make_shared(nullptr)),
-      _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
+      _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
 }
@@ -87,7 +87,7 @@ observing::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const
     return this->_collider;
 }
 
-chaining::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
+observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
     return this->_batch;
 }
 
@@ -262,22 +262,21 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     // batch
 
-    auto batch_observer = this->_batch->chain()
-                              .perform([prev_batch = std::shared_ptr<ui::batch>{nullptr}](
-                                           std::shared_ptr<ui::batch> const &batch) mutable {
-                                  if (prev_batch) {
-                                      renderable_batch::cast(prev_batch)->clear_render_meshes();
-                                  }
+    auto batch_canceller = this->_batch->observe(
+        [this, prev_batch = std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
+            if (prev_batch) {
+                renderable_batch::cast(prev_batch)->clear_render_meshes();
+            }
 
-                                  if (batch) {
-                                      renderable_batch::cast(batch)->clear_render_meshes();
-                                  }
+            if (batch) {
+                renderable_batch::cast(batch)->clear_render_meshes();
+            }
 
-                                  prev_batch = batch;
-                              })
-                              .end();
+            prev_batch = batch;
 
-    auto batch_chain = this->_batch->chain().to_value(ui::node_update_reason::batch);
+            this->_set_updated(ui::node_update_reason::batch);
+        },
+        false);
 
     // render_target
 
@@ -285,7 +284,6 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     auto updates_observer = pos_chain.merge(std::move(angle_chain))
                                 .merge(std::move(scale_chain))
-                                .merge(std::move(batch_chain))
                                 .merge(std::move(render_target_chain))
                                 .perform([this](ui::node_update_reason const &reason) { this->_set_updated(reason); })
                                 .end();
@@ -294,7 +292,7 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     this->_update_observers.emplace_back(std::move(color_canceller));
     this->_update_observers.emplace_back(std::move(alpha_canceller));
     this->_update_observers.emplace_back(std::move(mesh_canceller));
-    this->_update_observers.emplace_back(std::move(batch_observer));
+    this->_update_observers.emplace_back(std::move(batch_canceller));
     this->_update_observers.emplace_back(std::move(updates_observer));
 }
 
