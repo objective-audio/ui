@@ -95,31 +95,30 @@ void ui::button::_prepare(button_ptr const &button) {
         }
     });
 
-    this->_renderer_observer = node->chain_renderer()
-                                   .perform([event_canceller = observing::canceller_ptr{nullptr},
-                                             leave_observers = std::vector<chaining::invalidatable_ptr>(),
-                                             collider_observers = std::vector<observing::canceller_ptr>(),
-                                             weak_button](ui::renderer_ptr const &value) mutable {
-                                       if (auto renderer = value) {
-                                           event_canceller =
-                                               renderer->event_manager()->observe([weak_button](auto const &context) {
-                                                   if (context.method == ui::event_manager::method::touch_changed) {
-                                                       if (auto button = weak_button.lock()) {
-                                                           button->_update_tracking(context.event, button);
-                                                       }
-                                                   }
-                                               });
-                                           if (auto button = weak_button.lock()) {
-                                               leave_observers = button->_make_leave_chains();
-                                               collider_observers = button->_make_collider_chains();
-                                           }
-                                       } else {
-                                           event_canceller = nullptr;
-                                           leave_observers.clear();
-                                           collider_observers.clear();
-                                       }
-                                   })
-                                   .end();
+    this->_renderer_canceller = node->observe_renderer(
+        [event_canceller = observing::canceller_ptr{nullptr},
+         leave_observers = std::vector<chaining::invalidatable_ptr>(),
+         collider_observers = std::vector<observing::canceller_ptr>(),
+         weak_button](ui::renderer_ptr const &value) mutable {
+            if (auto renderer = value) {
+                event_canceller = renderer->event_manager()->observe([weak_button](auto const &context) {
+                    if (context.method == ui::event_manager::method::touch_changed) {
+                        if (auto button = weak_button.lock()) {
+                            button->_update_tracking(context.event, button);
+                        }
+                    }
+                });
+                if (auto button = weak_button.lock()) {
+                    leave_observers = button->_make_leave_chains();
+                    collider_observers = button->_make_collider_chains();
+                }
+            } else {
+                event_canceller = nullptr;
+                leave_observers.clear();
+                collider_observers.clear();
+            }
+        },
+        false);
 
     this->_rect_observer = this->_layout_guide_rect->chain()
                                .guard([weak_button](ui::region const &) { return !weak_button.expired(); })

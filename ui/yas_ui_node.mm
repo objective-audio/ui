@@ -30,7 +30,7 @@ using namespace yas;
 
 ui::node::node()
     : _parent(observing::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
-      _renderer(chaining::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
+      _renderer(observing::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
       _position(chaining::value::holder<ui::point>::make_shared({.v = 0.0f})),
       _scale(chaining::value::holder<ui::size>::make_shared({.v = 1.0f})),
       _angle(chaining::value::holder<ui::angle>::make_shared({0.0f})),
@@ -165,24 +165,30 @@ observing::canceller_ptr ui::node::observe(std::vector<method> const &methods,
     });
 }
 
-chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> ui::node::chain_renderer() const {
-    return this->_renderer->chain().to([](ui::renderer_wptr const &weak_renderer) {
-        if (auto renderer = weak_renderer.lock()) {
-            return renderer;
-        } else {
-            return ui::renderer_ptr{nullptr};
-        }
-    });
+observing::canceller_ptr ui::node::observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&handler,
+                                                    bool const sync) {
+    return this->_renderer->observe(
+        [handler = std::move(handler)](ui::renderer_wptr const &weak_renderer) {
+            if (auto renderer = weak_renderer.lock()) {
+                handler(renderer);
+            } else {
+                handler(nullptr);
+            }
+        },
+        sync);
 }
 
-observing::canceller_ptr ui::node::observe_parent(observing::caller<ui::node_ptr>::handler_f &&handler) {
-    return this->_parent->observe([handler = std::move(handler)](ui::node_wptr const &weak_node) {
-        if (auto node = weak_node.lock()) {
-            handler(node);
-        } else {
-            handler(nullptr);
-        }
-    });
+observing::canceller_ptr ui::node::observe_parent(observing::caller<ui::node_ptr>::handler_f &&handler,
+                                                  bool const sync) {
+    return this->_parent->observe(
+        [handler = std::move(handler)](ui::node_wptr const &weak_node) {
+            if (auto node = weak_node.lock()) {
+                handler(node);
+            } else {
+                handler(nullptr);
+            }
+        },
+        sync);
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {

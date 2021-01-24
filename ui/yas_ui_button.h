@@ -58,7 +58,7 @@ struct button final {
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    observing::canceller_ptr _renderer_canceller = nullptr;
     ui::event_ptr _tracking_event = nullptr;
     chaining::any_observer_ptr _rect_observer = nullptr;
     chaining::perform_receiver_ptr<> _leave_or_enter_or_move_tracking_receiver = nullptr;
