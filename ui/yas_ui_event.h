@@ -83,7 +83,7 @@ struct event_manager : event_inputtable {
     std::unordered_map<uint16_t, event_ptr> _key_events;
     std::unordered_map<uint32_t, event_ptr> _modifier_events;
 
-    observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
+    observing::notifier_ptr<context> const _notifier = observing::notifier<context>::make_shared();
 
     event_manager();
 
