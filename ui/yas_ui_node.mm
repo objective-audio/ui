@@ -257,8 +257,8 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     // collider
 
-    auto collider_chain =
-        this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); });
+    auto collider_canceller =
+        this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false);
 
     // batch
 
@@ -291,6 +291,7 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     this->_update_observers.emplace_back(std::move(enabled_canceller));
     this->_update_observers.emplace_back(std::move(color_canceller));
     this->_update_observers.emplace_back(std::move(alpha_canceller));
+    this->_update_observers.emplace_back(std::move(collider_canceller));
     this->_update_observers.emplace_back(std::move(mesh_canceller));
     this->_update_observers.emplace_back(std::move(batch_canceller));
     this->_update_observers.emplace_back(std::move(render_target_canceller));
