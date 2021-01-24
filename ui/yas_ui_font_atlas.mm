@@ -172,7 +172,8 @@ void ui::font_atlas::_prepare(font_atlas_ptr const &atlas, ui::texture_ptr const
             }
         });
 
-    this->_texture_changed_observer = this->_texture->chain().send_to(this->_texture_changed_receiver).end();
+    this->_texture_changed_canceller = this->_texture->observe(
+        [this](ui::texture_ptr const &texture) { this->_texture_changed_receiver->receive_value(texture); }, false);
 
     this->set_texture(texture);
 }
