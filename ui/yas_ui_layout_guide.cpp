@@ -82,8 +82,11 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
 
             return std::make_pair(cache, is_continue);
         })
-        .guard([](auto const &pair) { return pair.second; })
         .guard([old_cache](auto const &pair) {
+            if (!pair.second) {
+                return false;
+            }
+
             if (!*old_cache) {
                 return true;
             }
