@@ -38,7 +38,8 @@ ui::font_atlas::font_atlas(args &&args)
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
       _font_size(args.font_size),
-      _words(std::move(args.words)) {
+      _words(std::move(args.words)),
+      _texture(observing::value::holder<ui::texture_ptr>::make_shared(args.texture)) {
     auto ct_font_obj = this->_impl->_ct_font_ref.object();
     this->_ascent = CTFontGetAscent(ct_font_obj);
     this->_descent = CTFontGetDescent(ct_font_obj);
@@ -47,31 +48,24 @@ ui::font_atlas::font_atlas(args &&args)
     this->_word_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
         [this](auto const &pair) { this->_word_infos.at(pair.second).rect.set_tex_coord(pair.first); });
 
-    this->_texture_updated_receiver = chaining::perform_receiver<ui::texture_ptr>::make_shared(
-        [this](ui::texture_ptr const &texture) { this->_texture_updated_notifier->notify(texture); });
-
     this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
         [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
 
-    this->_texture_changed_canceller = this->_texture->observe(
-        [this](ui::texture_ptr const &texture) {
-            this->_update_word_infos();
+    this->_texture_changed_canceller = this->_texture->observe([this](ui::texture_ptr const &texture) {
+        this->_update_word_infos();
 
-            if (texture) {
-                this->_texture_canceller = texture->observe([this](auto const &pair) {
-                    if (pair.first == texture::method::metal_texture_changed) {
-                        this->_texture_updated_receiver->receive_value(pair.second);
-                    }
-                });
-            } else {
-                this->_texture_canceller = std::nullopt;
-            }
+        if (texture) {
+            this->_texture_canceller = texture->observe([this](auto const &pair) {
+                if (pair.first == texture::method::metal_texture_changed) {
+                    this->_texture_updated_notifier->notify(pair.second);
+                }
+            });
+        } else {
+            this->_texture_canceller = std::nullopt;
+        }
 
-            this->_texture_changed_fetcher->push();
-        },
-        false);
-
-    this->set_texture(args.texture);
+        this->_texture_changed_fetcher->push();
+    });
 }
 
 ui::font_atlas::~font_atlas() = default;
