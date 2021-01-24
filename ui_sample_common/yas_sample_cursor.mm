@@ -23,11 +23,11 @@ static std::shared_ptr<ui::parallel_action> _make_rotate_action(ui::node_ptr con
     return ui::parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}});
 }
 
-static chaining::any_observer_ptr _make_event_observer(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
-    return renderer->event_manager()
-        ->chain(ui::event_manager::method::cursor_changed)
-        .perform(
-            [weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](ui::event_ptr const &event) mutable {
+static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
+    return renderer->event_manager()->observe(
+        [weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](auto const &context) mutable {
+            if (context.method == ui::event_manager::method::cursor_changed) {
+                ui::event_ptr const &event = context.event;
                 if (auto node = weak_node.lock()) {
                     auto const &value = event->get<ui::cursor>();
 
@@ -69,8 +69,8 @@ static chaining::any_observer_ptr _make_event_observer(ui::node_ptr const &node,
                         }
                     }
                 }
-            })
-        .end();
+            }
+        });
 }
 }
 
@@ -86,13 +86,13 @@ void sample::cursor::_prepare(cursor_ptr const &shared) {
     this->_renderer_observer =
         this->_node->chain_renderer()
             .perform([weak_node = to_weak(this->_node),
-                      event_observer = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+                      event_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 auto node = weak_node.lock();
                 if (renderer) {
-                    event_observer = cursor_utils::_make_event_observer(node, renderer);
+                    event_canceller = cursor_utils::_observe_event(node, renderer);
                     renderer->insert_action(cursor_utils::_make_rotate_action(node));
                 } else {
-                    event_observer = nullptr;
+                    event_canceller = nullptr;
                 }
             })
             .end();

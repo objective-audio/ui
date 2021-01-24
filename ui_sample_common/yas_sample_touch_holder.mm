@@ -43,18 +43,18 @@ void sample::touch_holder::_prepare(touch_holder_ptr const &holder) {
     this->_renderer_observer =
         root_node->chain_renderer()
             .perform([weak_touch_holder = to_weak(holder),
-                      event_observer = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+                      event_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 if (renderer) {
-                    event_observer = renderer->event_manager()
-                                         ->chain(ui::event_manager::method::touch_changed)
-                                         .perform([weak_touch_holder](ui::event_ptr const &event) {
-                                             if (auto touch_holder = weak_touch_holder.lock()) {
-                                                 touch_holder->_update_touch_node(event);
-                                             }
-                                         })
-                                         .end();
+                    event_canceller = renderer->event_manager()->observe([weak_touch_holder](auto const &context) {
+                        if (context.method == ui::event_manager::method::touch_changed) {
+                            ui::event_ptr const &event = context.event;
+                            if (auto touch_holder = weak_touch_holder.lock()) {
+                                touch_holder->_update_touch_node(event);
+                            }
+                        }
+                    });
                 } else {
-                    event_observer = nullptr;
+                    event_canceller = nullptr;
                 }
             })
             .end();
