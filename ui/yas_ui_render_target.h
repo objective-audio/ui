@@ -43,12 +43,10 @@ struct render_target : metal_object, renderable_render_target {
     simd::float4x4 _projection_matrix;
     observing::canceller_ptr _scale_canceller = nullptr;
     chaining::any_observer_ptr _rect_observer = nullptr;
-    chaining::any_observer_ptr _effect_observer = nullptr;
 
     ui::metal_system_ptr _metal_system = nullptr;
 
     render_target_updates_t _updates;
-    std::vector<chaining::any_observer_ptr> _update_observers;
 
     render_target();
 
