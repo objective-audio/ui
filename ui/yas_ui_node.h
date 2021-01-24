@@ -36,8 +36,8 @@ struct node final : action_target, metal_object, renderable_node {
     chaining::value::holder_ptr<ui::point> const &position() const;
     chaining::value::holder_ptr<ui::angle> const &angle() const;
     chaining::value::holder_ptr<ui::size> const &scale() const;
-    chaining::value::holder_ptr<ui::color> const &color() const;
-    chaining::value::holder_ptr<float> const &alpha() const;
+    observing::value::holder_ptr<ui::color> const &color() const;
+    observing::value::holder_ptr<float> const &alpha() const;
     observing::value::holder_ptr<bool> const &is_enabled() const;
 
     simd::float4x4 const &matrix() const;
@@ -83,8 +83,8 @@ struct node final : action_target, metal_object, renderable_node {
     chaining::value::holder_ptr<ui::point> _position;
     chaining::value::holder_ptr<ui::angle> _angle;
     chaining::value::holder_ptr<ui::size> _scale;
-    chaining::value::holder_ptr<ui::color> _color;
-    chaining::value::holder_ptr<float> _alpha;
+    observing::value::holder_ptr<ui::color> _color;
+    observing::value::holder_ptr<float> _alpha;
     chaining::value::holder_ptr<ui::mesh_ptr> _mesh;
     chaining::value::holder_ptr<ui::collider_ptr> _collider;
     chaining::value::holder_ptr<std::shared_ptr<ui::batch>> _batch;

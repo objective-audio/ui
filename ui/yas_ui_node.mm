@@ -34,8 +34,8 @@ ui::node::node()
       _position(chaining::value::holder<ui::point>::make_shared({.v = 0.0f})),
       _scale(chaining::value::holder<ui::size>::make_shared({.v = 1.0f})),
       _angle(chaining::value::holder<ui::angle>::make_shared({0.0f})),
-      _color(chaining::value::holder<ui::color>::make_shared({.v = 1.0f})),
-      _alpha(chaining::value::holder<float>::make_shared(1.0f)),
+      _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
+      _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(chaining::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
       _collider(chaining::value::holder<ui::collider_ptr>::make_shared(nullptr)),
       _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
@@ -57,11 +57,11 @@ chaining::value::holder_ptr<ui::size> const &ui::node::scale() const {
     return this->_scale;
 }
 
-chaining::value::holder_ptr<ui::color> const &ui::node::color() const {
+observing::value::holder_ptr<ui::color> const &ui::node::color() const {
     return this->_color;
 }
 
-chaining::value::holder_ptr<float> const &ui::node::alpha() const {
+observing::value::holder_ptr<float> const &ui::node::alpha() const {
     return this->_alpha;
 }
 
@@ -252,13 +252,8 @@ void ui::node::_prepare(ui::node_ptr const &node) {
                              .perform([weak_node](auto const &) { weak_node.lock()->_update_mesh_color(); })
                              .to_value(ui::node_update_reason::mesh);
 
-    auto color_chain = this->_color->chain().to_null();
-    auto alpha_chain = this->_alpha->chain().to_null();
-
-    auto mesh_color_observer = color_chain.merge(std::move(alpha_chain))
-                                   .guard([weak_node](auto const &) { return !weak_node.expired(); })
-                                   .perform([weak_node](auto const &) { weak_node.lock()->_update_mesh_color(); })
-                                   .end();
+    auto color_canceller = this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false);
+    auto alpha_canceller = this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false);
 
     // collider
 
@@ -299,7 +294,8 @@ void ui::node::_prepare(ui::node_ptr const &node) {
 
     this->_update_observers.reserve(2);
     this->_update_observers.emplace_back(std::move(enabled_canceller));
-    this->_update_observers.emplace_back(std::move(mesh_color_observer));
+    this->_update_observers.emplace_back(std::move(color_canceller));
+    this->_update_observers.emplace_back(std::move(alpha_canceller));
     this->_update_observers.emplace_back(std::move(batch_observer));
     this->_update_observers.emplace_back(std::move(updates_observer));
 }
