@@ -45,9 +45,6 @@ ui::font_atlas::font_atlas(args &&args)
     this->_descent = CTFontGetDescent(ct_font_obj);
     this->_leading = CTFontGetLeading(ct_font_obj);
 
-    this->_word_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
-        [this](auto const &pair) { this->_word_infos.at(pair.second).rect.set_tex_coord(pair.first); });
-
     this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
         [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
 
@@ -213,7 +210,7 @@ void ui::font_atlas::_update_word_infos() {
         this->_element_observers.emplace_back(
             texture_element->chain_tex_coords()
                 .to([idx](ui::uint_region const &tex_coords) { return std::make_pair(tex_coords, idx); })
-                .send_to(this->_word_tex_coords_receiver)
+                .perform([this](auto const &pair) { this->_word_infos.at(pair.second).rect.set_tex_coord(pair.first); })
                 .sync());
 
         auto const &advance = advances[idx];

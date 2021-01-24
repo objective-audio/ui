@@ -47,19 +47,18 @@ struct font_atlas final {
 
     std::unique_ptr<impl> _impl;
 
-    std::string _font_name;
-    double _font_size;
+    std::string const _font_name;
+    double const _font_size;
     double _ascent;
     double _descent;
     double _leading;
-    std::string _words;
+    std::string const _words;
     observing::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
     observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =
         observing::notifier<ui::texture_ptr>::make_shared();
 
     observing::value::holder_ptr<ui::texture_ptr> const _texture;
     std::vector<ui::word_info> _word_infos;
-    chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
     std::vector<chaining::any_observer_ptr> _element_observers;
     std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
     observing::canceller_ptr _texture_changed_canceller = nullptr;
