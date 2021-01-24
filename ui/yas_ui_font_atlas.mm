@@ -43,6 +43,37 @@ ui::font_atlas::font_atlas(args &&args)
     this->_ascent = CTFontGetAscent(ct_font_obj);
     this->_descent = CTFontGetDescent(ct_font_obj);
     this->_leading = CTFontGetLeading(ct_font_obj);
+
+    this->_word_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
+        [this](auto const &pair) { this->_word_infos.at(pair.second).rect.set_tex_coord(pair.first); });
+
+    this->_texture_updated_receiver = chaining::perform_receiver<ui::texture_ptr>::make_shared(
+        [this](ui::texture_ptr const &texture) { this->_texture_updated_notifier->notify(texture); });
+
+    this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
+        [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
+
+    this->_texture_changed_receiver =
+        chaining::perform_receiver<ui::texture_ptr>::make_shared([this](ui::texture_ptr const &texture) {
+            this->_update_word_infos();
+
+            if (texture) {
+                this->_texture_canceller = texture->observe([this](auto const &pair) {
+                    if (pair.first == texture::method::metal_texture_changed) {
+                        this->_texture_updated_receiver->receive_value(pair.second);
+                    }
+                });
+            } else {
+                this->_texture_canceller = std::nullopt;
+            }
+
+            this->_texture_changed_fetcher->push();
+        });
+
+    this->_texture_changed_canceller = this->_texture->observe(
+        [this](ui::texture_ptr const &texture) { this->_texture_changed_receiver->receive_value(texture); }, false);
+
+    this->set_texture(args.texture);
 }
 
 ui::font_atlas::~font_atlas() = default;
@@ -126,39 +157,6 @@ observing::canceller_ptr ui::font_atlas::observe_texture_updated(observing::call
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 
-void ui::font_atlas::_prepare(ui::texture_ptr const &texture) {
-    this->_word_tex_coords_receiver = chaining::perform_receiver<std::pair<ui::uint_region, std::size_t>>::make_shared(
-        [this](auto const &pair) { this->_word_infos.at(pair.second).rect.set_tex_coord(pair.first); });
-
-    this->_texture_updated_receiver = chaining::perform_receiver<ui::texture_ptr>::make_shared(
-        [this](ui::texture_ptr const &texture) { this->_texture_updated_notifier->notify(texture); });
-
-    this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
-        [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
-
-    this->_texture_changed_receiver =
-        chaining::perform_receiver<ui::texture_ptr>::make_shared([this](ui::texture_ptr const &texture) {
-            this->_update_word_infos();
-
-            if (texture) {
-                this->_texture_canceller = texture->observe([this](auto const &pair) {
-                    if (pair.first == texture::method::metal_texture_changed) {
-                        this->_texture_updated_receiver->receive_value(pair.second);
-                    }
-                });
-            } else {
-                this->_texture_canceller = std::nullopt;
-            }
-
-            this->_texture_changed_fetcher->push();
-        });
-
-    this->_texture_changed_canceller = this->_texture->observe(
-        [this](ui::texture_ptr const &texture) { this->_texture_changed_receiver->receive_value(texture); }, false);
-
-    this->set_texture(texture);
-}
-
 void ui::font_atlas::_update_word_infos() {
     this->_element_observers.clear();
 
@@ -232,10 +230,7 @@ void ui::font_atlas::_update_word_infos() {
 }
 
 ui::font_atlas_ptr ui::font_atlas::make_shared(args args) {
-    auto texture = args.texture;
-    auto shared = std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
-    shared->_prepare(texture);
-    return shared;
+    return std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
 }
 
 #pragma mark -

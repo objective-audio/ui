@@ -74,7 +74,6 @@ struct font_atlas final {
     font_atlas &operator=(font_atlas const &) = delete;
     font_atlas &operator=(font_atlas &&) = delete;
 
-    void _prepare(ui::texture_ptr const &);
     void _update_word_infos();
 };
 }  // namespace yas::ui
