@@ -19,9 +19,9 @@ ui::strings::strings(args args)
     : _collection_layout(ui::collection_layout::make_shared(
           {.frame = args.frame, .alignment = args.alignment, .row_order = ui::layout_order::descending})),
       _rect_plane(ui::rect_plane::make_shared(args.max_word_count)),
-      _text(chaining::value::holder<std::string>::make_shared(std::move(args.text))),
-      _font_atlas(chaining::value::holder<ui::font_atlas_ptr>::make_shared(std::move(args.font_atlas))),
-      _line_height(chaining::value::holder<std::optional<float>>::make_shared(args.line_height)),
+      _text(observing::value::holder<std::string>::make_shared(std::move(args.text))),
+      _font_atlas(observing::value::holder<ui::font_atlas_ptr>::make_shared(std::move(args.font_atlas))),
+      _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
 }
 
@@ -67,16 +67,19 @@ ui::rect_plane_ptr const &ui::strings::rect_plane() {
     return this->_rect_plane;
 }
 
-chaining::chain_sync_t<std::string> ui::strings::chain_text() const {
-    return this->_text->chain();
+observing::canceller_ptr ui::strings::observe_text(observing::caller<std::string>::handler_f &&handler,
+                                                   bool const sync) {
+    return this->_text->observe(std::move(handler), sync);
 }
 
-chaining::chain_sync_t<ui::font_atlas_ptr> ui::strings::chain_font_atlas() const {
-    return this->_font_atlas->chain();
+observing::canceller_ptr ui::strings::observe_font_atlas(observing::caller<ui::font_atlas_ptr>::handler_f &&handler,
+                                                         bool const sync) {
+    return this->_font_atlas->observe(std::move(handler), sync);
 }
 
-chaining::chain_sync_t<std::optional<float>> ui::strings::chain_line_height() const {
-    return this->_line_height->chain();
+observing::canceller_ptr ui::strings::observe_line_height(observing::caller<std::optional<float>>::handler_f &&handler,
+                                                          bool const sync) {
+    return this->_line_height->observe(std::move(handler), sync);
 }
 
 chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() const {
@@ -91,7 +94,7 @@ void ui::strings::_prepare(strings_ptr const &strings) {
     this->_weak_strings = to_weak(strings);
 
     this->_prepare_receivers(this->_weak_strings);
-    this->_prepare_chains(this->_weak_strings);
+    this->_prepare_chains();
 
     this->_update_layout();
 }
@@ -126,16 +129,20 @@ void ui::strings::_prepare_receivers(ui::strings_wptr const &weak_strings) {
         });
 }
 
-void ui::strings::_prepare_chains(ui::strings_wptr const &weak_strings) {
-    this->_property_observers.emplace_back(this->_font_atlas->chain()
-                                               .send_to(this->_update_texture_receiver)
-                                               .send_null_to(this->_update_layout_receiver)
-                                               .sync());
+void ui::strings::_prepare_chains() {
+    this->_font_atlas
+        ->observe([this](ui::font_atlas_ptr const &font_atras) {
+            this->_update_texture_receiver->receive_value(font_atras);
+            this->_update_layout_receiver->receive_value(nullptr);
+        })
+        ->add_to(*this->_property_pool);
 
-    this->_property_observers.emplace_back(this->_text->chain().send_null_to(this->_update_layout_receiver).end());
+    this->_text->observe([this](auto const &) { this->_update_layout_receiver->receive_value(nullptr); }, false)
+        ->add_to(*this->_property_pool);
 
-    this->_property_observers.emplace_back(
-        this->_line_height->chain().send_null_to(this->_update_layout_receiver).end());
+    this->_line_height
+        ->observe([this](auto const &height) { this->_update_layout_receiver->receive_value(nullptr); }, false)
+        ->add_to(*this->_property_pool);
 
     this->_property_observers.emplace_back(
         this->_collection_layout->actual_cell_count()->chain().to_null().send_to(this->_update_layout_receiver).end());
