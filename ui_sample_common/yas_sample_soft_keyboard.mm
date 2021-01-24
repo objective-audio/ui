@@ -94,19 +94,13 @@ observing::canceller_ptr sample::soft_keyboard::observe(observing::caller<std::s
 void sample::soft_keyboard::_prepare(soft_keyboard_ptr const &keyboard) {
     this->_weak_keyboard = keyboard;
 
-    auto weak_keyboard = this->_weak_keyboard;
-
-    this->_renderer_observer = this->_root_node->chain_renderer()
-                                   .guard([weak_keyboard](auto const &) { return !weak_keyboard.expired(); })
-                                   .perform([weak_keyboard](ui::renderer_ptr const &renderer) {
-                                       auto const keyboard = weak_keyboard.lock();
-                                       if (renderer) {
-                                           keyboard->_setup_soft_keys_if_needed();
-                                       } else {
-                                           keyboard->_dispose_soft_keys();
-                                       }
-                                   })
-                                   .sync();
+    this->_renderer_canceller = this->_root_node->observe_renderer([this](ui::renderer_ptr const &renderer) {
+        if (renderer) {
+            this->_setup_soft_keys_if_needed();
+        } else {
+            this->_dispose_soft_keys();
+        }
+    });
 }
 
 void sample::soft_keyboard::_setup_soft_keys_if_needed() {

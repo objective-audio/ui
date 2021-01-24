@@ -167,10 +167,12 @@ std::vector<chaining::invalidatable_ptr> ui::button::_make_leave_chains() {
     ui::node_ptr &node = this->_rect_plane->node();
 
     std::vector<chaining::invalidatable_ptr> observers;
-    observers.emplace_back(
-        node->position()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
-    observers.emplace_back(node->angle()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
-    observers.emplace_back(node->scale()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
+    observers.emplace_back(node->position()->observe(
+        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
+    observers.emplace_back(node->angle()->observe(
+        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
+    observers.emplace_back(node->scale()->observe(
+        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
 
     observers.emplace_back(node->collider()->observe(
         [this](ui::collider_ptr const &value) {

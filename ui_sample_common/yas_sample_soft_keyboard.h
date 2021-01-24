@@ -34,7 +34,7 @@ struct soft_keyboard {
     std::vector<chaining::any_observer_ptr> _frame_layouts;
 
     std::vector<observing::canceller_ptr> _soft_key_cancellers;
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    observing::canceller_ptr _renderer_canceller = nullptr;
     chaining::any_observer_ptr _actual_cell_count_observer = nullptr;
     ui::layout_animator_ptr _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect_ptr> _src_cell_guide_rects;

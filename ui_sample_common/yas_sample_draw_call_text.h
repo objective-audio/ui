@@ -18,7 +18,7 @@ struct draw_call_text {
    private:
     ui::strings_ptr _strings;
     std::optional<timer> _timer = std::nullopt;
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    observing::canceller_ptr _renderer_canceller = nullptr;
 
     explicit draw_call_text(ui::font_atlas_ptr const &);
 

@@ -16,7 +16,7 @@ struct cursor {
 
    private:
     ui::node_ptr _node = ui::node::make_shared();
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    observing::canceller_ptr _renderer_canceller = nullptr;
 
     cursor();
 

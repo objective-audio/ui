@@ -31,9 +31,9 @@ using namespace yas;
 ui::node::node()
     : _parent(observing::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
       _renderer(observing::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
-      _position(chaining::value::holder<ui::point>::make_shared({.v = 0.0f})),
-      _scale(chaining::value::holder<ui::size>::make_shared({.v = 1.0f})),
-      _angle(chaining::value::holder<ui::angle>::make_shared({0.0f})),
+      _position(observing::value::holder<ui::point>::make_shared({.v = 0.0f})),
+      _scale(observing::value::holder<ui::size>::make_shared({.v = 1.0f})),
+      _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
       _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
@@ -45,15 +45,15 @@ ui::node::node()
 
 ui::node::~node() = default;
 
-chaining::value::holder_ptr<ui::point> const &ui::node::position() const {
+observing::value::holder_ptr<ui::point> const &ui::node::position() const {
     return this->_position;
 }
 
-chaining::value::holder_ptr<ui::angle> const &ui::node::angle() const {
+observing::value::holder_ptr<ui::angle> const &ui::node::angle() const {
     return this->_angle;
 }
 
-chaining::value::holder_ptr<ui::size> const &ui::node::scale() const {
+observing::value::holder_ptr<ui::size> const &ui::node::scale() const {
     return this->_scale;
 }
 
@@ -197,39 +197,28 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 }
 
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
-    auto &position = this->_position;
-    auto weak_node = this->_weak_node;
-
     this->_x_observer = guide.chain()
-                            .guard([weak_node](float const &) { return !weak_node.expired(); })
-                            .to([weak_node](float const &x) {
-                                return ui::point{x, weak_node.lock()->position()->value().y};
+                            .perform([this](float const &x) {
+                                this->_position->set_value(ui::point{x, this->position()->value().y});
                             })
-                            .send_to(position)
                             .sync();
 
     this->_position_observer = nullptr;
 }
 
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
-    auto &position = this->_position;
-    auto weak_node = this->_weak_node;
-
     this->_y_observer = guide.chain()
-                            .guard([weak_node](float const &) { return !weak_node.expired(); })
-                            .to([weak_node](float const &y) {
-                                return ui::point{weak_node.lock()->position()->value().x, y};
+                            .perform([this](float const &y) {
+                                this->_position->set_value(ui::point{this->position()->value().x, y});
                             })
-                            .send_to(position)
                             .sync();
 
     this->_position_observer = nullptr;
 }
 
 void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point) {
-    auto &position = this->_position;
-
-    this->_position_observer = guide_point.chain().send_to(position).sync();
+    this->_position_observer =
+        guide_point.chain().perform([this](auto const &position) { this->_position->set_value(position); }).sync();
 
     this->_x_observer = nullptr;
     this->_y_observer = nullptr;
@@ -238,70 +227,62 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
 void ui::node::_prepare(ui::node_ptr const &node) {
     this->_weak_node = node;
 
-    auto weak_node = this->_weak_node;
-
     // enabled
 
-    auto enabled_canceller =
-        this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false);
+    this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false)
+        ->add_to(this->_pool);
 
     // geometry
 
-    auto pos_chain = this->_position->chain().to_value(ui::node_update_reason::geometry);
-    auto angle_chain = this->_angle->chain().to_value(ui::node_update_reason::geometry);
-    auto scale_chain = this->_scale->chain().to_value(ui::node_update_reason::geometry);
+    this->_position->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+    this->_angle->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+    this->_scale->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
 
     // mesh and mesh_color
 
-    auto mesh_canceller = this->_mesh->observe([this](auto const &) {
-        this->_update_mesh_color();
-        this->_set_updated(ui::node_update_reason::mesh);
-    });
+    this->_mesh
+        ->observe([this](auto const &) {
+            this->_update_mesh_color();
+            this->_set_updated(ui::node_update_reason::mesh);
+        })
+        ->add_to(this->_pool);
 
-    auto color_canceller = this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false);
-    auto alpha_canceller = this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false);
+    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
+    this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
 
     // collider
 
-    auto collider_canceller =
-        this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false);
+    this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false)
+        ->add_to(this->_pool);
 
     // batch
 
-    auto batch_canceller = this->_batch->observe(
-        [this, prev_batch = std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
-            if (prev_batch) {
-                renderable_batch::cast(prev_batch)->clear_render_meshes();
-            }
+    this->_batch
+        ->observe(
+            [this, prev_batch = std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
+                if (prev_batch) {
+                    renderable_batch::cast(prev_batch)->clear_render_meshes();
+                }
 
-            if (batch) {
-                renderable_batch::cast(batch)->clear_render_meshes();
-            }
+                if (batch) {
+                    renderable_batch::cast(batch)->clear_render_meshes();
+                }
 
-            prev_batch = batch;
+                prev_batch = batch;
 
-            this->_set_updated(ui::node_update_reason::batch);
-        },
-        false);
+                this->_set_updated(ui::node_update_reason::batch);
+            },
+            false)
+        ->add_to(this->_pool);
 
     // render_target
 
-    auto render_target_canceller = this->_render_target->observe(
-        [this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false);
-
-    auto updates_observer = pos_chain.merge(std::move(angle_chain))
-                                .merge(std::move(scale_chain))
-                                .perform([this](ui::node_update_reason const &reason) { this->_set_updated(reason); })
-                                .end();
-
-    this->_update_observers.emplace_back(std::move(enabled_canceller));
-    this->_update_observers.emplace_back(std::move(color_canceller));
-    this->_update_observers.emplace_back(std::move(alpha_canceller));
-    this->_update_observers.emplace_back(std::move(collider_canceller));
-    this->_update_observers.emplace_back(std::move(mesh_canceller));
-    this->_update_observers.emplace_back(std::move(batch_canceller));
-    this->_update_observers.emplace_back(std::move(render_target_canceller));
-    this->_update_observers.emplace_back(std::move(updates_observer));
+    this->_render_target
+        ->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false)
+        ->add_to(this->_pool);
 }
 
 ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
