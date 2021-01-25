@@ -115,7 +115,7 @@ using namespace yas;
 
     std::string notified;
 
-    auto observer = strings->chain_text().perform([&notified](std::string const &text) { notified = text; }).sync();
+    auto canceller = strings->observe_text([&notified](std::string const &text) { notified = text; });
 
     XCTAssertEqual(notified, "a");
 
@@ -129,9 +129,8 @@ using namespace yas;
 
     ui::font_atlas_ptr notified = nullptr;
 
-    auto observer = strings->chain_font_atlas()
-                        .perform([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; })
-                        .sync();
+    auto canceller =
+        strings->observe_font_atlas([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; });
 
     XCTAssertFalse(notified);
 
@@ -149,9 +148,8 @@ using namespace yas;
 
     std::optional<float> notified = std::nullopt;
 
-    auto observer = strings->chain_line_height()
-                        .perform([&notified](std::optional<float> const &line_height) { notified = line_height; })
-                        .sync();
+    auto observer =
+        strings->observe_line_height([&notified](std::optional<float> const &line_height) { notified = line_height; });
 
     XCTAssertFalse(notified);
 
@@ -193,13 +191,9 @@ using namespace yas;
 - (void)test_text_receiver {
     auto strings = ui::strings::make_shared();
 
-    auto sender = chaining::notifier<std::string>::make_shared();
-
-    auto observer = sender->chain().send_to(strings->text_receiver()).end();
-
     XCTAssertEqual(strings->text(), "");
 
-    sender->notify("test_text");
+    strings->text_receiver()->receive_value("test_text");
 
     XCTAssertEqual(strings->text(), "test_text");
 }

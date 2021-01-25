@@ -19,7 +19,7 @@ struct big_button_text {
    private:
     ui::strings_ptr _strings;
     ui::button::method _status;
-    chaining::any_observer_ptr _strings_observer = nullptr;
+    observing::canceller_ptr _strings_observer = nullptr;
 
     explicit big_button_text(ui::font_atlas_ptr const &atlas);
 

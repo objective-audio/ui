@@ -61,15 +61,8 @@ void ui::button::cancel_tracking() {
     }
 }
 
-chaining::chain_unsync_t<ui::button::chain_pair_t> ui::button::chain() const {
-    return this->_notify_sender->chain();
-}
-
-chaining::chain_relayed_unsync_t<ui::button::context, ui::button::chain_pair_t> ui::button::chain(
-    method const method) const {
-    return this->_notify_sender->chain()
-        .guard([method](chain_pair_t const &pair) { return pair.first == method; })
-        .to([](chain_pair_t const &pair) { return pair.second; });
+observing::canceller_ptr ui::button::observe(observing::caller<chain_pair_t>::handler_f &&handler) {
+    return this->_notifier->observe(std::move(handler));
 }
 
 ui::rect_plane_ptr const &ui::button::rect_plane() {
@@ -102,33 +95,30 @@ void ui::button::_prepare(button_ptr const &button) {
         }
     });
 
-    this->_renderer_observer =
-        node->chain_renderer()
-            .perform([event_observer = chaining::any_observer_ptr{nullptr},
-                      leave_observers = std::vector<chaining::any_observer_ptr>(),
-                      collider_observers = std::vector<chaining::any_observer_ptr>(),
-                      weak_button](ui::renderer_ptr const &value) mutable {
-                if (auto renderer = value) {
-                    event_observer = renderer->event_manager()
-                                         ->chain(ui::event_manager::method::touch_changed)
-                                         .guard([weak_button](ui::event_ptr const &) { return !weak_button.expired(); })
-                                         .perform([weak_button](ui::event_ptr const &event) {
-                                             if (auto button = weak_button.lock()) {
-                                                 button->_update_tracking(event, button);
-                                             }
-                                         })
-                                         .end();
-                    if (auto button = weak_button.lock()) {
-                        leave_observers = button->_make_leave_chains();
-                        collider_observers = button->_make_collider_chains();
+    this->_renderer_canceller = node->observe_renderer(
+        [event_canceller = observing::canceller_ptr{nullptr},
+         leave_observers = std::vector<chaining::invalidatable_ptr>(),
+         collider_observers = std::vector<observing::canceller_ptr>(),
+         weak_button](ui::renderer_ptr const &value) mutable {
+            if (auto renderer = value) {
+                event_canceller = renderer->event_manager()->observe([weak_button](auto const &context) {
+                    if (context.method == ui::event_manager::method::touch_changed) {
+                        if (auto button = weak_button.lock()) {
+                            button->_update_tracking(context.event, button);
+                        }
                     }
-                } else {
-                    event_observer = nullptr;
-                    leave_observers.clear();
-                    collider_observers.clear();
+                });
+                if (auto button = weak_button.lock()) {
+                    leave_observers = button->_make_leave_chains();
+                    collider_observers = button->_make_collider_chains();
                 }
-            })
-            .end();
+            } else {
+                event_canceller = nullptr;
+                leave_observers.clear();
+                collider_observers.clear();
+            }
+        },
+        false);
 
     this->_rect_observer = this->_layout_guide_rect->chain()
                                .guard([weak_button](ui::region const &) { return !weak_button.expired(); })
@@ -162,7 +152,7 @@ void ui::button::_update_rect_positions(ui::region const &region, std::size_t co
         this->_rect_plane->data()->set_rect_position(region, yas_each_index(each));
     }
 
-    ui::collider_ptr &collider = this->_rect_plane->node()->collider()->value();
+    ui::collider_ptr const &collider = this->_rect_plane->node()->collider()->value();
     if (!collider->shape() || (collider->shape()->type_info() == typeid(ui::shape::rect))) {
         collider->set_shape(ui::shape::make_shared({.rect = region}));
     }
@@ -173,47 +163,53 @@ void ui::button::_update_rect_index() {
     this->_rect_plane->data()->set_rect_index(0, idx);
 }
 
-std::vector<chaining::any_observer_ptr> ui::button::_make_leave_chains() {
+std::vector<chaining::invalidatable_ptr> ui::button::_make_leave_chains() {
     ui::node_ptr &node = this->_rect_plane->node();
 
-    std::vector<chaining::any_observer_ptr> observers;
-    observers.emplace_back(
-        node->position()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
-    observers.emplace_back(node->angle()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
-    observers.emplace_back(node->scale()->chain().send_null_to(this->_leave_or_enter_or_move_tracking_receiver).end());
+    std::vector<chaining::invalidatable_ptr> observers;
+    observers.emplace_back(node->position()->observe(
+        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
+    observers.emplace_back(node->angle()->observe(
+        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
+    observers.emplace_back(node->scale()->observe(
+        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
 
-    observers.emplace_back(node->collider()
-                               ->chain()
-                               .guard([](ui::collider_ptr const &value) { return !value; })
-                               .send_null_to(this->_cancel_tracking_receiver)
-                               .end());
-    observers.emplace_back(node->is_enabled()
-                               ->chain()
-                               .guard([](bool const &value) { return !value; })
-                               .send_null_to(this->_cancel_tracking_receiver)
-                               .end());
+    observers.emplace_back(node->collider()->observe(
+        [this](ui::collider_ptr const &value) {
+            if (!value) {
+                this->_cancel_tracking_receiver->receive_value(nullptr);
+            }
+        },
+        false));
+    observers.emplace_back(node->is_enabled()->observe([this](bool const &value) {
+        if (!value) {
+            this->_cancel_tracking_receiver->receive_value(nullptr);
+        }
+    }));
 
     return observers;
 }
 
-std::vector<chaining::any_observer_ptr> ui::button::_make_collider_chains() {
+std::vector<observing::canceller_ptr> ui::button::_make_collider_chains() {
     auto &node = this->_rect_plane->node();
 
-    auto shape_observer = node->collider()
-                              ->value()
-                              ->chain_shape()
-                              .guard([](ui::shape_ptr const &shape) { return !shape; })
-                              .send_null_to(this->_cancel_tracking_receiver)
-                              .end();
+    auto shape_observer = node->collider()->value()->observe_shape(
+        [this](ui::shape_ptr const &shape) {
+            if (!shape) {
+                this->_cancel_tracking_receiver->receive_value(nullptr);
+            }
+        },
+        false);
 
-    auto enabled_observer = node->collider()
-                                ->value()
-                                ->chain_enabled()
-                                .guard([](bool const &enabled) { return !enabled; })
-                                .send_null_to(this->_cancel_tracking_receiver)
-                                .end();
+    auto enabled_observer = node->collider()->value()->observe_enabled(
+        [this](bool const &enabled) {
+            if (!enabled) {
+                this->_cancel_tracking_receiver->receive_value(nullptr);
+            }
+        },
+        false);
 
-    return std::vector<chaining::any_observer_ptr>{std::move(shape_observer), std::move(enabled_observer)};
+    return std::vector<observing::canceller_ptr>{std::move(shape_observer), std::move(enabled_observer)};
 }
 
 void ui::button::_update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
@@ -279,7 +275,7 @@ void ui::button::_cancel_tracking(ui::event_ptr const &event, std::shared_ptr<bu
 }
 
 void ui::button::_send_notify(method const method, ui::event_ptr const &event, std::shared_ptr<button> const &button) {
-    this->_notify_sender->notify(std::make_pair(method, context{.button = button, .touch = event->get<ui::touch>()}));
+    this->_notifier->notify(std::make_pair(method, context{.button = button, .touch = event->get<ui::touch>()}));
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region) {

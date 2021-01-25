@@ -21,8 +21,9 @@ ui::uint_region const &ui::texture_element::tex_coords() const {
     return this->_tex_coords->value();
 }
 
-chaining::chain_sync_t<ui::uint_region> ui::texture_element::chain_tex_coords() const {
-    return this->_tex_coords->chain();
+observing::canceller_ptr ui::texture_element::observe_tex_coords(observing::caller<uint_region>::handler_f &&handler,
+                                                                 bool const sync) {
+    return this->_tex_coords->observe(std::move(handler), sync);
 }
 
 ui::texture_element_ptr ui::texture_element::make_shared(draw_pair_t &&pair) {

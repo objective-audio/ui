@@ -33,20 +33,20 @@ struct node final : action_target, metal_object, renderable_node {
 
     virtual ~node();
 
-    chaining::value::holder_ptr<ui::point> const &position() const;
-    chaining::value::holder_ptr<ui::angle> const &angle() const;
-    chaining::value::holder_ptr<ui::size> const &scale() const;
-    chaining::value::holder_ptr<ui::color> const &color() const;
-    chaining::value::holder_ptr<float> const &alpha() const;
-    chaining::value::holder_ptr<bool> const &is_enabled() const;
+    observing::value::holder_ptr<ui::point> const &position() const;
+    observing::value::holder_ptr<ui::angle> const &angle() const;
+    observing::value::holder_ptr<ui::size> const &scale() const;
+    observing::value::holder_ptr<ui::color> const &color() const;
+    observing::value::holder_ptr<float> const &alpha() const;
+    observing::value::holder_ptr<bool> const &is_enabled() const;
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
-    chaining::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
-    chaining::value::holder_ptr<ui::collider_ptr> const &collider() const;
-    chaining::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
-    chaining::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
+    observing::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
+    observing::value::holder_ptr<ui::collider_ptr> const &collider() const;
+    observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
+    observing::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
 
     void add_sub_node(ui::node_ptr const &);
     void add_sub_node(ui::node_ptr const &, std::size_t const);
@@ -59,11 +59,14 @@ struct node final : action_target, metal_object, renderable_node {
     ui::renderer_ptr renderer() const override;
 
     using chain_pair_t = std::pair<method, node_ptr>;
-    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(method const &) const;
-    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain(std::vector<method> const &) const;
+    [[nodiscard]] observing::canceller_ptr observe(method const &, observing::caller<chain_pair_t>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe(std::vector<method> const &,
+                                                   observing::caller<chain_pair_t>::handler_f &&);
 
-    [[nodiscard]] chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> chain_renderer() const;
-    [[nodiscard]] chaining::chain_relayed_sync_t<ui::node_ptr, ui::node_wptr> chain_parent() const;
+    [[nodiscard]] observing::canceller_ptr observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&,
+                                                            bool const sync = true);
+    [[nodiscard]] observing::canceller_ptr observe_parent(observing::caller<ui::node_ptr>::handler_f &&,
+                                                          bool const sync = true);
 
     ui::point convert_position(ui::point const &) const;
 
@@ -76,20 +79,21 @@ struct node final : action_target, metal_object, renderable_node {
    private:
     std::weak_ptr<node> _weak_node;
 
-    chaining::value::holder_ptr<ui::node_wptr> _parent;
-    chaining::value::holder_ptr<ui::renderer_wptr> _renderer;
+    observing::value::holder_ptr<ui::node_wptr> const _parent;
+    observing::value::holder_ptr<ui::renderer_wptr> const _renderer;
 
-    chaining::value::holder_ptr<ui::point> _position;
-    chaining::value::holder_ptr<ui::angle> _angle;
-    chaining::value::holder_ptr<ui::size> _scale;
-    chaining::value::holder_ptr<ui::color> _color;
-    chaining::value::holder_ptr<float> _alpha;
-    chaining::value::holder_ptr<ui::mesh_ptr> _mesh;
-    chaining::value::holder_ptr<ui::collider_ptr> _collider;
-    chaining::value::holder_ptr<std::shared_ptr<ui::batch>> _batch;
-    chaining::value::holder_ptr<ui::render_target_ptr> _render_target;
-    chaining::value::holder_ptr<bool> _enabled;
+    observing::value::holder_ptr<ui::point> const _position;
+    observing::value::holder_ptr<ui::angle> const _angle;
+    observing::value::holder_ptr<ui::size> const _scale;
+    observing::value::holder_ptr<ui::color> const _color;
+    observing::value::holder_ptr<float> const _alpha;
+    observing::value::holder_ptr<ui::mesh_ptr> const _mesh;
+    observing::value::holder_ptr<ui::collider_ptr> const _collider;
+    observing::value::holder_ptr<std::shared_ptr<ui::batch>> const _batch;
+    observing::value::holder_ptr<ui::render_target_ptr> const _render_target;
+    observing::value::holder_ptr<bool> const _enabled;
 
+    observing::canceller_pool _pool;
     chaining::any_observer_ptr _x_observer = nullptr;
     chaining::any_observer_ptr _y_observer = nullptr;
     chaining::any_observer_ptr _position_observer = nullptr;
@@ -99,11 +103,9 @@ struct node final : action_target, metal_object, renderable_node {
     mutable simd::float4x4 _matrix = matrix_identity_float4x4;
     mutable simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    std::vector<chaining::any_observer_ptr> _update_observers;
-    mutable std::unordered_map<ui::node::method, chaining::any_observer_ptr> _dispatch_observers;
-    chaining::notifier_ptr<chain_pair_t> _dispatch_sender;
-    chaining::perform_receiver_ptr<ui::node::method> _dispatch_receiver = nullptr;
-    chaining::notifier_ptr<ui::node::method> _notify_sender;
+    mutable std::unordered_map<ui::node::method, observing::canceller_ptr> _dispatch_cancellers;
+    observing::notifier_ptr<chain_pair_t> const _dispatch_notifier = observing::notifier<chain_pair_t>::make_shared();
+    observing::notifier_ptr<ui::node::method> const _notifier = observing::notifier<ui::node::method>::make_shared();
 
     node_updates_t _updates;
 

@@ -40,9 +40,9 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
     : _metal_system(metal_system),
       _view_size({.width = 0, .height = 0}),
       _drawable_size({.width = 0, .height = 0}),
-      _scale_factor_notify(chaining::value::holder<double>::make_shared(0.0f)),
+      _scale_factor_notify(observing::value::holder<double>::make_shared(0.0f)),
       _safe_area_insets({.top = 0, .left = 0, .bottom = 0, .right = 0}),
-      _appearance(chaining::value::holder<ui::appearance>::make_shared(ui::appearance::normal)),
+      _appearance(observing::value::holder<ui::appearance>::make_shared(ui::appearance::normal)),
       _projection_matrix(matrix_identity_float4x4),
       _background(ui::background::make_shared()),
       _root_node(ui::node::make_shared()),
@@ -50,8 +50,7 @@ ui::renderer::renderer(ui::metal_system_ptr const &metal_system)
       _detector(ui::detector::make_shared()),
       _event_manager(ui::event_manager::make_shared()),
       _view_layout_guide_rect(ui::layout_guide_rect::make_shared()),
-      _safe_area_layout_guide_rect(ui::layout_guide_rect::make_shared()),
-      _will_render_notifier(chaining::notifier<std::nullptr_t>::make_shared()) {
+      _safe_area_layout_guide_rect(ui::layout_guide_rect::make_shared()) {
 }
 
 ui::renderer::~renderer() = default;
@@ -143,16 +142,18 @@ ui::appearance ui::renderer::appearance() const {
     return this->_appearance->value();
 }
 
-chaining::chain_unsync_t<std::nullptr_t> ui::renderer::chain_will_render() const {
-    return this->_will_render_notifier->chain();
+observing::canceller_ptr ui::renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+    return this->_will_render_notifier->observe(std::move(handler));
 }
 
-chaining::chain_sync_t<double> ui::renderer::chain_scale_factor() const {
-    return this->_scale_factor_notify->chain();
+observing::canceller_ptr ui::renderer::observe_scale_factor(observing::caller<double>::handler_f &&handler,
+                                                            bool const sync) {
+    return this->_scale_factor_notify->observe(std::move(handler), sync);
 }
 
-chaining::chain_sync_t<ui::appearance> ui::renderer::chain_appearance() const {
-    return this->_appearance->chain();
+observing::canceller_ptr ui::renderer::observe_appearance(observing::caller<ui::appearance>::handler_f &&handler,
+                                                          bool const sync) {
+    return this->_appearance->observe(std::move(handler), sync);
 }
 
 void ui::renderer::_prepare(renderer_ptr const &shared) {

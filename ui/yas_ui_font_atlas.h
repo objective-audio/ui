@@ -36,8 +36,9 @@ struct font_atlas final {
 
     void set_texture(ui::texture_ptr const &);
 
-    [[nodiscard]] chaining::chain_sync_t<ui::texture_ptr> chain_texture() const;
-    [[nodiscard]] chaining::chain_unsync_t<ui::texture_ptr> chain_texture_updated() const;
+    [[nodiscard]] observing::canceller_ptr observe_texture(observing::caller<texture_ptr>::handler_f &&,
+                                                           bool const sync = true);
+    [[nodiscard]] observing::canceller_ptr observe_texture_updated(observing::caller<texture_ptr>::handler_f &&);
 
     [[nodiscard]] static font_atlas_ptr make_shared(args);
 
@@ -46,27 +47,21 @@ struct font_atlas final {
 
     std::unique_ptr<impl> _impl;
 
-    std::string _font_name;
-    double _font_size;
-    double _ascent;
-    double _descent;
-    double _leading;
-    std::string _words;
-    chaining::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
-    chaining::notifier_ptr<ui::texture_ptr> _texture_updated_sender =
-        chaining::notifier<ui::texture_ptr>::make_shared();
+    std::string const _font_name;
+    double const _font_size;
+    double const _ascent;
+    double const _descent;
+    double const _leading;
+    std::string const _words;
+    observing::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
+    observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =
+        observing::notifier<ui::texture_ptr>::make_shared();
 
-    chaining::value::holder_ptr<ui::texture_ptr> _texture =
-        chaining::value::holder<ui::texture_ptr>::make_shared(nullptr);
+    observing::value::holder_ptr<ui::texture_ptr> const _texture;
     std::vector<ui::word_info> _word_infos;
-    chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _word_tex_coords_receiver = nullptr;
-    std::vector<chaining::any_observer_ptr> _element_observers;
-    chaining::perform_receiver_ptr<ui::texture_ptr> _texture_updated_receiver = nullptr;
-    chaining::any_observer_ptr _texture_observer = nullptr;
-    chaining::notifier_ptr<ui::texture_ptr> _texture_setter = chaining::notifier<ui::texture_ptr>::make_shared();
-    chaining::any_observer_ptr _texture_setter_observer = nullptr;
-    chaining::any_observer_ptr _texture_changed_observer = nullptr;
-    chaining::perform_receiver_ptr<ui::texture_ptr> _texture_changed_receiver = nullptr;
+    std::vector<observing::canceller_ptr> _element_cancellers;
+    std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
+    observing::canceller_ptr _texture_changed_canceller = nullptr;
 
     font_atlas(args &&);
 
@@ -75,8 +70,7 @@ struct font_atlas final {
     font_atlas &operator=(font_atlas const &) = delete;
     font_atlas &operator=(font_atlas &&) = delete;
 
-    void _prepare(font_atlas_ptr const &, ui::texture_ptr const &);
-    void _update_word_infos(font_atlas_ptr const &atlas);
+    void _update_word_infos();
 };
 }  // namespace yas::ui
 

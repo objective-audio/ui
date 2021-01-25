@@ -39,9 +39,12 @@ struct strings final {
 
     ui::rect_plane_ptr const &rect_plane();
 
-    [[nodiscard]] chaining::chain_sync_t<std::string> chain_text() const;
-    [[nodiscard]] chaining::chain_sync_t<ui::font_atlas_ptr> chain_font_atlas() const;
-    [[nodiscard]] chaining::chain_sync_t<std::optional<float>> chain_line_height() const;
+    [[nodiscard]] observing::canceller_ptr observe_text(observing::caller<std::string>::handler_f &&,
+                                                        bool const sync = true);
+    [[nodiscard]] observing::canceller_ptr observe_font_atlas(observing::caller<ui::font_atlas_ptr>::handler_f &&,
+                                                              bool const sync = true);
+    [[nodiscard]] observing::canceller_ptr observe_line_height(observing::caller<std::optional<float>>::handler_f &&,
+                                                               bool const sync = true);
     [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
     [[nodiscard]] chaining::receiver_ptr<std::string> text_receiver();
 
@@ -53,17 +56,19 @@ struct strings final {
     ui::rect_plane_ptr _rect_plane;
     chaining::perform_receiver_ptr<std::string> _text_receiver = nullptr;
 
-    chaining::value::holder_ptr<std::string> _text;
-    chaining::value::holder_ptr<ui::font_atlas_ptr> _font_atlas;
-    chaining::value::holder_ptr<std::optional<float>> _line_height;
+    observing::value::holder_ptr<std::string> _text;
+    observing::value::holder_ptr<ui::font_atlas_ptr> _font_atlas;
+    observing::value::holder_ptr<std::optional<float>> _line_height;
 
     ui::strings_wptr _weak_strings;
     std::size_t const _max_word_count = 0;
     chaining::perform_receiver_ptr<ui::texture_ptr> _texture_receiver = nullptr;
     chaining::perform_receiver_ptr<ui::font_atlas_ptr> _update_texture_receiver = nullptr;
     chaining::perform_receiver_ptr<std::nullptr_t> _update_layout_receiver = nullptr;
-    chaining::any_observer_ptr _texture_observer = nullptr;
+    std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
+    std::optional<observing::canceller_ptr> _texture_updated_canceller = std::nullopt;
     std::vector<chaining::any_observer_ptr> _property_observers;
+    observing::canceller_pool_ptr const _property_pool = observing::canceller_pool::make_shared();
     std::vector<chaining::any_observer_ptr> _cell_rect_observers;
 
     explicit strings(args);
@@ -75,7 +80,7 @@ struct strings final {
 
     void _prepare(strings_ptr const &);
     void _prepare_receivers(ui::strings_wptr const &);
-    void _prepare_chains(ui::strings_wptr const &);
+    void _prepare_chains();
     void _update_texture_chaining();
     void _update_layout();
     float _cell_height();

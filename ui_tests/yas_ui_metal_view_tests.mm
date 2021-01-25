@@ -57,22 +57,20 @@ using namespace yas;
         ended_called = false;
     };
 
-    auto observer = event_manager->chain()
-                        .perform([&self, &began_called, &changed_called, &ended_called](auto const &context) {
-                            auto const &method = context.method;
-                            ui::event_ptr const &event = context.event;
+    auto observer = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &context) {
+        auto const &method = context.method;
+        ui::event_ptr const &event = context.event;
 
-                            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
-                            if (event->phase() == ui::event_phase::began) {
-                                began_called = true;
-                            } else if (event->phase() == ui::event_phase::ended) {
-                                ended_called = true;
-                            } else if (event->phase() == ui::event_phase::changed) {
-                                changed_called = true;
-                            }
-                        })
-                        .end();
+        if (event->phase() == ui::event_phase::began) {
+            began_called = true;
+        } else if (event->phase() == ui::event_phase::ended) {
+            ended_called = true;
+        } else if (event->phase() == ui::event_phase::changed) {
+            changed_called = true;
+        }
+    });
 
     [view mouseEntered:[self _enterExitEventWithType:NSEventTypeMouseEntered location:NSMakePoint(1, 1)]];
 
@@ -119,26 +117,24 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer = event_manager->chain()
-                        .perform([&self, &values](auto const &context) {
-                            auto const &method = context.method;
-                            ui::event_ptr const &event = context.event;
+    auto observer = event_manager->observe([&self, &values](auto const &context) {
+        auto const &method = context.method;
+        ui::event_ptr const &event = context.event;
 
-                            if (method == ui::event_manager::method::cursor_changed) {
-                                return;
-                            }
+        if (method == ui::event_manager::method::cursor_changed) {
+            return;
+        }
 
-                            XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
 
-                            if (event->phase() == ui::event_phase::began) {
-                                values.began_called = true;
-                            } else if (event->phase() == ui::event_phase::ended) {
-                                values.ended_called = true;
-                            } else if (event->phase() == ui::event_phase::changed) {
-                                values.changed_called = true;
-                            }
-                        })
-                        .end();
+        if (event->phase() == ui::event_phase::began) {
+            values.began_called = true;
+        } else if (event->phase() == ui::event_phase::ended) {
+            values.ended_called = true;
+        } else if (event->phase() == ui::event_phase::changed) {
+            values.changed_called = true;
+        }
+    });
 
     [view mouseDown:[self _mouseEventWithType:NSEventTypeLeftMouseDown location:NSMakePoint(100, 100)]];
 
@@ -237,27 +233,25 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer = event_manager->chain()
-                        .perform([&self, &values](auto const &context) {
-                            auto const &method = context.method;
-                            ui::event_ptr const &event = context.event;
+    auto observer = event_manager->observe([&self, &values](auto const &context) {
+        auto const &method = context.method;
+        ui::event_ptr const &event = context.event;
 
-                            XCTAssertEqual(method, ui::event_manager::method::key_changed);
+        XCTAssertEqual(method, ui::event_manager::method::key_changed);
 
-                            if (event->phase() == ui::event_phase::began) {
-                                values.began_called = true;
-                            } else if (event->phase() == ui::event_phase::ended) {
-                                values.ended_called = true;
-                            } else if (event->phase() == ui::event_phase::changed) {
-                                values.changed_called = true;
-                            }
+        if (event->phase() == ui::event_phase::began) {
+            values.began_called = true;
+        } else if (event->phase() == ui::event_phase::ended) {
+            values.ended_called = true;
+        } else if (event->phase() == ui::event_phase::changed) {
+            values.changed_called = true;
+        }
 
-                            auto const &key_event = event->get<ui::key>();
-                            values.key_code = key_event.key_code();
-                            values.characters = key_event.characters();
-                            values.raw_characters = key_event.raw_characters();
-                        })
-                        .end();
+        auto const &key_event = event->get<ui::key>();
+        values.key_code = key_event.key_code();
+        values.characters = key_event.characters();
+        values.raw_characters = key_event.raw_characters();
+    });
 
     [view keyDown:[self _keyEventWithType:NSEventTypeKeyDown
                                           keyCode:1

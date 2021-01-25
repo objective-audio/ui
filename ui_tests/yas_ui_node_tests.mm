@@ -264,18 +264,17 @@ struct test_render_encoder : ui::render_encodable {
     bool added_to_super_called = false;
     bool removed_from_super_called = false;
 
-    auto added_observer = sub_node->chain(ui::node::method::added_to_super)
-                              .perform([&observer_called_count, &added_to_super_called](auto const &pair) {
-                                  added_to_super_called = true;
-                                  ++observer_called_count;
-                              })
-                              .end();
-    auto remove_observer = sub_node->chain(ui::node::method::removed_from_super)
-                               .perform([&observer_called_count, &removed_from_super_called](auto const &pair) {
-                                   removed_from_super_called = true;
-                                   ++observer_called_count;
-                               })
-                               .end();
+    auto added_canceller = sub_node->observe(ui::node::method::added_to_super,
+                                             [&observer_called_count, &added_to_super_called](auto const &pair) {
+                                                 added_to_super_called = true;
+                                                 ++observer_called_count;
+                                             });
+
+    auto removed_canceller = sub_node->observe(ui::node::method::removed_from_super,
+                                               [&observer_called_count, &removed_from_super_called](auto const &pair) {
+                                                   removed_from_super_called = true;
+                                                   ++observer_called_count;
+                                               });
 
     parent_node->add_sub_node(sub_node);
 
@@ -293,9 +292,8 @@ struct test_render_encoder : ui::render_encodable {
 
     auto node = ui::node::make_shared();
 
-    auto observer = node->chain({ui::node::method::added_to_super, ui::node::method::removed_from_super})
-                        .perform([&called](auto const &pair) { called = pair.first; })
-                        .end();
+    auto canceller = node->observe({ui::node::method::added_to_super, ui::node::method::removed_from_super},
+                                   [&called](auto const &pair) { called = pair.first; });
 
     auto super_node = ui::node::make_shared();
 
@@ -318,7 +316,7 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
 
     auto observer =
-        node->chain_renderer().perform([&notified](ui::renderer_ptr const &renderer) { notified = renderer; }).end();
+        node->observe_renderer([&notified](ui::renderer_ptr const &renderer) { notified = renderer; }, false);
 
     auto renderer = ui::renderer::make_shared();
 

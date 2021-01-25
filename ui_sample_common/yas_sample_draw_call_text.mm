@@ -19,73 +19,69 @@ ui::strings_ptr const &sample::draw_call_text::strings() {
 void sample::draw_call_text::_prepare(draw_call_text_ptr const &text) {
     auto &node = this->_strings->rect_plane()->node();
 
-    this->_renderer_observer =
-        node->chain_renderer()
-            .perform([weak_text = to_weak(text), left_layout = chaining::any_observer_ptr{nullptr},
-                      right_layout = chaining::any_observer_ptr{nullptr},
-                      bottom_layout = chaining::any_observer_ptr{nullptr},
-                      strings_observer =
-                          chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-                if (auto text = weak_text.lock()) {
-                    if (renderer) {
-                        auto const &strings = text->strings();
-                        auto &strings_guide_rect = strings->frame_layout_guide_rect();
-                        auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
-                        left_layout = safe_area_guide_rect->left()
-                                          ->chain()
-                                          .to(chaining::add(4.0f))
-                                          .send_to(strings_guide_rect->right())
-                                          .sync();
+    this->_renderer_canceller = node->observe_renderer(
+        [weak_text = to_weak(text), left_layout = chaining::any_observer_ptr{nullptr},
+         right_layout = chaining::any_observer_ptr{nullptr}, bottom_layout = chaining::any_observer_ptr{nullptr},
+         strings_observer = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+            if (auto text = weak_text.lock()) {
+                if (renderer) {
+                    auto const &strings = text->strings();
+                    auto &strings_guide_rect = strings->frame_layout_guide_rect();
+                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
+                    left_layout = safe_area_guide_rect->left()
+                                      ->chain()
+                                      .to(chaining::add(4.0f))
+                                      .send_to(strings_guide_rect->right())
+                                      .sync();
 
-                        right_layout = safe_area_guide_rect->right()
-                                           ->chain()
-                                           .to(chaining::add(-4.0f))
-                                           .send_to(strings_guide_rect->right())
-                                           .sync();
+                    right_layout = safe_area_guide_rect->right()
+                                       ->chain()
+                                       .to(chaining::add(-4.0f))
+                                       .send_to(strings_guide_rect->right())
+                                       .sync();
 
-                        bottom_layout = safe_area_guide_rect->bottom()
-                                            ->chain()
-                                            .to(chaining::add(4.0f))
-                                            .send_to(strings_guide_rect->bottom())
-                                            .sync();
+                    bottom_layout = safe_area_guide_rect->bottom()
+                                        ->chain()
+                                        .to(chaining::add(4.0f))
+                                        .send_to(strings_guide_rect->bottom())
+                                        .sync();
 
-                        auto strings_handler =
-                            [top_layout = chaining::any_observer_ptr{nullptr}](ui::strings_ptr const &strings) mutable {
-                                float distance = 0.0f;
+                    auto strings_handler =
+                        [top_layout = chaining::any_observer_ptr{nullptr}](ui::strings_ptr const &strings) mutable {
+                            float distance = 0.0f;
 
-                                if (strings->font_atlas()) {
-                                    auto const &font_atlas = strings->font_atlas();
-                                    distance += font_atlas->ascent() + font_atlas->descent();
-                                }
+                            if (strings->font_atlas()) {
+                                auto const &font_atlas = strings->font_atlas();
+                                distance += font_atlas->ascent() + font_atlas->descent();
+                            }
 
-                                top_layout = strings->frame_layout_guide_rect()
-                                                 ->bottom()
-                                                 ->chain()
-                                                 .to(chaining::add(distance))
-                                                 .send_to(strings->frame_layout_guide_rect()->top())
-                                                 .sync();
-                            };
+                            top_layout = strings->frame_layout_guide_rect()
+                                             ->bottom()
+                                             ->chain()
+                                             .to(chaining::add(distance))
+                                             .send_to(strings->frame_layout_guide_rect()->top())
+                                             .sync();
+                        };
 
-                        strings_handler(strings);
+                    strings_handler(strings);
 
-                        strings_observer =
-                            strings->chain_font_atlas()
-                                .perform([strings_handler = std::move(strings_handler),
-                                          weak_strings = to_weak(strings)](ui::font_atlas_ptr const &) mutable {
-                                    if (auto strings = weak_strings.lock()) {
-                                        strings_handler(strings);
-                                    }
-                                })
-                                .end();
-                    } else {
-                        left_layout = nullptr;
-                        right_layout = nullptr;
-                        bottom_layout = nullptr;
-                        strings_observer = nullptr;
-                    }
+                    strings_observer = strings->observe_font_atlas(
+                        [strings_handler = std::move(strings_handler),
+                         weak_strings = to_weak(strings)](ui::font_atlas_ptr const &) mutable {
+                            if (auto strings = weak_strings.lock()) {
+                                strings_handler(strings);
+                            }
+                        },
+                        false);
+                } else {
+                    left_layout = nullptr;
+                    right_layout = nullptr;
+                    bottom_layout = nullptr;
+                    strings_observer = nullptr;
                 }
-            })
-            .end();
+            }
+        },
+        false);
 
     auto timer_handler = [weak_text = to_weak(text)]() {
         if (auto text = weak_text.lock()) {

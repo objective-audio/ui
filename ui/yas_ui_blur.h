@@ -18,7 +18,7 @@ struct blur {
     [[nodiscard]] static blur_ptr make_shared();
 
    private:
-    chaining::value::holder_ptr<double> _sigma = chaining::value::holder<double>::make_shared(0.0);
+    double _sigma = 0.0;
     ui::effect_ptr _effect;
     chaining::any_observer_ptr _sigma_observer = nullptr;
 
@@ -29,7 +29,6 @@ struct blur {
     blur &operator=(blur const &) = delete;
     blur &operator=(blur &&) = delete;
 
-    void _prepare(std::shared_ptr<blur> &);
     void _update_effect_handler();
 };
 }  // namespace yas::ui

@@ -50,17 +50,17 @@ struct texture : metal_object {
     std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
     using chain_pair_t = std::pair<method, texture_ptr>;
-    [[nodiscard]] chaining::chain_unsync_t<chain_pair_t> chain() const;
-    [[nodiscard]] chaining::chain_relayed_unsync_t<texture_ptr, chain_pair_t> chain(method const &) const;
-    [[nodiscard]] std::shared_ptr<chaining::receiver<double>> scale_factor_receiver();
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<chain_pair_t>::handler_f &&);
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
     [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
-    chaining::value::holder_ptr<ui::uint_size> _point_size;
-    chaining::value::holder_ptr<double> _scale_factor;
+    std::weak_ptr<ui::texture> _weak_texture;
+
+    ui::uint_size _point_size;
+    double _scale_factor;
     uint32_t const _depth = 1;
     bool const _has_alpha = false;
     ui::texture_usages_t const _usages;
@@ -73,10 +73,8 @@ struct texture : metal_object {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element_ptr> _texture_elements;
-    chaining::any_observer_ptr _scale_observer = nullptr;
-    chaining::any_observer_ptr _properties_observer = nullptr;
-    chaining::notifier_ptr<chain_pair_t> _notify_sender = chaining::notifier<chain_pair_t>::make_shared();
-    chaining::perform_receiver_ptr<method> _notify_receiver = nullptr;
+    observing::canceller_ptr _scale_canceller = nullptr;
+    observing::notifier_ptr<chain_pair_t> const _notifier = observing::notifier<chain_pair_t>::make_shared();
 
     explicit texture(args &&);
 
@@ -96,6 +94,7 @@ struct texture : metal_object {
     bool _can_draw(uint_size const size);
     void _add_images_to_metal_texture();
     void _add_image_to_metal_texture(texture_element_ptr const &element);
+    void _size_updated();
 };
 }  // namespace yas::ui
 

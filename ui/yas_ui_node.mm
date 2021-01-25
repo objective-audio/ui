@@ -29,45 +29,43 @@ using namespace yas;
 #pragma mark - node
 
 ui::node::node()
-    : _parent(chaining::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
-      _renderer(chaining::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
-      _position(chaining::value::holder<ui::point>::make_shared({.v = 0.0f})),
-      _scale(chaining::value::holder<ui::size>::make_shared({.v = 1.0f})),
-      _angle(chaining::value::holder<ui::angle>::make_shared({0.0f})),
-      _color(chaining::value::holder<ui::color>::make_shared({.v = 1.0f})),
-      _alpha(chaining::value::holder<float>::make_shared(1.0f)),
-      _mesh(chaining::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
-      _collider(chaining::value::holder<ui::collider_ptr>::make_shared(nullptr)),
-      _batch(chaining::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
-      _render_target(chaining::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
-      _enabled(chaining::value::holder<bool>::make_shared(true)),
-      _dispatch_sender(chaining::notifier<chain_pair_t>::make_shared()),
-      _notify_sender(chaining::notifier<ui::node::method>::make_shared()) {
+    : _parent(observing::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
+      _renderer(observing::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
+      _position(observing::value::holder<ui::point>::make_shared({.v = 0.0f})),
+      _scale(observing::value::holder<ui::size>::make_shared({.v = 1.0f})),
+      _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
+      _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
+      _alpha(observing::value::holder<float>::make_shared(1.0f)),
+      _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
+      _collider(observing::value::holder<ui::collider_ptr>::make_shared(nullptr)),
+      _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
+      _render_target(observing::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
+      _enabled(observing::value::holder<bool>::make_shared(true)) {
 }
 
 ui::node::~node() = default;
 
-chaining::value::holder_ptr<ui::point> const &ui::node::position() const {
+observing::value::holder_ptr<ui::point> const &ui::node::position() const {
     return this->_position;
 }
 
-chaining::value::holder_ptr<ui::angle> const &ui::node::angle() const {
+observing::value::holder_ptr<ui::angle> const &ui::node::angle() const {
     return this->_angle;
 }
 
-chaining::value::holder_ptr<ui::size> const &ui::node::scale() const {
+observing::value::holder_ptr<ui::size> const &ui::node::scale() const {
     return this->_scale;
 }
 
-chaining::value::holder_ptr<ui::color> const &ui::node::color() const {
+observing::value::holder_ptr<ui::color> const &ui::node::color() const {
     return this->_color;
 }
 
-chaining::value::holder_ptr<float> const &ui::node::alpha() const {
+observing::value::holder_ptr<float> const &ui::node::alpha() const {
     return this->_alpha;
 }
 
-chaining::value::holder_ptr<bool> const &ui::node::is_enabled() const {
+observing::value::holder_ptr<bool> const &ui::node::is_enabled() const {
     return this->_enabled;
 }
 
@@ -81,19 +79,19 @@ simd::float4x4 const &ui::node::local_matrix() const {
     return this->_local_matrix;
 }
 
-chaining::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
+observing::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
     return this->_mesh;
 }
 
-chaining::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {
+observing::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {
     return this->_collider;
 }
 
-chaining::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
+observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
     return this->_batch;
 }
 
-chaining::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_target() const {
+observing::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_target() const {
     return this->_render_target;
 }
 
@@ -131,53 +129,66 @@ ui::renderer_ptr ui::node::renderer() const {
     return this->_renderer->value().lock();
 }
 
-chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(ui::node::method const &method) const {
-    return this->chain(std::vector<ui::node::method>{method});
+observing::canceller_ptr ui::node::observe(method const &method, observing::caller<chain_pair_t>::handler_f &&handler) {
+    return this->observe(std::vector<node::method>{method}, std::move(handler));
 }
 
-chaining::chain_unsync_t<ui::node::chain_pair_t> ui::node::chain(std::vector<ui::node::method> const &methods) const {
+observing::canceller_ptr ui::node::observe(std::vector<method> const &methods,
+                                           observing::caller<chain_pair_t>::handler_f &&handler) {
     for (auto const &method : methods) {
-        if (this->_dispatch_observers.count(method) > 0) {
+        if (this->_dispatch_cancellers.count(method) > 0) {
             continue;
         }
 
-        chaining::any_observer_ptr observer = nullptr;
+        observing::canceller_ptr canceller = nullptr;
 
         switch (method) {
             case ui::node::method::added_to_super:
             case ui::node::method::removed_from_super:
-                observer = this->_notify_sender->chain()
-                               .guard([method](node::method const &value) { return method == value; })
-                               .send_to(this->_dispatch_receiver)
-                               .end();
+                canceller = this->_notifier->observe([this, method](node::method const &value) {
+                    if (method == value) {
+                        if (auto node = this->_weak_node.lock()) {
+                            this->_dispatch_notifier->notify(std::make_pair(method, node));
+                        }
+                    }
+                });
                 break;
         }
 
-        this->_dispatch_observers.emplace(method, std::move(observer));
+        this->_dispatch_cancellers.emplace(method, std::move(canceller));
     }
 
-    return this->_dispatch_sender->chain().guard(
-        [methods](chain_pair_t const &pair) { return contains(methods, pair.first); });
-}
-
-chaining::chain_relayed_sync_t<ui::renderer_ptr, ui::renderer_wptr> ui::node::chain_renderer() const {
-    return this->_renderer->chain().to([](ui::renderer_wptr const &weak_renderer) {
-        if (auto renderer = weak_renderer.lock()) {
-            return renderer;
-        } else {
-            return ui::renderer_ptr{nullptr};
+    return this->_dispatch_notifier->observe([methods, handler = std::move(handler)](auto const &pair) {
+        if (contains(methods, pair.first)) {
+            handler(pair);
         }
     });
 }
 
-chaining::chain_relayed_sync_t<ui::node_ptr, ui::node_wptr> ui::node::chain_parent() const {
-    return this->_parent->chain().to([](ui::node_wptr const &weak_node) {
-        if (auto node = weak_node.lock()) {
-            return node;
-        } else {
-            return ui::node_ptr{nullptr};
-        }
-    });
+observing::canceller_ptr ui::node::observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&handler,
+                                                    bool const sync) {
+    return this->_renderer->observe(
+        [handler = std::move(handler)](ui::renderer_wptr const &weak_renderer) {
+            if (auto renderer = weak_renderer.lock()) {
+                handler(renderer);
+            } else {
+                handler(nullptr);
+            }
+        },
+        sync);
+}
+
+observing::canceller_ptr ui::node::observe_parent(observing::caller<ui::node_ptr>::handler_f &&handler,
+                                                  bool const sync) {
+    return this->_parent->observe(
+        [handler = std::move(handler)](ui::node_wptr const &weak_node) {
+            if (auto node = weak_node.lock()) {
+                handler(node);
+            } else {
+                handler(nullptr);
+            }
+        },
+        sync);
 }
 
 ui::point ui::node::convert_position(ui::point const &loc) const {
@@ -186,39 +197,28 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 }
 
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
-    auto &position = this->_position;
-    auto weak_node = this->_weak_node;
-
     this->_x_observer = guide.chain()
-                            .guard([weak_node](float const &) { return !weak_node.expired(); })
-                            .to([weak_node](float const &x) {
-                                return ui::point{x, weak_node.lock()->position()->value().y};
+                            .perform([this](float const &x) {
+                                this->_position->set_value(ui::point{x, this->position()->value().y});
                             })
-                            .send_to(position)
                             .sync();
 
     this->_position_observer = nullptr;
 }
 
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
-    auto &position = this->_position;
-    auto weak_node = this->_weak_node;
-
     this->_y_observer = guide.chain()
-                            .guard([weak_node](float const &) { return !weak_node.expired(); })
-                            .to([weak_node](float const &y) {
-                                return ui::point{weak_node.lock()->position()->value().x, y};
+                            .perform([this](float const &y) {
+                                this->_position->set_value(ui::point{this->position()->value().x, y});
                             })
-                            .send_to(position)
                             .sync();
 
     this->_position_observer = nullptr;
 }
 
 void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point) {
-    auto &position = this->_position;
-
-    this->_position_observer = guide_point.chain().send_to(position).sync();
+    this->_position_observer =
+        guide_point.chain().perform([this](auto const &position) { this->_position->set_value(position); }).sync();
 
     this->_x_observer = nullptr;
     this->_y_observer = nullptr;
@@ -227,84 +227,62 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
 void ui::node::_prepare(ui::node_ptr const &node) {
     this->_weak_node = node;
 
-    auto weak_node = this->_weak_node;
-
     // enabled
 
-    auto enabled_observer = this->_enabled->chain().to_value(ui::node_update_reason::enabled);
+    this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false)
+        ->add_to(this->_pool);
 
     // geometry
 
-    auto pos_chain = this->_position->chain().to_value(ui::node_update_reason::geometry);
-    auto angle_chain = this->_angle->chain().to_value(ui::node_update_reason::geometry);
-    auto scale_chain = this->_scale->chain().to_value(ui::node_update_reason::geometry);
+    this->_position->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+    this->_angle->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+    this->_scale->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
 
     // mesh and mesh_color
 
-    auto mesh_observer = this->_mesh->chain()
-                             .guard([weak_node](auto const &) { return !weak_node.expired(); })
-                             .perform([weak_node](auto const &) { weak_node.lock()->_update_mesh_color(); })
-                             .to_value(ui::node_update_reason::mesh);
+    this->_mesh
+        ->observe([this](auto const &) {
+            this->_update_mesh_color();
+            this->_set_updated(ui::node_update_reason::mesh);
+        })
+        ->add_to(this->_pool);
 
-    auto color_chain = this->_color->chain().to_null();
-    auto alpha_chain = this->_alpha->chain().to_null();
-
-    auto mesh_color_observer = color_chain.merge(std::move(alpha_chain))
-                                   .guard([weak_node](auto const &) { return !weak_node.expired(); })
-                                   .perform([weak_node](auto const &) { weak_node.lock()->_update_mesh_color(); })
-                                   .end();
+    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
+    this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
 
     // collider
 
-    auto collider_chain = this->_collider->chain().to_value(ui::node_update_reason::collider);
+    this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false)
+        ->add_to(this->_pool);
 
     // batch
 
-    auto batch_observer = this->_batch->chain()
-                              .perform([prev_batch = std::shared_ptr<ui::batch>{nullptr}](
-                                           std::shared_ptr<ui::batch> const &batch) mutable {
-                                  if (prev_batch) {
-                                      renderable_batch::cast(prev_batch)->clear_render_meshes();
-                                  }
+    this->_batch
+        ->observe(
+            [this, prev_batch = std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
+                if (prev_batch) {
+                    renderable_batch::cast(prev_batch)->clear_render_meshes();
+                }
 
-                                  if (batch) {
-                                      renderable_batch::cast(batch)->clear_render_meshes();
-                                  }
+                if (batch) {
+                    renderable_batch::cast(batch)->clear_render_meshes();
+                }
 
-                                  prev_batch = batch;
-                              })
-                              .end();
+                prev_batch = batch;
 
-    auto batch_chain = this->_batch->chain().to_value(ui::node_update_reason::batch);
+                this->_set_updated(ui::node_update_reason::batch);
+            },
+            false)
+        ->add_to(this->_pool);
 
     // render_target
 
-    auto render_target_chain = this->_render_target->chain().to_value(ui::node_update_reason::render_target);
-
-    auto updates_observer =
-        enabled_observer.merge(std::move(pos_chain))
-            .merge(std::move(angle_chain))
-            .merge(std::move(scale_chain))
-            .merge(std::move(mesh_observer))
-            .merge(std::move(collider_chain))
-            .merge(std::move(batch_chain))
-            .merge(std::move(render_target_chain))
-            .perform([weak_node](ui::node_update_reason const &reason) { weak_node.lock()->_set_updated(reason); })
-            .end();
-
-    this->_update_observers.reserve(2);
-    this->_update_observers.emplace_back(std::move(mesh_color_observer));
-    this->_update_observers.emplace_back(std::move(batch_observer));
-    this->_update_observers.emplace_back(std::move(updates_observer));
-
-    // dispatch
-
-    this->_dispatch_receiver =
-        chaining::perform_receiver<ui::node::method>::make_shared([weak_node](ui::node::method const &method) {
-            if (auto node = weak_node.lock()) {
-                node->_dispatch_sender->notify(std::make_pair(method, node));
-            }
-        });
+    this->_render_target
+        ->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false)
+        ->add_to(this->_pool);
 }
 
 ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
@@ -551,7 +529,7 @@ void ui::node::_add_sub_node(ui::node_ptr &sub_node, ui::node_ptr const &node) {
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
-    sub_node->_notify_sender->notify(method::added_to_super);
+    sub_node->_notifier->notify(method::added_to_super);
 
     this->_set_updated(ui::node_update_reason::children);
 }
@@ -563,7 +541,7 @@ void ui::node::_remove_sub_node(ui::node_ptr const &sub_node) {
 
     erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node == sub_node; });
 
-    sub_node->_notify_sender->notify(method::removed_from_super);
+    sub_node->_notifier->notify(method::removed_from_super);
 
     this->_set_updated(ui::node_update_reason::children);
 }

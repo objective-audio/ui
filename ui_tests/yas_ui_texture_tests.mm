@@ -129,7 +129,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = element->chain_tex_coords().perform([&called](auto const &) { called = true; }).end();
+    auto canceller = element->observe_tex_coords([&called](auto const &) { called = true; }, false);
 
     XCTAssertFalse(called);
 
@@ -211,7 +211,7 @@ using namespace yas;
 
     std::optional<ui::texture::method> received;
 
-    auto observer = texture->chain().perform([&received](auto const &pair) { received = pair.first; }).end();
+    auto canceller = texture->observe([&received](auto const &pair) { received = pair.first; });
 
     texture->set_point_size({16, 16});
 
@@ -224,33 +224,6 @@ using namespace yas;
 
     XCTAssertTrue(received);
     XCTAssertEqual(*received, ui::texture::method::metal_texture_changed);
-}
-
-- (void)test_chain_with_method {
-    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    auto metal_system = ui::metal_system::make_shared(device.object());
-
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
-
-    bool called = false;
-
-    auto observer =
-        texture->chain(ui::texture::method::size_updated).perform([&called](auto const &) { called = true; }).end();
-
-    texture->set_point_size({16, 16});
-
-    XCTAssertTrue(called);
-
-    called = false;
-
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
-
-    XCTAssertFalse(called);
 }
 
 @end

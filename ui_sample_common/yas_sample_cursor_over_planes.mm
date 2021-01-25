@@ -9,17 +9,16 @@
 using namespace yas;
 
 namespace yas::sample::cursor_over_planes_utils {
-static std::vector<chaining::any_observer_ptr> _make_event_observers(std::vector<ui::node_ptr> const &nodes,
-                                                                     ui::renderer_ptr const &renderer) {
-    std::vector<chaining::any_observer_ptr> event_observers;
-    event_observers.reserve(nodes.size());
+static std::vector<observing::canceller_ptr> _observe_events(std::vector<ui::node_ptr> const &nodes,
+                                                             ui::renderer_ptr const &renderer) {
+    std::vector<observing::canceller_ptr> event_cancellers;
+    event_cancellers.reserve(nodes.size());
 
     for (auto &node : nodes) {
-        event_observers.emplace_back(
-            renderer->event_manager()
-                ->chain(ui::event_manager::method::cursor_changed)
-                .perform([weak_node = to_weak(node),
-                          prev_detected = std::make_shared<bool>(false)](ui::event_ptr const &event) {
+        event_cancellers.emplace_back(renderer->event_manager()->observe(
+            [weak_node = to_weak(node), prev_detected = std::make_shared<bool>(false)](auto const &context) {
+                if (context.method == ui::event_manager::method::cursor_changed) {
+                    ui::event_ptr const &event = context.event;
                     auto const &cursor_event = event->get<ui::cursor>();
 
                     if (auto node = weak_node.lock()) {
@@ -43,11 +42,11 @@ static std::vector<chaining::any_observer_ptr> _make_event_observers(std::vector
                             *prev_detected = is_detected;
                         }
                     }
-                })
-                .end());
+                }
+            }));
     }
 
-    return event_observers;
+    return event_cancellers;
 }
 }
 
@@ -60,19 +59,18 @@ ui::node_ptr const &sample::cursor_over_planes::node() {
 }
 
 void sample::cursor_over_planes::_prepare(cursor_over_planes_ptr const &shared) {
-    this->_renderer_observer =
-        root_node->chain_renderer()
-            .perform([weak_planes = to_weak(shared), event_observers = std::vector<chaining::any_observer_ptr>{}](
-                         ui::renderer_ptr const &value) mutable {
-                if (auto planes = weak_planes.lock()) {
-                    if (value) {
-                        event_observers = cursor_over_planes_utils::_make_event_observers(planes->_nodes, value);
-                    } else {
-                        event_observers.clear();
-                    }
+    this->_renderer_canceller = root_node->observe_renderer(
+        [weak_planes = to_weak(shared),
+         event_observers = std::vector<observing::canceller_ptr>{}](ui::renderer_ptr const &value) mutable {
+            if (auto planes = weak_planes.lock()) {
+                if (value) {
+                    event_observers = cursor_over_planes_utils::_observe_events(planes->_nodes, value);
+                } else {
+                    event_observers.clear();
                 }
-            })
-            .end();
+            }
+        },
+        false);
 }
 
 void sample::cursor_over_planes::_setup_nodes() {

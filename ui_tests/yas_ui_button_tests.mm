@@ -75,9 +75,7 @@ using namespace yas;
 
     std::vector<ui::button::method> observed_methods;
 
-    auto observer = button->chain()
-                        .perform([&observed_methods](auto const &pair) { observed_methods.push_back(pair.first); })
-                        .end();
+    auto canceller = button->observe([&observed_methods](auto const &pair) { observed_methods.push_back(pair.first); });
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 

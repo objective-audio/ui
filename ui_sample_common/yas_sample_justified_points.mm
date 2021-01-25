@@ -40,57 +40,55 @@ ui::rect_plane_ptr const &sample::justified_points::rect_plane() {
 void sample::justified_points::_prepare(justified_points_ptr const &points) {
     auto &node = this->_rect_plane->node();
 
-    this->_renderer_observer =
-        node->chain_renderer()
-            .perform([weak_points = to_weak(points), x_layout = chaining::any_observer_ptr{nullptr},
-                      y_layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-                if (auto points = weak_points.lock()) {
-                    if (renderer) {
-                        std::vector<ui::layout_guide_ptr> x_receivers;
-                        for (auto &guide : points->_x_layout_guides) {
-                            x_receivers.push_back(guide);
-                        }
-
-                        x_layout = renderer->view_layout_guide_rect()
-                                       ->left()
-                                       ->chain()
-                                       .combine(renderer->view_layout_guide_rect()->right()->chain())
-                                       .to(ui::justify<sample::x_point_count - 1>())
-                                       .send_to(x_receivers)
-                                       .sync();
-
-                        std::array<float, sample::y_point_count - 1> y_ratios;
-
-                        auto each = make_fast_each(sample::y_point_count - 1);
-                        while (yas_each_next(each)) {
-                            auto const &idx = yas_each_index(each);
-                            if (idx < y_point_count / 2) {
-                                y_ratios.at(idx) = std::pow(2.0f, idx);
-                            } else {
-                                y_ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
-                            }
-                        }
-
-                        std::vector<ui::layout_guide_ptr> y_receivers;
-                        for (auto &guide : points->_y_layout_guides) {
-                            y_receivers.push_back(guide);
-                        }
-
-                        y_layout = renderer->view_layout_guide_rect()
-                                       ->bottom()
-                                       ->chain()
-                                       .combine(renderer->view_layout_guide_rect()->top()->chain())
-                                       .to(ui::justify<sample::y_point_count - 1>(y_ratios))
-                                       .perform([](std::array<float, sample::y_point_count> const &value) {})
-                                       .send_to(y_receivers)
-                                       .sync();
-                    } else {
-                        x_layout = nullptr;
-                        y_layout = nullptr;
+    this->_renderer_canceller = node->observe_renderer(
+        [weak_points = to_weak(points), x_layout = chaining::any_observer_ptr{nullptr},
+         y_layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+            if (auto points = weak_points.lock()) {
+                if (renderer) {
+                    std::vector<ui::layout_guide_ptr> x_receivers;
+                    for (auto &guide : points->_x_layout_guides) {
+                        x_receivers.push_back(guide);
                     }
+
+                    x_layout = renderer->view_layout_guide_rect()
+                                   ->left()
+                                   ->chain()
+                                   .combine(renderer->view_layout_guide_rect()->right()->chain())
+                                   .to(ui::justify<sample::x_point_count - 1>())
+                                   .send_to(x_receivers)
+                                   .sync();
+
+                    std::array<float, sample::y_point_count - 1> y_ratios;
+
+                    auto each = make_fast_each(sample::y_point_count - 1);
+                    while (yas_each_next(each)) {
+                        auto const &idx = yas_each_index(each);
+                        if (idx < y_point_count / 2) {
+                            y_ratios.at(idx) = std::pow(2.0f, idx);
+                        } else {
+                            y_ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
+                        }
+                    }
+
+                    std::vector<ui::layout_guide_ptr> y_receivers;
+                    for (auto &guide : points->_y_layout_guides) {
+                        y_receivers.push_back(guide);
+                    }
+
+                    y_layout = renderer->view_layout_guide_rect()
+                                   ->bottom()
+                                   ->chain()
+                                   .combine(renderer->view_layout_guide_rect()->top()->chain())
+                                   .to(ui::justify<sample::y_point_count - 1>(y_ratios))
+                                   .perform([](std::array<float, sample::y_point_count> const &value) {})
+                                   .send_to(y_receivers)
+                                   .sync();
+                } else {
+                    x_layout = nullptr;
+                    y_layout = nullptr;
                 }
-            })
-            .sync();
+            }
+        });
 }
 
 void sample::justified_points::_setup_colors() {

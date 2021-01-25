@@ -17,7 +17,7 @@ struct modifier_text {
    private:
     ui::strings_ptr _strings;
     ui::layout_guide_ptr _bottom_guide;
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    observing::canceller_ptr _renderer_canceller = nullptr;
 
     explicit modifier_text(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
 

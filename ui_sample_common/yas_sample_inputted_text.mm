@@ -23,35 +23,34 @@ ui::strings_ptr const &sample::inputted_text::strings() {
 void sample::inputted_text::_prepare(inputted_text_ptr const &text) {
     auto &node = this->_strings->rect_plane()->node();
 
-    this->_renderer_observer =
-        node->chain_renderer()
-            .perform([weak_text = to_weak(text), event_observer = chaining::any_observer_ptr{nullptr},
-                      layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-                if (auto text = weak_text.lock()) {
-                    if (renderer) {
-                        auto &strings_frame_guide_rect = text->_strings->frame_layout_guide_rect();
+    this->_renderer_canceller = node->observe_renderer(
+        [weak_text = to_weak(text), event_canceller = observing::canceller_ptr{nullptr},
+         layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+            if (auto text = weak_text.lock()) {
+                if (renderer) {
+                    auto &strings_frame_guide_rect = text->_strings->frame_layout_guide_rect();
 
-                        event_observer = renderer->event_manager()
-                                             ->chain(ui::event_manager::method::key_changed)
-                                             .perform([weak_text](ui::event_ptr const &event) {
-                                                 if (auto text = weak_text.lock()) {
-                                                     text->_update_text(event);
-                                                 }
-                                             })
-                                             .end();
+                    event_canceller = renderer->event_manager()->observe([weak_text](auto const &context) {
+                        if (context.method == ui::event_manager::method::key_changed) {
+                            ui::event_ptr const &event = context.event;
+                            if (auto text = weak_text.lock()) {
+                                text->_update_text(event);
+                            }
+                        }
+                    });
 
-                        layout = renderer->safe_area_layout_guide_rect()
-                                     ->chain()
-                                     .to(chaining::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
-                                     .send_to(strings_frame_guide_rect)
-                                     .sync();
-                    } else {
-                        event_observer = nullptr;
-                        layout = nullptr;
-                    }
+                    layout = renderer->safe_area_layout_guide_rect()
+                                 ->chain()
+                                 .to(chaining::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
+                                 .send_to(strings_frame_guide_rect)
+                                 .sync();
+                } else {
+                    event_canceller = nullptr;
+                    layout = nullptr;
                 }
-            })
-            .end();
+            }
+        },
+        false);
 }
 
 void sample::inputted_text::_update_text(ui::event_ptr const &event) {

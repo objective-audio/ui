@@ -24,19 +24,17 @@ void sample::bg::_prepare(std::shared_ptr<bg> const &shared) {
                                })
                                .end();
 
-    this->_renderer_observer =
-        this->_rect_plane->node()
-            ->chain_renderer()
-            .perform([weak_bg, layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
-                if (auto bg = weak_bg.lock()) {
-                    if (value) {
-                        layout = value->safe_area_layout_guide_rect()->chain().send_to(bg->_layout_guide_rect).sync();
-                    } else {
-                        layout = nullptr;
-                    }
+    this->_renderer_canceller = this->_rect_plane->node()->observe_renderer(
+        [weak_bg, layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
+            if (auto bg = weak_bg.lock()) {
+                if (value) {
+                    layout = value->safe_area_layout_guide_rect()->chain().send_to(bg->_layout_guide_rect).sync();
+                } else {
+                    layout = nullptr;
                 }
-            })
-            .end();
+            }
+        },
+        false);
 }
 
 sample::bg_ptr sample::bg::make_shared() {

@@ -65,9 +65,8 @@ using namespace yas;
 
     ui::texture_ptr observed_texture = nullptr;
 
-    auto observer = font_atlas->chain_texture()
-                        .perform([&observed_texture](ui::texture_ptr const &texture) { observed_texture = texture; })
-                        .end();
+    auto canceller = font_atlas->observe_texture(
+        [&observed_texture](ui::texture_ptr const &texture) { observed_texture = texture; });
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 

@@ -38,20 +38,22 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
 
     auto old_cache = std::make_shared<std::optional<float>>();
 
+    auto wait_sender_chain = this->_wait_sender->chain().guard([count = int32_t(0)](bool const &is_wait) mutable {
+        if (is_wait) {
+            ++count;
+            return (count == 1);
+        } else {
+            --count;
+            if (count < 0) {
+                std::underflow_error("");
+            }
+            return (count == 0);
+        }
+    });
+
     return this->_value->chain()
         .guard([weak_guide](float const &) { return !weak_guide.expired(); })
-        .pair(this->_wait_sender->chain().guard([count = int32_t(0)](bool const &is_wait) mutable {
-            if (is_wait) {
-                ++count;
-                return (count == 1);
-            } else {
-                --count;
-                if (count < 0) {
-                    std::underflow_error("");
-                }
-                return (count == 0);
-            }
-        }))
+        .pair(std::move(wait_sender_chain))
         .to([cache = std::optional<float>(), old_cache, is_wait = false,
              weak_guide](std::pair<std::optional<float>, std::optional<bool>> const &pair) mutable {
             bool is_continue = false;
@@ -82,8 +84,11 @@ ui::layout_guide::chain_t ui::layout_guide::chain() const {
 
             return std::make_pair(cache, is_continue);
         })
-        .guard([](auto const &pair) { return pair.second; })
         .guard([old_cache](auto const &pair) {
+            if (!pair.second) {
+                return false;
+            }
+
             if (!*old_cache) {
                 return true;
             }

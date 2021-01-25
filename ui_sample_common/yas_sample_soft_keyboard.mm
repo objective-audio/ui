@@ -87,30 +87,24 @@ ui::node_ptr const &sample::soft_keyboard::node() {
     return this->_root_node;
 }
 
-chaining::chain_unsync_t<std::string> sample::soft_keyboard::chain() const {
-    return this->_key_sender->chain();
+observing::canceller_ptr sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
+    return this->_key_notifier->observe(std::move(handler));
 }
 
 void sample::soft_keyboard::_prepare(soft_keyboard_ptr const &keyboard) {
     this->_weak_keyboard = keyboard;
 
-    auto weak_keyboard = this->_weak_keyboard;
-
-    this->_renderer_observer = this->_root_node->chain_renderer()
-                                   .guard([weak_keyboard](auto const &) { return !weak_keyboard.expired(); })
-                                   .perform([weak_keyboard](ui::renderer_ptr const &renderer) {
-                                       auto const keyboard = weak_keyboard.lock();
-                                       if (renderer) {
-                                           keyboard->_setup_soft_keys_if_needed();
-                                       } else {
-                                           keyboard->_dispose_soft_keys();
-                                       }
-                                   })
-                                   .sync();
+    this->_renderer_canceller = this->_root_node->observe_renderer([this](ui::renderer_ptr const &renderer) {
+        if (renderer) {
+            this->_setup_soft_keys_if_needed();
+        } else {
+            this->_dispose_soft_keys();
+        }
+    });
 }
 
 void sample::soft_keyboard::_setup_soft_keys_if_needed() {
-    if (this->_soft_keys.size() > 0 && this->_soft_key_observers.size() > 0 && this->_collection_layout &&
+    if (this->_soft_keys.size() > 0 && this->_soft_key_cancellers.size() > 0 && this->_collection_layout &&
         this->_frame_layouts.size() > 0 && this->_actual_cell_count_observer) {
         return;
     }
@@ -137,7 +131,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     }
 
     this->_soft_keys.reserve(key_count);
-    this->_soft_key_observers.reserve(key_count);
+    this->_soft_key_cancellers.reserve(key_count);
 
     this->_collection_layout = ui::collection_layout::make_shared(
         {.frame = {.size = {width, 0.0f}},
@@ -150,17 +144,16 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     for (auto const &key : keys) {
         sample::soft_key_ptr soft_key = sample::soft_key::make_shared(key, key_width, this->_font_atlas);
 
-        chaining::any_observer_ptr observer =
-            soft_key->button()
-                ->chain(ui::button::method::ended)
-                .perform([weak_keyboard = this->_weak_keyboard, key](auto const &context) {
+        observing::canceller_ptr canceller =
+            soft_key->button()->observe([weak_keyboard = this->_weak_keyboard, key](auto const &context) {
+                if (context.first == ui::button::method::ended) {
                     if (auto keyboard = weak_keyboard.lock()) {
-                        keyboard->_key_sender->notify(key);
+                        keyboard->_key_notifier->notify(key);
                     }
-                })
-                .end();
+                }
+            });
 
-        this->_soft_key_observers.emplace_back(std::move(observer));
+        this->_soft_key_cancellers.emplace_back(std::move(canceller));
 
         auto &node = soft_key->button()->rect_plane()->node();
 
@@ -221,7 +214,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
 
 void sample::soft_keyboard::_dispose_soft_keys() {
     this->_soft_keys.clear();
-    this->_soft_key_observers.clear();
+    this->_soft_key_cancellers.clear();
     this->_frame_layouts.clear();
     this->_collection_layout = nullptr;
     this->_actual_cell_count_observer = nullptr;

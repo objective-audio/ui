@@ -43,8 +43,6 @@ struct rect_plane_data final {
 
     ui::dynamic_mesh_data_ptr const &dynamic_mesh_data();
 
-    chaining::receiver<std::pair<ui::uint_region, std::size_t>> &rect_tex_coords_receiver();
-
     [[nodiscard]] static rect_plane_data_ptr make_shared(ui::dynamic_mesh_data_ptr mesh_data);
     [[nodiscard]] static rect_plane_data_ptr make_shared(std::size_t const max_rect_count);
     [[nodiscard]] static rect_plane_data_ptr make_shared(std::size_t const max_rect_count,
@@ -52,8 +50,7 @@ struct rect_plane_data final {
 
    private:
     ui::dynamic_mesh_data_ptr _dynamic_mesh_data;
-    std::vector<chaining::any_observer_ptr> _element_observers;
-    chaining::perform_receiver_ptr<std::pair<ui::uint_region, std::size_t>> _rect_tex_coords_receiver;
+    std::vector<observing::canceller_ptr> _element_cancellers;
 
     explicit rect_plane_data(ui::dynamic_mesh_data_ptr mesh_data);
 

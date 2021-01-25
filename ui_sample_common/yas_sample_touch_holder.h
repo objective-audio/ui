@@ -23,7 +23,7 @@ struct touch_holder {
     std::unordered_map<uintptr_t, touch_object> _objects;
     ui::texture_ptr _texture = nullptr;
     ui::rect_plane_data_ptr _rect_plane_data = ui::rect_plane_data::make_shared(1);
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    observing::canceller_ptr _renderer_canceller = nullptr;
 
     touch_holder();
 

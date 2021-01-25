@@ -138,8 +138,7 @@ using namespace yas;
 
     ui::shape_ptr received{nullptr};
 
-    auto observer =
-        collider->chain_shape().perform([&received](ui::shape_ptr const &shape) { received = shape; }).end();
+    auto observer = collider->observe_shape([&received](ui::shape_ptr const &shape) { received = shape; }, false);
 
     collider->set_shape(ui::shape::make_shared(ui::anywhere_shape{}));
 
@@ -152,38 +151,11 @@ using namespace yas;
 
     bool received = true;
 
-    auto observer = collider->chain_enabled().perform([&received](bool const &enabled) { received = enabled; }).end();
+    auto observer = collider->observe_enabled([&received](bool const &enabled) { received = enabled; }, false);
 
     collider->set_enabled(false);
 
     XCTAssertFalse(received);
-}
-
-- (void)test_shape_receiver {
-    auto collider = ui::collider::make_shared();
-
-    auto sender = chaining::notifier<ui::shape_ptr>::make_shared();
-    auto observer = sender->chain().send_to(collider->shape_receiver()).end();
-
-    XCTAssertFalse(collider->shape());
-
-    sender->notify(ui::shape::make_shared(ui::circle_shape{}));
-
-    XCTAssertTrue(collider->shape());
-    XCTAssertTrue(collider->shape()->type_info() == typeid(ui::shape::circle));
-}
-
-- (void)test_enabled_receiver {
-    auto collider = ui::collider::make_shared();
-
-    auto sender = chaining::notifier<bool>::make_shared();
-    auto observer = sender->chain().send_to(collider->enabled_receiver()).end();
-
-    XCTAssertTrue(collider->is_enabled());
-
-    sender->notify(false);
-
-    XCTAssertFalse(collider->is_enabled());
 }
 
 @end

@@ -11,31 +11,26 @@
 using namespace yas;
 
 ui::blur::blur() : _effect(ui::effect::make_shared()) {
+    this->_update_effect_handler();
 }
 
 void ui::blur::set_sigma(double const sigma) {
-    this->_sigma->set_value(sigma);
+    if (this->_sigma != sigma) {
+        this->_sigma = sigma;
+        this->_update_effect_handler();
+    }
 }
 
 double ui::blur::sigma() const {
-    return this->_sigma->value();
+    return this->_sigma;
 }
 
 ui::effect_ptr const &ui::blur::effect() const {
     return this->_effect;
 }
 
-void ui::blur::_prepare(std::shared_ptr<ui::blur> &blur) {
-    auto weak_blur = to_weak(blur);
-
-    this->_sigma_observer = this->_sigma->chain()
-                                .guard([weak_blur](double const &) { return !weak_blur.expired(); })
-                                .perform([weak_blur](double const &) { weak_blur.lock()->_update_effect_handler(); })
-                                .sync();
-}
-
 void ui::blur::_update_effect_handler() {
-    double const sigma = this->_sigma->value();
+    double const sigma = this->_sigma;
 
     if (sigma > 0.0) {
         this->_effect->set_metal_handler([sigma, prev_scale_factor = std::optional<double>{std::nullopt},
@@ -61,7 +56,5 @@ void ui::blur::_update_effect_handler() {
 }
 
 ui::blur_ptr ui::blur::make_shared() {
-    auto shared = std::shared_ptr<blur>(new blur{});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<blur>(new blur{});
 }

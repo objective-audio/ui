@@ -17,13 +17,13 @@ struct soft_keyboard {
 
     ui::node_ptr const &node();
 
-    chaining::chain_unsync_t<std::string> chain() const;
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<std::string>::handler_f &&);
 
     static soft_keyboard_ptr make_shared(ui::font_atlas_ptr const &);
 
    private:
     ui::node_ptr _root_node = ui::node::make_shared();
-    chaining::notifier_ptr<std::string> _key_sender = chaining::notifier<std::string>::make_shared();
+    observing::notifier_ptr<std::string> _key_notifier = observing::notifier<std::string>::make_shared();
 
     std::weak_ptr<soft_keyboard> _weak_keyboard;
 
@@ -33,8 +33,8 @@ struct soft_keyboard {
     std::shared_ptr<ui::collection_layout> _collection_layout = nullptr;
     std::vector<chaining::any_observer_ptr> _frame_layouts;
 
-    std::vector<chaining::any_observer_ptr> _soft_key_observers;
-    chaining::any_observer_ptr _renderer_observer = nullptr;
+    std::vector<observing::canceller_ptr> _soft_key_cancellers;
+    observing::canceller_ptr _renderer_canceller = nullptr;
     chaining::any_observer_ptr _actual_cell_count_observer = nullptr;
     ui::layout_animator_ptr _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect_ptr> _src_cell_guide_rects;
