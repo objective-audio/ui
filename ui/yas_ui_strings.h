@@ -68,7 +68,7 @@ struct strings final {
     std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
     std::optional<observing::canceller_ptr> _texture_updated_canceller = std::nullopt;
     std::vector<chaining::any_observer_ptr> _property_observers;
-    observing::canceller_pool_ptr const _property_pool = observing::canceller_pool::make_shared();
+    observing::invalidator_pool_ptr const _property_pool = observing::invalidator_pool::make_shared();
     std::vector<chaining::any_observer_ptr> _cell_rect_observers;
 
     explicit strings(args);
