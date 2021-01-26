@@ -93,7 +93,7 @@ struct node final : action_target, metal_object, renderable_node {
     observing::value::holder_ptr<ui::render_target_ptr> const _render_target;
     observing::value::holder_ptr<bool> const _enabled;
 
-    observing::canceller_pool _pool;
+    observing::invalidator_pool _pool;
     chaining::any_observer_ptr _x_observer = nullptr;
     chaining::any_observer_ptr _y_observer = nullptr;
     chaining::any_observer_ptr _position_observer = nullptr;
