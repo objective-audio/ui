@@ -24,7 +24,7 @@ struct background final : renderable_background {
 
     background_updates_t _updates;
 
-    observing::invalidator_pool _pool;
+    observing::canceller_pool _pool;
 
     background();
 

@@ -64,9 +64,9 @@ struct node final : action_target, metal_object, renderable_node {
                                                    observing::caller<chain_pair_t>::handler_f &&);
 
     [[nodiscard]] observing::canceller_ptr observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&,
-                                                            bool const sync = true);
+                                                            bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_parent(observing::caller<ui::node_ptr>::handler_f &&,
-                                                          bool const sync = true);
+                                                          bool const sync);
 
     ui::point convert_position(ui::point const &) const;
 
@@ -93,10 +93,10 @@ struct node final : action_target, metal_object, renderable_node {
     observing::value::holder_ptr<ui::render_target_ptr> const _render_target;
     observing::value::holder_ptr<bool> const _enabled;
 
-    observing::invalidator_pool _pool;
-    chaining::any_observer_ptr _x_observer = nullptr;
-    chaining::any_observer_ptr _y_observer = nullptr;
-    chaining::any_observer_ptr _position_observer = nullptr;
+    observing::canceller_pool _pool;
+    observing::cancellable_ptr _x_canceller = nullptr;
+    observing::cancellable_ptr _y_canceller = nullptr;
+    observing::cancellable_ptr _position_canceller = nullptr;
 
     std::vector<ui::node_ptr> _children;
 

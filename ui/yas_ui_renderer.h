@@ -63,9 +63,9 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     [[nodiscard]] observing::canceller_ptr observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] observing::canceller_ptr observe_scale_factor(observing::caller<double>::handler_f &&,
-                                                                bool const sync = true);
+                                                                bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_appearance(observing::caller<ui::appearance>::handler_f &&,
-                                                              bool const sync = true);
+                                                              bool const sync);
 
     [[nodiscard]] static renderer_ptr make_shared();
     [[nodiscard]] static renderer_ptr make_shared(ui::metal_system_ptr const &);

@@ -40,7 +40,7 @@ struct layout_animator {
    private:
     args _args;
     ui::transform_f _value_transformer;
-    std::vector<chaining::any_observer_ptr> _observers;
+    observing::canceller_pool _pool;
 
     explicit layout_animator(args);
 

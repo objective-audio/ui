@@ -42,7 +42,7 @@ struct render_target : metal_object, renderable_render_target {
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
     observing::canceller_ptr _scale_canceller = nullptr;
-    chaining::any_observer_ptr _rect_observer = nullptr;
+    observing::cancellable_ptr _rect_canceller;
 
     ui::metal_system_ptr _metal_system = nullptr;
 

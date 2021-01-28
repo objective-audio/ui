@@ -12,10 +12,10 @@ ui::background::background()
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
     this->_updates.flags.set();
 
-    this->_color->observe([this](auto const &) { this->_updates.set(ui::background_update_reason::color); })
+    this->_color->observe([this](auto const &) { this->_updates.set(ui::background_update_reason::color); }, true)
         ->add_to(this->_pool);
 
-    this->_alpha->observe([this](auto const &) { this->_updates.set(ui::background_update_reason::alpha); })
+    this->_alpha->observe([this](auto const &) { this->_updates.set(ui::background_update_reason::alpha); }, true)
         ->add_to(this->_pool);
 }
 

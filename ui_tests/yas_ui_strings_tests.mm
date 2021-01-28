@@ -108,14 +108,14 @@ using namespace yas;
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 9);
 }
 
-- (void)test_chain_text {
+- (void)test_observe_text {
     auto strings = ui::strings::make_shared();
 
     strings->set_text("a");
 
     std::string notified;
 
-    auto canceller = strings->observe_text([&notified](std::string const &text) { notified = text; });
+    auto canceller = strings->observe_text([&notified](std::string const &text) { notified = text; }, true);
 
     XCTAssertEqual(notified, "a");
 
@@ -124,13 +124,13 @@ using namespace yas;
     XCTAssertEqual(notified, "b");
 }
 
-- (void)test_chain_font_atlas {
+- (void)test_observe_font_atlas {
     auto strings = ui::strings::make_shared();
 
     ui::font_atlas_ptr notified = nullptr;
 
     auto canceller =
-        strings->observe_font_atlas([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; });
+        strings->observe_font_atlas([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; }, true);
 
     XCTAssertFalse(notified);
 
@@ -143,13 +143,13 @@ using namespace yas;
     XCTAssertEqual(notified->font_name(), "HelveticaNeue");
 }
 
-- (void)test_chain_line_height {
+- (void)test_observe_line_height {
     auto strings = ui::strings::make_shared();
 
     std::optional<float> notified = std::nullopt;
 
-    auto observer =
-        strings->observe_line_height([&notified](std::optional<float> const &line_height) { notified = line_height; });
+    auto observer = strings->observe_line_height(
+        [&notified](std::optional<float> const &line_height) { notified = line_height; }, true);
 
     XCTAssertFalse(notified);
 
@@ -159,7 +159,7 @@ using namespace yas;
     XCTAssertEqual(*notified, 1.0f);
 }
 
-- (void)test_chain_alignment {
+- (void)test_observe_alignment {
     auto strings = ui::strings::make_shared();
 
     ui::layout_alignment notified;

@@ -10,9 +10,7 @@ using namespace yas;
 
 #pragma mark - ui::layout_guide
 
-ui::layout_guide::layout_guide(float const value)
-    : _value(chaining::value::holder<float>::make_shared(value)),
-      _wait_sender(chaining::notifier<bool>::make_shared()) {
+ui::layout_guide::layout_guide(float const value) : _value(observing::value::holder<float>::make_shared(value)) {
 }
 
 ui::layout_guide::~layout_guide() = default;
@@ -26,85 +24,48 @@ float const &ui::layout_guide::value() const {
 }
 
 void ui::layout_guide::push_notify_waiting() {
-    this->_wait_sender->notify(true);
+    if (this->_wait_count->value() == 0) {
+        this->_pushed_value = this->_value->value();
+    }
+
+    this->_wait_count->set_value(this->_wait_count->value() + 1);
 }
 
 void ui::layout_guide::pop_notify_waiting() {
-    this->_wait_sender->notify(false);
+    this->_wait_count->set_value(this->_wait_count->value() - 1);
+
+    if (this->_wait_count == 0) {
+        this->_pushed_value = std::nullopt;
+    }
 }
 
-ui::layout_guide::chain_t ui::layout_guide::chain() const {
-    auto cache = std::make_shared<std::optional<float>>();
-    auto old_cache = std::make_shared<std::optional<float>>();
-    auto is_wait = std::make_shared<bool>(false);
+observing::cancellable_ptr ui::layout_guide::observe(observing::caller<float>::handler_f &&handler, bool const sync) {
+    auto pool = observing::canceller_pool::make_shared();
 
-    auto value_chain = this->_value->chain().guard([cache, old_cache, is_wait](float const &value) {
-        // pointが来た場合はwaitしてなければフロー継続、waitしてればフロー中断
-        *cache = value;
-
-        if (*is_wait) {
-            return false;
-        }
-
-        if (*old_cache) {
-            float const old_value = **old_cache;
-            *old_cache = std::nullopt;
-            if (old_value == **cache) {
-                return false;
-            }
-        }
-
-        return true;
-    });
-
-    auto wait_sender_chain = this->_wait_sender->chain().guard(
-        [count = int32_t(0), is_wait, cache, old_cache, this](bool const &value) mutable {
-            if (value) {
-                ++count;
-                if (count != 1) {
-                    return false;
+    this->_value
+        ->observe(
+            [handler, this](float const &value) {
+                if (this->_wait_count->value() == 0) {
+                    handler(value);
                 }
-            } else {
-                --count;
-                if (count < 0) {
-                    std::underflow_error("");
+            },
+            sync)
+        ->add_to(*pool);
+
+    this->_wait_count
+        ->observe(
+            [handler, this](int32_t const &count) {
+                if (count == 0) {
+                    if (this->_pushed_value.has_value() && this->_pushed_value.value() == this->_value->value()) {
+                        return;
+                    }
+                    handler(this->_value->value());
                 }
-                if (count != 0) {
-                    return false;
-                }
-            }
+            },
+            false)
+        ->add_to(*pool);
 
-            // waitフラグが来た場合
-            *is_wait = value;
-
-            if (value) {
-                // wait開始ならキャッシュをクリアしてフロー中断
-                *cache = std::nullopt;
-                *old_cache = this->_value->value();
-
-                return false;
-            } else {
-                // wait終了ならキャッシュに値があればフロー継続
-
-                if (!*cache) {
-                    *old_cache = std::nullopt;
-                    return false;
-                }
-            }
-
-            if (*old_cache) {
-                float const old_value = **old_cache;
-                *old_cache = std::nullopt;
-                if (old_value == **cache) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-    return value_chain.pair(std::move(wait_sender_chain))
-        .to([cache](std::pair<std::optional<float>, std::optional<bool>> const &pair) { return **cache; });
+    return pool;
 }
 
 void ui::layout_guide::receive_value(float const &value) {
@@ -172,20 +133,14 @@ void ui::layout_guide_point::pop_notify_waiting() {
     this->_y_guide->pop_notify_waiting();
 }
 
-ui::layout_guide_point::chain_t ui::layout_guide_point::chain() const {
-    auto cache = this->point();
+observing::cancellable_ptr ui::layout_guide_point::observe(observing::caller<ui::point>::handler_f &&handler,
+                                                           bool const sync) {
+    auto pool = observing::canceller_pool::make_shared();
 
-    return this->_x_guide->chain()
-        .pair(this->_y_guide->chain())
-        .to([cache](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
-            if (pair.first) {
-                cache.x = *pair.first;
-            }
-            if (pair.second) {
-                cache.y = *pair.second;
-            }
-            return cache;
-        });
+    this->_x_guide->observe([this, handler](float const &) { handler(this->point()); }, false)->add_to(*pool);
+    this->_y_guide->observe([this, handler](float const &) { handler(this->point()); }, sync)->add_to(*pool);
+
+    return pool;
 }
 
 void ui::layout_guide_point::receive_value(ui::point const &point) {
@@ -207,6 +162,10 @@ ui::layout_guide_range::layout_guide_range(ui::range &&range)
     : _min_guide(layout_guide::make_shared(range.min())),
       _max_guide(layout_guide::make_shared(range.max())),
       _length_guide(layout_guide::make_shared(range.length)) {
+    this->_min_canceller = this->_min_guide->observe(
+        [this](float const &min) { this->_length_guide->set_value(this->max()->value() - min); }, false);
+    this->_max_canceller = this->_max_guide->observe(
+        [this](float const &max) { this->_length_guide->set_value(max - this->min()->value()); }, false);
 }
 
 ui::layout_guide_range::~layout_guide_range() = default;
@@ -259,41 +218,18 @@ void ui::layout_guide_range::pop_notify_waiting() {
     this->_length_guide->pop_notify_waiting();
 }
 
-ui::layout_guide_range::chain_t ui::layout_guide_range::chain() const {
-    ui::range const range = this->range();
+observing::cancellable_ptr ui::layout_guide_range::observe(observing::caller<ui::range>::handler_f &&handler,
+                                                           bool const sync) {
+    auto pool = observing::canceller_pool::make_shared();
 
-    return this->_min_guide->chain()
-        .pair(this->_max_guide->chain())
-        .to([min_cache = range.min(),
-             max_cache = range.max()](std::pair<std::optional<float>, std::optional<float>> const &pair) mutable {
-            if (pair.first) {
-                min_cache = *pair.first;
-            }
-            if (pair.second) {
-                max_cache = *pair.second;
-            }
-            return ui::range{min_cache, max_cache - min_cache};
-        });
+    this->_min_guide->observe([this, handler](float const &) { handler(this->range()); }, false)->add_to(*pool);
+    this->_max_guide->observe([this, handler](float const &) { handler(this->range()); }, sync)->add_to(*pool);
+
+    return pool;
 }
 
 void ui::layout_guide_range::receive_value(ui::range const &value) {
     this->set_range(value);
-}
-
-void ui::layout_guide_range::_prepare(layout_guide_range_ptr &range) {
-    auto weak_range = to_weak(range);
-
-    this->_min_observer = this->_min_guide->chain()
-                              .guard([weak_range](float const &) { return !weak_range.expired(); })
-                              .to([weak_range](float const &min) { return weak_range.lock()->max()->value() - min; })
-                              .send_to(this->_length_guide)
-                              .end();
-
-    this->_max_observer = this->_max_guide->chain()
-                              .guard([weak_range](float const &) { return !weak_range.expired(); })
-                              .to([weak_range](float const &max) { return max - weak_range.lock()->min()->value(); })
-                              .send_to(this->_length_guide)
-                              .end();
 }
 
 std::shared_ptr<ui::layout_guide_range> ui::layout_guide_range::make_shared() {
@@ -301,9 +237,7 @@ std::shared_ptr<ui::layout_guide_range> ui::layout_guide_range::make_shared() {
 }
 
 std::shared_ptr<ui::layout_guide_range> ui::layout_guide_range::make_shared(ui::range range) {
-    auto shared = std::shared_ptr<layout_guide_range>(new layout_guide_range{std::move(range)});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<layout_guide_range>(new layout_guide_range{std::move(range)});
 }
 
 #pragma mark - ui::layout_guide_rect
@@ -384,14 +318,12 @@ void ui::layout_guide_rect::set_vertical_range(ui::range range) {
 }
 
 void ui::layout_guide_rect::set_ranges(ranges_args args) {
-    this->_vertical_range->push_notify_waiting();
-    this->_horizontal_range->push_notify_waiting();
+    this->push_notify_waiting();
 
     this->set_vertical_range(std::move(args.vertical_range));
     this->set_horizontal_range(std::move(args.horizontal_range));
 
-    this->_vertical_range->pop_notify_waiting();
-    this->_horizontal_range->pop_notify_waiting();
+    this->pop_notify_waiting();
 }
 
 void ui::layout_guide_rect::set_region(ui::region const &region) {
@@ -415,21 +347,16 @@ void ui::layout_guide_rect::pop_notify_waiting() {
     this->_horizontal_range->pop_notify_waiting();
 }
 
-ui::layout_guide_rect::chain_t ui::layout_guide_rect::chain() const {
-    ui::region const region = this->region();
+observing::cancellable_ptr ui::layout_guide_rect::observe(observing::caller<ui::region>::handler_f &&handler,
+                                                          bool const sync) {
+    auto pool = observing::canceller_pool::make_shared();
 
-    return this->_vertical_range->chain()
-        .pair(this->_horizontal_range->chain())
-        .to([v_cache = region.vertical_range(), h_cache = region.horizontal_range()](
-                std::pair<std::optional<ui::range>, std::optional<ui::range>> const &pair) mutable {
-            if (pair.first) {
-                v_cache = *pair.first;
-            }
-            if (pair.second) {
-                h_cache = *pair.second;
-            }
-            return ui::make_region(h_cache, v_cache);
-        });
+    this->_vertical_range->observe([this, handler](ui::range const &) { handler(this->region()); }, false)
+        ->add_to(*pool);
+    this->_horizontal_range->observe([this, handler](ui::range const &) { handler(this->region()); }, sync)
+        ->add_to(*pool);
+
+    return pool;
 }
 
 void ui::layout_guide_rect::receive_value(ui::region const &region) {

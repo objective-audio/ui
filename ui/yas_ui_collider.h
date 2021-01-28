@@ -86,9 +86,8 @@ struct collider final : renderable_collider {
     bool hit_test(ui::point const &) const;
 
     [[nodiscard]] observing::canceller_ptr observe_shape(observing::caller<ui::shape_ptr>::handler_f &&,
-                                                         bool const sync = true);
-    [[nodiscard]] observing::canceller_ptr observe_enabled(observing::caller<bool>::handler_f &&,
-                                                           bool const sync = true);
+                                                         bool const sync);
+    [[nodiscard]] observing::canceller_ptr observe_enabled(observing::caller<bool>::handler_f &&, bool const sync);
 
     [[nodiscard]] static collider_ptr make_shared();
     [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);

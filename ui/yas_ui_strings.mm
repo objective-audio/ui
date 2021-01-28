@@ -131,10 +131,12 @@ void ui::strings::_prepare_receivers(ui::strings_wptr const &weak_strings) {
 
 void ui::strings::_prepare_chains() {
     this->_font_atlas
-        ->observe([this](ui::font_atlas_ptr const &font_atras) {
-            this->_update_texture_receiver->receive_value(font_atras);
-            this->_update_layout_receiver->receive_value(nullptr);
-        })
+        ->observe(
+            [this](ui::font_atlas_ptr const &font_atras) {
+                this->_update_texture_receiver->receive_value(font_atras);
+                this->_update_layout_receiver->receive_value(nullptr);
+            },
+            true)
         ->add_to(*this->_property_pool);
 
     this->_text->observe([this](auto const &) { this->_update_layout_receiver->receive_value(nullptr); }, false)
@@ -154,12 +156,14 @@ void ui::strings::_update_texture_chaining() {
     if (auto &font_atlas = this->_font_atlas->value()) {
         if (!this->_texture_canceller.has_value()) {
             auto &weak_strings = this->_weak_strings;
-            this->_texture_canceller = font_atlas->observe_texture([weak_strings, this](auto const &texture) {
-                if (!weak_strings.expired()) {
-                    this->_texture_receiver->receive_value(texture);
-                    this->_update_layout_receiver->receive_value(nullptr);
-                }
-            });
+            this->_texture_canceller = font_atlas->observe_texture(
+                [weak_strings, this](auto const &texture) {
+                    if (!weak_strings.expired()) {
+                        this->_texture_receiver->receive_value(texture);
+                        this->_update_layout_receiver->receive_value(nullptr);
+                    }
+                },
+                true);
         }
         if (!this->_texture_updated_canceller.has_value()) {
             this->_texture_updated_canceller = font_atlas->observe_texture_updated(
@@ -173,7 +177,7 @@ void ui::strings::_update_texture_chaining() {
 }
 
 void ui::strings::_update_layout() {
-    this->_cell_rect_observers.clear();
+    this->_cell_rect_pool.invalidate();
 
     auto const &font_atlas = this->_font_atlas->value();
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
@@ -244,14 +248,11 @@ void ui::strings::_update_layout() {
 
         auto weak_strings = to_weak(strings);
 
-        this->_cell_rect_observers.emplace_back(
-            cell_rect->chain()
-                .guard([weak_strings](ui::region const &) { return !weak_strings.expired(); })
-                .perform([idx, word, weak_strings, handler](ui::region const &value) {
-                    auto strings = weak_strings.lock();
-                    handler(strings, idx, word, value);
-                })
-                .end());
+        cell_rect
+            ->observe([idx, word, handler,
+                       this](ui::region const &value) { handler(this->_weak_strings.lock(), idx, word, value); },
+                      false)
+            ->add_to(this->_cell_rect_pool);
 
         handler(strings, idx, word, cell_rect->region());
     }

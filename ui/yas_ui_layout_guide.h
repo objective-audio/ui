@@ -19,9 +19,7 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<float, float, true>;
-
-    [[nodiscard]] chain_t chain() const;
+    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<float>::handler_f &&, bool const sync);
 
     void receive_value(float const &) override;
 
@@ -29,9 +27,10 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
 
    private:
-    chaining::value::holder_ptr<float> _value;
+    observing::value::holder_ptr<float> _value;
     layout_guide_wptr _weak_ptr;
-    chaining::notifier_ptr<bool> _wait_sender;
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<float> _pushed_value;
 
     explicit layout_guide(float const);
 
@@ -57,9 +56,7 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<ui::point, float, true>;
-
-    chain_t chain() const;
+    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::point>::handler_f &&, bool const sync);
 
     void receive_value(ui::point const &) override;
 
@@ -93,9 +90,7 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<ui::range, float, true>;
-
-    chain_t chain() const;
+    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::range>::handler_f &&, bool const sync);
 
     void receive_value(ui::range const &) override;
 
@@ -106,8 +101,8 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     layout_guide_ptr _min_guide;
     layout_guide_ptr _max_guide;
     layout_guide_ptr _length_guide;
-    chaining::any_observer_ptr _min_observer = nullptr;
-    chaining::any_observer_ptr _max_observer = nullptr;
+    observing::cancellable_ptr _min_canceller;
+    observing::cancellable_ptr _max_canceller;
 
     explicit layout_guide_range(ui::range &&);
 
@@ -115,8 +110,6 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     layout_guide_range(layout_guide_range &&) = delete;
     layout_guide_range &operator=(layout_guide_range const &) = delete;
     layout_guide_range &operator=(layout_guide_range &&) = delete;
-
-    void _prepare(std::shared_ptr<layout_guide_range> &range);
 };
 
 struct layout_guide_rect final : chaining::receiver<ui::region> {
@@ -153,9 +146,7 @@ struct layout_guide_rect final : chaining::receiver<ui::region> {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    using chain_t = chaining::chain<ui::region, float, true>;
-
-    chain_t chain() const;
+    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::region>::handler_f &&, bool const sync);
 
     void receive_value(ui::region const &) override;
 

@@ -39,12 +39,11 @@ struct strings final {
 
     ui::rect_plane_ptr const &rect_plane();
 
-    [[nodiscard]] observing::canceller_ptr observe_text(observing::caller<std::string>::handler_f &&,
-                                                        bool const sync = true);
+    [[nodiscard]] observing::canceller_ptr observe_text(observing::caller<std::string>::handler_f &&, bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_font_atlas(observing::caller<ui::font_atlas_ptr>::handler_f &&,
-                                                              bool const sync = true);
+                                                              bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_line_height(observing::caller<std::optional<float>>::handler_f &&,
-                                                               bool const sync = true);
+                                                               bool const sync);
     [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
     [[nodiscard]] chaining::receiver_ptr<std::string> text_receiver();
 
@@ -68,8 +67,8 @@ struct strings final {
     std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
     std::optional<observing::canceller_ptr> _texture_updated_canceller = std::nullopt;
     std::vector<chaining::any_observer_ptr> _property_observers;
-    observing::invalidator_pool_ptr const _property_pool = observing::invalidator_pool::make_shared();
-    std::vector<chaining::any_observer_ptr> _cell_rect_observers;
+    observing::canceller_pool_ptr const _property_pool = observing::canceller_pool::make_shared();
+    observing::canceller_pool _cell_rect_pool;
 
     explicit strings(args);
 

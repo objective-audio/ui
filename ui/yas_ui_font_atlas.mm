@@ -46,21 +46,23 @@ ui::font_atlas::font_atlas(args &&args)
     this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
         [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
 
-    this->_texture_changed_canceller = this->_texture->observe([this](ui::texture_ptr const &texture) {
-        this->_update_word_infos();
+    this->_texture_changed_canceller = this->_texture->observe(
+        [this](ui::texture_ptr const &texture) {
+            this->_update_word_infos();
 
-        if (texture) {
-            this->_texture_canceller = texture->observe([this](auto const &pair) {
-                if (pair.first == texture::method::metal_texture_changed) {
-                    this->_texture_updated_notifier->notify(pair.second);
-                }
-            });
-        } else {
-            this->_texture_canceller = std::nullopt;
-        }
+            if (texture) {
+                this->_texture_canceller = texture->observe([this](auto const &pair) {
+                    if (pair.first == texture::method::metal_texture_changed) {
+                        this->_texture_updated_notifier->notify(pair.second);
+                    }
+                });
+            } else {
+                this->_texture_canceller = std::nullopt;
+            }
 
-        this->_texture_changed_fetcher->push();
-    });
+            this->_texture_changed_fetcher->push();
+        },
+        true);
 }
 
 ui::font_atlas::~font_atlas() = default;
@@ -205,10 +207,11 @@ void ui::font_atlas::_update_word_infos() {
                 CGContextRestoreGState(ctx);
             });
 
-        this->_element_cancellers.emplace_back(
-            texture_element->observe_tex_coords([this, idx](ui::uint_region const &tex_coords) {
+        this->_element_cancellers.emplace_back(texture_element->observe_tex_coords(
+            [this, idx](ui::uint_region const &tex_coords) {
                 this->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
-            }));
+            },
+            true));
 
         auto const &advance = advances[idx];
         this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};

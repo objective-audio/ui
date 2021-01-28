@@ -44,8 +44,6 @@ ui::transform_f const &ui::layout_animator::value_transformer() const {
 }
 
 void ui::layout_animator::_prepare(ui::layout_animator_ptr const &animator) {
-    this->_observers.reserve(this->_args.layout_guide_pairs.size());
-
     for (auto &guide_pair : this->_args.layout_guide_pairs) {
         auto &src_guide = guide_pair.source;
         auto &dst_guide = guide_pair.destination;
@@ -55,29 +53,26 @@ void ui::layout_animator::_prepare(ui::layout_animator_ptr const &animator) {
         auto weak_animator = to_weak(animator);
         auto weak_dst_guide = to_weak(dst_guide);
 
-        auto observer = src_guide->chain()
-                            .guard([weak_animator, weak_dst_guide](float const &) {
-                                return !weak_animator.expired() && !weak_dst_guide.expired();
-                            })
-                            .perform([weak_animator, weak_dst_guide](float const &value) {
-                                auto animator = weak_animator.lock();
-                                auto const &args = animator->_args;
-                                if (auto renderer = args.renderer.lock()) {
-                                    auto dst_guide = weak_dst_guide.lock();
+        src_guide
+            ->observe(
+                [this, weak_dst_guide](float const &value) {
+                    auto const &args = this->_args;
+                    auto renderer = args.renderer.lock();
+                    auto dst_guide = weak_dst_guide.lock();
 
-                                    renderer->erase_action(dst_guide);
+                    if (renderer && dst_guide) {
+                        renderer->erase_action(dst_guide);
 
-                                    auto action = ui::make_action({.target = dst_guide,
-                                                                   .begin_value = dst_guide->value(),
-                                                                   .end_value = value,
-                                                                   .continuous_action = {.duration = args.duration}});
-                                    action->set_value_transformer(animator->value_transformer());
-                                    renderer->insert_action(action);
-                                }
-                            })
-                            .end();
-
-        this->_observers.emplace_back(std::move(observer));
+                        auto action = ui::make_action({.target = dst_guide,
+                                                       .begin_value = dst_guide->value(),
+                                                       .end_value = value,
+                                                       .continuous_action = {.duration = args.duration}});
+                        action->set_value_transformer(this->value_transformer());
+                        renderer->insert_action(action);
+                    }
+                },
+                false)
+            ->add_to(this->_pool);
     }
 }
 

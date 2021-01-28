@@ -106,7 +106,7 @@ observing::canceller_ptr ui::texture::observe(observing::caller<chain_pair_t>::h
 
 void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
     this->_scale_canceller =
-        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); });
+        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }, true);
 }
 
 void ui::texture::_prepare(texture_ptr const &texture) {
