@@ -31,7 +31,7 @@ struct soft_keyboard {
     ui::font_atlas_ptr _font_atlas;
 
     std::shared_ptr<ui::collection_layout> _collection_layout = nullptr;
-    std::vector<chaining::any_observer_ptr> _frame_layouts;
+    std::vector<observing::cancellable_ptr> _frame_cancellers;
 
     std::vector<observing::canceller_ptr> _soft_key_cancellers;
     observing::canceller_ptr _renderer_canceller = nullptr;
@@ -39,8 +39,8 @@ struct soft_keyboard {
     ui::layout_animator_ptr _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect_ptr> _src_cell_guide_rects;
     std::vector<ui::layout_guide_rect_ptr> _dst_cell_guide_rects;
-    std::vector<std::vector<chaining::any_observer_ptr>> _fixed_cell_layouts;
-    std::vector<chaining::any_observer_ptr> _dst_rect_observers;
+    std::vector<observing::cancellable_ptr> _fixed_cell_layouts;
+    observing::canceller_pool _dst_rect_pool;
 
     explicit soft_keyboard(ui::font_atlas_ptr const &);
 

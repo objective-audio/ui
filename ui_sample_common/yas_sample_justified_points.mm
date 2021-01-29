@@ -29,34 +29,36 @@ sample::justified_points::justified_points()
       _y_layout_guides(sample::make_layout_guides(sample::y_point_count)) {
     this->_setup_colors();
     this->_setup_layout_guides();
-}
 
-sample::justified_points::~justified_points() = default;
+    this->_rect_plane->node()
+        ->observe_renderer(
+            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+                pool->invalidate();
 
-ui::rect_plane_ptr const &sample::justified_points::rect_plane() {
-    return this->_rect_plane;
-}
-
-void sample::justified_points::_prepare(justified_points_ptr const &points) {
-    auto &node = this->_rect_plane->node();
-
-    this->_renderer_canceller = node->observe_renderer(
-        [weak_points = to_weak(points), x_layout = chaining::any_observer_ptr{nullptr},
-         y_layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            if (auto points = weak_points.lock()) {
                 if (renderer) {
-                    std::vector<ui::layout_guide_ptr> x_receivers;
-                    for (auto &guide : points->_x_layout_guides) {
-                        x_receivers.push_back(guide);
+                    std::vector<ui::layout_guide_wptr> x_receivers;
+                    for (auto &guide : this->_x_layout_guides) {
+                        x_receivers.push_back(to_weak(guide));
                     }
 
-                    x_layout = renderer->view_layout_guide_rect()
-                                   ->left()
-                                   ->chain()
-                                   .combine(renderer->view_layout_guide_rect()->right()->chain())
-                                   .to(ui::justify<sample::x_point_count - 1>())
-                                   .send_to(x_receivers)
-                                   .sync();
+                    auto weak_rect = to_weak(renderer->view_layout_guide_rect());
+
+                    auto x_justifying = [weak_rect, x_receivers](float const &) {
+                        if (auto const rect = weak_rect.lock()) {
+                            auto justified = ui::justify<sample::x_point_count - 1>()(
+                                {rect->left()->value(), rect->right()->value()});
+                            int idx = 0;
+                            for (auto const &weak_guide : x_receivers) {
+                                if (auto const guide = weak_guide.lock()) {
+                                    guide->set_value(justified.at(idx));
+                                }
+                                ++idx;
+                            }
+                        }
+                    };
+
+                    renderer->view_layout_guide_rect()->left()->observe(x_justifying, false)->add_to(*pool);
+                    renderer->view_layout_guide_rect()->right()->observe(x_justifying, true)->add_to(*pool);
 
                     std::array<float, sample::y_point_count - 1> y_ratios;
 
@@ -70,25 +72,37 @@ void sample::justified_points::_prepare(justified_points_ptr const &points) {
                         }
                     }
 
-                    std::vector<ui::layout_guide_ptr> y_receivers;
-                    for (auto &guide : points->_y_layout_guides) {
-                        y_receivers.push_back(guide);
+                    std::vector<ui::layout_guide_wptr> y_receivers;
+                    for (auto &guide : this->_y_layout_guides) {
+                        y_receivers.push_back(to_weak(guide));
                     }
 
-                    y_layout = renderer->view_layout_guide_rect()
-                                   ->bottom()
-                                   ->chain()
-                                   .combine(renderer->view_layout_guide_rect()->top()->chain())
-                                   .to(ui::justify<sample::y_point_count - 1>(y_ratios))
-                                   .perform([](std::array<float, sample::y_point_count> const &value) {})
-                                   .send_to(y_receivers)
-                                   .sync();
-                } else {
-                    x_layout = nullptr;
-                    y_layout = nullptr;
+                    auto y_justifying = [weak_rect, y_receivers](float const &) {
+                        if (auto const rect = weak_rect.lock()) {
+                            auto justified = ui::justify<sample::y_point_count - 1>()(
+                                {rect->bottom()->value(), rect->top()->value()});
+                            int idx = 0;
+                            for (auto const &weak_guide : y_receivers) {
+                                if (auto const guide = weak_guide.lock()) {
+                                    guide->set_value(justified.at(idx));
+                                }
+                                ++idx;
+                            }
+                        }
+                    };
+
+                    renderer->view_layout_guide_rect()->bottom()->observe(y_justifying, false)->add_to(*pool);
+                    renderer->view_layout_guide_rect()->top()->observe(y_justifying, true)->add_to(*pool);
                 }
-            }
-        });
+            },
+            true)
+        ->set_to(this->_renderer_canceller);
+}
+
+sample::justified_points::~justified_points() = default;
+
+ui::rect_plane_ptr const &sample::justified_points::rect_plane() {
+    return this->_rect_plane;
 }
 
 void sample::justified_points::_setup_colors() {
@@ -113,33 +127,33 @@ void sample::justified_points::_setup_layout_guides() {
     auto x_each = make_fast_each(sample::x_point_count);
     while (yas_each_next(x_each)) {
         auto const &idx = yas_each_index(x_each);
-        this->_guide_observers.emplace_back(this->_x_layout_guides.at(idx)
-                                                ->chain()
-                                                .guard([weak_plane](float const &) { return !weak_plane.expired(); })
-                                                .perform([weak_plane, idx](float const &value) {
-                                                    weak_plane.lock()->data()->set_rect_position(
-                                                        {.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
-                                                })
-                                                .end());
+        this->_x_layout_guides.at(idx)
+            ->observe(
+                [weak_plane, idx](float const &value) {
+                    if (auto const plane = weak_plane.lock()) {
+                        plane->data()->set_rect_position({.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
+                    }
+                },
+                false)
+            ->add_to(this->_guide_pool);
     }
 
     auto y_each = make_fast_each(sample::y_point_count);
     while (yas_each_next(y_each)) {
         auto const &idx = yas_each_index(y_each);
-        this->_guide_observers.emplace_back(this->_y_layout_guides.at(idx)
-                                                ->chain()
-                                                .guard([weak_plane](float const &) { return !weak_plane.expired(); })
-                                                .perform([weak_plane, idx](float const &value) {
-                                                    weak_plane.lock()->data()->set_rect_position(
-                                                        {.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
-                                                        idx + x_point_count);
-                                                })
-                                                .end());
+        this->_y_layout_guides.at(idx)
+            ->observe(
+                [weak_plane, idx](float const &value) {
+                    if (auto const plane = weak_plane.lock()) {
+                        plane->data()->set_rect_position({.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
+                                                         idx + x_point_count);
+                    }
+                },
+                true)
+            ->add_to(this->_guide_pool);
     }
 }
 
 sample::justified_points_ptr sample::justified_points::make_shared() {
-    auto shared = std::shared_ptr<justified_points>(new justified_points{});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<justified_points>(new justified_points{});
 }

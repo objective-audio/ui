@@ -12,89 +12,79 @@ sample::modifier_text::modifier_text(ui::font_atlas_ptr const &font_atlas, ui::l
     : _strings(ui::strings::make_shared(
           {.font_atlas = font_atlas, .max_word_count = 64, .alignment = ui::layout_alignment::max})),
       _bottom_guide(bottom_guide) {
+    this->_strings->rect_plane()
+        ->node()
+        ->observe_renderer(
+            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+                pool->invalidate();
+
+                if (renderer) {
+                    renderer->event_manager()
+                        ->observe(
+                            [this, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
+                                if (context.method == ui::event_manager::method::modifier_changed) {
+                                    ui::event_ptr const &event = context.event;
+                                    this->_update_text(event, flags);
+                                }
+                            })
+                        ->add_to(*pool);
+
+                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
+
+                    safe_area_guide_rect->left()
+                        ->observe(
+                            [this](float const &value) {
+                                this->_strings->frame_layout_guide_rect()->left()->set_value(value + 4.0f);
+                            },
+                            true)
+                        ->add_to(*pool);
+
+                    safe_area_guide_rect->right()
+                        ->observe(
+                            [this](float const &value) {
+                                this->_strings->frame_layout_guide_rect()->right()->set_value(value - 4.0f);
+                            },
+                            true)
+                        ->add_to(*pool);
+
+                    this->_bottom_guide
+                        ->observe(
+                            [this](float const &value) {
+                                this->_strings->frame_layout_guide_rect()->bottom()->set_value(value + 4.0f);
+                            },
+                            true)
+                        ->add_to(*pool);
+
+                    this->_strings
+                        ->observe_font_atlas(
+                            [this, top_layout =
+                                       observing::cancellable_ptr{nullptr}](ui::font_atlas_ptr const &value) mutable {
+                                float distance = 0.0f;
+
+                                if (auto const &font_atlas = this->_strings->font_atlas()) {
+                                    distance += font_atlas->ascent() + font_atlas->descent();
+                                }
+
+                                this->_strings->frame_layout_guide_rect()
+                                    ->bottom()
+                                    ->observe(
+                                        [this, distance](float const &value) {
+                                            this->_strings->frame_layout_guide_rect()->top()->set_value(value +
+                                                                                                        distance);
+                                        },
+                                        true)
+                                    ->set_to(top_layout);
+                            },
+                            true)
+                        ->add_to(*pool);
+                }
+            },
+            false)
+        ->set_to(this->_renderer_canceller);
 }
 
 ui::strings_ptr const &sample::modifier_text::strings() {
     return this->_strings;
-}
-
-void sample::modifier_text::_prepare(modifier_text_ptr const &text) {
-    auto &node = this->_strings->rect_plane()->node();
-
-    this->_renderer_canceller = node->observe_renderer(
-        [weak_text = to_weak(text), event_canceller = observing::canceller_ptr{nullptr},
-         left_layout = chaining::any_observer_ptr{nullptr}, right_layout = chaining::any_observer_ptr{nullptr},
-         bottom_layout = chaining::any_observer_ptr{nullptr},
-         strings_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            if (auto text = weak_text.lock()) {
-                if (renderer) {
-                    event_canceller = renderer->event_manager()->observe(
-                        [weak_text, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
-                            if (context.method == ui::event_manager::method::modifier_changed) {
-                                ui::event_ptr const &event = context.event;
-                                if (auto text = weak_text.lock()) {
-                                    text->_update_text(event, flags);
-                                }
-                            }
-                        });
-
-                    auto const &strings = text->_strings;
-                    auto &strings_guide_rect = strings->frame_layout_guide_rect();
-                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
-
-                    left_layout = safe_area_guide_rect->left()
-                                      ->chain()
-                                      .to(chaining::add(4.0f))
-                                      .send_to(strings_guide_rect->left())
-                                      .sync();
-
-                    right_layout = safe_area_guide_rect->right()
-                                       ->chain()
-                                       .to(chaining::add(-4.0f))
-                                       .send_to(strings_guide_rect->right())
-                                       .sync();
-
-                    bottom_layout = text->_bottom_guide->chain()
-                                        .to(chaining::add(4.0f))
-                                        .send_to(strings_guide_rect->bottom())
-                                        .sync();
-
-                    auto strings_handler =
-                        [top_layout = chaining::any_observer_ptr{nullptr}](ui::strings_ptr const &strings) mutable {
-                            float distance = 0.0f;
-
-                            if (auto const &font_atlas = strings->font_atlas()) {
-                                distance += font_atlas->ascent() + font_atlas->descent();
-                            }
-
-                            top_layout = strings->frame_layout_guide_rect()
-                                             ->bottom()
-                                             ->chain()
-                                             .to(chaining::add(distance))
-                                             .send_to(strings->frame_layout_guide_rect()->top())
-                                             .sync();
-                        };
-
-                    strings_handler(strings);
-
-                    strings_canceller = strings->observe_font_atlas(
-                        [strings_handler = std::move(strings_handler),
-                         weak_strings = to_weak(strings)](ui::font_atlas_ptr const &value) mutable {
-                            if (auto strings = weak_strings.lock()) {
-                                strings_handler(strings);
-                            }
-                        },
-                        false);
-                } else {
-                    event_canceller = nullptr;
-                    left_layout = nullptr;
-                    right_layout = nullptr;
-                    bottom_layout = nullptr;
-                    strings_canceller = nullptr;
-                }
-            }
-        },
-        false);
 }
 
 void sample::modifier_text::_update_text(ui::event_ptr const &event, std::unordered_set<ui::modifier_flags> &flags) {
@@ -118,7 +108,5 @@ void sample::modifier_text::_update_text(ui::event_ptr const &event, std::unorde
 
 sample::modifier_text_ptr sample::modifier_text::make_shared(ui::font_atlas_ptr const &atlas,
                                                              ui::layout_guide_ptr const &bottom_guide) {
-    auto shared = std::shared_ptr<modifier_text>(new modifier_text{atlas, bottom_guide});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<modifier_text>(new modifier_text{atlas, bottom_guide});
 }

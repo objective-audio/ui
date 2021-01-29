@@ -15,13 +15,12 @@ struct modifier_text {
     static modifier_text_ptr make_shared(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
 
    private:
-    ui::strings_ptr _strings;
-    ui::layout_guide_ptr _bottom_guide;
-    observing::canceller_ptr _renderer_canceller = nullptr;
+    ui::strings_ptr const _strings;
+    ui::layout_guide_ptr const _bottom_guide;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
 
     explicit modifier_text(ui::font_atlas_ptr const &, ui::layout_guide_ptr const &bottom_guide);
 
-    void _prepare(modifier_text_ptr const &);
     void _update_text(ui::event_ptr const &event, std::unordered_set<ui::modifier_flags> &flags);
 };
 }  // namespace yas::sample

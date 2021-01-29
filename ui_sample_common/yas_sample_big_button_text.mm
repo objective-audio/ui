@@ -10,6 +10,10 @@ sample::big_button_text::big_button_text(ui::font_atlas_ptr const &font_atlas)
     : _strings(ui::strings::make_shared(
           {.text = "-----", .alignment = ui::layout_alignment::mid, .font_atlas = font_atlas, .max_word_count = 32})) {
     this->_strings->rect_plane()->node()->alpha()->set_value(0.5f);
+
+    this->strings()
+        ->observe_font_atlas([this](ui::font_atlas_ptr const &) { this->_update_strings_position(); }, true)
+        ->set_to(this->_strings_canceller);
 }
 
 void sample::big_button_text::set_status(ui::button::method const status) {
@@ -20,15 +24,6 @@ ui::strings_ptr const &sample::big_button_text::strings() {
     return this->_strings;
 }
 
-void sample::big_button_text::_prepare(big_button_text_ptr const &shared) {
-    this->_strings_observer =
-        shared->strings()->observe_font_atlas([weak_text = to_weak(shared)](ui::font_atlas_ptr const &) {
-            if (auto text = weak_text.lock()) {
-                text->_update_strings_position();
-            }
-        });
-}
-
 void sample::big_button_text::_update_strings_position() {
     if (auto const &atlas = this->_strings->font_atlas()) {
         float const offset_y = (atlas->ascent() + atlas->descent()) * 0.5f;
@@ -37,7 +32,5 @@ void sample::big_button_text::_update_strings_position() {
 }
 
 sample::big_button_text_ptr sample::big_button_text::make_shared(ui::font_atlas_ptr const &atlas) {
-    auto shared = std::shared_ptr<big_button_text>(new big_button_text{atlas});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<big_button_text>(new big_button_text{atlas});
 }

@@ -10,44 +10,52 @@ using namespace yas;
 sample::draw_call_text::draw_call_text(ui::font_atlas_ptr const &font_atlas)
     : _strings(ui::strings::make_shared(
           {.text = "---", .alignment = ui::layout_alignment::max, .font_atlas = font_atlas, .max_word_count = 32})) {
-}
-
-ui::strings_ptr const &sample::draw_call_text::strings() {
-    return this->_strings;
-}
-
-void sample::draw_call_text::_prepare(draw_call_text_ptr const &text) {
-    auto &node = this->_strings->rect_plane()->node();
-
-    this->_renderer_canceller = node->observe_renderer(
-        [weak_text = to_weak(text), left_layout = chaining::any_observer_ptr{nullptr},
-         right_layout = chaining::any_observer_ptr{nullptr}, bottom_layout = chaining::any_observer_ptr{nullptr},
-         strings_observer = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            if (auto text = weak_text.lock()) {
+    this->_strings->rect_plane()
+        ->node()
+        ->observe_renderer(
+            [this, layouts_pool = observing::canceller_pool_ptr{nullptr},
+             strings_observer = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 if (renderer) {
-                    auto const &strings = text->strings();
+                    auto const &strings = this->strings();
                     auto &strings_guide_rect = strings->frame_layout_guide_rect();
                     auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
-                    left_layout = safe_area_guide_rect->left()
-                                      ->chain()
-                                      .to(chaining::add(4.0f))
-                                      .send_to(strings_guide_rect->right())
-                                      .sync();
 
-                    right_layout = safe_area_guide_rect->right()
-                                       ->chain()
-                                       .to(chaining::add(-4.0f))
-                                       .send_to(strings_guide_rect->right())
-                                       .sync();
+                    auto pool = observing::canceller_pool::make_shared();
 
-                    bottom_layout = safe_area_guide_rect->bottom()
-                                        ->chain()
-                                        .to(chaining::add(4.0f))
-                                        .send_to(strings_guide_rect->bottom())
-                                        .sync();
+                    safe_area_guide_rect->left()
+                        ->observe(
+                            [weak_rect = to_weak(strings_guide_rect)](float const &value) {
+                                if (auto const rect = weak_rect.lock()) {
+                                    rect->right()->set_value(value + 4.0f);
+                                }
+                            },
+                            true)
+                        ->add_to(*pool);
+
+                    safe_area_guide_rect->right()
+                        ->observe(
+                            [weak_rect = to_weak(strings_guide_rect)](float const &value) {
+                                if (auto const rect = weak_rect.lock()) {
+                                    rect->right()->set_value(value - 4.0f);
+                                }
+                            },
+                            true)
+                        ->add_to(*pool);
+
+                    safe_area_guide_rect->bottom()
+                        ->observe(
+                            [weak_rect = to_weak(strings_guide_rect)](float const &value) {
+                                if (auto const rect = weak_rect.lock()) {
+                                    rect->bottom()->set_value(value + 4.0f);
+                                }
+                            },
+                            true)
+                        ->add_to(*pool);
+
+                    layouts_pool = pool;
 
                     auto strings_handler =
-                        [top_layout = chaining::any_observer_ptr{nullptr}](ui::strings_ptr const &strings) mutable {
+                        [top_layout = observing::cancellable_ptr{nullptr}](ui::strings_ptr const &strings) mutable {
                             float distance = 0.0f;
 
                             if (strings->font_atlas()) {
@@ -55,12 +63,16 @@ void sample::draw_call_text::_prepare(draw_call_text_ptr const &text) {
                                 distance += font_atlas->ascent() + font_atlas->descent();
                             }
 
-                            top_layout = strings->frame_layout_guide_rect()
-                                             ->bottom()
-                                             ->chain()
-                                             .to(chaining::add(distance))
-                                             .send_to(strings->frame_layout_guide_rect()->top())
-                                             .sync();
+                            strings->frame_layout_guide_rect()
+                                ->bottom()
+                                ->observe(
+                                    [weak_strings = to_weak(strings), distance](float const &value) {
+                                        if (auto const strings = weak_strings.lock()) {
+                                            strings->frame_layout_guide_rect()->top()->set_value(value + distance);
+                                        }
+                                    },
+                                    true)
+                                ->set_to(top_layout);
                         };
 
                     strings_handler(strings);
@@ -74,22 +86,18 @@ void sample::draw_call_text::_prepare(draw_call_text_ptr const &text) {
                         },
                         false);
                 } else {
-                    left_layout = nullptr;
-                    right_layout = nullptr;
-                    bottom_layout = nullptr;
+                    layouts_pool = nullptr;
                     strings_observer = nullptr;
                 }
-            }
-        },
-        false);
+            },
+            false)
+        ->set_to(this->_renderer_canceller);
 
-    auto timer_handler = [weak_text = to_weak(text)]() {
-        if (auto text = weak_text.lock()) {
-            text->_update_text();
-        }
-    };
+    this->_timer = timer{1.0, true, [this] { this->_update_text(); }};
+}
 
-    this->_timer = timer{1.0, true, std::move(timer_handler)};
+ui::strings_ptr const &sample::draw_call_text::strings() {
+    return this->_strings;
 }
 
 void sample::draw_call_text::_update_text() {
@@ -106,7 +114,5 @@ void sample::draw_call_text::_update_text() {
 }
 
 sample::draw_call_text_ptr sample::draw_call_text::make_shared(ui::font_atlas_ptr const &atlas) {
-    auto shared = std::shared_ptr<draw_call_text>(new draw_call_text{atlas});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<draw_call_text>(new draw_call_text{atlas});
 }

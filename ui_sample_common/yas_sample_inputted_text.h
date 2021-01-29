@@ -18,12 +18,11 @@ struct inputted_text {
 
    private:
     ui::strings_ptr _strings;
-    observing::canceller_ptr _renderer_canceller = nullptr;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
     ui::layout_guide_point_ptr _layout_guide_point = ui::layout_guide_point::make_shared();
 
     explicit inputted_text(ui::font_atlas_ptr const &atlas);
 
-    void _prepare(inputted_text_ptr const &);
     void _update_text(ui::event_ptr const &event);
 };
 }  // namespace yas::sample

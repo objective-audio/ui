@@ -32,19 +32,21 @@ void sample::main::setup() {
     this->_big_button_text->strings()->frame_layout_guide_rect()->set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
-    this->_button_canceller =
-        this->_big_button->button()->observe([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
+    this->_big_button->button()
+        ->observe([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
             if (auto text = weak_text.lock()) {
                 text->set_status(pair.first);
             }
-        });
+        })
+        ->set_to(this->_button_canceller);
 
-    this->_keyboard_canceller =
-        this->_soft_keyboard->observe([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
+    this->_soft_keyboard
+        ->observe([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
             if (auto text = weak_text.lock()) {
                 text->append_text(key);
             }
-        });
+        })
+        ->set_to(this->_keyboard_canceller);
 
     auto button_pos_action = ui::make_action({.target = this->_big_button->button()->rect_plane()->node(),
                                               .begin_position = {0.0f, 0.0f},
@@ -74,10 +76,14 @@ void sample::main::setup() {
     this->renderer->insert_action(blur_action);
 
     auto &view_guide = this->renderer->view_layout_guide_rect();
-    auto &target_guide = render_target->layout_guide_rect();
-    this->_render_target_layout = view_guide->chain().send_to(target_guide).sync();
+
+    view_guide
+        ->observe([render_target](ui::region const &region) { render_target->layout_guide_rect()->set_region(region); },
+                  true)
+        ->set_to(this->_render_target_canceller);
 
     this->_render_target_node->render_target()->set_value(render_target);
+
     root_node->add_sub_node(this->_render_target_node, 1);
 
     this->_plane_on_target->data()->set_rect_position(

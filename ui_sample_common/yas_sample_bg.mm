@@ -15,23 +15,16 @@ ui::rect_plane_ptr const &sample::bg::rect_plane() {
 }
 
 void sample::bg::_prepare(std::shared_ptr<bg> const &shared) {
-    auto weak_bg = to_weak(shared);
-
-    this->_rect_observer = this->_layout_guide_rect->chain()
-                               .guard([weak_bg](ui::region const &) { return !weak_bg.expired(); })
-                               .perform([weak_bg](ui::region const &value) {
-                                   weak_bg.lock()->rect_plane()->data()->set_rect_position(value, 0);
-                               })
-                               .end();
+    this->_rect_canceller = this->_layout_guide_rect->observe(
+        [this](ui::region const &region) { this->rect_plane()->data()->set_rect_position(region, 0); }, false);
 
     this->_renderer_canceller = this->_rect_plane->node()->observe_renderer(
-        [weak_bg, layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
-            if (auto bg = weak_bg.lock()) {
-                if (value) {
-                    layout = value->safe_area_layout_guide_rect()->chain().send_to(bg->_layout_guide_rect).sync();
-                } else {
-                    layout = nullptr;
-                }
+        [this, canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
+            if (value) {
+                canceller = value->safe_area_layout_guide_rect()->observe(
+                    [this](ui::region const &region) { this->_layout_guide_rect->set_region(region); }, true);
+            } else {
+                canceller = nullptr;
             }
         },
         false);
