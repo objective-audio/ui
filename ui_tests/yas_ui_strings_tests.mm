@@ -187,14 +187,4 @@ using namespace yas;
     XCTAssertNoThrow(strings->set_font_atlas(font_atlas));
 }
 
-- (void)test_text_receiver {
-    auto strings = ui::strings::make_shared();
-
-    XCTAssertEqual(strings->text(), "");
-
-    strings->text_receiver()->receive_value("test_text");
-
-    XCTAssertEqual(strings->text(), "test_text");
-}
-
 @end

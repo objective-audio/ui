@@ -23,6 +23,8 @@ ui::strings::strings(args args)
       _font_atlas(observing::value::holder<ui::font_atlas_ptr>::make_shared(std::move(args.font_atlas))),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
+    this->_prepare_chains();
+    this->_update_layout();
 }
 
 ui::strings::~strings() = default;
@@ -87,54 +89,11 @@ observing::canceller_ptr ui::strings::observe_alignment(observing::caller<ui::la
     return this->_collection_layout->alignment->observe(std::move(handler), sync);
 }
 
-chaining::receiver_ptr<std::string> ui::strings::text_receiver() {
-    return this->_text_receiver;
-}
-
-void ui::strings::_prepare(strings_ptr const &strings) {
-    this->_weak_strings = to_weak(strings);
-
-    this->_prepare_receivers(this->_weak_strings);
-    this->_prepare_chains();
-
-    this->_update_layout();
-}
-
-void ui::strings::_prepare_receivers(ui::strings_wptr const &weak_strings) {
-    this->_texture_receiver =
-        chaining::perform_receiver<ui::texture_ptr>::make_shared([weak_strings](ui::texture_ptr const &texture) {
-            if (auto strings = weak_strings.lock()) {
-                strings->rect_plane()->node()->mesh()->value()->set_texture(texture);
-            }
-        });
-
-    this->_update_texture_receiver =
-        chaining::perform_receiver<ui::font_atlas_ptr>::make_shared([weak_strings](ui::font_atlas_ptr const &) {
-            if (auto strings = weak_strings.lock()) {
-                strings->_update_texture_chaining();
-            }
-        });
-
-    this->_update_layout_receiver =
-        chaining::perform_receiver<std::nullptr_t>::make_shared([weak_strings](auto const &) {
-            if (auto strings = weak_strings.lock()) {
-                strings->_update_layout();
-            }
-        });
-
-    this->_text_receiver =
-        chaining::perform_receiver<std::string>::make_shared([weak_strings](std::string const &text) {
-            if (auto strings = weak_strings.lock()) {
-                strings->set_text(text);
-            }
-        });
-}
-
 void ui::strings::_prepare_chains() {
     this->_font_atlas
         ->observe(
             [this](ui::font_atlas_ptr const &font_atras) {
-                this->_update_texture_chaining();
+                this->_update_texture_observing();
                 this->_update_layout();
             },
             true)
@@ -151,27 +110,26 @@ void ui::strings::_prepare_chains() {
         ->add_to(*this->_property_pool);
 }
 
-void ui::strings::_update_texture_chaining() {
+void ui::strings::_update_texture_observing() {
     if (auto &font_atlas = this->_font_atlas->value()) {
-        if (!this->_texture_canceller.has_value()) {
-            auto &weak_strings = this->_weak_strings;
-            this->_texture_canceller = font_atlas->observe_texture(
-                [weak_strings, this](auto const &texture) {
-                    if (!weak_strings.expired()) {
-                        this->_texture_receiver->receive_value(texture);
-                        this->_update_layout_receiver->receive_value(nullptr);
-                    }
-                },
-                true);
+        if (!this->_texture_canceller) {
+            font_atlas
+                ->observe_texture(
+                    [this](auto const &texture) {
+                        this->rect_plane()->node()->mesh()->value()->set_texture(texture);
+                        this->_update_layout();
+                    },
+                    true)
+                ->set_to(this->_texture_canceller);
         }
-        if (!this->_texture_updated_canceller.has_value()) {
-            this->_texture_updated_canceller = font_atlas->observe_texture_updated(
-                [this](auto const &) { this->_update_layout_receiver->receive_value(nullptr); });
+        if (!this->_texture_updated_canceller) {
+            font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
+                ->set_to(this->_texture_updated_canceller);
         }
     } else {
         this->_rect_plane->node()->mesh()->value()->set_texture(nullptr);
-        this->_texture_canceller = std::nullopt;
-        this->_texture_updated_canceller = std::nullopt;
+        this->_texture_canceller = nullptr;
+        this->_texture_updated_canceller = nullptr;
     }
 }
 
@@ -219,12 +177,11 @@ void ui::strings::_update_layout() {
 
     this->_rect_plane->data()->set_rect_count(actual_cell_count);
 
-    auto handler = [](ui::strings_ptr const &strings, std::size_t const idx, std::string const &word,
-                      ui::region const &region) {
-        auto const &rect_plane_data = strings->_rect_plane->data();
+    auto handler = [this](std::size_t const idx, std::string const &word, ui::region const &region) {
+        auto const &rect_plane_data = this->_rect_plane->data();
 
         if (idx < rect_plane_data->rect_count()) {
-            auto const &font_atlas = strings->font_atlas();
+            auto const &font_atlas = this->font_atlas();
             auto str_rect = font_atlas->rect(word);
             float const ascent = font_atlas->ascent();
             simd::float2 offset{region.left(), region.top() - ascent};
@@ -237,23 +194,16 @@ void ui::strings::_update_layout() {
         }
     };
 
-    auto strings = this->_weak_strings.lock();
-
     each = make_fast_each(actual_cell_count);
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         auto const word = eliminated_text.substr(idx, 1);
         auto const &cell_rect = this->_collection_layout->cell_guide_rects().at(idx);
 
-        auto weak_strings = to_weak(strings);
-
-        cell_rect
-            ->observe([idx, word, handler,
-                       this](ui::region const &value) { handler(this->_weak_strings.lock(), idx, word, value); },
-                      false)
+        cell_rect->observe([idx, word, handler](ui::region const &value) { handler(idx, word, value); }, false)
             ->add_to(this->_cell_rect_pool);
 
-        handler(strings, idx, word, cell_rect->region());
+        handler(idx, word, cell_rect->region());
     }
 }
 
@@ -275,7 +225,5 @@ ui::strings_ptr ui::strings::make_shared() {
 }
 
 ui::strings_ptr ui::strings::make_shared(args args) {
-    auto shared = std::shared_ptr<strings>(new strings{std::move(args)});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<strings>(new strings{std::move(args)});
 }
