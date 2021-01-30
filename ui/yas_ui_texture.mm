@@ -109,10 +109,6 @@ void ui::texture::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
         renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }, true);
 }
 
-void ui::texture::_prepare(texture_ptr const &texture) {
-    this->_weak_texture = texture;
-}
-
 ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
     if (this->_metal_system != metal_system) {
         this->_metal_system = metal_system;
@@ -128,9 +124,7 @@ ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system
 
         this->_add_images_to_metal_texture();
 
-        if (auto texture = this->_weak_texture.lock()) {
-            texture->_notifier->notify(std::make_pair(method::metal_texture_changed, texture));
-        }
+        this->_notifier->notify(std::make_pair(method::metal_texture_changed, this->_weak_texture.lock()));
     }
 
     return ui::setup_metal_result{nullptr};
@@ -242,7 +236,7 @@ void ui::texture::_size_updated() {
 
 ui::texture_ptr ui::texture::make_shared(args args) {
     auto shared = std::shared_ptr<texture>(new texture{std::move(args)});
-    shared->_prepare(shared);
+    shared->_weak_texture = shared;
     return shared;
 }
 
