@@ -54,8 +54,6 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     metal_system &operator=(metal_system const &) = delete;
     metal_system &operator=(metal_system &&) = delete;
 
-    void _prepare(metal_system_ptr const &);
-
     void view_configure(yas_objc_view *const) override;
     void view_render(yas_objc_view *const view, ui::renderer_ptr const &) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
