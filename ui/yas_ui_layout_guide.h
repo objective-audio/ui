@@ -10,7 +10,7 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct layout_guide final : chaining::receiver<float>, action_target {
+struct layout_guide final : action_target {
     virtual ~layout_guide();
 
     void set_value(float const);
@@ -20,8 +20,6 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     void pop_notify_waiting();
 
     [[nodiscard]] observing::cancellable_ptr observe(observing::caller<float>::handler_f &&, bool const sync);
-
-    void receive_value(float const &) override;
 
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
@@ -42,7 +40,7 @@ struct layout_guide final : chaining::receiver<float>, action_target {
     void _prepare(std::shared_ptr<layout_guide> &);
 };
 
-struct layout_guide_point final : chaining::receiver<ui::point> {
+struct layout_guide_point final {
     virtual ~layout_guide_point();
 
     ui::layout_guide_ptr &x();
@@ -57,8 +55,6 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
     void pop_notify_waiting();
 
     [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::point>::handler_f &&, bool const sync);
-
-    void receive_value(ui::point const &) override;
 
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
@@ -75,7 +71,7 @@ struct layout_guide_point final : chaining::receiver<ui::point> {
     layout_guide_point &operator=(layout_guide_point &&) = delete;
 };
 
-struct layout_guide_range : chaining::receiver<ui::range> {
+struct layout_guide_range {
     virtual ~layout_guide_range() final;
 
     layout_guide_ptr &min();
@@ -91,8 +87,6 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     void pop_notify_waiting();
 
     [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::range>::handler_f &&, bool const sync);
-
-    void receive_value(ui::range const &) override;
 
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
@@ -112,7 +106,7 @@ struct layout_guide_range : chaining::receiver<ui::range> {
     layout_guide_range &operator=(layout_guide_range &&) = delete;
 };
 
-struct layout_guide_rect final : chaining::receiver<ui::region> {
+struct layout_guide_rect final {
     struct ranges_args {
         ui::range horizontal_range;
         ui::range vertical_range;
@@ -147,8 +141,6 @@ struct layout_guide_rect final : chaining::receiver<ui::region> {
     void pop_notify_waiting();
 
     [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::region>::handler_f &&, bool const sync);
-
-    void receive_value(ui::region const &) override;
 
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ranges_args);
