@@ -155,9 +155,6 @@ ui::dynamic_mesh_data_ptr const &ui::rect_plane_data::dynamic_mesh_data() {
     return this->_dynamic_mesh_data;
 }
 
-void ui::rect_plane_data::_prepare(rect_plane_data_ptr const &data) {
-}
-
 void ui::rect_plane_data::_observe_rect_tex_coords(ui::rect_plane_data &data, ui::texture_element_ptr const &element,
                                                    std::size_t const rect_idx, tex_coords_transform_f &&transformer) {
     this->_element_cancellers.emplace_back(element->observe_tex_coords(
@@ -169,9 +166,7 @@ void ui::rect_plane_data::_observe_rect_tex_coords(ui::rect_plane_data &data, ui
 }
 
 ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(ui::dynamic_mesh_data_ptr mesh_data) {
-    auto shared = std::shared_ptr<rect_plane_data>(new rect_plane_data{std::move(mesh_data)});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<rect_plane_data>(new rect_plane_data{std::move(mesh_data)});
 }
 
 ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(std::size_t const max_rect_count) {
