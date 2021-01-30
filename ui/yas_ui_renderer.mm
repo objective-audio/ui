@@ -235,9 +235,7 @@ void ui::renderer::view_render(yas_objc_view *const view) {
             metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
         }
 
-        if (auto renderer = this->_weak_renderer.lock()) {
-            ui::renderable_metal_system::cast(this->_metal_system)->view_render(view, renderer);
-        }
+        ui::renderable_metal_system::cast(this->_metal_system)->view_render(view, this->_weak_renderer.lock());
     }
 
     _post_render();
