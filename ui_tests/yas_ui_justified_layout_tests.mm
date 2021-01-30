@@ -70,10 +70,33 @@ using namespace yas;
     auto second_dst_guide = ui::layout_guide::make_shared();
     std::array<ui::layout_guide_ptr, 2> receivers{first_dst_guide, second_dst_guide};
 
-    auto layout =
-        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<1>()).send_to(receivers).sync();
+    auto first_cache = std::make_shared<std::optional<float>>();
+    auto second_cache = std::make_shared<std::optional<float>>();
 
-    XCTAssertTrue(layout);
+    auto justifying = [first_cache, second_cache, &receivers] {
+        if (first_cache->has_value() && second_cache->has_value()) {
+            auto const justified = ui::justify<1>()({**first_cache, **second_cache});
+            receivers.at(0)->set_value(justified.at(0));
+            receivers.at(1)->set_value(justified.at(1));
+        }
+    };
+
+    auto first_layout = first_src_guide->observe(
+        [first_cache, justifying](float const &value) {
+            *first_cache = value;
+            justifying();
+        },
+        true);
+
+    auto second_layout = second_src_guide->observe(
+        [second_cache, justifying](float const &value) {
+            *second_cache = value;
+            justifying();
+        },
+        true);
+
+    XCTAssertTrue(first_layout);
+    XCTAssertTrue(second_layout);
 
     XCTAssertEqual(first_dst_guide->value(), 1.0f);
     XCTAssertEqual(second_dst_guide->value(), 2.0f);
@@ -84,12 +107,29 @@ using namespace yas;
     auto second_src_guide = ui::layout_guide::make_shared(0.0f);
     auto dst_guide = ui::layout_guide::make_shared(100.0f);
 
-    auto layout = first_src_guide->chain()
-                      .combine(second_src_guide->chain())
-                      .to(ui::justify<2>())
-                      .to([](std::array<float, 3> const &values) { return values[1]; })
-                      .send_to(dst_guide)
-                      .sync();
+    auto first_cache = std::make_shared<std::optional<float>>();
+    auto second_cache = std::make_shared<std::optional<float>>();
+
+    auto justifying = [&dst_guide, first_cache, second_cache] {
+        if (first_cache->has_value() && second_cache->has_value()) {
+            auto justified = ui::justify<2>()({**first_cache, **second_cache});
+            dst_guide->set_value(justified.at(1));
+        }
+    };
+
+    auto first_layout = first_src_guide->observe(
+        [justifying, first_cache](float const &value) {
+            *first_cache = value;
+            justifying();
+        },
+        true);
+
+    auto second_layout = second_src_guide->observe(
+        [justifying, second_cache](float const &value) {
+            *second_cache = value;
+            justifying();
+        },
+        true);
 
     XCTAssertEqual(dst_guide->value(), 0.0f);
 
@@ -115,46 +155,33 @@ using namespace yas;
     auto dst_guide_2 = ui::layout_guide::make_shared();
     std::array<ui::layout_guide_ptr, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
-    auto layout =
-        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<2>()).send_to(receivers).sync();
+    auto first_cache = std::make_shared<std::optional<float>>();
+    auto second_cache = std::make_shared<std::optional<float>>();
+
+    auto justified = [&receivers, first_cache, second_cache] {
+        if (first_cache->has_value() && second_cache->has_value()) {
+            auto justified = ui::justify<2>()({**first_cache, **second_cache});
+            receivers.at(0)->set_value(justified.at(0));
+            receivers.at(1)->set_value(justified.at(1));
+            receivers.at(2)->set_value(justified.at(2));
+        }
+    };
+
+    auto first_layout = first_src_guide->observe(
+        [justified, first_cache](float const &value) {
+            *first_cache = value;
+            justified();
+        },
+        true);
+
+    auto second_layout = second_src_guide->observe(
+        [justified, second_cache](float const &value) {
+            *second_cache = value;
+            justified();
+        },
+        true);
 
     XCTAssertEqual(dst_guide_0->value(), -1.0f);
-    XCTAssertEqual(dst_guide_1->value(), 1.0f);
-    XCTAssertEqual(dst_guide_2->value(), 3.0f);
-}
-
-- (void)test_chain_with_array_receivers {
-    auto first_src_guide = ui::layout_guide::make_shared(0.0f);
-    auto second_src_guide = ui::layout_guide::make_shared(3.0f);
-    auto dst_guide_0 = ui::layout_guide::make_shared();
-    auto dst_guide_1 = ui::layout_guide::make_shared();
-    auto dst_guide_2 = ui::layout_guide::make_shared();
-    std::array<ui::layout_guide_ptr, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
-
-    std::array<float, 2> array{1.0f, 2.0f};
-
-    auto observer =
-        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
-
-    XCTAssertEqual(dst_guide_0->value(), 0.0f);
-    XCTAssertEqual(dst_guide_1->value(), 1.0f);
-    XCTAssertEqual(dst_guide_2->value(), 3.0f);
-}
-
-- (void)test_chain_with_vector_receivers {
-    auto first_src_guide = ui::layout_guide::make_shared(0.0f);
-    auto second_src_guide = ui::layout_guide::make_shared(3.0f);
-    auto dst_guide_0 = ui::layout_guide::make_shared();
-    auto dst_guide_1 = ui::layout_guide::make_shared();
-    auto dst_guide_2 = ui::layout_guide::make_shared();
-    std::vector<ui::layout_guide_ptr> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
-
-    std::array<float, 2> array{1.0f, 2.0f};
-
-    auto observer =
-        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify<2>(array)).send_to(receivers).sync();
-
-    XCTAssertEqual(dst_guide_0->value(), 0.0f);
     XCTAssertEqual(dst_guide_1->value(), 1.0f);
     XCTAssertEqual(dst_guide_2->value(), 3.0f);
 }
@@ -164,8 +191,29 @@ using namespace yas;
     auto second_src_guide = ui::layout_guide::make_shared(2.0f);
     auto dst_guide = ui::layout_guide::make_shared();
 
-    auto observer =
-        first_src_guide->chain().combine(second_src_guide->chain()).to(ui::justify()).send_to(dst_guide).sync();
+    auto first_cache = std::make_shared<std::optional<float>>();
+    auto second_cache = std::make_shared<std::optional<float>>();
+
+    auto justified = [&dst_guide, first_cache, second_cache] {
+        if (first_cache->has_value() && second_cache->has_value()) {
+            auto justified = ui::justify()({**first_cache, **second_cache});
+            dst_guide->set_value(justified.at(0));
+        }
+    };
+
+    auto first_layout = first_src_guide->observe(
+        [justified, first_cache](float const &value) {
+            *first_cache = value;
+            justified();
+        },
+        true);
+
+    auto second_layout = second_src_guide->observe(
+        [justified, second_cache](float const &value) {
+            *second_cache = value;
+            justified();
+        },
+        true);
 
     XCTAssertEqual(dst_guide->value(), 1.0f);
 }

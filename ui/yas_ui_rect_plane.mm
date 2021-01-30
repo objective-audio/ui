@@ -164,7 +164,8 @@ void ui::rect_plane_data::_observe_rect_tex_coords(ui::rect_plane_data &data, ui
         [this, rect_idx, transformer = std::move(transformer)](ui::uint_region const &tex_coords) {
             auto transformed = transformer ? transformer(tex_coords) : tex_coords;
             this->set_rect_tex_coords(transformed, rect_idx);
-        }));
+        },
+        true));
 }
 
 ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(ui::dynamic_mesh_data_ptr mesh_data) {

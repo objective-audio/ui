@@ -65,22 +65,22 @@ ui::render_target::render_target()
         }
     });
 
-    this->_rect_observer = this->_layout_guide_rect->chain()
-                               .perform([this](ui::region const &region) {
-                                   ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                                                      .height = static_cast<uint32_t>(region.size.height)};
+    this->_rect_canceller = this->_layout_guide_rect->observe(
+        [this](ui::region const &region) {
+            ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                               .height = static_cast<uint32_t>(region.size.height)};
 
-                                   this->_src_texture->set_point_size(size);
-                                   this->_dst_texture->set_point_size(size);
+            this->_src_texture->set_point_size(size);
+            this->_dst_texture->set_point_size(size);
 
-                                   this->_projection_matrix = ui::matrix::ortho(
-                                       region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+            this->_projection_matrix =
+                ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-                                   this->_data->set_rect_position(region, 0);
+            this->_data->set_rect_position(region, 0);
 
-                                   this->_set_updated(render_target_update_reason::region);
-                               })
-                               .end();
+            this->_set_updated(render_target_update_reason::region);
+        },
+        false);
 }
 
 ui::layout_guide_rect_ptr &ui::render_target::layout_guide_rect() {
@@ -116,7 +116,7 @@ ui::effect_ptr const &ui::render_target::effect() {
 
 void ui::render_target::sync_scale_from_renderer(ui::renderer_ptr const &renderer) {
     this->_scale_canceller =
-        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); });
+        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }, true);
 }
 
 ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {

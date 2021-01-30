@@ -96,10 +96,8 @@ void ui::button::_prepare(button_ptr const &button) {
     });
 
     this->_renderer_canceller = node->observe_renderer(
-        [event_canceller = observing::canceller_ptr{nullptr},
-         leave_observers = std::vector<chaining::invalidatable_ptr>(),
-         collider_observers = std::vector<observing::canceller_ptr>(),
-         weak_button](ui::renderer_ptr const &value) mutable {
+        [event_canceller = observing::canceller_ptr{nullptr}, leave_canceller = observing::cancellable_ptr{nullptr},
+         collider_canceller = observing::cancellable_ptr{nullptr}, weak_button](ui::renderer_ptr const &value) mutable {
             if (auto renderer = value) {
                 event_canceller = renderer->event_manager()->observe([weak_button](auto const &context) {
                     if (context.method == ui::event_manager::method::touch_changed) {
@@ -109,23 +107,22 @@ void ui::button::_prepare(button_ptr const &button) {
                     }
                 });
                 if (auto button = weak_button.lock()) {
-                    leave_observers = button->_make_leave_chains();
-                    collider_observers = button->_make_collider_chains();
+                    leave_canceller = button->_make_leave_chains();
+                    collider_canceller = button->_make_collider_chains();
                 }
             } else {
                 event_canceller = nullptr;
-                leave_observers.clear();
-                collider_observers.clear();
+                leave_canceller = nullptr;
+                collider_canceller = nullptr;
             }
         },
         false);
 
-    this->_rect_observer = this->_layout_guide_rect->chain()
-                               .guard([weak_button](ui::region const &) { return !weak_button.expired(); })
-                               .perform([weak_button, state_count = this->_state_count](ui::region const &value) {
-                                   weak_button.lock()->_update_rect_positions(value, state_count);
-                               })
-                               .end();
+    this->_rect_canceller = this->_layout_guide_rect->observe(
+        [this, state_count = this->_state_count](ui::region const &value) {
+            this->_update_rect_positions(value, state_count);
+        },
+        false);
 }
 
 bool ui::button::_is_tracking() {
@@ -163,53 +160,74 @@ void ui::button::_update_rect_index() {
     this->_rect_plane->data()->set_rect_index(0, idx);
 }
 
-std::vector<chaining::invalidatable_ptr> ui::button::_make_leave_chains() {
+observing::cancellable_ptr ui::button::_make_leave_chains() {
     ui::node_ptr &node = this->_rect_plane->node();
 
-    std::vector<chaining::invalidatable_ptr> observers;
-    observers.emplace_back(node->position()->observe(
-        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
-    observers.emplace_back(node->angle()->observe(
-        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
-    observers.emplace_back(node->scale()->observe(
-        [this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); }, false));
+    auto pool = observing::canceller_pool::make_shared();
 
-    observers.emplace_back(node->collider()->observe(
-        [this](ui::collider_ptr const &value) {
-            if (!value) {
-                this->_cancel_tracking_receiver->receive_value(nullptr);
-            }
-        },
-        false));
-    observers.emplace_back(node->is_enabled()->observe([this](bool const &value) {
-        if (!value) {
-            this->_cancel_tracking_receiver->receive_value(nullptr);
-        }
-    }));
+    node->position()
+        ->observe([this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); },
+                  false)
+        ->add_to(*pool);
+    node->angle()
+        ->observe([this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); },
+                  false)
+        ->add_to(*pool);
+    node->scale()
+        ->observe([this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); },
+                  false)
+        ->add_to(*pool);
 
-    return observers;
+    node->collider()
+        ->observe(
+            [this](ui::collider_ptr const &value) {
+                if (!value) {
+                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                }
+            },
+            false)
+        ->add_to(*pool);
+    node->is_enabled()
+        ->observe(
+            [this](bool const &value) {
+                if (!value) {
+                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                }
+            },
+            true)
+        ->add_to(*pool);
+
+    return pool;
 }
 
-std::vector<observing::canceller_ptr> ui::button::_make_collider_chains() {
+observing::cancellable_ptr ui::button::_make_collider_chains() {
     auto &node = this->_rect_plane->node();
 
-    auto shape_observer = node->collider()->value()->observe_shape(
-        [this](ui::shape_ptr const &shape) {
-            if (!shape) {
-                this->_cancel_tracking_receiver->receive_value(nullptr);
-            }
-        },
-        false);
+    auto pool = observing::canceller_pool::make_shared();
 
-    auto enabled_observer = node->collider()->value()->observe_enabled(
-        [this](bool const &enabled) {
-            if (!enabled) {
-                this->_cancel_tracking_receiver->receive_value(nullptr);
-            }
-        },
-        false);
+    node->collider()
+        ->value()
+        ->observe_shape(
+            [this](ui::shape_ptr const &shape) {
+                if (!shape) {
+                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                }
+            },
+            false)
+        ->add_to(*pool);
 
-    return std::vector<observing::canceller_ptr>{std::move(shape_observer), std::move(enabled_observer)};
+    node->collider()
+        ->value()
+        ->observe_enabled(
+            [this](bool const &enabled) {
+                if (!enabled) {
+                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                }
+            },
+            false)
+        ->add_to(*pool);
+
+    return pool;
 }
 
 void ui::button::_update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {

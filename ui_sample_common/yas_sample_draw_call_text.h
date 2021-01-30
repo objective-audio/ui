@@ -18,11 +18,10 @@ struct draw_call_text {
    private:
     ui::strings_ptr _strings;
     std::optional<timer> _timer = std::nullopt;
-    observing::canceller_ptr _renderer_canceller = nullptr;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
 
     explicit draw_call_text(ui::font_atlas_ptr const &);
 
-    void _prepare(draw_call_text_ptr const &);
     void _update_text();
 };
 }  // namespace yas::sample

@@ -20,12 +20,11 @@ struct justified_points final {
     ui::rect_plane_ptr _rect_plane;
     std::vector<ui::layout_guide_ptr> _x_layout_guides;
     std::vector<ui::layout_guide_ptr> _y_layout_guides;
-    observing::canceller_ptr _renderer_canceller = nullptr;
-    std::vector<chaining::any_observer_ptr> _guide_observers;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
+    observing::canceller_pool _guide_pool;
 
     justified_points();
 
-    void _prepare(justified_points_ptr const &);
     void _setup_colors();
     void _setup_layout_guides();
 };

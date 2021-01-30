@@ -19,11 +19,10 @@ struct big_button_text {
    private:
     ui::strings_ptr _strings;
     ui::button::method _status;
-    observing::canceller_ptr _strings_observer = nullptr;
+    observing::cancellable_ptr _strings_canceller = nullptr;
 
     explicit big_button_text(ui::font_atlas_ptr const &atlas);
 
-    void _prepare(big_button_text_ptr const &);
     void _update_strings_position();
 };
 }  // namespace yas::sample

@@ -26,7 +26,7 @@ using namespace yas;
     auto src_guide = ui::layout_guide::make_shared(0.5f);
     auto dst_guide = ui::layout_guide::make_shared(0.25f);
 
-    auto layout = src_guide->chain().to(chaining::add(8.0f)).send_to(dst_guide).sync();
+    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 8.0f); }, true);
 
     XCTAssertTrue(layout);
 
@@ -39,7 +39,8 @@ using namespace yas;
     auto src_guide_point = ui::layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
     auto dst_guide_point = ui::layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
 
-    auto layout = src_guide_point->chain().to(chaining::add(distances)).send_to(dst_guide_point).sync();
+    auto layout = src_guide_point->observe(
+        [&dst_guide_point, distances](ui::point const &value) { dst_guide_point->set_point(value + distances); }, true);
 
     XCTAssertTrue(layout);
 
@@ -54,7 +55,9 @@ using namespace yas;
     auto src_guide_rect = ui::layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
     auto dst_guide_rect = ui::layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
 
-    auto layout = src_guide_rect->chain().to(chaining::add<ui::region>(distances)).send_to(dst_guide_rect).sync();
+    auto layout = src_guide_rect->observe(
+        [&dst_guide_rect, distances](ui::region const &region) { dst_guide_rect->set_region(region + distances); },
+        true);
 
     XCTAssertTrue(layout);
 
@@ -72,7 +75,7 @@ using namespace yas;
     auto src_guide = ui::layout_guide::make_shared(2.0f);
     auto dst_guide = ui::layout_guide::make_shared(-4.0f);
 
-    auto layout = src_guide->chain().to(chaining::add(1.0f)).send_to(dst_guide).sync();
+    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 1.0f); }, true);
 
     XCTAssertEqual(dst_guide->value(), 3.0f);
 
@@ -88,8 +91,28 @@ using namespace yas;
     auto src_guide_1 = ui::layout_guide::make_shared(2.0f);
     auto dst_guide = ui::layout_guide::make_shared(-1.0f);
 
-    auto layout =
-        src_guide_0->chain().combine(src_guide_1->chain()).to(chaining::min<float>()).send_to(dst_guide).sync();
+    auto cache0 = std::make_shared<std::optional<float>>();
+    auto cache1 = std::make_shared<std::optional<float>>();
+
+    auto set_min = [&dst_guide, cache0, cache1] {
+        if (cache0->has_value() && cache1->has_value()) {
+            dst_guide->set_value(std::min(**cache0, **cache1));
+        }
+    };
+
+    auto canceller0 = src_guide_0->observe(
+        [cache0, set_min](float const &value) {
+            *cache0 = value;
+            set_min();
+        },
+        true);
+
+    auto canceller1 = src_guide_1->observe(
+        [cache1, set_min](float const &value) {
+            *cache1 = value;
+            set_min();
+        },
+        true);
 
     XCTAssertEqual(dst_guide->value(), 1.0f);
 
@@ -111,8 +134,28 @@ using namespace yas;
     auto src_guide_1 = ui::layout_guide::make_shared(2.0f);
     auto dst_guide = ui::layout_guide::make_shared(3.0f);
 
-    auto layout =
-        src_guide_0->chain().combine(src_guide_1->chain()).to(chaining::max<float>()).send_to(dst_guide).sync();
+    auto cache0 = std::make_shared<std::optional<float>>();
+    auto cache1 = std::make_shared<std::optional<float>>();
+
+    auto set_max = [&dst_guide, cache0, cache1] {
+        if (cache0->has_value() && cache1->has_value()) {
+            dst_guide->set_value(std::max(**cache0, **cache1));
+        }
+    };
+
+    auto canceller0 = src_guide_0->observe(
+        [cache0, set_max](float const &value) {
+            *cache0 = value;
+            set_max();
+        },
+        true);
+
+    auto canceller1 = src_guide_1->observe(
+        [cache1, set_max](float const &value) {
+            *cache1 = value;
+            set_max();
+        },
+        true);
 
     XCTAssertEqual(dst_guide->value(), 2.0f);
 

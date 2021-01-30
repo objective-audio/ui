@@ -10,6 +10,34 @@ using namespace yas;
 sample::inputted_text::inputted_text(ui::font_atlas_ptr const &font_atlas)
     : _strings(ui::strings::make_shared(
           {.font_atlas = font_atlas, .max_word_count = 512, .alignment = ui::layout_alignment::min})) {
+    this->_strings->rect_plane()
+        ->node()
+        ->observe_renderer(
+            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+                pool->invalidate();
+
+                if (renderer) {
+                    renderer->event_manager()
+                        ->observe([this](auto const &context) {
+                            if (context.method == ui::event_manager::method::key_changed) {
+                                ui::event_ptr const &event = context.event;
+                                this->_update_text(event);
+                            }
+                        })
+                        ->add_to(*pool);
+
+                    renderer->safe_area_layout_guide_rect()
+                        ->observe(
+                            [this](ui::region const &region) {
+                                this->_strings->frame_layout_guide_rect()->set_region(
+                                    region + ui::insets{4.0f, -4.0f, 4.0f, -4.0f});
+                            },
+                            true)
+                        ->add_to(*pool);
+                }
+            },
+            false)
+        ->set_to(this->_renderer_canceller);
 }
 
 void sample::inputted_text::append_text(std::string text) {
@@ -18,39 +46,6 @@ void sample::inputted_text::append_text(std::string text) {
 
 ui::strings_ptr const &sample::inputted_text::strings() {
     return this->_strings;
-}
-
-void sample::inputted_text::_prepare(inputted_text_ptr const &text) {
-    auto &node = this->_strings->rect_plane()->node();
-
-    this->_renderer_canceller = node->observe_renderer(
-        [weak_text = to_weak(text), event_canceller = observing::canceller_ptr{nullptr},
-         layout = chaining::any_observer_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            if (auto text = weak_text.lock()) {
-                if (renderer) {
-                    auto &strings_frame_guide_rect = text->_strings->frame_layout_guide_rect();
-
-                    event_canceller = renderer->event_manager()->observe([weak_text](auto const &context) {
-                        if (context.method == ui::event_manager::method::key_changed) {
-                            ui::event_ptr const &event = context.event;
-                            if (auto text = weak_text.lock()) {
-                                text->_update_text(event);
-                            }
-                        }
-                    });
-
-                    layout = renderer->safe_area_layout_guide_rect()
-                                 ->chain()
-                                 .to(chaining::add<ui::region>(ui::insets{4.0f, -4.0f, 4.0f, -4.0f}))
-                                 .send_to(strings_frame_guide_rect)
-                                 .sync();
-                } else {
-                    event_canceller = nullptr;
-                    layout = nullptr;
-                }
-            }
-        },
-        false);
 }
 
 void sample::inputted_text::_update_text(ui::event_ptr const &event) {
@@ -73,7 +68,5 @@ void sample::inputted_text::_update_text(ui::event_ptr const &event) {
 }
 
 sample::inputted_text_ptr sample::inputted_text::make_shared(ui::font_atlas_ptr const &atlas) {
-    auto shared = std::shared_ptr<inputted_text>(new inputted_text{atlas});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<inputted_text>(new inputted_text{atlas});
 }

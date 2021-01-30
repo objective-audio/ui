@@ -64,13 +64,14 @@ struct collection_layout {
         chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
 
     ui::layout_guide_rect_ptr _border_guide_rect = ui::layout_guide_rect::make_shared();
-    chaining::any_observer_ptr _left_border_observer;
-    chaining::any_observer_ptr _right_border_observer;
-    chaining::any_observer_ptr _bottom_border_observer;
-    chaining::any_observer_ptr _top_border_observer;
+    observing::cancellable_ptr _left_border_canceller;
+    observing::cancellable_ptr _right_border_canceller;
+    observing::cancellable_ptr _bottom_border_canceller;
+    observing::cancellable_ptr _top_border_canceller;
     chaining::perform_receiver_ptr<> _layout_receiver = nullptr;
 
     chaining::observer_pool _pool;
+    observing::canceller_pool _pool2;
 
     collection_layout(args);
 
@@ -79,7 +80,6 @@ struct collection_layout {
     collection_layout &operator=(collection_layout const &) = delete;
     collection_layout &operator=(collection_layout &&) = delete;
 
-    void _prepare(std::shared_ptr<collection_layout> const &);
     void _push_notify_waiting();
     void _pop_notify_waiting();
     void _update_layout();

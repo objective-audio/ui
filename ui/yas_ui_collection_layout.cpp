@@ -51,47 +51,40 @@ ui::collection_layout::collection_layout(args args)
       direction(chaining::value::holder<ui::layout_direction>::make_shared(args.direction)),
       row_order(chaining::value::holder<ui::layout_order>::make_shared(args.row_order)),
       col_order(chaining::value::holder<ui::layout_order>::make_shared(args.col_order)),
-      _left_border_observer(frame_guide_rect->left()
-                                ->chain()
-                                .to(chaining::add(args.borders.left))
-                                .send_to(_border_guide_rect->left())
-                                .sync()),
-      _right_border_observer(frame_guide_rect->right()
-                                 ->chain()
-                                 .to(chaining::add(-args.borders.right))
-                                 .send_to(_border_guide_rect->right())
-                                 .sync()),
-      _bottom_border_observer(frame_guide_rect->bottom()
-                                  ->chain()
-                                  .to(chaining::add(args.borders.bottom))
-                                  .send_to(_border_guide_rect->bottom())
-                                  .sync()),
-      _top_border_observer(frame_guide_rect->top()
-                               ->chain()
-                               .to(chaining::add(-args.borders.top))
-                               .send_to(_border_guide_rect->top())
-                               .sync()),
       borders(std::move(args.borders)) {
-    if (args.borders.left < 0 || args.borders.right < 0 || args.borders.bottom < 0 || args.borders.top < 0) {
+    if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
     }
-}
 
-chaining::value::holder_ptr<std::size_t> const &ui::collection_layout::actual_cell_count() const {
-    return this->_actual_cell_count;
-}
+    this->_left_border_canceller = this->frame_guide_rect->left()->observe(
+        [this, adding = borders.left](float const &value) {
+            this->_border_guide_rect->left()->set_value(value + adding);
+        },
+        true);
 
-void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &layout) {
-    auto weak_layout = to_weak(layout);
+    this->_right_border_canceller = this->frame_guide_rect->right()->observe(
+        [this, adding = -borders.right](float const &value) {
+            this->_border_guide_rect->right()->set_value(value + adding);
+        },
+        true);
 
-    this->_layout_receiver = chaining::perform_receiver<>::make_shared([weak_layout]() {
-        if (auto layout = weak_layout.lock()) {
-            layout->_update_layout();
-        }
-    });
+    this->_bottom_border_canceller = this->frame_guide_rect->bottom()->observe(
+        [this, adding = borders.bottom](float const &value) {
+            this->_border_guide_rect->bottom()->set_value(value + adding);
+        },
+        true);
 
-    this->frame_guide_rect->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->_border_guide_rect->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->_top_border_canceller = this->frame_guide_rect->top()->observe(
+        [this, adding = -borders.top](float const &value) {
+            this->_border_guide_rect->top()->set_value(value + adding);
+        },
+        true);
+
+    this->_layout_receiver = chaining::perform_receiver<>::make_shared([this]() { this->_update_layout(); });
+
+    this->frame_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool2);
+    this->_border_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool2);
+
     this->row_spacing->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
     this->col_spacing->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
     this->alignment->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
@@ -103,6 +96,10 @@ void ui::collection_layout::_prepare(std::shared_ptr<collection_layout> const &l
     this->lines->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
 
     this->_update_layout();
+}
+
+chaining::value::holder_ptr<std::size_t> const &ui::collection_layout::actual_cell_count() const {
+    return this->_actual_cell_count;
 }
 
 void ui::collection_layout::_push_notify_waiting() {
@@ -374,7 +371,5 @@ ui::collection_layout_ptr ui::collection_layout::make_shared() {
 }
 
 ui::collection_layout_ptr ui::collection_layout::make_shared(args args) {
-    auto shared = std::shared_ptr<collection_layout>(new collection_layout{std::move(args)});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<collection_layout>(new collection_layout{std::move(args)});
 }

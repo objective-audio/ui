@@ -37,7 +37,7 @@ struct font_atlas final {
     void set_texture(ui::texture_ptr const &);
 
     [[nodiscard]] observing::canceller_ptr observe_texture(observing::caller<texture_ptr>::handler_f &&,
-                                                           bool const sync = true);
+                                                           bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_texture_updated(observing::caller<texture_ptr>::handler_f &&);
 
     [[nodiscard]] static font_atlas_ptr make_shared(args);

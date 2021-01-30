@@ -197,31 +197,31 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 }
 
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
-    this->_x_observer = guide.chain()
-                            .perform([this](float const &x) {
-                                this->_position->set_value(ui::point{x, this->position()->value().y});
-                            })
-                            .sync();
+    this->_x_canceller = guide.observe(
+        [this](float const &x) {
+            this->_position->set_value(ui::point{x, this->position()->value().y});
+        },
+        true);
 
-    this->_position_observer = nullptr;
+    this->_position_canceller = nullptr;
 }
 
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
-    this->_y_observer = guide.chain()
-                            .perform([this](float const &y) {
-                                this->_position->set_value(ui::point{this->position()->value().x, y});
-                            })
-                            .sync();
+    this->_y_canceller = guide.observe(
+        [this](float const &y) {
+            this->_position->set_value(ui::point{this->position()->value().x, y});
+        },
+        true);
 
-    this->_position_observer = nullptr;
+    this->_position_canceller = nullptr;
 }
 
 void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point) {
-    this->_position_observer =
-        guide_point.chain().perform([this](auto const &position) { this->_position->set_value(position); }).sync();
+    this->_position_canceller =
+        guide_point.observe([this](auto const &position) { this->_position->set_value(position); }, true);
 
-    this->_x_observer = nullptr;
-    this->_y_observer = nullptr;
+    this->_x_canceller = nullptr;
+    this->_y_canceller = nullptr;
 }
 
 void ui::node::_prepare(ui::node_ptr const &node) {
@@ -244,10 +244,12 @@ void ui::node::_prepare(ui::node_ptr const &node) {
     // mesh and mesh_color
 
     this->_mesh
-        ->observe([this](auto const &) {
-            this->_update_mesh_color();
-            this->_set_updated(ui::node_update_reason::mesh);
-        })
+        ->observe(
+            [this](auto const &) {
+                this->_update_mesh_color();
+                this->_set_updated(ui::node_update_reason::mesh);
+            },
+            true)
         ->add_to(this->_pool);
 
     this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
