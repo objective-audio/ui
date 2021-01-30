@@ -21,7 +21,6 @@ struct cursor_over_planes {
 
     cursor_over_planes();
 
-    void _prepare(cursor_over_planes_ptr const &);
     void _setup_nodes();
 };
 }  // namespace yas::sample

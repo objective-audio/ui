@@ -8,13 +8,7 @@ using namespace yas;
 
 sample::bg::bg() {
     this->_rect_plane->node()->color()->set_value({.v = 0.75f});
-}
 
-ui::rect_plane_ptr const &sample::bg::rect_plane() {
-    return this->_rect_plane;
-}
-
-void sample::bg::_prepare(std::shared_ptr<bg> const &shared) {
     this->_rect_canceller = this->_layout_guide_rect->observe(
         [this](ui::region const &region) { this->rect_plane()->data()->set_rect_position(region, 0); }, false);
 
@@ -30,8 +24,10 @@ void sample::bg::_prepare(std::shared_ptr<bg> const &shared) {
         false);
 }
 
+ui::rect_plane_ptr const &sample::bg::rect_plane() {
+    return this->_rect_plane;
+}
+
 sample::bg_ptr sample::bg::make_shared() {
-    auto shared = std::shared_ptr<bg>(new bg{});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<bg>(new bg{});
 }

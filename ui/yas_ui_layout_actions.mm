@@ -25,32 +25,12 @@ std::shared_ptr<ui::continuous_action> ui::make_action(layout_action::args args)
 }
 
 ui::layout_animator::layout_animator(args args) : _args(std::move(args)) {
-}
-
-ui::layout_animator::~layout_animator() {
-    if (auto renderer = this->_args.renderer.lock()) {
-        for (auto const &guide_pair : this->_args.layout_guide_pairs) {
-            renderer->erase_action(guide_pair.destination);
-        }
-    }
-}
-
-void ui::layout_animator::set_value_transformer(ui::transform_f transform) {
-    this->_value_transformer = transform;
-}
-
-ui::transform_f const &ui::layout_animator::value_transformer() const {
-    return this->_value_transformer;
-}
-
-void ui::layout_animator::_prepare(ui::layout_animator_ptr const &animator) {
     for (auto &guide_pair : this->_args.layout_guide_pairs) {
         auto &src_guide = guide_pair.source;
         auto &dst_guide = guide_pair.destination;
 
         dst_guide->set_value(src_guide->value());
 
-        auto weak_animator = to_weak(animator);
         auto weak_dst_guide = to_weak(dst_guide);
 
         src_guide
@@ -76,8 +56,22 @@ void ui::layout_animator::_prepare(ui::layout_animator_ptr const &animator) {
     }
 }
 
+ui::layout_animator::~layout_animator() {
+    if (auto renderer = this->_args.renderer.lock()) {
+        for (auto const &guide_pair : this->_args.layout_guide_pairs) {
+            renderer->erase_action(guide_pair.destination);
+        }
+    }
+}
+
+void ui::layout_animator::set_value_transformer(ui::transform_f transform) {
+    this->_value_transformer = transform;
+}
+
+ui::transform_f const &ui::layout_animator::value_transformer() const {
+    return this->_value_transformer;
+}
+
 ui::layout_animator_ptr ui::layout_animator::make_shared(args args) {
-    auto shared = std::shared_ptr<layout_animator>(new layout_animator{std::move(args)});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<layout_animator>(new layout_animator{std::move(args)});
 }

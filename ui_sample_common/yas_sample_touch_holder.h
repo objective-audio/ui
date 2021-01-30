@@ -27,7 +27,6 @@ struct touch_holder {
 
     touch_holder();
 
-    void _prepare(touch_holder_ptr const &);
     void _update_touch_node(ui::event_ptr const &);
     void _set_texture(ui::texture_ptr const &texture);
     void _insert_touch_node(uintptr_t const identifier);

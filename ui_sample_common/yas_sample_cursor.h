@@ -15,12 +15,11 @@ struct cursor {
     static cursor_ptr make_shared();
 
    private:
-    ui::node_ptr _node = ui::node::make_shared();
-    observing::canceller_ptr _renderer_canceller = nullptr;
+    ui::node_ptr const _node = ui::node::make_shared();
+    observing::cancellable_ptr _renderer_canceller = nullptr;
 
     cursor();
 
-    void _prepare(cursor_ptr const &);
     void _setup_node();
 };
 }  // namespace yas::sample
