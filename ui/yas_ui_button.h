@@ -58,11 +58,9 @@ struct button final {
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
-    observing::canceller_ptr _renderer_canceller = nullptr;
     ui::event_ptr _tracking_event = nullptr;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
     observing::cancellable_ptr _rect_canceller = nullptr;
-    chaining::perform_receiver_ptr<> _leave_or_enter_or_move_tracking_receiver = nullptr;
-    chaining::perform_receiver_ptr<> _cancel_tracking_receiver = nullptr;
 
     button(ui::region const &region, std::size_t const state_count);
 
@@ -71,7 +69,6 @@ struct button final {
     button &operator=(button const &) = delete;
     button &operator=(button &&) = delete;
 
-    void _prepare(button_ptr const &);
     bool _is_tracking();
     bool _is_tracking(ui::event_ptr const &);
     void _set_tracking_event(ui::event_ptr const &);
@@ -79,10 +76,10 @@ struct button final {
     void _update_rect_index();
     observing::cancellable_ptr _make_leave_chains();
     observing::cancellable_ptr _make_collider_chains();
-    void _update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
-    void _leave_or_enter_or_move_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
-    void _cancel_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button);
-    void _send_notify(method const method, ui::event_ptr const &event, std::shared_ptr<button> const &button);
+    void _update_tracking(ui::event_ptr const &event);
+    void _leave_or_enter_or_move_tracking(ui::event_ptr const &event);
+    void _cancel_tracking(ui::event_ptr const &event);
+    void _send_notify(method const method, ui::event_ptr const &event);
 };
 }  // namespace yas::ui
 
