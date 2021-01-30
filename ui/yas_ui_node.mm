@@ -41,6 +41,64 @@ ui::node::node()
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(observing::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
+    // enabled
+
+    this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false)
+        ->add_to(this->_pool);
+
+    // geometry
+
+    this->_position->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+    this->_angle->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+    this->_scale->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+        ->add_to(this->_pool);
+
+    // mesh and mesh_color
+
+    this->_mesh
+        ->observe(
+            [this](auto const &) {
+                this->_update_mesh_color();
+                this->_set_updated(ui::node_update_reason::mesh);
+            },
+            true)
+        ->add_to(this->_pool);
+
+    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
+    this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
+
+    // collider
+
+    this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false)
+        ->add_to(this->_pool);
+
+    // batch
+
+    this->_batch
+        ->observe(
+            [this, prev_batch = std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
+                if (prev_batch) {
+                    renderable_batch::cast(prev_batch)->clear_render_meshes();
+                }
+
+                if (batch) {
+                    renderable_batch::cast(batch)->clear_render_meshes();
+                }
+
+                prev_batch = batch;
+
+                this->_set_updated(ui::node_update_reason::batch);
+            },
+            false)
+        ->add_to(this->_pool);
+
+    // render_target
+
+    this->_render_target
+        ->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false)
+        ->add_to(this->_pool);
 }
 
 ui::node::~node() = default;
@@ -98,13 +156,13 @@ observing::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_targ
 void ui::node::add_sub_node(ui::node_ptr const &sub_node) {
     sub_node->remove_from_super_node();
     this->_children.emplace_back(sub_node);
-    this->_add_sub_node(this->_children.back(), this->_weak_node.lock());
+    this->_add_sub_node(this->_children.back());
 }
 
 void ui::node::add_sub_node(ui::node_ptr const &sub_node, std::size_t const idx) {
     sub_node->remove_from_super_node();
     auto iterator = this->_children.emplace(this->_children.begin() + idx, sub_node);
-    this->_add_sub_node(*iterator, this->_weak_node.lock());
+    this->_add_sub_node(*iterator);
 }
 
 void ui::node::remove_from_super_node() {
@@ -222,69 +280,6 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
 
     this->_x_canceller = nullptr;
     this->_y_canceller = nullptr;
-}
-
-void ui::node::_prepare(ui::node_ptr const &node) {
-    this->_weak_node = node;
-
-    // enabled
-
-    this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false)
-        ->add_to(this->_pool);
-
-    // geometry
-
-    this->_position->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
-        ->add_to(this->_pool);
-    this->_angle->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
-        ->add_to(this->_pool);
-    this->_scale->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
-        ->add_to(this->_pool);
-
-    // mesh and mesh_color
-
-    this->_mesh
-        ->observe(
-            [this](auto const &) {
-                this->_update_mesh_color();
-                this->_set_updated(ui::node_update_reason::mesh);
-            },
-            true)
-        ->add_to(this->_pool);
-
-    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
-    this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
-
-    // collider
-
-    this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false)
-        ->add_to(this->_pool);
-
-    // batch
-
-    this->_batch
-        ->observe(
-            [this, prev_batch = std::shared_ptr<ui::batch>{nullptr}](std::shared_ptr<ui::batch> const &batch) mutable {
-                if (prev_batch) {
-                    renderable_batch::cast(prev_batch)->clear_render_meshes();
-                }
-
-                if (batch) {
-                    renderable_batch::cast(batch)->clear_render_meshes();
-                }
-
-                prev_batch = batch;
-
-                this->_set_updated(ui::node_update_reason::batch);
-            },
-            false)
-        ->add_to(this->_pool);
-
-    // render_target
-
-    this->_render_target
-        ->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false)
-        ->add_to(this->_pool);
 }
 
 ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
@@ -526,9 +521,8 @@ void ui::node::clear_updates() {
     }
 }
 
-void ui::node::_add_sub_node(ui::node_ptr &sub_node, ui::node_ptr const &node) {
-    ui::node_wptr weak_node = node;
-    sub_node->_parent->set_value(std::move(weak_node));
+void ui::node::_add_sub_node(ui::node_ptr &sub_node) {
+    sub_node->_parent->set_value(this->_weak_node);
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
     sub_node->_notifier->notify(method::added_to_super);
@@ -596,7 +590,7 @@ void ui::node::_update_matrix() const {
 
 std::shared_ptr<ui::node> ui::node::make_shared() {
     auto shared = std::shared_ptr<node>(new node{});
-    shared->_prepare(shared);
+    shared->_weak_node = shared;
     return shared;
 }
 

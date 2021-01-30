@@ -116,8 +116,6 @@ struct node final : action_target, metal_object, renderable_node {
     node &operator=(node const &) = delete;
     node &operator=(node &&) = delete;
 
-    void _prepare(ui::node_ptr const &node);
-
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     void set_renderer(ui::renderer_ptr const &) override;
@@ -126,7 +124,7 @@ struct node final : action_target, metal_object, renderable_node {
     bool is_rendering_color_exists() override;
     void clear_updates() override;
 
-    void _add_sub_node(ui::node_ptr &sub_node, ui::node_ptr const &node);
+    void _add_sub_node(ui::node_ptr &sub_node);
     void _remove_sub_node(ui::node_ptr const &sub_node);
     void _set_renderer_recursively(ui::renderer_ptr const &);
     void _update_mesh_color();
