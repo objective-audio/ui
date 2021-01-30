@@ -138,11 +138,6 @@ using namespace yas;
 
     XCTAssertEqual(notified.x, 1.0f);
     XCTAssertEqual(notified.y, 2.0f);
-
-    guide_point->receive_value({3.0f, 4.0f});
-
-    XCTAssertEqual(notified.x, 3.0f);
-    XCTAssertEqual(notified.y, 4.0f);
 }
 
 - (void)test_point_notify_caller {
@@ -266,11 +261,6 @@ using namespace yas;
 
     XCTAssertEqual(notified.location, 1.0f);
     XCTAssertEqual(notified.length, 2.0f);
-
-    guide_range->receive_value({3.0f, 4.0f});
-
-    XCTAssertEqual(notified.location, 3.0f);
-    XCTAssertEqual(notified.length, 4.0f);
 }
 
 - (void)test_range_notify_caller {
@@ -488,13 +478,6 @@ using namespace yas;
     XCTAssertEqual(notified.origin.y, 2.0f);
     XCTAssertEqual(notified.size.width, 3.0f);
     XCTAssertEqual(notified.size.height, 4.0f);
-
-    guide_rect->receive_value({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
-
-    XCTAssertEqual(notified.origin.x, 5.0f);
-    XCTAssertEqual(notified.origin.y, 6.0f);
-    XCTAssertEqual(notified.size.width, 7.0f);
-    XCTAssertEqual(notified.size.height, 8.0f);
 }
 
 - (void)test_rect_notify_caller {

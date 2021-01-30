@@ -164,9 +164,8 @@ using namespace yas;
 
     ui::layout_alignment notified;
 
-    auto observer = strings->chain_alignment()
-                        .perform([&notified](ui::layout_alignment const &alignment) { notified = alignment; })
-                        .sync();
+    auto canceller =
+        strings->observe_alignment([&notified](ui::layout_alignment const &alignment) { notified = alignment; }, true);
 
     XCTAssertEqual(notified, ui::layout_alignment::min);
 
@@ -186,16 +185,6 @@ using namespace yas;
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = nullptr});
 
     XCTAssertNoThrow(strings->set_font_atlas(font_atlas));
-}
-
-- (void)test_text_receiver {
-    auto strings = ui::strings::make_shared();
-
-    XCTAssertEqual(strings->text(), "");
-
-    strings->text_receiver()->receive_value("test_text");
-
-    XCTAssertEqual(strings->text(), "test_text");
 }
 
 @end

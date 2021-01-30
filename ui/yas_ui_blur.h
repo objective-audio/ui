@@ -20,7 +20,6 @@ struct blur {
    private:
     double _sigma = 0.0;
     ui::effect_ptr _effect;
-    chaining::any_observer_ptr _sigma_observer = nullptr;
 
     blur();
 

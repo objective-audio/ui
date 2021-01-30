@@ -37,19 +37,19 @@ struct collection_layout {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    chaining::value::holder_ptr<std::size_t> preferred_cell_count;
-    chaining::value::holder_ptr<std::size_t> const &actual_cell_count() const;
-    chaining::value::holder_ptr<ui::size> default_cell_size;
-    chaining::value::holder_ptr<std::vector<ui::collection_layout::line>> lines;
-    chaining::value::holder_ptr<float> row_spacing;
-    chaining::value::holder_ptr<float> col_spacing;
-    chaining::value::holder_ptr<ui::layout_alignment> alignment;
-    chaining::value::holder_ptr<ui::layout_direction> direction;
-    chaining::value::holder_ptr<ui::layout_order> row_order;
-    chaining::value::holder_ptr<ui::layout_order> col_order;
+    observing::value::holder_ptr<std::size_t> const preferred_cell_count;
+    observing::value::holder_ptr<std::size_t> const actual_cell_count;
+    observing::value::holder_ptr<ui::size> const default_cell_size;
+    observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const lines;
+    observing::value::holder_ptr<float> const row_spacing;
+    observing::value::holder_ptr<float> const col_spacing;
+    observing::value::holder_ptr<ui::layout_alignment> const alignment;
+    observing::value::holder_ptr<ui::layout_direction> const direction;
+    observing::value::holder_ptr<ui::layout_order> const row_order;
+    observing::value::holder_ptr<ui::layout_order> const col_order;
     ui::layout_borders const borders;
-    ui::layout_guide_rect_ptr frame_guide_rect;
-    std::vector<ui::layout_guide_rect_ptr> cell_guide_rects;
+    ui::layout_guide_rect_ptr const frame_guide_rect;
+    std::vector<ui::layout_guide_rect_ptr> const &cell_guide_rects() const;
 
     [[nodiscard]] static collection_layout_ptr make_shared();
     [[nodiscard]] static collection_layout_ptr make_shared(args);
@@ -60,18 +60,10 @@ struct collection_layout {
         std::size_t cell_idx;
     };
 
-    chaining::value::holder_ptr<std::size_t> _actual_cell_count =
-        chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
+    std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 
     ui::layout_guide_rect_ptr _border_guide_rect = ui::layout_guide_rect::make_shared();
-    observing::cancellable_ptr _left_border_canceller;
-    observing::cancellable_ptr _right_border_canceller;
-    observing::cancellable_ptr _bottom_border_canceller;
-    observing::cancellable_ptr _top_border_canceller;
-    chaining::perform_receiver_ptr<> _layout_receiver = nullptr;
-
-    chaining::observer_pool _pool;
-    observing::canceller_pool _pool2;
+    observing::canceller_pool _pool;
 
     collection_layout(args);
 

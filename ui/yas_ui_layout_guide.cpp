@@ -68,10 +68,6 @@ observing::cancellable_ptr ui::layout_guide::observe(observing::caller<float>::h
     return pool;
 }
 
-void ui::layout_guide::receive_value(float const &value) {
-    return this->_value->set_value(value);
-}
-
 void ui::layout_guide::_prepare(std::shared_ptr<layout_guide> &guide) {
     this->_weak_ptr = guide;
 }
@@ -141,11 +137,6 @@ observing::cancellable_ptr ui::layout_guide_point::observe(observing::caller<ui:
     this->_y_guide->observe([this, handler](float const &) { handler(this->point()); }, sync)->add_to(*pool);
 
     return pool;
-}
-
-void ui::layout_guide_point::receive_value(ui::point const &point) {
-    auto copied = point;
-    this->set_point(std::move(copied));
 }
 
 std::shared_ptr<ui::layout_guide_point> ui::layout_guide_point::make_shared() {
@@ -226,10 +217,6 @@ observing::cancellable_ptr ui::layout_guide_range::observe(observing::caller<ui:
     this->_max_guide->observe([this, handler](float const &) { handler(this->range()); }, sync)->add_to(*pool);
 
     return pool;
-}
-
-void ui::layout_guide_range::receive_value(ui::range const &value) {
-    this->set_range(value);
 }
 
 std::shared_ptr<ui::layout_guide_range> ui::layout_guide_range::make_shared() {
@@ -357,10 +344,6 @@ observing::cancellable_ptr ui::layout_guide_rect::observe(observing::caller<ui::
         ->add_to(*pool);
 
     return pool;
-}
-
-void ui::layout_guide_rect::receive_value(ui::region const &region) {
-    this->set_region(region);
 }
 
 std::shared_ptr<ui::layout_guide_rect> ui::layout_guide_rect::make_shared() {

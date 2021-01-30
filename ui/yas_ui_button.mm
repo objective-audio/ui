@@ -25,6 +25,33 @@ ui::button::button(ui::region const &region, std::size_t const state_count)
 
     this->_update_rect_positions(this->_layout_guide_rect->region(), state_count);
     this->_update_rect_index();
+
+    this->_rect_plane->node()
+        ->observe_renderer(
+            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+                pool->invalidate();
+
+                if (renderer) {
+                    renderer->event_manager()
+                        ->observe([this](auto const &context) {
+                            if (context.method == ui::event_manager::method::touch_changed) {
+                                this->_update_tracking(context.event);
+                            }
+                        })
+                        ->add_to(*pool);
+
+                    this->_make_leave_chains()->add_to(*pool);
+                    this->_make_collider_chains()->add_to(*pool);
+                }
+            },
+            false)
+        ->set_to(this->_renderer_canceller);
+
+    this->_layout_guide_rect
+        ->observe([this, state_count = this->_state_count](
+                      ui::region const &value) { this->_update_rect_positions(value, state_count); },
+                  false)
+        ->set_to(this->_rect_canceller);
 }
 
 ui::button::~button() = default;
@@ -57,7 +84,7 @@ std::size_t ui::button::state_index() const {
 
 void ui::button::cancel_tracking() {
     if (this->_tracking_event) {
-        this->_cancel_tracking(this->_tracking_event, this->_weak_button.lock());
+        this->_cancel_tracking(this->_tracking_event);
     }
 }
 
@@ -71,58 +98,6 @@ ui::rect_plane_ptr const &ui::button::rect_plane() {
 
 ui::layout_guide_rect_ptr const &ui::button::layout_guide_rect() {
     return this->_layout_guide_rect;
-}
-
-void ui::button::_prepare(button_ptr const &button) {
-    auto const weak_button = to_weak(button);
-    this->_weak_button = weak_button;
-
-    auto &node = this->_rect_plane->node();
-
-    this->_leave_or_enter_or_move_tracking_receiver = chaining::perform_receiver<>::make_shared([weak_button] {
-        if (auto button = weak_button.lock()) {
-            if (auto tracking_event = button->_tracking_event) {
-                button->_leave_or_enter_or_move_tracking(tracking_event, button);
-            }
-        }
-    });
-
-    this->_cancel_tracking_receiver = chaining::perform_receiver<>::make_shared([weak_button]() {
-        if (auto button = weak_button.lock()) {
-            if (auto tracking_event = button->_tracking_event) {
-                button->_cancel_tracking(tracking_event, button);
-            }
-        }
-    });
-
-    this->_renderer_canceller = node->observe_renderer(
-        [event_canceller = observing::canceller_ptr{nullptr}, leave_canceller = observing::cancellable_ptr{nullptr},
-         collider_canceller = observing::cancellable_ptr{nullptr}, weak_button](ui::renderer_ptr const &value) mutable {
-            if (auto renderer = value) {
-                event_canceller = renderer->event_manager()->observe([weak_button](auto const &context) {
-                    if (context.method == ui::event_manager::method::touch_changed) {
-                        if (auto button = weak_button.lock()) {
-                            button->_update_tracking(context.event, button);
-                        }
-                    }
-                });
-                if (auto button = weak_button.lock()) {
-                    leave_canceller = button->_make_leave_chains();
-                    collider_canceller = button->_make_collider_chains();
-                }
-            } else {
-                event_canceller = nullptr;
-                leave_canceller = nullptr;
-                collider_canceller = nullptr;
-            }
-        },
-        false);
-
-    this->_rect_canceller = this->_layout_guide_rect->observe(
-        [this, state_count = this->_state_count](ui::region const &value) {
-            this->_update_rect_positions(value, state_count);
-        },
-        false);
 }
 
 bool ui::button::_is_tracking() {
@@ -166,23 +141,40 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
     auto pool = observing::canceller_pool::make_shared();
 
     node->position()
-        ->observe([this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); },
-                  false)
+        ->observe(
+            [this](auto const &) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_leave_or_enter_or_move_tracking(tracking_event);
+                }
+            },
+            false)
         ->add_to(*pool);
     node->angle()
-        ->observe([this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); },
-                  false)
+        ->observe(
+            [this](auto const &) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_leave_or_enter_or_move_tracking(tracking_event);
+                }
+            },
+            false)
         ->add_to(*pool);
     node->scale()
-        ->observe([this](auto const &) { this->_leave_or_enter_or_move_tracking_receiver->receive_value(nullptr); },
-                  false)
+        ->observe(
+            [this](auto const &) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_leave_or_enter_or_move_tracking(tracking_event);
+                }
+            },
+            false)
         ->add_to(*pool);
 
     node->collider()
         ->observe(
             [this](ui::collider_ptr const &value) {
                 if (!value) {
-                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                    if (auto tracking_event = this->_tracking_event) {
+                        this->_cancel_tracking(tracking_event);
+                    }
                 }
             },
             false)
@@ -191,7 +183,9 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
         ->observe(
             [this](bool const &value) {
                 if (!value) {
-                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                    if (auto tracking_event = this->_tracking_event) {
+                        this->_cancel_tracking(tracking_event);
+                    }
                 }
             },
             true)
@@ -210,7 +204,9 @@ observing::cancellable_ptr ui::button::_make_collider_chains() {
         ->observe_shape(
             [this](ui::shape_ptr const &shape) {
                 if (!shape) {
-                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                    if (auto tracking_event = this->_tracking_event) {
+                        this->_cancel_tracking(tracking_event);
+                    }
                 }
             },
             false)
@@ -221,7 +217,9 @@ observing::cancellable_ptr ui::button::_make_collider_chains() {
         ->observe_enabled(
             [this](bool const &enabled) {
                 if (!enabled) {
-                    this->_cancel_tracking_receiver->receive_value(nullptr);
+                    if (auto tracking_event = this->_tracking_event) {
+                        this->_cancel_tracking(tracking_event);
+                    }
                 }
             },
             false)
@@ -230,7 +228,7 @@ observing::cancellable_ptr ui::button::_make_collider_chains() {
     return pool;
 }
 
-void ui::button::_update_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
+void ui::button::_update_tracking(ui::event_ptr const &event) {
     auto &node = this->_rect_plane->node();
     if (auto const renderer = node->renderer()) {
         auto const &detector = renderer->detector();
@@ -241,23 +239,23 @@ void ui::button::_update_tracking(ui::event_ptr const &event, std::shared_ptr<bu
                 if (!this->_is_tracking()) {
                     if (detector->detect(touch_event.position(), node->collider()->value())) {
                         this->_set_tracking_event(event);
-                        this->_send_notify(method::began, event, button);
+                        this->_send_notify(method::began, event);
                     }
                 }
                 break;
             case ui::event_phase::stationary:
             case ui::event_phase::changed: {
-                this->_leave_or_enter_or_move_tracking(event, button);
+                this->_leave_or_enter_or_move_tracking(event);
             } break;
             case ui::event_phase::ended:
                 if (this->_is_tracking(event)) {
                     auto const send_evnet = event;
                     this->_set_tracking_event(nullptr);
-                    this->_send_notify(method::ended, send_evnet, button);
+                    this->_send_notify(method::ended, send_evnet);
                 }
                 break;
             case ui::event_phase::canceled:
-                this->_cancel_tracking(event, button);
+                this->_cancel_tracking(event);
                 break;
             default:
                 break;
@@ -265,7 +263,7 @@ void ui::button::_update_tracking(ui::event_ptr const &event, std::shared_ptr<bu
     }
 }
 
-void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
+void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event) {
     auto &node = this->_rect_plane->node();
     if (auto const renderer = node->renderer()) {
         auto const &detector = renderer->detector();
@@ -274,26 +272,27 @@ void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event, st
         bool is_detected = detector->detect(touch_event.position(), node->collider()->value());
         if (!is_event_tracking && is_detected) {
             this->_set_tracking_event(event);
-            this->_send_notify(method::entered, event, button);
+            this->_send_notify(method::entered, event);
         } else if (is_event_tracking && !is_detected) {
             this->_set_tracking_event(nullptr);
-            this->_send_notify(method::leaved, event, button);
+            this->_send_notify(method::leaved, event);
         } else if (is_event_tracking) {
-            this->_send_notify(method::moved, event, button);
+            this->_send_notify(method::moved, event);
         }
     }
 }
 
-void ui::button::_cancel_tracking(ui::event_ptr const &event, std::shared_ptr<button> const &button) {
+void ui::button::_cancel_tracking(ui::event_ptr const &event) {
     if (this->_is_tracking(event)) {
         auto const send_event = event;
         this->_set_tracking_event(nullptr);
-        this->_send_notify(method::canceled, send_event, button);
+        this->_send_notify(method::canceled, send_event);
     }
 }
 
-void ui::button::_send_notify(method const method, ui::event_ptr const &event, std::shared_ptr<button> const &button) {
-    this->_notifier->notify(std::make_pair(method, context{.button = button, .touch = event->get<ui::touch>()}));
+void ui::button::_send_notify(method const method, ui::event_ptr const &event) {
+    this->_notifier->notify(
+        std::make_pair(method, context{.button = this->_weak_button.lock(), .touch = event->get<ui::touch>()}));
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region) {
@@ -302,7 +301,7 @@ ui::button_ptr ui::button::make_shared(ui::region const &region) {
 
 ui::button_ptr ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
     auto shared = std::shared_ptr<button>(new button{region, state_count});
-    shared->_prepare(shared);
+    shared->_weak_button = shared;
     return shared;
 }
 
