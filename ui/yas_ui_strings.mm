@@ -112,7 +112,7 @@ void ui::strings::_prepare_chains() {
 
 void ui::strings::_update_texture_observing() {
     if (auto &font_atlas = this->_font_atlas->value()) {
-        if (!this->_texture_canceller) {
+        if (!this->_texture_pool.has_cancellable()) {
             font_atlas
                 ->observe_texture(
                     [this](auto const &texture) {
@@ -120,16 +120,14 @@ void ui::strings::_update_texture_observing() {
                         this->_update_layout();
                     },
                     true)
-                ->set_to(this->_texture_canceller);
-        }
-        if (!this->_texture_updated_canceller) {
+                ->add_to(this->_texture_pool);
+
             font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
-                ->set_to(this->_texture_updated_canceller);
+                ->add_to(this->_texture_pool);
         }
     } else {
         this->_rect_plane->node()->mesh()->value()->set_texture(nullptr);
-        this->_texture_canceller = nullptr;
-        this->_texture_updated_canceller = nullptr;
+        this->_texture_pool.invalidate();
     }
 }
 

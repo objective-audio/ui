@@ -59,8 +59,7 @@ struct strings final {
     observing::value::holder_ptr<std::optional<float>> _line_height;
 
     std::size_t const _max_word_count = 0;
-    observing::cancellable_ptr _texture_canceller = nullptr;
-    observing::cancellable_ptr _texture_updated_canceller = nullptr;
+    observing::canceller_pool _texture_pool;
     observing::canceller_pool_ptr const _property_pool = observing::canceller_pool::make_shared();
     observing::canceller_pool _cell_rect_pool;
 
