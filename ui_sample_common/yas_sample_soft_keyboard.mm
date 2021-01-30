@@ -107,7 +107,7 @@ void sample::soft_keyboard::_prepare(soft_keyboard_ptr const &keyboard) {
 
 void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     if (this->_soft_keys.size() > 0 && this->_soft_key_cancellers.size() > 0 && this->_collection_layout &&
-        this->_frame_cancellers.size() > 0 && this->_actual_cell_count_observer) {
+        this->_frame_cancellers.size() > 0 && this->_actual_cell_count_canceller) {
         return;
     }
 
@@ -160,12 +160,14 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         this->_soft_keys.emplace_back(std::move(soft_key));
     }
 
-    this->_actual_cell_count_observer = this->_collection_layout->actual_cell_count->chain()
-                                            .perform([this](auto const &) {
-                                                this->_update_soft_keys_enabled(true);
-                                                this->_update_soft_key_count();
-                                            })
-                                            .end();
+    this->_collection_layout->actual_cell_count
+        ->observe(
+            [this](auto const &) {
+                this->_update_soft_keys_enabled(true);
+                this->_update_soft_key_count();
+            },
+            false)
+        ->set_to(this->_actual_cell_count_canceller);
 
     if (this->_src_cell_guide_rects.size() > key_count) {
         this->_src_cell_guide_rects.resize(key_count);
@@ -216,7 +218,7 @@ void sample::soft_keyboard::_dispose_soft_keys() {
     this->_soft_key_cancellers.clear();
     this->_frame_cancellers.clear();
     this->_collection_layout = nullptr;
-    this->_actual_cell_count_observer = nullptr;
+    this->_actual_cell_count_canceller = nullptr;
     this->_src_cell_guide_rects.clear();
     this->_dst_cell_guide_rects.clear();
     this->_cell_interporator = nullptr;
@@ -283,7 +285,7 @@ void sample::soft_keyboard::_update_soft_key_count() {
         auto const &idx = yas_each_index(each);
         if (idx < layout_count) {
             if (idx >= this->_fixed_cell_layouts.size()) {
-                auto &src_guide_rect = this->_collection_layout->cell_guide_rects.at(idx);
+                auto const &src_guide_rect = this->_collection_layout->cell_guide_rects().at(idx);
                 auto weak_dst_guide_rect = to_weak(this->_src_cell_guide_rects.at(idx));
 
                 auto pool = observing::canceller_pool::make_shared();

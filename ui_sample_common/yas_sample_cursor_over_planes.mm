@@ -9,14 +9,13 @@
 using namespace yas;
 
 namespace yas::sample::cursor_over_planes_utils {
-static std::vector<observing::canceller_ptr> _observe_events(std::vector<ui::node_ptr> const &nodes,
-                                                             ui::renderer_ptr const &renderer) {
-    std::vector<observing::canceller_ptr> event_cancellers;
-    event_cancellers.reserve(nodes.size());
+static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> const &nodes,
+                                                  ui::renderer_ptr const &renderer) {
+    auto pool = observing::canceller_pool::make_shared();
 
     for (auto &node : nodes) {
-        event_cancellers.emplace_back(renderer->event_manager()->observe(
-            [weak_node = to_weak(node), prev_detected = std::make_shared<bool>(false)](auto const &context) {
+        renderer->event_manager()
+            ->observe([weak_node = to_weak(node), prev_detected = std::make_shared<bool>(false)](auto const &context) {
                 if (context.method == ui::event_manager::method::cursor_changed) {
                     ui::event_ptr const &event = context.event;
                     auto const &cursor_event = event->get<ui::cursor>();
@@ -43,34 +42,30 @@ static std::vector<observing::canceller_ptr> _observe_events(std::vector<ui::nod
                         }
                     }
                 }
-            }));
+            })
+            ->add_to(*pool);
     }
 
-    return event_cancellers;
+    return pool;
 }
 }
 
 sample::cursor_over_planes::cursor_over_planes() {
     this->_setup_nodes();
+
+    this->_renderer_canceller = root_node->observe_renderer(
+        [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
+            if (value) {
+                event_canceller = cursor_over_planes_utils::_observe_events(this->_nodes, value);
+            } else {
+                event_canceller = nullptr;
+            }
+        },
+        false);
 }
 
 ui::node_ptr const &sample::cursor_over_planes::node() {
     return this->root_node;
-}
-
-void sample::cursor_over_planes::_prepare(cursor_over_planes_ptr const &shared) {
-    this->_renderer_canceller = root_node->observe_renderer(
-        [weak_planes = to_weak(shared),
-         event_observers = std::vector<observing::canceller_ptr>{}](ui::renderer_ptr const &value) mutable {
-            if (auto planes = weak_planes.lock()) {
-                if (value) {
-                    event_observers = cursor_over_planes_utils::_observe_events(planes->_nodes, value);
-                } else {
-                    event_observers.clear();
-                }
-            }
-        },
-        false);
 }
 
 void sample::cursor_over_planes::_setup_nodes() {
@@ -100,7 +95,5 @@ void sample::cursor_over_planes::_setup_nodes() {
 }
 
 sample::cursor_over_planes_ptr sample::cursor_over_planes::make_shared() {
-    auto shared = std::shared_ptr<cursor_over_planes>(new cursor_over_planes{});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<cursor_over_planes>(new cursor_over_planes{});
 }

@@ -21,7 +21,5 @@ struct bg {
     observing::cancellable_ptr _rect_canceller = nullptr;
 
     bg();
-
-    void _prepare(bg_ptr const &);
 };
 }  // namespace yas::sample

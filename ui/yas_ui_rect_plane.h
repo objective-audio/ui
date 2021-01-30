@@ -59,7 +59,6 @@ struct rect_plane_data final {
     rect_plane_data &operator=(rect_plane_data const &) = delete;
     rect_plane_data &operator=(rect_plane_data &&) = delete;
 
-    void _prepare(rect_plane_data_ptr const &);
     void _observe_rect_tex_coords(ui::rect_plane_data &, ui::texture_element_ptr const &, std::size_t const rect_idx,
                                   tex_coords_transform_f &&);
 };

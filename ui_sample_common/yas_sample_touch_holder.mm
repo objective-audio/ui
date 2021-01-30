@@ -15,6 +15,23 @@ struct touch_object {
 
 sample::touch_holder::touch_holder() {
     this->_rect_plane_data->set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
+
+    this->_renderer_canceller = root_node->observe_renderer(
+        [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+            if (renderer) {
+                renderer->event_manager()
+                    ->observe([this](auto const &context) {
+                        if (context.method == ui::event_manager::method::touch_changed) {
+                            ui::event_ptr const &event = context.event;
+                            this->_update_touch_node(event);
+                        }
+                    })
+                    ->set_to(event_canceller);
+            } else {
+                event_canceller = nullptr;
+            }
+        },
+        false);
 }
 
 void sample::touch_holder::set_texture(ui::texture_ptr const &texture) {
@@ -37,26 +54,6 @@ void sample::touch_holder::set_texture(ui::texture_ptr const &texture) {
 
 ui::node_ptr const &sample::touch_holder::node() {
     return this->root_node;
-}
-
-void sample::touch_holder::_prepare(touch_holder_ptr const &holder) {
-    this->_renderer_canceller = root_node->observe_renderer(
-        [weak_touch_holder = to_weak(holder),
-         event_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            if (renderer) {
-                event_canceller = renderer->event_manager()->observe([weak_touch_holder](auto const &context) {
-                    if (context.method == ui::event_manager::method::touch_changed) {
-                        ui::event_ptr const &event = context.event;
-                        if (auto touch_holder = weak_touch_holder.lock()) {
-                            touch_holder->_update_touch_node(event);
-                        }
-                    }
-                });
-            } else {
-                event_canceller = nullptr;
-            }
-        },
-        false);
 }
 
 void sample::touch_holder::_update_touch_node(ui::event_ptr const &event) {
@@ -178,7 +175,5 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
 }
 
 sample::touch_holder_ptr sample::touch_holder::make_shared() {
-    auto shared = std::shared_ptr<touch_holder>(new touch_holder{});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<touch_holder>(new touch_holder{});
 }

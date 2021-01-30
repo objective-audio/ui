@@ -83,8 +83,6 @@ struct texture : metal_object {
     texture &operator=(texture const &) = delete;
     texture &operator=(texture &&) = delete;
 
-    void _prepare(texture_ptr const &);
-
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     draw_image_result _reserve_image_size(image_ptr const &image);

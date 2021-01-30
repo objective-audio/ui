@@ -109,10 +109,6 @@ std::size_t ui::metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
 }
 
-void ui::metal_system::_prepare(metal_system_ptr const &metal_system) {
-    this->_weak_metal_system = metal_system;
-}
-
 void ui::metal_system::view_configure(yas_objc_view *const objc_view) {
     if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
         return;
@@ -291,6 +287,6 @@ ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device) {
 
 ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device, uint32_t const sample_count) {
     auto shared = std::shared_ptr<metal_system>(new metal_system{device, sample_count});
-    shared->_prepare(shared);
+    shared->_weak_metal_system = shared;
     return shared;
 }

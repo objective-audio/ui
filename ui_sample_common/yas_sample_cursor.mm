@@ -76,25 +76,23 @@ static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::ren
 
 sample::cursor::cursor() {
     this->_setup_node();
+
+    this->_node
+        ->observe_renderer(
+            [this, event_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+                if (renderer) {
+                    event_canceller = cursor_utils::_observe_event(this->_node, renderer);
+                    renderer->insert_action(cursor_utils::_make_rotate_action(this->_node));
+                } else {
+                    event_canceller = nullptr;
+                }
+            },
+            false)
+        ->set_to(this->_renderer_canceller);
 }
 
 ui::node_ptr const &sample::cursor::node() {
     return this->_node;
-}
-
-void sample::cursor::_prepare(cursor_ptr const &shared) {
-    this->_renderer_canceller = this->_node->observe_renderer(
-        [weak_node = to_weak(this->_node),
-         event_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            auto node = weak_node.lock();
-            if (renderer) {
-                event_canceller = cursor_utils::_observe_event(node, renderer);
-                renderer->insert_action(cursor_utils::_make_rotate_action(node));
-            } else {
-                event_canceller = nullptr;
-            }
-        },
-        false);
 }
 
 void sample::cursor::_setup_node() {
@@ -117,7 +115,5 @@ void sample::cursor::_setup_node() {
 }
 
 sample::cursor_ptr sample::cursor::make_shared() {
-    auto shared = std::shared_ptr<cursor>(new cursor{});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<cursor>(new cursor{});
 }
