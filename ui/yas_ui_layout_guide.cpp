@@ -68,18 +68,12 @@ observing::cancellable_ptr ui::layout_guide::observe(observing::caller<float>::h
     return pool;
 }
 
-void ui::layout_guide::_prepare(std::shared_ptr<layout_guide> &guide) {
-    this->_weak_ptr = guide;
-}
-
 std::shared_ptr<ui::layout_guide> ui::layout_guide::make_shared() {
     return make_shared(0.0f);
 }
 
 std::shared_ptr<ui::layout_guide> ui::layout_guide::make_shared(float const value) {
-    auto shared = std::shared_ptr<layout_guide>{new layout_guide{value}};
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<layout_guide>{new layout_guide{value}};
 }
 
 #pragma mark - ui::layout_guide_point

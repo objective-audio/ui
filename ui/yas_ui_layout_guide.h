@@ -26,7 +26,6 @@ struct layout_guide final : action_target {
 
    private:
     observing::value::holder_ptr<float> _value;
-    layout_guide_wptr _weak_ptr;
     observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
     std::optional<float> _pushed_value;
 
@@ -36,8 +35,6 @@ struct layout_guide final : action_target {
     layout_guide(layout_guide &&) = delete;
     layout_guide &operator=(layout_guide const &) = delete;
     layout_guide &operator=(layout_guide &&) = delete;
-
-    void _prepare(std::shared_ptr<layout_guide> &);
 };
 
 struct layout_guide_point final {
