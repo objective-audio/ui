@@ -59,7 +59,7 @@ ui::layout_alignment const &ui::strings::alignment() const {
     return this->_collection_layout->alignment->value();
 }
 
-ui::layout_guide_rect_ptr &ui::strings::frame_layout_guide_rect() {
+ui::layout_guide_rect_ptr const &ui::strings::frame_layout_guide_rect() {
     return this->_collection_layout->frame_guide_rect;
 }
 
@@ -82,8 +82,9 @@ observing::canceller_ptr ui::strings::observe_line_height(observing::caller<std:
     return this->_line_height->observe(std::move(handler), sync);
 }
 
-chaining::chain_sync_t<ui::layout_alignment> ui::strings::chain_alignment() const {
-    return this->_collection_layout->alignment->chain();
+observing::canceller_ptr ui::strings::observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&handler,
+                                                        bool const sync) {
+    return this->_collection_layout->alignment->observe(std::move(handler), sync);
 }
 
 chaining::receiver_ptr<std::string> ui::strings::text_receiver() {
@@ -133,23 +134,21 @@ void ui::strings::_prepare_chains() {
     this->_font_atlas
         ->observe(
             [this](ui::font_atlas_ptr const &font_atras) {
-                this->_update_texture_receiver->receive_value(font_atras);
-                this->_update_layout_receiver->receive_value(nullptr);
+                this->_update_texture_chaining();
+                this->_update_layout();
             },
             true)
         ->add_to(*this->_property_pool);
 
-    this->_text->observe([this](auto const &) { this->_update_layout_receiver->receive_value(nullptr); }, false)
+    this->_text->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(*this->_property_pool);
+
+    this->_line_height->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(*this->_property_pool);
+
+    this->_collection_layout->actual_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)
         ->add_to(*this->_property_pool);
 
-    this->_line_height
-        ->observe([this](auto const &height) { this->_update_layout_receiver->receive_value(nullptr); }, false)
+    this->_collection_layout->alignment->observe([this](auto const &) { this->_update_layout(); }, false)
         ->add_to(*this->_property_pool);
-
-    this->_property_observers.emplace_back(
-        this->_collection_layout->actual_cell_count()->chain().to_null().send_to(this->_update_layout_receiver).end());
-
-    this->_property_observers.emplace_back(this->_collection_layout->alignment->chain().end());
 }
 
 void ui::strings::_update_texture_chaining() {
@@ -216,7 +215,7 @@ void ui::strings::_update_layout() {
     this->_collection_layout->lines->set_value(std::move(lines));
     this->_collection_layout->preferred_cell_count->set_value(eliminated_text.size());
 
-    auto const actual_cell_count = this->_collection_layout->actual_cell_count()->value();
+    auto const actual_cell_count = this->_collection_layout->actual_cell_count->value();
 
     this->_rect_plane->data()->set_rect_count(actual_cell_count);
 
@@ -244,7 +243,7 @@ void ui::strings::_update_layout() {
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         auto const word = eliminated_text.substr(idx, 1);
-        auto &cell_rect = this->_collection_layout->cell_guide_rects.at(idx);
+        auto const &cell_rect = this->_collection_layout->cell_guide_rects().at(idx);
 
         auto weak_strings = to_weak(strings);
 

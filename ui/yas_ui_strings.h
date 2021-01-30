@@ -35,7 +35,7 @@ struct strings final {
     std::optional<float> const &line_height() const;
     ui::layout_alignment const &alignment() const;
 
-    ui::layout_guide_rect_ptr &frame_layout_guide_rect();
+    ui::layout_guide_rect_ptr const &frame_layout_guide_rect();
 
     ui::rect_plane_ptr const &rect_plane();
 
@@ -44,7 +44,8 @@ struct strings final {
                                                               bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_line_height(observing::caller<std::optional<float>>::handler_f &&,
                                                                bool const sync);
-    [[nodiscard]] chaining::chain_sync_t<ui::layout_alignment> chain_alignment() const;
+    [[nodiscard]] observing::canceller_ptr observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&,
+                                                             bool const sync);
     [[nodiscard]] chaining::receiver_ptr<std::string> text_receiver();
 
     [[nodiscard]] static strings_ptr make_shared();

@@ -164,9 +164,8 @@ using namespace yas;
 
     ui::layout_alignment notified;
 
-    auto observer = strings->chain_alignment()
-                        .perform([&notified](ui::layout_alignment const &alignment) { notified = alignment; })
-                        .sync();
+    auto canceller =
+        strings->observe_alignment([&notified](ui::layout_alignment const &alignment) { notified = alignment; }, true);
 
     XCTAssertEqual(notified, ui::layout_alignment::min);
 

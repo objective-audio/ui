@@ -42,74 +42,73 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 
 ui::collection_layout::collection_layout(args args)
     : frame_guide_rect(ui::layout_guide_rect::make_shared(std::move(args.frame))),
-      preferred_cell_count(chaining::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
-      default_cell_size(chaining::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
-      lines(chaining::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
-      row_spacing(chaining::value::holder<float>::make_shared(args.row_spacing)),
-      col_spacing(chaining::value::holder<float>::make_shared(args.col_spacing)),
-      alignment(chaining::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
-      direction(chaining::value::holder<ui::layout_direction>::make_shared(args.direction)),
-      row_order(chaining::value::holder<ui::layout_order>::make_shared(args.row_order)),
-      col_order(chaining::value::holder<ui::layout_order>::make_shared(args.col_order)),
+      preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
+      actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
+      default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
+      lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
+      row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
+      col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
+      alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
+      direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
+      row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
+      col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)),
       borders(std::move(args.borders)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
     }
 
-    this->_left_border_canceller = this->frame_guide_rect->left()->observe(
-        [this, adding = borders.left](float const &value) {
-            this->_border_guide_rect->left()->set_value(value + adding);
-        },
-        true);
+    this->frame_guide_rect->left()
+        ->observe([this, adding = borders.left](
+                      float const &value) { this->_border_guide_rect->left()->set_value(value + adding); },
+                  true)
+        ->add_to(this->_pool);
 
-    this->_right_border_canceller = this->frame_guide_rect->right()->observe(
-        [this, adding = -borders.right](float const &value) {
-            this->_border_guide_rect->right()->set_value(value + adding);
-        },
-        true);
+    this->frame_guide_rect->right()
+        ->observe([this, adding = -borders.right](
+                      float const &value) { this->_border_guide_rect->right()->set_value(value + adding); },
+                  true)
+        ->add_to(this->_pool);
 
-    this->_bottom_border_canceller = this->frame_guide_rect->bottom()->observe(
-        [this, adding = borders.bottom](float const &value) {
-            this->_border_guide_rect->bottom()->set_value(value + adding);
-        },
-        true);
+    this->frame_guide_rect->bottom()
+        ->observe([this, adding = borders.bottom](
+                      float const &value) { this->_border_guide_rect->bottom()->set_value(value + adding); },
+                  true)
+        ->add_to(this->_pool);
 
-    this->_top_border_canceller = this->frame_guide_rect->top()->observe(
-        [this, adding = -borders.top](float const &value) {
-            this->_border_guide_rect->top()->set_value(value + adding);
-        },
-        true);
+    this->frame_guide_rect->top()
+        ->observe([this, adding = -borders.top](
+                      float const &value) { this->_border_guide_rect->top()->set_value(value + adding); },
+                  true)
+        ->add_to(this->_pool);
 
-    this->_layout_receiver = chaining::perform_receiver<>::make_shared([this]() { this->_update_layout(); });
+    this->frame_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_border_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
 
-    this->frame_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool2);
-    this->_border_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool2);
-
-    this->row_spacing->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->col_spacing->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->alignment->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->direction->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->row_order->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->col_order->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->preferred_cell_count->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->default_cell_size->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
-    this->lines->chain().send_null_to(this->_layout_receiver).end()->add_to(this->_pool);
+    this->row_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->col_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->alignment->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
 
     this->_update_layout();
 }
 
-chaining::value::holder_ptr<std::size_t> const &ui::collection_layout::actual_cell_count() const {
-    return this->_actual_cell_count;
+std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
+    return this->_cell_guide_rects;
 }
 
 void ui::collection_layout::_push_notify_waiting() {
-    for (auto &rect : this->cell_guide_rects) {
+    for (auto &rect : this->_cell_guide_rects) {
         rect->push_notify_waiting();
     }
 }
 
 void ui::collection_layout::_pop_notify_waiting() {
-    for (auto &rect : this->cell_guide_rects) {
+    for (auto &rect : this->_cell_guide_rects) {
         rect->pop_notify_waiting();
     }
 }
@@ -119,8 +118,8 @@ void ui::collection_layout::_update_layout() {
     auto const &preferred_cell_count = this->preferred_cell_count->value();
 
     if (preferred_cell_count == 0) {
-        this->cell_guide_rects.clear();
-        this->_actual_cell_count->set_value(0);
+        this->_cell_guide_rects.clear();
+        this->actual_cell_count->set_value(0);
         return;
     }
 
@@ -178,11 +177,11 @@ void ui::collection_layout::_update_layout() {
         regions.emplace_back(std::move(row_regions));
     }
 
-    if (actual_cell_count < this->cell_guide_rects.size()) {
-        this->cell_guide_rects.resize(actual_cell_count);
+    if (actual_cell_count < this->_cell_guide_rects.size()) {
+        this->_cell_guide_rects.resize(actual_cell_count);
     } else {
-        while (this->cell_guide_rects.size() < actual_cell_count) {
-            this->cell_guide_rects.emplace_back(ui::layout_guide_rect::make_shared());
+        while (this->_cell_guide_rects.size() < actual_cell_count) {
+            this->_cell_guide_rects.emplace_back(ui::layout_guide_rect::make_shared());
         }
     }
 
@@ -208,7 +207,7 @@ void ui::collection_layout::_update_layout() {
             for (auto const &region : row_regions) {
                 ui::region aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
                                           .size = region.size};
-                this->cell_guide_rects.at(idx)->set_region(
+                this->_cell_guide_rects.at(idx)->set_region(
                     this->_direction_swapped_region_if_horizontal(aligned_region));
 
                 ++idx;
@@ -218,7 +217,7 @@ void ui::collection_layout::_update_layout() {
 
     this->_pop_notify_waiting();
 
-    this->_actual_cell_count->set_value(actual_cell_count);
+    this->actual_cell_count->set_value(actual_cell_count);
 }
 
 std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell_location(std::size_t const cell_idx) {

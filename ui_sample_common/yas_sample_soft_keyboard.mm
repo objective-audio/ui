@@ -160,8 +160,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         this->_soft_keys.emplace_back(std::move(soft_key));
     }
 
-    this->_actual_cell_count_observer = this->_collection_layout->actual_cell_count()
-                                            ->chain()
+    this->_actual_cell_count_observer = this->_collection_layout->actual_cell_count->chain()
                                             .perform([this](auto const &) {
                                                 this->_update_soft_keys_enabled(true);
                                                 this->_update_soft_key_count();
@@ -277,7 +276,7 @@ void sample::soft_keyboard::_update_soft_key_count() {
         return;
     }
 
-    auto const layout_count = this->_collection_layout->actual_cell_count()->value();
+    auto const layout_count = this->_collection_layout->actual_cell_count->value();
 
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {
@@ -344,7 +343,7 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
         return;
     }
 
-    auto const layout_count = this->_collection_layout->actual_cell_count()->value();
+    auto const layout_count = this->_collection_layout->actual_cell_count->value();
 
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {
