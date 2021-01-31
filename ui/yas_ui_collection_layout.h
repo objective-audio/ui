@@ -62,7 +62,7 @@ struct collection_layout {
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 
-    ui::layout_guide_rect_ptr _border_guide_rect = ui::layout_guide_rect::make_shared();
+    ui::layout_guide_rect_ptr const _border_guide_rect = ui::layout_guide_rect::make_shared();
     observing::canceller_pool _pool;
 
     collection_layout(args);
