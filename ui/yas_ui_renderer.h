@@ -82,7 +82,6 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
     };
 
     ui::metal_system_ptr _metal_system;
-    std::weak_ptr<renderer> _weak_renderer;
 
     ui::uint_size _view_size;
     ui::uint_size _drawable_size;
