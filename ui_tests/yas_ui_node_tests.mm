@@ -68,7 +68,7 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertFalse(node->parent());
     XCTAssertFalse(node->renderer());
 
-    XCTAssertTrue(node->is_enabled()->value());
+    XCTAssertTrue(node->is_enabled());
 
     XCTAssertTrue(ui::renderable_node::cast(node));
     XCTAssertTrue(ui::metal_object::cast(node));
@@ -87,7 +87,7 @@ struct test_render_encoder : ui::render_encodable {
     node->set_color({0.1f, 0.2f, 0.3f});
     node->set_alpha(0.4f);
 
-    node->is_enabled()->set_value(true);
+    node->set_is_enabled(true);
 
     XCTAssertEqual(node->position().x, 1.0f);
     XCTAssertEqual(node->position().y, 2.0f);
@@ -114,7 +114,7 @@ struct test_render_encoder : ui::render_encodable {
     node->batch()->set_value(nullptr);
     XCTAssertFalse(node->batch()->value());
 
-    XCTAssertTrue(node->is_enabled()->value());
+    XCTAssertTrue(node->is_enabled());
 
     node->render_target()->set_value(render_target);
     XCTAssertTrue(node->render_target()->value());
@@ -385,7 +385,7 @@ struct test_render_encoder : ui::render_encodable {
     updates = ui::tree_updates{};
     ui::renderable_node::cast(node)->clear_updates();
 
-    sub_node->is_enabled()->set_value(false);
+    sub_node->set_is_enabled(false);
     ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 1);
@@ -414,7 +414,7 @@ struct test_render_encoder : ui::render_encodable {
     node->mesh()->value()->set_mesh_data(mesh_data);
 
     node->set_angle({1.0f});
-    node->is_enabled()->set_value(false);
+    node->set_is_enabled(false);
     node->collider()->set_value(ui::collider::make_shared());
     node->batch()->set_value(ui::batch::make_shared());
 
@@ -432,7 +432,7 @@ struct test_render_encoder : ui::render_encodable {
     updates = ui::tree_updates{};
     ui::renderable_node::cast(node)->clear_updates();
 
-    node->is_enabled()->set_value(true);
+    node->set_is_enabled(true);
 
     // enabledをtrueにするとフェッチされる
     ui::renderable_node::cast(node)->fetch_updates(updates);
@@ -466,7 +466,7 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertTrue(ui::renderable_node::cast(node)->is_rendering_color_exists());
 
-    node->is_enabled()->set_value(false);
+    node->set_is_enabled(false);
 
     XCTAssertFalse(ui::renderable_node::cast(node)->is_rendering_color_exists());
 }
@@ -1121,7 +1121,7 @@ struct test_render_encoder : ui::render_encodable {
         ui::renderable_node::cast(parent_batch_node)->clear_updates();
     }
 
-    mesh_node1b->is_enabled()->set_value(false);
+    mesh_node1b->set_is_enabled(false);
 
     {
         auto render_encoder = render();
@@ -1169,9 +1169,9 @@ struct test_render_encoder : ui::render_encodable {
         ui::renderable_node::cast(parent_batch_node)->clear_updates();
     }
 
-    mesh_node1a->is_enabled()->set_value(false);
-    mesh_node1b->is_enabled()->set_value(true);
-    mesh_node2->is_enabled()->set_value(false);
+    mesh_node1a->set_is_enabled(false);
+    mesh_node1b->set_is_enabled(true);
+    mesh_node2->set_is_enabled(false);
 
     {
         auto render_encoder = render();

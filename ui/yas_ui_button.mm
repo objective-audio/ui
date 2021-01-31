@@ -176,8 +176,7 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
             },
             false)
         ->add_to(*pool);
-    node->is_enabled()
-        ->observe(
+    node->observe_is_enabled(
             [this](bool const &value) {
                 if (!value) {
                     if (auto tracking_event = this->_tracking_event) {

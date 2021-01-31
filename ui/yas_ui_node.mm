@@ -164,8 +164,16 @@ observing::canceller_ptr ui::node::observe_alpha(observing::caller<float>::handl
     return this->_alpha->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<bool> const &ui::node::is_enabled() const {
-    return this->_enabled;
+void ui::node::set_is_enabled(bool const &is_enabled) {
+    this->_enabled->set_value(is_enabled);
+}
+
+bool const &ui::node::is_enabled() const {
+    return this->_enabled->value();
+}
+
+observing::canceller_ptr ui::node::observe_is_enabled(observing::caller<bool>::handler_f &&handler, bool const sync) {
+    return this->_enabled->observe(std::move(handler), sync);
 }
 
 simd::float4x4 const &ui::node::matrix() const {

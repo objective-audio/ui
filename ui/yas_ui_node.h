@@ -53,7 +53,9 @@ struct node final : action_target, metal_object, renderable_node {
     float const &alpha() const;
     observing::canceller_ptr observe_alpha(observing::caller<float>::handler_f &&, bool const sync);
 
-    observing::value::holder_ptr<bool> const &is_enabled() const;
+    void set_is_enabled(bool const &);
+    bool const &is_enabled() const;
+    observing::canceller_ptr observe_is_enabled(observing::caller<bool>::handler_f &&, bool const sync);
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
