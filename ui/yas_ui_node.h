@@ -45,7 +45,10 @@ struct node final : action_target, metal_object, renderable_node {
     ui::size const &scale() const;
     observing::canceller_ptr observe_scale(observing::caller<ui::size>::handler_f &&, bool const sync);
 
-    observing::value::holder_ptr<ui::color> const &color() const;
+    void set_color(ui::color const &);
+    ui::color const &color() const;
+    observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
+
     observing::value::holder_ptr<float> const &alpha() const;
     observing::value::holder_ptr<bool> const &is_enabled() const;
 

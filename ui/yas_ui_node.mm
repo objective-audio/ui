@@ -140,8 +140,16 @@ observing::canceller_ptr ui::node::observe_scale(observing::caller<ui::size>::ha
     return this->_scale->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<ui::color> const &ui::node::color() const {
-    return this->_color;
+void ui::node::set_color(ui::color const &color) {
+    this->_color->set_value(color);
+}
+
+ui::color const &ui::node::color() const {
+    return this->_color->value();
+}
+
+observing::canceller_ptr ui::node::observe_color(observing::caller<ui::color>::handler_f &&handler, bool const sync) {
+    return this->_color->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<float> const &ui::node::alpha() const {
