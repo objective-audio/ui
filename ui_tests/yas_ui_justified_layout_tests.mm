@@ -23,8 +23,7 @@ using namespace yas;
 
 - (void)test_justify_with_array_ratios {
     std::array<float, 2> array{1.0f, 2.0f};
-    auto justify = ui::justify<2>(array);
-    auto justified = justify(std::make_pair(1.0f, 7.0f));
+    auto justified = ui::justify<2>(1.0f, 7.0f, array);
 
     XCTAssertEqual(std::get<0>(justified), 1.0f);
     XCTAssertEqual(std::get<1>(justified), 3.0f);
@@ -32,8 +31,7 @@ using namespace yas;
 }
 
 - (void)test_justify_without_ratios {
-    auto justify = ui::justify<2>();
-    auto justified = justify(std::make_pair(1.0f, 3.0f));
+    auto justified = ui::justify<2>(1.0f, 3.0f);
 
     XCTAssertEqual(std::get<0>(justified), 1.0f);
     XCTAssertEqual(std::get<1>(justified), 2.0f);
@@ -41,8 +39,7 @@ using namespace yas;
 }
 
 - (void)test_justify_functional_ratios {
-    auto justify = ui::justify([](std::size_t const &idx) { return float(idx + 1); });
-    auto justified = justify(std::make_tuple(0.0f, 6.0f, 3));
+    auto justified = ui::justify(0.0f, 6.0f, 3, [](std::size_t const &idx) { return float(idx + 1); });
 
     XCTAssertEqual(justified.size(), 4);
     XCTAssertEqual(justified.at(0), 0.0f);
@@ -53,8 +50,7 @@ using namespace yas;
 
 - (void)test_justify_vector_ratios {
     std::vector ratios{1.0f, 2.0f, 3.0f};
-    auto justify = ui::justify(ratios);
-    auto justified = justify(std::make_tuple(0.0f, 6.0f, 3));
+    auto justified = ui::justify(0.0f, 6.0f, ratios);
 
     XCTAssertEqual(justified.size(), 4);
     XCTAssertEqual(justified.at(0), 0.0f);
@@ -75,7 +71,7 @@ using namespace yas;
 
     auto justifying = [first_cache, second_cache, &receivers] {
         if (first_cache->has_value() && second_cache->has_value()) {
-            auto const justified = ui::justify<1>()({**first_cache, **second_cache});
+            auto const justified = ui::justify<1>(**first_cache, **second_cache);
             receivers.at(0)->set_value(justified.at(0));
             receivers.at(1)->set_value(justified.at(1));
         }
@@ -112,7 +108,7 @@ using namespace yas;
 
     auto justifying = [&dst_guide, first_cache, second_cache] {
         if (first_cache->has_value() && second_cache->has_value()) {
-            auto justified = ui::justify<2>()({**first_cache, **second_cache});
+            auto justified = ui::justify<2>(**first_cache, **second_cache);
             dst_guide->set_value(justified.at(1));
         }
     };
@@ -160,7 +156,7 @@ using namespace yas;
 
     auto justified = [&receivers, first_cache, second_cache] {
         if (first_cache->has_value() && second_cache->has_value()) {
-            auto justified = ui::justify<2>()({**first_cache, **second_cache});
+            auto justified = ui::justify<2>(**first_cache, **second_cache);
             receivers.at(0)->set_value(justified.at(0));
             receivers.at(1)->set_value(justified.at(1));
             receivers.at(2)->set_value(justified.at(2));
@@ -196,7 +192,7 @@ using namespace yas;
 
     auto justified = [&dst_guide, first_cache, second_cache] {
         if (first_cache->has_value() && second_cache->has_value()) {
-            auto justified = ui::justify()({**first_cache, **second_cache});
+            auto justified = ui::justify(**first_cache, **second_cache);
             dst_guide->set_value(justified.at(0));
         }
     };
