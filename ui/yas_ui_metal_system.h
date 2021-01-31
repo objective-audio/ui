@@ -59,7 +59,7 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
     void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
                      ui::metal_encode_info_ptr const &) override;
-    void push_render_target(ui::render_stackable_ptr const &, ui::render_target_ptr const &) override;
+    void push_render_target(ui::render_stackable_ptr const &, ui::render_target const *) override;
 
     objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) override;
     objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) override;

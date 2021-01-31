@@ -25,8 +25,6 @@ struct soft_keyboard {
     ui::node_ptr _root_node = ui::node::make_shared();
     observing::notifier_ptr<std::string> _key_notifier = observing::notifier<std::string>::make_shared();
 
-    std::weak_ptr<soft_keyboard> _weak_keyboard;
-
     std::vector<sample::soft_key_ptr> _soft_keys;
     ui::font_atlas_ptr _font_atlas;
 
@@ -44,7 +42,6 @@ struct soft_keyboard {
 
     explicit soft_keyboard(ui::font_atlas_ptr const &);
 
-    void _prepare(soft_keyboard_ptr const &);
     void _setup_soft_keys_if_needed();
     void _dispose_soft_keys();
     void _setup_soft_keys_layout();

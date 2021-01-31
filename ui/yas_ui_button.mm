@@ -291,8 +291,7 @@ void ui::button::_cancel_tracking(ui::event_ptr const &event) {
 }
 
 void ui::button::_send_notify(method const method, ui::event_ptr const &event) {
-    this->_notifier->notify(
-        std::make_pair(method, context{.button = this->_weak_button.lock(), .touch = event->get<ui::touch>()}));
+    this->_notifier->notify(std::make_pair(method, context{.button = this, .touch = event->get<ui::touch>()}));
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region) {
@@ -300,9 +299,7 @@ ui::button_ptr ui::button::make_shared(ui::region const &region) {
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
-    auto shared = std::shared_ptr<button>(new button{region, state_count});
-    shared->_weak_button = shared;
-    return shared;
+    return std::shared_ptr<button>(new button{region, state_count});
 }
 
 #pragma mark -

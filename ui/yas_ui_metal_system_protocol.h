@@ -21,7 +21,7 @@ struct renderable_metal_system {
     virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
     virtual void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
                              ui::metal_encode_info_ptr const &) = 0;
-    virtual void push_render_target(ui::render_stackable_ptr const &, ui::render_target_ptr const &) = 0;
+    virtual void push_render_target(ui::render_stackable_ptr const &, ui::render_target const *) = 0;
 
     static renderable_metal_system_ptr cast(renderable_metal_system_ptr const &system) {
         return system;

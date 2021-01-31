@@ -41,7 +41,7 @@ ui::render_target::render_target()
     this->_src_texture
         ->observe([this](auto const &pair) {
             if (pair.first == ui::texture::method::metal_texture_changed) {
-                ui::texture_ptr const &texture = pair.second;
+                ui::texture const *texture = pair.second;
                 auto const renderPassDescriptor = *this->_render_pass_descriptor;
 
                 if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
@@ -62,7 +62,7 @@ ui::render_target::render_target()
     this->_dst_texture
         ->observe([this](auto const &pair) {
             if (pair.first == ui::texture::method::size_updated) {
-                ui::texture_ptr const &texture = pair.second;
+                ui::texture const *texture = pair.second;
                 this->_data->set_rect_tex_coords(
                     ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
             }
@@ -116,7 +116,7 @@ void ui::render_target::set_effect(ui::effect_ptr effect) {
     }
 }
 
-ui::effect_ptr const &ui::render_target::effect() {
+ui::effect_ptr const &ui::render_target::effect() const {
     return this->_effect;
 }
 
@@ -141,11 +141,11 @@ ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_
     return ui::setup_metal_result{nullptr};
 }
 
-ui::mesh_ptr const &ui::render_target::mesh() {
+ui::mesh_ptr const &ui::render_target::mesh() const {
     return _mesh;
 }
 
-ui::render_target_updates_t &ui::render_target::updates() {
+ui::render_target_updates_t const &ui::render_target::updates() const {
     return this->_updates;
 }
 
@@ -157,11 +157,11 @@ void ui::render_target::clear_updates() {
     }
 }
 
-MTLRenderPassDescriptor *ui::render_target::renderPassDescriptor() {
+MTLRenderPassDescriptor *ui::render_target::renderPassDescriptor() const {
     return *this->_render_pass_descriptor;
 }
 
-simd::float4x4 &ui::render_target::projection_matrix() {
+simd::float4x4 const &ui::render_target::projection_matrix() const {
     return this->_projection_matrix;
 }
 
@@ -170,9 +170,8 @@ bool ui::render_target::push_encode_info(ui::render_stackable_ptr const &stackab
         return false;
     }
 
-    auto target = this->_weak_render_target.lock();
     if (auto const &metal_system = this->_metal_system) {
-        ui::renderable_metal_system::cast(metal_system)->push_render_target(stackable, target);
+        ui::renderable_metal_system::cast(metal_system)->push_render_target(stackable, this);
         return true;
     }
     return false;
@@ -205,7 +204,5 @@ bool ui::render_target::_is_size_enough() {
 }
 
 ui::render_target_ptr ui::render_target::make_shared() {
-    auto shared = std::shared_ptr<render_target>(new render_target{});
-    shared->_weak_render_target = shared;
-    return shared;
+    return std::shared_ptr<render_target>(new render_target{});
 }

@@ -49,7 +49,7 @@ struct texture : metal_object {
 
     std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
-    using chain_pair_t = std::pair<method, texture_ptr>;
+    using chain_pair_t = std::pair<method, ui::texture const *>;
     [[nodiscard]] observing::canceller_ptr observe(observing::caller<chain_pair_t>::handler_f &&);
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
@@ -57,8 +57,6 @@ struct texture : metal_object {
     [[nodiscard]] static texture_ptr make_shared(args);
 
    private:
-    std::weak_ptr<ui::texture> _weak_texture;
-
     ui::uint_size _point_size;
     double _scale_factor;
     uint32_t const _depth = 1;

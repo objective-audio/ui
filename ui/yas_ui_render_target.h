@@ -21,7 +21,7 @@ struct render_target : metal_object, renderable_render_target {
     double scale_factor() const;
 
     void set_effect(ui::effect_ptr);
-    ui::effect_ptr const &effect() override;
+    ui::effect_ptr const &effect() const override;
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -32,7 +32,6 @@ struct render_target : metal_object, renderable_render_target {
     ui::effect_ptr _effect;
     double _scale_factor;
 
-    std::weak_ptr<render_target> _weak_render_target;
     ui::rect_plane_data_ptr _data;
     ui::mesh_ptr _mesh = ui::mesh::make_shared();
     ui::texture_ptr _src_texture;
@@ -55,11 +54,11 @@ struct render_target : metal_object, renderable_render_target {
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
-    ui::mesh_ptr const &mesh() override;
-    render_target_updates_t &updates() override;
+    ui::mesh_ptr const &mesh() const override;
+    render_target_updates_t const &updates() const override;
     void clear_updates() override;
-    MTLRenderPassDescriptor *renderPassDescriptor() override;
-    simd::float4x4 &projection_matrix() override;
+    MTLRenderPassDescriptor *renderPassDescriptor() const override;
+    simd::float4x4 const &projection_matrix() const override;
     bool push_encode_info(ui::render_stackable_ptr const &) override;
 
     void _set_updated(ui::render_target_update_reason const reason);
