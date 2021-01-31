@@ -170,9 +170,8 @@ bool ui::render_target::push_encode_info(ui::render_stackable_ptr const &stackab
         return false;
     }
 
-    auto target = this->_weak_render_target.lock();
     if (auto const &metal_system = this->_metal_system) {
-        ui::renderable_metal_system::cast(metal_system)->push_render_target(stackable, target);
+        ui::renderable_metal_system::cast(metal_system)->push_render_target(stackable, this);
         return true;
     }
     return false;

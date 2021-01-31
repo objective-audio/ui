@@ -211,8 +211,8 @@ void ui::metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommand
 }
 
 void ui::metal_system::push_render_target(ui::render_stackable_ptr const &stackable,
-                                          ui::render_target_ptr const &render_target) {
-    ui::renderable_render_target const *renderable = render_target.get();
+                                          ui::render_target const *render_target) {
+    ui::renderable_render_target const *renderable = render_target;
 
     stackable->push_encode_info(
         ui::metal_encode_info::make_shared({.renderPassDescriptor = renderable->renderPassDescriptor(),
