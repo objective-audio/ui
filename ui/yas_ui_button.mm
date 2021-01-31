@@ -45,13 +45,13 @@ ui::button::button(ui::region const &region, std::size_t const state_count)
                 }
             },
             false)
-        ->set_to(this->_renderer_canceller);
+        ->add_to(this->_pool);
 
     this->_layout_guide_rect
         ->observe([this, state_count = this->_state_count](
                       ui::region const &value) { this->_update_rect_positions(value, state_count); },
                   false)
-        ->set_to(this->_rect_canceller);
+        ->add_to(this->_pool);
 }
 
 ui::button::~button() = default;
@@ -136,7 +136,7 @@ void ui::button::_update_rect_index() {
 }
 
 observing::cancellable_ptr ui::button::_make_leave_chains() {
-    ui::node_ptr &node = this->_rect_plane->node();
+    ui::node_ptr const &node = this->_rect_plane->node();
 
     auto pool = observing::canceller_pool::make_shared();
 

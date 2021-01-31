@@ -51,16 +51,16 @@ struct strings final {
     [[nodiscard]] static strings_ptr make_shared(args);
 
    private:
-    std::shared_ptr<ui::collection_layout> _collection_layout;
-    ui::rect_plane_ptr _rect_plane;
+    std::shared_ptr<ui::collection_layout> const _collection_layout;
+    ui::rect_plane_ptr const _rect_plane;
 
-    observing::value::holder_ptr<std::string> _text;
-    observing::value::holder_ptr<ui::font_atlas_ptr> _font_atlas;
-    observing::value::holder_ptr<std::optional<float>> _line_height;
+    observing::value::holder_ptr<std::string> const _text;
+    observing::value::holder_ptr<ui::font_atlas_ptr> const _font_atlas;
+    observing::value::holder_ptr<std::optional<float>> const _line_height;
 
     std::size_t const _max_word_count = 0;
     observing::canceller_pool _texture_pool;
-    observing::canceller_pool_ptr const _property_pool = observing::canceller_pool::make_shared();
+    observing::canceller_pool _property_pool;
     observing::canceller_pool _cell_rect_pool;
 
     explicit strings(args);

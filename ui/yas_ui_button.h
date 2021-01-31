@@ -59,8 +59,7 @@ struct button final {
     std::size_t _state_count;
 
     ui::event_ptr _tracking_event = nullptr;
-    observing::cancellable_ptr _renderer_canceller = nullptr;
-    observing::cancellable_ptr _rect_canceller = nullptr;
+    observing::canceller_pool _pool;
 
     button(ui::region const &region, std::size_t const state_count);
 

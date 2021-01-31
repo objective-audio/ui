@@ -64,7 +64,7 @@ struct rect_plane_data final {
 };
 
 struct rect_plane final {
-    ui::node_ptr &node();
+    ui::node_ptr const &node();
     ui::rect_plane_data_ptr const &data();
 
     [[nodiscard]] static rect_plane_ptr make_shared(rect_plane_data_ptr const &);
@@ -73,8 +73,8 @@ struct rect_plane final {
                                                     std::size_t const max_index_count);
 
    private:
-    ui::node_ptr _node = ui::node::make_shared();
-    ui::rect_plane_data_ptr _rect_plane_data;
+    ui::node_ptr const _node = ui::node::make_shared();
+    ui::rect_plane_data_ptr const _rect_plane_data;
 
     explicit rect_plane(rect_plane_data_ptr const &);
 
