@@ -204,7 +204,5 @@ bool ui::render_target::_is_size_enough() {
 }
 
 ui::render_target_ptr ui::render_target::make_shared() {
-    auto shared = std::shared_ptr<render_target>(new render_target{});
-    shared->_weak_render_target = shared;
-    return shared;
+    return std::shared_ptr<render_target>(new render_target{});
 }

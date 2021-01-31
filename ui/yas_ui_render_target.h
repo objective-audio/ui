@@ -32,7 +32,6 @@ struct render_target : metal_object, renderable_render_target {
     ui::effect_ptr _effect;
     double _scale_factor;
 
-    std::weak_ptr<render_target> _weak_render_target;
     ui::rect_plane_data_ptr _data;
     ui::mesh_ptr _mesh = ui::mesh::make_shared();
     ui::texture_ptr _src_texture;
