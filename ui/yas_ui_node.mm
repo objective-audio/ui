@@ -211,8 +211,17 @@ observing::canceller_ptr ui::node::observe_collider(observing::caller<ui::collid
     return this->_collider->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {
-    return this->_batch;
+void ui::node::set_batch(ui::batch_ptr const &batch) {
+    return this->_batch->set_value(batch);
+}
+
+ui::batch_ptr const &ui::node::batch() const {
+    return this->_batch->value();
+}
+
+observing::canceller_ptr ui::node::observe_batch(observing::caller<ui::batch_ptr>::handler_f &&handler,
+                                                 bool const sync) {
+    return this->_batch->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_target() const {

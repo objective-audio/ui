@@ -12,7 +12,7 @@ void sample::main::setup() {
     root_node->add_sub_node(this->_bg->rect_plane()->node());
 
     auto batch_node = ui::node::make_shared();
-    batch_node->batch()->set_value(ui::batch::make_shared());
+    batch_node->set_batch(ui::batch::make_shared());
     batch_node->add_sub_node(this->_cursor_over_planes->node());
     root_node->add_sub_node(std::move(batch_node));
 

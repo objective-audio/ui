@@ -107,12 +107,12 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertTrue(node->collider());
     XCTAssertEqual(node->collider(), collider);
 
-    node->batch()->set_value(batch);
-    XCTAssertTrue(node->batch()->value());
-    XCTAssertEqual(node->batch()->value(), batch);
+    node->set_batch(batch);
+    XCTAssertTrue(node->batch());
+    XCTAssertEqual(node->batch(), batch);
 
-    node->batch()->set_value(nullptr);
-    XCTAssertFalse(node->batch()->value());
+    node->set_batch(nullptr);
+    XCTAssertFalse(node->batch());
 
     XCTAssertTrue(node->is_enabled());
 
@@ -130,16 +130,16 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertFalse(const_node->mesh());
     XCTAssertFalse(const_node->collider());
-    XCTAssertFalse(const_node->batch()->value());
+    XCTAssertFalse(const_node->batch());
 
     node->set_mesh(ui::mesh::make_shared());
     node->set_collider(ui::collider::make_shared());
-    node->batch()->set_value(ui::batch::make_shared());
+    node->set_batch(ui::batch::make_shared());
 
     XCTAssertTrue(const_node->mesh());
     XCTAssertTrue(const_node->collider());
     XCTAssertEqual(const_node->children().size(), 0);
-    XCTAssertTrue(const_node->batch()->value());
+    XCTAssertTrue(const_node->batch());
 }
 
 - (void)set_color_to_mesh {
@@ -416,7 +416,7 @@ struct test_render_encoder : ui::render_encodable {
     node->set_angle({1.0f});
     node->set_is_enabled(false);
     node->set_collider(ui::collider::make_shared());
-    node->batch()->set_value(ui::batch::make_shared());
+    node->set_batch(ui::batch::make_shared());
 
     auto sub_node = ui::node::make_shared();
     node->add_sub_node(sub_node);
@@ -531,7 +531,7 @@ struct test_render_encoder : ui::render_encodable {
     sub_node->set_mesh(sub_mesh);
     sub_mesh->set_mesh_data(sub_mesh_data);
 
-    batch_node->batch()->set_value(ui::batch::make_shared());
+    batch_node->set_batch(ui::batch::make_shared());
     batch_node->add_sub_node(batch_sub_node);
 
     auto const batch_sub_mesh = ui::mesh::make_shared();
@@ -714,12 +714,12 @@ struct test_render_encoder : ui::render_encodable {
     auto mesh_node2 = ui::node::make_shared();
 
     auto parent_batch = ui::batch::make_shared();
-    parent_batch_node->batch()->set_value(parent_batch);
+    parent_batch_node->set_batch(parent_batch);
 
     auto child_batch1 = ui::batch::make_shared();
-    child_batch_node1->batch()->set_value(child_batch1);
+    child_batch_node1->set_batch(child_batch1);
     auto child_batch2 = ui::batch::make_shared();
-    child_batch_node2->batch()->set_value(child_batch2);
+    child_batch_node2->set_batch(child_batch2);
 
     auto mesh1a = ui::mesh::make_shared();
     mesh1a->set_color({0.5f, 0.5f, 0.5f, 0.5f});
@@ -1211,7 +1211,7 @@ struct test_render_encoder : ui::render_encodable {
     auto metal_system = ui::metal_system::make_shared(device.object());
 
     auto batch_node = ui::node::make_shared();
-    batch_node->batch()->set_value(ui::batch::make_shared());
+    batch_node->set_batch(ui::batch::make_shared());
 
     auto mesh_node1 = ui::node::make_shared();
     batch_node->add_sub_node(mesh_node1);
