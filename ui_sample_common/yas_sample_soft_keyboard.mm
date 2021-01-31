@@ -73,6 +73,15 @@ struct soft_key {
 }
 
 sample::soft_keyboard::soft_keyboard(ui::font_atlas_ptr const &atlas) : _font_atlas(atlas) {
+    this->_renderer_canceller = this->_root_node->observe_renderer(
+        [this](ui::renderer_ptr const &renderer) {
+            if (renderer) {
+                this->_setup_soft_keys_if_needed();
+            } else {
+                this->_dispose_soft_keys();
+            }
+        },
+        true);
 }
 
 void sample::soft_keyboard::set_font_atlas(ui::font_atlas_ptr const &atlas) {
@@ -89,20 +98,6 @@ ui::node_ptr const &sample::soft_keyboard::node() {
 
 observing::canceller_ptr sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
     return this->_key_notifier->observe(std::move(handler));
-}
-
-void sample::soft_keyboard::_prepare(soft_keyboard_ptr const &keyboard) {
-    this->_weak_keyboard = keyboard;
-
-    this->_renderer_canceller = this->_root_node->observe_renderer(
-        [this](ui::renderer_ptr const &renderer) {
-            if (renderer) {
-                this->_setup_soft_keys_if_needed();
-            } else {
-                this->_dispose_soft_keys();
-            }
-        },
-        true);
 }
 
 void sample::soft_keyboard::_setup_soft_keys_if_needed() {
@@ -355,7 +350,5 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
 }
 
 sample::soft_keyboard_ptr sample::soft_keyboard::make_shared(ui::font_atlas_ptr const &atlas) {
-    auto shared = std::shared_ptr<soft_keyboard>(new soft_keyboard{atlas});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<soft_keyboard>(new soft_keyboard{atlas});
 }
