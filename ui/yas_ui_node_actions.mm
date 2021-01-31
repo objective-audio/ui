@@ -63,8 +63,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::scale_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target->scale()->set_value(
-                    {.v = (args.end_scale.v - args.begin_scale.v) * (float)value + args.begin_scale.v});
+                target->set_scale({.v = (args.end_scale.v - args.begin_scale.v) * (float)value + args.begin_scale.v});
             }
         }
     });

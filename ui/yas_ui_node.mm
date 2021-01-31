@@ -128,8 +128,16 @@ observing::canceller_ptr ui::node::observe_angle(observing::caller<ui::angle>::h
     return this->_angle->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<ui::size> const &ui::node::scale() const {
-    return this->_scale;
+void ui::node::set_scale(ui::size const &scale) {
+    this->_scale->set_value(scale);
+}
+
+ui::size const &ui::node::scale() const {
+    return this->_scale->value();
+}
+
+observing::canceller_ptr ui::node::observe_scale(observing::caller<ui::size>::handler_f &&handler, bool const sync) {
+    return this->_scale->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<ui::color> const &ui::node::color() const {

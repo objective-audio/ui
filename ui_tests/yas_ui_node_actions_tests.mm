@@ -138,18 +138,18 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->scale()->value().width, 0.0f);
-    XCTAssertEqual(target->scale()->value().height, -1.0f);
+    XCTAssertEqual(target->scale().width, 0.0f);
+    XCTAssertEqual(target->scale().height, -1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->scale()->value().width, 0.5f);
-    XCTAssertEqual(target->scale()->value().height, 0.0f);
+    XCTAssertEqual(target->scale().width, 0.5f);
+    XCTAssertEqual(target->scale().height, 0.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->scale()->value().width, 1.0f);
-    XCTAssertEqual(target->scale()->value().height, 1.0f);
+    XCTAssertEqual(target->scale().width, 1.0f);
+    XCTAssertEqual(target->scale().height, 1.0f);
 }
 
 - (void)test_update_color_action {
