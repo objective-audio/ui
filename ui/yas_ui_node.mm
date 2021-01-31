@@ -103,6 +103,10 @@ ui::node::node()
 
 ui::node::~node() = default;
 
+void ui::node::set_position(ui::point &&position) {
+    this->_position->set_value(std::move(position));
+}
+
 void ui::node::set_position(ui::point const &position) {
     this->_position->set_value(position);
 }
@@ -114,6 +118,10 @@ ui::point const &ui::node::position() const {
 observing::canceller_ptr ui::node::observe_position(observing::caller<ui::point>::handler_f &&handler,
                                                     bool const sync) {
     return this->_position->observe(std::move(handler), sync);
+}
+
+void ui::node::set_angle(ui::angle &&angle) {
+    this->_angle->set_value(std::move(angle));
 }
 
 void ui::node::set_angle(ui::angle const &angle) {
@@ -128,6 +136,10 @@ observing::canceller_ptr ui::node::observe_angle(observing::caller<ui::angle>::h
     return this->_angle->observe(std::move(handler), sync);
 }
 
+void ui::node::set_scale(ui::size &&scale) {
+    this->_scale->set_value(std::move(scale));
+}
+
 void ui::node::set_scale(ui::size const &scale) {
     this->_scale->set_value(scale);
 }
@@ -138,6 +150,10 @@ ui::size const &ui::node::scale() const {
 
 observing::canceller_ptr ui::node::observe_scale(observing::caller<ui::size>::handler_f &&handler, bool const sync) {
     return this->_scale->observe(std::move(handler), sync);
+}
+
+void ui::node::set_color(ui::color &&color) {
+    this->_color->set_value(std::move(color));
 }
 
 void ui::node::set_color(ui::color const &color) {
@@ -152,6 +168,10 @@ observing::canceller_ptr ui::node::observe_color(observing::caller<ui::color>::h
     return this->_color->observe(std::move(handler), sync);
 }
 
+void ui::node::set_alpha(float &&alpha) {
+    this->_alpha->set_value(std::move(alpha));
+}
+
 void ui::node::set_alpha(float const &alpha) {
     this->_alpha->set_value(alpha);
 }
@@ -162,6 +182,10 @@ float const &ui::node::alpha() const {
 
 observing::canceller_ptr ui::node::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
     return this->_alpha->observe(std::move(handler), sync);
+}
+
+void ui::node::set_is_enabled(bool &&is_enabled) {
+    this->_enabled->set_value(std::move(is_enabled));
 }
 
 void ui::node::set_is_enabled(bool const &is_enabled) {

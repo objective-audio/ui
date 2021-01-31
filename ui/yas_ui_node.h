@@ -33,26 +33,32 @@ struct node final : action_target, metal_object, renderable_node {
 
     virtual ~node();
 
+    void set_position(ui::point &&);
     void set_position(ui::point const &);
     ui::point const &position() const;
     observing::canceller_ptr observe_position(observing::caller<ui::point>::handler_f &&, bool const sync);
 
+    void set_angle(ui::angle &&);
     void set_angle(ui::angle const &);
     ui::angle const &angle() const;
     observing::canceller_ptr observe_angle(observing::caller<ui::angle>::handler_f &&, bool const sync);
 
+    void set_scale(ui::size &&);
     void set_scale(ui::size const &);
     ui::size const &scale() const;
     observing::canceller_ptr observe_scale(observing::caller<ui::size>::handler_f &&, bool const sync);
 
+    void set_color(ui::color &&);
     void set_color(ui::color const &);
     ui::color const &color() const;
     observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
 
+    void set_alpha(float &&);
     void set_alpha(float const &);
     float const &alpha() const;
     observing::canceller_ptr observe_alpha(observing::caller<float>::handler_f &&, bool const sync);
 
+    void set_is_enabled(bool &&);
     void set_is_enabled(bool const &);
     bool const &is_enabled() const;
     observing::canceller_ptr observe_is_enabled(observing::caller<bool>::handler_f &&, bool const sync);
