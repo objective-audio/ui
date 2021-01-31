@@ -103,8 +103,17 @@ ui::node::node()
 
 ui::node::~node() = default;
 
-observing::value::holder_ptr<ui::point> const &ui::node::position() const {
-    return this->_position;
+void ui::node::set_position(ui::point const &position) {
+    this->_position->set_value(position);
+}
+
+ui::point const &ui::node::position() const {
+    return this->_position->value();
+}
+
+observing::canceller_ptr ui::node::observe_position(observing::caller<ui::point>::handler_f &&handler,
+                                                    bool const sync) {
+    return this->_position->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<ui::angle> const &ui::node::angle() const {
@@ -257,7 +266,7 @@ ui::point ui::node::convert_position(ui::point const &loc) const {
 void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
     this->_x_canceller = guide.observe(
         [this](float const &x) {
-            this->_position->set_value(ui::point{x, this->position()->value().y});
+            this->_position->set_value(ui::point{x, this->position().y});
         },
         true);
 
@@ -267,7 +276,7 @@ void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
 void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
     this->_y_canceller = guide.observe(
         [this](float const &y) {
-            this->_position->set_value(ui::point{this->position()->value().x, y});
+            this->_position->set_value(ui::point{this->position().x, y});
         },
         true);
 

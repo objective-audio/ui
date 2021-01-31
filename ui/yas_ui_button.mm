@@ -140,8 +140,7 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
 
     auto pool = observing::canceller_pool::make_shared();
 
-    node->position()
-        ->observe(
+    node->observe_position(
             [this](auto const &) {
                 if (auto tracking_event = this->_tracking_event) {
                     this->_leave_or_enter_or_move_tracking(tracking_event);

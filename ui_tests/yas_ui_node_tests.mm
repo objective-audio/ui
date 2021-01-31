@@ -49,8 +49,8 @@ struct test_render_encoder : ui::render_encodable {
 - (void)test_create {
     auto node = ui::node::make_shared();
 
-    XCTAssertEqual(node->position()->value().x, 0.0f);
-    XCTAssertEqual(node->position()->value().y, 0.0f);
+    XCTAssertEqual(node->position().x, 0.0f);
+    XCTAssertEqual(node->position().y, 0.0f);
     XCTAssertEqual(node->angle()->value().degrees, 0.0f);
     XCTAssertEqual(node->scale()->value().width, 1.0f);
     XCTAssertEqual(node->scale()->value().height, 1.0f);
@@ -81,7 +81,7 @@ struct test_render_encoder : ui::render_encodable {
     std::shared_ptr<ui::batch> batch = ui::batch::make_shared();
     auto render_target = ui::render_target::make_shared();
 
-    node->position()->set_value({1.0f, 2.0f});
+    node->set_position({1.0f, 2.0f});
     node->angle()->set_value({3.0f});
     node->scale()->set_value({4.0f, 5.0f});
     node->color()->set_value({0.1f, 0.2f, 0.3f});
@@ -89,8 +89,8 @@ struct test_render_encoder : ui::render_encodable {
 
     node->is_enabled()->set_value(true);
 
-    XCTAssertEqual(node->position()->value().x, 1.0f);
-    XCTAssertEqual(node->position()->value().y, 2.0f);
+    XCTAssertEqual(node->position().x, 1.0f);
+    XCTAssertEqual(node->position().y, 2.0f);
     XCTAssertEqual(node->angle()->value().degrees, 3.0f);
     XCTAssertEqual(node->scale()->value().width, 4.0f);
     XCTAssertEqual(node->scale()->value().height, 5.0f);
@@ -560,11 +560,11 @@ struct test_render_encoder : ui::render_encodable {
 
 - (void)test_local_matrix {
     auto node = ui::node::make_shared();
-    node->position()->set_value(ui::point{10.0f, -20.0f});
+    node->set_position(ui::point{10.0f, -20.0f});
     node->scale()->set_value(ui::size{2.0f, 0.5f});
     node->angle()->set_value({90.0f});
 
-    simd::float4x4 expected_matrix = ui::matrix::translation(node->position()->value().x, node->position()->value().y) *
+    simd::float4x4 expected_matrix = ui::matrix::translation(node->position().x, node->position().y) *
                                      ui::matrix::rotation(node->angle()->value().degrees) *
                                      ui::matrix::scale(node->scale()->value().width, node->scale()->value().height);
 
@@ -575,7 +575,7 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     auto sub_node = ui::node::make_shared();
     node->add_sub_node(sub_node);
-    node->position()->set_value({-1.0f, -1.0f});
+    node->set_position({-1.0f, -1.0f});
     node->scale()->set_value({1.0f / 200.0f, 1.0f / 100.0f});
 
     auto converted_position = sub_node->convert_position({1.0f, -0.5f});
@@ -585,23 +585,23 @@ struct test_render_encoder : ui::render_encodable {
 
 - (void)test_matrix {
     auto root_node = ui::node::make_shared();
-    root_node->position()->set_value(ui::point{10.0f, -20.0f});
+    root_node->set_position(ui::point{10.0f, -20.0f});
     root_node->scale()->set_value(ui::size{2.0f, 0.5f});
     root_node->angle()->set_value({90.0f});
 
     auto sub_node = ui::node::make_shared();
-    sub_node->position()->set_value(ui::point{-50.0f, 10.0f});
+    sub_node->set_position(ui::point{-50.0f, 10.0f});
     sub_node->scale()->set_value(ui::size{0.25f, 3.0f});
     sub_node->angle()->set_value({-45.0f});
 
     root_node->add_sub_node(sub_node);
 
     simd::float4x4 root_local_matrix =
-        ui::matrix::translation(root_node->position()->value().x, root_node->position()->value().y) *
+        ui::matrix::translation(root_node->position().x, root_node->position().y) *
         ui::matrix::rotation(root_node->angle()->value().degrees) *
         ui::matrix::scale(root_node->scale()->value().width, root_node->scale()->value().height);
     simd::float4x4 sub_local_matrix =
-        ui::matrix::translation(sub_node->position()->value().x, sub_node->position()->value().y) *
+        ui::matrix::translation(sub_node->position().x, sub_node->position().y) *
         ui::matrix::rotation(sub_node->angle()->value().degrees) *
         ui::matrix::scale(sub_node->scale()->value().width, sub_node->scale()->value().height);
     simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
@@ -666,11 +666,11 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     node->attach_x_layout_guide(*x_guide);
 
-    XCTAssertEqual(node->position()->value().x, -1.0f);
+    XCTAssertEqual(node->position().x, -1.0f);
 
     x_guide->set_value(1.0f);
 
-    XCTAssertEqual(node->position()->value().x, 1.0f);
+    XCTAssertEqual(node->position().x, 1.0f);
 }
 
 - (void)test_attach_y_layout_guide {
@@ -679,11 +679,11 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     node->attach_y_layout_guide(*y_guide);
 
-    XCTAssertEqual(node->position()->value().y, -1.0f);
+    XCTAssertEqual(node->position().y, -1.0f);
 
     y_guide->set_value(1.0f);
 
-    XCTAssertEqual(node->position()->value().y, 1.0f);
+    XCTAssertEqual(node->position().y, 1.0f);
 }
 
 - (void)test_attach_position_layout_guide {
@@ -692,11 +692,11 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     node->attach_position_layout_guides(*guide_point);
 
-    XCTAssertTrue(node->position()->value() == (ui::point{-1.0f, -2.0f}));
+    XCTAssertTrue(node->position() == (ui::point{-1.0f, -2.0f}));
 
     guide_point->set_point({1.0f, 2.0f});
 
-    XCTAssertTrue(node->position()->value() == (ui::point{1.0f, 2.0f}));
+    XCTAssertTrue(node->position() == (ui::point{1.0f, 2.0f}));
 }
 
 - (void)test_render_batch {

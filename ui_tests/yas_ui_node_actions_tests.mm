@@ -36,18 +36,18 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->position()->value().x, 0.0f);
-    XCTAssertEqual(target->position()->value().y, -1.0f);
+    XCTAssertEqual(target->position().x, 0.0f);
+    XCTAssertEqual(target->position().y, -1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->position()->value().x, 0.5f);
-    XCTAssertEqual(target->position()->value().y, 0.0f);
+    XCTAssertEqual(target->position().x, 0.5f);
+    XCTAssertEqual(target->position().y, 0.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->position()->value().x, 1.0f);
-    XCTAssertEqual(target->position()->value().y, 1.0f);
+    XCTAssertEqual(target->position().x, 1.0f);
+    XCTAssertEqual(target->position().y, 1.0f);
 }
 
 - (void)test_update_rotate_action {
