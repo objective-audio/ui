@@ -62,7 +62,7 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertFalse(node->mesh());
     XCTAssertFalse(node->collider());
-    XCTAssertFalse(node->render_target()->value());
+    XCTAssertFalse(node->render_target());
 
     XCTAssertEqual(node->children().size(), 0);
     XCTAssertFalse(node->parent());
@@ -116,11 +116,11 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertTrue(node->is_enabled());
 
-    node->render_target()->set_value(render_target);
-    XCTAssertTrue(node->render_target()->value());
-    XCTAssertEqual(node->render_target()->value(), render_target);
+    node->set_render_target(render_target);
+    XCTAssertTrue(node->render_target());
+    XCTAssertEqual(node->render_target(), render_target);
 
-    node->render_target()->set_value(nullptr);
+    node->set_render_target(nullptr);
 }
 
 - (void)test_const_variables {

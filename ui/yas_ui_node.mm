@@ -224,8 +224,17 @@ observing::canceller_ptr ui::node::observe_batch(observing::caller<ui::batch_ptr
     return this->_batch->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<ui::render_target_ptr> const &ui::node::render_target() const {
-    return this->_render_target;
+void ui::node::set_render_target(ui::render_target_ptr const &render_target) {
+    this->_render_target->set_value(render_target);
+}
+
+ui::render_target_ptr const &ui::node::render_target() const {
+    return this->_render_target->value();
+}
+
+observing::canceller_ptr ui::node::observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&handler,
+                                                         bool const sync) {
+    return this->_render_target->observe(std::move(handler), sync);
 }
 
 void ui::node::add_sub_node(ui::node_ptr const &sub_node) {

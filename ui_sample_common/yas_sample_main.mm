@@ -82,7 +82,7 @@ void sample::main::setup() {
                   true)
         ->set_to(this->_render_target_canceller);
 
-    this->_render_target_node->render_target()->set_value(render_target);
+    this->_render_target_node->set_render_target(render_target);
 
     root_node->add_sub_node(this->_render_target_node, 1);
 

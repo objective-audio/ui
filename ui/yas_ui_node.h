@@ -72,7 +72,10 @@ struct node final : action_target, metal_object, renderable_node {
     ui::batch_ptr const &batch() const;
     observing::canceller_ptr observe_batch(observing::caller<ui::batch_ptr>::handler_f &&, bool const sync);
 
-    observing::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
+    void set_render_target(ui::render_target_ptr const &);
+    ui::render_target_ptr const &render_target() const;
+    observing::canceller_ptr observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&,
+                                                   bool const sync);
 
     void add_sub_node(ui::node_ptr const &);
     void add_sub_node(ui::node_ptr const &, std::size_t const);
