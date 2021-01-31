@@ -97,17 +97,17 @@ void ui::strings::_prepare_chains() {
                 this->_update_layout();
             },
             true)
-        ->add_to(*this->_property_pool);
+        ->add_to(this->_property_pool);
 
-    this->_text->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(*this->_property_pool);
+    this->_text->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_property_pool);
 
-    this->_line_height->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(*this->_property_pool);
+    this->_line_height->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_property_pool);
 
     this->_collection_layout->actual_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)
-        ->add_to(*this->_property_pool);
+        ->add_to(this->_property_pool);
 
     this->_collection_layout->alignment->observe([this](auto const &) { this->_update_layout(); }, false)
-        ->add_to(*this->_property_pool);
+        ->add_to(this->_property_pool);
 }
 
 void ui::strings::_update_texture_observing() {
