@@ -116,7 +116,7 @@ void ui::strings::_update_texture_observing() {
             font_atlas
                 ->observe_texture(
                     [this](auto const &texture) {
-                        this->rect_plane()->node()->mesh()->value()->set_texture(texture);
+                        this->rect_plane()->node()->mesh()->set_texture(texture);
                         this->_update_layout();
                     },
                     true)
@@ -126,7 +126,7 @@ void ui::strings::_update_texture_observing() {
                 ->add_to(this->_texture_pool);
         }
     } else {
-        this->_rect_plane->node()->mesh()->value()->set_texture(nullptr);
+        this->_rect_plane->node()->mesh()->set_texture(nullptr);
         this->_texture_pool.invalidate();
     }
 }

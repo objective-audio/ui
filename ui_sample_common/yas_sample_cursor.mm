@@ -109,8 +109,8 @@ void sample::cursor::_setup_node() {
         plane->data()->set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
     }
 
-    plane->node()->color()->set_value({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
-    plane->node()->alpha()->set_value(0.0f);
+    plane->node()->set_color({.red = 0.0f, .green = 0.6f, .blue = 1.0f});
+    plane->node()->set_alpha(0.0f);
     this->_node->add_sub_node(plane->node());
 }
 

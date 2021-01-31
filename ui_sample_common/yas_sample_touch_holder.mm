@@ -86,7 +86,7 @@ void sample::touch_holder::_set_texture(ui::texture_ptr const &texture) {
 
     for (auto &touch_object : this->_objects) {
         if (auto &node = touch_object.second.node) {
-            node->mesh()->value()->set_texture(this->_texture);
+            node->mesh()->set_texture(this->_texture);
         }
     }
 }
@@ -100,9 +100,9 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
     auto mesh = ui::mesh::make_shared();
     mesh->set_mesh_data(this->_rect_plane_data->dynamic_mesh_data());
     mesh->set_texture(this->_texture);
-    node->mesh()->set_value(mesh);
-    node->scale()->set_value({.v = 0.0f});
-    node->alpha()->set_value(0.0f);
+    node->set_mesh(mesh);
+    node->set_scale({.v = 0.0f});
+    node->set_alpha(0.0f);
 
     root_node->add_sub_node(node);
 
@@ -152,7 +152,7 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
         auto const &node = touch_object.node;
 
         auto scale_action = ui::make_action({.target = node,
-                                             .begin_scale = touch_object.node->scale()->value(),
+                                             .begin_scale = touch_object.node->scale(),
                                              .end_scale = {.v = 300.0f},
                                              .continuous_action = {.duration = 0.3}});
         scale_action->set_value_transformer(ui::ease_out_sine_transformer());

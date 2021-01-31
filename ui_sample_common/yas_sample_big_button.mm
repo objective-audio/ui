@@ -11,7 +11,7 @@ using namespace yas;
 #pragma mark - big_button
 
 sample::big_button::big_button() {
-    this->_button->rect_plane()->node()->collider()->set_value(
+    this->_button->rect_plane()->node()->set_collider(
         ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{.radius = this->_radius})));
 }
 
@@ -23,7 +23,7 @@ void sample::big_button::set_texture(ui::texture_ptr const &texture) {
     auto const &data = this->_button->rect_plane()->data();
     data->clear_observers();
 
-    this->_button->rect_plane()->node()->mesh()->value()->set_texture(texture);
+    this->_button->rect_plane()->node()->mesh()->set_texture(texture);
 
     if (!texture) {
         return;

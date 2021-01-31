@@ -12,7 +12,7 @@ void sample::main::setup() {
     root_node->add_sub_node(this->_bg->rect_plane()->node());
 
     auto batch_node = ui::node::make_shared();
-    batch_node->batch()->set_value(ui::batch::make_shared());
+    batch_node->set_batch(ui::batch::make_shared());
     batch_node->add_sub_node(this->_cursor_over_planes->node());
     root_node->add_sub_node(std::move(batch_node));
 
@@ -82,13 +82,13 @@ void sample::main::setup() {
                   true)
         ->set_to(this->_render_target_canceller);
 
-    this->_render_target_node->render_target()->set_value(render_target);
+    this->_render_target_node->set_render_target(render_target);
 
     root_node->add_sub_node(this->_render_target_node, 1);
 
     this->_plane_on_target->data()->set_rect_position(
         {.origin = {.x = -100.0f, .y = -100.0f}, .size = {.width = 50.0f, .height = 50.0f}}, 0);
-    this->_plane_on_target->node()->color()->set_value(ui::cyan_color());
+    this->_plane_on_target->node()->set_color(ui::cyan_color());
     this->_render_target_node->add_sub_node(this->_plane_on_target->node());
 
     auto action = ui::make_action({.target = this->_plane_on_target->node(),

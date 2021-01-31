@@ -9,7 +9,7 @@ using namespace yas;
 sample::big_button_text::big_button_text(ui::font_atlas_ptr const &font_atlas)
     : _strings(ui::strings::make_shared(
           {.text = "-----", .alignment = ui::layout_alignment::mid, .font_atlas = font_atlas, .max_word_count = 32})) {
-    this->_strings->rect_plane()->node()->alpha()->set_value(0.5f);
+    this->_strings->rect_plane()->node()->set_alpha(0.5f);
 
     this->strings()
         ->observe_font_atlas([this](ui::font_atlas_ptr const &) { this->_update_strings_position(); }, true)

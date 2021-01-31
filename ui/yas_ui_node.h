@@ -33,20 +33,55 @@ struct node final : action_target, metal_object, renderable_node {
 
     virtual ~node();
 
-    observing::value::holder_ptr<ui::point> const &position() const;
-    observing::value::holder_ptr<ui::angle> const &angle() const;
-    observing::value::holder_ptr<ui::size> const &scale() const;
-    observing::value::holder_ptr<ui::color> const &color() const;
-    observing::value::holder_ptr<float> const &alpha() const;
-    observing::value::holder_ptr<bool> const &is_enabled() const;
+    void set_position(ui::point &&);
+    void set_position(ui::point const &);
+    ui::point const &position() const;
+    observing::canceller_ptr observe_position(observing::caller<ui::point>::handler_f &&, bool const sync);
+
+    void set_angle(ui::angle &&);
+    void set_angle(ui::angle const &);
+    ui::angle const &angle() const;
+    observing::canceller_ptr observe_angle(observing::caller<ui::angle>::handler_f &&, bool const sync);
+
+    void set_scale(ui::size &&);
+    void set_scale(ui::size const &);
+    ui::size const &scale() const;
+    observing::canceller_ptr observe_scale(observing::caller<ui::size>::handler_f &&, bool const sync);
+
+    void set_color(ui::color &&);
+    void set_color(ui::color const &);
+    ui::color const &color() const;
+    observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
+
+    void set_alpha(float &&);
+    void set_alpha(float const &);
+    float const &alpha() const;
+    observing::canceller_ptr observe_alpha(observing::caller<float>::handler_f &&, bool const sync);
+
+    void set_is_enabled(bool &&);
+    void set_is_enabled(bool const &);
+    bool const &is_enabled() const;
+    observing::canceller_ptr observe_is_enabled(observing::caller<bool>::handler_f &&, bool const sync);
 
     simd::float4x4 const &matrix() const;
     simd::float4x4 const &local_matrix() const;
 
-    observing::value::holder_ptr<ui::mesh_ptr> const &mesh() const;
-    observing::value::holder_ptr<ui::collider_ptr> const &collider() const;
-    observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
-    observing::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
+    void set_mesh(ui::mesh_ptr const &);
+    ui::mesh_ptr const &mesh() const;
+    observing::canceller_ptr observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&, bool const sync);
+
+    void set_collider(ui::collider_ptr const &);
+    ui::collider_ptr const &collider() const;
+    observing::canceller_ptr observe_collider(observing::caller<ui::collider_ptr>::handler_f &&, bool const sync);
+
+    void set_batch(ui::batch_ptr const &);
+    ui::batch_ptr const &batch() const;
+    observing::canceller_ptr observe_batch(observing::caller<ui::batch_ptr>::handler_f &&, bool const sync);
+
+    void set_render_target(ui::render_target_ptr const &);
+    ui::render_target_ptr const &render_target() const;
+    observing::canceller_ptr observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&,
+                                                   bool const sync);
 
     void add_sub_node(ui::node_ptr const &);
     void add_sub_node(ui::node_ptr const &, std::size_t const);
