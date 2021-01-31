@@ -116,7 +116,7 @@ void ui::render_target::set_effect(ui::effect_ptr effect) {
     }
 }
 
-ui::effect_ptr const &ui::render_target::effect() {
+ui::effect_ptr const &ui::render_target::effect() const {
     return this->_effect;
 }
 
@@ -141,11 +141,11 @@ ui::setup_metal_result ui::render_target::metal_setup(std::shared_ptr<ui::metal_
     return ui::setup_metal_result{nullptr};
 }
 
-ui::mesh_ptr const &ui::render_target::mesh() {
+ui::mesh_ptr const &ui::render_target::mesh() const {
     return _mesh;
 }
 
-ui::render_target_updates_t &ui::render_target::updates() {
+ui::render_target_updates_t const &ui::render_target::updates() const {
     return this->_updates;
 }
 
@@ -157,11 +157,11 @@ void ui::render_target::clear_updates() {
     }
 }
 
-MTLRenderPassDescriptor *ui::render_target::renderPassDescriptor() {
+MTLRenderPassDescriptor *ui::render_target::renderPassDescriptor() const {
     return *this->_render_pass_descriptor;
 }
 
-simd::float4x4 &ui::render_target::projection_matrix() {
+simd::float4x4 const &ui::render_target::projection_matrix() const {
     return this->_projection_matrix;
 }
 
