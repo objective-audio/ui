@@ -58,7 +58,7 @@ struct node final : action_target, metal_object, renderable_node {
 
     ui::renderer_ptr renderer() const override;
 
-    using chain_pair_t = std::pair<method, node_ptr>;
+    using chain_pair_t = std::pair<method, ui::node const *>;
     [[nodiscard]] observing::canceller_ptr observe(method const &, observing::caller<chain_pair_t>::handler_f &&);
     [[nodiscard]] observing::canceller_ptr observe(std::vector<method> const &,
                                                    observing::caller<chain_pair_t>::handler_f &&);
