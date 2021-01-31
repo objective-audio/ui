@@ -45,8 +45,8 @@ sample::justified_points::justified_points()
 
                     auto x_justifying = [weak_rect, x_receivers](float const &) {
                         if (auto const rect = weak_rect.lock()) {
-                            auto justified = ui::justify<sample::x_point_count - 1>()(
-                                {rect->left()->value(), rect->right()->value()});
+                            auto const justified =
+                                ui::justify<sample::x_point_count - 1>(rect->left()->value(), rect->right()->value());
                             int idx = 0;
                             for (auto const &weak_guide : x_receivers) {
                                 if (auto const guide = weak_guide.lock()) {
@@ -79,8 +79,8 @@ sample::justified_points::justified_points()
 
                     auto y_justifying = [weak_rect, y_receivers](float const &) {
                         if (auto const rect = weak_rect.lock()) {
-                            auto justified = ui::justify<sample::y_point_count - 1>()(
-                                {rect->bottom()->value(), rect->top()->value()});
+                            auto justified =
+                                ui::justify<sample::y_point_count - 1>(rect->bottom()->value(), rect->top()->value());
                             int idx = 0;
                             for (auto const &weak_guide : y_receivers) {
                                 if (auto const guide = weak_guide.lock()) {
