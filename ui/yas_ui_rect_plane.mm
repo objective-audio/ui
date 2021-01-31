@@ -201,7 +201,7 @@ ui::rect_plane::rect_plane(ui::rect_plane_data_ptr const &plane_data) : _rect_pl
     this->node()->mesh()->set_value(std::move(mesh));
 }
 
-ui::node_ptr &ui::rect_plane::node() {
+ui::node_ptr const &ui::rect_plane::node() {
     return this->_node;
 }
 

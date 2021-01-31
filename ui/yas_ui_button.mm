@@ -136,7 +136,7 @@ void ui::button::_update_rect_index() {
 }
 
 observing::cancellable_ptr ui::button::_make_leave_chains() {
-    ui::node_ptr &node = this->_rect_plane->node();
+    ui::node_ptr const &node = this->_rect_plane->node();
 
     auto pool = observing::canceller_pool::make_shared();
 
