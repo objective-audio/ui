@@ -81,8 +81,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::color_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target->color()->set_value(
-                    {.v = (args.end_color.v - args.begin_color.v) * (float)value + args.begin_color.v});
+                target->set_color({.v = (args.end_color.v - args.begin_color.v) * (float)value + args.begin_color.v});
             }
         }
     });

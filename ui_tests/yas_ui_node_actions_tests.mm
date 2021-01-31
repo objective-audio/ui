@@ -167,21 +167,21 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->color()->value().red, 0.0f);
-    XCTAssertEqual(target->color()->value().green, 0.25f);
-    XCTAssertEqual(target->color()->value().blue, 0.5f);
+    XCTAssertEqual(target->color().red, 0.0f);
+    XCTAssertEqual(target->color().green, 0.25f);
+    XCTAssertEqual(target->color().blue, 0.5f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->color()->value().red, 0.5f);
-    XCTAssertEqual(target->color()->value().green, 0.5f);
-    XCTAssertEqual(target->color()->value().blue, 0.5f);
+    XCTAssertEqual(target->color().red, 0.5f);
+    XCTAssertEqual(target->color().green, 0.5f);
+    XCTAssertEqual(target->color().blue, 0.5f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->color()->value().red, 1.0f);
-    XCTAssertEqual(target->color()->value().green, 0.75f);
-    XCTAssertEqual(target->color()->value().blue, 0.5f);
+    XCTAssertEqual(target->color().red, 1.0f);
+    XCTAssertEqual(target->color().green, 0.75f);
+    XCTAssertEqual(target->color().blue, 0.5f);
 }
 
 - (void)test_update_alpha_action {

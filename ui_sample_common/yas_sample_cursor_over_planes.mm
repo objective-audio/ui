@@ -81,7 +81,7 @@ void sample::cursor_over_planes::_setup_nodes() {
         auto const &node = plane->node();
         node->position()->set_value({100.0f, 0.0f});
         node->set_scale({10.0f, 30.0f});
-        node->color()->set_value({.v = 0.3f});
+        node->set_color({.v = 0.3f});
         node->collider()->set_value(ui::collider::make_shared(ui::shape::make_shared(ui::rect_shape{})));
 
         auto handle_node = ui::node::make_shared();

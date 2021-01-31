@@ -7,7 +7,7 @@
 using namespace yas;
 
 sample::bg::bg() {
-    this->_rect_plane->node()->color()->set_value({.v = 0.75f});
+    this->_rect_plane->node()->set_color({.v = 0.75f});
 
     this->_rect_canceller = this->_layout_guide_rect->observe(
         [this](ui::region const &region) { this->rect_plane()->data()->set_rect_position(region, 0); }, false);
