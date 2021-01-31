@@ -198,8 +198,17 @@ observing::canceller_ptr ui::node::observe_mesh(observing::caller<ui::mesh_ptr>:
     return this->_mesh->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {
-    return this->_collider;
+void ui::node::set_collider(ui::collider_ptr const &collider) {
+    this->_collider->set_value(collider);
+}
+
+ui::collider_ptr const &ui::node::collider() const {
+    return this->_collider->value();
+}
+
+observing::canceller_ptr ui::node::observe_collider(observing::caller<ui::collider_ptr>::handler_f &&handler,
+                                                    bool const sync) {
+    return this->_collider->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &ui::node::batch() const {

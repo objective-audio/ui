@@ -22,8 +22,7 @@ static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> cons
 
                     if (auto node = weak_node.lock()) {
                         if (auto renderer = node->renderer()) {
-                            auto is_detected =
-                                renderer->detector()->detect(cursor_event.position(), node->collider()->value());
+                            auto is_detected = renderer->detector()->detect(cursor_event.position(), node->collider());
 
                             auto make_color_action = [](ui::node_ptr const &node, ui::color const &color) {
                                 return ui::make_action(
@@ -82,7 +81,7 @@ void sample::cursor_over_planes::_setup_nodes() {
         node->position()->set_value({100.0f, 0.0f});
         node->set_scale({10.0f, 30.0f});
         node->set_color({.v = 0.3f});
-        node->collider()->set_value(ui::collider::make_shared(ui::shape::make_shared(ui::rect_shape{})));
+        node->set_collider(ui::collider::make_shared(ui::shape::make_shared(ui::rect_shape{})));
 
         auto handle_node = ui::node::make_shared();
         handle_node->add_sub_node(node);

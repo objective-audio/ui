@@ -21,7 +21,7 @@ ui::button::button(ui::region const &region, std::size_t const state_count)
     : _rect_plane(ui::rect_plane::make_shared(state_count * 2, 1)),
       _layout_guide_rect(layout_guide_rect::make_shared(region)),
       _state_count(state_count) {
-    this->_rect_plane->node()->collider()->set_value(ui::collider::make_shared());
+    this->_rect_plane->node()->set_collider(ui::collider::make_shared());
 
     this->_update_rect_positions(this->_layout_guide_rect->region(), state_count);
     this->_update_rect_index();
@@ -124,7 +124,7 @@ void ui::button::_update_rect_positions(ui::region const &region, std::size_t co
         this->_rect_plane->data()->set_rect_position(region, yas_each_index(each));
     }
 
-    ui::collider_ptr const &collider = this->_rect_plane->node()->collider()->value();
+    ui::collider_ptr const &collider = this->_rect_plane->node()->collider();
     if (!collider->shape() || (collider->shape()->type_info() == typeid(ui::shape::rect))) {
         collider->set_shape(ui::shape::make_shared({.rect = region}));
     }
@@ -165,8 +165,7 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
             false)
         ->add_to(*pool);
 
-    node->collider()
-        ->observe(
+    node->observe_collider(
             [this](ui::collider_ptr const &value) {
                 if (!value) {
                     if (auto tracking_event = this->_tracking_event) {
@@ -196,7 +195,6 @@ observing::cancellable_ptr ui::button::_make_collider_chains() {
     auto pool = observing::canceller_pool::make_shared();
 
     node->collider()
-        ->value()
         ->observe_shape(
             [this](ui::shape_ptr const &shape) {
                 if (!shape) {
@@ -209,7 +207,6 @@ observing::cancellable_ptr ui::button::_make_collider_chains() {
         ->add_to(*pool);
 
     node->collider()
-        ->value()
         ->observe_enabled(
             [this](bool const &enabled) {
                 if (!enabled) {
@@ -233,7 +230,7 @@ void ui::button::_update_tracking(ui::event_ptr const &event) {
         switch (event->phase()) {
             case ui::event_phase::began:
                 if (!this->_is_tracking()) {
-                    if (detector->detect(touch_event.position(), node->collider()->value())) {
+                    if (detector->detect(touch_event.position(), node->collider())) {
                         this->_set_tracking_event(event);
                         this->_send_notify(method::began, event);
                     }
@@ -265,7 +262,7 @@ void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event) {
         auto const &detector = renderer->detector();
         auto const &touch_event = event->get<ui::touch>();
         bool const is_event_tracking = this->_is_tracking(event);
-        bool is_detected = detector->detect(touch_event.position(), node->collider()->value());
+        bool is_detected = detector->detect(touch_event.position(), node->collider());
         if (!is_event_tracking && is_detected) {
             this->_set_tracking_event(event);
             this->_send_notify(method::entered, event);

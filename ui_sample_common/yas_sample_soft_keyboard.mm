@@ -25,7 +25,7 @@ struct soft_key {
         auto const &strings_node = this->_strings->rect_plane()->node();
         auto renderer = button_node->renderer();
 
-        button_node->collider()->value()->set_enabled(enabled);
+        button_node->collider()->set_enabled(enabled);
 
         float const alpha = enabled ? 1.0f : 0.0f;
 

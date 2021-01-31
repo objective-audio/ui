@@ -64,7 +64,10 @@ struct node final : action_target, metal_object, renderable_node {
     ui::mesh_ptr const &mesh() const;
     observing::canceller_ptr observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&, bool const sync);
 
-    observing::value::holder_ptr<ui::collider_ptr> const &collider() const;
+    void set_collider(ui::collider_ptr const &);
+    ui::collider_ptr const &collider() const;
+    observing::canceller_ptr observe_collider(observing::caller<ui::collider_ptr>::handler_f &&, bool const sync);
+
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> const &batch() const;
     observing::value::holder_ptr<ui::render_target_ptr> const &render_target() const;
 

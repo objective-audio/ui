@@ -61,7 +61,7 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertEqual(node->alpha(), 1.0f);
 
     XCTAssertFalse(node->mesh());
-    XCTAssertFalse(node->collider()->value());
+    XCTAssertFalse(node->collider());
     XCTAssertFalse(node->render_target()->value());
 
     XCTAssertEqual(node->children().size(), 0);
@@ -103,9 +103,9 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertTrue(node->mesh());
     XCTAssertEqual(node->mesh(), mesh);
 
-    node->collider()->set_value(collider);
-    XCTAssertTrue(node->collider()->value());
-    XCTAssertEqual(node->collider()->value(), collider);
+    node->set_collider(collider);
+    XCTAssertTrue(node->collider());
+    XCTAssertEqual(node->collider(), collider);
 
     node->batch()->set_value(batch);
     XCTAssertTrue(node->batch()->value());
@@ -129,15 +129,15 @@ struct test_render_encoder : ui::render_encodable {
     ui::node_ptr const &const_node = node;
 
     XCTAssertFalse(const_node->mesh());
-    XCTAssertFalse(const_node->collider()->value());
+    XCTAssertFalse(const_node->collider());
     XCTAssertFalse(const_node->batch()->value());
 
     node->set_mesh(ui::mesh::make_shared());
-    node->collider()->set_value(ui::collider::make_shared());
+    node->set_collider(ui::collider::make_shared());
     node->batch()->set_value(ui::batch::make_shared());
 
     XCTAssertTrue(const_node->mesh());
-    XCTAssertTrue(const_node->collider()->value());
+    XCTAssertTrue(const_node->collider());
     XCTAssertEqual(const_node->children().size(), 0);
     XCTAssertTrue(const_node->batch()->value());
 }
@@ -415,7 +415,7 @@ struct test_render_encoder : ui::render_encodable {
 
     node->set_angle({1.0f});
     node->set_is_enabled(false);
-    node->collider()->set_value(ui::collider::make_shared());
+    node->set_collider(ui::collider::make_shared());
     node->batch()->set_value(ui::batch::make_shared());
 
     auto sub_node = ui::node::make_shared();
@@ -522,7 +522,7 @@ struct test_render_encoder : ui::render_encodable {
     auto const sub_mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     auto const batch_sub_mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
-    node->collider()->set_value(ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{})));
+    node->set_collider(ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{})));
     auto const mesh = ui::mesh::make_shared();
     node->set_mesh(mesh);
     mesh->set_mesh_data(mesh_data);

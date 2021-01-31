@@ -11,7 +11,7 @@ using namespace yas;
 #pragma mark - big_button
 
 sample::big_button::big_button() {
-    this->_button->rect_plane()->node()->collider()->set_value(
+    this->_button->rect_plane()->node()->set_collider(
         ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{.radius = this->_radius})));
 }
 
