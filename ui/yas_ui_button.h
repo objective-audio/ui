@@ -25,7 +25,7 @@ struct button final {
     };
 
     struct context {
-        std::shared_ptr<ui::button> const &button;
+        ui::button const *button;
         ui::touch_event const &touch;
     };
 
@@ -51,7 +51,6 @@ struct button final {
     [[nodiscard]] static button_ptr make_shared(ui::region const &, std::size_t const state_count);
 
    private:
-    std::weak_ptr<button> _weak_button;
     ui::rect_plane_ptr _rect_plane;
     ui::layout_guide_rect_ptr _layout_guide_rect;
     observing::notifier_ptr<chain_pair_t> _notifier = observing::notifier<chain_pair_t>::make_shared();
