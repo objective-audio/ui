@@ -38,49 +38,55 @@ ui::render_target::render_target()
 
     this->_set_textures_to_effect();
 
-    this->_src_texture_canceller = this->_src_texture->observe([this](auto const &pair) {
-        if (pair.first == ui::texture::method::metal_texture_changed) {
-            ui::texture_ptr const &texture = pair.second;
-            auto const renderPassDescriptor = *this->_render_pass_descriptor;
+    this->_src_texture
+        ->observe([this](auto const &pair) {
+            if (pair.first == ui::texture::method::metal_texture_changed) {
+                ui::texture_ptr const &texture = pair.second;
+                auto const renderPassDescriptor = *this->_render_pass_descriptor;
 
-            if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
-                auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
-                auto colorDesc = *color_desc;
-                colorDesc.texture = metal_texture->texture();
-                colorDesc.loadAction = MTLLoadActionClear;
-                colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+                if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
+                    auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
+                    auto colorDesc = *color_desc;
+                    colorDesc.texture = metal_texture->texture();
+                    colorDesc.loadAction = MTLLoadActionClear;
+                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 
-                [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-            } else {
-                [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+                } else {
+                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
+                }
             }
-        }
-    });
+        })
+        ->add_to(this->_pool);
 
-    this->_dst_texture_canceller = this->_dst_texture->observe([this](auto const &pair) {
-        if (pair.first == ui::texture::method::size_updated) {
-            ui::texture_ptr const &texture = pair.second;
-            this->_data->set_rect_tex_coords(
-                ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
-        }
-    });
+    this->_dst_texture
+        ->observe([this](auto const &pair) {
+            if (pair.first == ui::texture::method::size_updated) {
+                ui::texture_ptr const &texture = pair.second;
+                this->_data->set_rect_tex_coords(
+                    ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
+            }
+        })
+        ->add_to(this->_pool);
 
-    this->_rect_canceller = this->_layout_guide_rect->observe(
-        [this](ui::region const &region) {
-            ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                               .height = static_cast<uint32_t>(region.size.height)};
+    this->_layout_guide_rect
+        ->observe(
+            [this](ui::region const &region) {
+                ui::uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                                   .height = static_cast<uint32_t>(region.size.height)};
 
-            this->_src_texture->set_point_size(size);
-            this->_dst_texture->set_point_size(size);
+                this->_src_texture->set_point_size(size);
+                this->_dst_texture->set_point_size(size);
 
-            this->_projection_matrix =
-                ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+                this->_projection_matrix =
+                    ui::matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-            this->_data->set_rect_position(region, 0);
+                this->_data->set_rect_position(region, 0);
 
-            this->_set_updated(render_target_update_reason::region);
-        },
-        false);
+                this->_set_updated(render_target_update_reason::region);
+            },
+            false)
+        ->add_to(this->_pool);
 }
 
 ui::layout_guide_rect_ptr &ui::render_target::layout_guide_rect() {
