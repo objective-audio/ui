@@ -102,7 +102,7 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
     mesh->set_texture(this->_texture);
     node->mesh()->set_value(mesh);
     node->set_scale({.v = 0.0f});
-    node->alpha()->set_value(0.0f);
+    node->set_alpha(0.0f);
 
     root_node->add_sub_node(node);
 

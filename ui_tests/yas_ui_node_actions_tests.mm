@@ -197,15 +197,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->alpha()->value(), 1.0f);
+    XCTAssertEqual(target->alpha(), 1.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->alpha()->value(), 0.5f);
+    XCTAssertEqual(target->alpha(), 0.5f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->alpha()->value(), 0.0f);
+    XCTAssertEqual(target->alpha(), 0.0f);
 }
 
 @end

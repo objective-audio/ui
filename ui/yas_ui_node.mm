@@ -152,8 +152,16 @@ observing::canceller_ptr ui::node::observe_color(observing::caller<ui::color>::h
     return this->_color->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<float> const &ui::node::alpha() const {
-    return this->_alpha;
+void ui::node::set_alpha(float const &alpha) {
+    this->_alpha->set_value(alpha);
+}
+
+float const &ui::node::alpha() const {
+    return this->_alpha->value();
+}
+
+observing::canceller_ptr ui::node::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
+    return this->_alpha->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<bool> const &ui::node::is_enabled() const {

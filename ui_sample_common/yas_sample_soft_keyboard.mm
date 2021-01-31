@@ -38,8 +38,8 @@ struct soft_key {
             renderer->insert_action(ui::make_action(
                 {.target = strings_node, .begin_alpha = strings_node->alpha()->value(), .end_alpha = alpha}));
         } else {
-            button_node->alpha()->set_value(alpha);
-            strings_node->alpha()->set_value(alpha);
+            button_node->set_alpha(alpha);
+            strings_node->set_alpha(alpha);
         }
     }
 

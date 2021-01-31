@@ -99,7 +99,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::alpha_action::args ar
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
             if (auto target = args.target.lock()) {
-                target->alpha()->set_value((args.end_alpha - args.begin_alpha) * (float)value + args.begin_alpha);
+                target->set_alpha((args.end_alpha - args.begin_alpha) * (float)value + args.begin_alpha);
             }
         }
     });
