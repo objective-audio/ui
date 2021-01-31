@@ -142,7 +142,8 @@ observing::canceller_ptr ui::font_atlas::observe_texture(observing::caller<textu
     return this->_texture_changed_fetcher->observe(std::move(handler), sync);
 }
 
-observing::canceller_ptr ui::font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
+observing::canceller_ptr ui::font_atlas::observe_texture_updated(
+    observing::caller<ui::texture const *>::handler_f &&handler) {
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 

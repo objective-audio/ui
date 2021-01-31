@@ -124,7 +124,7 @@ ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system
 
         this->_add_images_to_metal_texture();
 
-        this->_notifier->notify(std::make_pair(method::metal_texture_changed, this->_weak_texture.lock()));
+        this->_notifier->notify(std::make_pair(method::metal_texture_changed, this));
     }
 
     return ui::setup_metal_result{nullptr};
@@ -231,13 +231,11 @@ void ui::texture::_add_image_to_metal_texture(texture_element_ptr const &element
 void ui::texture::_size_updated() {
     this->_metal_texture = nullptr;
     this->_draw_actual_pos = {this->_draw_actual_padding, this->_draw_actual_padding};
-    this->_notifier->notify(std::make_pair(method::size_updated, this->_weak_texture.lock()));
+    this->_notifier->notify(std::make_pair(method::size_updated, this));
 }
 
 ui::texture_ptr ui::texture::make_shared(args args) {
-    auto shared = std::shared_ptr<texture>(new texture{std::move(args)});
-    shared->_weak_texture = shared;
-    return shared;
+    return std::shared_ptr<texture>(new texture{std::move(args)});
 }
 
 #pragma mark -
