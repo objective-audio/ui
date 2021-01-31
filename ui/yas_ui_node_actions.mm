@@ -45,7 +45,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(rotate_action::args args)
                     begin_angle = begin_angle.shortest_from(end_angle);
                 }
 
-                target->angle()->set_value({(end_angle - begin_angle) * static_cast<float>(value) + begin_angle});
+                target->set_angle({(end_angle - begin_angle) * static_cast<float>(value) + begin_angle});
             }
         }
     });

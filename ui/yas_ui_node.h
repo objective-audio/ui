@@ -37,7 +37,10 @@ struct node final : action_target, metal_object, renderable_node {
     ui::point const &position() const;
     observing::canceller_ptr observe_position(observing::caller<ui::point>::handler_f &&, bool const sync);
 
-    observing::value::holder_ptr<ui::angle> const &angle() const;
+    void set_angle(ui::angle const &);
+    ui::angle const &angle() const;
+    observing::canceller_ptr observe_angle(observing::caller<ui::angle>::handler_f &&, bool const sync);
+
     observing::value::holder_ptr<ui::size> const &scale() const;
     observing::value::holder_ptr<ui::color> const &color() const;
     observing::value::holder_ptr<float> const &alpha() const;

@@ -116,8 +116,16 @@ observing::canceller_ptr ui::node::observe_position(observing::caller<ui::point>
     return this->_position->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<ui::angle> const &ui::node::angle() const {
-    return this->_angle;
+void ui::node::set_angle(ui::angle const &angle) {
+    this->_angle->set_value(angle);
+}
+
+ui::angle const &ui::node::angle() const {
+    return this->_angle->value();
+}
+
+observing::canceller_ptr ui::node::observe_angle(observing::caller<ui::angle>::handler_f &&handler, bool const sync) {
+    return this->_angle->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<ui::size> const &ui::node::scale() const {

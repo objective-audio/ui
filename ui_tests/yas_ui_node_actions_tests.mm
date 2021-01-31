@@ -64,15 +64,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->angle()->value().degrees, 0.0f);
+    XCTAssertEqual(target->angle().degrees, 0.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->angle()->value().degrees, 180.0f);
+    XCTAssertEqual(target->angle().degrees, 180.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->angle()->value().degrees, 360.0f);
+    XCTAssertEqual(target->angle().degrees, 360.0f);
 }
 
 - (void)test_update_rotate_action_shortest_1 {
@@ -89,15 +89,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->angle()->value().degrees, 360.0f);
+    XCTAssertEqual(target->angle().degrees, 360.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->angle()->value().degrees, 315.0f);
+    XCTAssertEqual(target->angle().degrees, 315.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->angle()->value().degrees, 270.0f);
+    XCTAssertEqual(target->angle().degrees, 270.0f);
 }
 
 - (void)test_update_rotate_action_shortest_2 {
@@ -114,15 +114,15 @@ using namespace yas;
 
     updatable->update(time);
 
-    XCTAssertEqual(target->angle()->value().degrees, 180.0f);
+    XCTAssertEqual(target->angle().degrees, 180.0f);
 
     updatable->update(time + 500ms);
 
-    XCTAssertEqual(target->angle()->value().degrees, 135.0f);
+    XCTAssertEqual(target->angle().degrees, 135.0f);
 
     updatable->update(time + 1s);
 
-    XCTAssertEqual(target->angle()->value().degrees, 90.0f);
+    XCTAssertEqual(target->angle().degrees, 90.0f);
 }
 
 - (void)test_update_scale_action {

@@ -51,7 +51,7 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertEqual(node->position().x, 0.0f);
     XCTAssertEqual(node->position().y, 0.0f);
-    XCTAssertEqual(node->angle()->value().degrees, 0.0f);
+    XCTAssertEqual(node->angle().degrees, 0.0f);
     XCTAssertEqual(node->scale()->value().width, 1.0f);
     XCTAssertEqual(node->scale()->value().height, 1.0f);
 
@@ -82,7 +82,7 @@ struct test_render_encoder : ui::render_encodable {
     auto render_target = ui::render_target::make_shared();
 
     node->set_position({1.0f, 2.0f});
-    node->angle()->set_value({3.0f});
+    node->set_angle({3.0f});
     node->scale()->set_value({4.0f, 5.0f});
     node->color()->set_value({0.1f, 0.2f, 0.3f});
     node->alpha()->set_value(0.4f);
@@ -91,7 +91,7 @@ struct test_render_encoder : ui::render_encodable {
 
     XCTAssertEqual(node->position().x, 1.0f);
     XCTAssertEqual(node->position().y, 2.0f);
-    XCTAssertEqual(node->angle()->value().degrees, 3.0f);
+    XCTAssertEqual(node->angle().degrees, 3.0f);
     XCTAssertEqual(node->scale()->value().width, 4.0f);
     XCTAssertEqual(node->scale()->value().height, 5.0f);
     XCTAssertEqual(node->color()->value().red, 0.1f);
@@ -352,7 +352,7 @@ struct test_render_encoder : ui::render_encodable {
     updates = ui::tree_updates{};
     ui::renderable_node::cast(node)->clear_updates();
 
-    node->angle()->set_value({1.0f});
+    node->set_angle({1.0f});
     ui::renderable_node::cast(node)->fetch_updates(updates);
     XCTAssertTrue(updates.is_any_updated());
     XCTAssertEqual(updates.node_updates.flags.count(), 1);
@@ -413,7 +413,7 @@ struct test_render_encoder : ui::render_encodable {
     mesh_data->set_vertex_count(1);
     node->mesh()->value()->set_mesh_data(mesh_data);
 
-    node->angle()->set_value({1.0f});
+    node->set_angle({1.0f});
     node->is_enabled()->set_value(false);
     node->collider()->set_value(ui::collider::make_shared());
     node->batch()->set_value(ui::batch::make_shared());
@@ -562,10 +562,10 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     node->set_position(ui::point{10.0f, -20.0f});
     node->scale()->set_value(ui::size{2.0f, 0.5f});
-    node->angle()->set_value({90.0f});
+    node->set_angle({90.0f});
 
     simd::float4x4 expected_matrix = ui::matrix::translation(node->position().x, node->position().y) *
-                                     ui::matrix::rotation(node->angle()->value().degrees) *
+                                     ui::matrix::rotation(node->angle().degrees) *
                                      ui::matrix::scale(node->scale()->value().width, node->scale()->value().height);
 
     XCTAssertTrue(is_equal(node->local_matrix(), expected_matrix));
@@ -587,22 +587,22 @@ struct test_render_encoder : ui::render_encodable {
     auto root_node = ui::node::make_shared();
     root_node->set_position(ui::point{10.0f, -20.0f});
     root_node->scale()->set_value(ui::size{2.0f, 0.5f});
-    root_node->angle()->set_value({90.0f});
+    root_node->set_angle({90.0f});
 
     auto sub_node = ui::node::make_shared();
     sub_node->set_position(ui::point{-50.0f, 10.0f});
     sub_node->scale()->set_value(ui::size{0.25f, 3.0f});
-    sub_node->angle()->set_value({-45.0f});
+    sub_node->set_angle({-45.0f});
 
     root_node->add_sub_node(sub_node);
 
     simd::float4x4 root_local_matrix =
         ui::matrix::translation(root_node->position().x, root_node->position().y) *
-        ui::matrix::rotation(root_node->angle()->value().degrees) *
+        ui::matrix::rotation(root_node->angle().degrees) *
         ui::matrix::scale(root_node->scale()->value().width, root_node->scale()->value().height);
     simd::float4x4 sub_local_matrix =
         ui::matrix::translation(sub_node->position().x, sub_node->position().y) *
-        ui::matrix::rotation(sub_node->angle()->value().degrees) *
+        ui::matrix::rotation(sub_node->angle().degrees) *
         ui::matrix::scale(sub_node->scale()->value().width, sub_node->scale()->value().height);
     simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
 

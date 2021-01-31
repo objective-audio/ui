@@ -86,7 +86,7 @@ void sample::cursor_over_planes::_setup_nodes() {
 
         auto handle_node = ui::node::make_shared();
         handle_node->add_sub_node(node);
-        handle_node->angle()->set_value({360.0f / count * idx});
+        handle_node->set_angle({360.0f / count * idx});
 
         root_node->add_sub_node(handle_node);
 

@@ -148,8 +148,7 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
             },
             false)
         ->add_to(*pool);
-    node->angle()
-        ->observe(
+    node->observe_angle(
             [this](auto const &) {
                 if (auto tracking_event = this->_tracking_event) {
                     this->_leave_or_enter_or_move_tracking(tracking_event);
