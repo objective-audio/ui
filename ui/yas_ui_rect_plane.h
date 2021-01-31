@@ -74,7 +74,7 @@ struct rect_plane final {
 
    private:
     ui::node_ptr const _node = ui::node::make_shared();
-    ui::rect_plane_data_ptr _rect_plane_data;
+    ui::rect_plane_data_ptr const _rect_plane_data;
 
     explicit rect_plane(rect_plane_data_ptr const &);
 
