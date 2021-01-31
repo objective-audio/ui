@@ -119,7 +119,7 @@ void ui::metal_system::view_configure(yas_objc_view *const objc_view) {
     view.sampleCount = this->_sample_count;
 }
 
-void ui::metal_system::view_render(yas_objc_view *const objc_view, ui::renderer_ptr const &renderer) {
+void ui::metal_system::view_render(yas_objc_view *const objc_view, ui::renderer const *renderer) {
     if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
         return;
     }
@@ -256,7 +256,7 @@ id<MTLRenderPipelineState> ui::metal_system::mtlRenderPipelineStateWithoutTextur
     return this->_pipeline_state_without_texture.object();
 }
 
-void ui::metal_system::_render_nodes(ui::renderer_ptr const &renderer, id<MTLCommandBuffer> const commandBuffer,
+void ui::metal_system::_render_nodes(ui::renderer const *renderer, id<MTLCommandBuffer> const commandBuffer,
                                      MTLRenderPassDescriptor *const renderPassDesc) {
     auto metal_render_encoder = ui::metal_render_encoder::make_shared();
     render_stackable::cast(metal_render_encoder)

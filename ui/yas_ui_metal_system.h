@@ -55,7 +55,7 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     metal_system &operator=(metal_system &&) = delete;
 
     void view_configure(yas_objc_view *const) override;
-    void view_render(yas_objc_view *const view, ui::renderer_ptr const &) override;
+    void view_render(yas_objc_view *const view, ui::renderer const *) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
     void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
                      ui::metal_encode_info_ptr const &) override;
@@ -72,6 +72,6 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
 
-    void _render_nodes(ui::renderer_ptr const &, id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
+    void _render_nodes(ui::renderer const *renderer, id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
 };
 }  // namespace yas::ui
