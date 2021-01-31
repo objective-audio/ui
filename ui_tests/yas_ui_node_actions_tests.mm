@@ -162,7 +162,7 @@ using namespace yas;
                                    .continuous_action = std::move(args)});
 
     auto mesh = ui::mesh::make_shared();
-    target->mesh()->set_value(mesh);
+    target->set_mesh(mesh);
     auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);
@@ -192,7 +192,7 @@ using namespace yas;
         {.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .continuous_action = std::move(args)});
 
     auto mesh = ui::mesh::make_shared();
-    target->mesh()->set_value(mesh);
+    target->set_mesh(mesh);
     auto const updatable = ui::updatable_action::cast(action);
 
     updatable->update(time);

@@ -54,7 +54,7 @@ struct soft_key {
     soft_key(std::string &&key, float const width, ui::font_atlas_ptr const &atlas)
         : _button(ui::button::make_shared({.size = {width, width}})),
           _strings(ui::strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
-        this->_button->rect_plane()->node()->mesh()->value()->set_use_mesh_color(true);
+        this->_button->rect_plane()->node()->mesh()->set_use_mesh_color(true);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 

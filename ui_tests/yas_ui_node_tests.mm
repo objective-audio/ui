@@ -60,7 +60,7 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertEqual(node->color().blue, 1.0f);
     XCTAssertEqual(node->alpha(), 1.0f);
 
-    XCTAssertFalse(node->mesh()->value());
+    XCTAssertFalse(node->mesh());
     XCTAssertFalse(node->collider()->value());
     XCTAssertFalse(node->render_target()->value());
 
@@ -99,9 +99,9 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertEqual(node->color().blue, 0.3f);
     XCTAssertEqual(node->alpha(), 0.4f);
 
-    node->mesh()->set_value(mesh);
-    XCTAssertTrue(node->mesh()->value());
-    XCTAssertEqual(node->mesh()->value(), mesh);
+    node->set_mesh(mesh);
+    XCTAssertTrue(node->mesh());
+    XCTAssertEqual(node->mesh(), mesh);
 
     node->collider()->set_value(collider);
     XCTAssertTrue(node->collider()->value());
@@ -128,15 +128,15 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
     ui::node_ptr const &const_node = node;
 
-    XCTAssertFalse(const_node->mesh()->value());
+    XCTAssertFalse(const_node->mesh());
     XCTAssertFalse(const_node->collider()->value());
     XCTAssertFalse(const_node->batch()->value());
 
-    node->mesh()->set_value(ui::mesh::make_shared());
+    node->set_mesh(ui::mesh::make_shared());
     node->collider()->set_value(ui::collider::make_shared());
     node->batch()->set_value(ui::batch::make_shared());
 
-    XCTAssertTrue(const_node->mesh()->value());
+    XCTAssertTrue(const_node->mesh());
     XCTAssertTrue(const_node->collider()->value());
     XCTAssertEqual(const_node->children().size(), 0);
     XCTAssertTrue(const_node->batch()->value());
@@ -154,7 +154,7 @@ struct test_render_encoder : ui::render_encodable {
     node->set_color({0.25f, 0.5f, 0.75f});
     node->set_alpha(0.125f);
 
-    node->mesh()->set_value(mesh);
+    node->set_mesh(mesh);
 
     XCTAssertEqual(mesh->color()[0], 0.25f);
     XCTAssertEqual(mesh->color()[1], 0.5f);
@@ -333,7 +333,7 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
 
     auto mesh = ui::mesh::make_shared();
-    node->mesh()->set_value(mesh);
+    node->set_mesh(mesh);
 
     auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 2, .index_count = 2});
     mesh->set_mesh_data(mesh_data);
@@ -408,10 +408,10 @@ struct test_render_encoder : ui::render_encodable {
     ui::renderable_node::cast(node)->clear_updates();
 
     // nodeのパラメータを変更する
-    node->mesh()->set_value(ui::mesh::make_shared());
+    node->set_mesh(ui::mesh::make_shared());
     auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 2, .index_count = 2});
     mesh_data->set_vertex_count(1);
-    node->mesh()->value()->set_mesh_data(mesh_data);
+    node->mesh()->set_mesh_data(mesh_data);
 
     node->set_angle({1.0f});
     node->set_is_enabled(false);
@@ -455,13 +455,13 @@ struct test_render_encoder : ui::render_encodable {
 
     auto mesh = ui::mesh::make_shared();
     mesh->set_mesh_data(ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1}));
-    node->mesh()->set_value(mesh);
+    node->set_mesh(mesh);
 
     XCTAssertTrue(ui::renderable_node::cast(node)->is_rendering_color_exists());
 
-    node->mesh()->set_value(nullptr);
+    node->set_mesh(nullptr);
     auto sub_node = ui::node::make_shared();
-    sub_node->mesh()->set_value(mesh);
+    sub_node->set_mesh(mesh);
     node->add_sub_node(sub_node);
 
     XCTAssertTrue(ui::renderable_node::cast(node)->is_rendering_color_exists());
@@ -489,10 +489,10 @@ struct test_render_encoder : ui::render_encodable {
     sub_mesh->set_mesh_data(sub_mesh_data);
 
     auto root_node = ui::node::make_shared();
-    root_node->mesh()->set_value(root_mesh);
+    root_node->set_mesh(root_mesh);
 
     auto sub_node = ui::node::make_shared();
-    sub_node->mesh()->set_value(sub_mesh);
+    sub_node->set_mesh(sub_mesh);
     root_node->add_sub_node(sub_node);
 
     XCTAssertFalse(root_mesh_data->metal_system());
@@ -524,18 +524,18 @@ struct test_render_encoder : ui::render_encodable {
 
     node->collider()->set_value(ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{})));
     auto const mesh = ui::mesh::make_shared();
-    node->mesh()->set_value(mesh);
+    node->set_mesh(mesh);
     mesh->set_mesh_data(mesh_data);
 
     auto const sub_mesh = ui::mesh::make_shared();
-    sub_node->mesh()->set_value(sub_mesh);
+    sub_node->set_mesh(sub_mesh);
     sub_mesh->set_mesh_data(sub_mesh_data);
 
     batch_node->batch()->set_value(ui::batch::make_shared());
     batch_node->add_sub_node(batch_sub_node);
 
     auto const batch_sub_mesh = ui::mesh::make_shared();
-    batch_sub_node->mesh()->set_value(batch_sub_mesh);
+    batch_sub_node->set_mesh(batch_sub_mesh);
     batch_sub_mesh->set_mesh_data(batch_sub_mesh_data);
 
     node->add_sub_node(sub_node);
@@ -735,7 +735,7 @@ struct test_render_encoder : ui::render_encodable {
         index = 0;
     });
     mesh1a->set_mesh_data(mesh_data1a);
-    mesh_node1a->mesh()->set_value(mesh1a);
+    mesh_node1a->set_mesh(mesh1a);
     mesh_node1a->set_color(ui::color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
     mesh_node1a->set_alpha(0.8f);
 
@@ -761,7 +761,7 @@ struct test_render_encoder : ui::render_encodable {
     auto texture1b = ui::texture::make_shared({.point_size = {.width = 1024, .height = 1024}});
     mesh1b->set_texture(texture1b);
 
-    mesh_node1b->mesh()->set_value(mesh1b);
+    mesh_node1b->set_mesh(mesh1b);
 
     auto mesh2 = ui::mesh::make_shared();
     mesh2->set_use_mesh_color(true);
@@ -785,7 +785,7 @@ struct test_render_encoder : ui::render_encodable {
     auto texture2 = ui::texture::make_shared({.point_size = {.width = 1024, .height = 1024}});
     mesh2->set_texture(texture2);
 
-    mesh_node2->mesh()->set_value(mesh2);
+    mesh_node2->set_mesh(mesh2);
 
     parent_batch_node->add_sub_node(child_batch_node1);
     parent_batch_node->add_sub_node(child_batch_node2);
@@ -1228,7 +1228,7 @@ struct test_render_encoder : ui::render_encodable {
         index = 0;
     });
     mesh1->set_mesh_data(mesh_data1);
-    mesh_node1->mesh()->set_value(mesh1);
+    mesh_node1->set_mesh(mesh1);
     mesh_node1->set_color(ui::color{.red = 0.1f, .green = 0.2f, .blue = 0.3f});
     mesh_node1->set_alpha(0.0f);
 
@@ -1247,7 +1247,7 @@ struct test_render_encoder : ui::render_encodable {
         index = 0;
     });
     mesh2->set_mesh_data(mesh_data2);
-    mesh_node2->mesh()->set_value(mesh2);
+    mesh_node2->set_mesh(mesh2);
     mesh_node2->set_color(ui::color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
     mesh_node2->set_alpha(1.0f);
 

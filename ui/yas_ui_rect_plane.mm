@@ -198,7 +198,7 @@ ui::rect_plane_data_ptr ui::rect_plane_data::make_shared(std::size_t const rect_
 ui::rect_plane::rect_plane(ui::rect_plane_data_ptr const &plane_data) : _rect_plane_data(plane_data) {
     auto mesh = ui::mesh::make_shared();
     mesh->set_mesh_data(this->data()->dynamic_mesh_data());
-    this->node()->mesh()->set_value(std::move(mesh));
+    this->node()->set_mesh(std::move(mesh));
 }
 
 ui::node_ptr const &ui::rect_plane::node() {

@@ -186,8 +186,16 @@ simd::float4x4 const &ui::node::local_matrix() const {
     return this->_local_matrix;
 }
 
-observing::value::holder_ptr<ui::mesh_ptr> const &ui::node::mesh() const {
-    return this->_mesh;
+void ui::node::set_mesh(ui::mesh_ptr const &mesh) {
+    this->_mesh->set_value(mesh);
+}
+
+ui::mesh_ptr const &ui::node::mesh() const {
+    return this->_mesh->value();
+}
+
+observing::canceller_ptr ui::node::observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&handler, bool const sync) {
+    return this->_mesh->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<ui::collider_ptr> const &ui::node::collider() const {

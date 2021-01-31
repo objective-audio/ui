@@ -57,11 +57,11 @@ ui::button::button(ui::region const &region, std::size_t const state_count)
 ui::button::~button() = default;
 
 void ui::button::set_texture(ui::texture_ptr const &texture) {
-    this->rect_plane()->node()->mesh()->value()->set_texture(texture);
+    this->rect_plane()->node()->mesh()->set_texture(texture);
 }
 
 ui::texture_ptr const &ui::button::texture() const {
-    return this->_rect_plane->node()->mesh()->value()->texture();
+    return this->_rect_plane->node()->mesh()->texture();
 }
 
 std::size_t ui::button::state_count() const {

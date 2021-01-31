@@ -106,7 +106,7 @@ ui::rect_plane_ptr const &sample::justified_points::rect_plane() {
 }
 
 void sample::justified_points::_setup_colors() {
-    this->_rect_plane->node()->mesh()->value()->set_use_mesh_color(true);
+    this->_rect_plane->node()->mesh()->set_use_mesh_color(true);
 
     auto const &rect_plane_data = this->_rect_plane->data();
 

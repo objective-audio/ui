@@ -122,13 +122,13 @@ using namespace yas;
 - (void)test_set_texture {
     auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
 
-    XCTAssertFalse(button->rect_plane()->node()->mesh()->value()->texture());
+    XCTAssertFalse(button->rect_plane()->node()->mesh()->texture());
 
     auto texture = ui::texture::make_shared({.point_size = {8, 8}});
 
     button->set_texture(texture);
 
-    XCTAssertTrue(button->rect_plane()->node()->mesh()->value()->texture());
+    XCTAssertTrue(button->rect_plane()->node()->mesh()->texture());
     XCTAssertEqual(button->texture(), texture);
 }
 
