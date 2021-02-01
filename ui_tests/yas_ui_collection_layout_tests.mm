@@ -33,7 +33,7 @@ using namespace yas;
     XCTAssertEqual(layout->row_spacing(), 0.0f);
     XCTAssertEqual(layout->col_spacing(), 0.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
-    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::min);
+    XCTAssertEqual(layout->alignment(), ui::layout_alignment::min);
     XCTAssertEqual(layout->direction->value(), ui::layout_direction::vertical);
     XCTAssertEqual(layout->row_order->value(), ui::layout_order::ascending);
     XCTAssertEqual(layout->col_order->value(), ui::layout_order::ascending);
@@ -66,7 +66,7 @@ using namespace yas;
     XCTAssertEqual(layout->row_spacing(), 4.0f);
     XCTAssertEqual(layout->col_spacing(), 4.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
-    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->alignment(), ui::layout_alignment::max);
     XCTAssertEqual(layout->direction->value(), ui::layout_direction::horizontal);
     XCTAssertEqual(layout->row_order->value(), ui::layout_order::descending);
     XCTAssertEqual(layout->col_order->value(), ui::layout_order::descending);
@@ -472,13 +472,13 @@ using namespace yas;
 - (void)test_set_aligmnent {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->alignment->set_value(ui::layout_alignment::mid);
+    layout->set_alignment(ui::layout_alignment::mid);
 
-    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::mid);
+    XCTAssertEqual(layout->alignment(), ui::layout_alignment::mid);
 
-    layout->alignment->set_value(ui::layout_alignment::max);
+    layout->set_alignment(ui::layout_alignment::max);
 
-    XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->alignment(), ui::layout_alignment::max);
 }
 
 - (void)test_alignment_mid {
@@ -719,9 +719,11 @@ using namespace yas;
 
     std::optional<ui::layout_alignment> notified;
 
-    auto observer = layout->alignment->observe([&notified](auto const &aligment) { notified = aligment; }, false);
+    auto observer = layout->observe_alignment([&notified](auto const &aligment) { notified = aligment; }, false);
 
-    layout->alignment->set_value(ui::layout_alignment::max);
+    XCTAssertFalse(notified);
+
+    layout->set_alignment(ui::layout_alignment::max);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_alignment::max);

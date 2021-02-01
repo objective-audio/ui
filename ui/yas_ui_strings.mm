@@ -42,7 +42,7 @@ void ui::strings::set_line_height(std::optional<float> line_height) {
 }
 
 void ui::strings::set_alignment(ui::layout_alignment const alignment) {
-    this->_collection_layout->alignment->set_value(alignment);
+    this->_collection_layout->set_alignment(alignment);
 }
 
 std::string const &ui::strings::text() const {
@@ -58,7 +58,7 @@ std::optional<float> const &ui::strings::line_height() const {
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {
-    return this->_collection_layout->alignment->value();
+    return this->_collection_layout->alignment();
 }
 
 ui::layout_guide_rect_ptr const &ui::strings::frame_layout_guide_rect() {
@@ -86,7 +86,7 @@ observing::canceller_ptr ui::strings::observe_line_height(observing::caller<std:
 
 observing::canceller_ptr ui::strings::observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&handler,
                                                         bool const sync) {
-    return this->_collection_layout->alignment->observe(std::move(handler), sync);
+    return this->_collection_layout->observe_alignment(std::move(handler), sync);
 }
 
 void ui::strings::_prepare_chains() {
@@ -106,7 +106,7 @@ void ui::strings::_prepare_chains() {
     this->_collection_layout->observe_actual_cell_count([this](auto const &) { this->_update_layout(); }, false)
         ->add_to(this->_property_pool);
 
-    this->_collection_layout->alignment->observe([this](auto const &) { this->_update_layout(); }, false)
+    this->_collection_layout->observe_alignment([this](auto const &) { this->_update_layout(); }, false)
         ->add_to(this->_property_pool);
 }
 
