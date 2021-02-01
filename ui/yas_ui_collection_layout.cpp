@@ -47,7 +47,7 @@ ui::collection_layout::collection_layout(args args)
       _default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
       _lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
       _row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
-      col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
+      _col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
       alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
       direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
       row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
@@ -85,7 +85,7 @@ ui::collection_layout::collection_layout(args args)
     this->_border_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
 
     this->_row_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->col_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_col_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->alignment->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
@@ -156,6 +156,19 @@ float const &ui::collection_layout::row_spacing() const {
 observing::canceller_ptr ui::collection_layout::observe_row_spacing(observing::caller<float>::handler_f &&handler,
                                                                     bool const &sync) {
     return this->_row_spacing->observe(std::move(handler), sync);
+}
+
+void ui::collection_layout::set_col_spacing(float const &spacing) {
+    this->_col_spacing->set_value(spacing);
+}
+
+float const &ui::collection_layout::col_spacing() const {
+    return this->_col_spacing->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_col_spacing(observing::caller<float>::handler_f &&handler,
+                                                                    bool const &sync) {
+    return this->_col_spacing->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -350,7 +363,7 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
 }
 
 float ui::collection_layout::_transformed_col_diff(std::size_t const idx) {
-    auto diff = fabsf(_transformed_cell_size(idx).width) + this->col_spacing->value();
+    auto diff = fabsf(_transformed_cell_size(idx).width) + this->_col_spacing->value();
     if (this->col_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }

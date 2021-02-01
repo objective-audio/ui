@@ -31,7 +31,7 @@ using namespace yas;
     XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
     XCTAssertEqual(layout->lines().size(), 0);
     XCTAssertEqual(layout->row_spacing(), 0.0f);
-    XCTAssertEqual(layout->col_spacing->value(), 0.0f);
+    XCTAssertEqual(layout->col_spacing(), 0.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
     XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::min);
     XCTAssertEqual(layout->direction->value(), ui::layout_direction::vertical);
@@ -64,7 +64,7 @@ using namespace yas;
     XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
     XCTAssertEqual(layout->lines().at(0).new_line_min_offset, 3.9f);
     XCTAssertEqual(layout->row_spacing(), 4.0f);
-    XCTAssertEqual(layout->col_spacing->value(), 4.0f);
+    XCTAssertEqual(layout->col_spacing(), 4.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
     XCTAssertEqual(layout->alignment->value(), ui::layout_alignment::max);
     XCTAssertEqual(layout->direction->value(), ui::layout_direction::horizontal);
@@ -448,7 +448,7 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
-    XCTAssertEqual(layout->col_spacing->value(), 0.0f);
+    XCTAssertEqual(layout->col_spacing(), 0.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -457,9 +457,9 @@ using namespace yas;
     XCTAssertEqual(cell_guide_rects.at(2)->left()->value(), 2.0f);
     XCTAssertEqual(cell_guide_rects.at(2)->bottom()->value(), 0.0f);
 
-    layout->col_spacing->set_value(1.0f);
+    layout->set_col_spacing(1.0f);
 
-    XCTAssertEqual(layout->col_spacing->value(), 1.0f);
+    XCTAssertEqual(layout->col_spacing(), 1.0f);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -817,9 +817,11 @@ using namespace yas;
 
     std::optional<float> notified;
 
-    auto observer = layout->col_spacing->observe([&notified](auto const &spacing) { notified = spacing; }, false);
+    auto observer = layout->observe_col_spacing([&notified](auto const &spacing) { notified = spacing; }, false);
 
-    layout->col_spacing->set_value(11.0f);
+    XCTAssertFalse(notified);
+
+    layout->set_col_spacing(11.0f);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, 11.0f);
