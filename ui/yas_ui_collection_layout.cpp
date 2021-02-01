@@ -42,6 +42,7 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 
 ui::collection_layout::collection_layout(args args)
     : frame_guide_rect(ui::layout_guide_rect::make_shared(std::move(args.frame))),
+      borders(std::move(args.borders)),
       _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
       _actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
       _default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
@@ -51,8 +52,7 @@ ui::collection_layout::collection_layout(args args)
       _alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
       _direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
-      _col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)),
-      borders(std::move(args.borders)) {
+      _col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
     }

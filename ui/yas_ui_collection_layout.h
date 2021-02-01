@@ -37,6 +37,9 @@ struct collection_layout {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
+    ui::layout_guide_rect_ptr const frame_guide_rect;
+    ui::layout_borders const borders;
+
     void set_preferred_cell_count(std::size_t const &);
     std::size_t preferred_cell_count() const;
     observing::canceller_ptr observe_preferred_cell_count(observing::caller<std::size_t>::handler_f &&,
@@ -78,8 +81,6 @@ struct collection_layout {
     ui::layout_order const &col_order() const;
     observing::canceller_ptr observe_col_order(observing::caller<ui::layout_order>::handler_f &&, bool const &sync);
 
-    ui::layout_borders const borders;
-    ui::layout_guide_rect_ptr const frame_guide_rect;
     std::vector<ui::layout_guide_rect_ptr> const &cell_guide_rects() const;
 
     [[nodiscard]] static collection_layout_ptr make_shared();
