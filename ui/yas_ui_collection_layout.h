@@ -54,7 +54,10 @@ struct collection_layout {
     observing::canceller_ptr observe_lines(observing::caller<std::vector<ui::collection_layout::line>>::handler_f &&,
                                            bool const &sync);
 
-    observing::value::holder_ptr<float> const row_spacing;
+    void set_row_spacing(float const &);
+    float const &row_spacing() const;
+    observing::canceller_ptr observe_row_spacing(observing::caller<float>::handler_f &&, bool const &sync);
+
     observing::value::holder_ptr<float> const col_spacing;
     observing::value::holder_ptr<ui::layout_alignment> const alignment;
     observing::value::holder_ptr<ui::layout_direction> const direction;
@@ -77,6 +80,7 @@ struct collection_layout {
     observing::value::holder_ptr<std::size_t> const _actual_cell_count;
     observing::value::holder_ptr<ui::size> const _default_cell_size;
     observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const _lines;
+    observing::value::holder_ptr<float> const _row_spacing;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 
