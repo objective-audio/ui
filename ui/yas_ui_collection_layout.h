@@ -42,7 +42,9 @@ struct collection_layout {
     observing::canceller_ptr observe_preferred_cell_count(observing::caller<std::size_t>::handler_f &&,
                                                           bool const &sync);
 
-    observing::value::holder_ptr<std::size_t> const actual_cell_count;
+    std::size_t actual_cell_count() const;
+    observing::canceller_ptr observe_actual_cell_count(observing::caller<std::size_t>::handler_f &&, bool const &sync);
+
     observing::value::holder_ptr<ui::size> const default_cell_size;
     observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const lines;
     observing::value::holder_ptr<float> const row_spacing;
@@ -65,6 +67,7 @@ struct collection_layout {
     };
 
     observing::value::holder_ptr<std::size_t> const _preferred_cell_count;
+    observing::value::holder_ptr<std::size_t> const _actual_cell_count;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 

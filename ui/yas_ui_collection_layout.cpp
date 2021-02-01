@@ -43,7 +43,7 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 ui::collection_layout::collection_layout(args args)
     : frame_guide_rect(ui::layout_guide_rect::make_shared(std::move(args.frame))),
       _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
-      actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
+      _actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
       default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
       lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
       row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
@@ -110,6 +110,15 @@ observing::canceller_ptr ui::collection_layout::observe_preferred_cell_count(
     return this->_preferred_cell_count->observe(std::move(handler), sync);
 }
 
+std::size_t ui::collection_layout::actual_cell_count() const {
+    return this->_actual_cell_count->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_actual_cell_count(
+    observing::caller<std::size_t>::handler_f &&handler, bool const &sync) {
+    return this->_actual_cell_count->observe(std::move(handler), sync);
+}
+
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
     return this->_cell_guide_rects;
 }
@@ -132,7 +141,7 @@ void ui::collection_layout::_update_layout() {
 
     if (preferred_cell_count == 0) {
         this->_cell_guide_rects.clear();
-        this->actual_cell_count->set_value(0);
+        this->_actual_cell_count->set_value(0);
         return;
     }
 
@@ -230,7 +239,7 @@ void ui::collection_layout::_update_layout() {
 
     this->_pop_notify_waiting();
 
-    this->actual_cell_count->set_value(actual_cell_count);
+    this->_actual_cell_count->set_value(actual_cell_count);
 }
 
 std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell_location(std::size_t const cell_idx) {
