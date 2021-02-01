@@ -49,7 +49,11 @@ struct collection_layout {
     ui::size default_cell_size() const;
     observing::canceller_ptr observe_default_cell_size(observing::caller<ui::size>::handler_f &&, bool const &sync);
 
-    observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const lines;
+    void set_lines(std::vector<ui::collection_layout::line> const &);
+    std::vector<ui::collection_layout::line> const &lines() const;
+    observing::canceller_ptr observe_lines(observing::caller<std::vector<ui::collection_layout::line>>::handler_f &&,
+                                           bool const &sync);
+
     observing::value::holder_ptr<float> const row_spacing;
     observing::value::holder_ptr<float> const col_spacing;
     observing::value::holder_ptr<ui::layout_alignment> const alignment;
@@ -72,6 +76,7 @@ struct collection_layout {
     observing::value::holder_ptr<std::size_t> const _preferred_cell_count;
     observing::value::holder_ptr<std::size_t> const _actual_cell_count;
     observing::value::holder_ptr<ui::size> const _default_cell_size;
+    observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const _lines;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 

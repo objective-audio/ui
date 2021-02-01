@@ -29,7 +29,7 @@ using namespace yas;
     XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
     XCTAssertEqual(layout->preferred_cell_count(), 0);
     XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
-    XCTAssertEqual(layout->lines->value().size(), 0);
+    XCTAssertEqual(layout->lines().size(), 0);
     XCTAssertEqual(layout->row_spacing->value(), 0.0f);
     XCTAssertEqual(layout->col_spacing->value(), 0.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
@@ -58,11 +58,11 @@ using namespace yas;
     XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
     XCTAssertEqual(layout->preferred_cell_count(), 10);
     XCTAssertTrue(layout->default_cell_size() == (ui::size{2.5f, 3.5f}));
-    XCTAssertEqual(layout->lines->value().size(), 1);
-    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 2);
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
-    XCTAssertEqual(layout->lines->value().at(0).new_line_min_offset, 3.9f);
+    XCTAssertEqual(layout->lines().size(), 1);
+    XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 2);
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
+    XCTAssertEqual(layout->lines().at(0).new_line_min_offset, 3.9f);
     XCTAssertEqual(layout->row_spacing->value(), 4.0f);
     XCTAssertEqual(layout->col_spacing->value(), 4.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
@@ -280,19 +280,19 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
-    XCTAssertEqual(layout->lines->value().size(), 0);
+    XCTAssertEqual(layout->lines().size(), 0);
 
-    layout->lines->set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}},
-                               .new_line_min_offset = 0.0f}});
+    layout->set_lines({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}},
+                        .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines->value().size(), 1);
-    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 5);
+    XCTAssertEqual(layout->lines().size(), 1);
+    XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 5);
 
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines->value().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -321,12 +321,12 @@ using namespace yas;
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
-    layout->lines->set_value({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
-                              {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
+    layout->set_lines({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
+                       {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines->value().size(), 2);
-    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 3);
-    XCTAssertEqual(layout->lines->value().at(1).cell_sizes.size(), 2);
+    XCTAssertEqual(layout->lines().size(), 2);
+    XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout->lines().at(1).cell_sizes.size(), 2);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -358,12 +358,12 @@ using namespace yas;
 
     ui::size const cell_size = {1.0f, 1.0f};
 
-    layout->lines->set_value({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
-                              {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
+    layout->set_lines({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
+                       {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
 
-    XCTAssertEqual(layout->lines->value().size(), 2);
-    XCTAssertEqual(layout->lines->value().at(0).cell_sizes.size(), 3);
-    XCTAssertEqual(layout->lines->value().at(1).cell_sizes.size(), 2);
+    XCTAssertEqual(layout->lines().size(), 2);
+    XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 3);
+    XCTAssertEqual(layout->lines().at(1).cell_sizes.size(), 2);
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -732,9 +732,11 @@ using namespace yas;
 
     std::optional<std::vector<ui::collection_layout::line>> notified;
 
-    auto observer = layout->lines->observe([&notified](auto const &lines) { notified = lines; }, false);
+    auto observer = layout->observe_lines([&notified](auto const &lines) { notified = lines; }, false);
 
-    layout->lines->set_value({{}});
+    XCTAssertFalse(notified);
+
+    layout->set_lines({{}});
 
     XCTAssertTrue(notified);
     XCTAssertEqual(notified->size(), 1);

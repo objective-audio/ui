@@ -45,7 +45,7 @@ ui::collection_layout::collection_layout(args args)
       _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
       _actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
       _default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
-      lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
+      _lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
       row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
       col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
       alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
@@ -92,7 +92,7 @@ ui::collection_layout::collection_layout(args args)
     this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
 
     this->_update_layout();
 }
@@ -130,6 +130,19 @@ ui::size ui::collection_layout::default_cell_size() const {
 observing::canceller_ptr ui::collection_layout::observe_default_cell_size(
     observing::caller<ui::size>::handler_f &&handler, bool const &sync) {
     return this->_default_cell_size->observe(std::move(handler), sync);
+}
+
+void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> const &lines) {
+    this->_lines->set_value(lines);
+}
+
+std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
+    return this->_lines->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_lines(
+    observing::caller<std::vector<ui::collection_layout::line>>::handler_f &&handler, bool const &sync) {
+    return this->_lines->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -259,7 +272,7 @@ std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell
     std::size_t top_idx = 0;
     std::size_t line_idx = 0;
 
-    for (auto const &line : this->lines->value()) {
+    for (auto const &line : this->_lines->value()) {
         if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
             return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
         }
@@ -273,7 +286,7 @@ std::optional<ui::collection_layout::cell_location> ui::collection_layout::_cell
 ui::size ui::collection_layout::_cell_size(std::size_t const idx) {
     std::size_t find_idx = 0;
 
-    for (auto const &line : this->lines->value()) {
+    for (auto const &line : this->_lines->value()) {
         std::size_t const line_idx = idx - find_idx;
         std::size_t const line_cell_count = line.cell_sizes.size();
 
@@ -341,7 +354,7 @@ float ui::collection_layout::_transformed_row_cell_diff(std::size_t const idx) {
 
 float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const idx) {
     auto diff = 0.0f;
-    auto const &lines = this->lines->value();
+    auto const &lines = this->_lines->value();
 
     if (auto cell_location = _cell_location(idx)) {
         auto line_idx = cell_location->line_idx;
