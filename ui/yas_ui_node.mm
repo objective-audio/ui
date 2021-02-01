@@ -275,7 +275,7 @@ void ui::node::add_sub_node(ui::node_ptr const &sub_node, std::size_t const idx)
 
 void ui::node::remove_from_super_node() {
     if (auto parent = this->_parent->value().lock()) {
-        parent->_remove_sub_node(this->_weak_node.lock());
+        parent->_remove_sub_node(this);
     }
 }
 
@@ -638,12 +638,12 @@ void ui::node::_add_sub_node(ui::node_ptr &sub_node) {
     this->_set_updated(ui::node_update_reason::children);
 }
 
-void ui::node::_remove_sub_node(ui::node_ptr const &sub_node) {
+void ui::node::_remove_sub_node(ui::node *sub_node) {
     ui::node_wptr weak_node = ui::node_ptr{nullptr};
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_set_renderer_recursively(nullptr);
 
-    erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node == sub_node; });
+    erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node.get() == sub_node; });
 
     sub_node->_notifier->notify(method::removed_from_super);
 

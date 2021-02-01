@@ -160,7 +160,7 @@ struct node final : action_target, metal_object, renderable_node {
     void clear_updates() override;
 
     void _add_sub_node(ui::node_ptr &sub_node);
-    void _remove_sub_node(ui::node_ptr const &sub_node);
+    void _remove_sub_node(ui::node *sub_node);
     void _set_renderer_recursively(ui::renderer_ptr const &);
     void _update_mesh_color();
     void _set_updated(ui::node_update_reason const);
