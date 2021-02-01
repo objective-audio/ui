@@ -51,7 +51,7 @@ ui::collection_layout::collection_layout(args args)
       _alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
       _direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
-      col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)),
+      _col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)),
       borders(std::move(args.borders)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
@@ -89,7 +89,7 @@ ui::collection_layout::collection_layout(args args)
     this->_alignment->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
@@ -208,6 +208,19 @@ ui::layout_order const &ui::collection_layout::row_order() const {
 observing::canceller_ptr ui::collection_layout::observe_row_order(
     observing::caller<ui::layout_order>::handler_f &&handler, bool const &sync) {
     return this->_row_order->observe(std::move(handler), sync);
+}
+
+void ui::collection_layout::set_col_order(ui::layout_order const &order) {
+    this->_col_order->set_value(order);
+}
+
+ui::layout_order const &ui::collection_layout::col_order() const {
+    return this->_col_order->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_col_order(
+    observing::caller<ui::layout_order>::handler_f &&handler, bool const &sync) {
+    return this->_col_order->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -390,7 +403,7 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
         result.height *= -1.0f;
     }
 
-    if (this->col_order->value() == ui::layout_order::descending) {
+    if (this->_col_order->value() == ui::layout_order::descending) {
         result.width *= -1.0;
     }
 
@@ -403,7 +416,7 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
 
 float ui::collection_layout::_transformed_col_diff(std::size_t const idx) {
     auto diff = fabsf(_transformed_cell_size(idx).width) + this->_col_spacing->value();
-    if (this->col_order->value() == ui::layout_order::descending) {
+    if (this->_col_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
     return diff;
@@ -456,7 +469,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
         } break;
     }
 
-    switch (this->col_order->value()) {
+    switch (this->_col_order->value()) {
         case ui::layout_order::ascending: {
             result.origin.x = original.origin.x;
         } break;

@@ -36,7 +36,7 @@ using namespace yas;
     XCTAssertEqual(layout->alignment(), ui::layout_alignment::min);
     XCTAssertEqual(layout->direction(), ui::layout_direction::vertical);
     XCTAssertEqual(layout->row_order(), ui::layout_order::ascending);
-    XCTAssertEqual(layout->col_order->value(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->col_order(), ui::layout_order::ascending);
 }
 
 - (void)test_create_with_args {
@@ -69,7 +69,7 @@ using namespace yas;
     XCTAssertEqual(layout->alignment(), ui::layout_alignment::max);
     XCTAssertEqual(layout->direction(), ui::layout_direction::horizontal);
     XCTAssertEqual(layout->row_order(), ui::layout_order::descending);
-    XCTAssertEqual(layout->col_order->value(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order(), ui::layout_order::descending);
 }
 
 - (void)test_cell_layout_guide_rects {
@@ -532,9 +532,9 @@ using namespace yas;
 - (void)test_set_col_order {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->col_order->set_value(ui::layout_order::descending);
+    layout->set_col_order(ui::layout_order::descending);
 
-    XCTAssertEqual(layout->col_order->value(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order(), ui::layout_order::descending);
 }
 
 - (void)test_vertical_each_ascending_order {
@@ -780,9 +780,11 @@ using namespace yas;
 
     std::optional<ui::layout_order> notified;
 
-    auto observer = layout->col_order->observe([&notified](auto const &order) { notified = order; }, false);
+    auto observer = layout->observe_col_order([&notified](auto const &order) { notified = order; }, false);
 
-    layout->col_order->set_value(ui::layout_order::descending);
+    XCTAssertFalse(notified);
+
+    layout->set_col_order(ui::layout_order::descending);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_order::descending);
