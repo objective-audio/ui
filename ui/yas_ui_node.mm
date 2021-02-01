@@ -101,7 +101,9 @@ ui::node::node()
         ->add_to(this->_pool);
 }
 
-ui::node::~node() = default;
+ui::node::~node() {
+    this->_remove_sub_nodes_on_destructor();
+}
 
 void ui::node::set_position(ui::point &&position) {
     this->_position->set_value(std::move(position));
@@ -616,6 +618,15 @@ void ui::node::_remove_sub_node(ui::node *sub_node) {
     sub_node->_notifier->notify(method::removed_from_super);
 
     this->_set_updated(ui::node_update_reason::children);
+}
+
+void ui::node::_remove_sub_nodes_on_destructor() {
+    for (auto const &sub_node : this->_children) {
+        ui::node_wptr weak_node = ui::node_ptr{nullptr};
+        sub_node->_parent->set_value(std::move(weak_node));
+        sub_node->_set_renderer_recursively(nullptr);
+        sub_node->_notifier->notify(method::removed_from_super);
+    }
 }
 
 void ui::node::_set_renderer_recursively(ui::renderer_ptr const &renderer) {

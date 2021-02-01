@@ -257,7 +257,7 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertEqual(renderable->renderer(), renderer);
 }
 
-- (void)test_add_and_remove_node_observed {
+- (void)test_observe_add_and_remove_node {
     auto parent_node = ui::node::make_shared();
     auto sub_node = ui::node::make_shared();
     std::vector<ui::node::method> called;
@@ -270,6 +270,26 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertEqual(called.at(0), ui::node::method::added_to_super);
 
     sub_node->remove_from_super_node();
+
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertEqual(called.at(1), ui::node::method::removed_from_super);
+}
+
+- (void)test_observe_on_super_destructor {
+    auto sub_node = ui::node::make_shared();
+
+    std::vector<ui::node::method> called;
+
+    auto canceller = sub_node->observe([&called](ui::node::method const &method) { called.emplace_back(method); });
+
+    {
+        auto parent_node = ui::node::make_shared();
+
+        parent_node->add_sub_node(sub_node);
+
+        XCTAssertEqual(called.size(), 1);
+        XCTAssertEqual(called.at(0), ui::node::method::added_to_super);
+    }
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertEqual(called.at(1), ui::node::method::removed_from_super);
