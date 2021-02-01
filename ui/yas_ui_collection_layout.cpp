@@ -49,7 +49,7 @@ ui::collection_layout::collection_layout(args args)
       _row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
       _col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
       _alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
-      direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
+      _direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
       row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
       col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)),
       borders(std::move(args.borders)) {
@@ -87,7 +87,7 @@ ui::collection_layout::collection_layout(args args)
     this->_row_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_col_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_alignment->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
@@ -182,6 +182,19 @@ ui::layout_alignment const &ui::collection_layout::alignment() const {
 observing::canceller_ptr ui::collection_layout::observe_alignment(
     observing::caller<ui::layout_alignment>::handler_f &&handler, bool const &sync) {
     return this->_alignment->observe(std::move(handler), sync);
+}
+
+void ui::collection_layout::set_direction(ui::layout_direction const &direction) {
+    this->_direction->set_value(direction);
+}
+
+ui::layout_direction const &ui::collection_layout::direction() const {
+    return this->_direction->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_direction(
+    observing::caller<ui::layout_direction>::handler_f &&handler, bool const &sync) {
+    return this->_direction->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -353,7 +366,7 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
     ui::size result;
     auto const &cell_size = _cell_size(idx);
 
-    switch (this->direction->value()) {
+    switch (this->_direction->value()) {
         case ui::layout_direction::horizontal:
             result = ui::size{cell_size.height, cell_size.width};
         case ui::layout_direction::vertical:
@@ -444,7 +457,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
 }
 
 ui::region ui::collection_layout::_direction_swapped_region_if_horizontal(ui::region const &region) {
-    if (this->direction->value() == ui::layout_direction::horizontal) {
+    if (this->_direction->value() == ui::layout_direction::horizontal) {
         return ui::region{.origin = {region.origin.y, region.origin.x},
                           .size = {region.size.height, region.size.width}};
     } else {

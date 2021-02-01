@@ -34,7 +34,7 @@ using namespace yas;
     XCTAssertEqual(layout->col_spacing(), 0.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
     XCTAssertEqual(layout->alignment(), ui::layout_alignment::min);
-    XCTAssertEqual(layout->direction->value(), ui::layout_direction::vertical);
+    XCTAssertEqual(layout->direction(), ui::layout_direction::vertical);
     XCTAssertEqual(layout->row_order->value(), ui::layout_order::ascending);
     XCTAssertEqual(layout->col_order->value(), ui::layout_order::ascending);
 }
@@ -67,7 +67,7 @@ using namespace yas;
     XCTAssertEqual(layout->col_spacing(), 4.0f);
     XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
     XCTAssertEqual(layout->alignment(), ui::layout_alignment::max);
-    XCTAssertEqual(layout->direction->value(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->direction(), ui::layout_direction::horizontal);
     XCTAssertEqual(layout->row_order->value(), ui::layout_order::descending);
     XCTAssertEqual(layout->col_order->value(), ui::layout_order::descending);
 }
@@ -201,7 +201,7 @@ using namespace yas;
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
-    layout->direction->set_value(ui::layout_direction::horizontal);
+    layout->set_direction(ui::layout_direction::horizontal);
 
     // セルの並びを横にすれば高さの制限は受けない
     XCTAssertEqual(layout->actual_cell_count(), 8);
@@ -225,7 +225,7 @@ using namespace yas;
     // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
-    layout->direction->set_value(ui::layout_direction::vertical);
+    layout->set_direction(ui::layout_direction::vertical);
 
     // セルの並びを縦にすれば高さの制限は受けない
     XCTAssertEqual(layout->actual_cell_count(), 8);
@@ -516,9 +516,9 @@ using namespace yas;
 - (void)test_set_direction {
     auto layout = ui::collection_layout::make_shared();
 
-    layout->direction->set_value(ui::layout_direction::horizontal);
+    layout->set_direction(ui::layout_direction::horizontal);
 
-    XCTAssertEqual(layout->direction->value(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->direction(), ui::layout_direction::horizontal);
 }
 
 - (void)test_set_row_order {
@@ -791,9 +791,11 @@ using namespace yas;
 
     std::optional<ui::layout_direction> notified;
 
-    auto observer = layout->direction->observe([&notified](auto const &direction) { notified = direction; }, false);
+    auto observer = layout->observe_direction([&notified](auto const &direction) { notified = direction; }, false);
 
-    layout->direction->set_value(ui::layout_direction::horizontal);
+    XCTAssertFalse(notified);
+
+    layout->set_direction(ui::layout_direction::horizontal);
 
     XCTAssertTrue(notified);
     XCTAssertEqual(*notified, ui::layout_direction::horizontal);
