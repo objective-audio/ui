@@ -44,7 +44,7 @@ ui::collection_layout::collection_layout(args args)
     : frame_guide_rect(ui::layout_guide_rect::make_shared(std::move(args.frame))),
       _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
       _actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
-      default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
+      _default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
       lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
       row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
       col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
@@ -91,7 +91,7 @@ ui::collection_layout::collection_layout(args args)
     this->row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
 
     this->_update_layout();
@@ -117,6 +117,19 @@ std::size_t ui::collection_layout::actual_cell_count() const {
 observing::canceller_ptr ui::collection_layout::observe_actual_cell_count(
     observing::caller<std::size_t>::handler_f &&handler, bool const &sync) {
     return this->_actual_cell_count->observe(std::move(handler), sync);
+}
+
+void ui::collection_layout::set_default_cell_size(ui::size const &size) {
+    this->_default_cell_size->set_value(size);
+}
+
+ui::size ui::collection_layout::default_cell_size() const {
+    return this->_default_cell_size->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_default_cell_size(
+    observing::caller<ui::size>::handler_f &&handler, bool const &sync) {
+    return this->_default_cell_size->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -271,7 +284,7 @@ ui::size ui::collection_layout::_cell_size(std::size_t const idx) {
         find_idx += line_cell_count;
     }
 
-    return this->default_cell_size->value();
+    return this->_default_cell_size->value();
 }
 
 bool ui::collection_layout::_is_top_of_new_line(std::size_t const idx) {
