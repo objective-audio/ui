@@ -313,9 +313,7 @@ observing::canceller_ptr ui::node::observe(std::vector<method> const &methods,
             case ui::node::method::removed_from_super:
                 canceller = this->_notifier->observe([this, method](node::method const &value) {
                     if (method == value) {
-                        if (auto node = this->_weak_node.lock()) {
-                            this->_dispatch_notifier->notify(std::make_pair(method, this));
-                        }
+                        this->_dispatch_notifier->notify(std::make_pair(method, this));
                     }
                 });
                 break;
