@@ -70,7 +70,10 @@ struct collection_layout {
     ui::layout_direction const &direction() const;
     observing::canceller_ptr observe_direction(observing::caller<ui::layout_direction>::handler_f &&, bool const &sync);
 
-    observing::value::holder_ptr<ui::layout_order> const row_order;
+    void set_row_order(ui::layout_order const &);
+    ui::layout_order const &row_order() const;
+    observing::canceller_ptr observe_row_order(observing::caller<ui::layout_order>::handler_f &&, bool const &sync);
+
     observing::value::holder_ptr<ui::layout_order> const col_order;
     ui::layout_borders const borders;
     ui::layout_guide_rect_ptr const frame_guide_rect;
@@ -93,6 +96,7 @@ struct collection_layout {
     observing::value::holder_ptr<float> const _col_spacing;
     observing::value::holder_ptr<ui::layout_alignment> const _alignment;
     observing::value::holder_ptr<ui::layout_direction> const _direction;
+    observing::value::holder_ptr<ui::layout_order> const _row_order;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 

@@ -50,7 +50,7 @@ ui::collection_layout::collection_layout(args args)
       _col_spacing(observing::value::holder<float>::make_shared(args.col_spacing)),
       _alignment(observing::value::holder<ui::layout_alignment>::make_shared(args.alignment)),
       _direction(observing::value::holder<ui::layout_direction>::make_shared(args.direction)),
-      row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
+      _row_order(observing::value::holder<ui::layout_order>::make_shared(args.row_order)),
       col_order(observing::value::holder<ui::layout_order>::make_shared(args.col_order)),
       borders(std::move(args.borders)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
@@ -88,7 +88,7 @@ ui::collection_layout::collection_layout(args args)
     this->_col_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_alignment->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->_default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
@@ -195,6 +195,19 @@ ui::layout_direction const &ui::collection_layout::direction() const {
 observing::canceller_ptr ui::collection_layout::observe_direction(
     observing::caller<ui::layout_direction>::handler_f &&handler, bool const &sync) {
     return this->_direction->observe(std::move(handler), sync);
+}
+
+void ui::collection_layout::set_row_order(ui::layout_order const &order) {
+    this->_row_order->set_value(order);
+}
+
+ui::layout_order const &ui::collection_layout::row_order() const {
+    return this->_row_order->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_row_order(
+    observing::caller<ui::layout_order>::handler_f &&handler, bool const &sync) {
+    return this->_row_order->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -373,7 +386,7 @@ ui::size ui::collection_layout::_transformed_cell_size(std::size_t const idx) {
             result = cell_size;
     }
 
-    if (this->row_order->value() == ui::layout_order::descending) {
+    if (this->_row_order->value() == ui::layout_order::descending) {
         result.height *= -1.0f;
     }
 
@@ -398,7 +411,7 @@ float ui::collection_layout::_transformed_col_diff(std::size_t const idx) {
 
 float ui::collection_layout::_transformed_row_cell_diff(std::size_t const idx) {
     auto diff = fabsf(this->_transformed_cell_size(idx).height) + this->_row_spacing->value();
-    if (this->row_order->value() == ui::layout_order::descending) {
+    if (this->_row_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
     return diff;
@@ -422,7 +435,7 @@ float ui::collection_layout::_transformed_row_new_line_diff(std::size_t const id
         }
     }
 
-    if (this->row_order->value() == ui::layout_order::descending) {
+    if (this->_row_order->value() == ui::layout_order::descending) {
         diff *= -1.0f;
     }
 
@@ -433,7 +446,7 @@ ui::region ui::collection_layout::_transformed_border_rect() {
     auto const original = _direction_swapped_region_if_horizontal(this->_border_guide_rect->region());
     ui::region result{.size = original.size};
 
-    switch (this->row_order->value()) {
+    switch (this->_row_order->value()) {
         case ui::layout_order::ascending: {
             result.origin.y = original.origin.y;
         } break;
