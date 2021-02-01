@@ -295,38 +295,8 @@ ui::renderer_ptr ui::node::renderer() const {
     return this->_renderer->value().lock();
 }
 
-observing::canceller_ptr ui::node::observe(method const &method, observing::caller<chain_pair_t>::handler_f &&handler) {
-    return this->observe(std::vector<node::method>{method}, std::move(handler));
-}
-
-observing::canceller_ptr ui::node::observe(std::vector<method> const &methods,
-                                           observing::caller<chain_pair_t>::handler_f &&handler) {
-    for (auto const &method : methods) {
-        if (this->_dispatch_cancellers.count(method) > 0) {
-            continue;
-        }
-
-        observing::canceller_ptr canceller = nullptr;
-
-        switch (method) {
-            case ui::node::method::added_to_super:
-            case ui::node::method::removed_from_super:
-                canceller = this->_notifier->observe([this, method](node::method const &value) {
-                    if (method == value) {
-                        this->_dispatch_notifier->notify(std::make_pair(method, this));
-                    }
-                });
-                break;
-        }
-
-        this->_dispatch_cancellers.emplace(method, std::move(canceller));
-    }
-
-    return this->_dispatch_notifier->observe([methods, handler = std::move(handler)](auto const &pair) {
-        if (contains(methods, pair.first)) {
-            handler(pair);
-        }
-    });
+observing::canceller_ptr ui::node::observe(observing::caller<method>::handler_f &&handler) {
+    return this->_notifier->observe(std::move(handler));
 }
 
 observing::canceller_ptr ui::node::observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&handler,

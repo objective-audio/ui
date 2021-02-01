@@ -94,9 +94,7 @@ struct node final : action_target, metal_object, renderable_node {
     ui::renderer_ptr renderer() const override;
 
     using chain_pair_t = std::pair<method, ui::node const *>;
-    [[nodiscard]] observing::canceller_ptr observe(method const &, observing::caller<chain_pair_t>::handler_f &&);
-    [[nodiscard]] observing::canceller_ptr observe(std::vector<method> const &,
-                                                   observing::caller<chain_pair_t>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<method>::handler_f &&);
 
     [[nodiscard]] observing::canceller_ptr observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&,
                                                             bool const sync);
@@ -138,8 +136,6 @@ struct node final : action_target, metal_object, renderable_node {
     mutable simd::float4x4 _matrix = matrix_identity_float4x4;
     mutable simd::float4x4 _local_matrix = matrix_identity_float4x4;
 
-    mutable std::unordered_map<ui::node::method, observing::canceller_ptr> _dispatch_cancellers;
-    observing::notifier_ptr<chain_pair_t> const _dispatch_notifier = observing::notifier<chain_pair_t>::make_shared();
     observing::notifier_ptr<ui::node::method> const _notifier = observing::notifier<ui::node::method>::make_shared();
 
     node_updates_t _updates;
