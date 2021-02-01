@@ -136,7 +136,7 @@ void ui::strings::_update_layout() {
 
     auto const &font_atlas = this->_font_atlas->value();
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
-        this->_collection_layout->preferred_cell_count->set_value(0);
+        this->_collection_layout->set_preferred_cell_count(0);
         this->_rect_plane->data()->set_rect_count(0);
         return;
     }
@@ -169,7 +169,7 @@ void ui::strings::_update_layout() {
     }
 
     this->_collection_layout->lines->set_value(std::move(lines));
-    this->_collection_layout->preferred_cell_count->set_value(eliminated_text.size());
+    this->_collection_layout->set_preferred_cell_count(eliminated_text.size());
 
     auto const actual_cell_count = this->_collection_layout->actual_cell_count->value();
 

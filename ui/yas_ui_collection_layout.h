@@ -37,7 +37,11 @@ struct collection_layout {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    observing::value::holder_ptr<std::size_t> const preferred_cell_count;
+    void set_preferred_cell_count(std::size_t const &);
+    std::size_t preferred_cell_count() const;
+    observing::canceller_ptr observe_preferred_cell_count(observing::caller<std::size_t>::handler_f &&,
+                                                          bool const &sync);
+
     observing::value::holder_ptr<std::size_t> const actual_cell_count;
     observing::value::holder_ptr<ui::size> const default_cell_size;
     observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const lines;
@@ -59,6 +63,8 @@ struct collection_layout {
         std::size_t line_idx;
         std::size_t cell_idx;
     };
+
+    observing::value::holder_ptr<std::size_t> const _preferred_cell_count;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 

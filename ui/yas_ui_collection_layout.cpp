@@ -42,7 +42,7 @@ bool ui::collection_layout::line::operator!=(line const &rhs) const {
 
 ui::collection_layout::collection_layout(args args)
     : frame_guide_rect(ui::layout_guide_rect::make_shared(std::move(args.frame))),
-      preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
+      _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
       actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
       default_cell_size(observing::value::holder<ui::size>::make_shared(std::move(args.default_cell_size))),
       lines(observing::value::holder<std::vector<ui::collection_layout::line>>::make_shared(std::move(args.lines))),
@@ -90,11 +90,24 @@ ui::collection_layout::collection_layout(args args)
     this->direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
     this->lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
 
     this->_update_layout();
+}
+
+void ui::collection_layout::set_preferred_cell_count(std::size_t const &count) {
+    this->_preferred_cell_count->set_value(count);
+}
+
+std::size_t ui::collection_layout::preferred_cell_count() const {
+    return this->_preferred_cell_count->value();
+}
+
+observing::canceller_ptr ui::collection_layout::observe_preferred_cell_count(
+    observing::caller<std::size_t>::handler_f &&handler, bool const &sync) {
+    return this->_preferred_cell_count->observe(std::move(handler), sync);
 }
 
 std::vector<ui::layout_guide_rect_ptr> const &ui::collection_layout::cell_guide_rects() const {
@@ -115,7 +128,7 @@ void ui::collection_layout::_pop_notify_waiting() {
 
 void ui::collection_layout::_update_layout() {
     auto frame_region = this->_direction_swapped_region_if_horizontal(this->frame_guide_rect->region());
-    auto const &preferred_cell_count = this->preferred_cell_count->value();
+    auto const &preferred_cell_count = this->preferred_cell_count();
 
     if (preferred_cell_count == 0) {
         this->_cell_guide_rects.clear();
