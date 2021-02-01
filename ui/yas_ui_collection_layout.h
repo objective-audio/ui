@@ -41,6 +41,7 @@ struct collection_layout {
     ui::layout_borders const borders;
 
     void set_preferred_cell_count(std::size_t const &);
+    void set_preferred_cell_count(std::size_t &&);
     std::size_t preferred_cell_count() const;
     observing::canceller_ptr observe_preferred_cell_count(observing::caller<std::size_t>::handler_f &&,
                                                           bool const &sync);
@@ -49,35 +50,43 @@ struct collection_layout {
     observing::canceller_ptr observe_actual_cell_count(observing::caller<std::size_t>::handler_f &&, bool const &sync);
 
     void set_default_cell_size(ui::size const &);
+    void set_default_cell_size(ui::size &&);
     ui::size default_cell_size() const;
     observing::canceller_ptr observe_default_cell_size(observing::caller<ui::size>::handler_f &&, bool const &sync);
 
     void set_lines(std::vector<ui::collection_layout::line> const &);
+    void set_lines(std::vector<ui::collection_layout::line> &&);
     std::vector<ui::collection_layout::line> const &lines() const;
     observing::canceller_ptr observe_lines(observing::caller<std::vector<ui::collection_layout::line>>::handler_f &&,
                                            bool const &sync);
 
     void set_row_spacing(float const &);
+    void set_row_spacing(float &&);
     float const &row_spacing() const;
     observing::canceller_ptr observe_row_spacing(observing::caller<float>::handler_f &&, bool const &sync);
 
     void set_col_spacing(float const &);
+    void set_col_spacing(float &&);
     float const &col_spacing() const;
     observing::canceller_ptr observe_col_spacing(observing::caller<float>::handler_f &&, bool const &sync);
 
     void set_alignment(ui::layout_alignment const &);
+    void set_alignment(ui::layout_alignment &&);
     ui::layout_alignment const &alignment() const;
     observing::canceller_ptr observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&, bool const &sync);
 
     void set_direction(ui::layout_direction const &);
+    void set_direction(ui::layout_direction &&);
     ui::layout_direction const &direction() const;
     observing::canceller_ptr observe_direction(observing::caller<ui::layout_direction>::handler_f &&, bool const &sync);
 
     void set_row_order(ui::layout_order const &);
+    void set_row_order(ui::layout_order &&);
     ui::layout_order const &row_order() const;
     observing::canceller_ptr observe_row_order(observing::caller<ui::layout_order>::handler_f &&, bool const &sync);
 
     void set_col_order(ui::layout_order const &);
+    void set_col_order(ui::layout_order &&);
     ui::layout_order const &col_order() const;
     observing::canceller_ptr observe_col_order(observing::caller<ui::layout_order>::handler_f &&, bool const &sync);
 

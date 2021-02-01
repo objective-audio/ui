@@ -101,6 +101,10 @@ void ui::collection_layout::set_preferred_cell_count(std::size_t const &count) {
     this->_preferred_cell_count->set_value(count);
 }
 
+void ui::collection_layout::set_preferred_cell_count(std::size_t &&count) {
+    this->_preferred_cell_count->set_value(std::move(count));
+}
+
 std::size_t ui::collection_layout::preferred_cell_count() const {
     return this->_preferred_cell_count->value();
 }
@@ -123,6 +127,10 @@ void ui::collection_layout::set_default_cell_size(ui::size const &size) {
     this->_default_cell_size->set_value(size);
 }
 
+void ui::collection_layout::set_default_cell_size(ui::size &&size) {
+    this->_default_cell_size->set_value(std::move(size));
+}
+
 ui::size ui::collection_layout::default_cell_size() const {
     return this->_default_cell_size->value();
 }
@@ -134,6 +142,10 @@ observing::canceller_ptr ui::collection_layout::observe_default_cell_size(
 
 void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> const &lines) {
     this->_lines->set_value(lines);
+}
+
+void ui::collection_layout::set_lines(std::vector<ui::collection_layout::line> &&lines) {
+    this->_lines->set_value(std::move(lines));
 }
 
 std::vector<ui::collection_layout::line> const &ui::collection_layout::lines() const {
@@ -149,6 +161,10 @@ void ui::collection_layout::set_row_spacing(float const &spacing) {
     this->_row_spacing->set_value(spacing);
 }
 
+void ui::collection_layout::set_row_spacing(float &&spacing) {
+    this->_row_spacing->set_value(std::move(spacing));
+}
+
 float const &ui::collection_layout::row_spacing() const {
     return this->_row_spacing->value();
 }
@@ -160,6 +176,10 @@ observing::canceller_ptr ui::collection_layout::observe_row_spacing(observing::c
 
 void ui::collection_layout::set_col_spacing(float const &spacing) {
     this->_col_spacing->set_value(spacing);
+}
+
+void ui::collection_layout::set_col_spacing(float &&spacing) {
+    this->_col_spacing->set_value(std::move(spacing));
 }
 
 float const &ui::collection_layout::col_spacing() const {
@@ -175,6 +195,10 @@ void ui::collection_layout::set_alignment(ui::layout_alignment const &alignment)
     this->_alignment->set_value(alignment);
 }
 
+void ui::collection_layout::set_alignment(ui::layout_alignment &&alignment) {
+    this->_alignment->set_value(std::move(alignment));
+}
+
 ui::layout_alignment const &ui::collection_layout::alignment() const {
     return this->_alignment->value();
 }
@@ -186,6 +210,10 @@ observing::canceller_ptr ui::collection_layout::observe_alignment(
 
 void ui::collection_layout::set_direction(ui::layout_direction const &direction) {
     this->_direction->set_value(direction);
+}
+
+void ui::collection_layout::set_direction(ui::layout_direction &&direction) {
+    this->_direction->set_value(std::move(direction));
 }
 
 ui::layout_direction const &ui::collection_layout::direction() const {
@@ -201,6 +229,10 @@ void ui::collection_layout::set_row_order(ui::layout_order const &order) {
     this->_row_order->set_value(order);
 }
 
+void ui::collection_layout::set_row_order(ui::layout_order &&order) {
+    this->_row_order->set_value(std::move(order));
+}
+
 ui::layout_order const &ui::collection_layout::row_order() const {
     return this->_row_order->value();
 }
@@ -212,6 +244,10 @@ observing::canceller_ptr ui::collection_layout::observe_row_order(
 
 void ui::collection_layout::set_col_order(ui::layout_order const &order) {
     this->_col_order->set_value(order);
+}
+
+void ui::collection_layout::set_col_order(ui::layout_order &&order) {
+    this->_col_order->set_value(std::move(order));
 }
 
 ui::layout_order const &ui::collection_layout::col_order() const {
