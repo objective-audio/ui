@@ -257,57 +257,42 @@ struct test_render_encoder : ui::render_encodable {
     XCTAssertEqual(renderable->renderer(), renderer);
 }
 
-- (void)test_add_and_remove_node_observed {
+- (void)test_observe_add_and_remove_node {
     auto parent_node = ui::node::make_shared();
     auto sub_node = ui::node::make_shared();
-    int observer_called_count = 0;
-    bool added_to_super_called = false;
-    bool removed_from_super_called = false;
+    std::vector<ui::node::method> called;
 
-    auto added_canceller = sub_node->observe(ui::node::method::added_to_super,
-                                             [&observer_called_count, &added_to_super_called](auto const &pair) {
-                                                 added_to_super_called = true;
-                                                 ++observer_called_count;
-                                             });
-
-    auto removed_canceller = sub_node->observe(ui::node::method::removed_from_super,
-                                               [&observer_called_count, &removed_from_super_called](auto const &pair) {
-                                                   removed_from_super_called = true;
-                                                   ++observer_called_count;
-                                               });
+    auto canceller = sub_node->observe([&called](ui::node::method const &method) { called.emplace_back(method); });
 
     parent_node->add_sub_node(sub_node);
 
-    XCTAssertTrue(added_to_super_called);
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0), ui::node::method::added_to_super);
 
     sub_node->remove_from_super_node();
 
-    XCTAssertTrue(removed_from_super_called);
-
-    XCTAssertEqual(observer_called_count, 2);
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertEqual(called.at(1), ui::node::method::removed_from_super);
 }
 
-- (void)test_chain_with_methods {
-    std::optional<ui::node::method> called;
+- (void)test_observe_on_super_destructor {
+    auto sub_node = ui::node::make_shared();
 
-    auto node = ui::node::make_shared();
+    std::vector<ui::node::method> called;
 
-    auto canceller = node->observe({ui::node::method::added_to_super, ui::node::method::removed_from_super},
-                                   [&called](auto const &pair) { called = pair.first; });
+    auto canceller = sub_node->observe([&called](ui::node::method const &method) { called.emplace_back(method); });
 
-    auto super_node = ui::node::make_shared();
+    {
+        auto parent_node = ui::node::make_shared();
 
-    super_node->add_sub_node(node);
+        parent_node->add_sub_node(sub_node);
 
-    XCTAssertTrue(called);
-    XCTAssertEqual(*called, ui::node::method::added_to_super);
+        XCTAssertEqual(called.size(), 1);
+        XCTAssertEqual(called.at(0), ui::node::method::added_to_super);
+    }
 
-    called = std::nullopt;
-
-    node->remove_from_super_node();
-
-    XCTAssertTrue(called);
-    XCTAssertEqual(*called, ui::node::method::removed_from_super);
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertEqual(called.at(1), ui::node::method::removed_from_super);
 }
 
 - (void)test_chain_renderer {

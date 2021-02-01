@@ -101,7 +101,9 @@ ui::node::node()
         ->add_to(this->_pool);
 }
 
-ui::node::~node() = default;
+ui::node::~node() {
+    this->_remove_sub_nodes_on_destructor();
+}
 
 void ui::node::set_position(ui::point &&position) {
     this->_position->set_value(std::move(position));
@@ -275,7 +277,7 @@ void ui::node::add_sub_node(ui::node_ptr const &sub_node, std::size_t const idx)
 
 void ui::node::remove_from_super_node() {
     if (auto parent = this->_parent->value().lock()) {
-        parent->_remove_sub_node(this->_weak_node.lock());
+        parent->_remove_sub_node(this);
     }
 }
 
@@ -295,40 +297,8 @@ ui::renderer_ptr ui::node::renderer() const {
     return this->_renderer->value().lock();
 }
 
-observing::canceller_ptr ui::node::observe(method const &method, observing::caller<chain_pair_t>::handler_f &&handler) {
-    return this->observe(std::vector<node::method>{method}, std::move(handler));
-}
-
-observing::canceller_ptr ui::node::observe(std::vector<method> const &methods,
-                                           observing::caller<chain_pair_t>::handler_f &&handler) {
-    for (auto const &method : methods) {
-        if (this->_dispatch_cancellers.count(method) > 0) {
-            continue;
-        }
-
-        observing::canceller_ptr canceller = nullptr;
-
-        switch (method) {
-            case ui::node::method::added_to_super:
-            case ui::node::method::removed_from_super:
-                canceller = this->_notifier->observe([this, method](node::method const &value) {
-                    if (method == value) {
-                        if (auto node = this->_weak_node.lock()) {
-                            this->_dispatch_notifier->notify(std::make_pair(method, this));
-                        }
-                    }
-                });
-                break;
-        }
-
-        this->_dispatch_cancellers.emplace(method, std::move(canceller));
-    }
-
-    return this->_dispatch_notifier->observe([methods, handler = std::move(handler)](auto const &pair) {
-        if (contains(methods, pair.first)) {
-            handler(pair);
-        }
-    });
+observing::canceller_ptr ui::node::observe(observing::caller<method>::handler_f &&handler) {
+    return this->_notifier->observe(std::move(handler));
 }
 
 observing::canceller_ptr ui::node::observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&handler,
@@ -638,16 +608,25 @@ void ui::node::_add_sub_node(ui::node_ptr &sub_node) {
     this->_set_updated(ui::node_update_reason::children);
 }
 
-void ui::node::_remove_sub_node(ui::node_ptr const &sub_node) {
+void ui::node::_remove_sub_node(ui::node *sub_node) {
     ui::node_wptr weak_node = ui::node_ptr{nullptr};
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_set_renderer_recursively(nullptr);
 
-    erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node == sub_node; });
+    erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node.get() == sub_node; });
 
     sub_node->_notifier->notify(method::removed_from_super);
 
     this->_set_updated(ui::node_update_reason::children);
+}
+
+void ui::node::_remove_sub_nodes_on_destructor() {
+    for (auto const &sub_node : this->_children) {
+        ui::node_wptr weak_node = ui::node_ptr{nullptr};
+        sub_node->_parent->set_value(std::move(weak_node));
+        sub_node->_set_renderer_recursively(nullptr);
+        sub_node->_notifier->notify(method::removed_from_super);
+    }
 }
 
 void ui::node::_set_renderer_recursively(ui::renderer_ptr const &renderer) {
