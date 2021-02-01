@@ -42,7 +42,7 @@ void ui::strings::set_line_height(std::optional<float> line_height) {
 }
 
 void ui::strings::set_alignment(ui::layout_alignment const alignment) {
-    this->_collection_layout->alignment->set_value(alignment);
+    this->_collection_layout->set_alignment(alignment);
 }
 
 std::string const &ui::strings::text() const {
@@ -58,7 +58,7 @@ std::optional<float> const &ui::strings::line_height() const {
 }
 
 ui::layout_alignment const &ui::strings::alignment() const {
-    return this->_collection_layout->alignment->value();
+    return this->_collection_layout->alignment();
 }
 
 ui::layout_guide_rect_ptr const &ui::strings::frame_layout_guide_rect() {
@@ -86,7 +86,7 @@ observing::canceller_ptr ui::strings::observe_line_height(observing::caller<std:
 
 observing::canceller_ptr ui::strings::observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&handler,
                                                         bool const sync) {
-    return this->_collection_layout->alignment->observe(std::move(handler), sync);
+    return this->_collection_layout->observe_alignment(std::move(handler), sync);
 }
 
 void ui::strings::_prepare_chains() {
@@ -103,10 +103,10 @@ void ui::strings::_prepare_chains() {
 
     this->_line_height->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_property_pool);
 
-    this->_collection_layout->actual_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)
+    this->_collection_layout->observe_actual_cell_count([this](auto const &) { this->_update_layout(); }, false)
         ->add_to(this->_property_pool);
 
-    this->_collection_layout->alignment->observe([this](auto const &) { this->_update_layout(); }, false)
+    this->_collection_layout->observe_alignment([this](auto const &) { this->_update_layout(); }, false)
         ->add_to(this->_property_pool);
 }
 
@@ -136,7 +136,7 @@ void ui::strings::_update_layout() {
 
     auto const &font_atlas = this->_font_atlas->value();
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
-        this->_collection_layout->preferred_cell_count->set_value(0);
+        this->_collection_layout->set_preferred_cell_count(0);
         this->_rect_plane->data()->set_rect_count(0);
         return;
     }
@@ -168,10 +168,10 @@ void ui::strings::_update_layout() {
             ui::collection_layout::line{.cell_sizes = std::move(cell_sizes), .new_line_min_offset = cell_height});
     }
 
-    this->_collection_layout->lines->set_value(std::move(lines));
-    this->_collection_layout->preferred_cell_count->set_value(eliminated_text.size());
+    this->_collection_layout->set_lines(std::move(lines));
+    this->_collection_layout->set_preferred_cell_count(eliminated_text.size());
 
-    auto const actual_cell_count = this->_collection_layout->actual_cell_count->value();
+    auto const actual_cell_count = this->_collection_layout->actual_cell_count();
 
     this->_rect_plane->data()->set_rect_count(actual_cell_count);
 

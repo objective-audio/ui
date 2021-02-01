@@ -37,18 +37,59 @@ struct collection_layout {
         ui::layout_order col_order = ui::layout_order::ascending;
     };
 
-    observing::value::holder_ptr<std::size_t> const preferred_cell_count;
-    observing::value::holder_ptr<std::size_t> const actual_cell_count;
-    observing::value::holder_ptr<ui::size> const default_cell_size;
-    observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const lines;
-    observing::value::holder_ptr<float> const row_spacing;
-    observing::value::holder_ptr<float> const col_spacing;
-    observing::value::holder_ptr<ui::layout_alignment> const alignment;
-    observing::value::holder_ptr<ui::layout_direction> const direction;
-    observing::value::holder_ptr<ui::layout_order> const row_order;
-    observing::value::holder_ptr<ui::layout_order> const col_order;
-    ui::layout_borders const borders;
     ui::layout_guide_rect_ptr const frame_guide_rect;
+    ui::layout_borders const borders;
+
+    void set_preferred_cell_count(std::size_t const &);
+    void set_preferred_cell_count(std::size_t &&);
+    std::size_t preferred_cell_count() const;
+    observing::canceller_ptr observe_preferred_cell_count(observing::caller<std::size_t>::handler_f &&,
+                                                          bool const &sync);
+
+    std::size_t actual_cell_count() const;
+    observing::canceller_ptr observe_actual_cell_count(observing::caller<std::size_t>::handler_f &&, bool const &sync);
+
+    void set_default_cell_size(ui::size const &);
+    void set_default_cell_size(ui::size &&);
+    ui::size default_cell_size() const;
+    observing::canceller_ptr observe_default_cell_size(observing::caller<ui::size>::handler_f &&, bool const &sync);
+
+    void set_lines(std::vector<ui::collection_layout::line> const &);
+    void set_lines(std::vector<ui::collection_layout::line> &&);
+    std::vector<ui::collection_layout::line> const &lines() const;
+    observing::canceller_ptr observe_lines(observing::caller<std::vector<ui::collection_layout::line>>::handler_f &&,
+                                           bool const &sync);
+
+    void set_row_spacing(float const &);
+    void set_row_spacing(float &&);
+    float const &row_spacing() const;
+    observing::canceller_ptr observe_row_spacing(observing::caller<float>::handler_f &&, bool const &sync);
+
+    void set_col_spacing(float const &);
+    void set_col_spacing(float &&);
+    float const &col_spacing() const;
+    observing::canceller_ptr observe_col_spacing(observing::caller<float>::handler_f &&, bool const &sync);
+
+    void set_alignment(ui::layout_alignment const &);
+    void set_alignment(ui::layout_alignment &&);
+    ui::layout_alignment const &alignment() const;
+    observing::canceller_ptr observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&, bool const &sync);
+
+    void set_direction(ui::layout_direction const &);
+    void set_direction(ui::layout_direction &&);
+    ui::layout_direction const &direction() const;
+    observing::canceller_ptr observe_direction(observing::caller<ui::layout_direction>::handler_f &&, bool const &sync);
+
+    void set_row_order(ui::layout_order const &);
+    void set_row_order(ui::layout_order &&);
+    ui::layout_order const &row_order() const;
+    observing::canceller_ptr observe_row_order(observing::caller<ui::layout_order>::handler_f &&, bool const &sync);
+
+    void set_col_order(ui::layout_order const &);
+    void set_col_order(ui::layout_order &&);
+    ui::layout_order const &col_order() const;
+    observing::canceller_ptr observe_col_order(observing::caller<ui::layout_order>::handler_f &&, bool const &sync);
+
     std::vector<ui::layout_guide_rect_ptr> const &cell_guide_rects() const;
 
     [[nodiscard]] static collection_layout_ptr make_shared();
@@ -59,6 +100,17 @@ struct collection_layout {
         std::size_t line_idx;
         std::size_t cell_idx;
     };
+
+    observing::value::holder_ptr<std::size_t> const _preferred_cell_count;
+    observing::value::holder_ptr<std::size_t> const _actual_cell_count;
+    observing::value::holder_ptr<ui::size> const _default_cell_size;
+    observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const _lines;
+    observing::value::holder_ptr<float> const _row_spacing;
+    observing::value::holder_ptr<float> const _col_spacing;
+    observing::value::holder_ptr<ui::layout_alignment> const _alignment;
+    observing::value::holder_ptr<ui::layout_direction> const _direction;
+    observing::value::holder_ptr<ui::layout_order> const _row_order;
+    observing::value::holder_ptr<ui::layout_order> const _col_order;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
 
