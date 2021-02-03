@@ -21,8 +21,21 @@ ui::background::background()
 
 ui::background::~background() = default;
 
-observing::value::holder_ptr<ui::color> const &ui::background::color() const {
-    return this->_color;
+void ui::background::set_color(ui::color const &color) {
+    this->_color->set_value(color);
+}
+
+void ui::background::set_color(ui::color &&color) {
+    this->_color->set_value(std::move(color));
+}
+
+ui::color const &ui::background::color() const {
+    return this->_color->value();
+}
+
+observing::canceller_ptr ui::background::observe_color(observing::caller<ui::color>::handler_f &&handler,
+                                                       bool const sync) {
+    return this->_color->observe(std::move(handler), sync);
 }
 
 observing::value::holder_ptr<float> const &ui::background::alpha() const {

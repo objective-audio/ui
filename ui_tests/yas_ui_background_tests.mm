@@ -23,7 +23,7 @@ using namespace yas;
 
     XCTAssertFalse(renderable->updates().flags.any());
 
-    background->color()->set_value(ui::gray_color());
+    background->set_color(ui::gray_color());
 
     XCTAssertTrue(renderable->updates().flags.any());
 

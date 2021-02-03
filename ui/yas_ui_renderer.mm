@@ -226,10 +226,10 @@ void ui::renderer::view_render(yas_objc_view *const view) {
 
     this->_will_render_notifier->notify(nullptr);
 
-    if (to_bool(_pre_render())) {
+    if (to_bool(this->_pre_render())) {
         if ([view isKindOfClass:[YASUIMetalView class]]) {
             auto const metalView = (YASUIMetalView *)view;
-            auto const &color = this->background()->color()->value();
+            auto const &color = this->background()->color();
             auto const &alpha = this->background()->alpha()->value();
             metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
         }
@@ -237,7 +237,7 @@ void ui::renderer::view_render(yas_objc_view *const view) {
         ui::renderable_metal_system::cast(this->_metal_system)->view_render(view, this);
     }
 
-    _post_render();
+    this->_post_render();
 }
 
 void ui::renderer::view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) {

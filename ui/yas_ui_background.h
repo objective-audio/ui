@@ -13,7 +13,11 @@ class color;
 struct background final : renderable_background {
     virtual ~background();
 
-    [[nodiscard]] observing::value::holder_ptr<ui::color> const &color() const;
+    void set_color(ui::color const &);
+    void set_color(ui::color &&);
+    ui::color const &color() const;
+    observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
+
     [[nodiscard]] observing::value::holder_ptr<float> const &alpha() const;
 
     [[nodiscard]] static std::shared_ptr<background> make_shared();
