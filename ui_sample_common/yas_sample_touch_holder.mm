@@ -135,7 +135,7 @@ void sample::touch_holder::_move_touch_node(uintptr_t const identifier, ui::poin
     if (this->_objects.count(identifier)) {
         auto &touch_object = this->_objects.at(identifier);
         auto &node = touch_object.node;
-        node->position()->set_value(node->parent()->convert_position(position));
+        node->set_position(node->parent()->convert_position(position));
     }
 }
 
@@ -158,10 +158,8 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
         scale_action->set_value_transformer(ui::ease_out_sine_transformer());
         scale_action->set_completion_handler([node = node]() mutable { node->remove_from_super_node(); });
 
-        auto alpha_action = ui::make_action({.target = node,
-                                             .begin_alpha = node->alpha()->value(),
-                                             .end_alpha = 0.0f,
-                                             .continuous_action = {.duration = 0.3}});
+        auto alpha_action = ui::make_action(
+            {.target = node, .begin_alpha = node->alpha(), .end_alpha = 0.0f, .continuous_action = {.duration = 0.3}});
         alpha_action->set_value_transformer(
             ui::connect({ui::ease_out_sine_transformer(), ui::ease_out_sine_transformer()}));
 

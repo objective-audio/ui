@@ -27,7 +27,7 @@ ui::strings_ptr const &sample::big_button_text::strings() {
 void sample::big_button_text::_update_strings_position() {
     if (auto const &atlas = this->_strings->font_atlas()) {
         float const offset_y = (atlas->ascent() + atlas->descent()) * 0.5f;
-        this->_strings->rect_plane()->node()->position()->set_value(ui::point{0.0f, offset_y});
+        this->_strings->rect_plane()->node()->set_position(ui::point{0.0f, offset_y});
     }
 }
 

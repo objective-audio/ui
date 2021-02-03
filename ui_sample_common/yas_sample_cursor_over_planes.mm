@@ -26,7 +26,7 @@ static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> cons
 
                             auto make_color_action = [](ui::node_ptr const &node, ui::color const &color) {
                                 return ui::make_action(
-                                    {.target = node, .begin_color = node->color()->value(), .end_color = color});
+                                    {.target = node, .begin_color = node->color(), .end_color = color});
                             };
 
                             if (is_detected && !*prev_detected) {
@@ -78,7 +78,7 @@ void sample::cursor_over_planes::_setup_nodes() {
         plane->data()->set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
         auto const &node = plane->node();
-        node->position()->set_value({100.0f, 0.0f});
+        node->set_position({100.0f, 0.0f});
         node->set_scale({10.0f, 30.0f});
         node->set_color({.v = 0.3f});
         node->set_collider(ui::collider::make_shared(ui::shape::make_shared(ui::rect_shape{})));
