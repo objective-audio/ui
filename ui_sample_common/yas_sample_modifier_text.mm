@@ -16,7 +16,7 @@ sample::modifier_text::modifier_text(ui::font_atlas_ptr const &font_atlas, ui::l
         ->node()
         ->observe_renderer(
             [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-                pool->invalidate();
+                pool->cancel();
 
                 if (renderer) {
                     renderer->event_manager()

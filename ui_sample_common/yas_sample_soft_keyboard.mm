@@ -33,10 +33,10 @@ struct soft_key {
         renderer->erase_action(strings_node);
 
         if (animated) {
-            renderer->insert_action(ui::make_action(
-                {.target = button_node, .begin_alpha = button_node->alpha()->value(), .end_alpha = alpha}));
-            renderer->insert_action(ui::make_action(
-                {.target = strings_node, .begin_alpha = strings_node->alpha()->value(), .end_alpha = alpha}));
+            renderer->insert_action(
+                ui::make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
+            renderer->insert_action(
+                ui::make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
         } else {
             button_node->set_alpha(alpha);
             strings_node->set_alpha(alpha);
@@ -155,8 +155,8 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         this->_soft_keys.emplace_back(std::move(soft_key));
     }
 
-    this->_collection_layout->actual_cell_count
-        ->observe(
+    this->_collection_layout
+        ->observe_actual_cell_count(
             [this](auto const &) {
                 this->_update_soft_keys_enabled(true);
                 this->_update_soft_key_count();
@@ -217,7 +217,7 @@ void sample::soft_keyboard::_dispose_soft_keys() {
     this->_src_cell_guide_rects.clear();
     this->_dst_cell_guide_rects.clear();
     this->_cell_interporator = nullptr;
-    this->_dst_rect_pool.invalidate();
+    this->_dst_rect_pool.cancel();
 }
 
 void sample::soft_keyboard::_setup_soft_keys_layout() {
@@ -246,8 +246,7 @@ void sample::soft_keyboard::_setup_soft_keys_layout() {
             ->observe(
                 [weak_soft_key](ui::region const &value) {
                     if (auto const soft_key = weak_soft_key.lock()) {
-                        soft_key->button()->rect_plane()->node()->position()->set_value(
-                            {value.origin.x, value.origin.y});
+                        soft_key->button()->rect_plane()->node()->set_position({value.origin.x, value.origin.y});
                         soft_key->button()->layout_guide_rect()->set_region({.size = value.size});
                     }
                 },
@@ -273,7 +272,7 @@ void sample::soft_keyboard::_update_soft_key_count() {
         return;
     }
 
-    auto const layout_count = this->_collection_layout->actual_cell_count->value();
+    auto const layout_count = this->_collection_layout->actual_cell_count();
 
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {
@@ -340,7 +339,7 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
         return;
     }
 
-    auto const layout_count = this->_collection_layout->actual_cell_count->value();
+    auto const layout_count = this->_collection_layout->actual_cell_count();
 
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {

@@ -127,12 +127,12 @@ void ui::strings::_update_texture_observing() {
         }
     } else {
         this->_rect_plane->node()->mesh()->set_texture(nullptr);
-        this->_texture_pool.invalidate();
+        this->_texture_pool.cancel();
     }
 }
 
 void ui::strings::_update_layout() {
-    this->_cell_rect_pool.invalidate();
+    this->_cell_rect_pool.cancel();
 
     auto const &font_atlas = this->_font_atlas->value();
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {

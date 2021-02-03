@@ -31,13 +31,13 @@ static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::ren
                 if (auto node = weak_node.lock()) {
                     auto const &value = event->get<ui::cursor>();
 
-                    node->position()->set_value(node->parent()->convert_position(value.position()));
+                    node->set_position(node->parent()->convert_position(value.position()));
 
                     if (auto renderer = node->renderer()) {
                         for (auto child_node : node->children()) {
                             auto make_fade_action = [](ui::node_ptr const &node, float const alpha) {
                                 return ui::make_action({.target = node,
-                                                        .begin_alpha = node->alpha()->value(),
+                                                        .begin_alpha = node->alpha(),
                                                         .end_alpha = alpha,
                                                         .continuous_action = {.duration = 0.5}});
                             };

@@ -33,7 +33,7 @@ sample::justified_points::justified_points()
     this->_rect_plane->node()
         ->observe_renderer(
             [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-                pool->invalidate();
+                pool->cancel();
 
                 if (renderer) {
                     std::vector<ui::layout_guide_wptr> x_receivers;

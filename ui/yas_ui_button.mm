@@ -29,7 +29,7 @@ ui::button::button(ui::region const &region, std::size_t const state_count)
     this->_rect_plane->node()
         ->observe_renderer(
             [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-                pool->invalidate();
+                pool->cancel();
 
                 if (renderer) {
                     renderer->event_manager()
