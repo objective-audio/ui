@@ -15,12 +15,12 @@ struct background final : renderable_background {
 
     void set_color(ui::color const &);
     void set_color(ui::color &&);
-    ui::color const &color() const;
-    observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
+    [[nodiscard]] ui::color const &color() const;
+    [[nodiscard]] observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
 
     void set_alpha(float const &);
-    float const &alpha() const;
-    observing::canceller_ptr observe_alpha(observing::caller<float>::handler_f &&, bool const sync);
+    [[nodiscard]] float const &alpha() const;
+    [[nodiscard]] observing::canceller_ptr observe_alpha(observing::caller<float>::handler_f &&, bool const sync);
 
     [[nodiscard]] static std::shared_ptr<background> make_shared();
 
