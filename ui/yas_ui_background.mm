@@ -21,12 +21,33 @@ ui::background::background()
 
 ui::background::~background() = default;
 
-observing::value::holder_ptr<ui::color> const &ui::background::color() const {
-    return this->_color;
+void ui::background::set_color(ui::color const &color) {
+    this->_color->set_value(color);
 }
 
-observing::value::holder_ptr<float> const &ui::background::alpha() const {
-    return this->_alpha;
+void ui::background::set_color(ui::color &&color) {
+    this->_color->set_value(std::move(color));
+}
+
+ui::color const &ui::background::color() const {
+    return this->_color->value();
+}
+
+observing::canceller_ptr ui::background::observe_color(observing::caller<ui::color>::handler_f &&handler,
+                                                       bool const sync) {
+    return this->_color->observe(std::move(handler), sync);
+}
+
+void ui::background::set_alpha(float const &alpha) {
+    this->_alpha->set_value(alpha);
+}
+
+float const &ui::background::alpha() const {
+    return this->_alpha->value();
+}
+
+observing::canceller_ptr ui::background::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
+    return this->_alpha->observe(std::move(handler), sync);
 }
 
 std::shared_ptr<ui::background> ui::background::make_shared() {
