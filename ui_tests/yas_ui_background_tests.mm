@@ -31,7 +31,7 @@ using namespace yas;
 
     XCTAssertFalse(renderable->updates().flags.any());
 
-    background->alpha()->set_value(0.5f);
+    background->set_alpha(0.5f);
 
     XCTAssertTrue(renderable->updates().flags.any());
 }

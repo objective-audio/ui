@@ -38,8 +38,16 @@ observing::canceller_ptr ui::background::observe_color(observing::caller<ui::col
     return this->_color->observe(std::move(handler), sync);
 }
 
-observing::value::holder_ptr<float> const &ui::background::alpha() const {
-    return this->_alpha;
+void ui::background::set_alpha(float const &alpha) {
+    this->_alpha->set_value(alpha);
+}
+
+float const &ui::background::alpha() const {
+    return this->_alpha->value();
+}
+
+observing::canceller_ptr ui::background::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
+    return this->_alpha->observe(std::move(handler), sync);
 }
 
 std::shared_ptr<ui::background> ui::background::make_shared() {

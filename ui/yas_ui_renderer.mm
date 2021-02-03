@@ -230,7 +230,7 @@ void ui::renderer::view_render(yas_objc_view *const view) {
         if ([view isKindOfClass:[YASUIMetalView class]]) {
             auto const metalView = (YASUIMetalView *)view;
             auto const &color = this->background()->color();
-            auto const &alpha = this->background()->alpha()->value();
+            auto const &alpha = this->background()->alpha();
             metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
         }
 
