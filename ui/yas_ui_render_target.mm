@@ -39,9 +39,9 @@ ui::render_target::render_target()
     this->_set_textures_to_effect();
 
     this->_src_texture
-        ->observe([this](auto const &pair) {
-            if (pair.first == ui::texture::method::metal_texture_changed) {
-                ui::texture const *texture = pair.second;
+        ->observe([this](auto const &method) {
+            if (method == ui::texture::method::metal_texture_changed) {
+                ui::texture_ptr const &texture = this->_src_texture;
                 auto const renderPassDescriptor = *this->_render_pass_descriptor;
 
                 if (ui::metal_texture_ptr const &metal_texture = texture->metal_texture()) {
@@ -60,9 +60,9 @@ ui::render_target::render_target()
         ->add_to(this->_pool);
 
     this->_dst_texture
-        ->observe([this](auto const &pair) {
-            if (pair.first == ui::texture::method::size_updated) {
-                ui::texture const *texture = pair.second;
+        ->observe([this](auto const &method) {
+            if (method == ui::texture::method::size_updated) {
+                ui::texture_ptr const &texture = this->_dst_texture;
                 this->_data->set_rect_tex_coords(
                     ui::uint_region{.origin = ui::uint_point::zero(), .size = texture->actual_size()}, 0);
             }

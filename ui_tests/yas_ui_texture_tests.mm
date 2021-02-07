@@ -211,7 +211,7 @@ using namespace yas;
 
     std::optional<ui::texture::method> received;
 
-    auto canceller = texture->observe([&received](auto const &pair) { received = pair.first; });
+    auto canceller = texture->observe([&received](auto const &method) { received = method; });
 
     texture->set_point_size({16, 16});
 

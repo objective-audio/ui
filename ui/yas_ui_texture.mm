@@ -100,7 +100,7 @@ ui::metal_texture_ptr const &ui::texture::metal_texture() const {
     return this->_metal_texture;
 }
 
-observing::canceller_ptr ui::texture::observe(observing::caller<chain_pair_t>::handler_f &&handler) {
+observing::canceller_ptr ui::texture::observe(observing::caller<method>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
@@ -124,7 +124,7 @@ ui::setup_metal_result ui::texture::metal_setup(std::shared_ptr<ui::metal_system
 
         this->_add_images_to_metal_texture();
 
-        this->_notifier->notify(std::make_pair(method::metal_texture_changed, this));
+        this->_notifier->notify(method::metal_texture_changed);
     }
 
     return ui::setup_metal_result{nullptr};
@@ -231,7 +231,7 @@ void ui::texture::_add_image_to_metal_texture(texture_element_ptr const &element
 void ui::texture::_size_updated() {
     this->_metal_texture = nullptr;
     this->_draw_actual_pos = {this->_draw_actual_padding, this->_draw_actual_padding};
-    this->_notifier->notify(std::make_pair(method::size_updated, this));
+    this->_notifier->notify(method::size_updated);
 }
 
 ui::texture_ptr ui::texture::make_shared(args args) {

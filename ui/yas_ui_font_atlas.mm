@@ -51,9 +51,9 @@ ui::font_atlas::font_atlas(args &&args)
             this->_update_word_infos();
 
             if (texture) {
-                this->_texture_canceller = texture->observe([this](auto const &pair) {
-                    if (pair.first == texture::method::metal_texture_changed) {
-                        this->_texture_updated_notifier->notify(pair.second);
+                this->_texture_canceller = texture->observe([this](auto const &method) {
+                    if (method == texture::method::metal_texture_changed) {
+                        this->_texture_updated_notifier->notify(this->_texture->value());
                     }
                 });
             } else {
@@ -143,7 +143,7 @@ observing::canceller_ptr ui::font_atlas::observe_texture(observing::caller<textu
 }
 
 observing::canceller_ptr ui::font_atlas::observe_texture_updated(
-    observing::caller<ui::texture const *>::handler_f &&handler) {
+    observing::caller<ui::texture_ptr>::handler_f &&handler) {
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 
