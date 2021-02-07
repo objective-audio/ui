@@ -307,7 +307,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = manager->observe([&called, self](auto const &context) {
+    auto canceller = manager->observe([&called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -331,7 +331,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = manager->observe([&called, self](auto const &context) {
+    auto canceller = manager->observe([&called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -357,7 +357,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto observer = manager->observe([&called, self](auto const &context) {
+    auto canceller = manager->observe([&called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -384,7 +384,7 @@ using namespace yas;
     bool alt_called = false;
     bool func_called = false;
 
-    auto observer = manager->observe([&alt_called, &func_called, self](auto const &context) {
+    auto canceller = manager->observe([&alt_called, &func_called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -414,7 +414,7 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer = manager->observe([&began_called, &ended_called, self](auto const &context) {
+    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -461,7 +461,7 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer = manager->observe([&began_called, &ended_called, self](auto const &context) {
+    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -527,7 +527,7 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer = manager->observe([&began_called, &ended_called, self](auto const &context) {
+    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -586,7 +586,7 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer = manager->observe([&began_called, &ended_called, self](auto const &context) {
+    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -703,7 +703,7 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto observer = manager->observe([&began_called, &ended_called, self](auto const &context) {
+    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
         if (context.method == ui::event_manager::method::touch_changed) {
             ui::event_ptr const &event = context.event;
             if (event->get<ui::touch>().identifier() == 1) {
@@ -898,7 +898,7 @@ using namespace yas;
         called_events.clear();
     };
 
-    auto observer = manager->observe([&called_methods, &called_events](auto const &context) {
+    auto canceller = manager->observe([&called_methods, &called_events](auto const &context) {
         called_methods.push_back(context.method);
         called_events.push_back(context.event);
     });

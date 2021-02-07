@@ -57,7 +57,7 @@ using namespace yas;
         ended_called = false;
     };
 
-    auto observer = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &context) {
+    auto canceller = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -117,7 +117,7 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer = event_manager->observe([&self, &values](auto const &context) {
+    auto canceller = event_manager->observe([&self, &values](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
@@ -233,7 +233,7 @@ using namespace yas;
 
     observed_values values;
 
-    auto observer = event_manager->observe([&self, &values](auto const &context) {
+    auto canceller = event_manager->observe([&self, &values](auto const &context) {
         auto const &method = context.method;
         ui::event_ptr const &event = context.event;
 
