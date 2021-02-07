@@ -46,23 +46,25 @@ ui::font_atlas::font_atlas(args &&args)
     this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
         [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
 
-    this->_texture_changed_canceller = this->_texture->observe(
-        [this](ui::texture_ptr const &texture) {
-            this->_update_word_infos();
+    this->_texture
+        ->observe(
+            [this](ui::texture_ptr const &texture) {
+                this->_update_word_infos();
 
-            if (texture) {
-                this->_texture_canceller = texture->observe([this](auto const &method) {
-                    if (method == texture::method::metal_texture_changed) {
-                        this->_texture_updated_notifier->notify(this->_texture->value());
-                    }
-                });
-            } else {
-                this->_texture_canceller = std::nullopt;
-            }
+                if (texture) {
+                    this->_texture_canceller = texture->observe([this](auto const &method) {
+                        if (method == texture::method::metal_texture_changed) {
+                            this->_texture_updated_notifier->notify(this->_texture->value());
+                        }
+                    });
+                } else {
+                    this->_texture_canceller = std::nullopt;
+                }
 
-            this->_texture_changed_fetcher->push();
-        },
-        true);
+                this->_texture_changed_fetcher->push();
+            },
+            true)
+        ->set_to(this->_texture_changed_canceller);
 }
 
 ui::font_atlas::~font_atlas() = default;

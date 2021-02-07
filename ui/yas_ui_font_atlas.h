@@ -61,7 +61,7 @@ struct font_atlas final {
     std::vector<ui::word_info> _word_infos;
     std::vector<observing::canceller_ptr> _element_cancellers;
     std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
-    observing::canceller_ptr _texture_changed_canceller = nullptr;
+    observing::cancellable_ptr _texture_changed_canceller = nullptr;
 
     font_atlas(args &&);
 
