@@ -88,7 +88,7 @@ void ui::button::cancel_tracking() {
     }
 }
 
-observing::canceller_ptr ui::button::observe(observing::caller<chain_pair_t>::handler_f &&handler) {
+observing::canceller_ptr ui::button::observe(observing::caller<context>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
@@ -284,7 +284,8 @@ void ui::button::_cancel_tracking(ui::event_ptr const &event) {
 }
 
 void ui::button::_send_notify(method const method, ui::event_ptr const &event) {
-    this->_notifier->notify(std::make_pair(method, context{.button = this, .touch = event->get<ui::touch>()}));
+    context const context{.method = method, .touch = event->get<ui::touch>()};
+    this->_notifier->notify(context);
 }
 
 ui::button_ptr ui::button::make_shared(ui::region const &region) {

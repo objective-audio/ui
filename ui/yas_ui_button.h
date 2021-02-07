@@ -25,7 +25,7 @@ struct button final {
     };
 
     struct context {
-        ui::button const *button;
+        method const method;
         ui::touch_event const &touch;
     };
 
@@ -40,8 +40,7 @@ struct button final {
 
     void cancel_tracking();
 
-    using chain_pair_t = std::pair<method, context>;
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<chain_pair_t>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<context>::handler_f &&);
 
     ui::rect_plane_ptr const &rect_plane();
 
@@ -53,7 +52,7 @@ struct button final {
    private:
     ui::rect_plane_ptr _rect_plane;
     ui::layout_guide_rect_ptr _layout_guide_rect;
-    observing::notifier_ptr<chain_pair_t> _notifier = observing::notifier<chain_pair_t>::make_shared();
+    observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
