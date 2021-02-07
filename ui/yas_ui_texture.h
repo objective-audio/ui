@@ -49,8 +49,7 @@ struct texture : metal_object {
 
     std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
-    using chain_pair_t = std::pair<method, ui::texture const *>;
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<chain_pair_t>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<method>::handler_f &&);
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -72,7 +71,7 @@ struct texture : metal_object {
     uint_point _draw_actual_pos;
     std::vector<texture_element_ptr> _texture_elements;
     observing::canceller_ptr _scale_canceller = nullptr;
-    observing::notifier_ptr<chain_pair_t> const _notifier = observing::notifier<chain_pair_t>::make_shared();
+    observing::notifier_ptr<method> const _notifier = observing::notifier<method>::make_shared();
 
     explicit texture(args &&);
 
