@@ -142,7 +142,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         sample::soft_key_ptr soft_key = sample::soft_key::make_shared(key, key_width, this->_font_atlas);
 
         observing::canceller_ptr canceller = soft_key->button()->observe([this, key](auto const &context) {
-            if (context.first == ui::button::method::ended) {
+            if (context.method == ui::button::method::ended) {
                 this->_key_notifier->notify(key);
             }
         });

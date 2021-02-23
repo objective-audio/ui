@@ -57,20 +57,21 @@ using namespace yas;
         ended_called = false;
     };
 
-    auto canceller = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
+    auto canceller =
+        event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &context) {
+            auto const &method = context.method;
+            ui::event_ptr const &event = context.event;
 
-        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
 
-        if (event->phase() == ui::event_phase::began) {
-            began_called = true;
-        } else if (event->phase() == ui::event_phase::ended) {
-            ended_called = true;
-        } else if (event->phase() == ui::event_phase::changed) {
-            changed_called = true;
-        }
-    });
+            if (event->phase() == ui::event_phase::began) {
+                began_called = true;
+            } else if (event->phase() == ui::event_phase::ended) {
+                ended_called = true;
+            } else if (event->phase() == ui::event_phase::changed) {
+                changed_called = true;
+            }
+        });
 
     [view mouseEntered:[self _enterExitEventWithType:NSEventTypeMouseEntered location:NSMakePoint(1, 1)]];
 

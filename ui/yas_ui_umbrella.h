@@ -9,7 +9,6 @@
 #include <ui/yas_ui_batch.h>
 #include <ui/yas_ui_blur.h>
 #include <ui/yas_ui_button.h>
-#include <ui/yas_ui_chaining_utils.h>
 #include <ui/yas_ui_collection_layout.h>
 #include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_detector.h>
@@ -22,7 +21,7 @@
 #include <ui/yas_ui_matrix.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
-#include <ui/yas_ui_metal_protocol.h>
+#include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_metal_render_encoder.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_texture.h>
@@ -30,6 +29,7 @@
 #include <ui/yas_ui_metal_view_controller.h>
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_node_actions.h>
+#include <ui/yas_ui_observing_utils.h>
 #include <ui/yas_ui_rect_plane.h>
 #include <ui/yas_ui_render_info.h>
 #include <ui/yas_ui_render_target.h>
