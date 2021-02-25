@@ -8,12 +8,13 @@
 #include "yas_ui_node.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark - translate_action
 
-std::shared_ptr<ui::continuous_action> ui::make_action(translate_action::args args) {
+std::shared_ptr<continuous_action> ui::make_action(translate_action::args args) {
     auto target = args.target;
-    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    auto action = continuous_action::make_shared(std::move(args.continuous_action));
     action->set_target(target);
 
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -30,9 +31,9 @@ std::shared_ptr<ui::continuous_action> ui::make_action(translate_action::args ar
 
 #pragma mark - rotate_action
 
-std::shared_ptr<ui::continuous_action> ui::make_action(rotate_action::args args) {
+std::shared_ptr<continuous_action> ui::make_action(rotate_action::args args) {
     auto target = args.target;
-    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    auto action = continuous_action::make_shared(std::move(args.continuous_action));
     action->set_target(target);
 
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -55,9 +56,9 @@ std::shared_ptr<ui::continuous_action> ui::make_action(rotate_action::args args)
 
 #pragma mark - scale_action
 
-std::shared_ptr<ui::continuous_action> ui::make_action(ui::scale_action::args args) {
+std::shared_ptr<continuous_action> ui::make_action(scale_action::args args) {
     auto target = args.target;
-    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    auto action = continuous_action::make_shared(std::move(args.continuous_action));
     action->set_target(target);
 
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -73,9 +74,9 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::scale_action::args ar
 
 #pragma mark - color_action
 
-std::shared_ptr<ui::continuous_action> ui::make_action(ui::color_action::args args) {
+std::shared_ptr<continuous_action> ui::make_action(color_action::args args) {
     auto target = args.target;
-    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    auto action = continuous_action::make_shared(std::move(args.continuous_action));
     action->set_target(target);
 
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -91,9 +92,9 @@ std::shared_ptr<ui::continuous_action> ui::make_action(ui::color_action::args ar
 
 #pragma mark - alpha_action
 
-std::shared_ptr<ui::continuous_action> ui::make_action(ui::alpha_action::args args) {
+std::shared_ptr<continuous_action> ui::make_action(alpha_action::args args) {
     auto target = args.target;
-    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    auto action = continuous_action::make_shared(std::move(args.continuous_action));
     action->set_target(target);
 
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {

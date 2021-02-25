@@ -18,6 +18,7 @@
 #include "yas_ui_texture.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 namespace yas::ui {
 static auto constexpr _uniforms_buffer_allocating_unit = 1024 * 16;
@@ -28,7 +29,7 @@ static size_t constexpr _uniforms2d_required_align = 4;
 static size_t constexpr _uniforms2d_required_align = 256;
 #endif
 static size_t constexpr _uniforms2d_size = []() {
-    size_t const reqired_align = MAX(ui::_uniforms2d_required_align, _Alignof(uniforms2d_t));
+    size_t const reqired_align = MAX(_uniforms2d_required_align, _Alignof(uniforms2d_t));
     size_t constexpr size = sizeof(uniforms2d_t);
     size_t const mod = size % reqired_align;
     if (mod > 0) {
@@ -39,14 +40,14 @@ static size_t constexpr _uniforms2d_size = []() {
 }();
 }
 
-#pragma mark - ui::metal_system
+#pragma mark - metal_system
 
-ui::metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample_count)
+metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample_count)
     : _device(device), _sample_count(sample_count) {
     this->_command_queue.move_object([device newCommandQueue]);
     auto const bundle = objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
     this->_default_library.move_object([device newDefaultLibraryWithBundle:bundle.object() error:nil]);
-    this->_inflight_semaphore.move_object(dispatch_semaphore_create(ui::metal_system::_uniforms_buffer_count));
+    this->_inflight_semaphore.move_object(dispatch_semaphore_create(metal_system::_uniforms_buffer_count));
 
     auto defaultLibrary = this->_default_library.object();
 
@@ -103,13 +104,13 @@ ui::metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample
                                                                                           error:nil]);
 }
 
-ui::metal_system::~metal_system() = default;
+metal_system::~metal_system() = default;
 
-std::size_t ui::metal_system::last_encoded_mesh_count() const {
+std::size_t metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
 }
 
-void ui::metal_system::view_configure(yas_objc_view *const objc_view) {
+void metal_system::view_configure(yas_objc_view *const objc_view) {
     if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
         return;
     }
@@ -119,7 +120,7 @@ void ui::metal_system::view_configure(yas_objc_view *const objc_view) {
     view.sampleCount = this->_sample_count;
 }
 
-void ui::metal_system::view_render(yas_objc_view *const objc_view, ui::renderer const *renderer) {
+void metal_system::view_render(yas_objc_view *const objc_view, renderer const *renderer) {
     if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
         return;
     }
@@ -147,16 +148,16 @@ void ui::metal_system::view_render(yas_objc_view *const objc_view, ui::renderer 
         dispatch_semaphore_signal(semaphore.object());
     }];
 
-    this->_uniforms_buffer_index = (this->_uniforms_buffer_index + 1) % ui::metal_system::_uniforms_buffer_count;
+    this->_uniforms_buffer_index = (this->_uniforms_buffer_index + 1) % metal_system::_uniforms_buffer_count;
 
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
 }
 
-void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
+void metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
     bool needs_allocate = false;
-    NSUInteger length = uniforms_count * ui::_uniforms2d_size;
-    length = length - length % ui::_uniforms_buffer_allocating_unit + ui::_uniforms_buffer_allocating_unit;
+    NSUInteger length = uniforms_count * _uniforms2d_size;
+    length = length - length % _uniforms_buffer_allocating_unit + _uniforms_buffer_allocating_unit;
 
     if (auto &current_buffer = this->_uniforms_buffers[this->_uniforms_buffer_index]) {
         id<MTLBuffer> currentBuffer = current_buffer.object();
@@ -174,13 +175,13 @@ void ui::metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
     }
 }
 
-void ui::metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const encoder,
-                                   ui::metal_encode_info_ptr const &encode_info) {
+void metal_system::mesh_encode(mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const encoder,
+                               metal_encode_info_ptr const &encode_info) {
     auto const currentUniformsBuffer = this->_uniforms_buffers[this->_uniforms_buffer_index].object();
 
     if (auto uniforms_ptr =
             (uniforms2d_t *)(&((uint8_t *)[currentUniformsBuffer contents])[this->_uniforms_buffer_offset])) {
-        uniforms_ptr->matrix = ui::renderable_mesh::cast(mesh)->matrix();
+        uniforms_ptr->matrix = renderable_mesh::cast(mesh)->matrix();
         uniforms_ptr->color = mesh->color();
         uniforms_ptr->use_mesh_color = mesh->is_use_mesh_color();
     }
@@ -193,7 +194,7 @@ void ui::metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommand
     }
 
     auto &mesh_data = mesh->mesh_data();
-    auto const renderable_mesh_data = ui::renderable_mesh_data::cast(mesh_data);
+    auto const renderable_mesh_data = renderable_mesh_data::cast(mesh_data);
 
     [encoder setVertexBuffer:renderable_mesh_data->vertexBuffer()
                       offset:renderable_mesh_data->vertex_buffer_byte_offset()
@@ -206,87 +207,86 @@ void ui::metal_system::mesh_encode(ui::mesh_ptr const &mesh, id<MTLRenderCommand
                        indexBuffer:renderable_mesh_data->indexBuffer()
                  indexBufferOffset:renderable_mesh_data->index_buffer_byte_offset()];
 
-    this->_uniforms_buffer_offset += ui::_uniforms2d_size;
-    assert(this->_uniforms_buffer_offset + ui::_uniforms2d_size < currentUniformsBuffer.length);
+    this->_uniforms_buffer_offset += _uniforms2d_size;
+    assert(this->_uniforms_buffer_offset + _uniforms2d_size < currentUniformsBuffer.length);
 }
 
-void ui::metal_system::push_render_target(ui::render_stackable_ptr const &stackable,
-                                          ui::render_target const *render_target) {
-    ui::renderable_render_target const *renderable = render_target;
+void metal_system::push_render_target(render_stackable_ptr const &stackable, render_target const *render_target) {
+    renderable_render_target const *renderable = render_target;
 
     stackable->push_encode_info(
-        ui::metal_encode_info::make_shared({.renderPassDescriptor = renderable->renderPassDescriptor(),
-                                            .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
-                                            .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}));
+        metal_encode_info::make_shared({.renderPassDescriptor = renderable->renderPassDescriptor(),
+                                        .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
+                                        .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}));
 }
 
-objc_ptr<id<MTLTexture>> ui::metal_system::make_mtl_texture(MTLTextureDescriptor *const descriptor) {
+objc_ptr<id<MTLTexture>> metal_system::make_mtl_texture(MTLTextureDescriptor *const descriptor) {
     return objc_ptr_with_move_object([mtlDevice() newTextureWithDescriptor:descriptor]);
 }
 
-objc_ptr<id<MTLSamplerState>> ui::metal_system::make_mtl_sampler_state(MTLSamplerDescriptor *const descriptor) {
+objc_ptr<id<MTLSamplerState>> metal_system::make_mtl_sampler_state(MTLSamplerDescriptor *const descriptor) {
     return objc_ptr_with_move_object([mtlDevice() newSamplerStateWithDescriptor:descriptor]);
 }
 
-objc_ptr<id<MTLBuffer>> ui::metal_system::make_mtl_buffer(std::size_t const length) {
+objc_ptr<id<MTLBuffer>> metal_system::make_mtl_buffer(std::size_t const length) {
     return objc_ptr_with_move_object([mtlDevice() newBufferWithLength:length
                                                               options:MTLResourceOptionCPUCacheModeDefault]);
 }
 
-objc_ptr<id<MTLArgumentEncoder>> ui::metal_system::make_mtl_argument_encoder() {
+objc_ptr<id<MTLArgumentEncoder>> metal_system::make_mtl_argument_encoder() {
     return objc_ptr_with_move_object([*this->_fragment_function_with_texture newArgumentEncoderWithBufferIndex:0]);
 }
 
-objc_ptr<MPSImageGaussianBlur *> ui::metal_system::make_mtl_blur(double const blur) {
+objc_ptr<MPSImageGaussianBlur *> metal_system::make_mtl_blur(double const blur) {
     return objc_ptr_with_move_object([[MPSImageGaussianBlur alloc] initWithDevice:this->mtlDevice() sigma:blur]);
 }
 
-id<MTLDevice> ui::metal_system::mtlDevice() {
+id<MTLDevice> metal_system::mtlDevice() {
     return this->_device.object();
 }
 
-uint32_t ui::metal_system::sample_count() {
+uint32_t metal_system::sample_count() {
     return this->_sample_count;
 }
 
-id<MTLRenderPipelineState> ui::metal_system::mtlRenderPipelineStateWithTexture() {
+id<MTLRenderPipelineState> metal_system::mtlRenderPipelineStateWithTexture() {
     return this->_pipeline_state_with_texture.object();
 }
 
-id<MTLRenderPipelineState> ui::metal_system::mtlRenderPipelineStateWithoutTexture() {
+id<MTLRenderPipelineState> metal_system::mtlRenderPipelineStateWithoutTexture() {
     return this->_pipeline_state_without_texture.object();
 }
 
-void ui::metal_system::_render_nodes(ui::renderer const *renderer, id<MTLCommandBuffer> const commandBuffer,
-                                     MTLRenderPassDescriptor *const renderPassDesc) {
-    auto metal_render_encoder = ui::metal_render_encoder::make_shared();
+void metal_system::_render_nodes(renderer const *renderer, id<MTLCommandBuffer> const commandBuffer,
+                                 MTLRenderPassDescriptor *const renderPassDesc) {
+    auto metal_render_encoder = metal_render_encoder::make_shared();
     render_stackable::cast(metal_render_encoder)
-        ->push_encode_info(ui::metal_encode_info::make_shared(
+        ->push_encode_info(metal_encode_info::make_shared(
             {.renderPassDescriptor = renderPassDesc,
              .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
              .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));
 
     auto metal_system = this->_weak_metal_system.lock();
 
-    ui::render_info render_info{.detector = renderer->detector(),
-                                .render_encodable = render_encodable::cast(metal_render_encoder),
-                                .render_effectable = render_effectable::cast(metal_render_encoder),
-                                .render_stackable = render_stackable::cast(metal_render_encoder),
-                                .matrix = renderer->projection_matrix(),
-                                .mesh_matrix = renderer->projection_matrix()};
+    render_info render_info{.detector = renderer->detector(),
+                            .render_encodable = render_encodable::cast(metal_render_encoder),
+                            .render_effectable = render_effectable::cast(metal_render_encoder),
+                            .render_stackable = render_stackable::cast(metal_render_encoder),
+                            .matrix = renderer->projection_matrix(),
+                            .mesh_matrix = renderer->projection_matrix()};
 
-    ui::metal_object::cast(renderer->root_node())->metal_setup(metal_system);
-    ui::renderable_node::cast(renderer->root_node())->build_render_info(render_info);
+    metal_object::cast(renderer->root_node())->metal_setup(metal_system);
+    renderable_node::cast(renderer->root_node())->build_render_info(render_info);
 
     auto result = metal_render_encoder->encode(metal_system, commandBuffer);
     this->_last_encoded_mesh_count = result.encoded_mesh_count;
 }
 
-ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device) {
+metal_system_ptr metal_system::make_shared(id<MTLDevice> const device) {
     return make_shared(device, 4);
 }
 
-ui::metal_system_ptr ui::metal_system::make_shared(id<MTLDevice> const device, uint32_t const sample_count) {
+metal_system_ptr metal_system::make_shared(id<MTLDevice> const device, uint32_t const sample_count) {
     auto shared = std::shared_ptr<metal_system>(new metal_system{device, sample_count});
     shared->_weak_metal_system = shared;
     return shared;

@@ -8,24 +8,25 @@
 #include <vector>
 
 using namespace yas;
+using namespace yas::ui;
 
-bool ui::tree_updates::is_any_updated() const {
+bool tree_updates::is_any_updated() const {
     return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any() ||
            this->render_target_updates.flags.any() || this->effect_updates.flags.any();
 }
 
-bool ui::tree_updates::is_collider_updated() const {
+bool tree_updates::is_collider_updated() const {
     static node_updates_t const _node_collider_updates = {
         ui::node_update_reason::enabled, ui::node_update_reason::children, ui::node_update_reason::collider};
 
     return this->node_updates.and_test(_node_collider_updates);
 }
 
-bool ui::tree_updates::is_render_target_updated() const {
+bool tree_updates::is_render_target_updated() const {
     return this->render_target_updates.flags.any() || this->effect_updates.flags.any();
 }
 
-ui::batch_building_type ui::tree_updates::batch_building_type() const {
+batch_building_type tree_updates::batch_building_type() const {
     static node_updates_t const _node_rebuild_updates = {ui::node_update_reason::mesh, ui::node_update_reason::enabled,
                                                          ui::node_update_reason::children,
                                                          ui::node_update_reason::batch};

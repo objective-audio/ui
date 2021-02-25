@@ -5,8 +5,9 @@
 #include "yas_ui_image.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-ui::image::image(ui::image::args const &args)
+image::image(image::args const &args)
     : _point_size(args.point_size),
       _scale_factor(args.scale_factor),
       _actual_size(uint_size{static_cast<uint32_t>(args.point_size.width * args.scale_factor),
@@ -18,35 +19,35 @@ ui::image::image(ui::image::args const &args)
     CGColorSpaceRelease(colorSpace);
 }
 
-ui::image::~image() {
+image::~image() {
     CGContextRelease(this->_bitmap_context);
 }
 
-ui::uint_size ui::image::point_size() const {
+uint_size image::point_size() const {
     return this->_point_size;
 }
 
-ui::uint_size ui::image::actual_size() const {
+uint_size image::actual_size() const {
     return this->_actual_size;
 }
 
-double ui::image::scale_factor() const {
+double image::scale_factor() const {
     return this->_scale_factor;
 }
 
-const void *ui::image::data() const {
+const void *image::data() const {
     return CGBitmapContextGetData(this->_bitmap_context);
 }
 
-void *ui::image::data() {
+void *image::data() {
     return CGBitmapContextGetData(this->_bitmap_context);
 }
 
-void ui::image::clear() {
+void image::clear() {
     CGContextClearRect(this->_bitmap_context, CGRectMake(0, 0, this->_actual_size.width, this->_actual_size.height));
 }
 
-void ui::image::draw(ui::draw_handler_f const &function) {
+void image::draw(draw_handler_f const &function) {
     CGContextSaveGState(this->_bitmap_context);
 
     CGContextTranslateCTM(this->_bitmap_context, 0.0, this->_actual_size.height);
@@ -57,6 +58,6 @@ void ui::image::draw(ui::draw_handler_f const &function) {
     CGContextRestoreGState(this->_bitmap_context);
 }
 
-ui::image_ptr ui::image::make_shared(args const &args) {
+image_ptr image::make_shared(args const &args) {
     return std::shared_ptr<image>(new image{std::move(args)});
 }

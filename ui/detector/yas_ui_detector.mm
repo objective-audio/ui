@@ -5,15 +5,16 @@
 #include "yas_ui_detector.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-#pragma mark - ui::detector
+#pragma mark - detector
 
-ui::detector::detector() {
+detector::detector() {
 }
 
-ui::detector::~detector() = default;
+detector::~detector() = default;
 
-std::optional<ui::collider_ptr> ui::detector::detect(ui::point const &location) const {
+std::optional<collider_ptr> detector::detect(point const &location) const {
     for (auto const &collider : this->_colliders) {
         if (collider->hit_test(location)) {
             return collider;
@@ -22,7 +23,7 @@ std::optional<ui::collider_ptr> ui::detector::detect(ui::point const &location) 
     return std::nullopt;
 }
 
-bool ui::detector::detect(ui::point const &location, ui::collider_ptr const &collider) const {
+bool detector::detect(point const &location, collider_ptr const &collider) const {
     if (auto detected_collider = detect(location)) {
         if (detected_collider == collider) {
             return true;
@@ -31,16 +32,16 @@ bool ui::detector::detect(ui::point const &location, ui::collider_ptr const &col
     return false;
 }
 
-bool ui::detector::is_updating() {
+bool detector::is_updating() {
     return this->_updating;
 }
 
-void ui::detector::begin_update() {
+void detector::begin_update() {
     this->_updating = true;
     this->_colliders.clear();
 }
 
-void ui::detector::push_front_collider(ui::collider_ptr const &collider) {
+void detector::push_front_collider(collider_ptr const &collider) {
     if (!this->_updating) {
         throw std::runtime_error("detector is not updating.");
     }
@@ -48,10 +49,10 @@ void ui::detector::push_front_collider(ui::collider_ptr const &collider) {
     this->_colliders.emplace_front(collider);
 }
 
-void ui::detector::end_update() {
+void detector::end_update() {
     this->_updating = false;
 }
 
-ui::detector_ptr ui::detector::make_shared() {
+detector_ptr detector::make_shared() {
     return std::shared_ptr<detector>(new detector{});
 }

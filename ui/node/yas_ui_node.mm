@@ -24,34 +24,35 @@
 #include "yas_ui_types.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark - node
 
-ui::node::node()
-    : _parent(observing::value::holder<ui::node_wptr>::make_shared(ui::node_ptr{nullptr})),
-      _renderer(observing::value::holder<ui::renderer_wptr>::make_shared(ui::renderer_ptr{nullptr})),
-      _position(observing::value::holder<ui::point>::make_shared({.v = 0.0f})),
-      _scale(observing::value::holder<ui::size>::make_shared({.v = 1.0f})),
+node::node()
+    : _parent(observing::value::holder<node_wptr>::make_shared(node_ptr{nullptr})),
+      _renderer(observing::value::holder<renderer_wptr>::make_shared(renderer_ptr{nullptr})),
+      _position(observing::value::holder<point>::make_shared({.v = 0.0f})),
+      _scale(observing::value::holder<size>::make_shared({.v = 1.0f})),
       _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
       _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
-      _mesh(observing::value::holder<ui::mesh_ptr>::make_shared(nullptr)),
-      _collider(observing::value::holder<ui::collider_ptr>::make_shared(nullptr)),
+      _mesh(observing::value::holder<mesh_ptr>::make_shared(nullptr)),
+      _collider(observing::value::holder<collider_ptr>::make_shared(nullptr)),
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
-      _render_target(observing::value::holder<ui::render_target_ptr>::make_shared(nullptr)),
+      _render_target(observing::value::holder<render_target_ptr>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
     // enabled
 
-    this->_enabled->observe([this](bool const &) { this->_set_updated(ui::node_update_reason::enabled); }, false)
+    this->_enabled->observe([this](bool const &) { this->_set_updated(node_update_reason::enabled); }, false)
         ->add_to(this->_pool);
 
     // geometry
 
-    this->_position->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+    this->_position->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); }, false)
         ->add_to(this->_pool);
-    this->_angle->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+    this->_angle->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); }, false)
         ->add_to(this->_pool);
-    this->_scale->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::geometry); }, false)
+    this->_scale->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); }, false)
         ->add_to(this->_pool);
 
     // mesh and mesh_color
@@ -60,7 +61,7 @@ ui::node::node()
         ->observe(
             [this](auto const &) {
                 this->_update_mesh_color();
-                this->_set_updated(ui::node_update_reason::mesh);
+                this->_set_updated(node_update_reason::mesh);
             },
             true)
         ->add_to(this->_pool);
@@ -70,7 +71,7 @@ ui::node::node()
 
     // collider
 
-    this->_collider->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::collider); }, false)
+    this->_collider->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); }, false)
         ->add_to(this->_pool);
 
     // batch
@@ -88,7 +89,7 @@ ui::node::node()
 
                 prev_batch = batch;
 
-                this->_set_updated(ui::node_update_reason::batch);
+                this->_set_updated(node_update_reason::batch);
             },
             false)
         ->add_to(this->_pool);
@@ -96,214 +97,210 @@ ui::node::node()
     // render_target
 
     this->_render_target
-        ->observe([this](auto const &) { this->_set_updated(ui::node_update_reason::render_target); }, false)
+        ->observe([this](auto const &) { this->_set_updated(node_update_reason::render_target); }, false)
         ->add_to(this->_pool);
 }
 
-ui::node::~node() {
+node::~node() {
     this->_remove_sub_nodes_on_destructor();
 }
 
-void ui::node::set_position(ui::point &&position) {
+void node::set_position(point &&position) {
     this->_position->set_value(std::move(position));
 }
 
-void ui::node::set_position(ui::point const &position) {
+void node::set_position(point const &position) {
     this->_position->set_value(position);
 }
 
-ui::point const &ui::node::position() const {
+point const &node::position() const {
     return this->_position->value();
 }
 
-observing::canceller_ptr ui::node::observe_position(observing::caller<ui::point>::handler_f &&handler,
-                                                    bool const sync) {
+observing::canceller_ptr node::observe_position(observing::caller<point>::handler_f &&handler, bool const sync) {
     return this->_position->observe(std::move(handler), sync);
 }
 
-void ui::node::set_angle(ui::angle &&angle) {
+void node::set_angle(ui::angle &&angle) {
     this->_angle->set_value(std::move(angle));
 }
 
-void ui::node::set_angle(ui::angle const &angle) {
+void node::set_angle(ui::angle const &angle) {
     this->_angle->set_value(angle);
 }
 
-ui::angle const &ui::node::angle() const {
+angle const &node::angle() const {
     return this->_angle->value();
 }
 
-observing::canceller_ptr ui::node::observe_angle(observing::caller<ui::angle>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr node::observe_angle(observing::caller<ui::angle>::handler_f &&handler, bool const sync) {
     return this->_angle->observe(std::move(handler), sync);
 }
 
-void ui::node::set_scale(ui::size &&scale) {
+void node::set_scale(size &&scale) {
     this->_scale->set_value(std::move(scale));
 }
 
-void ui::node::set_scale(ui::size const &scale) {
+void node::set_scale(size const &scale) {
     this->_scale->set_value(scale);
 }
 
-ui::size const &ui::node::scale() const {
+size const &node::scale() const {
     return this->_scale->value();
 }
 
-observing::canceller_ptr ui::node::observe_scale(observing::caller<ui::size>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr node::observe_scale(observing::caller<size>::handler_f &&handler, bool const sync) {
     return this->_scale->observe(std::move(handler), sync);
 }
 
-void ui::node::set_color(ui::color &&color) {
+void node::set_color(ui::color &&color) {
     this->_color->set_value(std::move(color));
 }
 
-void ui::node::set_color(ui::color const &color) {
+void node::set_color(ui::color const &color) {
     this->_color->set_value(color);
 }
 
-ui::color const &ui::node::color() const {
+color const &node::color() const {
     return this->_color->value();
 }
 
-observing::canceller_ptr ui::node::observe_color(observing::caller<ui::color>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr node::observe_color(observing::caller<ui::color>::handler_f &&handler, bool const sync) {
     return this->_color->observe(std::move(handler), sync);
 }
 
-void ui::node::set_alpha(float &&alpha) {
+void node::set_alpha(float &&alpha) {
     this->_alpha->set_value(std::move(alpha));
 }
 
-void ui::node::set_alpha(float const &alpha) {
+void node::set_alpha(float const &alpha) {
     this->_alpha->set_value(alpha);
 }
 
-float const &ui::node::alpha() const {
+float const &node::alpha() const {
     return this->_alpha->value();
 }
 
-observing::canceller_ptr ui::node::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr node::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
     return this->_alpha->observe(std::move(handler), sync);
 }
 
-void ui::node::set_is_enabled(bool &&is_enabled) {
+void node::set_is_enabled(bool &&is_enabled) {
     this->_enabled->set_value(std::move(is_enabled));
 }
 
-void ui::node::set_is_enabled(bool const &is_enabled) {
+void node::set_is_enabled(bool const &is_enabled) {
     this->_enabled->set_value(is_enabled);
 }
 
-bool const &ui::node::is_enabled() const {
+bool const &node::is_enabled() const {
     return this->_enabled->value();
 }
 
-observing::canceller_ptr ui::node::observe_is_enabled(observing::caller<bool>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr node::observe_is_enabled(observing::caller<bool>::handler_f &&handler, bool const sync) {
     return this->_enabled->observe(std::move(handler), sync);
 }
 
-simd::float4x4 const &ui::node::matrix() const {
+simd::float4x4 const &node::matrix() const {
     this->_update_matrix();
     return this->_matrix;
 }
 
-simd::float4x4 const &ui::node::local_matrix() const {
+simd::float4x4 const &node::local_matrix() const {
     this->_update_local_matrix();
     return this->_local_matrix;
 }
 
-void ui::node::set_mesh(ui::mesh_ptr const &mesh) {
+void node::set_mesh(mesh_ptr const &mesh) {
     this->_mesh->set_value(mesh);
 }
 
-ui::mesh_ptr const &ui::node::mesh() const {
+mesh_ptr const &node::mesh() const {
     return this->_mesh->value();
 }
 
-observing::canceller_ptr ui::node::observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr node::observe_mesh(observing::caller<mesh_ptr>::handler_f &&handler, bool const sync) {
     return this->_mesh->observe(std::move(handler), sync);
 }
 
-void ui::node::set_collider(ui::collider_ptr const &collider) {
+void node::set_collider(collider_ptr const &collider) {
     this->_collider->set_value(collider);
 }
 
-ui::collider_ptr const &ui::node::collider() const {
+collider_ptr const &node::collider() const {
     return this->_collider->value();
 }
 
-observing::canceller_ptr ui::node::observe_collider(observing::caller<ui::collider_ptr>::handler_f &&handler,
-                                                    bool const sync) {
+observing::canceller_ptr node::observe_collider(observing::caller<collider_ptr>::handler_f &&handler, bool const sync) {
     return this->_collider->observe(std::move(handler), sync);
 }
 
-void ui::node::set_batch(ui::batch_ptr const &batch) {
+void node::set_batch(batch_ptr const &batch) {
     return this->_batch->set_value(batch);
 }
 
-ui::batch_ptr const &ui::node::batch() const {
+batch_ptr const &node::batch() const {
     return this->_batch->value();
 }
 
-observing::canceller_ptr ui::node::observe_batch(observing::caller<ui::batch_ptr>::handler_f &&handler,
-                                                 bool const sync) {
+observing::canceller_ptr node::observe_batch(observing::caller<batch_ptr>::handler_f &&handler, bool const sync) {
     return this->_batch->observe(std::move(handler), sync);
 }
 
-void ui::node::set_render_target(ui::render_target_ptr const &render_target) {
+void node::set_render_target(render_target_ptr const &render_target) {
     this->_render_target->set_value(render_target);
 }
 
-ui::render_target_ptr const &ui::node::render_target() const {
+render_target_ptr const &node::render_target() const {
     return this->_render_target->value();
 }
 
-observing::canceller_ptr ui::node::observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&handler,
-                                                         bool const sync) {
+observing::canceller_ptr node::observe_render_target(observing::caller<render_target_ptr>::handler_f &&handler,
+                                                     bool const sync) {
     return this->_render_target->observe(std::move(handler), sync);
 }
 
-void ui::node::add_sub_node(ui::node_ptr const &sub_node) {
+void node::add_sub_node(node_ptr const &sub_node) {
     sub_node->remove_from_super_node();
     this->_children.emplace_back(sub_node);
     this->_add_sub_node(this->_children.back());
 }
 
-void ui::node::add_sub_node(ui::node_ptr const &sub_node, std::size_t const idx) {
+void node::add_sub_node(node_ptr const &sub_node, std::size_t const idx) {
     sub_node->remove_from_super_node();
     auto iterator = this->_children.emplace(this->_children.begin() + idx, sub_node);
     this->_add_sub_node(*iterator);
 }
 
-void ui::node::remove_from_super_node() {
+void node::remove_from_super_node() {
     if (auto parent = this->_parent->value().lock()) {
         parent->_remove_sub_node(this);
     }
 }
 
-std::vector<ui::node_ptr> const &ui::node::children() const {
+std::vector<node_ptr> const &node::children() const {
     return this->_children;
 }
 
-std::vector<ui::node_ptr> &ui::node::children() {
+std::vector<node_ptr> &node::children() {
     return this->_children;
 }
 
-ui::node_ptr ui::node::parent() const {
+node_ptr node::parent() const {
     return this->_parent->value().lock();
 }
 
-ui::renderer_ptr ui::node::renderer() const {
+renderer_ptr node::renderer() const {
     return this->_renderer->value().lock();
 }
 
-observing::canceller_ptr ui::node::observe(observing::caller<method>::handler_f &&handler) {
+observing::canceller_ptr node::observe(observing::caller<method>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
-observing::canceller_ptr ui::node::observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&handler,
-                                                    bool const sync) {
+observing::canceller_ptr node::observe_renderer(observing::caller<renderer_ptr>::handler_f &&handler, bool const sync) {
     return this->_renderer->observe(
-        [handler = std::move(handler)](ui::renderer_wptr const &weak_renderer) {
+        [handler = std::move(handler)](renderer_wptr const &weak_renderer) {
             if (auto renderer = weak_renderer.lock()) {
                 handler(renderer);
             } else {
@@ -313,10 +310,9 @@ observing::canceller_ptr ui::node::observe_renderer(observing::caller<ui::render
         sync);
 }
 
-observing::canceller_ptr ui::node::observe_parent(observing::caller<ui::node_ptr>::handler_f &&handler,
-                                                  bool const sync) {
+observing::canceller_ptr node::observe_parent(observing::caller<node_ptr>::handler_f &&handler, bool const sync) {
     return this->_parent->observe(
-        [handler = std::move(handler)](ui::node_wptr const &weak_node) {
+        [handler = std::move(handler)](node_wptr const &weak_node) {
             if (auto node = weak_node.lock()) {
                 handler(node);
             } else {
@@ -326,32 +322,32 @@ observing::canceller_ptr ui::node::observe_parent(observing::caller<ui::node_ptr
         sync);
 }
 
-ui::point ui::node::convert_position(ui::point const &loc) const {
+point node::convert_position(point const &loc) const {
     auto const loc4 = simd::float4x4(matrix_invert(this->matrix())) * to_float4(loc.v);
     return {loc4.x, loc4.y};
 }
 
-void ui::node::attach_x_layout_guide(ui::layout_guide &guide) {
+void node::attach_x_layout_guide(layout_guide &guide) {
     this->_x_canceller = guide.observe(
         [this](float const &x) {
-            this->_position->set_value(ui::point{x, this->position().y});
+            this->_position->set_value(point{x, this->position().y});
         },
         true);
 
     this->_position_canceller = nullptr;
 }
 
-void ui::node::attach_y_layout_guide(ui::layout_guide &guide) {
+void node::attach_y_layout_guide(layout_guide &guide) {
     this->_y_canceller = guide.observe(
         [this](float const &y) {
-            this->_position->set_value(ui::point{this->position().x, y});
+            this->_position->set_value(point{this->position().x, y});
         },
         true);
 
     this->_position_canceller = nullptr;
 }
 
-void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point) {
+void node::attach_position_layout_guides(layout_guide_point &guide_point) {
     this->_position_canceller =
         guide_point.observe([this](auto const &position) { this->_position->set_value(position); }, true);
 
@@ -359,7 +355,7 @@ void ui::node::attach_position_layout_guides(ui::layout_guide_point &guide_point
     this->_y_canceller = nullptr;
 }
 
-ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> const &metal_system) {
+setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_system) {
     if (auto const &mesh = this->_mesh->value()) {
         if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
             return std::move(ul.value);
@@ -367,16 +363,16 @@ ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> c
     }
 
     if (auto &render_target = this->_render_target->value()) {
-        if (auto ul = unless(ui::metal_object::cast(render_target)->metal_setup(metal_system))) {
+        if (auto ul = unless(metal_object::cast(render_target)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
 
-        if (auto ul = unless(metal_object::cast(ui::renderable_render_target::cast(render_target)->mesh())
-                                 ->metal_setup(metal_system))) {
+        if (auto ul = unless(
+                metal_object::cast(renderable_render_target::cast(render_target)->mesh())->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
 
-        if (auto &effect = ui::renderable_render_target::cast(render_target)->effect()) {
+        if (auto &effect = renderable_render_target::cast(render_target)->effect()) {
             if (auto ul = unless(metal_object::cast(effect)->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
@@ -384,25 +380,25 @@ ui::setup_metal_result ui::node::metal_setup(std::shared_ptr<ui::metal_system> c
     }
 
     if (auto &batch = this->_batch->value()) {
-        if (auto ul = unless(ui::metal_object::cast(batch)->metal_setup(metal_system))) {
+        if (auto ul = unless(metal_object::cast(batch)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
 
     for (auto &sub_node : this->_children) {
-        if (auto ul = unless(ui::metal_object::cast(sub_node)->metal_setup(metal_system))) {
+        if (auto ul = unless(metal_object::cast(sub_node)->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
 
-    return ui::setup_metal_result{nullptr};
+    return setup_metal_result{nullptr};
 }
 
-void ui::node::set_renderer(ui::renderer_ptr const &renderer) {
+void node::set_renderer(renderer_ptr const &renderer) {
     this->_renderer->set_value(renderer);
 }
 
-void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
+void node::fetch_updates(tree_updates &tree_updates) {
     if (this->_enabled->value()) {
         tree_updates.node_updates.flags |= this->_updates.flags;
 
@@ -410,12 +406,12 @@ void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
             if (auto const &mesh_data = mesh->mesh_data()) {
-                tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
+                tree_updates.mesh_data_updates.flags |= renderable_mesh_data::cast(mesh_data)->updates().flags;
             }
         }
 
         if (auto &render_target = this->_render_target->value()) {
-            auto const renderable = ui::renderable_render_target::cast(render_target);
+            auto const renderable = renderable_render_target::cast(render_target);
 
             tree_updates.render_target_updates.flags |= renderable->updates().flags;
 
@@ -424,7 +420,7 @@ void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
             if (auto &mesh_data = mesh->mesh_data()) {
-                tree_updates.mesh_data_updates.flags |= ui::renderable_mesh_data::cast(mesh_data)->updates().flags;
+                tree_updates.mesh_data_updates.flags |= renderable_mesh_data::cast(mesh_data)->updates().flags;
             }
 
             if (auto &effect = renderable->effect()) {
@@ -433,14 +429,14 @@ void ui::node::fetch_updates(ui::tree_updates &tree_updates) {
         }
 
         for (auto &sub_node : this->_children) {
-            ui::renderable_node::cast(sub_node)->fetch_updates(tree_updates);
+            renderable_node::cast(sub_node)->fetch_updates(tree_updates);
         }
-    } else if (this->_updates.test(ui::node_update_reason::enabled)) {
-        tree_updates.node_updates.set(ui::node_update_reason::enabled);
+    } else if (this->_updates.test(node_update_reason::enabled)) {
+        tree_updates.node_updates.set(node_update_reason::enabled);
     }
 }
 
-void ui::node::build_render_info(ui::render_info &render_info) {
+void node::build_render_info(render_info &render_info) {
     if (this->_enabled->value()) {
         this->_update_local_matrix();
 
@@ -448,7 +444,7 @@ void ui::node::build_render_info(ui::render_info &render_info) {
         auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
         if (auto const &collider = this->_collider->value()) {
-            ui::renderable_collider::cast(collider)->set_matrix(this->_matrix);
+            renderable_collider::cast(collider)->set_matrix(this->_matrix);
 
             if (auto const &detector = render_info.detector) {
                 auto const detector_updatable = updatable_detector::cast(detector);
@@ -465,30 +461,30 @@ void ui::node::build_render_info(ui::render_info &render_info) {
             }
 
             if (auto &render_target = this->_render_target->value()) {
-                auto const &mesh = ui::renderable_render_target::cast(render_target)->mesh();
+                auto const &mesh = renderable_render_target::cast(render_target)->mesh();
                 renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                 render_encodable->append_mesh(mesh);
             }
         }
 
         if (auto const &render_target = this->_render_target->value()) {
-            bool needs_render = this->_updates.test(ui::node_update_reason::render_target);
+            bool needs_render = this->_updates.test(node_update_reason::render_target);
 
             if (!needs_render) {
-                needs_render = ui::renderable_render_target::cast(render_target)->updates().flags.any();
+                needs_render = renderable_render_target::cast(render_target)->updates().flags.any();
             }
 
-            auto const renderable = ui::renderable_render_target::cast(render_target);
+            auto const renderable = renderable_render_target::cast(render_target);
             auto const &effect = renderable->effect();
             if (!needs_render && effect) {
                 needs_render = renderable_effect::cast(effect)->updates().flags.any();
             }
 
             if (!needs_render) {
-                ui::tree_updates tree_updates;
+                tree_updates tree_updates;
 
                 for (auto &sub_node : this->_children) {
-                    ui::renderable_node::cast(sub_node)->fetch_updates(tree_updates);
+                    renderable_node::cast(sub_node)->fetch_updates(tree_updates);
                 }
 
                 needs_render = tree_updates.is_any_updated();
@@ -497,7 +493,7 @@ void ui::node::build_render_info(ui::render_info &render_info) {
             if (needs_render) {
                 auto const &stackable = render_info.render_stackable;
 
-                if (ui::renderable_render_target::cast(render_target)->push_encode_info(stackable)) {
+                if (renderable_render_target::cast(render_target)->push_encode_info(stackable)) {
                     ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
                                                        .render_effectable = render_info.render_effectable,
                                                        .render_stackable = render_info.render_stackable,
@@ -520,10 +516,10 @@ void ui::node::build_render_info(ui::render_info &render_info) {
                 }
             }
         } else if (auto const &batch = _batch->value()) {
-            ui::tree_updates tree_updates;
+            tree_updates tree_updates;
 
             for (auto const &sub_node : this->_children) {
-                ui::renderable_node::cast(sub_node)->fetch_updates(tree_updates);
+                renderable_node::cast(sub_node)->fetch_updates(tree_updates);
             }
 
             auto const building_type = tree_updates.batch_building_type();
@@ -560,13 +556,13 @@ void ui::node::build_render_info(ui::render_info &render_info) {
     }
 }
 
-bool ui::node::is_rendering_color_exists() {
+bool node::is_rendering_color_exists() {
     if (!this->_enabled->value()) {
         return false;
     }
 
     for (auto &sub_node : this->_children) {
-        if (ui::renderable_node::cast(sub_node)->is_rendering_color_exists()) {
+        if (renderable_node::cast(sub_node)->is_rendering_color_exists()) {
             return true;
         }
     }
@@ -578,7 +574,7 @@ bool ui::node::is_rendering_color_exists() {
     return false;
 }
 
-void ui::node::clear_updates() {
+void node::clear_updates() {
     if (this->_enabled->value()) {
         this->_updates.flags.reset();
 
@@ -587,48 +583,48 @@ void ui::node::clear_updates() {
         }
 
         if (auto &render_target = this->_render_target->value()) {
-            ui::renderable_render_target::cast(render_target)->clear_updates();
+            renderable_render_target::cast(render_target)->clear_updates();
         }
 
         for (auto &sub_node : this->_children) {
-            ui::renderable_node::cast(sub_node)->clear_updates();
+            renderable_node::cast(sub_node)->clear_updates();
         }
     } else {
-        this->_updates.reset(ui::node_update_reason::enabled);
+        this->_updates.reset(node_update_reason::enabled);
     }
 }
 
-void ui::node::_add_sub_node(ui::node_ptr &sub_node) {
+void node::_add_sub_node(node_ptr &sub_node) {
     sub_node->_parent->set_value(this->_weak_node);
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
     sub_node->_notifier->notify(method::added_to_super);
 
-    this->_set_updated(ui::node_update_reason::children);
+    this->_set_updated(node_update_reason::children);
 }
 
-void ui::node::_remove_sub_node(ui::node *sub_node) {
-    ui::node_wptr weak_node = ui::node_ptr{nullptr};
+void node::_remove_sub_node(node *sub_node) {
+    node_wptr weak_node = node_ptr{nullptr};
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_set_renderer_recursively(nullptr);
 
-    erase_if(this->_children, [&sub_node](ui::node_ptr const &node) { return node.get() == sub_node; });
+    erase_if(this->_children, [&sub_node](node_ptr const &node) { return node.get() == sub_node; });
 
     sub_node->_notifier->notify(method::removed_from_super);
 
-    this->_set_updated(ui::node_update_reason::children);
+    this->_set_updated(node_update_reason::children);
 }
 
-void ui::node::_remove_sub_nodes_on_destructor() {
+void node::_remove_sub_nodes_on_destructor() {
     for (auto const &sub_node : this->_children) {
-        ui::node_wptr weak_node = ui::node_ptr{nullptr};
+        node_wptr weak_node = node_ptr{nullptr};
         sub_node->_parent->set_value(std::move(weak_node));
         sub_node->_set_renderer_recursively(nullptr);
         sub_node->_notifier->notify(method::removed_from_super);
     }
 }
 
-void ui::node::_set_renderer_recursively(ui::renderer_ptr const &renderer) {
+void node::_set_renderer_recursively(renderer_ptr const &renderer) {
     this->_renderer->set_value(renderer);
 
     for (auto const &sub_node : this->_children) {
@@ -636,7 +632,7 @@ void ui::node::_set_renderer_recursively(ui::renderer_ptr const &renderer) {
     }
 }
 
-void ui::node::_update_mesh_color() {
+void node::_update_mesh_color() {
     if (auto const &mesh = this->_mesh->value()) {
         auto const &color = this->_color->value();
         auto const &alpha = this->_alpha->value();
@@ -644,12 +640,12 @@ void ui::node::_update_mesh_color() {
     }
 }
 
-void ui::node::_set_updated(ui::node_update_reason const reason) {
+void node::_set_updated(node_update_reason const reason) {
     this->_updates.set(reason);
 }
 
-void ui::node::_update_local_matrix() const {
-    if (this->_updates.test(ui::node_update_reason::geometry)) {
+void node::_update_local_matrix() const {
+    if (this->_updates.test(node_update_reason::geometry)) {
         auto const &position = this->_position->value();
         auto const &angle = this->_angle->value();
         auto const &scale = this->_scale->value();
@@ -658,7 +654,7 @@ void ui::node::_update_local_matrix() const {
     }
 }
 
-void ui::node::_update_matrix() const {
+void node::_update_matrix() const {
     if (auto locked_parent = this->_parent->value().lock()) {
         this->_matrix = locked_parent->matrix();
     } else {
@@ -674,17 +670,17 @@ void ui::node::_update_matrix() const {
     this->_matrix = this->_matrix * this->_local_matrix;
 }
 
-std::shared_ptr<ui::node> ui::node::make_shared() {
+std::shared_ptr<node> node::make_shared() {
     auto shared = std::shared_ptr<node>(new node{});
     shared->_weak_node = shared;
     return shared;
 }
 
-std::string yas::to_string(ui::node::method const &method) {
+std::string yas::to_string(node::method const &method) {
     switch (method) {
-        case ui::node::method::added_to_super:
+        case node::method::added_to_super:
             return "added_to_super";
-        case ui::node::method::removed_from_super:
+        case node::method::removed_from_super:
             return "removed_from_super";
     }
 }

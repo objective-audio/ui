@@ -9,6 +9,7 @@
 #include "yas_ui_types.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark - event::impl
 
@@ -16,11 +17,11 @@ struct ui::event_impl_base {
     virtual std::type_info const &type() const = 0;
     virtual bool is_equal(std::shared_ptr<event_impl_base> const &rhs) const = 0;
 
-    event_phase phase = ui::event_phase::none;
+    event_phase phase = event_phase::none;
 };
 
 template <typename T>
-struct ui::event::impl : ui::event_impl_base {
+struct event::impl : event_impl_base {
     typename T::type value;
 
     impl() {
@@ -51,30 +52,30 @@ struct ui::event::impl : ui::event_impl_base {
 
 #pragma mark - event
 
-ui::event::event(cursor const &) : _impl(std::make_shared<impl<ui::cursor>>()) {
+event::event(cursor const &) : _impl(std::make_shared<impl<cursor>>()) {
 }
 
-ui::event::event(touch const &) : _impl(std::make_shared<impl<ui::touch>>()) {
+event::event(touch const &) : _impl(std::make_shared<impl<touch>>()) {
 }
 
-ui::event::event(key const &) : _impl(std::make_shared<impl<ui::key>>()) {
+event::event(key const &) : _impl(std::make_shared<impl<key>>()) {
 }
 
-ui::event::event(modifier const &) : _impl(std::make_shared<impl<ui::modifier>>()) {
+event::event(modifier const &) : _impl(std::make_shared<impl<modifier>>()) {
 }
 
-ui::event::~event() = default;
+event::~event() = default;
 
-ui::event_phase ui::event::phase() const {
+event_phase event::phase() const {
     return this->_impl->phase;
 }
 
-std::type_info const &ui::event::type_info() const {
+std::type_info const &event::type_info() const {
     return this->_impl->type();
 }
 
 template <typename T>
-typename T::type const &ui::event::get() const {
+typename T::type const &event::get() const {
     if (auto ip = std::dynamic_pointer_cast<impl<T>>(this->_impl)) {
         return ip->value;
     }
@@ -83,51 +84,51 @@ typename T::type const &ui::event::get() const {
     return _default;
 }
 
-template ui::cursor::type const &ui::event::get<ui::cursor>() const;
-template ui::touch::type const &ui::event::get<ui::touch>() const;
-template ui::key::type const &ui::event::get<ui::key>() const;
-template ui::modifier::type const &ui::event::get<ui::modifier>() const;
+template cursor::type const &event::get<cursor>() const;
+template touch::type const &event::get<touch>() const;
+template key::type const &event::get<key>() const;
+template modifier::type const &event::get<modifier>() const;
 
-uintptr_t ui::event::identifier() const {
+uintptr_t event::identifier() const {
     return reinterpret_cast<uintptr_t>(this);
 }
 
-bool ui::event::operator==(event const &rhs) const {
+bool event::operator==(event const &rhs) const {
     return rhs._impl != nullptr && this->_impl->is_equal(rhs._impl);
 }
 
-bool ui::event::operator!=(event const &rhs) const {
+bool event::operator!=(event const &rhs) const {
     return !(*this == rhs);
 }
 
-void ui::event::set_phase(event_phase const &phase) {
+void event::set_phase(event_phase const &phase) {
     this->_impl->phase = std::move(phase);
 }
 
-std::shared_ptr<ui::event_impl_base> ui::event::get_impl() {
+std::shared_ptr<event_impl_base> event::get_impl() {
     return this->_impl;
 }
 
-ui::event_ptr ui::event::make_shared(cursor const &cursor) {
+event_ptr event::make_shared(cursor const &cursor) {
     return std::shared_ptr<event>(new event{cursor});
 }
 
-ui::event_ptr ui::event::make_shared(touch const &touch) {
+event_ptr event::make_shared(touch const &touch) {
     return std::shared_ptr<event>(new event{touch});
 }
 
-ui::event_ptr ui::event::make_shared(key const &key) {
+event_ptr event::make_shared(key const &key) {
     return std::shared_ptr<event>(new event{key});
 }
 
-ui::event_ptr ui::event::make_shared(modifier const &modifier) {
+event_ptr event::make_shared(modifier const &modifier) {
     return std::shared_ptr<event>(new event{modifier});
 }
 
 #pragma mark - manageable_event
 
 template <typename T>
-void ui::manageable_event::set(typename T::type value) {
+void manageable_event::set(typename T::type value) {
     if (auto ip = std::dynamic_pointer_cast<event::impl<T>>(this->get_impl())) {
         ip->value = std::move(value);
     } else {
@@ -135,38 +136,38 @@ void ui::manageable_event::set(typename T::type value) {
     }
 }
 
-template void ui::manageable_event::set<ui::cursor>(ui::cursor::type);
-template void ui::manageable_event::set<ui::touch>(ui::touch::type);
-template void ui::manageable_event::set<ui::key>(ui::key::type);
-template void ui::manageable_event::set<ui::modifier>(ui::modifier::type);
+template void manageable_event::set<cursor>(cursor::type);
+template void manageable_event::set<touch>(touch::type);
+template void manageable_event::set<key>(key::type);
+template void manageable_event::set<modifier>(modifier::type);
 
 #pragma mark - event_manager
 
-ui::event_manager::event_manager() {
+event_manager::event_manager() {
 }
 
-ui::event_manager::~event_manager() = default;
+event_manager::~event_manager() = default;
 
-observing::canceller_ptr ui::event_manager::observe(observing::caller<context>::handler_f &&handler) {
+observing::canceller_ptr event_manager::observe(observing::caller<context>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
-void ui::event_manager::input_cursor_event(cursor_event const &value) {
-    ui::event_phase phase;
+void event_manager::input_cursor_event(cursor_event const &value) {
+    event_phase phase;
 
     if (value.contains_in_window()) {
         if (this->_cursor_event) {
             phase = event_phase::changed;
         } else {
             phase = event_phase::began;
-            this->_cursor_event = ui::event::make_shared(cursor_tag);
+            this->_cursor_event = event::make_shared(cursor_tag);
         }
     } else {
         phase = event_phase::ended;
     }
 
     if (this->_cursor_event) {
-        auto manageable_event = ui::manageable_event::cast(this->_cursor_event);
+        auto manageable_event = manageable_event::cast(this->_cursor_event);
         manageable_event->set_phase(phase);
         manageable_event->set<cursor>(value);
 
@@ -178,20 +179,20 @@ void ui::event_manager::input_cursor_event(cursor_event const &value) {
     }
 }
 
-void ui::event_manager::input_touch_event(event_phase const phase, touch_event const &value) {
+void event_manager::input_touch_event(event_phase const phase, touch_event const &value) {
     auto const identifer = value.identifier();
 
     if (phase == event_phase::began) {
         if (this->_touch_events.count(identifer) > 0) {
             return;
         }
-        ui::event_ptr event = ui::event::make_shared(touch_tag);
+        event_ptr event = event::make_shared(touch_tag);
         this->_touch_events.emplace(std::make_pair(identifer, std::move(event)));
     }
 
     if (this->_touch_events.count(identifer) > 0) {
         auto &event = this->_touch_events.at(identifer);
-        auto const manageable_event = ui::manageable_event::cast(event);
+        auto const manageable_event = manageable_event::cast(event);
         manageable_event->set_phase(phase);
         manageable_event->set<touch>(value);
 
@@ -203,20 +204,20 @@ void ui::event_manager::input_touch_event(event_phase const phase, touch_event c
     }
 }
 
-void ui::event_manager::input_key_event(event_phase const phase, key_event const &value) {
+void event_manager::input_key_event(event_phase const phase, key_event const &value) {
     auto const key_code = value.key_code();
 
     if (phase == event_phase::began) {
         if (this->_key_events.count(key_code) > 0) {
             return;
         }
-        ui::event_ptr event = ui::event::make_shared(key_tag);
+        event_ptr event = event::make_shared(key_tag);
         this->_key_events.emplace(std::make_pair(key_code, std::move(event)));
     }
 
     if (this->_key_events.count(key_code) > 0) {
         auto const &event = this->_key_events.at(key_code);
-        auto const manageable = ui::manageable_event::cast(event);
+        auto const manageable = manageable_event::cast(event);
         manageable->set_phase(phase);
         manageable->set<key>(value);
 
@@ -228,7 +229,7 @@ void ui::event_manager::input_key_event(event_phase const phase, key_event const
     }
 }
 
-void ui::event_manager::input_modifier_event(modifier_flags const &flags, double const timestamp) {
+void event_manager::input_modifier_event(modifier_flags const &flags, double const timestamp) {
     static auto all_flags = {modifier_flags::alpha_shift, modifier_flags::shift,   modifier_flags::control,
                              modifier_flags::alternate,   modifier_flags::command, modifier_flags::numeric_pad,
                              modifier_flags::help,        modifier_flags::function};
@@ -236,10 +237,10 @@ void ui::event_manager::input_modifier_event(modifier_flags const &flags, double
     for (auto const &flag : all_flags) {
         if (flags & flag) {
             if (this->_modifier_events.count(flag) == 0) {
-                ui::event_ptr const event = ui::event::make_shared(modifier_tag);
-                auto manageable = ui::manageable_event::cast(event);
-                manageable->set<modifier>(ui::modifier_event{flag, timestamp});
-                manageable->set_phase(ui::event_phase::began);
+                event_ptr const event = event::make_shared(modifier_tag);
+                auto manageable = manageable_event::cast(event);
+                manageable->set<modifier>(modifier_event{flag, timestamp});
+                manageable->set_phase(event_phase::began);
                 this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
                 this->_notifier->notify(
@@ -248,7 +249,7 @@ void ui::event_manager::input_modifier_event(modifier_flags const &flags, double
         } else {
             if (this->_modifier_events.count(flag) > 0) {
                 auto const &event = this->_modifier_events.at(flag);
-                ui::manageable_event::cast(event)->set_phase(ui::event_phase::ended);
+                manageable_event::cast(event)->set_phase(event_phase::ended);
 
                 this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
 
@@ -258,42 +259,42 @@ void ui::event_manager::input_modifier_event(modifier_flags const &flags, double
     }
 }
 
-ui::event_manager_ptr ui::event_manager::make_shared() {
+event_manager_ptr event_manager::make_shared() {
     return std::shared_ptr<event_manager>(new event_manager{});
 }
 
 #pragma mark -
 
-std::string yas::to_string(ui::event const &event) {
+std::string yas::to_string(event const &event) {
     std::string type = "unknown";
     std::string values;
 
-    if (event.type_info() == typeid(ui::cursor)) {
+    if (event.type_info() == typeid(cursor)) {
         type = "cursor";
-        values = to_string(event.get<ui::cursor>());
-    } else if (event.type_info() == typeid(ui::touch)) {
+        values = to_string(event.get<cursor>());
+    } else if (event.type_info() == typeid(touch)) {
         type = "touch";
-        values = to_string(event.get<ui::touch>());
-    } else if (event.type_info() == typeid(ui::key)) {
+        values = to_string(event.get<touch>());
+    } else if (event.type_info() == typeid(key)) {
         type = "key";
-        values = to_string(event.get<ui::key>());
-    } else if (event.type_info() == typeid(ui::modifier)) {
+        values = to_string(event.get<key>());
+    } else if (event.type_info() == typeid(modifier)) {
         type = "modifier";
-        values = to_string(event.get<ui::modifier>());
+        values = to_string(event.get<modifier>());
     }
 
     return "{phase:" + to_string(event.phase()) + ", type:" + type + ", values:" + values + "}";
 }
 
-std::string yas::to_string(ui::event_manager::method const &method) {
+std::string yas::to_string(event_manager::method const &method) {
     switch (method) {
-        case ui::event_manager::method::cursor_changed:
+        case event_manager::method::cursor_changed:
             return "cursor_changed";
-        case ui::event_manager::method::touch_changed:
+        case event_manager::method::touch_changed:
             return "touch_changed";
-        case ui::event_manager::method::key_changed:
+        case event_manager::method::key_changed:
             return "key_changed";
-        case ui::event_manager::method::modifier_changed:
+        case event_manager::method::modifier_changed:
             return "modifier_changed";
     }
 }

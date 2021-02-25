@@ -7,35 +7,36 @@
 #include "yas_ui_texture.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-ui::effect::effect() {
+effect::effect() {
     this->_updates.flags.set();
 }
 
-void ui::effect::set_metal_handler(metal_handler_f handler) {
+void effect::set_metal_handler(metal_handler_f handler) {
     this->_metal_handler = std::move(handler);
     this->_updates.set(effect_update_reason::handler);
 }
 
-ui::effect::metal_handler_f const &ui::effect::metal_handler() const {
+effect::metal_handler_f const &effect::metal_handler() const {
     return this->_metal_handler;
 }
 
-void ui::effect::set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) {
+void effect::set_textures(texture_ptr const &src, texture_ptr const &dst) {
     this->_src_texture = src;
     this->_dst_texture = dst;
     this->_updates.set(effect_update_reason::textures);
 }
 
-ui::effect_updates_t &ui::effect::updates() {
+effect_updates_t &effect::updates() {
     return this->_updates;
 }
 
-void ui::effect::clear_updates() {
+void effect::clear_updates() {
     this->_updates.flags.reset();
 }
 
-void ui::effect::encode(id<MTLCommandBuffer> const commandBuffer) {
+void effect::encode(id<MTLCommandBuffer> const commandBuffer) {
     if (!this->_metal_system || !this->_metal_handler) {
         return;
     }
@@ -45,19 +46,19 @@ void ui::effect::encode(id<MTLCommandBuffer> const commandBuffer) {
     }
 }
 
-ui::setup_metal_result ui::effect::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+setup_metal_result effect::metal_setup(std::shared_ptr<metal_system> const &system) {
     if (this->_metal_system != system) {
         this->_metal_system = system;
     }
 
-    return ui::setup_metal_result{nullptr};
+    return setup_metal_result{nullptr};
 }
 
-ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {
+effect::metal_handler_f const &effect::through_metal_handler() {
     static metal_handler_f _handler = nullptr;
     if (!_handler) {
-        _handler = [](ui::texture_ptr const &src_texture, ui::texture_ptr const &dst_texture,
-                      ui::metal_system_ptr const &, id<MTLCommandBuffer> const commandBuffer) mutable {
+        _handler = [](texture_ptr const &src_texture, texture_ptr const &dst_texture, metal_system_ptr const &,
+                      id<MTLCommandBuffer> const commandBuffer) mutable {
             auto const srcTexture = src_texture->metal_texture()->texture();
             auto const dstTexture = dst_texture->metal_texture()->texture();
             auto const width = std::min(srcTexture.width, dstTexture.width);
@@ -83,12 +84,12 @@ ui::effect::metal_handler_f const &ui::effect::through_metal_handler() {
     return _handler;
 }
 
-ui::effect_ptr ui::effect::make_through_effect() {
-    auto effect = ui::effect::make_shared();
-    effect->set_metal_handler(ui::effect::through_metal_handler());
+effect_ptr effect::make_through_effect() {
+    auto effect = effect::make_shared();
+    effect->set_metal_handler(effect::through_metal_handler());
     return effect;
 }
 
-ui::effect_ptr ui::effect::make_shared() {
+effect_ptr effect::make_shared() {
     return std::shared_ptr<effect>(new effect{});
 }

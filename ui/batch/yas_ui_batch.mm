@@ -13,36 +13,37 @@
 #include "yas_ui_texture.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-ui::batch::batch() {
+batch::batch() {
 }
 
-ui::batch::~batch() = default;
+batch::~batch() = default;
 
-std::vector<ui::mesh_ptr> const &ui::batch::meshes() {
+std::vector<mesh_ptr> const &batch::meshes() {
     return this->_render_meshes;
 }
 
-void ui::batch::begin_render_meshes_building(batch_building_type const type) {
-    if (type == ui::batch_building_type::rebuild) {
+void batch::begin_render_meshes_building(batch_building_type const type) {
+    if (type == batch_building_type::rebuild) {
         this->clear_render_meshes();
     }
 
     this->_building_type = type;
 }
 
-void ui::batch::commit_render_meshes_building() {
+void batch::commit_render_meshes_building() {
     if (!to_bool(this->_building_type)) {
         throw std::runtime_error("don't commit if batch_building_type is none.");
     }
 
     for (auto &mesh_info : this->_render_mesh_infos) {
-        if (this->_building_type == ui::batch_building_type::rebuild) {
-            auto render_mesh_data = ui::dynamic_mesh_data::make_shared(
+        if (this->_building_type == batch_building_type::rebuild) {
+            auto render_mesh_data = dynamic_mesh_data::make_shared(
                 {.vertex_count = mesh_info.vertex_count, .index_count = mesh_info.index_count});
             mesh_info.render_mesh->set_mesh_data(render_mesh_data);
             mesh_info.mesh_data = std::move(render_mesh_data);
-        } else if (this->_building_type == ui::batch_building_type::overwrite) {
+        } else if (this->_building_type == batch_building_type::overwrite) {
             mesh_info.vertex_idx = 0;
             mesh_info.index_idx = 0;
         }
@@ -55,10 +56,10 @@ void ui::batch::commit_render_meshes_building() {
         }
     }
 
-    if (this->_building_type == ui::batch_building_type::rebuild) {
-        std::vector<ui::mesh_ptr> render_meshes;
+    if (this->_building_type == batch_building_type::rebuild) {
+        std::vector<mesh_ptr> render_meshes;
         render_meshes.reserve(this->_render_mesh_infos.size());
-        for (ui::batch_render_mesh_info const &mesh_info : this->_render_mesh_infos) {
+        for (batch_render_mesh_info const &mesh_info : this->_render_mesh_infos) {
             auto const &render_mesh = mesh_info.render_mesh;
             auto const &mesh_data = render_mesh->mesh_data();
             if (mesh_data && mesh_data->data_exists()) {
@@ -76,17 +77,17 @@ void ui::batch::commit_render_meshes_building() {
         }
     }
 
-    this->_building_type = ui::batch_building_type::none;
+    this->_building_type = batch_building_type::none;
 }
 
-void ui::batch::clear_render_meshes() {
+void batch::clear_render_meshes() {
     this->_render_meshes.clear();
     this->_render_mesh_infos.clear();
 }
 
-void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
-    if (this->_building_type == ui::batch_building_type::rebuild) {
-        ui::batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
+void batch::append_mesh(mesh_ptr const &mesh) {
+    if (this->_building_type == batch_building_type::rebuild) {
+        batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
 
         auto const renderable_mesh = renderable_mesh::cast(mesh);
         mesh_info.vertex_count += renderable_mesh->render_vertex_count();
@@ -96,15 +97,15 @@ void ui::batch::append_mesh(ui::mesh_ptr const &mesh) {
     }
 }
 
-ui::setup_metal_result ui::batch::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+setup_metal_result batch::metal_setup(std::shared_ptr<metal_system> const &system) {
     if (this->_metal_system != system) {
         this->_metal_system = system;
     }
 
-    return ui::setup_metal_result{nullptr};
+    return setup_metal_result{nullptr};
 }
 
-ui::batch_render_mesh_info &ui::batch::_find_or_make_mesh_info(ui::texture_ptr const &texture) {
+batch_render_mesh_info &batch::_find_or_make_mesh_info(texture_ptr const &texture) {
     for (auto &info : this->_render_mesh_infos) {
         if (info.render_mesh->texture() == texture) {
             return info;
@@ -114,14 +115,14 @@ ui::batch_render_mesh_info &ui::batch::_find_or_make_mesh_info(ui::texture_ptr c
     return this->_add_mesh_info(texture);
 }
 
-ui::batch_render_mesh_info &ui::batch::_add_mesh_info(ui::texture_ptr const &texture) {
-    this->_render_mesh_infos.emplace_back(ui::batch_render_mesh_info{});
+batch_render_mesh_info &batch::_add_mesh_info(texture_ptr const &texture) {
+    this->_render_mesh_infos.emplace_back(batch_render_mesh_info{});
     auto &info = this->_render_mesh_infos.back();
     info.render_mesh->set_texture(texture);
     info.render_mesh->set_use_mesh_color(true);
     return info;
 }
 
-ui::batch_ptr ui::batch::make_shared() {
+batch_ptr batch::make_shared() {
     return std::shared_ptr<batch>(new batch{});
 }

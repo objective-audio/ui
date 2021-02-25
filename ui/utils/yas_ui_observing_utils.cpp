@@ -5,6 +5,7 @@
 #include "yas_ui_observing_utils.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 std::vector<float> ui::justify(float const begin, float const end, std::size_t const count,
                                std::function<float(std::size_t const &)> const &ratio_handler) {
@@ -45,7 +46,7 @@ std::vector<float> ui::justify(float const begin, float const end, std::size_t c
 }
 
 std::vector<float> ui::justify(float const begin, float const end, std::vector<float> const &ratios) {
-    return ui::justify(begin, end, ratios.size(), [ratios](std::size_t const &idx) {
+    return justify(begin, end, ratios.size(), [ratios](std::size_t const &idx) {
         if (idx < ratios.size()) {
             return ratios.at(idx);
         } else {

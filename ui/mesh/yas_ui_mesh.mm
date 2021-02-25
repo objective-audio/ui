@@ -15,125 +15,126 @@
 #include "yas_ui_texture.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-#pragma mark - ui::mesh
+#pragma mark - mesh
 
-ui::mesh::mesh() {
+mesh::mesh() {
     this->_updates.flags.set();
 }
 
-ui::mesh::~mesh() = default;
+mesh::~mesh() = default;
 
-ui::mesh_data_ptr const &ui::mesh::mesh_data() const {
+mesh_data_ptr const &mesh::mesh_data() const {
     return this->_mesh_data;
 }
 
-ui::texture_ptr const &ui::mesh::texture() const {
+texture_ptr const &mesh::texture() const {
     return this->_texture;
 }
 
-simd::float4 const &ui::mesh::color() const {
+simd::float4 const &mesh::color() const {
     return this->_color;
 }
 
-bool ui::mesh::is_use_mesh_color() const {
+bool mesh::is_use_mesh_color() const {
     return this->_use_mesh_color;
 }
 
-ui::primitive_type const &ui::mesh::primitive_type() const {
+primitive_type const &mesh::primitive_type() const {
     return this->_primitive_type;
 }
 
-void ui::mesh::set_mesh_data(ui::mesh_data_ptr const &mesh_data) {
+void mesh::set_mesh_data(mesh_data_ptr const &mesh_data) {
     if (this->_mesh_data != mesh_data) {
         this->_mesh_data = std::move(mesh_data);
 
-        this->_updates.set(ui::mesh_update_reason::mesh_data);
+        this->_updates.set(mesh_update_reason::mesh_data);
     }
 }
 
-void ui::mesh::set_texture(ui::texture_ptr const &texture) {
+void mesh::set_texture(texture_ptr const &texture) {
     if (this->_texture != texture) {
         this->_texture = texture;
 
         if (this->_is_mesh_data_exists()) {
-            this->_updates.set(ui::mesh_update_reason::texture);
+            this->_updates.set(mesh_update_reason::texture);
         }
     }
 }
 
-void ui::mesh::set_color(simd::float4 const &color) {
+void mesh::set_color(simd::float4 const &color) {
     if (!yas::is_equal(this->_color, color)) {
         this->_color = color;
 
         if (this->_is_mesh_data_exists() && !this->_use_mesh_color) {
-            this->_updates.set(ui::mesh_update_reason::color);
+            this->_updates.set(mesh_update_reason::color);
         }
     }
 }
 
-void ui::mesh::set_use_mesh_color(bool const use) {
+void mesh::set_use_mesh_color(bool const use) {
     if (this->_use_mesh_color != use) {
         this->_use_mesh_color = use;
 
         if (this->_is_mesh_data_exists()) {
-            this->_updates.set(ui::mesh_update_reason::use_mesh_color);
+            this->_updates.set(mesh_update_reason::use_mesh_color);
         }
     }
 }
 
-void ui::mesh::set_primitive_type(ui::primitive_type const type) {
+void mesh::set_primitive_type(ui::primitive_type const type) {
     if (this->_primitive_type != type) {
         this->_primitive_type = type;
 
         if (this->_is_mesh_data_exists()) {
-            this->_updates.set(ui::mesh_update_reason::primitive_type);
+            this->_updates.set(mesh_update_reason::primitive_type);
         }
     }
 }
 
-simd::float4x4 const &ui::mesh::matrix() {
+simd::float4x4 const &mesh::matrix() {
     return this->_matrix;
 }
 
-void ui::mesh::set_matrix(simd::float4x4 const &matrix) {
+void mesh::set_matrix(simd::float4x4 const &matrix) {
     if (this->_matrix != matrix) {
         this->_matrix = matrix;
 
         if (this->is_rendering_color_exists()) {
-            this->_updates.set(ui::mesh_update_reason::matrix);
+            this->_updates.set(mesh_update_reason::matrix);
         }
     }
 }
 
-std::size_t ui::mesh::render_vertex_count() {
+std::size_t mesh::render_vertex_count() {
     if (this->is_rendering_color_exists()) {
         return this->_mesh_data->vertex_count();
     }
     return 0;
 }
 
-std::size_t ui::mesh::render_index_count() {
+std::size_t mesh::render_index_count() {
     if (this->is_rendering_color_exists()) {
         return this->_mesh_data->index_count();
     }
     return 0;
 }
 
-ui::mesh_updates_t const &ui::mesh::updates() {
+mesh_updates_t const &mesh::updates() {
     return this->_updates;
 }
 
-bool ui::mesh::pre_render() {
+bool mesh::pre_render() {
     if (this->_mesh_data) {
-        ui::renderable_mesh_data::cast(this->_mesh_data)->update_render_buffer();
+        renderable_mesh_data::cast(this->_mesh_data)->update_render_buffer();
         return this->is_rendering_color_exists();
     }
 
     return false;
 }
 
-void ui::mesh::batch_render(batch_render_mesh_info &mesh_info, ui::batch_building_type const building_type) {
+void mesh::batch_render(batch_render_mesh_info &mesh_info, batch_building_type const building_type) {
     auto const next_vertex_idx = mesh_info.vertex_idx + this->_mesh_data->vertex_count();
     auto const next_index_idx = mesh_info.index_idx + this->_mesh_data->index_count();
 
@@ -175,53 +176,53 @@ void ui::mesh::batch_render(batch_render_mesh_info &mesh_info, ui::batch_buildin
     mesh_info.index_idx = next_index_idx;
 }
 
-bool ui::mesh::is_rendering_color_exists() {
+bool mesh::is_rendering_color_exists() {
     return this->_is_mesh_data_exists();
 }
 
-void ui::mesh::clear_updates() {
+void mesh::clear_updates() {
     this->_updates.flags.reset();
 
     if (this->_mesh_data) {
-        ui::renderable_mesh_data::cast(this->_mesh_data)->clear_updates();
+        renderable_mesh_data::cast(this->_mesh_data)->clear_updates();
     }
 }
 
-ui::setup_metal_result ui::mesh::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+setup_metal_result mesh::metal_setup(std::shared_ptr<metal_system> const &system) {
     if (this->_mesh_data) {
-        if (auto ul = unless(ui::metal_object::cast(this->_mesh_data)->metal_setup(system))) {
+        if (auto ul = unless(metal_object::cast(this->_mesh_data)->metal_setup(system))) {
             return ul.value;
         }
     }
     if (this->_texture) {
-        if (auto ul = unless(ui::metal_object::cast(this->_texture)->metal_setup(system))) {
+        if (auto ul = unless(metal_object::cast(this->_texture)->metal_setup(system))) {
             return ul.value;
         }
     }
-    return ui::setup_metal_result{nullptr};
+    return setup_metal_result{nullptr};
 }
 
-bool ui::mesh::_is_mesh_data_exists() {
+bool mesh::_is_mesh_data_exists() {
     return this->_mesh_data && this->_mesh_data->index_count() > 0 && this->_mesh_data->vertex_count() > 0;
 }
 
-bool ui::mesh::_needs_write(ui::batch_building_type const &building_type) {
-    if (building_type == ui::batch_building_type::rebuild) {
+bool mesh::_needs_write(batch_building_type const &building_type) {
+    if (building_type == batch_building_type::rebuild) {
         return true;
     }
 
-    if (building_type == ui::batch_building_type::overwrite) {
+    if (building_type == batch_building_type::overwrite) {
         static mesh_updates_t const _mesh_overwrite_updates = {
-            ui::mesh_update_reason::color, ui::mesh_update_reason::use_mesh_color, ui::mesh_update_reason::matrix};
+            mesh_update_reason::color, mesh_update_reason::use_mesh_color, mesh_update_reason::matrix};
 
         if (this->_updates.and_test(_mesh_overwrite_updates)) {
             return true;
         }
 
         if (this->_mesh_data) {
-            static mesh_data_updates_t const _mesh_data_overwrite_updates = {ui::mesh_data_update_reason::data};
+            static mesh_data_updates_t const _mesh_data_overwrite_updates = {mesh_data_update_reason::data};
 
-            if (ui::renderable_mesh_data::cast(this->_mesh_data)->updates().and_test(_mesh_data_overwrite_updates)) {
+            if (renderable_mesh_data::cast(this->_mesh_data)->updates().and_test(_mesh_data_overwrite_updates)) {
                 return true;
             }
         }
@@ -230,6 +231,6 @@ bool ui::mesh::_needs_write(ui::batch_building_type const &building_type) {
     return false;
 }
 
-ui::mesh_ptr ui::mesh::make_shared() {
+mesh_ptr mesh::make_shared() {
     return std::shared_ptr<mesh>(new mesh{});
 }
