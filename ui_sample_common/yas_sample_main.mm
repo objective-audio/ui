@@ -33,9 +33,9 @@ void sample::main::setup() {
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
     this->_big_button->button()
-        ->observe([weak_text = to_weak(this->_big_button_text)](auto const &pair) {
+        ->observe([weak_text = to_weak(this->_big_button_text)](auto const &context) {
             if (auto text = weak_text.lock()) {
-                text->set_status(pair.first);
+                text->set_status(context.method);
             }
         })
         ->set_to(this->_button_canceller);
