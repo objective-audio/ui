@@ -6,18 +6,19 @@
 
 using namespace simd;
 using namespace yas;
+using namespace yas::ui;
 
-float4x4 ui::matrix::scale(float const x, float const y) {
+float4x4 matrix::scale(float const x, float const y) {
     return float4x4{float4{x, 0.0f, 0.0f, 0.0f}, float4{0.0f, y, 0.0f, 0.0f}, float4{0.0f, 0.0f, 1.0f, 0.0f},
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-float4x4 ui::matrix::translation(float const x, float const y) {
+float4x4 matrix::translation(float const x, float const y) {
     return float4x4{float4{1.0f, 0.0f, 0.0f, 0.0f}, float4{0.0f, 1.0f, 0.0f, 0.0f}, float4{0.0f, 0.0f, 1.0f, 0.0f},
                     float4{x, y, 0.0f, 1.0f}};
 }
 
-float4x4 ui::matrix::rotation(float const degree) {
+float4x4 matrix::rotation(float const degree) {
     float const radians = degree * M_PI / 180.0f;
     float const cos = cosf(radians);
     float const sin = sinf(radians);
@@ -26,8 +27,8 @@ float4x4 ui::matrix::rotation(float const degree) {
                     float4{0.0f, 0.0f, 0.0f, 1.0f}};
 }
 
-float4x4 ui::matrix::ortho(float const left, float const right, float const bottom, float const top, float const near,
-                           float const far) {
+float4x4 matrix::ortho(float const left, float const right, float const bottom, float const top, float const near,
+                       float const far) {
     float const ral = right + left;
     float const rsl = right - left;
     float const tab = top + bottom;

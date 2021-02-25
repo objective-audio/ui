@@ -7,10 +7,11 @@
 #include "yas_ui_renderer.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-std::shared_ptr<ui::continuous_action> ui::make_action(layout_action::args args) {
+std::shared_ptr<continuous_action> ui::make_action(layout_action::args args) {
     auto target = args.target;
-    auto action = ui::continuous_action::make_shared(std::move(args.continuous_action));
+    auto action = continuous_action::make_shared(std::move(args.continuous_action));
     action->set_target(target);
 
     action->set_value_updater([args = std::move(args), weak_action = to_weak(action)](double const value) {
@@ -24,7 +25,7 @@ std::shared_ptr<ui::continuous_action> ui::make_action(layout_action::args args)
     return action;
 }
 
-ui::layout_animator::layout_animator(args args) : _args(std::move(args)) {
+layout_animator::layout_animator(args args) : _args(std::move(args)) {
     for (auto &guide_pair : this->_args.layout_guide_pairs) {
         auto &src_guide = guide_pair.source;
         auto &dst_guide = guide_pair.destination;
@@ -43,10 +44,10 @@ ui::layout_animator::layout_animator(args args) : _args(std::move(args)) {
                     if (renderer && dst_guide) {
                         renderer->erase_action(dst_guide);
 
-                        auto action = ui::make_action({.target = dst_guide,
-                                                       .begin_value = dst_guide->value(),
-                                                       .end_value = value,
-                                                       .continuous_action = {.duration = args.duration}});
+                        auto action = make_action({.target = dst_guide,
+                                                   .begin_value = dst_guide->value(),
+                                                   .end_value = value,
+                                                   .continuous_action = {.duration = args.duration}});
                         action->set_value_transformer(this->value_transformer());
                         renderer->insert_action(action);
                     }
@@ -56,7 +57,7 @@ ui::layout_animator::layout_animator(args args) : _args(std::move(args)) {
     }
 }
 
-ui::layout_animator::~layout_animator() {
+layout_animator::~layout_animator() {
     if (auto renderer = this->_args.renderer.lock()) {
         for (auto const &guide_pair : this->_args.layout_guide_pairs) {
             renderer->erase_action(guide_pair.destination);
@@ -64,14 +65,14 @@ ui::layout_animator::~layout_animator() {
     }
 }
 
-void ui::layout_animator::set_value_transformer(ui::transform_f transform) {
+void layout_animator::set_value_transformer(transform_f transform) {
     this->_value_transformer = transform;
 }
 
-ui::transform_f const &ui::layout_animator::value_transformer() const {
+transform_f const &layout_animator::value_transformer() const {
     return this->_value_transformer;
 }
 
-ui::layout_animator_ptr ui::layout_animator::make_shared(args args) {
+layout_animator_ptr layout_animator::make_shared(args args) {
     return std::shared_ptr<layout_animator>(new layout_animator{std::move(args)});
 }

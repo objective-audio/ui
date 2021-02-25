@@ -6,58 +6,58 @@
 #include "yas_ui_color.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-ui::background::background()
+background::background()
     : _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
     this->_updates.flags.set();
 
-    this->_color->observe([this](auto const &) { this->_updates.set(ui::background_update_reason::color); }, true)
+    this->_color->observe([this](auto const &) { this->_updates.set(background_update_reason::color); }, true)
         ->add_to(this->_pool);
 
-    this->_alpha->observe([this](auto const &) { this->_updates.set(ui::background_update_reason::alpha); }, true)
+    this->_alpha->observe([this](auto const &) { this->_updates.set(background_update_reason::alpha); }, true)
         ->add_to(this->_pool);
 }
 
-ui::background::~background() = default;
+background::~background() = default;
 
-void ui::background::set_color(ui::color const &color) {
+void background::set_color(ui::color const &color) {
     this->_color->set_value(color);
 }
 
-void ui::background::set_color(ui::color &&color) {
+void background::set_color(ui::color &&color) {
     this->_color->set_value(std::move(color));
 }
 
-ui::color const &ui::background::color() const {
+ui::color const &background::color() const {
     return this->_color->value();
 }
 
-observing::canceller_ptr ui::background::observe_color(observing::caller<ui::color>::handler_f &&handler,
-                                                       bool const sync) {
+observing::canceller_ptr background::observe_color(observing::caller<ui::color>::handler_f &&handler, bool const sync) {
     return this->_color->observe(std::move(handler), sync);
 }
 
-void ui::background::set_alpha(float const &alpha) {
+void background::set_alpha(float const &alpha) {
     this->_alpha->set_value(alpha);
 }
 
-float const &ui::background::alpha() const {
+float const &background::alpha() const {
     return this->_alpha->value();
 }
 
-observing::canceller_ptr ui::background::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
+observing::canceller_ptr background::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
     return this->_alpha->observe(std::move(handler), sync);
 }
 
-std::shared_ptr<ui::background> ui::background::make_shared() {
+std::shared_ptr<background> background::make_shared() {
     return std::shared_ptr<background>(new background{});
 }
 
-ui::background_updates_t const &ui::background::updates() const {
+background_updates_t const &background::updates() const {
     return this->_updates;
 }
 
-void ui::background::clear_updates() {
+void background::clear_updates() {
     this->_updates.flags.reset();
 }

@@ -16,25 +16,26 @@
 #include "yas_ui_texture.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-ui::button::button(ui::region const &region, std::size_t const state_count)
-    : _rect_plane(ui::rect_plane::make_shared(state_count * 2, 1)),
+button::button(region const &region, std::size_t const state_count)
+    : _rect_plane(rect_plane::make_shared(state_count * 2, 1)),
       _layout_guide_rect(layout_guide_rect::make_shared(region)),
       _state_count(state_count) {
-    this->_rect_plane->node()->set_collider(ui::collider::make_shared());
+    this->_rect_plane->node()->set_collider(collider::make_shared());
 
     this->_update_rect_positions(this->_layout_guide_rect->region(), state_count);
     this->_update_rect_index();
 
     this->_rect_plane->node()
         ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+            [this, pool = observing::canceller_pool::make_shared()](renderer_ptr const &renderer) {
                 pool->cancel();
 
                 if (renderer) {
                     renderer->event_manager()
                         ->observe([this](auto const &context) {
-                            if (context.method == ui::event_manager::method::touch_changed) {
+                            if (context.method == event_manager::method::touch_changed) {
                                 this->_update_tracking(context.event);
                             }
                         })
@@ -54,21 +55,21 @@ ui::button::button(ui::region const &region, std::size_t const state_count)
         ->add_to(this->_pool);
 }
 
-ui::button::~button() = default;
+button::~button() = default;
 
-void ui::button::set_texture(ui::texture_ptr const &texture) {
+void button::set_texture(texture_ptr const &texture) {
     this->rect_plane()->node()->mesh()->set_texture(texture);
 }
 
-ui::texture_ptr const &ui::button::texture() const {
+texture_ptr const &button::texture() const {
     return this->_rect_plane->node()->mesh()->texture();
 }
 
-std::size_t ui::button::state_count() const {
+std::size_t button::state_count() const {
     return this->_state_count;
 }
 
-void ui::button::set_state_index(std::size_t const idx) {
+void button::set_state_index(std::size_t const idx) {
     if (idx >= this->_state_count) {
         throw std::invalid_argument("idx greater than or equal state count.");
     }
@@ -78,33 +79,33 @@ void ui::button::set_state_index(std::size_t const idx) {
     this->_update_rect_index();
 }
 
-std::size_t ui::button::state_index() const {
+std::size_t button::state_index() const {
     return this->_state_idx;
 }
 
-void ui::button::cancel_tracking() {
+void button::cancel_tracking() {
     if (this->_tracking_event) {
         this->_cancel_tracking(this->_tracking_event);
     }
 }
 
-observing::canceller_ptr ui::button::observe(observing::caller<context>::handler_f &&handler) {
+observing::canceller_ptr button::observe(observing::caller<context>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
-ui::rect_plane_ptr const &ui::button::rect_plane() {
+rect_plane_ptr const &button::rect_plane() {
     return this->_rect_plane;
 }
 
-ui::layout_guide_rect_ptr const &ui::button::layout_guide_rect() {
+layout_guide_rect_ptr const &button::layout_guide_rect() {
     return this->_layout_guide_rect;
 }
 
-bool ui::button::_is_tracking() {
+bool button::_is_tracking() {
     return !!this->_tracking_event;
 }
 
-bool ui::button::_is_tracking(ui::event_ptr const &event) {
+bool button::_is_tracking(event_ptr const &event) {
     if (event && this->_tracking_event) {
         return *event == *this->_tracking_event;
     } else {
@@ -112,31 +113,31 @@ bool ui::button::_is_tracking(ui::event_ptr const &event) {
     }
 }
 
-void ui::button::_set_tracking_event(ui::event_ptr const &event) {
+void button::_set_tracking_event(event_ptr const &event) {
     this->_tracking_event = event;
 
     this->_update_rect_index();
 }
 
-void ui::button::_update_rect_positions(ui::region const &region, std::size_t const state_count) {
+void button::_update_rect_positions(region const &region, std::size_t const state_count) {
     auto each = make_fast_each(state_count * 2);
     while (yas_each_next(each)) {
         this->_rect_plane->data()->set_rect_position(region, yas_each_index(each));
     }
 
-    ui::collider_ptr const &collider = this->_rect_plane->node()->collider();
-    if (!collider->shape() || (collider->shape()->type_info() == typeid(ui::shape::rect))) {
-        collider->set_shape(ui::shape::make_shared({.rect = region}));
+    collider_ptr const &collider = this->_rect_plane->node()->collider();
+    if (!collider->shape() || (collider->shape()->type_info() == typeid(shape::rect))) {
+        collider->set_shape(shape::make_shared({.rect = region}));
     }
 }
 
-void ui::button::_update_rect_index() {
+void button::_update_rect_index() {
     std::size_t const idx = to_rect_index(this->_state_idx, this->_is_tracking());
     this->_rect_plane->data()->set_rect_index(0, idx);
 }
 
-observing::cancellable_ptr ui::button::_make_leave_chains() {
-    ui::node_ptr const &node = this->_rect_plane->node();
+observing::cancellable_ptr button::_make_leave_chains() {
+    node_ptr const &node = this->_rect_plane->node();
 
     auto pool = observing::canceller_pool::make_shared();
 
@@ -166,7 +167,7 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
         ->add_to(*pool);
 
     node->observe_collider(
-            [this](ui::collider_ptr const &value) {
+            [this](collider_ptr const &value) {
                 if (!value) {
                     if (auto tracking_event = this->_tracking_event) {
                         this->_cancel_tracking(tracking_event);
@@ -189,14 +190,14 @@ observing::cancellable_ptr ui::button::_make_leave_chains() {
     return pool;
 }
 
-observing::cancellable_ptr ui::button::_make_collider_chains() {
+observing::cancellable_ptr button::_make_collider_chains() {
     auto &node = this->_rect_plane->node();
 
     auto pool = observing::canceller_pool::make_shared();
 
     node->collider()
         ->observe_shape(
-            [this](ui::shape_ptr const &shape) {
+            [this](shape_ptr const &shape) {
                 if (!shape) {
                     if (auto tracking_event = this->_tracking_event) {
                         this->_cancel_tracking(tracking_event);
@@ -221,14 +222,14 @@ observing::cancellable_ptr ui::button::_make_collider_chains() {
     return pool;
 }
 
-void ui::button::_update_tracking(ui::event_ptr const &event) {
+void button::_update_tracking(event_ptr const &event) {
     auto &node = this->_rect_plane->node();
     if (auto const renderer = node->renderer()) {
         auto const &detector = renderer->detector();
 
-        auto const &touch_event = event->get<ui::touch>();
+        auto const &touch_event = event->get<touch>();
         switch (event->phase()) {
-            case ui::event_phase::began:
+            case event_phase::began:
                 if (!this->_is_tracking()) {
                     if (detector->detect(touch_event.position(), node->collider())) {
                         this->_set_tracking_event(event);
@@ -236,18 +237,18 @@ void ui::button::_update_tracking(ui::event_ptr const &event) {
                     }
                 }
                 break;
-            case ui::event_phase::stationary:
-            case ui::event_phase::changed: {
+            case event_phase::stationary:
+            case event_phase::changed: {
                 this->_leave_or_enter_or_move_tracking(event);
             } break;
-            case ui::event_phase::ended:
+            case event_phase::ended:
                 if (this->_is_tracking(event)) {
                     auto const send_evnet = event;
                     this->_set_tracking_event(nullptr);
                     this->_send_notify(method::ended, send_evnet);
                 }
                 break;
-            case ui::event_phase::canceled:
+            case event_phase::canceled:
                 this->_cancel_tracking(event);
                 break;
             default:
@@ -256,11 +257,11 @@ void ui::button::_update_tracking(ui::event_ptr const &event) {
     }
 }
 
-void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event) {
+void button::_leave_or_enter_or_move_tracking(event_ptr const &event) {
     auto &node = this->_rect_plane->node();
     if (auto const renderer = node->renderer()) {
         auto const &detector = renderer->detector();
-        auto const &touch_event = event->get<ui::touch>();
+        auto const &touch_event = event->get<touch>();
         bool const is_event_tracking = this->_is_tracking(event);
         bool is_detected = detector->detect(touch_event.position(), node->collider());
         if (!is_event_tracking && is_detected) {
@@ -275,7 +276,7 @@ void ui::button::_leave_or_enter_or_move_tracking(ui::event_ptr const &event) {
     }
 }
 
-void ui::button::_cancel_tracking(ui::event_ptr const &event) {
+void button::_cancel_tracking(event_ptr const &event) {
     if (this->_is_tracking(event)) {
         auto const send_event = event;
         this->_set_tracking_event(nullptr);
@@ -283,16 +284,16 @@ void ui::button::_cancel_tracking(ui::event_ptr const &event) {
     }
 }
 
-void ui::button::_send_notify(method const method, ui::event_ptr const &event) {
-    context const context{.method = method, .touch = event->get<ui::touch>()};
+void button::_send_notify(method const method, event_ptr const &event) {
+    context const context{.method = method, .touch = event->get<touch>()};
     this->_notifier->notify(context);
 }
 
-ui::button_ptr ui::button::make_shared(ui::region const &region) {
+button_ptr button::make_shared(region const &region) {
     return make_shared(region, 1);
 }
 
-ui::button_ptr ui::button::make_shared(ui::region const &region, std::size_t const state_count) {
+button_ptr button::make_shared(region const &region, std::size_t const state_count) {
     return std::shared_ptr<button>(new button{region, state_count});
 }
 
@@ -302,19 +303,19 @@ std::size_t yas::to_rect_index(std::size_t const state_idx, bool is_tracking) {
     return state_idx * 2 + (is_tracking ? 1 : 0);
 }
 
-std::string yas::to_string(ui::button::method const &method) {
+std::string yas::to_string(button::method const &method) {
     switch (method) {
-        case ui::button::method::began:
+        case button::method::began:
             return "began";
-        case ui::button::method::entered:
+        case button::method::entered:
             return "entered";
-        case ui::button::method::moved:
+        case button::method::moved:
             return "moved";
-        case ui::button::method::leaved:
+        case button::method::leaved:
             return "leaved";
-        case ui::button::method::ended:
+        case button::method::ended:
             return "ended";
-        case ui::button::method::canceled:
+        case button::method::canceled:
             return "canceled";
     }
 }

@@ -13,19 +13,20 @@
 #include "yas_ui_texture_element.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark - font_atlas::impl
 
 namespace yas::ui {
-static ui::vertex2d_rect_t constexpr _empty_rect{0.0f};
+static vertex2d_rect_t constexpr _empty_rect{0.0f};
 
 struct word_info {
-    ui::vertex2d_rect_t rect;
-    ui::size advance;
+    vertex2d_rect_t rect;
+    size advance;
 };
 }
 
-struct ui::font_atlas::impl {
+struct font_atlas::impl {
     cf_ref<CTFontRef> _ct_font_ref = nullptr;
 
     impl(std::string const &font_name, double const font_size)
@@ -33,7 +34,7 @@ struct ui::font_atlas::impl {
     }
 };
 
-ui::font_atlas::font_atlas(args &&args)
+font_atlas::font_atlas(args &&args)
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
       _font_size(args.font_size),
@@ -41,13 +42,13 @@ ui::font_atlas::font_atlas(args &&args)
       _descent(CTFontGetDescent(this->_impl->_ct_font_ref.object())),
       _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
       _words(std::move(args.words)),
-      _texture(observing::value::holder<ui::texture_ptr>::make_shared(args.texture)) {
-    this->_texture_changed_fetcher = observing::fetcher<ui::texture_ptr>::make_shared(
-        [this]() { return std::optional<ui::texture_ptr>{this->texture()}; });
+      _texture(observing::value::holder<texture_ptr>::make_shared(args.texture)) {
+    this->_texture_changed_fetcher =
+        observing::fetcher<texture_ptr>::make_shared([this]() { return std::optional<texture_ptr>{this->texture()}; });
 
     this->_texture
         ->observe(
-            [this](ui::texture_ptr const &texture) {
+            [this](texture_ptr const &texture) {
                 this->_update_word_infos();
 
                 if (texture) {
@@ -66,37 +67,37 @@ ui::font_atlas::font_atlas(args &&args)
         ->set_to(this->_texture_changed_canceller);
 }
 
-ui::font_atlas::~font_atlas() = default;
+font_atlas::~font_atlas() = default;
 
-std::string const &ui::font_atlas::font_name() const {
+std::string const &font_atlas::font_name() const {
     return this->_font_name;
 }
 
-double const &ui::font_atlas::font_size() const {
+double const &font_atlas::font_size() const {
     return this->_font_size;
 }
 
-double const &ui::font_atlas::ascent() const {
+double const &font_atlas::ascent() const {
     return this->_ascent;
 }
 
-double const &ui::font_atlas::descent() const {
+double const &font_atlas::descent() const {
     return this->_descent;
 }
 
-double const &ui::font_atlas::leading() const {
+double const &font_atlas::leading() const {
     return this->_leading;
 }
 
-std::string const &ui::font_atlas::words() const {
+std::string const &font_atlas::words() const {
     return this->_words;
 }
 
-ui::texture_ptr const &ui::font_atlas::texture() const {
+texture_ptr const &font_atlas::texture() const {
     return this->_texture->value();
 }
 
-ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {
+vertex2d_rect_t const &font_atlas::rect(std::string const &word) const {
     auto idx = this->_words.find_first_of(word);
     if (idx == std::string::npos) {
         return _empty_rect;
@@ -104,7 +105,7 @@ ui::vertex2d_rect_t const &ui::font_atlas::rect(std::string const &word) const {
     return this->_word_infos.at(idx).rect;
 }
 
-ui::size ui::font_atlas::advance(std::string const &word) const {
+size font_atlas::advance(std::string const &word) const {
     if (word.size() != 1) {
         throw std::invalid_argument("word size is not equal to one.");
     }
@@ -132,23 +133,22 @@ ui::size ui::font_atlas::advance(std::string const &word) const {
     return {.width = static_cast<float>(advances[0].width), .height = static_cast<float>(advances[0].height)};
 }
 
-void ui::font_atlas::set_texture(ui::texture_ptr const &texture) {
+void font_atlas::set_texture(texture_ptr const &texture) {
     if (this->texture() != texture) {
         this->_texture->set_value(texture);
     }
 }
 
-observing::canceller_ptr ui::font_atlas::observe_texture(observing::caller<texture_ptr>::handler_f &&handler,
-                                                         bool const sync) {
+observing::canceller_ptr font_atlas::observe_texture(observing::caller<texture_ptr>::handler_f &&handler,
+                                                     bool const sync) {
     return this->_texture_changed_fetcher->observe(std::move(handler), sync);
 }
 
-observing::canceller_ptr ui::font_atlas::observe_texture_updated(
-    observing::caller<ui::texture_ptr>::handler_f &&handler) {
+observing::canceller_ptr font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 
-void ui::font_atlas::_update_word_infos() {
+void font_atlas::_update_word_infos() {
     this->_element_cancellers.clear();
 
     auto &texture = this->texture();
@@ -177,9 +177,8 @@ void ui::font_atlas::_update_word_infos() {
     double const scale_factor = texture->scale_factor();
 
     for (auto const &idx : each_index<std::size_t>(word_count)) {
-        ui::uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)),
-                                          uint32_t(std::ceilf(string_height))};
-        ui::region const image_region = {
+        uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)), uint32_t(std::ceilf(string_height))};
+        region const image_region = {
             .origin = {0.0f, roundf(-descent, scale_factor)},
             .size = {static_cast<float>(image_size.width), static_cast<float>(image_size.height)}};
 
@@ -210,9 +209,7 @@ void ui::font_atlas::_update_word_infos() {
             });
 
         this->_element_cancellers.emplace_back(texture_element->observe_tex_coords(
-            [this, idx](ui::uint_region const &tex_coords) {
-                this->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
-            },
+            [this, idx](uint_region const &tex_coords) { this->_word_infos.at(idx).rect.set_tex_coord(tex_coords); },
             true));
 
         auto const &advance = advances[idx];
@@ -220,17 +217,17 @@ void ui::font_atlas::_update_word_infos() {
     }
 }
 
-ui::font_atlas_ptr ui::font_atlas::make_shared(args args) {
+font_atlas_ptr font_atlas::make_shared(args args) {
     return std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
 }
 
 #pragma mark -
 
-std::string yas::to_string(ui::font_atlas::method const &method) {
+std::string yas::to_string(font_atlas::method const &method) {
     switch (method) {
-        case ui::font_atlas::method::texture_changed:
+        case font_atlas::method::texture_changed:
             return "texture_changed";
-        case ui::font_atlas::method::texture_updated:
+        case font_atlas::method::texture_updated:
             return "texture_updated";
     }
 }

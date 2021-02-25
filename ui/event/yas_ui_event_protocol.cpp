@@ -5,179 +5,178 @@
 #include "yas_ui_event_protocol.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark - cursor_event
 
-ui::cursor_event::cursor_event() : _position({.v = 0.0f}), _timestamp(0.0) {
+cursor_event::cursor_event() : _position({.v = 0.0f}), _timestamp(0.0) {
 }
 
-ui::cursor_event::cursor_event(ui::point pos, double const timestamp)
-    : _position(std::move(pos)), _timestamp(timestamp) {
+cursor_event::cursor_event(point pos, double const timestamp) : _position(std::move(pos)), _timestamp(timestamp) {
 }
 
-bool ui::cursor_event::operator==(cursor_event const &rhs) const {
+bool cursor_event::operator==(cursor_event const &rhs) const {
     return true;
 }
 
-bool ui::cursor_event::operator!=(cursor_event const &rhs) const {
+bool cursor_event::operator!=(cursor_event const &rhs) const {
     return false;
 }
 
-ui::point const &ui::cursor_event::position() const {
+point const &cursor_event::position() const {
     return this->_position;
 }
 
-double ui::cursor_event::timestamp() const {
+double cursor_event::timestamp() const {
     return this->_timestamp;
 }
 
-bool ui::cursor_event::contains_in_window() const {
+bool cursor_event::contains_in_window() const {
     return -1.0f <= this->_position.x && this->_position.x <= 1.0f && -1.0f <= this->_position.y &&
            this->_position.y <= 1.0f;
 }
 
 #pragma mark - touch_event
 
-ui::touch_event::touch_event() : _identifier(-1), _position({.v = {0.0f}}) {
+touch_event::touch_event() : _identifier(-1), _position({.v = {0.0f}}) {
 }
 
-ui::touch_event::touch_event(uintptr_t const identifier, ui::point pos, double const timestamp)
+touch_event::touch_event(uintptr_t const identifier, point pos, double const timestamp)
     : _identifier(identifier), _position(std::move(pos)), _timestamp(timestamp) {
 }
 
-bool ui::touch_event::operator==(touch_event const &rhs) const {
+bool touch_event::operator==(touch_event const &rhs) const {
     return this->_identifier == rhs._identifier;
 }
 
-bool ui::touch_event::operator!=(touch_event const &rhs) const {
+bool touch_event::operator!=(touch_event const &rhs) const {
     return this->_identifier != rhs._identifier;
 }
 
-uintptr_t ui::touch_event::identifier() const {
+uintptr_t touch_event::identifier() const {
     return this->_identifier;
 }
 
-ui::point const &ui::touch_event::position() const {
+point const &touch_event::position() const {
     return this->_position;
 }
 
-double ui::touch_event::timestamp() const {
+double touch_event::timestamp() const {
     return this->_timestamp;
 }
 
 #pragma mark - key_event
 
-ui::key_event::key_event() {
+key_event::key_event() {
 }
 
-ui::key_event::key_event(uint16_t const key_code, std::string charas, std::string charas2, double const timestamp)
+key_event::key_event(uint16_t const key_code, std::string charas, std::string charas2, double const timestamp)
     : _key_code(key_code), _characters(std::move(charas)), _raw_characters(std::move(charas2)), _timestamp(timestamp) {
 }
 
-bool ui::key_event::operator==(key_event const &rhs) const {
+bool key_event::operator==(key_event const &rhs) const {
     return this->_key_code == rhs._key_code;
 }
 
-bool ui::key_event::operator!=(key_event const &rhs) const {
+bool key_event::operator!=(key_event const &rhs) const {
     return this->_key_code != rhs._key_code;
 }
 
-uint16_t ui::key_event::key_code() const {
+uint16_t key_event::key_code() const {
     return this->_key_code;
 }
 
-std::string const &ui::key_event::characters() const {
+std::string const &key_event::characters() const {
     return this->_characters;
 }
 
-std::string const &ui::key_event::raw_characters() const {
+std::string const &key_event::raw_characters() const {
     return this->_raw_characters;
 }
 
-double ui::key_event::timestamp() const {
+double key_event::timestamp() const {
     return this->_timestamp;
 }
 
 #pragma mark - modifier_event
 
-ui::modifier_event::modifier_event() {
+modifier_event::modifier_event() {
 }
 
-ui::modifier_event::modifier_event(modifier_flags const flag, double const timestamp)
-    : _flag(flag), _timestamp(timestamp) {
+modifier_event::modifier_event(modifier_flags const flag, double const timestamp) : _flag(flag), _timestamp(timestamp) {
 }
 
-bool ui::modifier_event::operator==(modifier_event const &rhs) const {
+bool modifier_event::operator==(modifier_event const &rhs) const {
     return this->_flag == rhs._flag;
 }
 
-bool ui::modifier_event::operator!=(modifier_event const &rhs) const {
+bool modifier_event::operator!=(modifier_event const &rhs) const {
     return this->_flag != rhs._flag;
 }
 
-ui::modifier_flags ui::modifier_event::flag() const {
+modifier_flags modifier_event::flag() const {
     return this->_flag;
 }
 
-double ui::modifier_event::timestamp() const {
+double modifier_event::timestamp() const {
     return this->_timestamp;
 }
 
 #pragma mark -
 
-std::string yas::to_string(ui::cursor_event const &event) {
+std::string yas::to_string(cursor_event const &event) {
     return "{position:" + to_string(event.position()) + "}";
 }
 
-std::string yas::to_string(ui::touch_event const &event) {
+std::string yas::to_string(touch_event const &event) {
     return "{position:" + to_string(event.position()) + "}";
 }
 
-std::string yas::to_string(ui::key_event const &event) {
+std::string yas::to_string(key_event const &event) {
     return "{key_code:" + std::to_string(event.key_code()) + ", characters:" + event.characters() +
            ", raw_characters:" + event.raw_characters() + "}";
 }
 
-std::string yas::to_string(ui::modifier_event const &event) {
+std::string yas::to_string(modifier_event const &event) {
     return "{flag:" + to_string(event.flag()) + "}";
 }
 
-std::string yas::to_string(ui::event_phase const &phase) {
+std::string yas::to_string(event_phase const &phase) {
     switch (phase) {
-        case ui::event_phase::began:
+        case event_phase::began:
             return "began";
-        case ui::event_phase::stationary:
+        case event_phase::stationary:
             return "stationary";
-        case ui::event_phase::changed:
+        case event_phase::changed:
             return "changed";
-        case ui::event_phase::ended:
+        case event_phase::ended:
             return "ended";
-        case ui::event_phase::canceled:
+        case event_phase::canceled:
             return "canceled";
-        case ui::event_phase::may_begin:
+        case event_phase::may_begin:
             return "may_begin";
-        case ui::event_phase::none:
+        case event_phase::none:
             return "none";
     }
 }
 
-std::string yas::to_string(ui::modifier_flags const &flag) {
+std::string yas::to_string(modifier_flags const &flag) {
     switch (flag) {
-        case ui::modifier_flags::alpha_shift:
+        case modifier_flags::alpha_shift:
             return "alpha_shift";
-        case ui::modifier_flags::shift:
+        case modifier_flags::shift:
             return "shift";
-        case ui::modifier_flags::control:
+        case modifier_flags::control:
             return "control";
-        case ui::modifier_flags::alternate:
+        case modifier_flags::alternate:
             return "alternate";
-        case ui::modifier_flags::command:
+        case modifier_flags::command:
             return "command";
-        case ui::modifier_flags::numeric_pad:
+        case modifier_flags::numeric_pad:
             return "numeric_pad";
-        case ui::modifier_flags::help:
+        case modifier_flags::help:
             return "help";
-        case ui::modifier_flags::function:
+        case modifier_flags::function:
             return "function";
     }
 

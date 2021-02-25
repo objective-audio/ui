@@ -7,51 +7,51 @@
 #include "yas_ui_metal_types.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-#pragma mark - ui::metal_texture
+#pragma mark - metal_texture
 
-ui::metal_texture::metal_texture(ui::uint_size &&actual_size, ui::texture_usages_t const usages,
-                                 ui::pixel_format const format)
+metal_texture::metal_texture(uint_size &&actual_size, texture_usages_t const usages, ui::pixel_format const format)
     : _size(std::move(actual_size)),
       _texture_usage(to_mtl_texture_usage(usages)),
       _pixel_format(to_mtl_pixel_format(format)) {
 }
 
-ui::metal_texture::~metal_texture() = default;
+metal_texture::~metal_texture() = default;
 
-ui::uint_size ui::metal_texture::size() const {
+uint_size metal_texture::size() const {
     return this->_size;
 }
 
-id<MTLSamplerState> ui::metal_texture::samplerState() const {
+id<MTLSamplerState> metal_texture::samplerState() const {
     return this->_sampler_object.object();
 }
 
-id<MTLTexture> ui::metal_texture::texture() const {
+id<MTLTexture> metal_texture::texture() const {
     return this->_texture_object.object();
 }
 
-id<MTLBuffer> ui::metal_texture::argumentBuffer() const {
+id<MTLBuffer> metal_texture::argumentBuffer() const {
     return *this->_argument_buffer_object;
 }
 
-MTLTextureType ui::metal_texture::texture_type() const {
+MTLTextureType metal_texture::texture_type() const {
     return this->_target;
 }
 
-MTLPixelFormat ui::metal_texture::pixel_format() const {
+MTLPixelFormat metal_texture::pixel_format() const {
     return this->_pixel_format;
 }
 
-MTLTextureUsage ui::metal_texture::texture_usage() const {
+MTLTextureUsage metal_texture::texture_usage() const {
     return this->_texture_usage;
 }
 
-ui::metal_system_ptr const &ui::metal_texture::metal_system() const {
+metal_system_ptr const &metal_texture::metal_system() const {
     return this->_metal_system;
 }
 
-ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
+setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
     if (this->_metal_system != system) {
         this->_metal_system = system;
         this->_texture_object.set_object(nil);
@@ -60,7 +60,7 @@ ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_
 
     if (!this->_texture_object) {
         if (this->_size.width == 0 || this->_size.height == 0) {
-            return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
+            return setup_metal_result{setup_metal_error::create_texture_descriptor_failed};
         }
 
         auto texture_desc = objc_ptr<MTLTextureDescriptor *>([&format = this->_pixel_format, &size = this->_size] {
@@ -71,7 +71,7 @@ ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_
         });
 
         if (!texture_desc) {
-            return ui::setup_metal_result{ui::setup_metal_error::create_texture_descriptor_failed};
+            return setup_metal_result{setup_metal_error::create_texture_descriptor_failed};
         }
 
         auto textureDesc = texture_desc.object();
@@ -80,17 +80,17 @@ ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_
 
         textureDesc.usage = this->_texture_usage;
 
-        this->_texture_object = ui::makable_metal_system::cast(this->_metal_system)->make_mtl_texture(textureDesc);
+        this->_texture_object = makable_metal_system::cast(this->_metal_system)->make_mtl_texture(textureDesc);
 
         if (!this->_texture_object) {
-            return ui::setup_metal_result{ui::setup_metal_error::create_texture_failed};
+            return setup_metal_result{setup_metal_error::create_texture_failed};
         }
     }
 
     if (!this->_sampler_object) {
         auto sampler_desc = objc_ptr_with_move_object([MTLSamplerDescriptor new]);
         if (!sampler_desc) {
-            return ui::setup_metal_result{setup_metal_error::create_sampler_descriptor_failed};
+            return setup_metal_result{setup_metal_error::create_sampler_descriptor_failed};
         }
 
         auto samplerDesc = sampler_desc.object();
@@ -107,29 +107,27 @@ ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_
         samplerDesc.lodMaxClamp = FLT_MAX;
         samplerDesc.supportArgumentBuffers = true;
 
-        this->_sampler_object =
-            ui::makable_metal_system::cast(this->_metal_system)->make_mtl_sampler_state(samplerDesc);
+        this->_sampler_object = makable_metal_system::cast(this->_metal_system)->make_mtl_sampler_state(samplerDesc);
 
         if (!this->_sampler_object.object()) {
-            return ui::setup_metal_result{setup_metal_error::create_sampler_failed};
+            return setup_metal_result{setup_metal_error::create_sampler_failed};
         }
     }
 
     if (!this->_argument_encoder_object) {
-        this->_argument_encoder_object =
-            ui::makable_metal_system::cast(this->_metal_system)->make_mtl_argument_encoder();
+        this->_argument_encoder_object = makable_metal_system::cast(this->_metal_system)->make_mtl_argument_encoder();
 
         if (!this->_argument_encoder_object) {
-            return ui::setup_metal_result{setup_metal_error::create_argument_encoder_failed};
+            return setup_metal_result{setup_metal_error::create_argument_encoder_failed};
         }
 
         auto encoder = *this->_argument_encoder_object;
 
         this->_argument_buffer_object =
-            ui::makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(encoder.encodedLength);
+            makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(encoder.encodedLength);
 
         if (!this->_argument_buffer_object) {
-            return ui::setup_metal_result{setup_metal_error::create_argument_buffer_failed};
+            return setup_metal_result{setup_metal_error::create_argument_buffer_failed};
         }
 
         [encoder setArgumentBuffer:*this->_argument_buffer_object offset:0];
@@ -137,10 +135,10 @@ ui::setup_metal_result ui::metal_texture::metal_setup(std::shared_ptr<ui::metal_
         [encoder setSamplerState:*this->_sampler_object atIndex:1];
     }
 
-    return ui::setup_metal_result{nullptr};
+    return setup_metal_result{nullptr};
 }
 
-ui::metal_texture_ptr ui::metal_texture::make_shared(ui::uint_size size, ui::texture_usages_t const usages,
-                                                     ui::pixel_format const format) {
+metal_texture_ptr metal_texture::make_shared(uint_size size, texture_usages_t const usages,
+                                             ui::pixel_format const format) {
     return std::shared_ptr<metal_texture>(new metal_texture{std::move(size), usages, format});
 }
