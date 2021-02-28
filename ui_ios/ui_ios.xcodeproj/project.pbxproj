@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B61E354D21E6303700DF35C3 /* ui.h in Headers */ = {isa = PBXBuildFile; fileRef = B61E354B21E6303700DF35C3 /* ui.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B657FB9825EBD4DA00495411 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B657FB9725EBD4DA00495411 /* observing.framework */; };
 		B659576225E7A24C00DF4ED9 /* yas_ui_objc.h in Headers */ = {isa = PBXBuildFile; fileRef = B659576025E7A20D00DF4ED9 /* yas_ui_objc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6629A8625E69D1F00443098 /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B6629A0925E69D1F00443098 /* yas_ui_background.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6629A8725E69D1F00443098 /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6629A0A25E69D1F00443098 /* yas_ui_background.mm */; };
@@ -105,7 +106,6 @@
 		B6629AE425E69D1F00443098 /* yas_ui_event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6629A8325E69D1F00443098 /* yas_ui_event.cpp */; };
 		B6629AE525E69D1F00443098 /* yas_ui_event_protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6629A8425E69D1F00443098 /* yas_ui_event_protocol.cpp */; };
 		B6629AE625E69D1F00443098 /* yas_ui_event.h in Headers */ = {isa = PBXBuildFile; fileRef = B6629A8525E69D1F00443098 /* yas_ui_event.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6DE34BF21E6313800E49BCB /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34BE21E6313800E49BCB /* chaining.framework */; };
 		B6DE34C121E6313800E49BCB /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C021E6313800E49BCB /* cpp_utils.framework */; };
 		B6DE34C321E6313800E49BCB /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C221E6313800E49BCB /* objc_utils.framework */; };
 		B6DE34C721E6314700E49BCB /* MetalPerformanceShaders.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34C421E6314700E49BCB /* MetalPerformanceShaders.framework */; };
@@ -120,6 +120,7 @@
 		B61E354821E6303700DF35C3 /* ui.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ui.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B61E354B21E6303700DF35C3 /* ui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui.h; sourceTree = "<group>"; };
 		B61E354C21E6303700DF35C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B657FB9725EBD4DA00495411 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B659576025E7A20D00DF4ED9 /* yas_ui_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_objc.h; sourceTree = "<group>"; };
 		B6629A0925E69D1F00443098 /* yas_ui_background.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_background.h; sourceTree = "<group>"; };
 		B6629A0A25E69D1F00443098 /* yas_ui_background.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background.mm; sourceTree = "<group>"; };
@@ -241,8 +242,8 @@
 				B6DE34CF21E6319400E49BCB /* CoreGraphics.framework in Frameworks */,
 				B6DE34C721E6314700E49BCB /* MetalPerformanceShaders.framework in Frameworks */,
 				B6DE34C821E6314700E49BCB /* Metal.framework in Frameworks */,
+				B657FB9825EBD4DA00495411 /* observing.framework in Frameworks */,
 				B6DE34C921E6314700E49BCB /* MetalKit.framework in Frameworks */,
-				B6DE34BF21E6313800E49BCB /* chaining.framework in Frameworks */,
 				B6DE34C121E6313800E49BCB /* cpp_utils.framework in Frameworks */,
 				B6DE34C321E6313800E49BCB /* objc_utils.framework in Frameworks */,
 			);
@@ -610,6 +611,7 @@
 		B6DE34BD21E6313800E49BCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B657FB9725EBD4DA00495411 /* observing.framework */,
 				B6DE34D421E6322600E49BCB /* CoreText.framework */,
 				B6DE34D221E6322100E49BCB /* Foundation.framework */,
 				B6DE34D021E631D900E49BCB /* UIKit.framework */,

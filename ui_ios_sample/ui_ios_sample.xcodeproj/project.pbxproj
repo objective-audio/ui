@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B60428391D3B2F820076769D /* yas_sample_soft_keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428381D3B2F820076769D /* yas_sample_soft_keyboard.mm */; };
 		B65553891D6402B0000FB98F /* yas_sample_justified_points.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65553881D6402B0000FB98F /* yas_sample_justified_points.mm */; };
+		B657FB9A25EBD4FA00495411 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B657FB9925EBD4FA00495411 /* observing.framework */; };
+		B657FB9B25EBD4FA00495411 /* observing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B657FB9925EBD4FA00495411 /* observing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B65F6D9F1CC87D12007C3523 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6D9E1CC87D12007C3523 /* main.m */; };
 		B65F6DA21CC87D12007C3523 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F6DA11CC87D12007C3523 /* AppDelegate.m */; };
 		B65F6DA81CC87D12007C3523 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B65F6DA61CC87D12007C3523 /* Main.storyboard */; };
@@ -22,8 +24,6 @@
 		B6C413F51CDC612B0012095F /* yas_sample_big_button_text.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C413F41CDC612B0012095F /* yas_sample_big_button_text.mm */; };
 		B6DE35DA21E76F4100E49BCB /* ui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D621E76D2E00E49BCB /* ui.framework */; };
 		B6DE35DB21E76F4100E49BCB /* ui.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D621E76D2E00E49BCB /* ui.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B6DE35DC21E76F4100E49BCB /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D421E76D1200E49BCB /* chaining.framework */; };
-		B6DE35DD21E76F4100E49BCB /* chaining.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D421E76D1200E49BCB /* chaining.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6DE35DE21E76F4100E49BCB /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D221E76D0500E49BCB /* cpp_utils.framework */; };
 		B6DE35DF21E76F4100E49BCB /* cpp_utils.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D221E76D0500E49BCB /* cpp_utils.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6DE35E021E76F4100E49BCB /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE35D821E76DD800E49BCB /* objc_utils.framework */; };
@@ -46,8 +46,8 @@
 			files = (
 				B6DE35DF21E76F4100E49BCB /* cpp_utils.framework in Embed Frameworks */,
 				B6DE35DB21E76F4100E49BCB /* ui.framework in Embed Frameworks */,
+				B657FB9B25EBD4FA00495411 /* observing.framework in Embed Frameworks */,
 				B6DE35E121E76F4100E49BCB /* objc_utils.framework in Embed Frameworks */,
-				B6DE35DD21E76F4100E49BCB /* chaining.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -59,6 +59,7 @@
 		B60428381D3B2F820076769D /* yas_sample_soft_keyboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_soft_keyboard.mm; path = ../../ui_sample_common/yas_sample_soft_keyboard.mm; sourceTree = "<group>"; };
 		B65553871D6402B0000FB98F /* yas_sample_justified_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_justified_points.h; path = ../../ui_sample_common/yas_sample_justified_points.h; sourceTree = "<group>"; };
 		B65553881D6402B0000FB98F /* yas_sample_justified_points.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_justified_points.mm; path = ../../ui_sample_common/yas_sample_justified_points.mm; sourceTree = "<group>"; };
+		B657FB9925EBD4FA00495411 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65F6D9A1CC87D12007C3523 /* ui_ios_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ui_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65F6D9E1CC87D12007C3523 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B65F6DA01CC87D12007C3523 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -106,8 +107,8 @@
 			files = (
 				B6DE35E021E76F4100E49BCB /* objc_utils.framework in Frameworks */,
 				B6DE35DE21E76F4100E49BCB /* cpp_utils.framework in Frameworks */,
+				B657FB9A25EBD4FA00495411 /* observing.framework in Frameworks */,
 				B6B678531FF0C61100BDC824 /* MetalPerformanceShaders.framework in Frameworks */,
-				B6DE35DC21E76F4100E49BCB /* chaining.framework in Frameworks */,
 				B65F6E451CC87E03007C3523 /* MetalKit.framework in Frameworks */,
 				B6DE35DA21E76F4100E49BCB /* ui.framework in Frameworks */,
 			);
@@ -187,6 +188,7 @@
 		B6B678511FF0C61000BDC824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B657FB9925EBD4FA00495411 /* observing.framework */,
 				B6DE35D821E76DD800E49BCB /* objc_utils.framework */,
 				B6DE35D621E76D2E00E49BCB /* ui.framework */,
 				B6DE35D421E76D1200E49BCB /* chaining.framework */,

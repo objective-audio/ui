@@ -3,7 +3,6 @@
 //
 
 #include "yas_sample_soft_keyboard.h"
-#include <chaining/yas_chaining_utils.h>
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_stl_utils.h>
 #include <limits>

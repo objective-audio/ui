@@ -3,7 +3,6 @@
 //
 
 #include "yas_sample_draw_call_text.h"
-#include <chaining/yas_chaining_utils.h>
 
 using namespace yas;
 

@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		B60428281D3904D70076769D /* yas_sample_soft_keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */; };
 		B60F3FEB1FC7B8A6008493DC /* yas_sample_draw_call_text.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60F3FE91FC7B8A6008493DC /* yas_sample_draw_call_text.mm */; };
-		B61E343D21E6285800DF35C3 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B61E343C21E6285800DF35C3 /* chaining.framework */; };
 		B61E343F21E6285800DF35C3 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B61E343E21E6285800DF35C3 /* cpp_utils.framework */; };
 		B61E344121E6285800DF35C3 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B61E344021E6285800DF35C3 /* objc_utils.framework */; };
 		B61E344321E6285800DF35C3 /* ui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B61E344221E6285800DF35C3 /* ui.framework */; };
 		B65553861D6400C5000FB98F /* yas_sample_justified_points.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65553841D6400C5000FB98F /* yas_sample_justified_points.mm */; };
+		B657FB8025EBD2BC00495411 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B657FB7F25EBD2BC00495411 /* observing.framework */; };
 		B65F6E4E1CC8804D007C3523 /* YASSampleMetalViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */; };
 		B67B89E71CDA212B0081848D /* yas_sample_big_button.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89E61CDA212B0081848D /* yas_sample_big_button.mm */; };
 		B67B8A011CDAFD9A0081848D /* yas_sample_cursor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67B89F81CDAFD9A0081848D /* yas_sample_cursor.mm */; };
@@ -43,6 +43,7 @@
 		B61E344221E6285800DF35C3 /* ui.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ui.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65553841D6400C5000FB98F /* yas_sample_justified_points.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_justified_points.mm; path = ../../ui_sample_common/yas_sample_justified_points.mm; sourceTree = "<group>"; };
 		B65553851D6400C5000FB98F /* yas_sample_justified_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_justified_points.h; path = ../../ui_sample_common/yas_sample_justified_points.h; sourceTree = "<group>"; };
+		B657FB7F25EBD2BC00495411 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65F6E4C1CC8804D007C3523 /* YASSampleMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YASSampleMetalViewController.h; path = ../../ui_sample_common/YASSampleMetalViewController.h; sourceTree = "<group>"; };
 		B65F6E4D1CC8804D007C3523 /* YASSampleMetalViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = YASSampleMetalViewController.mm; path = ../../ui_sample_common/YASSampleMetalViewController.mm; sourceTree = "<group>"; };
 		B6635DFF2310C7A5003D53D4 /* yas_sample_ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yas_sample_ptr.h; path = ../../ui_sample_common/yas_sample_ptr.h; sourceTree = "<group>"; };
@@ -81,9 +82,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B61E343D21E6285800DF35C3 /* chaining.framework in Frameworks */,
 				B61E343F21E6285800DF35C3 /* cpp_utils.framework in Frameworks */,
 				B61E344121E6285800DF35C3 /* objc_utils.framework in Frameworks */,
+				B657FB8025EBD2BC00495411 /* observing.framework in Frameworks */,
 				B61E344321E6285800DF35C3 /* ui.framework in Frameworks */,
 				B6B678501FF0C60000BDC824 /* MetalPerformanceShaders.framework in Frameworks */,
 				B6ABA5DB1CB402EF008C7714 /* MetalKit.framework in Frameworks */,
@@ -96,6 +97,7 @@
 		B6B6784E1FF0C5FF00BDC824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B657FB7F25EBD2BC00495411 /* observing.framework */,
 				B61E343C21E6285800DF35C3 /* chaining.framework */,
 				B61E343E21E6285800DF35C3 /* cpp_utils.framework */,
 				B61E344021E6285800DF35C3 /* objc_utils.framework */,
