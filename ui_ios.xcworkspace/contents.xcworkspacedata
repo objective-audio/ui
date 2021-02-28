@@ -8,7 +8,7 @@
       location = "group:ui_ios/ui_ios.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:submodules/chaining/chaining_ios/chaining_ios.xcodeproj">
+      location = "group:submodules/observing/observing_ios/observing_ios.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:submodules/cpp_utils/cpp_utils_ios/cpp_utils_ios.xcodeproj">

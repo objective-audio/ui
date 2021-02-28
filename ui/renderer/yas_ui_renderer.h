@@ -5,8 +5,8 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <chaining/yas_chaining_umbrella.h>
 #include <objc_utils/yas_objc_macros.h>
+#include <observing/yas_observing_umbrella.h>
 #include <simd/simd.h>
 #include <ui/yas_ui_detector.h>
 #include <ui/yas_ui_event.h>
