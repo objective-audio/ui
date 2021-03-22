@@ -52,7 +52,7 @@ void sample::main::setup() {
                                               .begin_position = {0.0f, 0.0f},
                                               .end_position = {32.0f, 0.0f},
                                               .continuous_action = {.duration = 5.0, .loop_count = 0}});
-    button_pos_action->set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
+    button_pos_action->continuous()->set_value_transformer([](float const value) { return sinf(M_PI * 2.0f * value); });
     this->renderer->insert_action(button_pos_action);
 
     auto texture = ui::texture::make_shared({.point_size = {1024, 1024}});
@@ -66,13 +66,13 @@ void sample::main::setup() {
     render_target->sync_scale_from_renderer(this->renderer);
     render_target->set_effect(this->_blur->effect());
 
-    auto blur_action = ui::continuous_action::make_shared({.duration = 5.0, .loop_count = 0});
-    blur_action->set_value_updater([weak_blur = to_weak(this->_blur)](double const value) {
+    auto blur_action = ui::action::make_continuous({}, {.duration = 5.0, .loop_count = 0});
+    blur_action->continuous()->set_value_updater([weak_blur = to_weak(this->_blur)](double const value) {
         if (auto blur = weak_blur.lock()) {
             blur->set_sigma(value * 20.0);
         }
     });
-    blur_action->set_value_transformer(ui::ping_pong_transformer());
+    blur_action->continuous()->set_value_transformer(ui::ping_pong_transformer());
     this->renderer->insert_action(blur_action);
 
     auto &view_guide = this->renderer->view_layout_guide_rect();
