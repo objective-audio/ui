@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_math.h"
+
 #include <cmath>
 
 using namespace yas;
@@ -26,5 +27,5 @@ double yas::ceil(double const value, double const scale) {
 float yas::distance(ui::point const &src, ui::point const &dst) {
     float const x = src.x - dst.x;
     float const y = src.y - dst.y;
-    return sqrt(x * x + y * y);
+    return std::sqrt(x * x + y * y);
 }
