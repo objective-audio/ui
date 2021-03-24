@@ -33,19 +33,6 @@ using namespace yas;
     XCTAssertTrue(renderable->matrix() == simd::float4x4{matrix_identity_float4x4});
 }
 
-- (void)test_create_with_args {
-    auto collider = ui::collider::make_shared(ui::shape::make_shared({.center = {1.0f, 2.0f}, .radius = 3.0f}));
-
-    XCTAssertTrue(collider);
-    XCTAssertTrue(collider->shape());
-    XCTAssertTrue(collider->shape()->type_info() == typeid(ui::shape::circle));
-
-    auto const &circle_shape = collider->shape()->get<ui::shape::circle>();
-    XCTAssertEqual(circle_shape.center.x, 1.0f);
-    XCTAssertEqual(circle_shape.center.y, 2.0f);
-    XCTAssertEqual(circle_shape.radius, 3.0f);
-}
-
 - (void)test_set_variables {
     auto collider = ui::collider::make_shared();
 

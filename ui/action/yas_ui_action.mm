@@ -115,11 +115,11 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
 
             float value = finished ? 1.0f : (fmod(action->time_diff(time).count(), duration) / duration);
 
-            if (auto const &transformer = action->continuous()->value_transformer()) {
+            if (auto const &transformer = action->continuous()->value_transformer) {
                 value = transformer(value);
             }
 
-            if (auto const &updator = action->continuous()->value_updater()) {
+            if (auto const &updator = action->continuous()->value_updater) {
                 updator(value);
             }
 
@@ -166,24 +166,8 @@ double continuous_action::duration() const {
     return this->_duration;
 }
 
-continuous_action::value_update_f const &continuous_action::value_updater() const {
-    return this->_value_updater;
-}
-
-transform_f const &continuous_action::value_transformer() const {
-    return this->_value_transformer;
-}
-
 std::size_t continuous_action::loop_count() const {
     return this->_loop_count;
-}
-
-void continuous_action::set_value_updater(value_update_f updater) {
-    this->_value_updater = std::move(updater);
-}
-
-void continuous_action::set_value_transformer(transform_f transformer) {
-    this->_value_transformer = std::move(transformer);
 }
 
 std::shared_ptr<continuous_action> continuous_action::make_shared(continuous_action_args args) {

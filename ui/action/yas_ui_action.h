@@ -38,22 +38,17 @@ struct parallel_action_args final {
 struct continuous_action final {
     using value_update_f = std::function<void(double const)>;
 
-    double duration() const;
-    value_update_f const &value_updater() const;
-    transform_f const &value_transformer() const;
-    std::size_t loop_count() const;
+    value_update_f value_updater;
+    transform_f value_transformer;
 
-    void set_value_updater(value_update_f);
-    void set_value_transformer(transform_f);
+    double duration() const;
+    std::size_t loop_count() const;
 
     [[nodiscard]] static continuous_action_ptr make_shared(continuous_action_args);
 
    private:
     double _duration = 0.3;
-    value_update_f _value_updater;
-    transform_f _value_transformer;
     std::size_t _loop_count = 1;
-    std::size_t _index = 0;
 
     explicit continuous_action(continuous_action_args &&args);
 };
