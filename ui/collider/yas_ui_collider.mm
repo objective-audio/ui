@@ -54,8 +54,6 @@ shape::shape(circle::type &&shape) : _impl(std::make_shared<impl<circle>>(std::m
 shape::shape(rect::type &&shape) : _impl(std::make_shared<impl<rect>>(std::move(shape))) {
 }
 
-shape::~shape() = default;
-
 std::type_info const &shape::type_info() const {
     return this->_impl->type();
 }
@@ -63,20 +61,6 @@ std::type_info const &shape::type_info() const {
 bool shape::hit_test(point const &pos) const {
     return this->_impl->hit_test(pos);
 }
-
-template <typename T>
-typename T::type const &shape::get() const {
-    if (auto ip = std::dynamic_pointer_cast<impl<T>>(this->_impl)) {
-        return ip->_value;
-    }
-
-    static const typename T::type _default{};
-    return _default;
-}
-
-template anywhere_shape const &shape::get<shape::anywhere>() const;
-template circle_shape const &shape::get<shape::circle>() const;
-template rect_shape const &shape::get<shape::rect>() const;
 
 shape_ptr shape::make_shared(anywhere::type type) {
     return std::shared_ptr<shape>(new shape{std::move(type)});

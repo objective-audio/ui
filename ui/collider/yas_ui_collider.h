@@ -48,14 +48,9 @@ struct shape final {
         using type = rect_shape;
     };
 
-    virtual ~shape();
-
     [[nodiscard]] std::type_info const &type_info() const;
 
     [[nodiscard]] bool hit_test(ui::point const &) const;
-
-    template <typename T>
-    [[nodiscard]] typename T::type const &get() const;
 
     [[nodiscard]] static shape_ptr make_shared(anywhere::type);
     [[nodiscard]] static shape_ptr make_shared(circle::type);
