@@ -50,7 +50,7 @@ using namespace yas;
 
     auto pre_render_action = ui::action::make_shared();
 
-    pre_render_action->set_time_updater([expectation, self, &metal_system](auto const &) mutable {
+    pre_render_action->time_updater = [expectation, self, &metal_system](auto const &) mutable {
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
 
@@ -68,7 +68,7 @@ using namespace yas;
         [expectation fulfill];
 
         return true;
-    });
+    };
 
     renderer->insert_action(pre_render_action);
 

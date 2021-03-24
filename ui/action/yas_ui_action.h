@@ -21,7 +21,6 @@ struct action_target {
 };
 
 struct action_args final {
-    action_target_wptr target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
 };
@@ -32,6 +31,7 @@ struct continuous_action_args final {
 };
 
 struct parallel_action_args final {
+    action_target_wptr target;
     std::unordered_set<action_ptr> actions;
 };
 
@@ -41,8 +41,8 @@ struct continuous_action final {
     value_update_f value_updater;
     transform_f value_transformer;
 
-    double duration() const;
-    std::size_t loop_count() const;
+    [[nodiscard]] double duration() const;
+    [[nodiscard]] std::size_t loop_count() const;
 
     [[nodiscard]] static continuous_action_ptr make_shared(continuous_action_args);
 
@@ -54,8 +54,8 @@ struct continuous_action final {
 };
 
 struct parallel_action final {
-    std::vector<action_ptr> actions() const;
-    std::size_t action_count() const;
+    [[nodiscard]] std::vector<action_ptr> actions() const;
+    [[nodiscard]] std::size_t action_count() const;
 
     void insert_action(action_ptr);
     void erase_action(action_ptr const &);
@@ -72,24 +72,21 @@ struct action final {
     using time_update_f = std::function<bool(time_point_t const &)>;
     using completion_f = std::function<void(void)>;
 
-    virtual ~action() = default;
+    time_update_f time_updater;
+    completion_f completion_handler;
 
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
-    [[nodiscard]] time_update_f const &time_updater() const;
-    [[nodiscard]] completion_f const &completion_handler() const;
 
     void set_target(action_target_wptr const &);
-    void set_time_updater(time_update_f);
-    void set_completion_handler(completion_f);
 
     bool update(time_point_t const &time);
 
-    bool is_continous() const;
-    bool is_parallel() const;
-    continuous_action_ptr const &continuous() const;
-    parallel_action_ptr const &parallel() const;
+    [[nodiscard]] bool is_continous() const;
+    [[nodiscard]] bool is_parallel() const;
+    [[nodiscard]] continuous_action_ptr const &continuous() const;
+    [[nodiscard]] parallel_action_ptr const &parallel() const;
 
     [[nodiscard]] static action_ptr make_shared();
     [[nodiscard]] static action_ptr make_shared(action_args);
@@ -102,14 +99,12 @@ struct action final {
 
     [[nodiscard]] static action_ptr make_sequence(std::vector<action_ptr> actions, time_point_t const &begin_time);
 
-   protected:
+   private:
     continuous_action_ptr _continuous;
     parallel_action_ptr _parallel;
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
-    time_update_f _time_updater;
-    completion_f _completion_handler;
 
     explicit action(action_args);
 
