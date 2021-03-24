@@ -11,34 +11,23 @@
 namespace yas::ui {
 class event_impl_base;
 
-struct manageable_event {
-    virtual ~manageable_event() = default;
-
-    template <typename T>
-    void set(typename T::type);
-
-    virtual void set_phase(event_phase const &) = 0;
-    virtual std::shared_ptr<event_impl_base> get_impl() = 0;
-
-    static manageable_event_ptr cast(manageable_event_ptr const &event) {
-        return event;
-    }
-};
-
-struct event : manageable_event {
+struct event final {
     template <typename T>
     class impl;
-
-    virtual ~event() final;
 
     event_phase phase() const;
 
     std::type_info const &type_info() const;
 
     template <typename T>
+    void set(typename T::type);
+
+    template <typename T>
     typename T::type const &get() const;
 
     uintptr_t identifier() const;
+
+    void set_phase(event_phase const &);
 
     bool operator==(event const &) const;
     bool operator!=(event const &) const;
@@ -49,7 +38,10 @@ struct event : manageable_event {
     [[nodiscard]] static event_ptr make_shared(modifier const &);
 
    private:
-    std::shared_ptr<event_impl_base> _impl;
+    std::shared_ptr<impl<cursor>> _cursor_impl = nullptr;
+    std::shared_ptr<impl<touch>> _touch_impl = nullptr;
+    std::shared_ptr<impl<key>> _key_impl = nullptr;
+    std::shared_ptr<impl<modifier>> _modifier_impl = nullptr;
 
     explicit event(cursor const &);
     explicit event(touch const &);
@@ -61,8 +53,7 @@ struct event : manageable_event {
     event &operator=(event const &) = delete;
     event &operator=(event &&) = delete;
 
-    void set_phase(event_phase const &) override;
-    std::shared_ptr<event_impl_base> get_impl() override;
+    std::shared_ptr<event_impl_base> _impl() const;
 };
 
 struct event_manager : event_inputtable {

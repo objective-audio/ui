@@ -15,7 +15,6 @@ using namespace yas::ui;
 
 struct ui::event_impl_base {
     virtual std::type_info const &type() const = 0;
-    virtual bool is_equal(std::shared_ptr<event_impl_base> const &rhs) const = 0;
 
     event_phase phase = event_phase::none;
 };
@@ -34,15 +33,8 @@ struct event::impl : event_impl_base {
 
     ~impl() = default;
 
-    bool is_equal(std::shared_ptr<event_impl_base> const &rhs) const override {
-        if (auto casted_rhs = std::dynamic_pointer_cast<impl>(rhs)) {
-            auto &type_info = this->type();
-            if (type_info == casted_rhs->type()) {
-                return this->value == casted_rhs->value;
-            }
-        }
-
-        return false;
+    bool is_equal(std::shared_ptr<impl> const &rhs) const {
+        return this->value == rhs->value;
     }
 
     std::type_info const &type() const override {
@@ -52,49 +44,79 @@ struct event::impl : event_impl_base {
 
 #pragma mark - event
 
-event::event(cursor const &) : _impl(std::make_shared<impl<cursor>>()) {
+event::event(cursor const &) : _cursor_impl(std::make_shared<impl<cursor>>()) {
 }
 
-event::event(touch const &) : _impl(std::make_shared<impl<touch>>()) {
+event::event(touch const &) : _touch_impl(std::make_shared<impl<touch>>()) {
 }
 
-event::event(key const &) : _impl(std::make_shared<impl<key>>()) {
+event::event(key const &) : _key_impl(std::make_shared<impl<key>>()) {
 }
 
-event::event(modifier const &) : _impl(std::make_shared<impl<modifier>>()) {
+event::event(modifier const &) : _modifier_impl(std::make_shared<impl<modifier>>()) {
 }
-
-event::~event() = default;
 
 event_phase event::phase() const {
-    return this->_impl->phase;
+    return this->_impl()->phase;
 }
 
 std::type_info const &event::type_info() const {
-    return this->_impl->type();
+    return this->_impl()->type();
 }
 
-template <typename T>
-typename T::type const &event::get() const {
-    if (auto ip = std::dynamic_pointer_cast<impl<T>>(this->_impl)) {
-        return ip->value;
-    }
-
-    static const typename T::type _default{};
-    return _default;
+template <>
+void event::set<cursor>(cursor::type value) {
+    this->_cursor_impl->value = value;
+}
+template <>
+void event::set<touch>(touch::type value) {
+    this->_touch_impl->value = value;
+}
+template <>
+void event::set<key>(key::type value) {
+    this->_key_impl->value = value;
+}
+template <>
+void event::set<modifier>(modifier::type value) {
+    this->_modifier_impl->value = value;
 }
 
-template cursor::type const &event::get<cursor>() const;
-template touch::type const &event::get<touch>() const;
-template key::type const &event::get<key>() const;
-template modifier::type const &event::get<modifier>() const;
+template <>
+cursor::type const &event::get<cursor>() const {
+    return this->_cursor_impl->value;
+}
+
+template <>
+touch::type const &event::get<touch>() const {
+    return this->_touch_impl->value;
+}
+
+template <>
+key::type const &event::get<key>() const {
+    return this->_key_impl->value;
+}
+
+template <>
+modifier::type const &event::get<modifier>() const {
+    return this->_modifier_impl->value;
+}
 
 uintptr_t event::identifier() const {
     return reinterpret_cast<uintptr_t>(this);
 }
 
 bool event::operator==(event const &rhs) const {
-    return rhs._impl != nullptr && this->_impl->is_equal(rhs._impl);
+    if (this->_cursor_impl && rhs._cursor_impl) {
+        return this->_cursor_impl->is_equal(rhs._cursor_impl);
+    } else if (this->_touch_impl && rhs._touch_impl) {
+        return this->_touch_impl->is_equal(rhs._touch_impl);
+    } else if (this->_key_impl && rhs._key_impl) {
+        return this->_key_impl->is_equal(rhs._key_impl);
+    } else if (this->_modifier_impl && rhs._modifier_impl) {
+        return this->_modifier_impl->is_equal(rhs._modifier_impl);
+    } else {
+        return false;
+    }
 }
 
 bool event::operator!=(event const &rhs) const {
@@ -102,11 +124,21 @@ bool event::operator!=(event const &rhs) const {
 }
 
 void event::set_phase(event_phase const &phase) {
-    this->_impl->phase = std::move(phase);
+    this->_impl()->phase = std::move(phase);
 }
 
-std::shared_ptr<event_impl_base> event::get_impl() {
-    return this->_impl;
+std::shared_ptr<event_impl_base> event::_impl() const {
+    if (this->_cursor_impl) {
+        return this->_cursor_impl;
+    } else if (this->_touch_impl) {
+        return this->_touch_impl;
+    } else if (this->_key_impl) {
+        return this->_key_impl;
+    } else if (this->_modifier_impl) {
+        return this->_modifier_impl;
+    } else {
+        return nullptr;
+    }
 }
 
 event_ptr event::make_shared(cursor const &cursor) {
@@ -124,22 +156,6 @@ event_ptr event::make_shared(key const &key) {
 event_ptr event::make_shared(modifier const &modifier) {
     return std::shared_ptr<event>(new event{modifier});
 }
-
-#pragma mark - manageable_event
-
-template <typename T>
-void manageable_event::set(typename T::type value) {
-    if (auto ip = std::dynamic_pointer_cast<event::impl<T>>(this->get_impl())) {
-        ip->value = std::move(value);
-    } else {
-        throw std::invalid_argument("dynamic_pointer_cast failed");
-    }
-}
-
-template void manageable_event::set<cursor>(cursor::type);
-template void manageable_event::set<touch>(touch::type);
-template void manageable_event::set<key>(key::type);
-template void manageable_event::set<modifier>(modifier::type);
 
 #pragma mark - event_manager
 
@@ -167,9 +183,8 @@ void event_manager::input_cursor_event(cursor_event const &value) {
     }
 
     if (this->_cursor_event) {
-        auto manageable_event = manageable_event::cast(this->_cursor_event);
-        manageable_event->set_phase(phase);
-        manageable_event->set<cursor>(value);
+        this->_cursor_event->set_phase(phase);
+        this->_cursor_event->set<cursor>(value);
 
         this->_notifier->notify({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
 
@@ -192,9 +207,8 @@ void event_manager::input_touch_event(event_phase const phase, touch_event const
 
     if (this->_touch_events.count(identifer) > 0) {
         auto &event = this->_touch_events.at(identifer);
-        auto const manageable_event = manageable_event::cast(event);
-        manageable_event->set_phase(phase);
-        manageable_event->set<touch>(value);
+        event->set_phase(phase);
+        event->set<touch>(value);
 
         this->_notifier->notify({.method = event_manager::method::touch_changed, .event = event});
 
@@ -217,9 +231,8 @@ void event_manager::input_key_event(event_phase const phase, key_event const &va
 
     if (this->_key_events.count(key_code) > 0) {
         auto const &event = this->_key_events.at(key_code);
-        auto const manageable = manageable_event::cast(event);
-        manageable->set_phase(phase);
-        manageable->set<key>(value);
+        event->set_phase(phase);
+        event->set<key>(value);
 
         this->_notifier->notify({.method = event_manager::method::key_changed, .event = event});
 
@@ -238,9 +251,8 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
         if (flags & flag) {
             if (this->_modifier_events.count(flag) == 0) {
                 event_ptr const event = event::make_shared(modifier_tag);
-                auto manageable = manageable_event::cast(event);
-                manageable->set<modifier>(modifier_event{flag, timestamp});
-                manageable->set_phase(event_phase::began);
+                event->set<modifier>(modifier_event{flag, timestamp});
+                event->set_phase(event_phase::began);
                 this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
                 this->_notifier->notify(
@@ -249,7 +261,7 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
         } else {
             if (this->_modifier_events.count(flag) > 0) {
                 auto const &event = this->_modifier_events.at(flag);
-                manageable_event::cast(event)->set_phase(event_phase::ended);
+                event->set_phase(event_phase::ended);
 
                 this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
 
