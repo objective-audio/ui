@@ -14,14 +14,13 @@ std::shared_ptr<action> ui::make_action(layout_action::args args) {
     auto action = action::make_continuous(std::move(args.action), std::move(args.continuous_action));
     action->set_target(target);
 
-    action->continuous()->set_value_updater(
-        [args = std::move(args), weak_action = to_weak(action)](double const value) {
-            if (auto action = weak_action.lock()) {
-                if (auto target = args.target.lock()) {
-                    target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
-                }
+    action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
+        if (auto action = weak_action.lock()) {
+            if (auto target = args.target.lock()) {
+                target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
             }
-        });
+        }
+    };
 
     return action;
 }
@@ -49,7 +48,7 @@ layout_animator::layout_animator(args args) : _args(std::move(args)) {
                                                    .begin_value = dst_guide->value(),
                                                    .end_value = value,
                                                    .continuous_action = {.duration = args.duration}});
-                        action->continuous()->set_value_transformer(this->value_transformer());
+                        action->continuous()->value_transformer = this->value_transformer();
                         renderer->insert_action(action);
                     }
                 },

@@ -46,7 +46,7 @@ using namespace yas;
     auto action = ui::action::make_continuous();
 
     XCTAssertEqual(action->continuous()->duration(), 0.3);
-    XCTAssertFalse(action->continuous()->value_transformer());
+    XCTAssertFalse(action->continuous()->value_transformer);
     XCTAssertTrue(action->is_continous());
     XCTAssertFalse(action->is_parallel());
 }
@@ -79,10 +79,10 @@ using namespace yas;
     auto action = ui::action::make_continuous({}, {.duration = 10.0});
     auto target = ui::node::make_shared();
 
-    action->continuous()->set_value_transformer(ui::ease_out_sine_transformer());
+    action->continuous()->value_transformer = ui::ease_out_sine_transformer();
 
     XCTAssertEqual(action->continuous()->duration(), 10.0);
-    XCTAssertTrue(action->continuous()->value_transformer());
+    XCTAssertTrue(action->continuous()->value_transformer);
 }
 
 - (void)test_begin_time {
@@ -121,7 +121,7 @@ using namespace yas;
     bool completed = false;
     double updated_value = -1.0f;
 
-    action->continuous()->set_value_updater([&updated_value](auto const value) { updated_value = value; });
+    action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
     action->set_completion_handler([&completed]() { completed = true; });
 
     XCTAssertFalse(action->update(time));
@@ -151,7 +151,7 @@ using namespace yas;
     bool completed = false;
     double updated_value = -1.0f;
 
-    action->continuous()->set_value_updater([&updated_value](auto const value) { updated_value = value; });
+    action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
     action->set_completion_handler([&completed]() { completed = true; });
 
     XCTAssertFalse(action->update(time - 1ms));
