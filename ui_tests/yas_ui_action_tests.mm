@@ -28,8 +28,8 @@ using namespace yas;
 
     XCTAssertFalse(action->target());
     XCTAssertEqual(action->delay(), 0.0);
-    XCTAssertFalse(action->time_updater());
-    XCTAssertFalse(action->completion_handler());
+    XCTAssertFalse(action->time_updater);
+    XCTAssertFalse(action->completion_handler);
     XCTAssertFalse(action->is_continous());
     XCTAssertFalse(action->is_parallel());
 
@@ -65,14 +65,14 @@ using namespace yas;
     auto action = ui::action::make_shared({.begin_time = time, .delay = 1.0});
 
     action->set_target(target);
-    action->set_time_updater([](auto const &time) { return false; });
-    action->set_completion_handler([]() {});
+    action->time_updater = [](auto const &time) { return false; };
+    action->completion_handler = [] {};
 
     XCTAssertEqual(action->target(), target);
     XCTAssertEqual(action->begin_time(), time);
     XCTAssertEqual(action->delay(), 1.0);
-    XCTAssertTrue(action->time_updater());
-    XCTAssertTrue(action->completion_handler());
+    XCTAssertTrue(action->time_updater);
+    XCTAssertTrue(action->completion_handler);
 }
 
 - (void)test_set_variables_to_continuous_action {
@@ -99,7 +99,7 @@ using namespace yas;
     auto action = ui::action::make_continuous({.begin_time = time}, {.duration = 1.0});
 
     bool completed = false;
-    action->set_completion_handler([&completed]() { completed = true; });
+    action->completion_handler = [&completed]() { completed = true; };
 
     action->update(time);
 
@@ -122,7 +122,7 @@ using namespace yas;
     double updated_value = -1.0f;
 
     action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
-    action->set_completion_handler([&completed]() { completed = true; });
+    action->completion_handler = [&completed]() { completed = true; };
 
     XCTAssertFalse(action->update(time));
     XCTAssertFalse(completed);
@@ -152,7 +152,7 @@ using namespace yas;
     double updated_value = -1.0f;
 
     action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
-    action->set_completion_handler([&completed]() { completed = true; });
+    action->completion_handler = [&completed]() { completed = true; };
 
     XCTAssertFalse(action->update(time - 1ms));
     XCTAssertFalse(completed);
@@ -234,16 +234,16 @@ using namespace yas;
     bool scale_completed = false;
     bool sequence_completed = false;
 
-    first_action->set_completion_handler([&first_completed] { first_completed = true; });
-    continuous_action1->set_completion_handler([&rotate_completed] { rotate_completed = true; });
-    end_action->set_completion_handler([&end_completed] { end_completed = true; });
-    continuous_action2->set_completion_handler([&scale_completed] { scale_completed = true; });
+    first_action->completion_handler = [&first_completed] { first_completed = true; };
+    continuous_action1->completion_handler = [&rotate_completed] { rotate_completed = true; };
+    end_action->completion_handler = [&end_completed] { end_completed = true; };
+    continuous_action2->completion_handler = [&scale_completed] { scale_completed = true; };
 
     auto time = std::chrono::system_clock::now();
 
     auto action_sequence =
         ui::action::make_sequence({first_action, continuous_action1, end_action, continuous_action2}, time + 1s);
-    action_sequence->set_completion_handler([&sequence_completed] { sequence_completed = true; });
+    action_sequence->completion_handler = [&sequence_completed] { sequence_completed = true; };
     auto const action = action_sequence;
 
     XCTAssertFalse(action->update(time));

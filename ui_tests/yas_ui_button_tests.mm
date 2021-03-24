@@ -64,10 +64,10 @@ using namespace yas;
     XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
 
     auto pre_render_action = ui::action::make_shared();
-    pre_render_action->set_time_updater([expectation, self, &metal_system, count = int{0}](auto const &) mutable {
+    pre_render_action->time_updater = [expectation, self, &metal_system, count = int{0}](auto const &) mutable {
         [expectation fulfill];
         return true;
-    });
+    };
     renderer->insert_action(pre_render_action);
 
     auto button = ui::button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});

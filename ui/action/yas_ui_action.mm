@@ -13,8 +13,7 @@ using namespace std::chrono_literals;
 
 #pragma mark - action
 
-action::action(action_args args)
-    : _begin_time(std::move(args.begin_time)), _delay(args.delay), _target(std::move(args.target)) {
+action::action(action_args args) : _begin_time(std::move(args.begin_time)), _delay(args.delay) {
 }
 
 action_target_ptr action::target() const {
@@ -29,24 +28,8 @@ double action::delay() const {
     return this->_delay.count();
 }
 
-action::time_update_f const &action::time_updater() const {
-    return this->_time_updater;
-}
-
-action::completion_f const &action::completion_handler() const {
-    return this->_completion_handler;
-}
-
 void action::set_target(action_target_wptr const &target) {
     this->_target = target;
-}
-
-void action::set_time_updater(time_update_f handler) {
-    this->_time_updater = std::move(handler);
-}
-
-void action::set_completion_handler(completion_f handler) {
-    this->_completion_handler = std::move(handler);
 }
 
 bool action::update(time_point_t const &time) {
@@ -54,11 +37,11 @@ bool action::update(time_point_t const &time) {
         return false;
     }
 
-    auto const finished = this->_time_updater ? this->_time_updater(time) : true;
+    auto const finished = this->time_updater ? this->time_updater(time) : true;
 
-    if (finished && this->_completion_handler) {
-        this->_completion_handler();
-        this->_completion_handler = nullptr;
+    if (finished && this->completion_handler) {
+        this->completion_handler();
+        this->completion_handler = nullptr;
     }
 
     return finished;
@@ -100,7 +83,7 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
     auto action = make_shared(std::move(args));
     action->_continuous = continuous_action::make_shared(std::move(continuous_args));
 
-    action->set_time_updater([weak_action = to_weak(action)](time_point_t const &time) {
+    action->time_updater = [weak_action = to_weak(action)](time_point_t const &time) {
         if (auto action = weak_action.lock()) {
             auto const duration = action->continuous()->duration();
             bool finished = false;
@@ -127,7 +110,7 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
         } else {
             return true;
         }
-    });
+    };
 
     return action;
 }
@@ -138,9 +121,10 @@ action_ptr action::make_parallel() {
 
 action_ptr action::make_parallel(action_args args, parallel_action_args parallel_args) {
     auto action = action::make_shared(std::move(args));
+    action->set_target(std::move(parallel_args.target));
     action->_parallel = parallel_action::make_shared(std::move(parallel_args.actions));
 
-    action->set_time_updater([parallel = action->_parallel](auto const &time) {
+    action->time_updater = [parallel = action->_parallel](auto const &time) {
         for (auto const &updating : parallel->actions()) {
             if (updating->update(time)) {
                 parallel->erase_action(updating);
@@ -148,7 +132,7 @@ action_ptr action::make_parallel(action_args args, parallel_action_args parallel
         }
 
         return parallel->action_count() == 0;
-    });
+    };
 
     return action;
 }
