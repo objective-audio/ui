@@ -17,11 +17,12 @@ namespace layout_action {
         float begin_value;
         float end_value;
 
-        continuous_action::args continuous_action;
+        action_args action;
+        continuous_action_args continuous_action;
     };
 }  // namespace layout_action
 
-[[nodiscard]] std::shared_ptr<ui::continuous_action> make_action(layout_action::args);
+[[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action::args);
 
 struct layout_animator {
     struct args {

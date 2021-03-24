@@ -23,7 +23,7 @@ class metal_system;
 class action_target;
 enum class system_type;
 
-struct renderer final : view_renderable, std::enable_shared_from_this<renderer> {
+struct renderer final : view_renderable {
     enum class method {
         will_render,
         view_size_changed,
@@ -93,7 +93,7 @@ struct renderer final : view_renderable, std::enable_shared_from_this<renderer> 
 
     ui::background_ptr _background;
     ui::node_ptr _root_node;
-    std::shared_ptr<ui::parallel_action> _action;
+    std::shared_ptr<action> _parallel_action;
     ui::detector_ptr _detector;
     ui::event_manager_ptr _event_manager;
     ui::layout_guide_rect_ptr _view_layout_guide_rect;

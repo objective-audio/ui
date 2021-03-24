@@ -47,7 +47,7 @@ renderer::renderer(metal_system_ptr const &metal_system)
       _projection_matrix(matrix_identity_float4x4),
       _background(background::make_shared()),
       _root_node(node::make_shared()),
-      _action(parallel_action::make_shared()),
+      _parallel_action(action::make_parallel()),
       _detector(detector::make_shared()),
       _event_manager(event_manager::make_shared()),
       _view_layout_guide_rect(layout_guide_rect::make_shared()),
@@ -96,21 +96,21 @@ event_manager_ptr const &renderer::event_manager() const {
 }
 
 std::vector<std::shared_ptr<action>> renderer::actions() const {
-    return this->_action->actions();
+    return this->_parallel_action->parallel()->actions();
 }
 
 void renderer::insert_action(std::shared_ptr<action> const &action) {
-    this->_action->insert_action(action);
+    this->_parallel_action->parallel()->insert_action(action);
 }
 
 void renderer::erase_action(std::shared_ptr<action> const &action) {
-    this->_action->erase_action(action);
+    this->_parallel_action->parallel()->erase_action(action);
 }
 
 void renderer::erase_action(action_target_ptr const &target) {
-    for (auto const &action : this->_action->actions()) {
+    for (auto const &action : this->_parallel_action->parallel()->actions()) {
         if (action->target() == target) {
-            this->_action->erase_action(action);
+            this->_parallel_action->parallel()->erase_action(action);
         }
     }
 }
@@ -242,7 +242,7 @@ void renderer::view_appearance_did_change(yas_objc_view *const view, ui::appeara
 }
 
 renderer::pre_render_result renderer::_pre_render() {
-    updatable_action::cast(this->_action)->update(std::chrono::system_clock::now());
+    this->_parallel_action->update(std::chrono::system_clock::now());
 
     auto const bg_updates = renderable_background::cast(this->_background)->updates();
 

@@ -10,7 +10,7 @@ using namespace yas;
 #pragma mark -
 
 namespace yas::sample::cursor_utils {
-static std::shared_ptr<ui::parallel_action> _make_rotate_action(ui::node_ptr const &target) {
+static std::shared_ptr<ui::action> _make_rotate_action(ui::node_ptr const &target) {
     auto rotate_action = ui::make_action(
         {.target = target, .end_angle = -360.0f, .continuous_action = {.duration = 2.0f, .loop_count = 0}});
 
@@ -18,9 +18,10 @@ static std::shared_ptr<ui::parallel_action> _make_rotate_action(ui::node_ptr con
                                          .begin_scale = {.v = 10.0f},
                                          .end_scale = {.v = 15.0f},
                                          .continuous_action = {.duration = 5.0f, .loop_count = 0}});
-    scale_action->set_value_transformer(ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_sine_transformer()}));
+    scale_action->continuous()->set_value_transformer(
+        ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_sine_transformer()}));
 
-    return ui::parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}});
+    return ui::action::make_parallel({}, {.actions = {std::move(rotate_action), std::move(scale_action)}});
 }
 
 static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {

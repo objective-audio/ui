@@ -25,21 +25,21 @@ using namespace std::chrono_literals;
 - (void)test_update_layout_action {
     auto target = ui::layout_guide::make_shared();
     auto time = std::chrono::system_clock::now();
-    ui::continuous_action::args args{.duration = 1.0, .action = {.begin_time = time}};
-    auto action = ui::make_action(
-        {.target = target, .begin_value = 0.0f, .end_value = 1.0f, .continuous_action = std::move(args)});
+    auto action = ui::make_action({.target = target,
+                                   .begin_value = 0.0f,
+                                   .end_value = 1.0f,
+                                   .action = {.begin_time = time},
+                                   .continuous_action = {.duration = 1.0}});
 
-    auto const updatable = ui::updatable_action::cast(action);
-
-    updatable->update(time);
+    action->update(time);
 
     XCTAssertEqual(target->value(), 0.0f);
 
-    updatable->update(time + 500ms);
+    action->update(time + 500ms);
 
     XCTAssertEqual(target->value(), 0.5f);
 
-    updatable->update(time + 1s);
+    action->update(time + 1s);
 
     XCTAssertEqual(target->value(), 1.0f);
 }
