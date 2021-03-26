@@ -241,8 +241,11 @@ using namespace yas;
 
     auto time = std::chrono::system_clock::now();
 
-    auto action_sequence =
-        ui::action::make_sequence({first_action, continuous_action1, end_action, continuous_action2}, time + 1s);
+    auto action_sequence = ui::action::make_sequence({{.action = first_action},
+                                                      {.action = continuous_action1, .duration = 1.0},
+                                                      {.action = end_action},
+                                                      {.action = continuous_action2, .duration = 0.5}},
+                                                     time + 1s);
     action_sequence->completion_handler = [&sequence_completed] { sequence_completed = true; };
     auto const action = action_sequence;
 

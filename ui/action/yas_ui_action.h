@@ -68,6 +68,11 @@ struct parallel_action final {
     explicit parallel_action(std::unordered_set<action_ptr> &&);
 };
 
+struct sequence_action final {
+    action_ptr action;
+    double duration = 0.0;
+};
+
 struct action final {
     using time_update_f = std::function<bool(time_point_t const &)>;
     using completion_f = std::function<void(void)>;
@@ -97,7 +102,7 @@ struct action final {
     [[nodiscard]] static action_ptr make_parallel();
     [[nodiscard]] static action_ptr make_parallel(action_args, parallel_action_args);
 
-    [[nodiscard]] static action_ptr make_sequence(std::vector<action_ptr> actions, time_point_t const &begin_time);
+    [[nodiscard]] static action_ptr make_sequence(std::vector<sequence_action> actions, time_point_t const &begin_time);
 
    private:
     continuous_action_ptr _continuous;
