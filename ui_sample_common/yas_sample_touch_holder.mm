@@ -118,7 +118,9 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
                                           .continuous_action = {.duration = 0.2}});
     scale_action2->continuous()->value_transformer = ui::ease_out_sine_transformer();
 
-    auto scale_action = ui::action::make_sequence({scale_action1, scale_action2}, std::chrono::system_clock::now());
+    auto scale_action = ui::action::make_sequence(
+        {{.action = scale_action1, .duration = 0.1}, {.action = scale_action2, .duration = 0.2}},
+        std::chrono::system_clock::now());
 
     auto alpha_action = ui::make_action(
         {.target = node, .begin_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});

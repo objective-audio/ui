@@ -185,21 +185,19 @@ parallel_action_ptr parallel_action::make_shared(std::unordered_set<action_ptr> 
 
 #pragma mark -
 
-std::shared_ptr<action> ui::action::make_sequence(std::vector<std::shared_ptr<action>> actions,
+std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> seq_actions,
                                                   time_point_t const &begin_time) {
     auto sequence = action::make_parallel({.begin_time = begin_time}, {});
 
     duration_t delay{0.0};
 
-    for (std::shared_ptr<ui::action> const &action : actions) {
-        action->_begin_time = begin_time;
-        action->_delay = delay;
+    for (sequence_action const &seq_action : seq_actions) {
+        seq_action.action->_begin_time = begin_time;
+        seq_action.action->_delay = delay;
 
-        sequence->parallel()->insert_action(action);
+        sequence->parallel()->insert_action(seq_action.action);
 
-        if (auto const continuous_action = action->continuous()) {
-            delay += duration_t{continuous_action->duration()};
-        }
+        delay += duration_t(seq_action.duration);
     }
 
     return sequence;
