@@ -31,7 +31,6 @@ using namespace yas;
     XCTAssertFalse(action->time_updater);
     XCTAssertFalse(action->completion_handler);
     XCTAssertFalse(action->is_continous());
-    XCTAssertFalse(action->is_parallel());
 
     auto const &begin_time = action->begin_time();
     auto const time = std::chrono::system_clock::now();
@@ -48,7 +47,6 @@ using namespace yas;
     XCTAssertEqual(action->continuous()->duration(), 0.3);
     XCTAssertFalse(action->continuous()->value_transformer);
     XCTAssertTrue(action->is_continous());
-    XCTAssertFalse(action->is_parallel());
 }
 
 - (void)test_action_finished {
@@ -180,11 +178,9 @@ using namespace yas;
 }
 
 - (void)test_create_parallel_action {
-    auto action = ui::action::make_parallel();
+    auto action = ui::parallel_action::make_shared({});
 
-    XCTAssertEqual(action->parallel()->actions().size(), 0);
-    XCTAssertTrue(action->is_parallel());
-    XCTAssertFalse(action->is_continous());
+    XCTAssertEqual(action->actions().size(), 0);
 }
 
 - (void)test_parallel_action {
@@ -193,33 +189,33 @@ using namespace yas;
     auto action1 = ui::action::make_continuous({.begin_time = time}, {.duration = 1.0});
     auto action2 = ui::action::make_continuous({.begin_time = time}, {.duration = 2.0});
 
-    auto parallel_action = ui::action::make_parallel({}, {.actions = {std::move(action1), std::move(action2)}});
+    auto parallel_action = ui::parallel_action::make_shared({.actions = {std::move(action1), std::move(action2)}});
 
     auto action3 = ui::action::make_continuous({.begin_time = time}, {.duration = 3.0});
-    parallel_action->parallel()->insert_action(std::move(action3));
+    parallel_action->insert_action(std::move(action3));
 
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 3);
+    XCTAssertEqual(parallel_action->actions().size(), 3);
 
-    XCTAssertFalse(parallel_action->update(time));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 3);
+    XCTAssertFalse(parallel_action->raw_action()->update(time));
+    XCTAssertEqual(parallel_action->actions().size(), 3);
 
-    XCTAssertFalse(parallel_action->update(time + 999ms));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 3);
+    XCTAssertFalse(parallel_action->raw_action()->update(time + 999ms));
+    XCTAssertEqual(parallel_action->actions().size(), 3);
 
-    XCTAssertFalse(parallel_action->update(time + 1s));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 2);
+    XCTAssertFalse(parallel_action->raw_action()->update(time + 1s));
+    XCTAssertEqual(parallel_action->actions().size(), 2);
 
-    XCTAssertFalse(parallel_action->update(time + 1999ms));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 2);
+    XCTAssertFalse(parallel_action->raw_action()->update(time + 1999ms));
+    XCTAssertEqual(parallel_action->actions().size(), 2);
 
-    XCTAssertFalse(parallel_action->update(time + 2s));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 1);
+    XCTAssertFalse(parallel_action->raw_action()->update(time + 2s));
+    XCTAssertEqual(parallel_action->actions().size(), 1);
 
-    XCTAssertFalse(parallel_action->update(time + 2999ms));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 1);
+    XCTAssertFalse(parallel_action->raw_action()->update(time + 2999ms));
+    XCTAssertEqual(parallel_action->actions().size(), 1);
 
-    XCTAssertTrue(parallel_action->update(time + 3s));
-    XCTAssertEqual(parallel_action->parallel()->actions().size(), 0);
+    XCTAssertTrue(parallel_action->raw_action()->update(time + 3s));
+    XCTAssertEqual(parallel_action->actions().size(), 0);
 }
 
 - (void)test_make_action_sequence {

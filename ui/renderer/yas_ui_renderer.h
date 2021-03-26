@@ -93,7 +93,7 @@ struct renderer final : view_renderable {
 
     ui::background_ptr _background;
     ui::node_ptr _root_node;
-    std::shared_ptr<action> _parallel_action;
+    parallel_action_ptr _parallel_action;
     ui::detector_ptr _detector;
     ui::event_manager_ptr _event_manager;
     ui::layout_guide_rect_ptr _view_layout_guide_rect;
