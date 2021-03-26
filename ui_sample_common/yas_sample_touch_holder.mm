@@ -125,8 +125,9 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
     auto alpha_action = ui::make_action(
         {.target = node, .begin_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});
 
-    auto action =
-        ui::action::make_parallel({}, {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}});
+    auto action = ui::parallel_action::make_shared(
+                      {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
+                      ->raw_action();
 
     root_node->renderer()->insert_action(action);
 
@@ -165,8 +166,9 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
         alpha_action->continuous()->value_transformer =
             ui::connect({ui::ease_out_sine_transformer(), ui::ease_out_sine_transformer()});
 
-        auto action = ui::action::make_parallel(
-            {}, {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}});
+        auto action = ui::parallel_action::make_shared(
+                          {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
+                          ->raw_action();
 
         renderer->insert_action(action);
 
