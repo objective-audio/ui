@@ -94,11 +94,11 @@ action_ptr action::make_continuous(continuous_action_args continuous_args) {
 
             float value = finished ? 1.0f : (fmod(action->time_diff(time).count(), duration) / duration);
 
-            if (auto const &transformer = action->continuous()->value_transformer) {
+            if (auto const &transformer = action->continuous()->value_transformer()) {
                 value = transformer(value);
             }
 
-            if (auto const &updater = action->continuous()->value_updater) {
+            if (auto const &updater = action->continuous()->value_updater()) {
                 updater(value);
             }
 
@@ -114,7 +114,10 @@ action_ptr action::make_continuous(continuous_action_args continuous_args) {
 #pragma mark - continuous_action
 
 continuous_action::continuous_action(continuous_action_args &&args)
-    : _duration(args.duration), _loop_count(args.loop_count) {
+    : _duration(args.duration),
+      _loop_count(args.loop_count),
+      _value_updater(std::move(args.value_updater)),
+      _value_transformer(std::move(args.value_transformer)) {
     if (this->_duration < 0.0) {
         throw std::underflow_error("duration underflow");
     }
@@ -126,6 +129,14 @@ double continuous_action::duration() const {
 
 std::size_t continuous_action::loop_count() const {
     return this->_loop_count;
+}
+
+continuous_action::value_update_f const &continuous_action::value_updater() const {
+    return this->_value_updater;
+}
+
+transform_f const &continuous_action::value_transformer() const {
+    return this->_value_transformer;
 }
 
 std::shared_ptr<continuous_action> continuous_action::make_shared(continuous_action_args args) {

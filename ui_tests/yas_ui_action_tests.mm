@@ -45,7 +45,7 @@ using namespace yas;
     auto action = ui::action::make_continuous();
 
     XCTAssertEqual(action->continuous()->duration(), 0.3);
-    XCTAssertFalse(action->continuous()->value_transformer);
+    XCTAssertFalse(action->continuous()->value_transformer());
     XCTAssertTrue(action->is_continous());
 }
 
@@ -72,13 +72,11 @@ using namespace yas;
 }
 
 - (void)test_set_variables_to_continuous_action {
-    auto action = ui::action::make_continuous({.duration = 10.0});
+    auto action = ui::action::make_continuous({.duration = 10.0, .value_transformer = ui::ease_out_sine_transformer()});
     auto target = ui::node::make_shared();
 
-    action->continuous()->value_transformer = ui::ease_out_sine_transformer();
-
     XCTAssertEqual(action->continuous()->duration(), 10.0);
-    XCTAssertTrue(action->continuous()->value_transformer);
+    XCTAssertTrue(action->continuous()->value_transformer());
 }
 
 - (void)test_begin_time {
@@ -112,13 +110,12 @@ using namespace yas;
 - (void)test_continuous_action_with_delay {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
-    auto action = ui::action::make_continuous(
-        {.duration = 1.0,
-         .action = {.delay = 2.0, .begin_time = time, .completion = [&completed] { completed = true; }}});
-
     double updated_value = -1.0f;
 
-    action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
+    auto action = ui::action::make_continuous(
+        {.duration = 1.0,
+         .value_updater = [&updated_value](auto const value) { updated_value = value; },
+         .action = {.delay = 2.0, .begin_time = time, .completion = [&completed] { completed = true; }}});
 
     XCTAssertFalse(action->update(time));
     XCTAssertFalse(completed);
@@ -143,14 +140,13 @@ using namespace yas;
 - (void)test_continuous_action_with_loop {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
+    double updated_value = -1.0f;
+
     auto action =
         ui::action::make_continuous({.duration = 1.0,
                                      .loop_count = 2,
+                                     .value_updater = [&updated_value](auto const value) { updated_value = value; },
                                      .action = {.begin_time = time, .completion = [&completed] { completed = true; }}});
-
-    double updated_value = -1.0f;
-
-    action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
 
     XCTAssertFalse(action->update(time - 1ms));
     XCTAssertFalse(completed);

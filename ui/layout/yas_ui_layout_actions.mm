@@ -12,17 +12,14 @@ using namespace yas::ui;
 std::shared_ptr<action> ui::make_action(layout_action::args args) {
     args.action.target = args.target;
     args.continuous_action.action = std::move(args.action);
-    auto action = action::make_continuous(std::move(args.continuous_action));
 
-    action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
-        if (auto action = weak_action.lock()) {
-            if (auto target = args.target.lock()) {
-                target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
-            }
+    args.continuous_action.value_updater = [args = std::move(args)](double const value) {
+        if (auto target = args.target.lock()) {
+            target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
         }
     };
 
-    return action;
+    return action::make_continuous(std::move(args.continuous_action));
 }
 
 layout_animator::layout_animator(args args) : _args(std::move(args)) {
@@ -44,11 +41,12 @@ layout_animator::layout_animator(args args) : _args(std::move(args)) {
                     if (renderer && dst_guide) {
                         renderer->erase_action(dst_guide);
 
-                        auto action = make_action({.target = dst_guide,
-                                                   .begin_value = dst_guide->value(),
-                                                   .end_value = value,
-                                                   .continuous_action = {.duration = args.duration}});
-                        action->continuous()->value_transformer = this->value_transformer();
+                        auto action =
+                            make_action({.target = dst_guide,
+                                         .begin_value = dst_guide->value(),
+                                         .end_value = value,
+                                         .continuous_action = {.duration = args.duration,
+                                                               .value_transformer = this->value_transformer()}});
                         renderer->insert_action(action);
                     }
                 },
