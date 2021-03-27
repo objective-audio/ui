@@ -64,14 +64,13 @@ struct sequence_action final {
 
 struct action final {
     using time_update_f = std::function<bool(time_point_t const &)>;
-    using completion_f = std::function<void(void)>;
 
     time_update_f time_updater;
 
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
-    [[nodiscard]] completion_f const &completion() const;
+    [[nodiscard]] action_completion_f const &completion() const;
 
     bool update(time_point_t const &time);
 
@@ -91,7 +90,7 @@ struct action final {
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
-    completion_f _completion;
+    action_completion_f _completion;
 
     explicit action(action_args);
 
