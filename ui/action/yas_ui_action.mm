@@ -98,8 +98,8 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
                 value = transformer(value);
             }
 
-            if (auto const &updator = action->continuous()->value_updater) {
-                updator(value);
+            if (auto const &updater = action->continuous()->value_updater) {
+                updater(value);
             }
 
             return finished;

@@ -16,6 +16,7 @@ namespace yas::ui {
 using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 using duration_t = std::chrono::duration<double>;
 using action_completion_f = std::function<void(void)>;
+using action_time_update_f = std::function<bool(time_point_t const &)>;
 
 struct action_target {
     virtual ~action_target() = default;
@@ -63,9 +64,7 @@ struct sequence_action final {
 };
 
 struct action final {
-    using time_update_f = std::function<bool(time_point_t const &)>;
-
-    time_update_f time_updater;
+    action_time_update_f time_updater;
 
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
