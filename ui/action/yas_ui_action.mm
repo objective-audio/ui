@@ -55,16 +55,8 @@ bool action::is_continous() const {
     return this->_continuous != nullptr;
 }
 
-bool action::is_parallel() const {
-    return this->_parallel != nullptr;
-}
-
 continuous_action_ptr const &action::continuous() const {
     return this->_continuous;
-}
-
-parallel_action_ptr const &action::parallel() const {
-    return this->_parallel;
 }
 
 action_ptr action::make_shared() {
@@ -115,28 +107,6 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
     return action;
 }
 
-action_ptr action::make_parallel() {
-    return make_parallel({}, {});
-}
-
-action_ptr action::make_parallel(action_args args, parallel_action_args parallel_args) {
-    auto action = action::make_shared(std::move(args));
-    action->set_target(std::move(parallel_args.target));
-    action->_parallel = parallel_action::make_shared(std::move(parallel_args.actions));
-
-    action->time_updater = [parallel = action->_parallel](auto const &time) {
-        for (auto const &updating : parallel->actions()) {
-            if (updating->update(time)) {
-                parallel->erase_action(updating);
-            }
-        }
-
-        return parallel->action_count() == 0;
-    };
-
-    return action;
-}
-
 #pragma mark - continuous_action
 
 continuous_action::continuous_action(continuous_action_args &&args)
@@ -158,36 +128,11 @@ std::shared_ptr<continuous_action> continuous_action::make_shared(continuous_act
     return std::shared_ptr<continuous_action>(new continuous_action{std::move(args)});
 }
 
-#pragma mark - parallel_action
-
-parallel_action::parallel_action(std::unordered_set<action_ptr> &&actions) : _actions(std::move(actions)) {
-}
-
-std::vector<std::shared_ptr<action>> parallel_action::actions() const {
-    return to_vector(this->_actions);
-}
-
-std::size_t parallel_action::action_count() const {
-    return this->_actions.size();
-}
-
-void parallel_action::insert_action(std::shared_ptr<action> action) {
-    this->_actions.emplace(std::move(action));
-}
-
-void parallel_action::erase_action(std::shared_ptr<action> const &action) {
-    this->_actions.erase(action);
-}
-
-parallel_action_ptr parallel_action::make_shared(std::unordered_set<action_ptr> &&actions) {
-    return std::shared_ptr<parallel_action>(new parallel_action{std::move(actions)});
-}
-
 #pragma mark -
 
 std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> seq_actions,
                                                   time_point_t const &begin_time) {
-    auto sequence = action::make_parallel({.begin_time = begin_time}, {});
+    auto sequence = parallel_action::make_shared({.action = {.begin_time = begin_time}});
 
     duration_t delay{0.0};
 
@@ -195,10 +140,51 @@ std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> s
         seq_action.action->_begin_time = begin_time;
         seq_action.action->_delay = delay;
 
-        sequence->parallel()->insert_action(seq_action.action);
+        sequence->insert_action(seq_action.action);
 
         delay += duration_t(seq_action.duration);
     }
 
-    return sequence;
+    return sequence->raw_action();
+}
+
+#pragma mark -
+
+parallel_action::parallel_action(parallel_action_args &&args)
+    : _raw_action(action::make_shared(std::move(args.action))),
+      _actions(std::make_shared<std::unordered_set<action_ptr>>(std::move(args.actions))) {
+    this->_raw_action->set_target(args.target);
+    this->_raw_action->time_updater = [actions = this->_actions](auto const &time) {
+        for (auto const &updating : to_vector(*actions)) {
+            if (updating->update(time)) {
+                actions->erase(updating);
+            }
+        }
+
+        return actions->size() == 0;
+    };
+}
+
+action_ptr const &parallel_action::raw_action() const {
+    return this->_raw_action;
+}
+
+std::vector<std::shared_ptr<action>> parallel_action::actions() const {
+    return to_vector(*this->_actions);
+}
+
+std::size_t parallel_action::action_count() const {
+    return this->_actions->size();
+}
+
+void parallel_action::insert_action(std::shared_ptr<action> action) {
+    this->_actions->emplace(std::move(action));
+}
+
+void parallel_action::erase_action(std::shared_ptr<action> const &action) {
+    this->_actions->erase(action);
+}
+
+parallel_action_ptr parallel_action::make_shared(parallel_action_args &&args) {
+    return parallel_action_ptr(new parallel_action{std::move(args)});
 }

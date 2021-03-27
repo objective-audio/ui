@@ -21,7 +21,8 @@ static std::shared_ptr<ui::action> _make_rotate_action(ui::node_ptr const &targe
     scale_action->continuous()->value_transformer =
         ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_sine_transformer()});
 
-    return ui::action::make_parallel({}, {.actions = {std::move(rotate_action), std::move(scale_action)}});
+    return ui::parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}})
+        ->raw_action();
 }
 
 static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
