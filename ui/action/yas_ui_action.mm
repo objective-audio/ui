@@ -13,7 +13,8 @@ using namespace std::chrono_literals;
 
 #pragma mark - action
 
-action::action(action_args args) : _begin_time(std::move(args.begin_time)), _delay(args.delay) {
+action::action(action_args args)
+    : _begin_time(std::move(args.begin_time)), _delay(args.delay), _completion(std::move(args.completion)) {
 }
 
 action_target_ptr action::target() const {
@@ -28,6 +29,10 @@ double action::delay() const {
     return this->_delay.count();
 }
 
+action_completion_f const &action::completion() const {
+    return this->_completion;
+}
+
 void action::set_target(action_target_wptr const &target) {
     this->_target = target;
 }
@@ -39,9 +44,9 @@ bool action::update(time_point_t const &time) {
 
     auto const finished = this->time_updater ? this->time_updater(time) : true;
 
-    if (finished && this->completion_handler) {
-        this->completion_handler();
-        this->completion_handler = nullptr;
+    if (finished && this->_completion) {
+        this->_completion();
+        this->_completion = nullptr;
     }
 
     return finished;
@@ -130,14 +135,13 @@ std::shared_ptr<continuous_action> continuous_action::make_shared(continuous_act
 
 #pragma mark -
 
-std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> seq_actions,
-                                                  time_point_t const &begin_time) {
-    auto sequence = parallel_action::make_shared({.action = {.begin_time = begin_time}});
+std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> &&seq_actions, action_args &&args) {
+    auto sequence = parallel_action::make_shared({.action = args});
 
-    duration_t delay{0.0};
+    duration_t delay{args.delay};
 
     for (sequence_action const &seq_action : seq_actions) {
-        seq_action.action->_begin_time = begin_time;
+        seq_action.action->_begin_time = args.begin_time;
         seq_action.action->_delay = delay;
 
         sequence->insert_action(seq_action.action);

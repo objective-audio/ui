@@ -119,8 +119,7 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
     scale_action2->continuous()->value_transformer = ui::ease_out_sine_transformer();
 
     auto scale_action = ui::action::make_sequence(
-        {{.action = scale_action1, .duration = 0.1}, {.action = scale_action2, .duration = 0.2}},
-        std::chrono::system_clock::now());
+        {{.action = scale_action1, .duration = 0.1}, {.action = scale_action2, .duration = 0.2}}, {});
 
     auto alpha_action = ui::make_action(
         {.target = node, .begin_alpha = 0.0f, .end_alpha = 1.0f, .continuous_action = {.duration = 0.3}});
@@ -154,12 +153,13 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
 
         auto const &node = touch_object.node;
 
-        auto scale_action = ui::make_action({.target = node,
-                                             .begin_scale = touch_object.node->scale(),
-                                             .end_scale = {.v = 300.0f},
-                                             .continuous_action = {.duration = 0.3}});
+        auto scale_action =
+            ui::make_action({.target = node,
+                             .begin_scale = touch_object.node->scale(),
+                             .end_scale = {.v = 300.0f},
+                             .action = {.completion = [node]() mutable { node->remove_from_super_node(); }},
+                             .continuous_action = {.duration = 0.3}});
         scale_action->continuous()->value_transformer = ui::ease_out_sine_transformer();
-        scale_action->completion_handler = [node = node]() mutable { node->remove_from_super_node(); };
 
         auto alpha_action = ui::make_action(
             {.target = node, .begin_alpha = node->alpha(), .end_alpha = 0.0f, .continuous_action = {.duration = 0.3}});
