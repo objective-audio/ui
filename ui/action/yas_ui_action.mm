@@ -102,38 +102,6 @@ action_ptr action::make_continuous(continuous_action_args continuous_args) {
     return action;
 }
 
-#pragma mark - continuous_action
-
-continuous_action::continuous_action(continuous_action_args &&args)
-    : _duration(args.duration),
-      _loop_count(args.loop_count),
-      _value_updater(std::move(args.value_updater)),
-      _value_transformer(std::move(args.value_transformer)) {
-    if (this->_duration < 0.0) {
-        throw std::underflow_error("duration underflow");
-    }
-}
-
-double continuous_action::duration() const {
-    return this->_duration;
-}
-
-std::size_t continuous_action::loop_count() const {
-    return this->_loop_count;
-}
-
-continuous_action::value_update_f const &continuous_action::value_updater() const {
-    return this->_value_updater;
-}
-
-transform_f const &continuous_action::value_transformer() const {
-    return this->_value_transformer;
-}
-
-std::shared_ptr<continuous_action> continuous_action::make_shared(continuous_action_args args) {
-    return std::shared_ptr<continuous_action>(new continuous_action{std::move(args)});
-}
-
 #pragma mark -
 
 std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> &&seq_actions, action_args &&args) {
