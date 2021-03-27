@@ -16,6 +16,8 @@ namespace yas::ui {
 using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 using duration_t = std::chrono::duration<double>;
 using action_completion_f = std::function<void(void)>;
+using action_time_update_f = std::function<bool(time_point_t const &)>;
+using continuous_value_update_f = std::function<void(double const)>;
 
 struct action_target {
     virtual ~action_target() = default;
@@ -31,6 +33,10 @@ struct action_args final {
 struct continuous_action_args final {
     double duration = 0.3;
     std::size_t loop_count = 1;
+    continuous_value_update_f value_updater;
+    transform_f value_transformer;
+
+    action_args action;
 };
 
 struct parallel_action_args final {
@@ -39,50 +45,26 @@ struct parallel_action_args final {
     action_args action;
 };
 
-struct continuous_action final {
-    using value_update_f = std::function<void(double const)>;
-
-    value_update_f value_updater;
-    transform_f value_transformer;
-
-    [[nodiscard]] double duration() const;
-    [[nodiscard]] std::size_t loop_count() const;
-
-    [[nodiscard]] static continuous_action_ptr make_shared(continuous_action_args);
-
-   private:
-    double _duration = 0.3;
-    std::size_t _loop_count = 1;
-
-    explicit continuous_action(continuous_action_args &&args);
-};
-
 struct sequence_action final {
     action_ptr action;
     double duration = 0.0;
 };
 
 struct action final {
-    using time_update_f = std::function<bool(time_point_t const &)>;
-    using completion_f = std::function<void(void)>;
-
-    time_update_f time_updater;
+    action_time_update_f time_updater;
 
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
-    [[nodiscard]] completion_f const &completion() const;
+    [[nodiscard]] action_completion_f const &completion() const;
 
     bool update(time_point_t const &time);
-
-    [[nodiscard]] bool is_continous() const;
-    [[nodiscard]] continuous_action_ptr const &continuous() const;
 
     [[nodiscard]] static action_ptr make_shared();
     [[nodiscard]] static action_ptr make_shared(action_args);
 
     [[nodiscard]] static action_ptr make_continuous();
-    [[nodiscard]] static action_ptr make_continuous(action_args, continuous_action_args);
+    [[nodiscard]] static action_ptr make_continuous(continuous_action_args);
 
     [[nodiscard]] static action_ptr make_sequence(std::vector<sequence_action> &&, action_args &&);
 
@@ -91,7 +73,7 @@ struct action final {
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
-    completion_f _completion;
+    action_completion_f _completion;
 
     explicit action(action_args);
 

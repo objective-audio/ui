@@ -30,7 +30,6 @@ using namespace yas;
     XCTAssertEqual(action->delay(), 0.0);
     XCTAssertFalse(action->time_updater);
     XCTAssertFalse(action->completion());
-    XCTAssertFalse(action->is_continous());
 
     auto const &begin_time = action->begin_time();
     auto const time = std::chrono::system_clock::now();
@@ -41,17 +40,9 @@ using namespace yas;
     XCTAssertTrue(action);
 }
 
-- (void)test_create_continuous_action {
-    auto action = ui::action::make_continuous();
-
-    XCTAssertEqual(action->continuous()->duration(), 0.3);
-    XCTAssertFalse(action->continuous()->value_transformer);
-    XCTAssertTrue(action->is_continous());
-}
-
 - (void)test_action_finished {
     auto const begin_time = std::chrono::system_clock::now();
-    auto action = ui::action::make_continuous({.begin_time = begin_time}, {.duration = 1.0});
+    auto action = ui::action::make_continuous({.duration = 1.0, .action = {.begin_time = begin_time}});
 
     XCTAssertFalse(action->update(begin_time + 999ms));
     XCTAssertTrue(action->update(begin_time + 1000ms));
@@ -71,16 +62,6 @@ using namespace yas;
     XCTAssertTrue(action->completion());
 }
 
-- (void)test_set_variables_to_continuous_action {
-    auto action = ui::action::make_continuous({}, {.duration = 10.0});
-    auto target = ui::node::make_shared();
-
-    action->continuous()->value_transformer = ui::ease_out_sine_transformer();
-
-    XCTAssertEqual(action->continuous()->duration(), 10.0);
-    XCTAssertTrue(action->continuous()->value_transformer);
-}
-
 - (void)test_begin_time {
     auto time = std::chrono::system_clock::now();
     auto action = ui::action::make_shared({.begin_time = time + 1s});
@@ -93,8 +74,8 @@ using namespace yas;
 - (void)test_completion_handler {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
-    auto action = ui::action::make_continuous({.begin_time = time, .completion = [&completed]() { completed = true; }},
-                                              {.duration = 1.0});
+    auto action = ui::action::make_continuous(
+        {.duration = 1.0, .action = {.begin_time = time, .completion = [&completed]() { completed = true; }}});
 
     action->update(time);
 
@@ -112,12 +93,12 @@ using namespace yas;
 - (void)test_continuous_action_with_delay {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
-    auto action = ui::action::make_continuous(
-        {.delay = 2.0, .begin_time = time, .completion = [&completed] { completed = true; }}, {.duration = 1.0});
-
     double updated_value = -1.0f;
 
-    action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
+    auto action = ui::action::make_continuous(
+        {.duration = 1.0,
+         .value_updater = [&updated_value](auto const value) { updated_value = value; },
+         .action = {.delay = 2.0, .begin_time = time, .completion = [&completed] { completed = true; }}});
 
     XCTAssertFalse(action->update(time));
     XCTAssertFalse(completed);
@@ -142,12 +123,13 @@ using namespace yas;
 - (void)test_continuous_action_with_loop {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
-    auto action = ui::action::make_continuous({.begin_time = time, .completion = [&completed] { completed = true; }},
-                                              {.duration = 1.0, .loop_count = 2});
-
     double updated_value = -1.0f;
 
-    action->continuous()->value_updater = [&updated_value](auto const value) { updated_value = value; };
+    auto action =
+        ui::action::make_continuous({.duration = 1.0,
+                                     .loop_count = 2,
+                                     .value_updater = [&updated_value](auto const value) { updated_value = value; },
+                                     .action = {.begin_time = time, .completion = [&completed] { completed = true; }}});
 
     XCTAssertFalse(action->update(time - 1ms));
     XCTAssertFalse(completed);
@@ -183,12 +165,12 @@ using namespace yas;
 - (void)test_parallel_action {
     auto time = std::chrono::system_clock::now();
 
-    auto action1 = ui::action::make_continuous({.begin_time = time}, {.duration = 1.0});
-    auto action2 = ui::action::make_continuous({.begin_time = time}, {.duration = 2.0});
+    auto action1 = ui::action::make_continuous({.duration = 1.0, .action = {.begin_time = time}});
+    auto action2 = ui::action::make_continuous({.duration = 2.0, .action = {.begin_time = time}});
 
     auto parallel_action = ui::parallel_action::make_shared({.actions = {std::move(action1), std::move(action2)}});
 
-    auto action3 = ui::action::make_continuous({.begin_time = time}, {.duration = 3.0});
+    auto action3 = ui::action::make_continuous({.duration = 3.0, .action = {.begin_time = time}});
     parallel_action->insert_action(std::move(action3));
 
     XCTAssertEqual(parallel_action->actions().size(), 3);
@@ -224,10 +206,10 @@ using namespace yas;
 
     auto first_action = ui::action::make_shared({.completion = [&first_completed] { first_completed = true; }});
     auto continuous_action1 = ui::action::make_continuous(
-        {.completion = [&rotate_completed] { rotate_completed = true; }}, {.duration = 1.0});
+        {.duration = 1.0, .action = {.completion = [&rotate_completed] { rotate_completed = true; }}});
     auto end_action = ui::action::make_shared({.completion = [&end_completed] { end_completed = true; }});
-    auto continuous_action2 =
-        ui::action::make_continuous({.completion = [&scale_completed] { scale_completed = true; }}, {.duration = 0.5});
+    auto continuous_action2 = ui::action::make_continuous(
+        {.duration = 0.5, .action = {.completion = [&scale_completed] { scale_completed = true; }}});
 
     auto time = std::chrono::system_clock::now();
 

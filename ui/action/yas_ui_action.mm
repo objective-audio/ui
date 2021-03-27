@@ -55,14 +55,6 @@ duration_t action::time_diff(time_point_t const &time) {
     return time - this->_begin_time - this->_delay;
 }
 
-bool action::is_continous() const {
-    return this->_continuous != nullptr;
-}
-
-continuous_action_ptr const &action::continuous() const {
-    return this->_continuous;
-}
-
 action_ptr action::make_shared() {
     return make_shared({});
 }
@@ -72,21 +64,20 @@ action_ptr action::make_shared(action_args args) {
 }
 
 action_ptr action::make_continuous() {
-    return make_continuous({}, {});
+    return make_continuous({});
 }
 
-action_ptr action::make_continuous(action_args args, continuous_action_args continuous_args) {
-    auto action = make_shared(std::move(args));
-    action->_continuous = continuous_action::make_shared(std::move(continuous_args));
+action_ptr action::make_continuous(continuous_action_args continuous_args) {
+    auto action = make_shared(std::move(continuous_args.action));
 
-    action->time_updater = [weak_action = to_weak(action)](time_point_t const &time) {
+    action->time_updater = [weak_action = to_weak(action), continuous_args](time_point_t const &time) {
         if (auto action = weak_action.lock()) {
-            auto const duration = action->continuous()->duration();
+            auto const duration = continuous_args.duration;
             bool finished = false;
 
-            if (action->continuous()->loop_count() > 0) {
+            if (continuous_args.loop_count > 0) {
                 auto end_time =
-                    action->_begin_time + action->_delay + duration_t{duration} * action->continuous()->loop_count();
+                    action->_begin_time + action->_delay + duration_t{duration} * continuous_args.loop_count;
                 if (end_time <= time) {
                     finished = true;
                 }
@@ -94,12 +85,12 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
 
             float value = finished ? 1.0f : (fmod(action->time_diff(time).count(), duration) / duration);
 
-            if (auto const &transformer = action->continuous()->value_transformer) {
+            if (auto const &transformer = continuous_args.value_transformer) {
                 value = transformer(value);
             }
 
-            if (auto const &updator = action->continuous()->value_updater) {
-                updator(value);
+            if (auto const &updater = continuous_args.value_updater) {
+                updater(value);
             }
 
             return finished;
@@ -109,27 +100,6 @@ action_ptr action::make_continuous(action_args args, continuous_action_args cont
     };
 
     return action;
-}
-
-#pragma mark - continuous_action
-
-continuous_action::continuous_action(continuous_action_args &&args)
-    : _duration(args.duration), _loop_count(args.loop_count) {
-    if (this->_duration < 0.0) {
-        throw std::underflow_error("duration underflow");
-    }
-}
-
-double continuous_action::duration() const {
-    return this->_duration;
-}
-
-std::size_t continuous_action::loop_count() const {
-    return this->_loop_count;
-}
-
-std::shared_ptr<continuous_action> continuous_action::make_shared(continuous_action_args args) {
-    return std::shared_ptr<continuous_action>(new continuous_action{std::move(args)});
 }
 
 #pragma mark -
