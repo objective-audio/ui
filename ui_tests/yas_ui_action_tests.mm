@@ -30,7 +30,6 @@ using namespace yas;
     XCTAssertEqual(action->delay(), 0.0);
     XCTAssertFalse(action->time_updater);
     XCTAssertFalse(action->completion());
-    XCTAssertFalse(action->is_continous());
 
     auto const &begin_time = action->begin_time();
     auto const time = std::chrono::system_clock::now();
@@ -39,14 +38,6 @@ using namespace yas;
     XCTAssertTrue((time + -100ms) < begin_time);
 
     XCTAssertTrue(action);
-}
-
-- (void)test_create_continuous_action {
-    auto action = ui::action::make_continuous();
-
-    XCTAssertEqual(action->continuous()->duration(), 0.3);
-    XCTAssertFalse(action->continuous()->value_transformer());
-    XCTAssertTrue(action->is_continous());
 }
 
 - (void)test_action_finished {
@@ -69,14 +60,6 @@ using namespace yas;
     XCTAssertEqual(action->delay(), 1.0);
     XCTAssertTrue(action->time_updater);
     XCTAssertTrue(action->completion());
-}
-
-- (void)test_set_variables_to_continuous_action {
-    auto action = ui::action::make_continuous({.duration = 10.0, .value_transformer = ui::ease_out_sine_transformer()});
-    auto target = ui::node::make_shared();
-
-    XCTAssertEqual(action->continuous()->duration(), 10.0);
-    XCTAssertTrue(action->continuous()->value_transformer());
 }
 
 - (void)test_begin_time {

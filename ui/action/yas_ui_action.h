@@ -80,9 +80,6 @@ struct action final {
 
     bool update(time_point_t const &time);
 
-    [[nodiscard]] bool is_continous() const;
-    [[nodiscard]] continuous_action_ptr const &continuous() const;
-
     [[nodiscard]] static action_ptr make_shared();
     [[nodiscard]] static action_ptr make_shared(action_args);
 
