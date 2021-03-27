@@ -60,9 +60,8 @@ using namespace yas;
 - (void)test_set_variables_to_action {
     auto target = ui::node::make_shared();
     auto const time = std::chrono::system_clock::now();
-    auto action = ui::action::make_shared({.begin_time = time, .delay = 1.0, .completion = [] {}});
+    auto action = ui::action::make_shared({.target = target, .begin_time = time, .delay = 1.0, .completion = [] {}});
 
-    action->set_target(target);
     action->time_updater = [](auto const &time) { return false; };
 
     XCTAssertEqual(action->target(), target);

@@ -14,7 +14,10 @@ using namespace std::chrono_literals;
 #pragma mark - action
 
 action::action(action_args args)
-    : _begin_time(std::move(args.begin_time)), _delay(args.delay), _completion(std::move(args.completion)) {
+    : _target(std::move(args.target)),
+      _begin_time(std::move(args.begin_time)),
+      _delay(args.delay),
+      _completion(std::move(args.completion)) {
 }
 
 action_target_ptr action::target() const {
@@ -31,10 +34,6 @@ double action::delay() const {
 
 action_completion_f const &action::completion() const {
     return this->_completion;
-}
-
-void action::set_target(action_target_wptr const &target) {
-    this->_target = target;
 }
 
 bool action::update(time_point_t const &time) {
@@ -157,7 +156,6 @@ std::shared_ptr<action> ui::action::make_sequence(std::vector<sequence_action> &
 parallel_action::parallel_action(parallel_action_args &&args)
     : _raw_action(action::make_shared(std::move(args.action))),
       _actions(std::make_shared<std::unordered_set<action_ptr>>(std::move(args.actions))) {
-    this->_raw_action->set_target(args.target);
     this->_raw_action->time_updater = [actions = this->_actions](auto const &time) {
         for (auto const &updating : to_vector(*actions)) {
             if (updating->update(time)) {

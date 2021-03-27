@@ -22,6 +22,7 @@ struct action_target {
 };
 
 struct action_args final {
+    action_target_wptr target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;
@@ -33,7 +34,6 @@ struct continuous_action_args final {
 };
 
 struct parallel_action_args final {
-    action_target_wptr target;
     std::unordered_set<action_ptr> actions;
 
     action_args action;
@@ -72,8 +72,6 @@ struct action final {
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
     [[nodiscard]] completion_f const &completion() const;
-
-    void set_target(action_target_wptr const &);
 
     bool update(time_point_t const &time);
 
