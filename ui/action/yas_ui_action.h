@@ -15,14 +15,17 @@
 namespace yas::ui {
 using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 using duration_t = std::chrono::duration<double>;
+using action_completion_f = std::function<void(void)>;
 
 struct action_target {
     virtual ~action_target() = default;
 };
 
 struct action_args final {
+    action_target_wptr target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
+    action_completion_f completion;
 };
 
 struct continuous_action_args final {
@@ -31,7 +34,6 @@ struct continuous_action_args final {
 };
 
 struct parallel_action_args final {
-    action_target_wptr target;
     std::unordered_set<action_ptr> actions;
 
     action_args action;
@@ -65,13 +67,11 @@ struct action final {
     using completion_f = std::function<void(void)>;
 
     time_update_f time_updater;
-    completion_f completion_handler;
 
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
-
-    void set_target(action_target_wptr const &);
+    [[nodiscard]] completion_f const &completion() const;
 
     bool update(time_point_t const &time);
 
@@ -84,13 +84,14 @@ struct action final {
     [[nodiscard]] static action_ptr make_continuous();
     [[nodiscard]] static action_ptr make_continuous(action_args, continuous_action_args);
 
-    [[nodiscard]] static action_ptr make_sequence(std::vector<sequence_action> actions, time_point_t const &begin_time);
+    [[nodiscard]] static action_ptr make_sequence(std::vector<sequence_action> &&, action_args &&);
 
    private:
     continuous_action_ptr _continuous;
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
+    completion_f _completion;
 
     explicit action(action_args);
 

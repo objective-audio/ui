@@ -72,10 +72,8 @@ using namespace yas;
 
     auto target1 = ui::node::make_shared();
     auto target2 = ui::node::make_shared();
-    auto action1 = ui::action::make_shared();
-    auto action2 = ui::action::make_shared();
-    action1->set_target(target1);
-    action2->set_target(target2);
+    auto action1 = ui::action::make_shared({.target = target1});
+    auto action2 = ui::action::make_shared({.target = target2});
 
     renderer->insert_action(action1);
 
