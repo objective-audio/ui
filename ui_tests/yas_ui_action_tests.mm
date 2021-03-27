@@ -28,7 +28,7 @@ using namespace yas;
 
     XCTAssertFalse(action->target());
     XCTAssertEqual(action->delay(), 0.0);
-    XCTAssertFalse(action->time_updater);
+    XCTAssertFalse(action->time_updater());
     XCTAssertFalse(action->completion());
 
     auto const &begin_time = action->begin_time();
@@ -51,14 +51,16 @@ using namespace yas;
 - (void)test_set_variables_to_action {
     auto target = ui::node::make_shared();
     auto const time = std::chrono::system_clock::now();
-    auto action = ui::action::make_shared({.target = target, .begin_time = time, .delay = 1.0, .completion = [] {}});
-
-    action->time_updater = [](auto const &time) { return false; };
+    auto action = ui::action::make_shared({.target = target,
+                                           .begin_time = time,
+                                           .delay = 1.0,
+                                           .time_updater = [](auto const &, auto const &) { return false; },
+                                           .completion = [] {}});
 
     XCTAssertEqual(action->target(), target);
     XCTAssertEqual(action->begin_time(), time);
     XCTAssertEqual(action->delay(), 1.0);
-    XCTAssertTrue(action->time_updater);
+    XCTAssertTrue(action->time_updater());
     XCTAssertTrue(action->completion());
 }
 
@@ -214,11 +216,11 @@ using namespace yas;
     auto time = std::chrono::system_clock::now();
 
     auto action_sequence = ui::action::make_sequence(
-        {{.action = first_action},
-         {.action = continuous_action1, .duration = 1.0},
-         {.action = end_action},
-         {.action = continuous_action2, .duration = 0.5}},
-        {.begin_time = time + 1s, .completion = [&sequence_completed] { sequence_completed = true; }});
+        {.elements = {{.action = first_action},
+                      {.action = continuous_action1, .duration = 1.0},
+                      {.action = end_action},
+                      {.action = continuous_action2, .duration = 0.5}},
+         .action = {.begin_time = time + 1s, .completion = [&sequence_completed] { sequence_completed = true; }}});
     auto const action = action_sequence;
 
     XCTAssertFalse(action->update(time));

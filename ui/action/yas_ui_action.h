@@ -16,76 +16,81 @@ namespace yas::ui {
 using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 using duration_t = std::chrono::duration<double>;
 using action_completion_f = std::function<void(void)>;
-using action_time_update_f = std::function<bool(time_point_t const &)>;
+using action_time_update_f = std::function<bool(time_point_t const &, action const &)>;
 using continuous_value_update_f = std::function<void(double const)>;
 
 struct action_target {
     virtual ~action_target() = default;
 };
 
-struct action_args final {
-    action_target_wptr target;
-    time_point_t begin_time = std::chrono::system_clock::now();
-    double delay = 0.0;
-    action_completion_f completion;
-};
-
-struct continuous_action_args final {
-    double duration = 0.3;
-    std::size_t loop_count = 1;
-    continuous_value_update_f value_updater;
-    transform_f value_transformer;
-
-    action_args action;
-};
-
-struct parallel_action_args final {
-    std::unordered_set<action_ptr> actions;
-
-    action_args action;
-};
-
-struct sequence_action final {
-    action_ptr action;
-    double duration = 0.0;
-};
-
 struct action final {
-    action_time_update_f time_updater;
+    struct args final {
+        action_target_wptr target;
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_time_update_f time_updater;
+        action_completion_f completion;
+    };
+
+    struct continuous_args final {
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        continuous_value_update_f value_updater;
+        transform_f value_transformer;
+
+        action::args action;
+    };
+
+    struct sequence_args final {
+        struct element final {
+            action_ptr action;
+            double duration = 0.0;
+        };
+
+        std::vector<element> elements;
+
+        action::args action;
+    };
 
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
+    [[nodiscard]] action_time_update_f const &time_updater() const;
     [[nodiscard]] action_completion_f const &completion() const;
 
     bool update(time_point_t const &time);
 
     [[nodiscard]] static action_ptr make_shared();
-    [[nodiscard]] static action_ptr make_shared(action_args);
-
-    [[nodiscard]] static action_ptr make_continuous();
-    [[nodiscard]] static action_ptr make_continuous(continuous_action_args);
-
-    [[nodiscard]] static action_ptr make_sequence(std::vector<sequence_action> &&, action_args &&);
+    [[nodiscard]] static action_ptr make_shared(args &&);
+    [[nodiscard]] static action_ptr make_continuous(continuous_args &&);
+    [[nodiscard]] static action_ptr make_sequence(sequence_args &&);
 
    private:
-    continuous_action_ptr _continuous;
     action_target_wptr _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
+    action_time_update_f _time_updater;
     action_completion_f _completion;
 
-    explicit action(action_args);
+    explicit action(args &&);
 
     action(action const &) = delete;
     action(action &&) = delete;
     action &operator=(action const &) = delete;
     action &operator=(action &&) = delete;
 
-    duration_t time_diff(time_point_t const &time);
+    [[nodiscard]] duration_t time_diff(time_point_t const &time) const;
+
+    [[nodiscard]] action_ptr make_delayed(time_point_t const &, double const) const;
 };
 
 struct parallel_action final {
+    struct args final {
+        std::unordered_set<action_ptr> actions;
+
+        action::args action;
+    };
+
     action_ptr const &raw_action() const;
 
     [[nodiscard]] std::vector<action_ptr> actions() const;
@@ -94,12 +99,12 @@ struct parallel_action final {
     void insert_action(action_ptr);
     void erase_action(action_ptr const &);
 
-    [[nodiscard]] static parallel_action_ptr make_shared(parallel_action_args &&);
+    [[nodiscard]] static parallel_action_ptr make_shared(args &&);
 
    private:
-    action_ptr _raw_action;
     std::shared_ptr<std::unordered_set<action_ptr>> _actions;
+    action_ptr _raw_action;
 
-    explicit parallel_action(parallel_action_args &&);
+    explicit parallel_action(args &&);
 };
 }  // namespace yas::ui
