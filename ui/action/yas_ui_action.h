@@ -17,6 +17,7 @@ using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
 using duration_t = std::chrono::duration<double>;
 using action_completion_f = std::function<void(void)>;
 using action_time_update_f = std::function<bool(time_point_t const &)>;
+using continuous_value_update_f = std::function<void(double const)>;
 
 struct action_target {
     virtual ~action_target() = default;
@@ -30,11 +31,9 @@ struct action_args final {
 };
 
 struct continuous_action_args final {
-    using value_update_f = std::function<void(double const)>;
-
     double duration = 0.3;
     std::size_t loop_count = 1;
-    value_update_f value_updater;
+    continuous_value_update_f value_updater;
     transform_f value_transformer;
 
     action_args action;
