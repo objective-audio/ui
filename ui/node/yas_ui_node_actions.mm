@@ -13,7 +13,8 @@ using namespace yas::ui;
 
 std::shared_ptr<action> ui::make_action(translate_action::args args) {
     args.action.target = args.target;
-    auto action = action::make_continuous(std::move(args.action), std::move(args.continuous_action));
+    args.continuous_action.action = std::move(args.action);
+    auto action = action::make_continuous(std::move(args.continuous_action));
 
     action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
@@ -31,7 +32,8 @@ std::shared_ptr<action> ui::make_action(translate_action::args args) {
 
 std::shared_ptr<action> ui::make_action(rotate_action::args args) {
     args.action.target = args.target;
-    auto action = action::make_continuous(std::move(args.action), std::move(args.continuous_action));
+    args.continuous_action.action = std::move(args.action);
+    auto action = action::make_continuous(std::move(args.continuous_action));
 
     action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
@@ -55,7 +57,8 @@ std::shared_ptr<action> ui::make_action(rotate_action::args args) {
 
 std::shared_ptr<action> ui::make_action(scale_action::args args) {
     args.action.target = args.target;
-    auto action = action::make_continuous(std::move(args.action), std::move(args.continuous_action));
+    args.continuous_action.action = std::move(args.action);
+    auto action = action::make_continuous(std::move(args.continuous_action));
 
     action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
@@ -72,7 +75,8 @@ std::shared_ptr<action> ui::make_action(scale_action::args args) {
 
 std::shared_ptr<action> ui::make_action(color_action::args args) {
     args.action.target = args.target;
-    auto action = action::make_continuous(std::move(args.action), std::move(args.continuous_action));
+    args.continuous_action.action = std::move(args.action);
+    auto action = action::make_continuous(std::move(args.continuous_action));
 
     action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {
@@ -89,7 +93,8 @@ std::shared_ptr<action> ui::make_action(color_action::args args) {
 
 std::shared_ptr<action> ui::make_action(alpha_action::args args) {
     args.action.target = args.target;
-    auto action = action::make_continuous(std::move(args.action), std::move(args.continuous_action));
+    args.continuous_action.action = std::move(args.action);
+    auto action = action::make_continuous(std::move(args.continuous_action));
 
     action->continuous()->value_updater = [args = std::move(args), weak_action = to_weak(action)](double const value) {
         if (auto action = weak_action.lock()) {

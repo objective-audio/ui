@@ -51,7 +51,7 @@ using namespace yas;
 
 - (void)test_action_finished {
     auto const begin_time = std::chrono::system_clock::now();
-    auto action = ui::action::make_continuous({.begin_time = begin_time}, {.duration = 1.0});
+    auto action = ui::action::make_continuous({.duration = 1.0, .action = {.begin_time = begin_time}});
 
     XCTAssertFalse(action->update(begin_time + 999ms));
     XCTAssertTrue(action->update(begin_time + 1000ms));
@@ -72,7 +72,7 @@ using namespace yas;
 }
 
 - (void)test_set_variables_to_continuous_action {
-    auto action = ui::action::make_continuous({}, {.duration = 10.0});
+    auto action = ui::action::make_continuous({.duration = 10.0});
     auto target = ui::node::make_shared();
 
     action->continuous()->value_transformer = ui::ease_out_sine_transformer();
@@ -93,8 +93,8 @@ using namespace yas;
 - (void)test_completion_handler {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
-    auto action = ui::action::make_continuous({.begin_time = time, .completion = [&completed]() { completed = true; }},
-                                              {.duration = 1.0});
+    auto action = ui::action::make_continuous(
+        {.duration = 1.0, .action = {.begin_time = time, .completion = [&completed]() { completed = true; }}});
 
     action->update(time);
 
@@ -113,7 +113,8 @@ using namespace yas;
     auto time = std::chrono::system_clock::now();
     bool completed = false;
     auto action = ui::action::make_continuous(
-        {.delay = 2.0, .begin_time = time, .completion = [&completed] { completed = true; }}, {.duration = 1.0});
+        {.duration = 1.0,
+         .action = {.delay = 2.0, .begin_time = time, .completion = [&completed] { completed = true; }}});
 
     double updated_value = -1.0f;
 
@@ -142,8 +143,10 @@ using namespace yas;
 - (void)test_continuous_action_with_loop {
     auto time = std::chrono::system_clock::now();
     bool completed = false;
-    auto action = ui::action::make_continuous({.begin_time = time, .completion = [&completed] { completed = true; }},
-                                              {.duration = 1.0, .loop_count = 2});
+    auto action =
+        ui::action::make_continuous({.duration = 1.0,
+                                     .loop_count = 2,
+                                     .action = {.begin_time = time, .completion = [&completed] { completed = true; }}});
 
     double updated_value = -1.0f;
 
@@ -183,12 +186,12 @@ using namespace yas;
 - (void)test_parallel_action {
     auto time = std::chrono::system_clock::now();
 
-    auto action1 = ui::action::make_continuous({.begin_time = time}, {.duration = 1.0});
-    auto action2 = ui::action::make_continuous({.begin_time = time}, {.duration = 2.0});
+    auto action1 = ui::action::make_continuous({.duration = 1.0, .action = {.begin_time = time}});
+    auto action2 = ui::action::make_continuous({.duration = 2.0, .action = {.begin_time = time}});
 
     auto parallel_action = ui::parallel_action::make_shared({.actions = {std::move(action1), std::move(action2)}});
 
-    auto action3 = ui::action::make_continuous({.begin_time = time}, {.duration = 3.0});
+    auto action3 = ui::action::make_continuous({.duration = 3.0, .action = {.begin_time = time}});
     parallel_action->insert_action(std::move(action3));
 
     XCTAssertEqual(parallel_action->actions().size(), 3);
@@ -224,10 +227,10 @@ using namespace yas;
 
     auto first_action = ui::action::make_shared({.completion = [&first_completed] { first_completed = true; }});
     auto continuous_action1 = ui::action::make_continuous(
-        {.completion = [&rotate_completed] { rotate_completed = true; }}, {.duration = 1.0});
+        {.duration = 1.0, .action = {.completion = [&rotate_completed] { rotate_completed = true; }}});
     auto end_action = ui::action::make_shared({.completion = [&end_completed] { end_completed = true; }});
-    auto continuous_action2 =
-        ui::action::make_continuous({.completion = [&scale_completed] { scale_completed = true; }}, {.duration = 0.5});
+    auto continuous_action2 = ui::action::make_continuous(
+        {.duration = 0.5, .action = {.completion = [&scale_completed] { scale_completed = true; }}});
 
     auto time = std::chrono::system_clock::now();
 

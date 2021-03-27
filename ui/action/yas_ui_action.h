@@ -32,6 +32,8 @@ struct action_args final {
 struct continuous_action_args final {
     double duration = 0.3;
     std::size_t loop_count = 1;
+
+    action_args action;
 };
 
 struct parallel_action_args final {
@@ -80,7 +82,7 @@ struct action final {
     [[nodiscard]] static action_ptr make_shared(action_args);
 
     [[nodiscard]] static action_ptr make_continuous();
-    [[nodiscard]] static action_ptr make_continuous(action_args, continuous_action_args);
+    [[nodiscard]] static action_ptr make_continuous(continuous_action_args);
 
     [[nodiscard]] static action_ptr make_sequence(std::vector<sequence_action> &&, action_args &&);
 

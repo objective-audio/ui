@@ -72,11 +72,11 @@ action_ptr action::make_shared(action_args args) {
 }
 
 action_ptr action::make_continuous() {
-    return make_continuous({}, {});
+    return make_continuous({});
 }
 
-action_ptr action::make_continuous(action_args args, continuous_action_args continuous_args) {
-    auto action = make_shared(std::move(args));
+action_ptr action::make_continuous(continuous_action_args continuous_args) {
+    auto action = make_shared(std::move(continuous_args.action));
     action->_continuous = continuous_action::make_shared(std::move(continuous_args));
 
     action->time_updater = [weak_action = to_weak(action)](time_point_t const &time) {
