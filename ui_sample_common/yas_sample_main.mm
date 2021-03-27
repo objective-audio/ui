@@ -66,7 +66,7 @@ void sample::main::setup() {
     render_target->sync_scale_from_renderer(this->renderer);
     render_target->set_effect(this->_blur->effect());
 
-    auto blur_action = ui::action::make_continuous({}, {.duration = 5.0, .loop_count = 0});
+    auto blur_action = ui::action::make_continuous({.duration = 5.0, .loop_count = 0});
     blur_action->continuous()->value_updater = [weak_blur = to_weak(this->_blur)](double const value) {
         if (auto blur = weak_blur.lock()) {
             blur->set_sigma(value * 20.0);
