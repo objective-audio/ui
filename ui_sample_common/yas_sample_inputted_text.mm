@@ -17,9 +17,8 @@ sample::inputted_text::inputted_text(ui::font_atlas_ptr const &font_atlas)
 
                 if (renderer) {
                     renderer->event_manager()
-                        ->observe([this](auto const &context) {
-                            if (context.method == ui::event_manager::method::key_changed) {
-                                ui::event_ptr const &event = context.event;
+                        ->observe([this](ui::event_ptr const &event) {
+                            if (event->type() == ui::event_type::key) {
                                 this->_update_text(event);
                             }
                         })

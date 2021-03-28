@@ -20,9 +20,8 @@ sample::touch_holder::touch_holder() {
         [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
             if (renderer) {
                 renderer->event_manager()
-                    ->observe([this](auto const &context) {
-                        if (context.method == ui::event_manager::method::touch_changed) {
-                            ui::event_ptr const &event = context.event;
+                    ->observe([this](auto const &event) {
+                        if (event->type() == ui::event_type::touch) {
                             this->_update_touch_node(event);
                         }
                     })

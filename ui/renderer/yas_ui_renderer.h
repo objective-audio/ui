@@ -24,13 +24,6 @@ class action_target;
 enum class system_type;
 
 struct renderer final : view_renderable {
-    enum class method {
-        will_render,
-        view_size_changed,
-        scale_factor_changed,
-        safe_area_insets_changed,
-    };
-
     virtual ~renderer();
 
     [[nodiscard]] ui::uint_size const &view_size() const;
@@ -127,12 +120,6 @@ struct renderer final : view_renderable {
     bool _is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2);
 };
 }  // namespace yas::ui
-
-namespace yas {
-std::string to_string(ui::renderer::method const &);
-}
-
-std::ostream &operator<<(std::ostream &, yas::ui::renderer::method const &);
 
 namespace yas::ui {
 bool operator==(yas::ui::renderer_wptr const &, yas::ui::renderer_wptr const &);

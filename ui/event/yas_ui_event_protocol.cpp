@@ -183,6 +183,19 @@ std::string yas::to_string(modifier_flags const &flag) {
     return "unknown";
 }
 
+std::string yas::to_string(ui::event_type const &type) {
+    switch (type) {
+        case event_type::cursor:
+            return "cursor";
+        case event_type::touch:
+            return "touch";
+        case event_type::key:
+            return "key";
+        case event_type::modifier:
+            return "modifier";
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, yas::ui::event_phase const &phase) {
     os << to_string(phase);
     return os;
@@ -190,5 +203,10 @@ std::ostream &operator<<(std::ostream &os, yas::ui::event_phase const &phase) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::modifier_flags const &flags) {
     os << to_string(flags);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::event_type const &event_type) {
+    os << to_string(event_type);
     return os;
 }

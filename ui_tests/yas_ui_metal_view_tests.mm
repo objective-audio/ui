@@ -57,21 +57,17 @@ using namespace yas;
         ended_called = false;
     };
 
-    auto canceller =
-        event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &context) {
-            auto const &method = context.method;
-            ui::event_ptr const &event = context.event;
+    auto canceller = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::cursor);
 
-            XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
-
-            if (event->phase() == ui::event_phase::began) {
-                began_called = true;
-            } else if (event->phase() == ui::event_phase::ended) {
-                ended_called = true;
-            } else if (event->phase() == ui::event_phase::changed) {
-                changed_called = true;
-            }
-        });
+        if (event->phase() == ui::event_phase::began) {
+            began_called = true;
+        } else if (event->phase() == ui::event_phase::ended) {
+            ended_called = true;
+        } else if (event->phase() == ui::event_phase::changed) {
+            changed_called = true;
+        }
+    });
 
     [view mouseEntered:[self _enterExitEventWithType:NSEventTypeMouseEntered location:NSMakePoint(1, 1)]];
 
@@ -118,15 +114,12 @@ using namespace yas;
 
     observed_values values;
 
-    auto canceller = event_manager->observe([&self, &values](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        if (method == ui::event_manager::method::cursor_changed) {
+    auto canceller = event_manager->observe([&self, &values](auto const &event) {
+        if (event->type() == ui::event_type::cursor) {
             return;
         }
 
-        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+        XCTAssertEqual(event->type(), ui::event_type::touch);
 
         if (event->phase() == ui::event_phase::began) {
             values.began_called = true;
@@ -234,11 +227,8 @@ using namespace yas;
 
     observed_values values;
 
-    auto canceller = event_manager->observe([&self, &values](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::key_changed);
+    auto canceller = event_manager->observe([&self, &values](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::key);
 
         if (event->phase() == ui::event_phase::began) {
             values.began_called = true;

@@ -101,8 +101,13 @@ metal_texture_ptr const &texture::metal_texture() const {
     return this->_metal_texture;
 }
 
-observing::canceller_ptr texture::observe(observing::caller<method>::handler_f &&handler) {
-    return this->_notifier->observe(std::move(handler));
+observing::canceller_ptr texture::observe_metal_texture_changed(
+    observing::caller<std::nullptr_t>::handler_f &&handler) {
+    return this->_texture_notifier->observe(std::move(handler));
+}
+
+observing::canceller_ptr texture::observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&handler) {
+    return this->_size_notifier->observe(std::move(handler));
 }
 
 void texture::sync_scale_from_renderer(renderer_ptr const &renderer) {
@@ -125,7 +130,7 @@ setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &met
 
         this->_add_images_to_metal_texture();
 
-        this->_notifier->notify(method::metal_texture_changed);
+        this->_texture_notifier->notify(nullptr);
     }
 
     return setup_metal_result{nullptr};
@@ -232,7 +237,7 @@ void texture::_add_image_to_metal_texture(texture_element_ptr const &element) {
 void texture::_size_updated() {
     this->_metal_texture = nullptr;
     this->_draw_actual_pos = {this->_draw_actual_padding, this->_draw_actual_padding};
-    this->_notifier->notify(method::size_updated);
+    this->_size_notifier->notify(nullptr);
 }
 
 texture_ptr texture::make_shared(args args) {
@@ -254,21 +259,7 @@ std::string yas::to_string(draw_image_error const &error) {
     }
 }
 
-std::string yas::to_string(texture::method const &method) {
-    switch (method) {
-        case texture::method::metal_texture_changed:
-            return "metal_texture_changed";
-        case texture::method::size_updated:
-            return "size_updated";
-    }
-}
-
 std::ostream &operator<<(std::ostream &os, yas::ui::draw_image_error const &error) {
     os << to_string(error);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::texture::method const &method) {
-    os << to_string(method);
     return os;
 }

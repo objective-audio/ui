@@ -34,9 +34,9 @@ button::button(region const &region, std::size_t const state_count)
 
                 if (renderer) {
                     renderer->event_manager()
-                        ->observe([this](auto const &context) {
-                            if (context.method == event_manager::method::touch_changed) {
-                                this->_update_tracking(context.event);
+                        ->observe([this](auto const &event) {
+                            if (event->type() == event_type::touch) {
+                                this->_update_tracking(event);
                             }
                         })
                         ->add_to(*pool);

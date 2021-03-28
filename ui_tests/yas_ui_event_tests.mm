@@ -43,11 +43,11 @@ using namespace yas;
     XCTAssertEqual(to_string(ui::modifier_flags::function), "function");
 }
 
-- (void)test_event_manager_method_to_string {
-    XCTAssertEqual(to_string(ui::event_manager::method::cursor_changed), "cursor_changed");
-    XCTAssertEqual(to_string(ui::event_manager::method::touch_changed), "touch_changed");
-    XCTAssertEqual(to_string(ui::event_manager::method::key_changed), "key_changed");
-    XCTAssertEqual(to_string(ui::event_manager::method::modifier_changed), "modifier_changed");
+- (void)test_event_type_to_string {
+    XCTAssertEqual(to_string(ui::event_type::cursor), "cursor");
+    XCTAssertEqual(to_string(ui::event_type::touch), "touch");
+    XCTAssertEqual(to_string(ui::event_type::key), "key");
+    XCTAssertEqual(to_string(ui::event_type::modifier), "modifier");
 }
 
 - (void)test_event_phase_ostream {
@@ -75,8 +75,7 @@ using namespace yas;
 }
 
 - (void)test_event_manager_method_ostream {
-    auto const methods = {ui::event_manager::method::cursor_changed, ui::event_manager::method::touch_changed,
-                          ui::event_manager::method::key_changed, ui::event_manager::method::modifier_changed};
+    auto const methods = {ui::event_type::cursor, ui::event_type::touch, ui::event_type::key, ui::event_type::modifier};
 
     for (auto const &method : methods) {
         std::ostringstream stream;
@@ -307,11 +306,8 @@ using namespace yas;
 
     bool called = false;
 
-    auto canceller = manager->observe([&called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+    auto canceller = manager->observe([&called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::cursor);
 
         auto const &value = event->get<ui::cursor>();
         XCTAssertEqual(value.position().x, 0.25f);
@@ -331,11 +327,8 @@ using namespace yas;
 
     bool called = false;
 
-    auto canceller = manager->observe([&called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+    auto canceller = manager->observe([&called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::touch);
 
         auto const &value = event->get<ui::touch>();
         XCTAssertEqual(value.identifier(), 100);
@@ -357,11 +350,8 @@ using namespace yas;
 
     bool called = false;
 
-    auto canceller = manager->observe([&called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::key_changed);
+    auto canceller = manager->observe([&called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::key);
 
         auto const &value = event->get<ui::key>();
         XCTAssertEqual(value.key_code(), 200);
@@ -384,11 +374,8 @@ using namespace yas;
     bool alt_called = false;
     bool func_called = false;
 
-    auto canceller = manager->observe([&alt_called, &func_called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
+    auto canceller = manager->observe([&alt_called, &func_called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::modifier);
 
         auto const &value = event->get<ui::modifier>();
 
@@ -414,11 +401,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::cursor_changed);
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::cursor);
 
         if (event->phase() == ui::event_phase::began) {
             began_called = true;
@@ -461,11 +445,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::touch_changed);
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::touch);
 
         if (event->get<ui::touch>().identifier() == 1) {
             if (event->phase() == ui::event_phase::began) {
@@ -527,11 +508,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::key_changed);
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::key);
 
         if (event->get<ui::key>().key_code() == 1) {
             if (event->phase() == ui::event_phase::began) {
@@ -586,11 +564,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        auto const &method = context.method;
-        ui::event_ptr const &event = context.event;
-
-        XCTAssertEqual(method, ui::event_manager::method::modifier_changed);
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        XCTAssertEqual(event->type(), ui::event_type::modifier);
 
         if (event->get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
             if (event->phase() == ui::event_phase::began) {
@@ -658,9 +633,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        if (context.method == ui::event_manager::method::cursor_changed) {
-            ui::event_ptr const &event = context.event;
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        if (event->type() == ui::event_type::cursor) {
             if (event->phase() == ui::event_phase::began) {
                 began_called = true;
             } else if (event->phase() == ui::event_phase::ended) {
@@ -703,9 +677,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        if (context.method == ui::event_manager::method::touch_changed) {
-            ui::event_ptr const &event = context.event;
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        if (event->type() == ui::event_type::touch) {
             if (event->get<ui::touch>().identifier() == 1) {
                 if (event->phase() == ui::event_phase::began) {
                     began_called = true;
@@ -767,9 +740,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        if (context.method == ui::event_manager::method::key_changed) {
-            ui::event_ptr const &event = context.event;
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        if (event->type() == ui::event_type::key) {
             if (event->get<ui::key>().key_code() == 1) {
                 if (event->phase() == ui::event_phase::began) {
                     began_called = true;
@@ -824,9 +796,8 @@ using namespace yas;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](auto const &context) {
-        if (context.method == ui::event_manager::method::modifier_changed) {
-            ui::event_ptr const &event = context.event;
+    auto canceller = manager->observe([&began_called, &ended_called, self](ui::event_ptr const &event) {
+        if (event->type() == ui::event_type::modifier) {
             if (event->get<ui::modifier>().flag() == ui::modifier_flags::alpha_shift) {
                 if (event->phase() == ui::event_phase::began) {
                     began_called = true;
@@ -890,24 +861,16 @@ using namespace yas;
 
 - (void)test_chain {
     auto manager = ui::event_manager::make_shared();
-    std::vector<ui::event_manager::method> called_methods;
     std::vector<ui::event_ptr> called_events;
 
-    auto clear = [&called_methods, &called_events]() {
-        called_methods.clear();
-        called_events.clear();
-    };
+    auto clear = [&called_events]() { called_events.clear(); };
 
-    auto canceller = manager->observe([&called_methods, &called_events](auto const &context) {
-        called_methods.push_back(context.method);
-        called_events.push_back(context.event);
-    });
+    auto canceller = manager->observe([&called_events](ui::event_ptr const &event) { called_events.push_back(event); });
 
     ui::event_inputtable::cast(manager)->input_cursor_event(ui::cursor_event{{.v = 0.0f}, 0.0});
 
-    XCTAssertEqual(called_methods.size(), 1);
     XCTAssertEqual(called_events.size(), 1);
-    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::cursor_changed);
+    XCTAssertEqual(called_events.at(0)->type(), ui::event_type::cursor);
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(ui::cursor));
 
     clear();
@@ -915,27 +878,24 @@ using namespace yas;
     ui::event_inputtable::cast(manager)->input_touch_event(ui::event_phase::began,
                                                            ui::touch_event{1, {.v = 0.0f}, 0.0});
 
-    XCTAssertEqual(called_methods.size(), 1);
     XCTAssertEqual(called_events.size(), 1);
-    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::touch_changed);
+    XCTAssertEqual(called_events.at(0)->type(), ui::event_type::touch);
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(ui::touch));
 
     clear();
 
     ui::event_inputtable::cast(manager)->input_key_event(ui::event_phase::began, ui::key_event{1, "", "", 0.0});
 
-    XCTAssertEqual(called_methods.size(), 1);
     XCTAssertEqual(called_events.size(), 1);
-    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::key_changed);
+    XCTAssertEqual(called_events.at(0)->type(), ui::event_type::key);
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(ui::key));
 
     clear();
 
     ui::event_inputtable::cast(manager)->input_modifier_event(ui::modifier_flags::alpha_shift, 0.0);
 
-    XCTAssertEqual(called_methods.size(), 1);
     XCTAssertEqual(called_events.size(), 1);
-    XCTAssertEqual(called_methods.at(0), ui::event_manager::method::modifier_changed);
+    XCTAssertEqual(called_events.at(0)->type(), ui::event_type::modifier);
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(ui::modifier));
 }
 

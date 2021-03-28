@@ -350,26 +350,6 @@ renderer_ptr renderer::make_shared(metal_system_ptr const &system) {
     return shared;
 }
 
-#pragma mark -
-
-std::string yas::to_string(renderer::method const &method) {
-    switch (method) {
-        case renderer::method::will_render:
-            return "will_render";
-        case renderer::method::view_size_changed:
-            return "view_size_changed";
-        case renderer::method::scale_factor_changed:
-            return "scale_factor_changed";
-        case renderer::method::safe_area_insets_changed:
-            return "safe_area_insets_changed";
-    }
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::renderer::method const &method) {
-    os << to_string(method);
-    return os;
-}
-
 bool yas::ui::operator==(yas::ui::renderer_wptr const &lhs, yas::ui::renderer_wptr const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();

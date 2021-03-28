@@ -39,33 +39,29 @@ render_target::render_target()
     this->_set_textures_to_effect();
 
     this->_src_texture
-        ->observe([this](auto const &method) {
-            if (method == texture::method::metal_texture_changed) {
-                texture_ptr const &texture = this->_src_texture;
-                auto const renderPassDescriptor = *this->_render_pass_descriptor;
+        ->observe_metal_texture_changed([this](auto const &) {
+            texture_ptr const &texture = this->_src_texture;
+            auto const renderPassDescriptor = *this->_render_pass_descriptor;
 
-                if (metal_texture_ptr const &metal_texture = texture->metal_texture()) {
-                    auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
-                    auto colorDesc = *color_desc;
-                    colorDesc.texture = metal_texture->texture();
-                    colorDesc.loadAction = MTLLoadActionClear;
-                    colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
+            if (metal_texture_ptr const &metal_texture = texture->metal_texture()) {
+                auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
+                auto colorDesc = *color_desc;
+                colorDesc.texture = metal_texture->texture();
+                colorDesc.loadAction = MTLLoadActionClear;
+                colorDesc.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 
-                    [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
-                } else {
-                    [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
-                }
+                [renderPassDescriptor.colorAttachments setObject:colorDesc atIndexedSubscript:0];
+            } else {
+                [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
             }
         })
         ->add_to(this->_pool);
 
     this->_dst_texture
-        ->observe([this](auto const &method) {
-            if (method == texture::method::size_updated) {
-                texture_ptr const &texture = this->_dst_texture;
-                this->_data->set_rect_tex_coords(
-                    uint_region{.origin = uint_point::zero(), .size = texture->actual_size()}, 0);
-            }
+        ->observe_size_updated([this](auto const &) {
+            texture_ptr const &texture = this->_dst_texture;
+            this->_data->set_rect_tex_coords(uint_region{.origin = uint_point::zero(), .size = texture->actual_size()},
+                                             0);
         })
         ->add_to(this->_pool);
 

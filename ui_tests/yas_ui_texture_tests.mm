@@ -183,22 +183,7 @@ using namespace yas;
     XCTAssertTrue(texture1a != texture2);
 }
 
-- (void)test_method_to_string {
-    XCTAssertEqual(to_string(ui::texture::method::metal_texture_changed), "metal_texture_changed");
-    XCTAssertEqual(to_string(ui::texture::method::size_updated), "size_updated");
-}
-
-- (void)test_method_ostream {
-    auto const methods = {ui::texture::method::metal_texture_changed, ui::texture::method::size_updated};
-
-    for (auto const &method : methods) {
-        std::ostringstream stream;
-        stream << method;
-        XCTAssertEqual(stream.str(), to_string(method));
-    }
-}
-
-- (void)test_chain {
+- (void)test_observe_metal_texture_updated {
     auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -209,21 +194,25 @@ using namespace yas;
 
     auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
-    std::optional<ui::texture::method> received;
+    std::size_t received;
 
-    auto canceller = texture->observe([&received](auto const &method) { received = method; });
-
-    texture->set_point_size({16, 16});
-
-    XCTAssertTrue(received);
-    XCTAssertEqual(*received, ui::texture::method::size_updated);
-
-    received = std::nullopt;
+    auto canceller = texture->observe_metal_texture_changed([&received](auto const &) { received += 1; });
 
     ui::metal_object::cast(texture)->metal_setup(metal_system);
 
-    XCTAssertTrue(received);
-    XCTAssertEqual(*received, ui::texture::method::metal_texture_changed);
+    XCTAssertEqual(received, 1);
+}
+
+- (void)test_observe_size_updated {
+    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+
+    std::size_t received;
+
+    auto canceller = texture->observe_size_updated([&received](auto const &) { received += 1; });
+
+    texture->set_point_size({16, 16});
+
+    XCTAssertEqual(received, 1);
 }
 
 @end

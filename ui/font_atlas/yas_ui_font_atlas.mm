@@ -52,11 +52,8 @@ font_atlas::font_atlas(args &&args)
                 this->_update_word_infos();
 
                 if (texture) {
-                    this->_texture_canceller = texture->observe([this](auto const &method) {
-                        if (method == texture::method::metal_texture_changed) {
-                            this->_texture_updated_notifier->notify(this->_texture->value());
-                        }
-                    });
+                    this->_texture_canceller = texture->observe_metal_texture_changed(
+                        [this](auto const &) { this->_texture_updated_notifier->notify(this->_texture->value()); });
                 } else {
                     this->_texture_canceller = std::nullopt;
                 }
@@ -219,15 +216,4 @@ void font_atlas::_update_word_infos() {
 
 font_atlas_ptr font_atlas::make_shared(args args) {
     return std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
-}
-
-#pragma mark -
-
-std::string yas::to_string(font_atlas::method const &method) {
-    switch (method) {
-        case font_atlas::method::texture_changed:
-            return "texture_changed";
-        case font_atlas::method::texture_updated:
-            return "texture_updated";
-    }
 }

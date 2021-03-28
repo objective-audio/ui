@@ -12,8 +12,6 @@ namespace yas::ui {
 class word_info;
 
 struct font_atlas final {
-    enum class method { texture_changed, texture_updated };
-
     struct args {
         std::string font_name;
         double font_size;
@@ -73,7 +71,3 @@ struct font_atlas final {
     void _update_word_infos();
 };
 }  // namespace yas::ui
-
-namespace yas {
-std::string to_string(ui::font_atlas::method const &);
-}
