@@ -88,9 +88,7 @@ using namespace yas;
 
     auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
 
-    auto pre_render_action = ui::action::make_shared();
-
-    pre_render_action->time_updater = [&metal_system = renderer->metal_system(), expectation, self](auto const &) {
+    auto time_updater = [&metal_system = renderer->metal_system(), expectation, &self](auto const &, auto const &) {
         auto mtlDevice = ui::testable_metal_system::cast(metal_system)->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
@@ -127,6 +125,8 @@ using namespace yas;
 
         return true;
     };
+
+    auto pre_render_action = ui::action::make_shared({.time_updater = std::move(time_updater)});
 
     renderer->insert_action(pre_render_action);
 

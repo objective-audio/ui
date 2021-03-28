@@ -17,8 +17,8 @@ namespace layout_action {
         float begin_value;
         float end_value;
 
-        action_args action;
-        continuous_action_args continuous_action;
+        action::args action;
+        action::continuous_args continuous_action;
     };
 }  // namespace layout_action
 
