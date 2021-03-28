@@ -74,14 +74,13 @@ struct action final {
 
     explicit action(args &&);
 
+    [[nodiscard]] duration_t time_diff(time_point_t const &time) const;
+    [[nodiscard]] action_ptr make_delayed(time_point_t const &, double const) const;
+
     action(action const &) = delete;
     action(action &&) = delete;
     action &operator=(action const &) = delete;
     action &operator=(action &&) = delete;
-
-    [[nodiscard]] duration_t time_diff(time_point_t const &time) const;
-
-    [[nodiscard]] action_ptr make_delayed(time_point_t const &, double const) const;
 };
 
 struct parallel_action final {
@@ -106,5 +105,10 @@ struct parallel_action final {
     action_ptr _raw_action;
 
     explicit parallel_action(args &&);
+
+    parallel_action(parallel_action const &) = delete;
+    parallel_action(parallel_action &&) = delete;
+    parallel_action &operator=(parallel_action const &) = delete;
+    parallel_action &operator=(parallel_action &&) = delete;
 };
 }  // namespace yas::ui
