@@ -10,6 +10,8 @@
 #include <string>
 
 namespace yas::ui {
+enum class event_type { cursor, touch, key, modifier };
+
 enum class event_phase {
     none,
     began,
@@ -141,7 +143,9 @@ std::string to_string(ui::key_event const &);
 std::string to_string(ui::modifier_event const &);
 std::string to_string(ui::event_phase const &);
 std::string to_string(ui::modifier_flags const &);
+std::string to_string(ui::event_type const &type);
 }  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::event_phase const &);
 std::ostream &operator<<(std::ostream &, yas::ui::modifier_flags const &);
+std::ostream &operator<<(std::ostream &, yas::ui::event_type const &event_type);

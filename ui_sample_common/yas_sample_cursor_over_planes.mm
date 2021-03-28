@@ -15,9 +15,9 @@ static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> cons
 
     for (auto &node : nodes) {
         renderer->event_manager()
-            ->observe([weak_node = to_weak(node), prev_detected = std::make_shared<bool>(false)](auto const &context) {
-                if (context.method == ui::event_manager::method::cursor_changed) {
-                    ui::event_ptr const &event = context.event;
+            ->observe([weak_node = to_weak(node),
+                       prev_detected = std::make_shared<bool>(false)](ui::event_ptr const &event) {
+                if (event->type() == ui::event_type::cursor) {
                     auto const &cursor_event = event->get<ui::cursor>();
 
                     if (auto node = weak_node.lock()) {

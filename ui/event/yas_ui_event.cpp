@@ -14,7 +14,7 @@ using namespace yas::ui;
 #pragma mark - event::impl
 
 struct ui::event_impl_base {
-    virtual std::type_info const &type() const = 0;
+    virtual std::type_info const &type_info() const = 0;
 
     event_phase phase = event_phase::none;
 };
@@ -37,7 +37,7 @@ struct event::impl : event_impl_base {
         return this->value == rhs->value;
     }
 
-    std::type_info const &type() const override {
+    std::type_info const &type_info() const override {
         return typeid(T);
     }
 };
@@ -60,8 +60,24 @@ event_phase event::phase() const {
     return this->_impl()->phase;
 }
 
+event_type event::type() const {
+    std::type_info const &type_info = this->type_info();
+
+    if (type_info == typeid(ui::cursor)) {
+        return event_type::cursor;
+    } else if (type_info == typeid(ui::touch)) {
+        return event_type::touch;
+    } else if (type_info == typeid(ui::key)) {
+        return event_type::key;
+    } else if (type_info == typeid(ui::modifier)) {
+        return event_type::modifier;
+    } else {
+        throw std::runtime_error("invalid type_info.");
+    }
+}
+
 std::type_info const &event::type_info() const {
-    return this->_impl()->type();
+    return this->_impl()->type_info();
 }
 
 template <>
@@ -164,7 +180,7 @@ event_manager::event_manager() {
 
 event_manager::~event_manager() = default;
 
-observing::canceller_ptr event_manager::observe(observing::caller<context>::handler_f &&handler) {
+observing::canceller_ptr event_manager::observe(observing::caller<event_ptr>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
@@ -186,7 +202,7 @@ void event_manager::input_cursor_event(cursor_event const &value) {
         this->_cursor_event->set_phase(phase);
         this->_cursor_event->set<cursor>(value);
 
-        this->_notifier->notify({.method = event_manager::method::cursor_changed, .event = this->_cursor_event});
+        this->_notifier->notify(this->_cursor_event);
 
         if (phase == event_phase::ended) {
             this->_cursor_event = nullptr;
@@ -210,7 +226,7 @@ void event_manager::input_touch_event(event_phase const phase, touch_event const
         event->set_phase(phase);
         event->set<touch>(value);
 
-        this->_notifier->notify({.method = event_manager::method::touch_changed, .event = event});
+        this->_notifier->notify(event);
 
         if (phase == event_phase::ended || phase == event_phase::canceled) {
             this->_touch_events.erase(identifer);
@@ -234,7 +250,7 @@ void event_manager::input_key_event(event_phase const phase, key_event const &va
         event->set_phase(phase);
         event->set<key>(value);
 
-        this->_notifier->notify({.method = event_manager::method::key_changed, .event = event});
+        this->_notifier->notify(event);
 
         if (phase == event_phase::ended || phase == event_phase::canceled) {
             this->_key_events.erase(key_code);
@@ -255,15 +271,14 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
                 event->set_phase(event_phase::began);
                 this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
 
-                this->_notifier->notify(
-                    {.method = event_manager::method::modifier_changed, .event = this->_modifier_events.at(flag)});
+                this->_notifier->notify(this->_modifier_events.at(flag));
             }
         } else {
             if (this->_modifier_events.count(flag) > 0) {
                 auto const &event = this->_modifier_events.at(flag);
                 event->set_phase(event_phase::ended);
 
-                this->_notifier->notify({.method = event_manager::method::modifier_changed, .event = event});
+                this->_notifier->notify(event);
 
                 this->_modifier_events.erase(flag);
             }
@@ -298,25 +313,7 @@ std::string yas::to_string(event const &event) {
     return "{phase:" + to_string(event.phase()) + ", type:" + type + ", values:" + values + "}";
 }
 
-std::string yas::to_string(event_manager::method const &method) {
-    switch (method) {
-        case event_manager::method::cursor_changed:
-            return "cursor_changed";
-        case event_manager::method::touch_changed:
-            return "touch_changed";
-        case event_manager::method::key_changed:
-            return "key_changed";
-        case event_manager::method::modifier_changed:
-            return "modifier_changed";
-    }
-}
-
 std::ostream &operator<<(std::ostream &os, yas::ui::event const &event) {
     os << to_string(event);
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::event_manager::method const &method) {
-    os << to_string(method);
     return os;
 }

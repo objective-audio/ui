@@ -27,11 +27,6 @@ struct texture : metal_object {
         ui::pixel_format pixel_format = ui::pixel_format::rgba8_unorm;
     };
 
-    enum class method {
-        metal_texture_changed,
-        size_updated,
-    };
-
     [[nodiscard]] uintptr_t identifier() const;
 
     [[nodiscard]] uint_size point_size() const;
@@ -48,7 +43,9 @@ struct texture : metal_object {
 
     [[nodiscard]] std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<method>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe_metal_texture_changed(
+        observing::caller<std::nullptr_t>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -70,7 +67,9 @@ struct texture : metal_object {
     uint_point _draw_actual_pos;
     std::vector<texture_element_ptr> _texture_elements;
     observing::canceller_ptr _scale_canceller = nullptr;
-    observing::notifier_ptr<method> const _notifier = observing::notifier<method>::make_shared();
+    observing::notifier_ptr<std::nullptr_t> const _texture_notifier =
+        observing::notifier<std::nullptr_t>::make_shared();
+    observing::notifier_ptr<std::nullptr_t> const _size_notifier = observing::notifier<std::nullptr_t>::make_shared();
 
     explicit texture(args &&);
 
@@ -91,9 +90,3 @@ struct texture : metal_object {
     void _size_updated();
 };
 }  // namespace yas::ui
-
-namespace yas {
-std::string to_string(ui::texture::method const &);
-}
-
-std::ostream &operator<<(std::ostream &, yas::ui::texture::method const &);

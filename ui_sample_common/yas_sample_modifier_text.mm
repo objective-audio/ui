@@ -19,13 +19,11 @@ sample::modifier_text::modifier_text(ui::font_atlas_ptr const &font_atlas, ui::l
 
                 if (renderer) {
                     renderer->event_manager()
-                        ->observe(
-                            [this, flags = std::unordered_set<ui::modifier_flags>{}](auto const &context) mutable {
-                                if (context.method == ui::event_manager::method::modifier_changed) {
-                                    ui::event_ptr const &event = context.event;
-                                    this->_update_text(event, flags);
-                                }
-                            })
+                        ->observe([this, flags = std::unordered_set<ui::modifier_flags>{}](auto const &event) mutable {
+                            if (event->type() == ui::event_type::modifier) {
+                                this->_update_text(event, flags);
+                            }
+                        })
                         ->add_to(*pool);
 
                     auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();

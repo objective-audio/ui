@@ -95,9 +95,7 @@ struct node final : action_target, metal_object, renderable_node {
 
     [[nodiscard]] ui::renderer_ptr renderer() const override;
 
-    using chain_pair_t = std::pair<method, ui::node const *>;
     [[nodiscard]] observing::canceller_ptr observe(observing::caller<method>::handler_f &&);
-
     [[nodiscard]] observing::canceller_ptr observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&,
                                                             bool const sync);
     [[nodiscard]] observing::canceller_ptr observe_parent(observing::caller<ui::node_ptr>::handler_f &&,

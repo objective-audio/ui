@@ -17,6 +17,7 @@ struct event final {
 
     event_phase phase() const;
 
+    event_type type() const;
     std::type_info const &type_info() const;
 
     template <typename T>
@@ -57,16 +58,9 @@ struct event final {
 };
 
 struct event_manager : event_inputtable {
-    enum class method { cursor_changed, touch_changed, key_changed, modifier_changed };
-
-    struct context {
-        method const &method;
-        event_ptr const &event;
-    };
-
     virtual ~event_manager() final;
 
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<context>::handler_f &&);
+    [[nodiscard]] observing::canceller_ptr observe(observing::caller<event_ptr>::handler_f &&);
 
     [[nodiscard]] static event_manager_ptr make_shared();
 
@@ -76,7 +70,7 @@ struct event_manager : event_inputtable {
     std::unordered_map<uint16_t, event_ptr> _key_events;
     std::unordered_map<uint32_t, event_ptr> _modifier_events;
 
-    observing::notifier_ptr<context> const _notifier = observing::notifier<context>::make_shared();
+    observing::notifier_ptr<event_ptr> const _notifier = observing::notifier<event_ptr>::make_shared();
 
     event_manager();
 
@@ -94,8 +88,6 @@ struct event_manager : event_inputtable {
 
 namespace yas {
 std::string to_string(ui::event const &);
-std::string to_string(ui::event_manager::method const &);
 }  // namespace yas
 
 std::ostream &operator<<(std::ostream &, yas::ui::event const &);
-std::ostream &operator<<(std::ostream &, yas::ui::event_manager::method const &);

@@ -29,9 +29,8 @@ static std::shared_ptr<ui::action> _make_rotate_action(ui::node_ptr const &targe
 
 static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
     return renderer->event_manager()->observe(
-        [weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](auto const &context) mutable {
-            if (context.method == ui::event_manager::method::cursor_changed) {
-                ui::event_ptr const &event = context.event;
+        [weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](ui::event_ptr const &event) mutable {
+            if (event->type() == ui::event_type::cursor) {
                 if (auto node = weak_node.lock()) {
                     auto const &value = event->get<ui::cursor>();
 
