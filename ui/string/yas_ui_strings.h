@@ -39,13 +39,10 @@ struct strings final {
 
     [[nodiscard]] ui::rect_plane_ptr const &rect_plane();
 
-    [[nodiscard]] observing::canceller_ptr observe_text(observing::caller<std::string>::handler_f &&, bool const sync);
-    [[nodiscard]] observing::canceller_ptr observe_font_atlas(observing::caller<ui::font_atlas_ptr>::handler_f &&,
-                                                              bool const sync);
-    [[nodiscard]] observing::canceller_ptr observe_line_height(observing::caller<std::optional<float>>::handler_f &&,
-                                                               bool const sync);
-    [[nodiscard]] observing::canceller_ptr observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&,
-                                                             bool const sync);
+    [[nodiscard]] observing::syncable observe_text(observing::caller<std::string>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_font_atlas(observing::caller<ui::font_atlas_ptr>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
 
     [[nodiscard]] static strings_ptr make_shared();
     [[nodiscard]] static strings_ptr make_shared(args);

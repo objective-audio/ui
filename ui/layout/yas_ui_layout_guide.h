@@ -19,7 +19,7 @@ struct layout_guide final : action_target {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<float>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe(observing::caller<float>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
@@ -51,7 +51,7 @@ struct layout_guide_point final {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::point>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe(observing::caller<ui::point>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
@@ -83,7 +83,7 @@ struct layout_guide_range {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::range>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe(observing::caller<ui::range>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
@@ -137,7 +137,7 @@ struct layout_guide_rect final {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<ui::region>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe(observing::caller<ui::region>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ranges_args);

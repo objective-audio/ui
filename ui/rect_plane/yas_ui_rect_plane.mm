@@ -156,12 +156,13 @@ dynamic_mesh_data_ptr const &rect_plane_data::dynamic_mesh_data() {
 
 void rect_plane_data::_observe_rect_tex_coords(rect_plane_data &data, texture_element_ptr const &element,
                                                std::size_t const rect_idx, tex_coords_transform_f &&transformer) {
-    this->_element_cancellers.emplace_back(element->observe_tex_coords(
-        [this, rect_idx, transformer = std::move(transformer)](uint_region const &tex_coords) {
-            auto transformed = transformer ? transformer(tex_coords) : tex_coords;
-            this->set_rect_tex_coords(transformed, rect_idx);
-        },
-        true));
+    this->_element_cancellers.emplace_back(
+        element
+            ->observe_tex_coords([this, rect_idx, transformer = std::move(transformer)](uint_region const &tex_coords) {
+                auto transformed = transformer ? transformer(tex_coords) : tex_coords;
+                this->set_rect_tex_coords(transformed, rect_idx);
+            })
+            .sync());
 }
 
 rect_plane_data_ptr rect_plane_data::make_shared(dynamic_mesh_data_ptr mesh_data) {

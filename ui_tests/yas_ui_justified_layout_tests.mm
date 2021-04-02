@@ -77,19 +77,19 @@ using namespace yas;
         }
     };
 
-    auto first_layout = first_src_guide->observe(
-        [first_cache, justifying](float const &value) {
-            *first_cache = value;
-            justifying();
-        },
-        true);
+    auto first_layout = first_src_guide
+                            ->observe([first_cache, justifying](float const &value) {
+                                *first_cache = value;
+                                justifying();
+                            })
+                            .sync();
 
-    auto second_layout = second_src_guide->observe(
-        [second_cache, justifying](float const &value) {
-            *second_cache = value;
-            justifying();
-        },
-        true);
+    auto second_layout = second_src_guide
+                             ->observe([second_cache, justifying](float const &value) {
+                                 *second_cache = value;
+                                 justifying();
+                             })
+                             .sync();
 
     XCTAssertTrue(first_layout);
     XCTAssertTrue(second_layout);
@@ -113,19 +113,19 @@ using namespace yas;
         }
     };
 
-    auto first_layout = first_src_guide->observe(
-        [justifying, first_cache](float const &value) {
-            *first_cache = value;
-            justifying();
-        },
-        true);
+    auto first_layout = first_src_guide
+                            ->observe([justifying, first_cache](float const &value) {
+                                *first_cache = value;
+                                justifying();
+                            })
+                            .sync();
 
-    auto second_layout = second_src_guide->observe(
-        [justifying, second_cache](float const &value) {
-            *second_cache = value;
-            justifying();
-        },
-        true);
+    auto second_layout = second_src_guide
+                             ->observe([justifying, second_cache](float const &value) {
+                                 *second_cache = value;
+                                 justifying();
+                             })
+                             .sync();
 
     XCTAssertEqual(dst_guide->value(), 0.0f);
 
@@ -163,19 +163,19 @@ using namespace yas;
         }
     };
 
-    auto first_layout = first_src_guide->observe(
-        [justified, first_cache](float const &value) {
-            *first_cache = value;
-            justified();
-        },
-        true);
+    auto first_layout = first_src_guide
+                            ->observe([justified, first_cache](float const &value) {
+                                *first_cache = value;
+                                justified();
+                            })
+                            .sync();
 
-    auto second_layout = second_src_guide->observe(
-        [justified, second_cache](float const &value) {
-            *second_cache = value;
-            justified();
-        },
-        true);
+    auto second_layout = second_src_guide
+                             ->observe([justified, second_cache](float const &value) {
+                                 *second_cache = value;
+                                 justified();
+                             })
+                             .sync();
 
     XCTAssertEqual(dst_guide_0->value(), -1.0f);
     XCTAssertEqual(dst_guide_1->value(), 1.0f);
@@ -197,19 +197,19 @@ using namespace yas;
         }
     };
 
-    auto first_layout = first_src_guide->observe(
-        [justified, first_cache](float const &value) {
-            *first_cache = value;
-            justified();
-        },
-        true);
+    auto first_layout = first_src_guide
+                            ->observe([justified, first_cache](float const &value) {
+                                *first_cache = value;
+                                justified();
+                            })
+                            .sync();
 
-    auto second_layout = second_src_guide->observe(
-        [justified, second_cache](float const &value) {
-            *second_cache = value;
-            justified();
-        },
-        true);
+    auto second_layout = second_src_guide
+                             ->observe([justified, second_cache](float const &value) {
+                                 *second_cache = value;
+                                 justified();
+                             })
+                             .sync();
 
     XCTAssertEqual(dst_guide->value(), 1.0f);
 }

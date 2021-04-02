@@ -34,9 +34,8 @@ struct font_atlas final {
 
     void set_texture(ui::texture_ptr const &);
 
-    [[nodiscard]] observing::canceller_ptr observe_texture(observing::caller<texture_ptr>::handler_f &&,
-                                                           bool const sync);
-    [[nodiscard]] observing::canceller_ptr observe_texture_updated(observing::caller<ui::texture_ptr>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_texture(observing::caller<texture_ptr>::handler_f &&);
+    [[nodiscard]] observing::endable observe_texture_updated(observing::caller<ui::texture_ptr>::handler_f &&);
 
     [[nodiscard]] static font_atlas_ptr make_shared(args);
 
@@ -57,8 +56,8 @@ struct font_atlas final {
 
     observing::value::holder_ptr<ui::texture_ptr> const _texture;
     std::vector<ui::word_info> _word_infos;
-    std::vector<observing::canceller_ptr> _element_cancellers;
-    std::optional<observing::canceller_ptr> _texture_canceller = std::nullopt;
+    std::vector<observing::cancellable_ptr> _element_cancellers;
+    std::optional<observing::cancellable_ptr> _texture_canceller = std::nullopt;
     observing::cancellable_ptr _texture_changed_canceller = nullptr;
 
     font_atlas(args &&);

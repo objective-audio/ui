@@ -32,25 +32,23 @@ layout_animator::layout_animator(args args) : _args(std::move(args)) {
         auto weak_dst_guide = to_weak(dst_guide);
 
         src_guide
-            ->observe(
-                [this, weak_dst_guide](float const &value) {
-                    auto const &args = this->_args;
-                    auto renderer = args.renderer.lock();
-                    auto dst_guide = weak_dst_guide.lock();
+            ->observe([this, weak_dst_guide](float const &value) {
+                auto const &args = this->_args;
+                auto renderer = args.renderer.lock();
+                auto dst_guide = weak_dst_guide.lock();
 
-                    if (renderer && dst_guide) {
-                        renderer->erase_action(dst_guide);
+                if (renderer && dst_guide) {
+                    renderer->erase_action(dst_guide);
 
-                        auto action =
-                            make_action({.target = dst_guide,
-                                         .begin_value = dst_guide->value(),
-                                         .end_value = value,
-                                         .continuous_action = {.duration = args.duration,
-                                                               .value_transformer = this->value_transformer()}});
-                        renderer->insert_action(action);
-                    }
-                },
-                false)
+                    auto action = make_action({.target = dst_guide,
+                                               .begin_value = dst_guide->value(),
+                                               .end_value = value,
+                                               .continuous_action = {.duration = args.duration,
+                                                                     .value_transformer = this->value_transformer()}});
+                    renderer->insert_action(action);
+                }
+            })
+            .end()
             ->add_to(this->_pool);
     }
 }

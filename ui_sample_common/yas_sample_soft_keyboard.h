@@ -17,7 +17,7 @@ struct soft_keyboard {
 
     ui::node_ptr const &node();
 
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<std::string>::handler_f &&);
+    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<std::string>::handler_f &&);
 
     static soft_keyboard_ptr make_shared(ui::font_atlas_ptr const &);
 
@@ -31,8 +31,8 @@ struct soft_keyboard {
     std::shared_ptr<ui::collection_layout> _collection_layout = nullptr;
     std::vector<observing::cancellable_ptr> _frame_cancellers;
 
-    std::vector<observing::canceller_ptr> _soft_key_cancellers;
-    observing::canceller_ptr _renderer_canceller = nullptr;
+    std::vector<observing::cancellable_ptr> _soft_key_cancellers;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
     observing::cancellable_ptr _actual_cell_count_canceller = nullptr;
     ui::layout_animator_ptr _cell_interporator = nullptr;
     std::vector<ui::layout_guide_rect_ptr> _src_cell_guide_rects;

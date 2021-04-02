@@ -106,12 +106,12 @@ bool collider::hit_test(point const &loc) const {
     return false;
 }
 
-observing::canceller_ptr collider::observe_shape(observing::caller<shape_ptr>::handler_f &&handler, bool const sync) {
-    return this->_shape->observe(std::move(handler), sync);
+observing::syncable collider::observe_shape(observing::caller<shape_ptr>::handler_f &&handler) {
+    return this->_shape->observe(std::move(handler));
 }
 
-observing::canceller_ptr collider::observe_enabled(observing::caller<bool>::handler_f &&handler, bool const sync) {
-    return this->_enabled->observe(std::move(handler), sync);
+observing::syncable collider::observe_enabled(observing::caller<bool>::handler_f &&handler) {
+    return this->_enabled->observe(std::move(handler));
 }
 
 simd::float4x4 const &collider::matrix() const {

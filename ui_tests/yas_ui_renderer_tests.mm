@@ -132,7 +132,7 @@ using namespace yas;
 
     double notified = 0.0f;
 
-    auto canceller = renderer->observe_scale_factor([&notified](double const &value) { notified = value; }, true);
+    auto canceller = renderer->observe_scale_factor([&notified](double const &value) { notified = value; }).sync();
 
     XCTAssertEqual(notified, 0.0f);
 

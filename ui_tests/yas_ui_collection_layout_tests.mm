@@ -128,7 +128,7 @@ using namespace yas;
     std::size_t notified_count = 0;
 
     auto canceller =
-        layout->observe_actual_cell_count([&notified_count](auto const &count) { notified_count = count; }, false);
+        layout->observe_actual_cell_count([&notified_count](auto const &count) { notified_count = count; }).end();
 
     layout->set_preferred_cell_count(5);
 
@@ -704,7 +704,7 @@ using namespace yas;
     std::optional<std::size_t> notified_count;
 
     auto canceller =
-        layout->observe_preferred_cell_count([&notified_count](auto const &count) { notified_count = count; }, false);
+        layout->observe_preferred_cell_count([&notified_count](auto const &count) { notified_count = count; }).end();
 
     XCTAssertFalse(notified_count);
 
@@ -719,7 +719,7 @@ using namespace yas;
 
     std::optional<ui::layout_alignment> notified;
 
-    auto observer = layout->observe_alignment([&notified](auto const &aligment) { notified = aligment; }, false);
+    auto observer = layout->observe_alignment([&notified](auto const &aligment) { notified = aligment; }).end();
 
     XCTAssertFalse(notified);
 
@@ -734,7 +734,7 @@ using namespace yas;
 
     std::optional<std::vector<ui::collection_layout::line>> notified;
 
-    auto observer = layout->observe_lines([&notified](auto const &lines) { notified = lines; }, false);
+    auto observer = layout->observe_lines([&notified](auto const &lines) { notified = lines; }).end();
 
     XCTAssertFalse(notified);
 
@@ -749,7 +749,7 @@ using namespace yas;
 
     std::optional<ui::size> notified;
 
-    auto observer = layout->observe_default_cell_size([&notified](auto const &size) { notified = size; }, false);
+    auto observer = layout->observe_default_cell_size([&notified](auto const &size) { notified = size; }).end();
 
     XCTAssertFalse(notified);
 
@@ -765,7 +765,7 @@ using namespace yas;
 
     std::optional<ui::layout_order> notified;
 
-    auto observer = layout->observe_row_order([&notified](auto const &order) { notified = order; }, false);
+    auto observer = layout->observe_row_order([&notified](auto const &order) { notified = order; }).end();
 
     XCTAssertFalse(notified);
 
@@ -780,7 +780,7 @@ using namespace yas;
 
     std::optional<ui::layout_order> notified;
 
-    auto observer = layout->observe_col_order([&notified](auto const &order) { notified = order; }, false);
+    auto observer = layout->observe_col_order([&notified](auto const &order) { notified = order; }).end();
 
     XCTAssertFalse(notified);
 
@@ -795,7 +795,7 @@ using namespace yas;
 
     std::optional<ui::layout_direction> notified;
 
-    auto observer = layout->observe_direction([&notified](auto const &direction) { notified = direction; }, false);
+    auto observer = layout->observe_direction([&notified](auto const &direction) { notified = direction; }).end();
 
     XCTAssertFalse(notified);
 
@@ -810,7 +810,7 @@ using namespace yas;
 
     std::optional<float> notified;
 
-    auto observer = layout->observe_row_spacing([&notified](auto const &spacing) { notified = spacing; }, false);
+    auto observer = layout->observe_row_spacing([&notified](auto const &spacing) { notified = spacing; }).end();
 
     XCTAssertFalse(notified);
 
@@ -825,7 +825,7 @@ using namespace yas;
 
     std::optional<float> notified;
 
-    auto observer = layout->observe_col_spacing([&notified](auto const &spacing) { notified = spacing; }, false);
+    auto observer = layout->observe_col_spacing([&notified](auto const &spacing) { notified = spacing; }).end();
 
     XCTAssertFalse(notified);
 

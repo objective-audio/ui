@@ -60,7 +60,7 @@ struct event final {
 struct event_manager : event_inputtable {
     virtual ~event_manager() final;
 
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<event_ptr>::handler_f &&);
+    [[nodiscard]] observing::endable observe(observing::caller<event_ptr>::handler_f &&);
 
     [[nodiscard]] static event_manager_ptr make_shared();
 

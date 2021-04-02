@@ -44,7 +44,7 @@ using namespace yas;
 
     auto clear_values = [&notified_new_value]() { notified_new_value = 0.0f; };
 
-    auto canceller = guide->observe([&notified_new_value](float const &value) { notified_new_value = value; }, false);
+    auto canceller = guide->observe([&notified_new_value](float const &value) { notified_new_value = value; }).end();
 
     guide->set_value(1.0f);
 
@@ -83,7 +83,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto canceller = guide->observe([&called](auto const &) { called = true; }, false);
+    auto canceller = guide->observe([&called](auto const &) { called = true; }).end();
 
     guide->push_notify_waiting();
 
@@ -132,7 +132,7 @@ using namespace yas;
 
     ui::point notified;
 
-    auto canceller = guide_point->observe([&notified](ui::point const &point) { notified = point; }, false);
+    auto canceller = guide_point->observe([&notified](ui::point const &point) { notified = point; }).end();
 
     guide_point->set_point({1.0f, 2.0f});
 
@@ -154,11 +154,11 @@ using namespace yas;
         notified_point.x = notified_point.y = 0.0f;
     };
 
-    auto x_observer = point->x()->observe([&notified_x](float const &value) { notified_x = value; }, false);
+    auto x_observer = point->x()->observe([&notified_x](float const &value) { notified_x = value; }).end();
 
-    auto y_observer = point->y()->observe([&notified_y](float const &value) { notified_y = value; }, false);
+    auto y_observer = point->y()->observe([&notified_y](float const &value) { notified_y = value; }).end();
 
-    auto point_observer = point->observe([&notified_point](ui::point const &point) { notified_point = point; }, false);
+    auto point_observer = point->observe([&notified_point](ui::point const &point) { notified_point = point; }).end();
 
     point->set_point({1.0f, 2.0f});
 
@@ -255,7 +255,7 @@ using namespace yas;
 
     ui::range notified;
 
-    auto observer = guide_range->observe([&notified](ui::range const &range) { notified = range; }, false);
+    auto observer = guide_range->observe([&notified](ui::range const &range) { notified = range; }).end();
 
     guide_range->set_range({1.0f, 2.0f});
 
@@ -288,14 +288,21 @@ using namespace yas;
         notified_range = ui::range::zero();
     };
 
-    auto min_observer = range->min()->observe(
-        [&notified_new_min = notified_new_edge.min](float const &value) { notified_new_min = value; }, false);
-    auto max_observer = range->max()->observe(
-        [&notified_new_max = notified_new_edge.max](float const &value) { notified_new_max = value; }, false);
-    auto length_observer = range->length()->observe(
-        [&notified_new_length = notified_new_edge.length](float const &value) { notified_new_length = value; }, false);
+    auto min_observer =
+        range->min()
+            ->observe([&notified_new_min = notified_new_edge.min](float const &value) { notified_new_min = value; })
+            .end();
+    auto max_observer =
+        range->max()
+            ->observe([&notified_new_max = notified_new_edge.max](float const &value) { notified_new_max = value; })
+            .end();
+    auto length_observer = range->length()
+                               ->observe([&notified_new_length = notified_new_edge.length](float const &value) {
+                                   notified_new_length = value;
+                               })
+                               .end();
 
-    auto observer = range->observe([&notified_range](ui::range const &range) { notified_range = range; }, false);
+    auto observer = range->observe([&notified_range](ui::range const &range) { notified_range = range; }).end();
 
     range->set_range({1.0f, 2.0f});
 
@@ -470,7 +477,7 @@ using namespace yas;
 
     ui::region notified;
 
-    auto observer = guide_rect->observe([&notified](ui::region const &region) { notified = region; }, false);
+    auto observer = guide_rect->observe([&notified](ui::region const &region) { notified = region; }).end();
 
     guide_rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
@@ -508,20 +515,36 @@ using namespace yas;
         notified_region = ui::region::zero();
     };
 
-    auto left_observer = rect->left()->observe(
-        [&notified_new_left = notified_new_edge.left](float const &value) { notified_new_left = value; }, false);
-    auto right_observer = rect->right()->observe(
-        [&notified_new_right = notified_new_edge.right](float const &value) { notified_new_right = value; }, false);
-    auto bottom_observer = rect->bottom()->observe(
-        [&notified_new_bottom = notified_new_edge.bottom](float const &value) { notified_new_bottom = value; }, false);
-    auto top_observer = rect->top()->observe(
-        [&notified_new_top = notified_new_edge.top](float const &value) { notified_new_top = value; }, false);
-    auto width_observer = rect->width()->observe(
-        [&notified_new_width = notified_new_edge.width](float const &value) { notified_new_width = value; }, false);
-    auto height_observer = rect->height()->observe(
-        [&notified_new_height = notified_new_edge.height](float const &value) { notified_new_height = value; }, false);
+    auto left_observer =
+        rect->left()
+            ->observe([&notified_new_left = notified_new_edge.left](float const &value) { notified_new_left = value; })
+            .end();
+    auto right_observer = rect->right()
+                              ->observe([&notified_new_right = notified_new_edge.right](float const &value) {
+                                  notified_new_right = value;
+                              })
+                              .end();
+    auto bottom_observer = rect->bottom()
+                               ->observe([&notified_new_bottom = notified_new_edge.bottom](float const &value) {
+                                   notified_new_bottom = value;
+                               })
+                               .end();
+    auto top_observer =
+        rect->top()
+            ->observe([&notified_new_top = notified_new_edge.top](float const &value) { notified_new_top = value; })
+            .end();
+    auto width_observer = rect->width()
+                              ->observe([&notified_new_width = notified_new_edge.width](float const &value) {
+                                  notified_new_width = value;
+                              })
+                              .end();
+    auto height_observer = rect->height()
+                               ->observe([&notified_new_height = notified_new_edge.height](float const &value) {
+                                   notified_new_height = value;
+                               })
+                               .end();
     auto region_observer =
-        rect->observe([&notified_region](ui::region const &value) { notified_region = value; }, false);
+        rect->observe([&notified_region](ui::region const &value) { notified_region = value; }).end();
 
     rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 

@@ -27,7 +27,7 @@ static std::shared_ptr<ui::action> _make_rotate_action(ui::node_ptr const &targe
         ->raw_action();
 }
 
-static observing::canceller_ptr _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
+static observing::cancellable_ptr _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
     return renderer->event_manager()->observe(
         [weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](ui::event_ptr const &event) mutable {
             if (event->type() == ui::event_type::cursor) {
@@ -82,7 +82,7 @@ sample::cursor::cursor() {
 
     this->_node
         ->observe_renderer(
-            [this, event_canceller = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+            [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 if (renderer) {
                     event_canceller = cursor_utils::_observe_event(this->_node, renderer);
                     renderer->insert_action(cursor_utils::_make_rotate_action(this->_node));

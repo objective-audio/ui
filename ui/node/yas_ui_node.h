@@ -35,55 +35,51 @@ struct node final : action_target, metal_object, renderable_node {
     void set_position(ui::point &&);
     void set_position(ui::point const &);
     [[nodiscard]] ui::point const &position() const;
-    [[nodiscard]] observing::canceller_ptr observe_position(observing::caller<ui::point>::handler_f &&,
-                                                            bool const sync);
+    [[nodiscard]] observing::syncable observe_position(observing::caller<ui::point>::handler_f &&);
 
     void set_angle(ui::angle &&);
     void set_angle(ui::angle const &);
     [[nodiscard]] ui::angle const &angle() const;
-    [[nodiscard]] observing::canceller_ptr observe_angle(observing::caller<ui::angle>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_angle(observing::caller<ui::angle>::handler_f &&);
 
     void set_scale(ui::size &&);
     void set_scale(ui::size const &);
     [[nodiscard]] ui::size const &scale() const;
-    [[nodiscard]] observing::canceller_ptr observe_scale(observing::caller<ui::size>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_scale(observing::caller<ui::size>::handler_f &&);
 
     void set_color(ui::color &&);
     void set_color(ui::color const &);
     [[nodiscard]] ui::color const &color() const;
-    [[nodiscard]] observing::canceller_ptr observe_color(observing::caller<ui::color>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_color(observing::caller<ui::color>::handler_f &&);
 
     void set_alpha(float &&);
     void set_alpha(float const &);
     [[nodiscard]] float const &alpha() const;
-    [[nodiscard]] observing::canceller_ptr observe_alpha(observing::caller<float>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_alpha(observing::caller<float>::handler_f &&);
 
     void set_is_enabled(bool &&);
     void set_is_enabled(bool const &);
     [[nodiscard]] bool const &is_enabled() const;
-    [[nodiscard]] observing::canceller_ptr observe_is_enabled(observing::caller<bool>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_is_enabled(observing::caller<bool>::handler_f &&);
 
     [[nodiscard]] simd::float4x4 const &matrix() const;
     [[nodiscard]] simd::float4x4 const &local_matrix() const;
 
     void set_mesh(ui::mesh_ptr const &);
     [[nodiscard]] ui::mesh_ptr const &mesh() const;
-    [[nodiscard]] observing::canceller_ptr observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&);
 
     void set_collider(ui::collider_ptr const &);
     [[nodiscard]] ui::collider_ptr const &collider() const;
-    [[nodiscard]] observing::canceller_ptr observe_collider(observing::caller<ui::collider_ptr>::handler_f &&,
-                                                            bool const sync);
+    [[nodiscard]] observing::syncable observe_collider(observing::caller<ui::collider_ptr>::handler_f &&);
 
     void set_batch(ui::batch_ptr const &);
     [[nodiscard]] ui::batch_ptr const &batch() const;
-    [[nodiscard]] observing::canceller_ptr observe_batch(observing::caller<ui::batch_ptr>::handler_f &&,
-                                                         bool const sync);
+    [[nodiscard]] observing::syncable observe_batch(observing::caller<ui::batch_ptr>::handler_f &&);
 
     void set_render_target(ui::render_target_ptr const &);
     [[nodiscard]] ui::render_target_ptr const &render_target() const;
-    [[nodiscard]] observing::canceller_ptr observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&,
-                                                                 bool const sync);
+    [[nodiscard]] observing::syncable observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&);
 
     void add_sub_node(ui::node_ptr const &);
     void add_sub_node(ui::node_ptr const &, std::size_t const);
@@ -95,11 +91,9 @@ struct node final : action_target, metal_object, renderable_node {
 
     [[nodiscard]] ui::renderer_ptr renderer() const override;
 
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<method>::handler_f &&);
-    [[nodiscard]] observing::canceller_ptr observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&,
-                                                            bool const sync);
-    [[nodiscard]] observing::canceller_ptr observe_parent(observing::caller<ui::node_ptr>::handler_f &&,
-                                                          bool const sync);
+    [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_parent(observing::caller<ui::node_ptr>::handler_f &&);
 
     [[nodiscard]] ui::point convert_position(ui::point const &) const;
 

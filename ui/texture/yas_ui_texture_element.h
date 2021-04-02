@@ -17,8 +17,7 @@ struct texture_element {
     void set_tex_coords(ui::uint_region const &);
     [[nodiscard]] ui::uint_region const &tex_coords() const;
 
-    [[nodiscard]] observing::canceller_ptr observe_tex_coords(observing::caller<uint_region>::handler_f &&,
-                                                              bool const sync);
+    [[nodiscard]] observing::syncable observe_tex_coords(observing::caller<uint_region>::handler_f &&);
 
     [[nodiscard]] static texture_element_ptr make_shared(draw_pair_t &&);
 

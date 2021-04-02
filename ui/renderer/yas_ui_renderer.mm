@@ -139,18 +139,16 @@ appearance renderer::appearance() const {
     return this->_appearance->value();
 }
 
-observing::canceller_ptr renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-observing::canceller_ptr renderer::observe_scale_factor(observing::caller<double>::handler_f &&handler,
-                                                        bool const sync) {
-    return this->_scale_factor_notify->observe(std::move(handler), sync);
+observing::syncable renderer::observe_scale_factor(observing::caller<double>::handler_f &&handler) {
+    return this->_scale_factor_notify->observe(std::move(handler));
 }
 
-observing::canceller_ptr renderer::observe_appearance(observing::caller<ui::appearance>::handler_f &&handler,
-                                                      bool const sync) {
-    return this->_appearance->observe(std::move(handler), sync);
+observing::syncable renderer::observe_appearance(observing::caller<ui::appearance>::handler_f &&handler) {
+    return this->_appearance->observe(std::move(handler));
 }
 
 void renderer::_prepare(renderer_ptr const &shared) {

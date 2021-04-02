@@ -13,10 +13,12 @@ background::background()
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
     this->_updates.flags.set();
 
-    this->_color->observe([this](auto const &) { this->_updates.set(background_update_reason::color); }, true)
+    this->_color->observe([this](auto const &) { this->_updates.set(background_update_reason::color); })
+        .sync()
         ->add_to(this->_pool);
 
-    this->_alpha->observe([this](auto const &) { this->_updates.set(background_update_reason::alpha); }, true)
+    this->_alpha->observe([this](auto const &) { this->_updates.set(background_update_reason::alpha); })
+        .sync()
         ->add_to(this->_pool);
 }
 
@@ -34,8 +36,8 @@ ui::color const &background::color() const {
     return this->_color->value();
 }
 
-observing::canceller_ptr background::observe_color(observing::caller<ui::color>::handler_f &&handler, bool const sync) {
-    return this->_color->observe(std::move(handler), sync);
+observing::syncable background::observe_color(observing::caller<ui::color>::handler_f &&handler) {
+    return this->_color->observe(std::move(handler));
 }
 
 void background::set_alpha(float const &alpha) {
@@ -46,8 +48,8 @@ float const &background::alpha() const {
     return this->_alpha->value();
 }
 
-observing::canceller_ptr background::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
-    return this->_alpha->observe(std::move(handler), sync);
+observing::syncable background::observe_alpha(observing::caller<float>::handler_f &&handler) {
+    return this->_alpha->observe(std::move(handler));
 }
 
 std::shared_ptr<background> background::make_shared() {

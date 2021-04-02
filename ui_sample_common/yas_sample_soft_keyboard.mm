@@ -95,7 +95,7 @@ ui::node_ptr const &sample::soft_keyboard::node() {
     return this->_root_node;
 }
 
-observing::canceller_ptr sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
+observing::cancellable_ptr sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
     return this->_key_notifier->observe(std::move(handler));
 }
 
@@ -140,7 +140,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     for (auto const &key : keys) {
         sample::soft_key_ptr soft_key = sample::soft_key::make_shared(key, key_width, this->_font_atlas);
 
-        observing::canceller_ptr canceller = soft_key->button()->observe([this, key](auto const &context) {
+        observing::cancellable_ptr canceller = soft_key->button()->observe([this, key](auto const &context) {
             if (context.method == ui::button::method::ended) {
                 this->_key_notifier->notify(key);
             }

@@ -40,7 +40,7 @@ struct button final {
 
     void cancel_tracking();
 
-    [[nodiscard]] observing::canceller_ptr observe(observing::caller<context>::handler_f &&);
+    [[nodiscard]] observing::endable observe(observing::caller<context>::handler_f &&);
 
     [[nodiscard]] ui::rect_plane_ptr const &rect_plane();
 
