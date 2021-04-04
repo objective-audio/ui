@@ -28,30 +28,31 @@ button::button(region const &region, std::size_t const state_count)
     this->_update_rect_index();
 
     this->_rect_plane->node()
-        ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](renderer_ptr const &renderer) {
-                pool->cancel();
+        ->observe_renderer([this, pool = observing::canceller_pool::make_shared()](renderer_ptr const &renderer) {
+            pool->cancel();
 
-                if (renderer) {
-                    renderer->event_manager()
-                        ->observe([this](auto const &event) {
-                            if (event->type() == event_type::touch) {
-                                this->_update_tracking(event);
-                            }
-                        })
-                        ->add_to(*pool);
+            if (renderer) {
+                renderer->event_manager()
+                    ->observe([this](auto const &event) {
+                        if (event->type() == event_type::touch) {
+                            this->_update_tracking(event);
+                        }
+                    })
+                    .end()
+                    ->add_to(*pool);
 
-                    this->_make_leave_chains()->add_to(*pool);
-                    this->_make_collider_chains()->add_to(*pool);
-                }
-            },
-            false)
+                this->_make_leave_chains()->add_to(*pool);
+                this->_make_collider_chains()->add_to(*pool);
+            }
+        })
+        .end()
         ->add_to(this->_pool);
 
     this->_layout_guide_rect
-        ->observe([this, state_count = this->_state_count](
-                      ui::region const &value) { this->_update_rect_positions(value, state_count); },
-                  false)
+        ->observe([this, state_count = this->_state_count](ui::region const &value) {
+            this->_update_rect_positions(value, state_count);
+        })
+        .end()
         ->add_to(this->_pool);
 }
 
@@ -89,7 +90,7 @@ void button::cancel_tracking() {
     }
 }
 
-observing::canceller_ptr button::observe(observing::caller<context>::handler_f &&handler) {
+observing::endable button::observe(observing::caller<context>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
@@ -141,50 +142,45 @@ observing::cancellable_ptr button::_make_leave_chains() {
 
     auto pool = observing::canceller_pool::make_shared();
 
-    node->observe_position(
-            [this](auto const &) {
-                if (auto tracking_event = this->_tracking_event) {
-                    this->_leave_or_enter_or_move_tracking(tracking_event);
-                }
-            },
-            false)
+    node->observe_position([this](auto const &) {
+            if (auto tracking_event = this->_tracking_event) {
+                this->_leave_or_enter_or_move_tracking(tracking_event);
+            }
+        })
+        .end()
         ->add_to(*pool);
-    node->observe_angle(
-            [this](auto const &) {
-                if (auto tracking_event = this->_tracking_event) {
-                    this->_leave_or_enter_or_move_tracking(tracking_event);
-                }
-            },
-            false)
+    node->observe_angle([this](auto const &) {
+            if (auto tracking_event = this->_tracking_event) {
+                this->_leave_or_enter_or_move_tracking(tracking_event);
+            }
+        })
+        .end()
         ->add_to(*pool);
-    node->observe_scale(
-            [this](auto const &) {
-                if (auto tracking_event = this->_tracking_event) {
-                    this->_leave_or_enter_or_move_tracking(tracking_event);
-                }
-            },
-            false)
+    node->observe_scale([this](auto const &) {
+            if (auto tracking_event = this->_tracking_event) {
+                this->_leave_or_enter_or_move_tracking(tracking_event);
+            }
+        })
+        .end()
         ->add_to(*pool);
 
-    node->observe_collider(
-            [this](collider_ptr const &value) {
-                if (!value) {
-                    if (auto tracking_event = this->_tracking_event) {
-                        this->_cancel_tracking(tracking_event);
-                    }
+    node->observe_collider([this](collider_ptr const &value) {
+            if (!value) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_cancel_tracking(tracking_event);
                 }
-            },
-            false)
+            }
+        })
+        .end()
         ->add_to(*pool);
-    node->observe_is_enabled(
-            [this](bool const &value) {
-                if (!value) {
-                    if (auto tracking_event = this->_tracking_event) {
-                        this->_cancel_tracking(tracking_event);
-                    }
+    node->observe_is_enabled([this](bool const &value) {
+            if (!value) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_cancel_tracking(tracking_event);
                 }
-            },
-            true)
+            }
+        })
+        .sync()
         ->add_to(*pool);
 
     return pool;
@@ -196,27 +192,25 @@ observing::cancellable_ptr button::_make_collider_chains() {
     auto pool = observing::canceller_pool::make_shared();
 
     node->collider()
-        ->observe_shape(
-            [this](shape_ptr const &shape) {
-                if (!shape) {
-                    if (auto tracking_event = this->_tracking_event) {
-                        this->_cancel_tracking(tracking_event);
-                    }
+        ->observe_shape([this](shape_ptr const &shape) {
+            if (!shape) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_cancel_tracking(tracking_event);
                 }
-            },
-            false)
+            }
+        })
+        .end()
         ->add_to(*pool);
 
     node->collider()
-        ->observe_enabled(
-            [this](bool const &enabled) {
-                if (!enabled) {
-                    if (auto tracking_event = this->_tracking_event) {
-                        this->_cancel_tracking(tracking_event);
-                    }
+        ->observe_enabled([this](bool const &enabled) {
+            if (!enabled) {
+                if (auto tracking_event = this->_tracking_event) {
+                    this->_cancel_tracking(tracking_event);
                 }
-            },
-            false)
+            }
+        })
+        .end()
         ->add_to(*pool);
 
     return pool;

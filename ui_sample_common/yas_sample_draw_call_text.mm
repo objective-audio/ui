@@ -13,7 +13,7 @@ sample::draw_call_text::draw_call_text(ui::font_atlas_ptr const &font_atlas)
         ->node()
         ->observe_renderer(
             [this, layouts_pool = observing::canceller_pool_ptr{nullptr},
-             strings_observer = observing::canceller_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
+             strings_observer = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
                 if (renderer) {
                     auto const &strings = this->strings();
                     auto &strings_guide_rect = strings->frame_layout_guide_rect();

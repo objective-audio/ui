@@ -43,9 +43,8 @@ struct texture : metal_object {
 
     [[nodiscard]] std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
-    [[nodiscard]] observing::canceller_ptr observe_metal_texture_changed(
-        observing::caller<std::nullptr_t>::handler_f &&);
-    [[nodiscard]] observing::canceller_ptr observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
+    [[nodiscard]] observing::endable observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&);
+    [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
@@ -66,7 +65,7 @@ struct texture : metal_object {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<texture_element_ptr> _texture_elements;
-    observing::canceller_ptr _scale_canceller = nullptr;
+    observing::cancellable_ptr _scale_canceller = nullptr;
     observing::notifier_ptr<std::nullptr_t> const _texture_notifier =
         observing::notifier<std::nullptr_t>::make_shared();
     observing::notifier_ptr<std::nullptr_t> const _size_notifier = observing::notifier<std::nullptr_t>::make_shared();

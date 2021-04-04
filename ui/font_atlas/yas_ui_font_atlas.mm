@@ -47,20 +47,22 @@ font_atlas::font_atlas(args &&args)
         observing::fetcher<texture_ptr>::make_shared([this]() { return std::optional<texture_ptr>{this->texture()}; });
 
     this->_texture
-        ->observe(
-            [this](texture_ptr const &texture) {
-                this->_update_word_infos();
+        ->observe([this](texture_ptr const &texture) {
+            this->_update_word_infos();
 
-                if (texture) {
-                    this->_texture_canceller = texture->observe_metal_texture_changed(
-                        [this](auto const &) { this->_texture_updated_notifier->notify(this->_texture->value()); });
-                } else {
-                    this->_texture_canceller = std::nullopt;
-                }
+            if (texture) {
+                this->_texture_canceller = texture
+                                               ->observe_metal_texture_changed([this](auto const &) {
+                                                   this->_texture_updated_notifier->notify(this->_texture->value());
+                                               })
+                                               .end();
+            } else {
+                this->_texture_canceller = std::nullopt;
+            }
 
-                this->_texture_changed_fetcher->push();
-            },
-            true)
+            this->_texture_changed_fetcher->push();
+        })
+        .sync()
         ->set_to(this->_texture_changed_canceller);
 }
 
@@ -136,12 +138,11 @@ void font_atlas::set_texture(texture_ptr const &texture) {
     }
 }
 
-observing::canceller_ptr font_atlas::observe_texture(observing::caller<texture_ptr>::handler_f &&handler,
-                                                     bool const sync) {
-    return this->_texture_changed_fetcher->observe(std::move(handler), sync);
+observing::syncable font_atlas::observe_texture(observing::caller<texture_ptr>::handler_f &&handler) {
+    return this->_texture_changed_fetcher->observe(std::move(handler));
 }
 
-observing::canceller_ptr font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
+observing::endable font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 
@@ -205,9 +206,11 @@ void font_atlas::_update_word_infos() {
                 CGContextRestoreGState(ctx);
             });
 
-        this->_element_cancellers.emplace_back(texture_element->observe_tex_coords(
-            [this, idx](uint_region const &tex_coords) { this->_word_infos.at(idx).rect.set_tex_coord(tex_coords); },
-            true));
+        this->_element_cancellers.emplace_back(texture_element
+                                                   ->observe_tex_coords([this, idx](uint_region const &tex_coords) {
+                                                       this->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
+                                                   })
+                                                   .sync());
 
         auto const &advance = advances[idx];
         this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};

@@ -55,6 +55,7 @@ render_target::render_target()
                 [renderPassDescriptor.colorAttachments setObject:nil atIndexedSubscript:0];
             }
         })
+        .end()
         ->add_to(this->_pool);
 
     this->_dst_texture
@@ -63,25 +64,25 @@ render_target::render_target()
             this->_data->set_rect_tex_coords(uint_region{.origin = uint_point::zero(), .size = texture->actual_size()},
                                              0);
         })
+        .end()
         ->add_to(this->_pool);
 
     this->_layout_guide_rect
-        ->observe(
-            [this](region const &region) {
-                uint_size size{.width = static_cast<uint32_t>(region.size.width),
-                               .height = static_cast<uint32_t>(region.size.height)};
+        ->observe([this](region const &region) {
+            uint_size size{.width = static_cast<uint32_t>(region.size.width),
+                           .height = static_cast<uint32_t>(region.size.height)};
 
-                this->_src_texture->set_point_size(size);
-                this->_dst_texture->set_point_size(size);
+            this->_src_texture->set_point_size(size);
+            this->_dst_texture->set_point_size(size);
 
-                this->_projection_matrix =
-                    matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
+            this->_projection_matrix =
+                matrix::ortho(region.left(), region.right(), region.bottom(), region.top(), -1.0f, 1.0f);
 
-                this->_data->set_rect_position(region, 0);
+            this->_data->set_rect_position(region, 0);
 
-                this->_set_updated(render_target_update_reason::region);
-            },
-            false)
+            this->_set_updated(render_target_update_reason::region);
+        })
+        .end()
         ->add_to(this->_pool);
 }
 
@@ -118,7 +119,7 @@ effect_ptr const &render_target::effect() const {
 
 void render_target::sync_scale_from_renderer(renderer_ptr const &renderer) {
     this->_scale_canceller =
-        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }, true);
+        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 setup_metal_result render_target::metal_setup(std::shared_ptr<metal_system> const &metal_system) {

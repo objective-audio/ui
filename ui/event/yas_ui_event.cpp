@@ -180,7 +180,7 @@ event_manager::event_manager() {
 
 event_manager::~event_manager() = default;
 
-observing::canceller_ptr event_manager::observe(observing::caller<event_ptr>::handler_f &&handler) {
+observing::endable event_manager::observe(observing::caller<event_ptr>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 

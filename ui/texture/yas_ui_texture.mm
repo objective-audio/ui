@@ -101,18 +101,17 @@ metal_texture_ptr const &texture::metal_texture() const {
     return this->_metal_texture;
 }
 
-observing::canceller_ptr texture::observe_metal_texture_changed(
-    observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable texture::observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&handler) {
     return this->_texture_notifier->observe(std::move(handler));
 }
 
-observing::canceller_ptr texture::observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable texture::observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&handler) {
     return this->_size_notifier->observe(std::move(handler));
 }
 
 void texture::sync_scale_from_renderer(renderer_ptr const &renderer) {
     this->_scale_canceller =
-        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }, true);
+        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &metal_system) {

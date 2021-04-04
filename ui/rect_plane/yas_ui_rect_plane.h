@@ -50,7 +50,7 @@ struct rect_plane_data final {
 
    private:
     ui::dynamic_mesh_data_ptr _dynamic_mesh_data;
-    std::vector<observing::canceller_ptr> _element_cancellers;
+    std::vector<observing::cancellable_ptr> _element_cancellers;
 
     explicit rect_plane_data(ui::dynamic_mesh_data_ptr mesh_data);
 

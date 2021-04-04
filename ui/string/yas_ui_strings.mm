@@ -70,43 +70,41 @@ rect_plane_ptr const &strings::rect_plane() {
     return this->_rect_plane;
 }
 
-observing::canceller_ptr strings::observe_text(observing::caller<std::string>::handler_f &&handler, bool const sync) {
-    return this->_text->observe(std::move(handler), sync);
+observing::syncable strings::observe_text(observing::caller<std::string>::handler_f &&handler) {
+    return this->_text->observe(std::move(handler));
 }
 
-observing::canceller_ptr strings::observe_font_atlas(observing::caller<font_atlas_ptr>::handler_f &&handler,
-                                                     bool const sync) {
-    return this->_font_atlas->observe(std::move(handler), sync);
+observing::syncable strings::observe_font_atlas(observing::caller<font_atlas_ptr>::handler_f &&handler) {
+    return this->_font_atlas->observe(std::move(handler));
 }
 
-observing::canceller_ptr strings::observe_line_height(observing::caller<std::optional<float>>::handler_f &&handler,
-                                                      bool const sync) {
-    return this->_line_height->observe(std::move(handler), sync);
+observing::syncable strings::observe_line_height(observing::caller<std::optional<float>>::handler_f &&handler) {
+    return this->_line_height->observe(std::move(handler));
 }
 
-observing::canceller_ptr strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler,
-                                                    bool const sync) {
-    return this->_collection_layout->observe_alignment(std::move(handler), sync);
+observing::syncable strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
+    return this->_collection_layout->observe_alignment(std::move(handler));
 }
 
 void strings::_prepare_chains() {
     this->_font_atlas
-        ->observe(
-            [this](font_atlas_ptr const &font_atras) {
-                this->_update_texture_observing();
-                this->_update_layout();
-            },
-            true)
+        ->observe([this](font_atlas_ptr const &font_atras) {
+            this->_update_texture_observing();
+            this->_update_layout();
+        })
+        .sync()
         ->add_to(this->_property_pool);
 
-    this->_text->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_property_pool);
+    this->_text->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
 
-    this->_line_height->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_property_pool);
+    this->_line_height->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
 
-    this->_collection_layout->observe_actual_cell_count([this](auto const &) { this->_update_layout(); }, false)
+    this->_collection_layout->observe_actual_cell_count([this](auto const &) { this->_update_layout(); })
+        .end()
         ->add_to(this->_property_pool);
 
-    this->_collection_layout->observe_alignment([this](auto const &) { this->_update_layout(); }, false)
+    this->_collection_layout->observe_alignment([this](auto const &) { this->_update_layout(); })
+        .end()
         ->add_to(this->_property_pool);
 }
 
@@ -114,15 +112,15 @@ void strings::_update_texture_observing() {
     if (auto &font_atlas = this->_font_atlas->value()) {
         if (!this->_texture_pool.has_cancellable()) {
             font_atlas
-                ->observe_texture(
-                    [this](auto const &texture) {
-                        this->rect_plane()->node()->mesh()->set_texture(texture);
-                        this->_update_layout();
-                    },
-                    true)
+                ->observe_texture([this](auto const &texture) {
+                    this->rect_plane()->node()->mesh()->set_texture(texture);
+                    this->_update_layout();
+                })
+                .sync()
                 ->add_to(this->_texture_pool);
 
             font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
+                .end()
                 ->add_to(this->_texture_pool);
         }
     } else {
@@ -198,7 +196,8 @@ void strings::_update_layout() {
         auto const word = eliminated_text.substr(idx, 1);
         auto const &cell_rect = this->_collection_layout->cell_guide_rects().at(idx);
 
-        cell_rect->observe([idx, word, handler](region const &value) { handler(idx, word, value); }, false)
+        cell_rect->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
+            .end()
             ->add_to(this->_cell_rect_pool);
 
         handler(idx, word, cell_rect->region());

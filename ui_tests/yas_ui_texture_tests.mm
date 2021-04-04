@@ -129,7 +129,7 @@ using namespace yas;
 
     bool called = false;
 
-    auto canceller = element->observe_tex_coords([&called](auto const &) { called = true; }, false);
+    auto canceller = element->observe_tex_coords([&called](auto const &) { called = true; }).end();
 
     XCTAssertFalse(called);
 

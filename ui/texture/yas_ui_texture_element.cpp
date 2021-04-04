@@ -22,9 +22,8 @@ uint_region const &texture_element::tex_coords() const {
     return this->_tex_coords->value();
 }
 
-observing::canceller_ptr texture_element::observe_tex_coords(observing::caller<uint_region>::handler_f &&handler,
-                                                             bool const sync) {
-    return this->_tex_coords->observe(std::move(handler), sync);
+observing::syncable texture_element::observe_tex_coords(observing::caller<uint_region>::handler_f &&handler) {
+    return this->_tex_coords->observe(std::move(handler));
 }
 
 texture_element_ptr texture_element::make_shared(draw_pair_t &&pair) {

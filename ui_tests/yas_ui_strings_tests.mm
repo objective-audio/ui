@@ -115,7 +115,7 @@ using namespace yas;
 
     std::string notified;
 
-    auto canceller = strings->observe_text([&notified](std::string const &text) { notified = text; }, true);
+    auto canceller = strings->observe_text([&notified](std::string const &text) { notified = text; }).sync();
 
     XCTAssertEqual(notified, "a");
 
@@ -130,7 +130,8 @@ using namespace yas;
     ui::font_atlas_ptr notified = nullptr;
 
     auto canceller =
-        strings->observe_font_atlas([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; }, true);
+        strings->observe_font_atlas([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; })
+            .sync();
 
     XCTAssertFalse(notified);
 
@@ -148,8 +149,9 @@ using namespace yas;
 
     std::optional<float> notified = std::nullopt;
 
-    auto observer = strings->observe_line_height(
-        [&notified](std::optional<float> const &line_height) { notified = line_height; }, true);
+    auto observer =
+        strings->observe_line_height([&notified](std::optional<float> const &line_height) { notified = line_height; })
+            .sync();
 
     XCTAssertFalse(notified);
 
@@ -165,7 +167,7 @@ using namespace yas;
     ui::layout_alignment notified;
 
     auto canceller =
-        strings->observe_alignment([&notified](ui::layout_alignment const &alignment) { notified = alignment; }, true);
+        strings->observe_alignment([&notified](ui::layout_alignment const &alignment) { notified = alignment; }).sync();
 
     XCTAssertEqual(notified, ui::layout_alignment::min);
 

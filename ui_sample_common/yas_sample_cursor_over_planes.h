@@ -17,7 +17,7 @@ struct cursor_over_planes {
    private:
     ui::node_ptr root_node = ui::node::make_shared();
     std::vector<ui::node_ptr> _nodes;
-    observing::canceller_ptr _renderer_canceller = nullptr;
+    observing::cancellable_ptr _renderer_canceller = nullptr;
 
     cursor_over_planes();
 

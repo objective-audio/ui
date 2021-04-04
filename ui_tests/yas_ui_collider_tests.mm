@@ -125,7 +125,7 @@ using namespace yas;
 
     ui::shape_ptr received{nullptr};
 
-    auto observer = collider->observe_shape([&received](ui::shape_ptr const &shape) { received = shape; }, false);
+    auto observer = collider->observe_shape([&received](ui::shape_ptr const &shape) { received = shape; }).end();
 
     collider->set_shape(ui::shape::make_shared(ui::anywhere_shape{}));
 
@@ -138,7 +138,7 @@ using namespace yas;
 
     bool received = true;
 
-    auto observer = collider->observe_enabled([&received](bool const &enabled) { received = enabled; }, false);
+    auto observer = collider->observe_enabled([&received](bool const &enabled) { received = enabled; }).end();
 
     collider->set_enabled(false);
 

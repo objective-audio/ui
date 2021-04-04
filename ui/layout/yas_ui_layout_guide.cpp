@@ -40,33 +40,25 @@ void layout_guide::pop_notify_waiting() {
     }
 }
 
-observing::cancellable_ptr layout_guide::observe(observing::caller<float>::handler_f &&handler, bool const sync) {
-    auto pool = observing::canceller_pool::make_shared();
+observing::syncable layout_guide::observe(observing::caller<float>::handler_f &&handler) {
+    auto value_syncable = this->_value->observe([handler, this](float const &value) {
+        if (this->_wait_count->value() == 0) {
+            handler(value);
+        }
+    });
 
-    this->_value
-        ->observe(
-            [handler, this](float const &value) {
-                if (this->_wait_count->value() == 0) {
-                    handler(value);
-                }
-            },
-            sync)
-        ->add_to(*pool);
+    auto wait_count_endable = this->_wait_count->observe([handler, this](int32_t const &count) {
+        if (count == 0) {
+            if (this->_pushed_value.has_value() && this->_pushed_value.value() == this->_value->value()) {
+                return;
+            }
+            handler(this->_value->value());
+        }
+    });
 
-    this->_wait_count
-        ->observe(
-            [handler, this](int32_t const &count) {
-                if (count == 0) {
-                    if (this->_pushed_value.has_value() && this->_pushed_value.value() == this->_value->value()) {
-                        return;
-                    }
-                    handler(this->_value->value());
-                }
-            },
-            false)
-        ->add_to(*pool);
+    value_syncable.merge(std::move(wait_count_endable));
 
-    return pool;
+    return value_syncable;
 }
 
 std::shared_ptr<layout_guide> layout_guide::make_shared() {
@@ -124,14 +116,11 @@ void layout_guide_point::pop_notify_waiting() {
     this->_y_guide->pop_notify_waiting();
 }
 
-observing::cancellable_ptr layout_guide_point::observe(observing::caller<ui::point>::handler_f &&handler,
-                                                       bool const sync) {
-    auto pool = observing::canceller_pool::make_shared();
-
-    this->_x_guide->observe([this, handler](float const &) { handler(this->point()); }, false)->add_to(*pool);
-    this->_y_guide->observe([this, handler](float const &) { handler(this->point()); }, sync)->add_to(*pool);
-
-    return pool;
+observing::syncable layout_guide_point::observe(observing::caller<ui::point>::handler_f &&handler) {
+    auto x_endable = this->_x_guide->observe([this, handler](float const &) { handler(this->point()); }).to_endable();
+    auto y_syncable = this->_y_guide->observe([this, handler](float const &) { handler(this->point()); });
+    y_syncable.merge(std::move(x_endable));
+    return y_syncable;
 }
 
 std::shared_ptr<layout_guide_point> layout_guide_point::make_shared() {
@@ -148,10 +137,14 @@ layout_guide_range::layout_guide_range(ui::range &&range)
     : _min_guide(layout_guide::make_shared(range.min())),
       _max_guide(layout_guide::make_shared(range.max())),
       _length_guide(layout_guide::make_shared(range.length)) {
-    this->_min_canceller = this->_min_guide->observe(
-        [this](float const &min) { this->_length_guide->set_value(this->max()->value() - min); }, false);
-    this->_max_canceller = this->_max_guide->observe(
-        [this](float const &max) { this->_length_guide->set_value(max - this->min()->value()); }, false);
+    this->_min_canceller =
+        this->_min_guide
+            ->observe([this](float const &min) { this->_length_guide->set_value(this->max()->value() - min); })
+            .end();
+    this->_max_canceller =
+        this->_max_guide
+            ->observe([this](float const &max) { this->_length_guide->set_value(max - this->min()->value()); })
+            .end();
 }
 
 layout_guide_range::~layout_guide_range() = default;
@@ -204,14 +197,12 @@ void layout_guide_range::pop_notify_waiting() {
     this->_length_guide->pop_notify_waiting();
 }
 
-observing::cancellable_ptr layout_guide_range::observe(observing::caller<ui::range>::handler_f &&handler,
-                                                       bool const sync) {
-    auto pool = observing::canceller_pool::make_shared();
-
-    this->_min_guide->observe([this, handler](float const &) { handler(this->range()); }, false)->add_to(*pool);
-    this->_max_guide->observe([this, handler](float const &) { handler(this->range()); }, sync)->add_to(*pool);
-
-    return pool;
+observing::syncable layout_guide_range::observe(observing::caller<ui::range>::handler_f &&handler) {
+    auto min_endable =
+        this->_min_guide->observe([this, handler](float const &) { handler(this->range()); }).to_endable();
+    auto max_syncable = this->_max_guide->observe([this, handler](float const &) { handler(this->range()); });
+    max_syncable.merge(std::move(min_endable));
+    return max_syncable;
 }
 
 std::shared_ptr<layout_guide_range> layout_guide_range::make_shared() {
@@ -329,14 +320,12 @@ void layout_guide_rect::pop_notify_waiting() {
     this->_horizontal_range->pop_notify_waiting();
 }
 
-observing::cancellable_ptr layout_guide_rect::observe(observing::caller<ui::region>::handler_f &&handler,
-                                                      bool const sync) {
-    auto pool = observing::canceller_pool::make_shared();
-
-    this->_vertical_range->observe([this, handler](range const &) { handler(this->region()); }, false)->add_to(*pool);
-    this->_horizontal_range->observe([this, handler](range const &) { handler(this->region()); }, sync)->add_to(*pool);
-
-    return pool;
+observing::syncable layout_guide_rect::observe(observing::caller<ui::region>::handler_f &&handler) {
+    auto v_endable =
+        this->_vertical_range->observe([this, handler](range const &) { handler(this->region()); }).to_endable();
+    auto h_syncable = this->_horizontal_range->observe([this, handler](range const &) { handler(this->region()); });
+    h_syncable.merge(std::move(v_endable));
+    return h_syncable;
 }
 
 std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared() {

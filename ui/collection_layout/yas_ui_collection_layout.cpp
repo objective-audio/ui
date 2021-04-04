@@ -58,41 +58,45 @@ collection_layout::collection_layout(args args)
     }
 
     this->frame_guide_rect->left()
-        ->observe([this, adding = borders.left](
-                      float const &value) { this->_border_guide_rect->left()->set_value(value + adding); },
-                  true)
+        ->observe([this, adding = borders.left](float const &value) {
+            this->_border_guide_rect->left()->set_value(value + adding);
+        })
+        .sync()
         ->add_to(this->_pool);
 
     this->frame_guide_rect->right()
-        ->observe([this, adding = -borders.right](
-                      float const &value) { this->_border_guide_rect->right()->set_value(value + adding); },
-                  true)
+        ->observe([this, adding = -borders.right](float const &value) {
+            this->_border_guide_rect->right()->set_value(value + adding);
+        })
+        .sync()
         ->add_to(this->_pool);
 
     this->frame_guide_rect->bottom()
-        ->observe([this, adding = borders.bottom](
-                      float const &value) { this->_border_guide_rect->bottom()->set_value(value + adding); },
-                  true)
+        ->observe([this, adding = borders.bottom](float const &value) {
+            this->_border_guide_rect->bottom()->set_value(value + adding);
+        })
+        .sync()
         ->add_to(this->_pool);
 
     this->frame_guide_rect->top()
-        ->observe([this, adding = -borders.top](
-                      float const &value) { this->_border_guide_rect->top()->set_value(value + adding); },
-                  true)
+        ->observe([this, adding = -borders.top](float const &value) {
+            this->_border_guide_rect->top()->set_value(value + adding);
+        })
+        .sync()
         ->add_to(this->_pool);
 
-    this->frame_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_border_guide_rect->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->frame_guide_rect->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_border_guide_rect->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
 
-    this->_row_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_col_spacing->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_alignment->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_direction->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_row_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_col_order->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_default_cell_size->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
-    this->_lines->observe([this](auto const &) { this->_update_layout(); }, false)->add_to(this->_pool);
+    this->_row_spacing->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_col_spacing->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_alignment->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_direction->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_row_order->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_col_order->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_preferred_cell_count->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_default_cell_size->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_lines->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
 
     this->_update_layout();
 }
@@ -109,18 +113,17 @@ std::size_t collection_layout::preferred_cell_count() const {
     return this->_preferred_cell_count->value();
 }
 
-observing::canceller_ptr collection_layout::observe_preferred_cell_count(
-    observing::caller<std::size_t>::handler_f &&handler, bool const &sync) {
-    return this->_preferred_cell_count->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_preferred_cell_count(
+    observing::caller<std::size_t>::handler_f &&handler) {
+    return this->_preferred_cell_count->observe(std::move(handler));
 }
 
 std::size_t collection_layout::actual_cell_count() const {
     return this->_actual_cell_count->value();
 }
 
-observing::canceller_ptr collection_layout::observe_actual_cell_count(
-    observing::caller<std::size_t>::handler_f &&handler, bool const &sync) {
-    return this->_actual_cell_count->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_actual_cell_count(observing::caller<std::size_t>::handler_f &&handler) {
+    return this->_actual_cell_count->observe(std::move(handler));
 }
 
 void collection_layout::set_default_cell_size(size const &size) {
@@ -135,9 +138,8 @@ size collection_layout::default_cell_size() const {
     return this->_default_cell_size->value();
 }
 
-observing::canceller_ptr collection_layout::observe_default_cell_size(observing::caller<size>::handler_f &&handler,
-                                                                      bool const &sync) {
-    return this->_default_cell_size->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_default_cell_size(observing::caller<size>::handler_f &&handler) {
+    return this->_default_cell_size->observe(std::move(handler));
 }
 
 void collection_layout::set_lines(std::vector<collection_layout::line> const &lines) {
@@ -152,9 +154,9 @@ std::vector<collection_layout::line> const &collection_layout::lines() const {
     return this->_lines->value();
 }
 
-observing::canceller_ptr collection_layout::observe_lines(
-    observing::caller<std::vector<collection_layout::line>>::handler_f &&handler, bool const &sync) {
-    return this->_lines->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_lines(
+    observing::caller<std::vector<collection_layout::line>>::handler_f &&handler) {
+    return this->_lines->observe(std::move(handler));
 }
 
 void collection_layout::set_row_spacing(float const &spacing) {
@@ -169,9 +171,8 @@ float const &collection_layout::row_spacing() const {
     return this->_row_spacing->value();
 }
 
-observing::canceller_ptr collection_layout::observe_row_spacing(observing::caller<float>::handler_f &&handler,
-                                                                bool const &sync) {
-    return this->_row_spacing->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_row_spacing(observing::caller<float>::handler_f &&handler) {
+    return this->_row_spacing->observe(std::move(handler));
 }
 
 void collection_layout::set_col_spacing(float const &spacing) {
@@ -186,9 +187,8 @@ float const &collection_layout::col_spacing() const {
     return this->_col_spacing->value();
 }
 
-observing::canceller_ptr collection_layout::observe_col_spacing(observing::caller<float>::handler_f &&handler,
-                                                                bool const &sync) {
-    return this->_col_spacing->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_col_spacing(observing::caller<float>::handler_f &&handler) {
+    return this->_col_spacing->observe(std::move(handler));
 }
 
 void collection_layout::set_alignment(layout_alignment const &alignment) {
@@ -203,9 +203,8 @@ layout_alignment const &collection_layout::alignment() const {
     return this->_alignment->value();
 }
 
-observing::canceller_ptr collection_layout::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler,
-                                                              bool const &sync) {
-    return this->_alignment->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
+    return this->_alignment->observe(std::move(handler));
 }
 
 void collection_layout::set_direction(layout_direction const &direction) {
@@ -220,9 +219,8 @@ layout_direction const &collection_layout::direction() const {
     return this->_direction->value();
 }
 
-observing::canceller_ptr collection_layout::observe_direction(observing::caller<layout_direction>::handler_f &&handler,
-                                                              bool const &sync) {
-    return this->_direction->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_direction(observing::caller<layout_direction>::handler_f &&handler) {
+    return this->_direction->observe(std::move(handler));
 }
 
 void collection_layout::set_row_order(layout_order const &order) {
@@ -237,9 +235,8 @@ layout_order const &collection_layout::row_order() const {
     return this->_row_order->value();
 }
 
-observing::canceller_ptr collection_layout::observe_row_order(observing::caller<layout_order>::handler_f &&handler,
-                                                              bool const &sync) {
-    return this->_row_order->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_row_order(observing::caller<layout_order>::handler_f &&handler) {
+    return this->_row_order->observe(std::move(handler));
 }
 
 void collection_layout::set_col_order(layout_order const &order) {
@@ -254,9 +251,8 @@ layout_order const &collection_layout::col_order() const {
     return this->_col_order->value();
 }
 
-observing::canceller_ptr collection_layout::observe_col_order(observing::caller<layout_order>::handler_f &&handler,
-                                                              bool const &sync) {
-    return this->_col_order->observe(std::move(handler), sync);
+observing::syncable collection_layout::observe_col_order(observing::caller<layout_order>::handler_f &&handler) {
+    return this->_col_order->observe(std::move(handler));
 }
 
 std::vector<layout_guide_rect_ptr> const &collection_layout::cell_guide_rects() const {

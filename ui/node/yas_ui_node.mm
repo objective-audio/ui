@@ -43,35 +43,39 @@ node::node()
       _enabled(observing::value::holder<bool>::make_shared(true)) {
     // enabled
 
-    this->_enabled->observe([this](bool const &) { this->_set_updated(node_update_reason::enabled); }, false)
+    this->_enabled->observe([this](bool const &) { this->_set_updated(node_update_reason::enabled); })
+        .end()
         ->add_to(this->_pool);
 
     // geometry
 
-    this->_position->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); }, false)
+    this->_position->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); })
+        .end()
         ->add_to(this->_pool);
-    this->_angle->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); }, false)
+    this->_angle->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); })
+        .end()
         ->add_to(this->_pool);
-    this->_scale->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); }, false)
+    this->_scale->observe([this](auto const &) { this->_set_updated(node_update_reason::geometry); })
+        .end()
         ->add_to(this->_pool);
 
     // mesh and mesh_color
 
     this->_mesh
-        ->observe(
-            [this](auto const &) {
-                this->_update_mesh_color();
-                this->_set_updated(node_update_reason::mesh);
-            },
-            true)
+        ->observe([this](auto const &) {
+            this->_update_mesh_color();
+            this->_set_updated(node_update_reason::mesh);
+        })
+        .sync()
         ->add_to(this->_pool);
 
-    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
-    this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }, false)->add_to(this->_pool);
+    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }).end()->add_to(this->_pool);
+    this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }).end()->add_to(this->_pool);
 
     // collider
 
-    this->_collider->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); }, false)
+    this->_collider->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); })
+        .end()
         ->add_to(this->_pool);
 
     // batch
@@ -90,14 +94,14 @@ node::node()
                 prev_batch = batch;
 
                 this->_set_updated(node_update_reason::batch);
-            },
-            false)
+            })
+        .end()
         ->add_to(this->_pool);
 
     // render_target
 
-    this->_render_target
-        ->observe([this](auto const &) { this->_set_updated(node_update_reason::render_target); }, false)
+    this->_render_target->observe([this](auto const &) { this->_set_updated(node_update_reason::render_target); })
+        .end()
         ->add_to(this->_pool);
 }
 
@@ -117,8 +121,8 @@ point const &node::position() const {
     return this->_position->value();
 }
 
-observing::canceller_ptr node::observe_position(observing::caller<point>::handler_f &&handler, bool const sync) {
-    return this->_position->observe(std::move(handler), sync);
+observing::syncable node::observe_position(observing::caller<point>::handler_f &&handler) {
+    return this->_position->observe(std::move(handler));
 }
 
 void node::set_angle(ui::angle &&angle) {
@@ -133,8 +137,8 @@ angle const &node::angle() const {
     return this->_angle->value();
 }
 
-observing::canceller_ptr node::observe_angle(observing::caller<ui::angle>::handler_f &&handler, bool const sync) {
-    return this->_angle->observe(std::move(handler), sync);
+observing::syncable node::observe_angle(observing::caller<ui::angle>::handler_f &&handler) {
+    return this->_angle->observe(std::move(handler));
 }
 
 void node::set_scale(size &&scale) {
@@ -149,8 +153,8 @@ size const &node::scale() const {
     return this->_scale->value();
 }
 
-observing::canceller_ptr node::observe_scale(observing::caller<size>::handler_f &&handler, bool const sync) {
-    return this->_scale->observe(std::move(handler), sync);
+observing::syncable node::observe_scale(observing::caller<size>::handler_f &&handler) {
+    return this->_scale->observe(std::move(handler));
 }
 
 void node::set_color(ui::color &&color) {
@@ -165,8 +169,8 @@ color const &node::color() const {
     return this->_color->value();
 }
 
-observing::canceller_ptr node::observe_color(observing::caller<ui::color>::handler_f &&handler, bool const sync) {
-    return this->_color->observe(std::move(handler), sync);
+observing::syncable node::observe_color(observing::caller<ui::color>::handler_f &&handler) {
+    return this->_color->observe(std::move(handler));
 }
 
 void node::set_alpha(float &&alpha) {
@@ -181,8 +185,8 @@ float const &node::alpha() const {
     return this->_alpha->value();
 }
 
-observing::canceller_ptr node::observe_alpha(observing::caller<float>::handler_f &&handler, bool const sync) {
-    return this->_alpha->observe(std::move(handler), sync);
+observing::syncable node::observe_alpha(observing::caller<float>::handler_f &&handler) {
+    return this->_alpha->observe(std::move(handler));
 }
 
 void node::set_is_enabled(bool &&is_enabled) {
@@ -197,8 +201,8 @@ bool const &node::is_enabled() const {
     return this->_enabled->value();
 }
 
-observing::canceller_ptr node::observe_is_enabled(observing::caller<bool>::handler_f &&handler, bool const sync) {
-    return this->_enabled->observe(std::move(handler), sync);
+observing::syncable node::observe_is_enabled(observing::caller<bool>::handler_f &&handler) {
+    return this->_enabled->observe(std::move(handler));
 }
 
 simd::float4x4 const &node::matrix() const {
@@ -219,8 +223,8 @@ mesh_ptr const &node::mesh() const {
     return this->_mesh->value();
 }
 
-observing::canceller_ptr node::observe_mesh(observing::caller<mesh_ptr>::handler_f &&handler, bool const sync) {
-    return this->_mesh->observe(std::move(handler), sync);
+observing::syncable node::observe_mesh(observing::caller<mesh_ptr>::handler_f &&handler) {
+    return this->_mesh->observe(std::move(handler));
 }
 
 void node::set_collider(collider_ptr const &collider) {
@@ -231,8 +235,8 @@ collider_ptr const &node::collider() const {
     return this->_collider->value();
 }
 
-observing::canceller_ptr node::observe_collider(observing::caller<collider_ptr>::handler_f &&handler, bool const sync) {
-    return this->_collider->observe(std::move(handler), sync);
+observing::syncable node::observe_collider(observing::caller<collider_ptr>::handler_f &&handler) {
+    return this->_collider->observe(std::move(handler));
 }
 
 void node::set_batch(batch_ptr const &batch) {
@@ -243,8 +247,8 @@ batch_ptr const &node::batch() const {
     return this->_batch->value();
 }
 
-observing::canceller_ptr node::observe_batch(observing::caller<batch_ptr>::handler_f &&handler, bool const sync) {
-    return this->_batch->observe(std::move(handler), sync);
+observing::syncable node::observe_batch(observing::caller<batch_ptr>::handler_f &&handler) {
+    return this->_batch->observe(std::move(handler));
 }
 
 void node::set_render_target(render_target_ptr const &render_target) {
@@ -255,9 +259,8 @@ render_target_ptr const &node::render_target() const {
     return this->_render_target->value();
 }
 
-observing::canceller_ptr node::observe_render_target(observing::caller<render_target_ptr>::handler_f &&handler,
-                                                     bool const sync) {
-    return this->_render_target->observe(std::move(handler), sync);
+observing::syncable node::observe_render_target(observing::caller<render_target_ptr>::handler_f &&handler) {
+    return this->_render_target->observe(std::move(handler));
 }
 
 void node::add_sub_node(node_ptr const &sub_node) {
@@ -294,32 +297,28 @@ renderer_ptr node::renderer() const {
     return this->_renderer->value().lock();
 }
 
-observing::canceller_ptr node::observe(observing::caller<method>::handler_f &&handler) {
+observing::endable node::observe(observing::caller<method>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
-observing::canceller_ptr node::observe_renderer(observing::caller<renderer_ptr>::handler_f &&handler, bool const sync) {
-    return this->_renderer->observe(
-        [handler = std::move(handler)](renderer_wptr const &weak_renderer) {
-            if (auto renderer = weak_renderer.lock()) {
-                handler(renderer);
-            } else {
-                handler(nullptr);
-            }
-        },
-        sync);
+observing::syncable node::observe_renderer(observing::caller<renderer_ptr>::handler_f &&handler) {
+    return this->_renderer->observe([handler = std::move(handler)](renderer_wptr const &weak_renderer) {
+        if (auto renderer = weak_renderer.lock()) {
+            handler(renderer);
+        } else {
+            handler(nullptr);
+        }
+    });
 }
 
-observing::canceller_ptr node::observe_parent(observing::caller<node_ptr>::handler_f &&handler, bool const sync) {
-    return this->_parent->observe(
-        [handler = std::move(handler)](node_wptr const &weak_node) {
-            if (auto node = weak_node.lock()) {
-                handler(node);
-            } else {
-                handler(nullptr);
-            }
-        },
-        sync);
+observing::syncable node::observe_parent(observing::caller<node_ptr>::handler_f &&handler) {
+    return this->_parent->observe([handler = std::move(handler)](node_wptr const &weak_node) {
+        if (auto node = weak_node.lock()) {
+            handler(node);
+        } else {
+            handler(nullptr);
+        }
+    });
 }
 
 point node::convert_position(point const &loc) const {
@@ -328,28 +327,28 @@ point node::convert_position(point const &loc) const {
 }
 
 void node::attach_x_layout_guide(layout_guide &guide) {
-    this->_x_canceller = guide.observe(
-        [this](float const &x) {
-            this->_position->set_value(point{x, this->position().y});
-        },
-        true);
+    this->_x_canceller =
+        guide.observe([this](float const &x) {
+                 this->_position->set_value(point{x, this->position().y});
+             })
+            .sync();
 
     this->_position_canceller = nullptr;
 }
 
 void node::attach_y_layout_guide(layout_guide &guide) {
-    this->_y_canceller = guide.observe(
-        [this](float const &y) {
-            this->_position->set_value(point{this->position().x, y});
-        },
-        true);
+    this->_y_canceller =
+        guide.observe([this](float const &y) {
+                 this->_position->set_value(point{this->position().x, y});
+             })
+            .sync();
 
     this->_position_canceller = nullptr;
 }
 
 void node::attach_position_layout_guides(layout_guide_point &guide_point) {
     this->_position_canceller =
-        guide_point.observe([this](auto const &position) { this->_position->set_value(position); }, true);
+        guide_point.observe([this](auto const &position) { this->_position->set_value(position); }).sync();
 
     this->_x_canceller = nullptr;
     this->_y_canceller = nullptr;

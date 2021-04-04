@@ -301,7 +301,7 @@ struct test_render_encoder : ui::render_encodable {
     auto node = ui::node::make_shared();
 
     auto observer =
-        node->observe_renderer([&notified](ui::renderer_ptr const &renderer) { notified = renderer; }, false);
+        node->observe_renderer([&notified](ui::renderer_ptr const &renderer) { notified = renderer; }).end();
 
     auto renderer = ui::renderer::make_shared();
 

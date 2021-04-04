@@ -25,7 +25,7 @@ using namespace yas;
     auto src_guide = ui::layout_guide::make_shared(0.5f);
     auto dst_guide = ui::layout_guide::make_shared(0.25f);
 
-    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 8.0f); }, true);
+    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 8.0f); }).sync();
 
     XCTAssertTrue(layout);
 
@@ -38,8 +38,11 @@ using namespace yas;
     auto src_guide_point = ui::layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
     auto dst_guide_point = ui::layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
 
-    auto layout = src_guide_point->observe(
-        [&dst_guide_point, distances](ui::point const &value) { dst_guide_point->set_point(value + distances); }, true);
+    auto layout = src_guide_point
+                      ->observe([&dst_guide_point, distances](ui::point const &value) {
+                          dst_guide_point->set_point(value + distances);
+                      })
+                      .sync();
 
     XCTAssertTrue(layout);
 
@@ -54,9 +57,11 @@ using namespace yas;
     auto src_guide_rect = ui::layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
     auto dst_guide_rect = ui::layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
 
-    auto layout = src_guide_rect->observe(
-        [&dst_guide_rect, distances](ui::region const &region) { dst_guide_rect->set_region(region + distances); },
-        true);
+    auto layout = src_guide_rect
+                      ->observe([&dst_guide_rect, distances](ui::region const &region) {
+                          dst_guide_rect->set_region(region + distances);
+                      })
+                      .sync();
 
     XCTAssertTrue(layout);
 
@@ -74,7 +79,7 @@ using namespace yas;
     auto src_guide = ui::layout_guide::make_shared(2.0f);
     auto dst_guide = ui::layout_guide::make_shared(-4.0f);
 
-    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 1.0f); }, true);
+    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 1.0f); }).sync();
 
     XCTAssertEqual(dst_guide->value(), 3.0f);
 
@@ -99,19 +104,19 @@ using namespace yas;
         }
     };
 
-    auto canceller0 = src_guide_0->observe(
-        [cache0, set_min](float const &value) {
-            *cache0 = value;
-            set_min();
-        },
-        true);
+    auto canceller0 = src_guide_0
+                          ->observe([cache0, set_min](float const &value) {
+                              *cache0 = value;
+                              set_min();
+                          })
+                          .sync();
 
-    auto canceller1 = src_guide_1->observe(
-        [cache1, set_min](float const &value) {
-            *cache1 = value;
-            set_min();
-        },
-        true);
+    auto canceller1 = src_guide_1
+                          ->observe([cache1, set_min](float const &value) {
+                              *cache1 = value;
+                              set_min();
+                          })
+                          .sync();
 
     XCTAssertEqual(dst_guide->value(), 1.0f);
 
@@ -142,19 +147,19 @@ using namespace yas;
         }
     };
 
-    auto canceller0 = src_guide_0->observe(
-        [cache0, set_max](float const &value) {
-            *cache0 = value;
-            set_max();
-        },
-        true);
+    auto canceller0 = src_guide_0
+                          ->observe([cache0, set_max](float const &value) {
+                              *cache0 = value;
+                              set_max();
+                          })
+                          .sync();
 
-    auto canceller1 = src_guide_1->observe(
-        [cache1, set_max](float const &value) {
-            *cache1 = value;
-            set_max();
-        },
-        true);
+    auto canceller1 = src_guide_1
+                          ->observe([cache1, set_max](float const &value) {
+                              *cache1 = value;
+                              set_max();
+                          })
+                          .sync();
 
     XCTAssertEqual(dst_guide->value(), 2.0f);
 

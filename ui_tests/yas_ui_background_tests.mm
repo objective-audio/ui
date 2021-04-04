@@ -43,7 +43,8 @@ using namespace yas;
 
     std::vector<ui::color> called;
 
-    auto canceller = background->observe_color([&called](ui::color const &color) { called.emplace_back(color); }, true);
+    auto canceller =
+        background->observe_color([&called](ui::color const &color) { called.emplace_back(color); }).sync();
 
     XCTAssertEqual(called.size(), 1);
     XCTAssertTrue(called.at(0) == (ui::color{.v = 1.0f}));
@@ -62,7 +63,7 @@ using namespace yas;
 
     std::vector<float> called;
 
-    auto canceller = background->observe_alpha([&called](float const &alpha) { called.emplace_back(alpha); }, true);
+    auto canceller = background->observe_alpha([&called](float const &alpha) { called.emplace_back(alpha); }).sync();
 
     XCTAssertEqual(called.size(), 1);
     XCTAssertEqual(called.at(0), 1.0f);
