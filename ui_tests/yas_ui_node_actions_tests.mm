@@ -29,8 +29,7 @@ using namespace yas;
     auto const action = ui::make_action({.target = target,
                                          .begin_position = {0.0f, -1.0f},
                                          .end_position = {1.0f, 1.0f},
-                                         .action = {.begin_time = time},
-                                         .continuous_action = {.duration = 1.0}});
+                                         .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     action->update(time);
 

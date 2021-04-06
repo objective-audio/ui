@@ -12,16 +12,17 @@ using namespace yas::ui;
 #pragma mark - translate_action
 
 std::shared_ptr<action> ui::make_action(translate_action::args args) {
-    args.action.target = args.target;
-    args.continuous_action.action = std::move(args.action);
-    args.continuous_action.value_updater = [args = std::move(args)](double const value) {
+    args.continuous_action.action.target = args.target;
+    auto continous_action = std::move(args.continuous_action);
+
+    continous_action.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
             target->set_position(
                 {.v = (args.end_position.v - args.begin_position.v) * (float)value + args.begin_position.v});
         }
     };
 
-    return action::make_continuous(std::move(args.continuous_action));
+    return action::make_continuous(std::move(continous_action));
 }
 
 #pragma mark - rotate_action

@@ -16,7 +16,6 @@ namespace translate_action {
         ui::point begin_position = {.v = 0.0f};
         ui::point end_position = {.v = 0.0f};
 
-        action::args action;
         action::continuous_args continuous_action;
     };
 }  // namespace translate_action
