@@ -13,70 +13,64 @@ sample::modifier_text::modifier_text(ui::font_atlas_ptr const &font_atlas, ui::l
       _bottom_guide(bottom_guide) {
     this->_strings->rect_plane()
         ->node()
-        ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-                pool->cancel();
+        ->observe_renderer([this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+            pool->cancel();
 
-                if (renderer) {
-                    renderer->event_manager()
-                        ->observe([this, flags = std::unordered_set<ui::modifier_flags>{}](auto const &event) mutable {
-                            if (event->type() == ui::event_type::modifier) {
-                                this->_update_text(event, flags);
-                            }
-                        })
-                        ->add_to(*pool);
+            if (renderer) {
+                renderer->event_manager()
+                    ->observe([this, flags = std::unordered_set<ui::modifier_flags>{}](auto const &event) mutable {
+                        if (event->type() == ui::event_type::modifier) {
+                            this->_update_text(event, flags);
+                        }
+                    })
+                    .end()
+                    ->add_to(*pool);
 
-                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
+                auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
 
-                    safe_area_guide_rect->left()
-                        ->observe(
-                            [this](float const &value) {
-                                this->_strings->frame_layout_guide_rect()->left()->set_value(value + 4.0f);
-                            },
-                            true)
-                        ->add_to(*pool);
+                safe_area_guide_rect->left()
+                    ->observe([this](float const &value) {
+                        this->_strings->frame_layout_guide_rect()->left()->set_value(value + 4.0f);
+                    })
+                    .sync()
+                    ->add_to(*pool);
 
-                    safe_area_guide_rect->right()
-                        ->observe(
-                            [this](float const &value) {
-                                this->_strings->frame_layout_guide_rect()->right()->set_value(value - 4.0f);
-                            },
-                            true)
-                        ->add_to(*pool);
+                safe_area_guide_rect->right()
+                    ->observe([this](float const &value) {
+                        this->_strings->frame_layout_guide_rect()->right()->set_value(value - 4.0f);
+                    })
+                    .sync()
+                    ->add_to(*pool);
 
-                    this->_bottom_guide
-                        ->observe(
-                            [this](float const &value) {
-                                this->_strings->frame_layout_guide_rect()->bottom()->set_value(value + 4.0f);
-                            },
-                            true)
-                        ->add_to(*pool);
+                this->_bottom_guide
+                    ->observe([this](float const &value) {
+                        this->_strings->frame_layout_guide_rect()->bottom()->set_value(value + 4.0f);
+                    })
+                    .sync()
+                    ->add_to(*pool);
 
-                    this->_strings
-                        ->observe_font_atlas(
-                            [this, top_layout =
-                                       observing::cancellable_ptr{nullptr}](ui::font_atlas_ptr const &value) mutable {
-                                float distance = 0.0f;
+                this->_strings
+                    ->observe_font_atlas([this, top_layout = observing::cancellable_ptr{nullptr}](
+                                             ui::font_atlas_ptr const &value) mutable {
+                        float distance = 0.0f;
 
-                                if (auto const &font_atlas = this->_strings->font_atlas()) {
-                                    distance += font_atlas->ascent() + font_atlas->descent();
-                                }
+                        if (auto const &font_atlas = this->_strings->font_atlas()) {
+                            distance += font_atlas->ascent() + font_atlas->descent();
+                        }
 
-                                this->_strings->frame_layout_guide_rect()
-                                    ->bottom()
-                                    ->observe(
-                                        [this, distance](float const &value) {
-                                            this->_strings->frame_layout_guide_rect()->top()->set_value(value +
-                                                                                                        distance);
-                                        },
-                                        true)
-                                    ->set_to(top_layout);
-                            },
-                            true)
-                        ->add_to(*pool);
-                }
-            },
-            false)
+                        this->_strings->frame_layout_guide_rect()
+                            ->bottom()
+                            ->observe([this, distance](float const &value) {
+                                this->_strings->frame_layout_guide_rect()->top()->set_value(value + distance);
+                            })
+                            .sync()
+                            ->set_to(top_layout);
+                    })
+                    .sync()
+                    ->add_to(*pool);
+            }
+        })
+        .end()
         ->set_to(this->_renderer_canceller);
 }
 

@@ -22,33 +22,30 @@ sample::draw_call_text::draw_call_text(ui::font_atlas_ptr const &font_atlas)
                     auto pool = observing::canceller_pool::make_shared();
 
                     safe_area_guide_rect->left()
-                        ->observe(
-                            [weak_rect = to_weak(strings_guide_rect)](float const &value) {
-                                if (auto const rect = weak_rect.lock()) {
-                                    rect->right()->set_value(value + 4.0f);
-                                }
-                            },
-                            true)
+                        ->observe([weak_rect = to_weak(strings_guide_rect)](float const &value) {
+                            if (auto const rect = weak_rect.lock()) {
+                                rect->right()->set_value(value + 4.0f);
+                            }
+                        })
+                        .sync()
                         ->add_to(*pool);
 
                     safe_area_guide_rect->right()
-                        ->observe(
-                            [weak_rect = to_weak(strings_guide_rect)](float const &value) {
-                                if (auto const rect = weak_rect.lock()) {
-                                    rect->right()->set_value(value - 4.0f);
-                                }
-                            },
-                            true)
+                        ->observe([weak_rect = to_weak(strings_guide_rect)](float const &value) {
+                            if (auto const rect = weak_rect.lock()) {
+                                rect->right()->set_value(value - 4.0f);
+                            }
+                        })
+                        .sync()
                         ->add_to(*pool);
 
                     safe_area_guide_rect->bottom()
-                        ->observe(
-                            [weak_rect = to_weak(strings_guide_rect)](float const &value) {
-                                if (auto const rect = weak_rect.lock()) {
-                                    rect->bottom()->set_value(value + 4.0f);
-                                }
-                            },
-                            true)
+                        ->observe([weak_rect = to_weak(strings_guide_rect)](float const &value) {
+                            if (auto const rect = weak_rect.lock()) {
+                                rect->bottom()->set_value(value + 4.0f);
+                            }
+                        })
+                        .sync()
                         ->add_to(*pool);
 
                     layouts_pool = pool;
@@ -64,32 +61,32 @@ sample::draw_call_text::draw_call_text(ui::font_atlas_ptr const &font_atlas)
 
                             strings->frame_layout_guide_rect()
                                 ->bottom()
-                                ->observe(
-                                    [weak_strings = to_weak(strings), distance](float const &value) {
-                                        if (auto const strings = weak_strings.lock()) {
-                                            strings->frame_layout_guide_rect()->top()->set_value(value + distance);
-                                        }
-                                    },
-                                    true)
+                                ->observe([weak_strings = to_weak(strings), distance](float const &value) {
+                                    if (auto const strings = weak_strings.lock()) {
+                                        strings->frame_layout_guide_rect()->top()->set_value(value + distance);
+                                    }
+                                })
+                                .sync()
                                 ->set_to(top_layout);
                         };
 
                     strings_handler(strings);
 
-                    strings_observer = strings->observe_font_atlas(
-                        [strings_handler = std::move(strings_handler),
-                         weak_strings = to_weak(strings)](ui::font_atlas_ptr const &) mutable {
-                            if (auto strings = weak_strings.lock()) {
-                                strings_handler(strings);
-                            }
-                        },
-                        false);
+                    strings_observer =
+                        strings
+                            ->observe_font_atlas([strings_handler = std::move(strings_handler),
+                                                  weak_strings = to_weak(strings)](ui::font_atlas_ptr const &) mutable {
+                                if (auto strings = weak_strings.lock()) {
+                                    strings_handler(strings);
+                                }
+                            })
+                            .end();
                 } else {
                     layouts_pool = nullptr;
                     strings_observer = nullptr;
                 }
-            },
-            false)
+            })
+        .end()
         ->set_to(this->_renderer_canceller);
 
     this->_timer = timer{1.0, true, [this] { this->_update_text(); }};

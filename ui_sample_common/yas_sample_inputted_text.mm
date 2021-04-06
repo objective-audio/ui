@@ -11,30 +11,29 @@ sample::inputted_text::inputted_text(ui::font_atlas_ptr const &font_atlas)
           {.font_atlas = font_atlas, .max_word_count = 512, .alignment = ui::layout_alignment::min})) {
     this->_strings->rect_plane()
         ->node()
-        ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-                pool->cancel();
+        ->observe_renderer([this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+            pool->cancel();
 
-                if (renderer) {
-                    renderer->event_manager()
-                        ->observe([this](ui::event_ptr const &event) {
-                            if (event->type() == ui::event_type::key) {
-                                this->_update_text(event);
-                            }
-                        })
-                        ->add_to(*pool);
+            if (renderer) {
+                renderer->event_manager()
+                    ->observe([this](ui::event_ptr const &event) {
+                        if (event->type() == ui::event_type::key) {
+                            this->_update_text(event);
+                        }
+                    })
+                    .end()
+                    ->add_to(*pool);
 
-                    renderer->safe_area_layout_guide_rect()
-                        ->observe(
-                            [this](ui::region const &region) {
-                                this->_strings->frame_layout_guide_rect()->set_region(
-                                    region + ui::insets{4.0f, -4.0f, 4.0f, -4.0f});
-                            },
-                            true)
-                        ->add_to(*pool);
-                }
-            },
-            false)
+                renderer->safe_area_layout_guide_rect()
+                    ->observe([this](ui::region const &region) {
+                        this->_strings->frame_layout_guide_rect()->set_region(region +
+                                                                              ui::insets{4.0f, -4.0f, 4.0f, -4.0f});
+                    })
+                    .sync()
+                    ->add_to(*pool);
+            }
+        })
+        .end()
         ->set_to(this->_renderer_canceller);
 }
 

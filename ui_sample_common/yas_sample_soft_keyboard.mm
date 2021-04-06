@@ -72,15 +72,15 @@ struct soft_key {
 }
 
 sample::soft_keyboard::soft_keyboard(ui::font_atlas_ptr const &atlas) : _font_atlas(atlas) {
-    this->_renderer_canceller = this->_root_node->observe_renderer(
-        [this](ui::renderer_ptr const &renderer) {
-            if (renderer) {
-                this->_setup_soft_keys_if_needed();
-            } else {
-                this->_dispose_soft_keys();
-            }
-        },
-        true);
+    this->_renderer_canceller = this->_root_node
+                                    ->observe_renderer([this](ui::renderer_ptr const &renderer) {
+                                        if (renderer) {
+                                            this->_setup_soft_keys_if_needed();
+                                        } else {
+                                            this->_dispose_soft_keys();
+                                        }
+                                    })
+                                    .sync();
 }
 
 void sample::soft_keyboard::set_font_atlas(ui::font_atlas_ptr const &atlas) {
@@ -95,7 +95,7 @@ ui::node_ptr const &sample::soft_keyboard::node() {
     return this->_root_node;
 }
 
-observing::cancellable_ptr sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
+observing::endable sample::soft_keyboard::observe(observing::caller<std::string>::handler_f &&handler) {
     return this->_key_notifier->observe(std::move(handler));
 }
 
@@ -140,11 +140,13 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     for (auto const &key : keys) {
         sample::soft_key_ptr soft_key = sample::soft_key::make_shared(key, key_width, this->_font_atlas);
 
-        observing::cancellable_ptr canceller = soft_key->button()->observe([this, key](auto const &context) {
-            if (context.method == ui::button::method::ended) {
-                this->_key_notifier->notify(key);
-            }
-        });
+        observing::cancellable_ptr canceller = soft_key->button()
+                                                   ->observe([this, key](auto const &context) {
+                                                       if (context.method == ui::button::method::ended) {
+                                                           this->_key_notifier->notify(key);
+                                                       }
+                                                   })
+                                                   .end();
 
         this->_soft_key_cancellers.emplace_back(std::move(canceller));
 
@@ -155,12 +157,11 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     }
 
     this->_collection_layout
-        ->observe_actual_cell_count(
-            [this](auto const &) {
-                this->_update_soft_keys_enabled(true);
-                this->_update_soft_key_count();
-            },
-            false)
+        ->observe_actual_cell_count([this](auto const &) {
+            this->_update_soft_keys_enabled(true);
+            this->_update_soft_key_count();
+        })
+        .end()
         ->set_to(this->_actual_cell_count_canceller);
 
     if (this->_src_cell_guide_rects.size() > key_count) {
@@ -184,12 +185,21 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     auto const &renderer = this->_root_node->renderer();
     auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
 
-    this->_frame_cancellers.emplace_back(safe_area_guide_rect->left()->observe(
-        [this](float const &value) { this->_collection_layout->frame_guide_rect->left()->set_value(value); }, true));
-    this->_frame_cancellers.emplace_back(safe_area_guide_rect->bottom()->observe(
-        [this](float const &value) { this->_collection_layout->frame_guide_rect->bottom()->set_value(value); }, true));
-    this->_frame_cancellers.emplace_back(safe_area_guide_rect->top()->observe(
-        [this](float const &value) { this->_collection_layout->frame_guide_rect->top()->set_value(value); }, true));
+    this->_frame_cancellers.emplace_back(safe_area_guide_rect->left()
+                                             ->observe([this](float const &value) {
+                                                 this->_collection_layout->frame_guide_rect->left()->set_value(value);
+                                             })
+                                             .sync());
+    this->_frame_cancellers.emplace_back(safe_area_guide_rect->bottom()
+                                             ->observe([this](float const &value) {
+                                                 this->_collection_layout->frame_guide_rect->bottom()->set_value(value);
+                                             })
+                                             .sync());
+    this->_frame_cancellers.emplace_back(safe_area_guide_rect->top()
+                                             ->observe([this](float const &value) {
+                                                 this->_collection_layout->frame_guide_rect->top()->set_value(value);
+                                             })
+                                             .sync());
 
     auto apply_to_frame_right = [this, width] {
         auto const &safe_area_rect = this->_root_node->renderer()->safe_area_layout_guide_rect();
@@ -197,10 +207,14 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         this->_collection_layout->frame_guide_rect->right()->set_value(min);
     };
 
-    this->_frame_cancellers.emplace_back(safe_area_guide_rect->left()->observe(
-        [apply_to_frame_right](float const &value) { apply_to_frame_right(); }, false));
-    this->_frame_cancellers.emplace_back(safe_area_guide_rect->right()->observe(
-        [apply_to_frame_right](float const &value) { apply_to_frame_right(); }, true));
+    this->_frame_cancellers.emplace_back(
+        safe_area_guide_rect->left()
+            ->observe([apply_to_frame_right](float const &value) { apply_to_frame_right(); })
+            .end());
+    this->_frame_cancellers.emplace_back(
+        safe_area_guide_rect->right()
+            ->observe([apply_to_frame_right](float const &value) { apply_to_frame_right(); })
+            .sync());
 
     this->_setup_soft_keys_layout();
     this->_update_soft_key_count();
@@ -242,14 +256,13 @@ void sample::soft_keyboard::_setup_soft_keys_layout() {
         auto weak_soft_key = to_weak(soft_key);
 
         dst_guide_rect
-            ->observe(
-                [weak_soft_key](ui::region const &value) {
-                    if (auto const soft_key = weak_soft_key.lock()) {
-                        soft_key->button()->rect_plane()->node()->set_position({value.origin.x, value.origin.y});
-                        soft_key->button()->layout_guide_rect()->set_region({.size = value.size});
-                    }
-                },
-                false)
+            ->observe([weak_soft_key](ui::region const &value) {
+                if (auto const soft_key = weak_soft_key.lock()) {
+                    soft_key->button()->rect_plane()->node()->set_position({value.origin.x, value.origin.y});
+                    soft_key->button()->layout_guide_rect()->set_region({.size = value.size});
+                }
+            })
+            .end()
             ->add_to(this->_dst_rect_pool);
 
         yas::move_back_insert(guide_pairs, ui::make_layout_guide_pairs({.source = this->_src_cell_guide_rects.at(idx),
@@ -284,40 +297,36 @@ void sample::soft_keyboard::_update_soft_key_count() {
                 auto pool = observing::canceller_pool::make_shared();
 
                 src_guide_rect->left()
-                    ->observe(
-                        [weak_dst_guide_rect](float const &value) {
-                            if (auto const rect = weak_dst_guide_rect.lock()) {
-                                rect->left()->set_value(value);
-                            }
-                        },
-                        true)
+                    ->observe([weak_dst_guide_rect](float const &value) {
+                        if (auto const rect = weak_dst_guide_rect.lock()) {
+                            rect->left()->set_value(value);
+                        }
+                    })
+                    .sync()
                     ->add_to(*pool);
                 src_guide_rect->bottom()
-                    ->observe(
-                        [weak_dst_guide_rect](float const &value) {
-                            if (auto const rect = weak_dst_guide_rect.lock()) {
-                                rect->bottom()->set_value(value);
-                            }
-                        },
-                        true)
+                    ->observe([weak_dst_guide_rect](float const &value) {
+                        if (auto const rect = weak_dst_guide_rect.lock()) {
+                            rect->bottom()->set_value(value);
+                        }
+                    })
+                    .sync()
                     ->add_to(*pool);
                 src_guide_rect->right()
-                    ->observe(
-                        [weak_dst_guide_rect](float const &value) {
-                            if (auto const rect = weak_dst_guide_rect.lock()) {
-                                rect->right()->set_value(value);
-                            }
-                        },
-                        true)
+                    ->observe([weak_dst_guide_rect](float const &value) {
+                        if (auto const rect = weak_dst_guide_rect.lock()) {
+                            rect->right()->set_value(value);
+                        }
+                    })
+                    .sync()
                     ->add_to(*pool);
                 src_guide_rect->top()
-                    ->observe(
-                        [weak_dst_guide_rect](float const &value) {
-                            if (auto const rect = weak_dst_guide_rect.lock()) {
-                                rect->top()->set_value(value);
-                            }
-                        },
-                        true)
+                    ->observe([weak_dst_guide_rect](float const &value) {
+                        if (auto const rect = weak_dst_guide_rect.lock()) {
+                            rect->top()->set_value(value);
+                        }
+                    })
+                    .sync()
                     ->add_to(*pool);
 
                 this->_fixed_cell_layouts.emplace_back(std::move(pool));

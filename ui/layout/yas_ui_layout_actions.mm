@@ -10,16 +10,16 @@ using namespace yas;
 using namespace yas::ui;
 
 std::shared_ptr<action> ui::make_action(layout_action::args args) {
-    args.action.target = args.target;
-    args.continuous_action.action = std::move(args.action);
+    args.continuous_action.action.target = args.target;
+    auto continous_args = std::move(args.continuous_action);
 
-    args.continuous_action.value_updater = [args = std::move(args)](double const value) {
+    continous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
             target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
         }
     };
 
-    return action::make_continuous(std::move(args.continuous_action));
+    return action::make_continuous(std::move(continous_args));
 }
 
 layout_animator::layout_animator(args args) : _args(std::move(args)) {

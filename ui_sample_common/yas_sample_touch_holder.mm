@@ -16,21 +16,23 @@ struct touch_object {
 sample::touch_holder::touch_holder() {
     this->_rect_plane_data->set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
-    this->_renderer_canceller = root_node->observe_renderer(
-        [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-            if (renderer) {
-                renderer->event_manager()
-                    ->observe([this](auto const &event) {
-                        if (event->type() == ui::event_type::touch) {
-                            this->_update_touch_node(event);
-                        }
-                    })
-                    ->set_to(event_canceller);
-            } else {
-                event_canceller = nullptr;
-            }
-        },
-        false);
+    this->_renderer_canceller = root_node
+                                    ->observe_renderer([this, event_canceller = observing::cancellable_ptr{nullptr}](
+                                                           ui::renderer_ptr const &renderer) mutable {
+                                        if (renderer) {
+                                            renderer->event_manager()
+                                                ->observe([this](auto const &event) {
+                                                    if (event->type() == ui::event_type::touch) {
+                                                        this->_update_touch_node(event);
+                                                    }
+                                                })
+                                                .end()
+                                                ->set_to(event_canceller);
+                                        } else {
+                                            event_canceller = nullptr;
+                                        }
+                                    })
+                                    .end();
 }
 
 void sample::touch_holder::set_texture(ui::texture_ptr const &texture) {
@@ -156,8 +158,9 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
             {.target = node,
              .begin_scale = touch_object.node->scale(),
              .end_scale = {.v = 300.0f},
-             .action = {.completion = [node]() mutable { node->remove_from_super_node(); }},
-             .continuous_action = {.duration = 0.3, .value_transformer = ui::ease_out_sine_transformer()}});
+             .continuous_action = {.duration = 0.3,
+                                   .value_transformer = ui::ease_out_sine_transformer(),
+                                   .action = {.completion = [node]() mutable { node->remove_from_super_node(); }}}});
 
         auto alpha_action = ui::make_action(
             {.target = node,
