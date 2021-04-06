@@ -54,8 +54,7 @@ using namespace yas;
                                    .begin_angle = 0.0f,
                                    .end_angle = 360.0f,
                                    .is_shortest = false,
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     action->update(time);
 
@@ -77,8 +76,7 @@ using namespace yas;
                                    .begin_angle = 0.0f,
                                    .end_angle = 270.0f,
                                    .is_shortest = true,
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     action->update(time);
 
@@ -100,8 +98,7 @@ using namespace yas;
                                    .begin_angle = -180.0f,
                                    .end_angle = 90.0f,
                                    .is_shortest = true,
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     action->update(time);
 

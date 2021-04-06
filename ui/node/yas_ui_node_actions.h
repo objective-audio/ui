@@ -27,7 +27,6 @@ namespace rotate_action {
         ui::angle end_angle = {0.0f};
         bool is_shortest = false;
 
-        action::args action;
         action::continuous_args continuous_action;
     };
 }  // namespace rotate_action

@@ -12,9 +12,8 @@ using namespace yas::ui;
 #pragma mark - translate_action
 
 std::shared_ptr<action> ui::make_action(translate_action::args args) {
-    args.continuous_action.action.target = args.target;
     auto continous_action = std::move(args.continuous_action);
-
+    continous_action.action.target = args.target;
     continous_action.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
             target->set_position(
@@ -28,10 +27,9 @@ std::shared_ptr<action> ui::make_action(translate_action::args args) {
 #pragma mark - rotate_action
 
 std::shared_ptr<action> ui::make_action(rotate_action::args args) {
-    args.action.target = args.target;
-    args.continuous_action.action = std::move(args.action);
-
-    args.continuous_action.value_updater = [args = std::move(args)](double const value) {
+    auto continous_args = args.continuous_action;
+    continous_args.action.target = args.target;
+    continous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
             auto const end_angle = args.end_angle;
             auto begin_angle = args.begin_angle;
@@ -44,7 +42,7 @@ std::shared_ptr<action> ui::make_action(rotate_action::args args) {
         }
     };
 
-    return action::make_continuous(std::move(args.continuous_action));
+    return action::make_continuous(std::move(continous_args));
     ;
 }
 
