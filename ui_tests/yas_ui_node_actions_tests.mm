@@ -119,8 +119,7 @@ using namespace yas;
     auto action = ui::make_action({.target = target,
                                    .begin_scale = {0.0f, -1.0f},
                                    .end_scale = {1.0f, 1.0f},
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     action->update(time);
 
@@ -144,8 +143,7 @@ using namespace yas;
     auto action = ui::make_action({.target = target,
                                    .begin_color = {0.0f, 0.25f, 0.5f},
                                    .end_color = {1.0f, 0.75f, 0.5f},
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     auto mesh = ui::mesh::make_shared();
     target->set_mesh(mesh);
@@ -175,8 +173,7 @@ using namespace yas;
     auto action = ui::make_action({.target = target,
                                    .begin_alpha = 1.0f,
                                    .end_alpha = 0.0f,
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     auto mesh = ui::mesh::make_shared();
     target->set_mesh(mesh);
