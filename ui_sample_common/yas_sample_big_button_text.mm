@@ -12,7 +12,8 @@ sample::big_button_text::big_button_text(ui::font_atlas_ptr const &font_atlas)
     this->_strings->rect_plane()->node()->set_alpha(0.5f);
 
     this->strings()
-        ->observe_font_atlas([this](ui::font_atlas_ptr const &) { this->_update_strings_position(); }, true)
+        ->observe_font_atlas([this](ui::font_atlas_ptr const &) { this->_update_strings_position(); })
+        .sync()
         ->set_to(this->_strings_canceller);
 }
 

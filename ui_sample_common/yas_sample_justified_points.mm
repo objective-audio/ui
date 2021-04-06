@@ -31,71 +31,70 @@ sample::justified_points::justified_points()
     this->_setup_layout_guides();
 
     this->_rect_plane->node()
-        ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-                pool->cancel();
+        ->observe_renderer([this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
+            pool->cancel();
 
-                if (renderer) {
-                    std::vector<ui::layout_guide_wptr> x_receivers;
-                    for (auto &guide : this->_x_layout_guides) {
-                        x_receivers.push_back(to_weak(guide));
-                    }
-
-                    auto weak_rect = to_weak(renderer->view_layout_guide_rect());
-
-                    auto x_justifying = [weak_rect, x_receivers](float const &) {
-                        if (auto const rect = weak_rect.lock()) {
-                            auto const justified =
-                                ui::justify<sample::x_point_count - 1>(rect->left()->value(), rect->right()->value());
-                            int idx = 0;
-                            for (auto const &weak_guide : x_receivers) {
-                                if (auto const guide = weak_guide.lock()) {
-                                    guide->set_value(justified.at(idx));
-                                }
-                                ++idx;
-                            }
-                        }
-                    };
-
-                    renderer->view_layout_guide_rect()->left()->observe(x_justifying, false)->add_to(*pool);
-                    renderer->view_layout_guide_rect()->right()->observe(x_justifying, true)->add_to(*pool);
-
-                    std::array<float, sample::y_point_count - 1> y_ratios;
-
-                    auto each = make_fast_each(sample::y_point_count - 1);
-                    while (yas_each_next(each)) {
-                        auto const &idx = yas_each_index(each);
-                        if (idx < y_point_count / 2) {
-                            y_ratios.at(idx) = std::pow(2.0f, idx);
-                        } else {
-                            y_ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
-                        }
-                    }
-
-                    std::vector<ui::layout_guide_wptr> y_receivers;
-                    for (auto &guide : this->_y_layout_guides) {
-                        y_receivers.push_back(to_weak(guide));
-                    }
-
-                    auto y_justifying = [weak_rect, y_receivers](float const &) {
-                        if (auto const rect = weak_rect.lock()) {
-                            auto justified =
-                                ui::justify<sample::y_point_count - 1>(rect->bottom()->value(), rect->top()->value());
-                            int idx = 0;
-                            for (auto const &weak_guide : y_receivers) {
-                                if (auto const guide = weak_guide.lock()) {
-                                    guide->set_value(justified.at(idx));
-                                }
-                                ++idx;
-                            }
-                        }
-                    };
-
-                    renderer->view_layout_guide_rect()->bottom()->observe(y_justifying, false)->add_to(*pool);
-                    renderer->view_layout_guide_rect()->top()->observe(y_justifying, true)->add_to(*pool);
+            if (renderer) {
+                std::vector<ui::layout_guide_wptr> x_receivers;
+                for (auto &guide : this->_x_layout_guides) {
+                    x_receivers.push_back(to_weak(guide));
                 }
-            },
-            true)
+
+                auto weak_rect = to_weak(renderer->view_layout_guide_rect());
+
+                auto x_justifying = [weak_rect, x_receivers](float const &) {
+                    if (auto const rect = weak_rect.lock()) {
+                        auto const justified =
+                            ui::justify<sample::x_point_count - 1>(rect->left()->value(), rect->right()->value());
+                        int idx = 0;
+                        for (auto const &weak_guide : x_receivers) {
+                            if (auto const guide = weak_guide.lock()) {
+                                guide->set_value(justified.at(idx));
+                            }
+                            ++idx;
+                        }
+                    }
+                };
+
+                renderer->view_layout_guide_rect()->left()->observe(x_justifying).end()->add_to(*pool);
+                renderer->view_layout_guide_rect()->right()->observe(x_justifying).sync()->add_to(*pool);
+
+                std::array<float, sample::y_point_count - 1> y_ratios;
+
+                auto each = make_fast_each(sample::y_point_count - 1);
+                while (yas_each_next(each)) {
+                    auto const &idx = yas_each_index(each);
+                    if (idx < y_point_count / 2) {
+                        y_ratios.at(idx) = std::pow(2.0f, idx);
+                    } else {
+                        y_ratios.at(idx) = std::pow(2.0f, y_point_count - 2 - idx);
+                    }
+                }
+
+                std::vector<ui::layout_guide_wptr> y_receivers;
+                for (auto &guide : this->_y_layout_guides) {
+                    y_receivers.push_back(to_weak(guide));
+                }
+
+                auto y_justifying = [weak_rect, y_receivers](float const &) {
+                    if (auto const rect = weak_rect.lock()) {
+                        auto justified =
+                            ui::justify<sample::y_point_count - 1>(rect->bottom()->value(), rect->top()->value());
+                        int idx = 0;
+                        for (auto const &weak_guide : y_receivers) {
+                            if (auto const guide = weak_guide.lock()) {
+                                guide->set_value(justified.at(idx));
+                            }
+                            ++idx;
+                        }
+                    }
+                };
+
+                renderer->view_layout_guide_rect()->bottom()->observe(y_justifying).end()->add_to(*pool);
+                renderer->view_layout_guide_rect()->top()->observe(y_justifying).sync()->add_to(*pool);
+            }
+        })
+        .sync()
         ->set_to(this->_renderer_canceller);
 }
 
@@ -128,13 +127,12 @@ void sample::justified_points::_setup_layout_guides() {
     while (yas_each_next(x_each)) {
         auto const &idx = yas_each_index(x_each);
         this->_x_layout_guides.at(idx)
-            ->observe(
-                [weak_plane, idx](float const &value) {
-                    if (auto const plane = weak_plane.lock()) {
-                        plane->data()->set_rect_position({.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
-                    }
-                },
-                false)
+            ->observe([weak_plane, idx](float const &value) {
+                if (auto const plane = weak_plane.lock()) {
+                    plane->data()->set_rect_position({.origin = {value - 2.0f, -2.0f}, .size = {4.0f, 4.0f}}, idx);
+                }
+            })
+            .end()
             ->add_to(this->_guide_pool);
     }
 
@@ -142,14 +140,13 @@ void sample::justified_points::_setup_layout_guides() {
     while (yas_each_next(y_each)) {
         auto const &idx = yas_each_index(y_each);
         this->_y_layout_guides.at(idx)
-            ->observe(
-                [weak_plane, idx](float const &value) {
-                    if (auto const plane = weak_plane.lock()) {
-                        plane->data()->set_rect_position({.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
-                                                         idx + x_point_count);
-                    }
-                },
-                true)
+            ->observe([weak_plane, idx](float const &value) {
+                if (auto const plane = weak_plane.lock()) {
+                    plane->data()->set_rect_position({.origin = {-2.0f, value - 2.0f}, .size = {4.0f, 4.0f}},
+                                                     idx + x_point_count);
+                }
+            })
+            .sync()
             ->add_to(this->_guide_pool);
     }
 }

@@ -17,7 +17,7 @@ struct soft_keyboard {
 
     ui::node_ptr const &node();
 
-    [[nodiscard]] observing::cancellable_ptr observe(observing::caller<std::string>::handler_f &&);
+    [[nodiscard]] observing::endable observe(observing::caller<std::string>::handler_f &&);
 
     static soft_keyboard_ptr make_shared(ui::font_atlas_ptr const &);
 

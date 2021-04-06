@@ -38,6 +38,7 @@ void sample::main::setup() {
                 text->set_status(context.method);
             }
         })
+        .end()
         ->set_to(this->_button_canceller);
 
     this->_soft_keyboard
@@ -46,6 +47,7 @@ void sample::main::setup() {
                 text->append_text(key);
             }
         })
+        .end()
         ->set_to(this->_keyboard_canceller);
 
     auto button_pos_action = ui::make_action(
@@ -84,8 +86,8 @@ void sample::main::setup() {
     auto &view_guide = this->renderer->view_layout_guide_rect();
 
     view_guide
-        ->observe([render_target](ui::region const &region) { render_target->layout_guide_rect()->set_region(region); },
-                  true)
+        ->observe([render_target](ui::region const &region) { render_target->layout_guide_rect()->set_region(region); })
+        .sync()
         ->set_to(this->_render_target_canceller);
 
     this->_render_target_node->set_render_target(render_target);

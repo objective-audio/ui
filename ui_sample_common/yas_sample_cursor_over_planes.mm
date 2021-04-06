@@ -42,6 +42,7 @@ static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> cons
                     }
                 }
             })
+            .end()
             ->add_to(*pool);
     }
 
@@ -52,15 +53,17 @@ static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> cons
 sample::cursor_over_planes::cursor_over_planes() {
     this->_setup_nodes();
 
-    this->_renderer_canceller = root_node->observe_renderer(
-        [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
-            if (value) {
-                event_canceller = cursor_over_planes_utils::_observe_events(this->_nodes, value);
-            } else {
-                event_canceller = nullptr;
-            }
-        },
-        false);
+    this->_renderer_canceller =
+        root_node
+            ->observe_renderer(
+                [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
+                    if (value) {
+                        event_canceller = cursor_over_planes_utils::_observe_events(this->_nodes, value);
+                    } else {
+                        event_canceller = nullptr;
+                    }
+                })
+            .end();
 }
 
 ui::node_ptr const &sample::cursor_over_planes::node() {
