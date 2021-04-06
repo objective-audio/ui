@@ -28,8 +28,7 @@ using namespace std::chrono_literals;
     auto action = ui::make_action({.target = target,
                                    .begin_value = 0.0f,
                                    .end_value = 1.0f,
-                                   .action = {.begin_time = time},
-                                   .continuous_action = {.duration = 1.0}});
+                                   .continuous_action = {.duration = 1.0, .action = {.begin_time = time}}});
 
     action->update(time);
 
