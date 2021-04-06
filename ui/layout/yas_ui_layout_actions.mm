@@ -10,6 +10,7 @@ using namespace yas;
 using namespace yas::ui;
 
 std::shared_ptr<action> ui::make_action(layout_action::args args) {
+    args.continuous_action.action.target = args.target;
     auto continous_args = std::move(args.continuous_action);
 
     continous_args.value_updater = [args = std::move(args)](double const value) {
