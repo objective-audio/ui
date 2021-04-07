@@ -50,13 +50,13 @@ void sample::main::setup() {
         .end()
         ->set_to(this->_keyboard_canceller);
 
-    auto button_pos_action = ui::make_action(
-        {.target = this->_big_button->button()->rect_plane()->node(),
-         .begin_position = {0.0f, 0.0f},
-         .end_position = {32.0f, 0.0f},
-         .continuous_action = {.duration = 5.0, .loop_count = 0, .value_transformer = [](float const value) {
-                                   return sinf(M_PI * 2.0f * value);
-                               }}});
+    auto button_pos_action =
+        ui::make_action({.target = this->_big_button->button()->rect_plane()->node(),
+                         .begin_position = {0.0f, 0.0f},
+                         .end_position = {32.0f, 0.0f},
+                         .duration = 5.0,
+                         .loop_count = 0,
+                         .value_transformer = [](float const value) { return sinf(M_PI * 2.0f * value); }});
 
     this->renderer->insert_action(button_pos_action);
 
@@ -102,6 +102,7 @@ void sample::main::setup() {
     auto action = ui::make_action({.target = this->_plane_on_target->node(),
                                    .begin_angle = 0.0f,
                                    .end_angle = 360.0f,
-                                   .continuous_action = {.duration = 3.0, .loop_count = 0}});
+                                   .duration = 3.0,
+                                   .loop_count = 0});
     this->renderer->insert_action(action);
 }
