@@ -16,7 +16,13 @@ namespace translate_action {
         ui::point begin_position = {.v = 0.0f};
         ui::point end_position = {.v = 0.0f};
 
-        action::continuous_args continuous_action;
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        transform_f value_transformer;
+
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 }  // namespace translate_action
 
@@ -27,7 +33,13 @@ namespace rotate_action {
         ui::angle end_angle = {0.0f};
         bool is_shortest = false;
 
-        action::continuous_args continuous_action;
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        transform_f value_transformer;
+
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 }  // namespace rotate_action
 
@@ -37,7 +49,13 @@ namespace scale_action {
         ui::size begin_scale = {.v = 1.0f};
         ui::size end_scale = {.v = 1.0f};
 
-        action::continuous_args continuous_action;
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        transform_f value_transformer;
+
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 }  // namespace scale_action
 
@@ -47,7 +65,13 @@ namespace color_action {
         ui::color begin_color = {.v = 1.0f};
         ui::color end_color = {.v = 1.0f};
 
-        action::continuous_args continuous_action;
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        transform_f value_transformer;
+
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 }  // namespace color_action
 
@@ -57,7 +81,13 @@ namespace alpha_action {
         float begin_alpha = 1.0f;
         float end_alpha = 1.0f;
 
-        action::continuous_args continuous_action;
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        transform_f value_transformer;
+
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 }  // namespace alpha_action
 

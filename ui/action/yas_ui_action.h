@@ -38,7 +38,10 @@ struct action final {
         continuous_value_update_f value_updater;
         transform_f value_transformer;
 
-        action::args action;
+        action_target_wptr target;
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 
     struct sequence_args final {
@@ -49,7 +52,10 @@ struct action final {
 
         std::vector<element> elements;
 
-        action::args action;
+        action_target_wptr target;
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 
     [[nodiscard]] action_target_ptr target() const;
@@ -87,7 +93,10 @@ struct parallel_action final {
     struct args final {
         std::unordered_set<action_ptr> actions;
 
-        action::args action;
+        action_target_wptr target;
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 
     action_ptr const &raw_action() const;

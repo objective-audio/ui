@@ -9,17 +9,22 @@
 using namespace yas;
 using namespace yas::ui;
 
-std::shared_ptr<action> ui::make_action(layout_action::args args) {
-    args.continuous_action.action.target = args.target;
-    auto continous_args = std::move(args.continuous_action);
+std::shared_ptr<action> ui::make_action(layout_action::args &&args) {
+    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
+                                                   .loop_count = std::move(args.loop_count),
+                                                   .value_transformer = std::move(args.value_transformer),
+                                                   .target = args.target,
+                                                   .begin_time = std::move(args.begin_time),
+                                                   .delay = std::move(args.delay),
+                                                   .completion = std::move(args.completion)};
 
-    continous_args.value_updater = [args = std::move(args)](double const value) {
+    continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
             target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
         }
     };
 
-    return action::make_continuous(std::move(continous_args));
+    return action::make_continuous(std::move(continuous_args));
 }
 
 layout_animator::layout_animator(args args) : _args(std::move(args)) {
@@ -43,8 +48,8 @@ layout_animator::layout_animator(args args) : _args(std::move(args)) {
                     auto action = make_action({.target = dst_guide,
                                                .begin_value = dst_guide->value(),
                                                .end_value = value,
-                                               .continuous_action = {.duration = args.duration,
-                                                                     .value_transformer = this->value_transformer()}});
+                                               .duration = args.duration,
+                                               .value_transformer = this->value_transformer()});
                     renderer->insert_action(action);
                 }
             })
