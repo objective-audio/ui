@@ -92,7 +92,10 @@ struct parallel_action final {
     struct args final {
         std::unordered_set<action_ptr> actions;
 
-        action::args action;
+        action_target_wptr target;
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 
     action_ptr const &raw_action() const;
