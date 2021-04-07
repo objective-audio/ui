@@ -25,10 +25,8 @@ using namespace std::chrono_literals;
 - (void)test_update_layout_action {
     auto target = ui::layout_guide::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action({.target = target,
-                                   .begin_value = 0.0f,
-                                   .end_value = 1.0f,
-                                   .continuous_action = {.duration = 1.0, .begin_time = time}});
+    auto action = ui::make_action(
+        {.target = target, .begin_value = 0.0f, .end_value = 1.0f, .duration = 1.0, .begin_time = time});
 
     action->update(time);
 

@@ -17,11 +17,17 @@ namespace layout_action {
         float begin_value;
         float end_value;
 
-        action::continuous_args continuous_action;
+        double duration = 0.3;
+        std::size_t loop_count = 1;
+        transform_f value_transformer;
+
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 }  // namespace layout_action
 
-[[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action::args);
+[[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action::args &&);
 
 struct layout_animator {
     struct args {

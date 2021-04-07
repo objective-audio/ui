@@ -9,9 +9,15 @@
 using namespace yas;
 using namespace yas::ui;
 
-std::shared_ptr<action> ui::make_action(layout_action::args args) {
-    auto continuous_args = std::move(args.continuous_action);
-    continuous_args.target = args.target;
+std::shared_ptr<action> ui::make_action(layout_action::args &&args) {
+    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
+                                                   .loop_count = std::move(args.loop_count),
+                                                   .value_transformer = std::move(args.value_transformer),
+
+                                                   .target = args.target,
+                                                   .begin_time = args.begin_time,
+                                                   .delay = args.delay,
+                                                   .completion = args.completion};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
@@ -43,8 +49,8 @@ layout_animator::layout_animator(args args) : _args(std::move(args)) {
                     auto action = make_action({.target = dst_guide,
                                                .begin_value = dst_guide->value(),
                                                .end_value = value,
-                                               .continuous_action = {.duration = args.duration,
-                                                                     .value_transformer = this->value_transformer()}});
+                                               .duration = args.duration,
+                                               .value_transformer = this->value_transformer()});
                     renderer->insert_action(action);
                 }
             })
