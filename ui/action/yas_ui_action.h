@@ -52,6 +52,7 @@ struct action final {
 
         std::vector<element> elements;
 
+        action_target_wptr target;
         time_point_t begin_time = std::chrono::system_clock::now();
         double delay = 0.0;
         action_completion_f completion;

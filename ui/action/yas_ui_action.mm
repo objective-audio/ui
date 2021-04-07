@@ -102,8 +102,10 @@ action_ptr action::make_continuous(continuous_args &&continuous_args) {
 }
 
 std::shared_ptr<action> ui::action::make_sequence(sequence_args &&args) {
-    auto sequence = parallel_action::make_shared(
-        {.begin_time = args.begin_time, .delay = args.delay, .completion = std::move(args.completion)});
+    auto sequence = parallel_action::make_shared({.target = std::move(args.target),
+                                                  .begin_time = args.begin_time,
+                                                  .delay = args.delay,
+                                                  .completion = std::move(args.completion)});
 
     duration_t delay{args.delay};
 
