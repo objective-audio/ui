@@ -102,12 +102,13 @@ action_ptr action::make_continuous(continuous_args &&continuous_args) {
 }
 
 std::shared_ptr<action> ui::action::make_sequence(sequence_args &&args) {
-    auto sequence = parallel_action::make_shared({.action = args.action});
+    auto sequence = parallel_action::make_shared(
+        {.action = {.begin_time = args.begin_time, .delay = args.delay, .completion = std::move(args.completion)}});
 
-    duration_t delay{args.action.delay};
+    duration_t delay{args.delay};
 
     for (auto const &element : args.elements) {
-        auto action = element.action->make_delayed(args.action.begin_time, delay.count());
+        auto action = element.action->make_delayed(args.begin_time, delay.count());
         sequence->insert_action(std::move(action));
         delay += duration_t(element.duration);
     }

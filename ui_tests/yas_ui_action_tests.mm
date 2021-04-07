@@ -202,7 +202,7 @@ using namespace yas;
     XCTAssertEqual(parallel_action->actions().size(), 0);
 }
 
-- (void)test_make_action_sequence {
+- (void)test_make_sequence {
     bool first_completed = false;
     bool rotate_completed = false;
     bool end_completed = false;
@@ -218,12 +218,13 @@ using namespace yas;
 
     auto time = std::chrono::system_clock::now();
 
-    auto action_sequence = ui::action::make_sequence(
-        {.elements = {{.action = first_action},
-                      {.action = continuous_action1, .duration = 1.0},
-                      {.action = end_action},
-                      {.action = continuous_action2, .duration = 0.5}},
-         .action = {.begin_time = time + 1s, .completion = [&sequence_completed] { sequence_completed = true; }}});
+    auto action_sequence =
+        ui::action::make_sequence({.elements = {{.action = first_action},
+                                                {.action = continuous_action1, .duration = 1.0},
+                                                {.action = end_action},
+                                                {.action = continuous_action2, .duration = 0.5}},
+                                   .begin_time = time + 1s,
+                                   .completion = [&sequence_completed] { sequence_completed = true; }});
     auto const action = action_sequence;
 
     XCTAssertFalse(action->update(time));

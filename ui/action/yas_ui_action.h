@@ -52,7 +52,9 @@ struct action final {
 
         std::vector<element> elements;
 
-        action::args action;
+        time_point_t begin_time = std::chrono::system_clock::now();
+        double delay = 0.0;
+        action_completion_f completion;
     };
 
     [[nodiscard]] action_target_ptr target() const;
