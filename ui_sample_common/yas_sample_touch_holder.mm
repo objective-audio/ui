@@ -154,13 +154,13 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
 
         auto const &node = touch_object.node;
 
-        auto scale_action = ui::make_action(
-            {.target = node,
-             .begin_scale = touch_object.node->scale(),
-             .end_scale = {.v = 300.0f},
-             .continuous_action = {.duration = 0.3,
-                                   .value_transformer = ui::ease_out_sine_transformer(),
-                                   .action = {.completion = [node]() mutable { node->remove_from_super_node(); }}}});
+        auto scale_action =
+            ui::make_action({.target = node,
+                             .begin_scale = touch_object.node->scale(),
+                             .end_scale = {.v = 300.0f},
+                             .continuous_action = {.duration = 0.3,
+                                                   .value_transformer = ui::ease_out_sine_transformer(),
+                                                   .completion = [node] { node->remove_from_super_node(); }}});
 
         auto alpha_action = ui::make_action(
             {.target = node,

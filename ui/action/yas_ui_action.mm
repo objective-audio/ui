@@ -69,7 +69,10 @@ action_ptr action::make_shared(args &&args) {
 }
 
 action_ptr action::make_continuous(continuous_args &&continuous_args) {
-    auto args = continuous_args.action;
+    auto args = action::args{.target = std::move(continuous_args.target),
+                             .begin_time = std::move(continuous_args.begin_time),
+                             .delay = std::move(continuous_args.delay),
+                             .completion = std::move(continuous_args.completion)};
 
     args.time_updater = [continuous_args](time_point_t const &time, ui::action const &action) {
         auto const duration = continuous_args.duration;
