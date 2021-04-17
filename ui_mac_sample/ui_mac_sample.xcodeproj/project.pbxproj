@@ -404,7 +404,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = ui_mac_sample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.ui-mac-sample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -421,7 +420,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = ui_mac_sample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.ui-mac-sample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
