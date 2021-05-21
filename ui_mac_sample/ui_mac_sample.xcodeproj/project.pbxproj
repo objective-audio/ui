@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B60428281D3904D70076769D /* yas_sample_soft_keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */; };
+		B605EA672657BE660031B177 /* Window.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B605EA662657BE660031B177 /* Window.storyboard */; };
 		B60F3FEB1FC7B8A6008493DC /* yas_sample_draw_call_text.mm in Sources */ = {isa = PBXBuildFile; fileRef = B60F3FE91FC7B8A6008493DC /* yas_sample_draw_call_text.mm */; };
 		B61E343F21E6285800DF35C3 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B61E343E21E6285800DF35C3 /* cpp_utils.framework */; };
 		B61E344121E6285800DF35C3 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B61E344021E6285800DF35C3 /* objc_utils.framework */; };
@@ -35,6 +36,7 @@
 /* Begin PBXFileReference section */
 		B60428261D3904D70076769D /* yas_sample_soft_keyboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_soft_keyboard.mm; path = ../../ui_sample_common/yas_sample_soft_keyboard.mm; sourceTree = "<group>"; };
 		B60428271D3904D70076769D /* yas_sample_soft_keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yas_sample_soft_keyboard.h; path = ../../ui_sample_common/yas_sample_soft_keyboard.h; sourceTree = "<group>"; };
+		B605EA662657BE660031B177 /* Window.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Window.storyboard; sourceTree = "<group>"; };
 		B60F3FE91FC7B8A6008493DC /* yas_sample_draw_call_text.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = yas_sample_draw_call_text.mm; path = ../../ui_sample_common/yas_sample_draw_call_text.mm; sourceTree = "<group>"; };
 		B60F3FEA1FC7B8A6008493DC /* yas_sample_draw_call_text.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yas_sample_draw_call_text.h; path = ../../ui_sample_common/yas_sample_draw_call_text.h; sourceTree = "<group>"; };
 		B61E343C21E6285800DF35C3 /* chaining.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = chaining.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +136,7 @@
 				B6F5015B1C9BFF9800A0B4A1 /* Assets.xcassets */,
 				B6F501601C9BFF9800A0B4A1 /* Info.plist */,
 				B6F5015D1C9BFF9800A0B4A1 /* Main.storyboard */,
+				B605EA662657BE660031B177 /* Window.storyboard */,
 				B6F501551C9BFF9800A0B4A1 /* Supporting Files */,
 				B6635DFF2310C7A5003D53D4 /* yas_sample_ptr.h */,
 				B6F73B911CDB1DBA009FD0DD /* yas_sample_bg.h */,
@@ -232,6 +235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B605EA672657BE660031B177 /* Window.storyboard in Resources */,
 				B6F5015C1C9BFF9800A0B4A1 /* Assets.xcassets in Resources */,
 				B6F5015F1C9BFF9800A0B4A1 /* Main.storyboard in Resources */,
 			);
