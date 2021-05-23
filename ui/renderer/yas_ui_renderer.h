@@ -81,6 +81,7 @@ struct renderer final : view_renderable {
     yas_edge_insets _safe_area_insets;
     observing::value::holder_ptr<ui::appearance> _appearance;
     simd::float4x4 _projection_matrix;
+    renderer_updates_t _updates;
 
     ui::background_ptr _background;
     ui::node_ptr _root_node;
