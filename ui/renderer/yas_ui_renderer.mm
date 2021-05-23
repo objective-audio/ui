@@ -251,7 +251,7 @@ renderer::pre_render_result renderer::_pre_render() {
         updatable_detector::cast(this->_detector)->begin_update();
     }
 
-    if (bg_updates.flags.any() || tree_updates.is_any_updated()) {
+    if (this->_updates.flags.any() || bg_updates.flags.any() || tree_updates.is_any_updated()) {
         return pre_render_result::updated;
     }
 
@@ -262,6 +262,7 @@ void renderer::_post_render() {
     renderable_background::cast(this->_background)->clear_updates();
     renderable_node::cast(this->_root_node)->clear_updates();
     updatable_detector::cast(this->_detector)->end_update();
+    this->_updates.flags.reset();
 }
 
 renderer::update_result renderer::_update_view_size(CGSize const v_size, CGSize const d_size) {
@@ -320,6 +321,8 @@ void renderer::_update_layout_guide_rect() {
 
     this->_view_layout_guide_rect->set_region(
         {.origin = {-view_width * 0.5f, -view_height * 0.5f}, .size = {view_width, view_height}});
+
+    this->_updates.set(renderer_update_reason::view_rect);
 }
 
 void renderer::_update_safe_area_layout_guide_rect() {
@@ -331,6 +334,8 @@ void renderer::_update_safe_area_layout_guide_rect() {
     float const height = view_height - this->_safe_area_insets.bottom - this->_safe_area_insets.top;
 
     this->_safe_area_layout_guide_rect->set_region({.origin = {origin_x, origin_y}, .size = {width, height}});
+
+    this->_updates.set(renderer_update_reason::safe_area_rect);
 }
 
 bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2) {

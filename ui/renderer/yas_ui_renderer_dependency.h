@@ -43,6 +43,15 @@ enum class effect_update_reason : std::size_t {
 
 using effect_updates_t = flagset<effect_update_reason>;
 
+enum class renderer_update_reason : std::size_t {
+    view_rect,
+    safe_area_rect,
+
+    count,
+};
+
+using renderer_updates_t = flagset<renderer_update_reason>;
+
 struct renderable_render_target {
     virtual ~renderable_render_target() = default;
 
