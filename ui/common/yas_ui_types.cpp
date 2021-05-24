@@ -267,6 +267,14 @@ point region::center() const {
     return point{.x = this->origin.x + this->size.width * 0.5f, .y = this->origin.y + this->size.height * 0.5f};
 }
 
+region region::combined(region const &rhs) const {
+    float const left = std::min(this->left(), rhs.left());
+    float const bottom = std::min(this->bottom(), rhs.bottom());
+    float const right = std::max(this->right(), rhs.right());
+    float const top = std::max(this->top(), rhs.top());
+    return region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+}
+
 region const &region::zero() {
     static region const _zero{.origin = point::zero(), .size = size::zero()};
     return _zero;

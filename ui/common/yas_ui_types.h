@@ -182,6 +182,8 @@ struct region {
     [[nodiscard]] insets insets() const;
     [[nodiscard]] point center() const;
 
+    [[nodiscard]] region combined(region const &) const;
+
     [[nodiscard]] static region const &zero();
     [[nodiscard]] static region zero_centered(ui::size const &);
 };
