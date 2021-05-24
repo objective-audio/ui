@@ -37,6 +37,8 @@ using namespace yas;
     XCTAssertEqual(layout->direction(), ui::layout_direction::vertical);
     XCTAssertEqual(layout->row_order(), ui::layout_order::ascending);
     XCTAssertEqual(layout->col_order(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->actual_cell_count(), 0);
+    XCTAssertFalse(layout->actual_frame().has_value());
 }
 
 - (void)test_create_with_args {
@@ -70,6 +72,8 @@ using namespace yas;
     XCTAssertEqual(layout->direction(), ui::layout_direction::horizontal);
     XCTAssertEqual(layout->row_order(), ui::layout_order::descending);
     XCTAssertEqual(layout->col_order(), ui::layout_order::descending);
+    XCTAssertEqual(layout->actual_cell_count(), 0);
+    XCTAssertFalse(layout->actual_frame().has_value());
 }
 
 - (void)test_cell_layout_guide_rects {
@@ -119,6 +123,29 @@ using namespace yas;
     layout->set_preferred_cell_count(2);
 
     XCTAssertEqual(layout->actual_cell_count(), 2);
+}
+
+- (void)test_actual_frame {
+    auto layout = ui::collection_layout::make_shared(
+        {.frame = {.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 0});
+
+    XCTAssertFalse(layout->actual_frame().has_value());
+
+    layout->set_preferred_cell_count(1);
+
+    XCTAssertTrue(layout->actual_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
+
+    layout->set_preferred_cell_count(2);
+
+    XCTAssertTrue(layout->actual_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+
+    layout->set_preferred_cell_count(3);
+
+    XCTAssertTrue(layout->actual_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+
+    layout->set_preferred_cell_count(4);
+
+    XCTAssertTrue(layout->actual_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
 }
 
 - (void)test_observe_actual_cell_count {
