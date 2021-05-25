@@ -24,7 +24,7 @@ struct collection_layout {
     };
 
     struct args {
-        ui::region frame = {.origin = {.v = 0.0f}, .size = {.v = 0.0f}};
+        ui::region frame = ui::region::zero();
         std::size_t preferred_cell_count = 0;
         ui::size default_cell_size = {1.0f, 1.0f};
         std::vector<line> lines;
