@@ -124,15 +124,7 @@ layout_guide_rect_ptr const &renderer::view_layout_guide_rect() const {
     return this->_view_layout_guide_rect;
 }
 
-layout_guide_rect_ptr &renderer::view_layout_guide_rect() {
-    return this->_view_layout_guide_rect;
-}
-
 layout_guide_rect_ptr const &renderer::safe_area_layout_guide_rect() const {
-    return this->_safe_area_layout_guide_rect;
-}
-
-layout_guide_rect_ptr &renderer::safe_area_layout_guide_rect() {
     return this->_safe_area_layout_guide_rect;
 }
 

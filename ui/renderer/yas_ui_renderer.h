@@ -48,9 +48,7 @@ struct renderer final : view_renderable {
     [[nodiscard]] ui::detector_ptr const &detector() const;
 
     [[nodiscard]] ui::layout_guide_rect_ptr const &view_layout_guide_rect() const;
-    [[nodiscard]] ui::layout_guide_rect_ptr &view_layout_guide_rect();
     [[nodiscard]] ui::layout_guide_rect_ptr const &safe_area_layout_guide_rect() const;
-    [[nodiscard]] ui::layout_guide_rect_ptr &safe_area_layout_guide_rect();
 
     [[nodiscard]] ui::appearance appearance() const;
 
