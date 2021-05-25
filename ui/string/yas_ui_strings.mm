@@ -62,6 +62,10 @@ layout_alignment const &strings::alignment() const {
     return this->_collection_layout->alignment();
 }
 
+std::optional<region> const &strings::actual_frame() const {
+    return this->_collection_layout->actual_frame();
+}
+
 layout_guide_rect_ptr const &strings::frame_layout_guide_rect() {
     return this->_collection_layout->frame_guide_rect;
 }
@@ -84,6 +88,10 @@ observing::syncable strings::observe_line_height(observing::caller<std::optional
 
 observing::syncable strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
     return this->_collection_layout->observe_alignment(std::move(handler));
+}
+
+observing::syncable strings::observe_actual_frame(observing::caller<std::optional<region>>::handler_f &&handler) {
+    return this->_collection_layout->observe_actual_frame(std::move(handler));
 }
 
 void strings::_prepare_chains() {

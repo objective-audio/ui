@@ -34,6 +34,7 @@ struct strings final {
     [[nodiscard]] ui::font_atlas_ptr const &font_atlas() const;
     [[nodiscard]] std::optional<float> const &line_height() const;
     [[nodiscard]] ui::layout_alignment const &alignment() const;
+    [[nodiscard]] std::optional<region> const &actual_frame() const;
 
     [[nodiscard]] ui::layout_guide_rect_ptr const &frame_layout_guide_rect();
 
@@ -43,6 +44,7 @@ struct strings final {
     [[nodiscard]] observing::syncable observe_font_atlas(observing::caller<ui::font_atlas_ptr>::handler_f &&);
     [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_actual_frame(observing::caller<std::optional<region>>::handler_f &&);
 
     [[nodiscard]] static strings_ptr make_shared();
     [[nodiscard]] static strings_ptr make_shared(args);
