@@ -10,6 +10,7 @@
 #import "yas_test_metal_view_controller.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_renderer_tests : XCTestCase
 
@@ -27,7 +28,8 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto renderer = ui::renderer::make_shared();
+    auto const renderer = ui::renderer::make_shared();
+    std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     XCTAssertFalse(renderer->metal_system());
 
@@ -38,7 +40,7 @@ using namespace yas;
     XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer->scale_factor(), 0.0);
 
-    XCTAssertTrue(ui::view_renderer_interface::cast(renderer));
+    XCTAssertTrue(view_renderer);
     XCTAssertTrue(renderer->event_manager());
     XCTAssertTrue(renderer->detector());
 
@@ -104,12 +106,13 @@ using namespace yas;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
 
-    ui::view_renderer_interface::cast(renderer)->view_configure(view);
+    view_renderer->view_configure(view);
 
     double const scale_factor = renderer->scale_factor();
     XCTAssertEqual(view.sampleCount, 4);
@@ -128,7 +131,8 @@ using namespace yas;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     double notified = 0.0f;
 
@@ -136,7 +140,7 @@ using namespace yas;
 
     XCTAssertEqual(notified, 0.0f);
 
-    ui::view_renderer_interface::cast(renderer)->view_configure(view);
+    view_renderer->view_configure(view);
 
     XCTAssertEqual(notified, renderer->scale_factor());
 }
