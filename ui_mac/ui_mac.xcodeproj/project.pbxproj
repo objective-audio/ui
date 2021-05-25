@@ -114,6 +114,7 @@
 		B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609E724B39FB200F9962D /* yas_ui_background.mm */; };
 		B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609E824B39FB200F9962D /* yas_ui_background.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69CD50725E4A53A00E3C33A /* yas_ui_renderer_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B69CD50625E4A53A00E3C33A /* yas_ui_renderer_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6D3EEBC265CFCE200151540 /* yas_ui_strings_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3EEBB265CFCDF00151540 /* yas_ui_strings_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -227,6 +228,7 @@
 		B69609E724B39FB200F9962D /* yas_ui_background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background.mm; sourceTree = "<group>"; };
 		B69609E824B39FB200F9962D /* yas_ui_background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_background.h; sourceTree = "<group>"; };
 		B69CD50625E4A53A00E3C33A /* yas_ui_renderer_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_renderer_dependency.h; sourceTree = "<group>"; };
+		B6D3EEBB265CFCDF00151540 /* yas_ui_strings_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -574,6 +576,7 @@
 		B69CD4F425E4A1D900E3C33A /* string */ = {
 			isa = PBXGroup;
 			children = (
+				B6D3EEBB265CFCDF00151540 /* yas_ui_strings_types.h */,
 				B65AF86921E4D7E400C65DB5 /* yas_ui_strings.h */,
 				B65AF86B21E4D7E400C65DB5 /* yas_ui_strings.mm */,
 			);
@@ -672,6 +675,7 @@
 				B65AF8E121E4D7E400C65DB5 /* yas_ui_collection_layout.h in Headers */,
 				B65AF91021E4D7E400C65DB5 /* yas_ui_metal_system_protocol.h in Headers */,
 				B65AF8DE21E4D7E400C65DB5 /* yas_ui_render_target_types.h in Headers */,
+				B6D3EEBC265CFCE200151540 /* yas_ui_strings_types.h in Headers */,
 				B69CD50725E4A53A00E3C33A /* yas_ui_renderer_dependency.h in Headers */,
 				B65AF92321E4D7E400C65DB5 /* yas_ui_math.h in Headers */,
 				B65AF8D921E4D7E400C65DB5 /* yas_ui_layout_guide.h in Headers */,

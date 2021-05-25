@@ -16,7 +16,7 @@
 using namespace yas;
 using namespace yas::ui;
 
-strings::strings(args args)
+strings::strings(strings_args &&args)
     : _collection_layout(collection_layout::make_shared(
           {.frame = args.frame, .alignment = args.alignment, .row_order = layout_order::descending})),
       _rect_plane(rect_plane::make_shared(args.max_word_count)),
@@ -229,6 +229,6 @@ strings_ptr strings::make_shared() {
     return make_shared({});
 }
 
-strings_ptr strings::make_shared(args args) {
+strings_ptr strings::make_shared(strings_args &&args) {
     return std::shared_ptr<strings>(new strings{std::move(args)});
 }
