@@ -52,7 +52,8 @@ collection_layout::collection_layout(args args)
       _alignment(observing::value::holder<layout_alignment>::make_shared(args.alignment)),
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
-      _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)) {
+      _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
+      _actual_frame(observing::value::holder<std::optional<ui::region>>::make_shared(std::nullopt)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
     }
@@ -259,6 +260,15 @@ std::vector<layout_guide_rect_ptr> const &collection_layout::cell_guide_rects() 
     return this->_cell_guide_rects;
 }
 
+std::optional<ui::region> const &collection_layout::actual_frame() const {
+    return this->_actual_frame->value();
+}
+
+observing::syncable collection_layout::observe_actual_frame(
+    std::function<void(std::optional<ui::region> const &)> &&handler) {
+    return this->_actual_frame->observe(std::move(handler));
+}
+
 void collection_layout::_push_notify_waiting() {
     for (auto &rect : this->_cell_guide_rects) {
         rect->push_notify_waiting();
@@ -277,6 +287,7 @@ void collection_layout::_update_layout() {
 
     if (preferred_cell_count == 0) {
         this->_cell_guide_rects.clear();
+        this->_actual_frame->set_value(std::nullopt);
         this->_actual_cell_count->set_value(0);
         return;
     }
@@ -345,6 +356,7 @@ void collection_layout::_update_layout() {
     this->_push_notify_waiting();
 
     std::size_t idx = 0;
+    std::optional<region> actual_frame{std::nullopt};
 
     for (auto const &row_regions : regions) {
         if (row_regions.size() > 0) {
@@ -367,6 +379,12 @@ void collection_layout::_update_layout() {
                 this->_cell_guide_rects.at(idx)->set_region(
                     this->_direction_swapped_region_if_horizontal(aligned_region));
 
+                if (!actual_frame.has_value()) {
+                    actual_frame = this->_cell_guide_rects.at(idx)->region();
+                } else {
+                    actual_frame = actual_frame->combined(this->_cell_guide_rects.at(idx)->region());
+                }
+
                 ++idx;
             }
         }
@@ -374,6 +392,7 @@ void collection_layout::_update_layout() {
 
     this->_pop_notify_waiting();
 
+    this->_actual_frame->set_value(actual_frame);
     this->_actual_cell_count->set_value(actual_cell_count);
 }
 

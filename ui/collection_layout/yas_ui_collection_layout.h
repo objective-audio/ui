@@ -90,6 +90,8 @@ struct collection_layout {
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
     [[nodiscard]] std::vector<ui::layout_guide_rect_ptr> const &cell_guide_rects() const;
+    [[nodiscard]] std::optional<ui::region> const &actual_frame() const;
+    [[nodiscard]] observing::syncable observe_actual_frame(std::function<void(std::optional<ui::region> const &)> &&);
 
     [[nodiscard]] static collection_layout_ptr make_shared();
     [[nodiscard]] static collection_layout_ptr make_shared(args);
@@ -112,6 +114,7 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
+    observing::value::holder_ptr<std::optional<ui::region>> _actual_frame;
 
     ui::layout_guide_rect_ptr const _border_guide_rect = ui::layout_guide_rect::make_shared();
     observing::canceller_pool _pool;
