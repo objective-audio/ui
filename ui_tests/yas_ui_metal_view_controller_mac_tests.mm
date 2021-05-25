@@ -22,7 +22,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
+    [[YASTestMetalViewController sharedViewController] setRenderer:nullptr];
     [super tearDown];
 }
 
@@ -52,7 +52,7 @@ using namespace yas;
     XCTAssertTrue(viewController.paused);
 }
 
-- (void)test_renderable {
+- (void)test_renderer {
     auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
@@ -63,11 +63,11 @@ using namespace yas;
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
-    XCTAssertFalse(viewController.renderable);
+    XCTAssertFalse(viewController.renderer);
 
-    [viewController setRenderable:renderer];
+    [viewController setRenderer:renderer];
 
-    XCTAssertTrue(viewController.renderable);
+    XCTAssertTrue(viewController.renderer);
 }
 
 - (void)test_drawable_size_will_change {
@@ -85,7 +85,7 @@ using namespace yas;
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
 
-    [viewController setRenderable:renderer];
+    [viewController setRenderer:renderer];
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{16, 16}));
 

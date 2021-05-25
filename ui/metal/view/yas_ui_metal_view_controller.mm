@@ -12,11 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 using namespace yas;
 
 namespace yas::ui {
-namespace metal_view {
-    struct cpp_variables {
-        ui::view_renderable_ptr renderable{nullptr};
-    };
-}
+struct metal_view_cpp {
+    ui::view_renderer_interface_ptr renderable{nullptr};
+};
 }
 
 @interface YASUIMetalViewController () <MTKViewDelegate, YASUIMetalViewDelegate>
@@ -24,7 +22,7 @@ namespace metal_view {
 @end
 
 @implementation YASUIMetalViewController {
-    ui::metal_view::cpp_variables _cpp;
+    ui::metal_view_cpp _cpp;
 }
 
 #if TARGET_OS_IPHONE
@@ -108,7 +106,7 @@ namespace metal_view {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderable:(yas::ui::view_renderable_ptr const &)renderable {
+- (void)setRenderer:(yas::ui::view_renderer_interface_ptr const &)renderable {
     self->_cpp.renderable = renderable;
 
     if (renderable) {
@@ -118,7 +116,7 @@ namespace metal_view {
     }
 }
 
-- (yas::ui::view_renderable_ptr const &)renderable {
+- (yas::ui::view_renderer_interface_ptr const &)renderer {
     return self->_cpp.renderable;
 }
 

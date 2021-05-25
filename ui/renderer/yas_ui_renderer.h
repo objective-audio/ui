@@ -23,7 +23,7 @@ class metal_system;
 class action_target;
 enum class system_type;
 
-struct renderer final : view_renderable {
+struct renderer final : view_renderer_interface {
     virtual ~renderer();
 
     [[nodiscard]] ui::uint_size const &view_size() const;
@@ -48,9 +48,7 @@ struct renderer final : view_renderable {
     [[nodiscard]] ui::detector_ptr const &detector() const;
 
     [[nodiscard]] ui::layout_guide_rect_ptr const &view_layout_guide_rect() const;
-    [[nodiscard]] ui::layout_guide_rect_ptr &view_layout_guide_rect();
     [[nodiscard]] ui::layout_guide_rect_ptr const &safe_area_layout_guide_rect() const;
-    [[nodiscard]] ui::layout_guide_rect_ptr &safe_area_layout_guide_rect();
 
     [[nodiscard]] ui::appearance appearance() const;
 
@@ -83,16 +81,15 @@ struct renderer final : view_renderable {
     simd::float4x4 _projection_matrix;
     renderer_updates_t _updates;
 
-    ui::background_ptr _background;
-    ui::node_ptr _root_node;
-    parallel_action_ptr _parallel_action;
-    ui::detector_ptr _detector;
-    ui::event_manager_ptr _event_manager;
-    ui::layout_guide_rect_ptr _view_layout_guide_rect;
-    ui::layout_guide_rect_ptr _safe_area_layout_guide_rect;
+    ui::background_ptr const _background;
+    ui::node_ptr const _root_node;
+    parallel_action_ptr const _parallel_action;
+    ui::detector_ptr const _detector;
+    ui::event_manager_ptr const _event_manager;
+    ui::layout_guide_rect_ptr const _view_layout_guide_rect;
+    ui::layout_guide_rect_ptr const _safe_area_layout_guide_rect;
 
-    observing::notifier_ptr<std::nullptr_t> const _will_render_notifier =
-        observing::notifier<std::nullptr_t>::make_shared();
+    observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
     explicit renderer(std::shared_ptr<ui::metal_system> const &);
 

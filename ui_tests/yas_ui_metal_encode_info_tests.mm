@@ -21,7 +21,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
+    [[YASTestMetalViewController sharedViewController] setRenderer:nullptr];
     [super tearDown];
 }
 
@@ -72,7 +72,7 @@ using namespace yas;
 
     renderer->insert_action(pre_render_action);
 
-    [[YASTestMetalViewController sharedViewController] setRenderable:renderer];
+    [[YASTestMetalViewController sharedViewController] setRenderer:renderer];
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
