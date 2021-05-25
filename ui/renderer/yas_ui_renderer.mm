@@ -51,7 +51,8 @@ renderer::renderer(metal_system_ptr const &metal_system)
       _detector(detector::make_shared()),
       _event_manager(event_manager::make_shared()),
       _view_layout_guide_rect(layout_guide_rect::make_shared()),
-      _safe_area_layout_guide_rect(layout_guide_rect::make_shared()) {
+      _safe_area_layout_guide_rect(layout_guide_rect::make_shared()),
+      _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
 }
 
 renderer::~renderer() = default;
