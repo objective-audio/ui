@@ -62,7 +62,7 @@ using namespace yas;
     auto mesh3 = ui::mesh::make_shared();
     auto mesh_data3 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh3->set_mesh_data(mesh_data3);
-    auto texture3 = ui::texture::make_shared(ui::texture::args{});
+    auto texture3 = ui::texture::make_shared(ui::texture_args{});
     mesh3->set_texture(texture3);
     batch_encodable->append_mesh(mesh3);
 

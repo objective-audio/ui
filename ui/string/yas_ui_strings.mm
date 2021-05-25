@@ -16,7 +16,7 @@
 using namespace yas;
 using namespace yas::ui;
 
-strings::strings(args args)
+strings::strings(strings_args &&args)
     : _collection_layout(collection_layout::make_shared(
           {.frame = args.frame, .alignment = args.alignment, .row_order = layout_order::descending})),
       _rect_plane(rect_plane::make_shared(args.max_word_count)),
@@ -62,6 +62,10 @@ layout_alignment const &strings::alignment() const {
     return this->_collection_layout->alignment();
 }
 
+std::optional<region> const &strings::actual_frame() const {
+    return this->_collection_layout->actual_frame();
+}
+
 layout_guide_rect_ptr const &strings::frame_layout_guide_rect() {
     return this->_collection_layout->frame_guide_rect;
 }
@@ -84,6 +88,10 @@ observing::syncable strings::observe_line_height(observing::caller<std::optional
 
 observing::syncable strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
     return this->_collection_layout->observe_alignment(std::move(handler));
+}
+
+observing::syncable strings::observe_actual_frame(observing::caller<std::optional<region>>::handler_f &&handler) {
+    return this->_collection_layout->observe_actual_frame(std::move(handler));
 }
 
 void strings::_prepare_chains() {
@@ -221,6 +229,6 @@ strings_ptr strings::make_shared() {
     return make_shared({});
 }
 
-strings_ptr strings::make_shared(args args) {
+strings_ptr strings::make_shared(strings_args &&args) {
     return std::shared_ptr<strings>(new strings{std::move(args)});
 }
