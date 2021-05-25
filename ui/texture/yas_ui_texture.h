@@ -9,6 +9,7 @@
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_texture_types.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
@@ -19,14 +20,6 @@ enum class draw_image_error;
 using draw_image_result = result<uint_region, draw_image_error>;
 
 struct texture : metal_object {
-    struct args {
-        ui::uint_size point_size;
-        double scale_factor = 1.0;
-        uint32_t draw_padding = 2;
-        ui::texture_usages_t usages = {texture_usage::shader_read};
-        ui::pixel_format pixel_format = ui::pixel_format::rgba8_unorm;
-    };
-
     [[nodiscard]] uintptr_t identifier() const;
 
     [[nodiscard]] uint_size point_size() const;
@@ -48,7 +41,7 @@ struct texture : metal_object {
 
     void sync_scale_from_renderer(ui::renderer_ptr const &);
 
-    [[nodiscard]] static texture_ptr make_shared(args);
+    [[nodiscard]] static texture_ptr make_shared(texture_args &&);
 
    private:
     ui::uint_size _point_size;
@@ -70,7 +63,7 @@ struct texture : metal_object {
         observing::notifier<std::nullptr_t>::make_shared();
     observing::notifier_ptr<std::nullptr_t> const _size_notifier = observing::notifier<std::nullptr_t>::make_shared();
 
-    explicit texture(args &&);
+    explicit texture(texture_args &&);
 
     texture(texture const &) = delete;
     texture(texture &&) = delete;

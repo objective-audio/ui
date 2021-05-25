@@ -31,7 +31,7 @@ std::string to_string(draw_image_error const &);
 
 std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
-texture::texture(args &&args)
+texture::texture(texture_args &&args)
     : _draw_actual_padding(args.draw_padding * args.scale_factor),
       _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
       _point_size(std::move(args.point_size)),
@@ -239,7 +239,7 @@ void texture::_size_updated() {
     this->_size_notifier->notify(nullptr);
 }
 
-texture_ptr texture::make_shared(args args) {
+texture_ptr texture::make_shared(texture_args &&args) {
     return std::shared_ptr<texture>(new texture{std::move(args)});
 }
 

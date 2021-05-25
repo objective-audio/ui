@@ -156,9 +156,9 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    auto texture1a = ui::texture::make_shared(ui::texture::args{});
+    auto texture1a = ui::texture::make_shared(ui::texture_args{});
     auto texture1b = texture1a;
-    auto texture2 = ui::texture::make_shared(ui::texture::args{});
+    auto texture2 = ui::texture::make_shared(ui::texture_args{});
 
     XCTAssertTrue(texture1a == texture1a);
     XCTAssertTrue(texture1a == texture1b);
@@ -174,9 +174,9 @@ using namespace yas;
 
     auto metal_system = ui::metal_system::make_shared(device.object());
 
-    auto texture1a = ui::texture::make_shared(ui::texture::args{});
+    auto texture1a = ui::texture::make_shared(ui::texture_args{});
     auto texture1b = texture1a;
-    auto texture2 = ui::texture::make_shared(ui::texture::args{});
+    auto texture2 = ui::texture::make_shared(ui::texture_args{});
 
     XCTAssertFalse(texture1a != texture1a);
     XCTAssertFalse(texture1a != texture1b);
