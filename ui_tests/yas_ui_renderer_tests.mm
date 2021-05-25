@@ -22,7 +22,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
+    [[YASTestMetalViewController sharedViewController] setRenderer:nullptr];
     [super tearDown];
 }
 

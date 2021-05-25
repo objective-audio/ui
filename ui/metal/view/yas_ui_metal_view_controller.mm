@@ -108,7 +108,7 @@ namespace metal_view {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderable:(yas::ui::view_renderer_interface_ptr const &)renderable {
+- (void)setRenderer:(yas::ui::view_renderer_interface_ptr const &)renderable {
     self->_cpp.renderable = renderable;
 
     if (renderable) {
@@ -118,7 +118,7 @@ namespace metal_view {
     }
 }
 
-- (yas::ui::view_renderer_interface_ptr const &)renderable {
+- (yas::ui::view_renderer_interface_ptr const &)renderer {
     return self->_cpp.renderable;
 }
 

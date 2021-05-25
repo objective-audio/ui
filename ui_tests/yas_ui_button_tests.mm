@@ -21,7 +21,7 @@ using namespace yas;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] setRenderable:nullptr];
+    [[YASTestMetalViewController sharedViewController] setRenderer:nullptr];
     [super tearDown];
 }
 
@@ -59,7 +59,7 @@ using namespace yas;
     auto metal_system = ui::metal_system::make_shared(device.object());
     auto renderer = ui::renderer::make_shared(metal_system);
     [[YASTestMetalViewController sharedViewController].view.window setFrame:CGRectMake(0, 0, 2, 2) display:YES];
-    [[YASTestMetalViewController sharedViewController] setRenderable:renderer];
+    [[YASTestMetalViewController sharedViewController] setRenderer:renderer];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
 
