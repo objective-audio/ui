@@ -7,6 +7,7 @@
 #import <sstream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_types_tests : XCTestCase
 
@@ -691,6 +692,17 @@ using namespace yas;
 - (void)test_uint_region_to_region {
     XCTAssertTrue(ui::to_region(ui::uint_region{.origin = {.x = 1, .y = 2}, .size = {.width = 4, .height = 8}}) ==
                   (ui::region{.origin = {.x = 1.0f, .y = 2.0f}, .size = {.width = 4.0f, .height = 8.0f}}));
+}
+
+- (void)test_range_combined {
+    XCTAssertTrue((range{0, 1}.combined({2, 1})) == (range{0, 3}));
+    XCTAssertTrue((range{-1, 2}.combined({0, 3})) == (range{-1, 4}));
+    XCTAssertTrue(range::zero().combined(range::zero()) == range::zero());
+}
+
+- (void)test_region_combined {
+    XCTAssertTrue((region{.origin = {0, 1}, .size = {2, 3}}.combined({.origin = {4, 5}, .size = {6, 7}})) ==
+                  (region{.origin = {0, 1}, .size = {10, 11}}));
 }
 
 @end
