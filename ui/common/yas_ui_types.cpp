@@ -287,7 +287,21 @@ point region::center() const {
 region region::combined(region const &rhs) const {
     auto const h_range = this->horizontal_range().combined(rhs.horizontal_range());
     auto const v_range = this->vertical_range().combined(rhs.vertical_range());
-    return {.origin = {h_range.location, v_range.location}, .size = {h_range.length, v_range.length}};
+    return make_region(h_range, v_range);
+}
+
+std::optional<region> region::intersected(region const &rhs) const {
+    auto const h_range = this->horizontal_range().intersected(rhs.horizontal_range());
+    if (!h_range.has_value()) {
+        return std::nullopt;
+    }
+
+    auto const v_range = this->vertical_range().intersected(rhs.vertical_range());
+    if (!v_range.has_value()) {
+        return std::nullopt;
+    }
+
+    return make_region(h_range.value(), v_range.value());
 }
 
 region const &region::zero() {

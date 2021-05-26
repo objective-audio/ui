@@ -187,6 +187,7 @@ struct region {
     [[nodiscard]] point center() const;
 
     [[nodiscard]] region combined(region const &) const;
+    [[nodiscard]] std::optional<region> intersected(region const &) const;
 
     [[nodiscard]] static region const &zero();
     [[nodiscard]] static region zero_centered(ui::size const &);
