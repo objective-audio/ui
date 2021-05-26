@@ -171,6 +171,12 @@ float range::max() const {
     return std::max(this->location, this->location + this->length);
 }
 
+range range::combined(range const &rhs) const {
+    float const min = std::min(this->min(), rhs.min());
+    float const max = std::max(this->max(), rhs.max());
+    return {min, max - min};
+}
+
 range const &range::zero() {
     static range const _zero{.location = 0.0f, .length = 0.0f};
     return _zero;
