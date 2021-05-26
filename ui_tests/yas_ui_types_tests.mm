@@ -705,4 +705,16 @@ using namespace yas::ui;
                   (region{.origin = {0, 1}, .size = {10, 11}}));
 }
 
+- (void)test_range_intersected {
+    XCTAssertTrue((range{0, 1}.intersected({0, 1})) == (range{0, 1}));
+    XCTAssertTrue((range{0, 1}.intersected({1, 1})) == (range{1, 0}));
+    XCTAssertTrue((range{0, 2}.intersected({1, 2})) == (range{1, 1}));
+    XCTAssertFalse((range{0, 1}.intersected({2, 1})).has_value());
+}
+
+- (void)test_region_intersected {
+    XCTAssertTrue((region{.origin = {0, 1}, .size = {2, 3}}.intersected({.origin = {1, 2}, .size = {4, 5}})) ==
+                  (region{.origin = {1, 2}, .size = {1, 2}}));
+}
+
 @end
