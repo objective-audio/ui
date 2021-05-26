@@ -133,7 +133,7 @@ struct range {
     [[nodiscard]] float min() const;
     [[nodiscard]] float max() const;
 
-    range combined(range const &) const;
+    [[nodiscard]] range combined(range const &) const;
 
     [[nodiscard]] static range const &zero();
 };
