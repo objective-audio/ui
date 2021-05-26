@@ -177,6 +177,17 @@ range range::combined(range const &rhs) const {
     return {min, max - min};
 }
 
+std::optional<range> range::intersected(range const &rhs) const {
+    float const min = std::max(this->min(), rhs.min());
+    float const max = std::min(this->max(), rhs.max());
+
+    if (min <= max) {
+        return range{min, max - min};
+    } else {
+        return std::nullopt;
+    }
+}
+
 range const &range::zero() {
     static range const _zero{.location = 0.0f, .length = 0.0f};
     return _zero;

@@ -8,6 +8,7 @@
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
 #include <ui/yas_ui_shared_types.h>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -134,6 +135,7 @@ struct range {
     [[nodiscard]] float max() const;
 
     [[nodiscard]] range combined(range const &) const;
+    [[nodiscard]] std::optional<range> intersected(range const &) const;
 
     [[nodiscard]] static range const &zero();
 };
