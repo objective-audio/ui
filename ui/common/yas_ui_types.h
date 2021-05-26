@@ -130,8 +130,8 @@ struct range {
 
     explicit operator bool() const;
 
-    float min() const;
-    float max() const;
+    [[nodiscard]] float min() const;
+    [[nodiscard]] float max() const;
 
     range combined(range const &) const;
 
