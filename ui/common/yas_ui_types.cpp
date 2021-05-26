@@ -274,11 +274,9 @@ point region::center() const {
 }
 
 region region::combined(region const &rhs) const {
-    float const left = std::min(this->left(), rhs.left());
-    float const bottom = std::min(this->bottom(), rhs.bottom());
-    float const right = std::max(this->right(), rhs.right());
-    float const top = std::max(this->top(), rhs.top());
-    return region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+    auto const h_range = this->horizontal_range().combined(rhs.horizontal_range());
+    auto const v_range = this->vertical_range().combined(rhs.vertical_range());
+    return {.origin = {h_range.location, v_range.location}, .size = {h_range.length, v_range.length}};
 }
 
 region const &region::zero() {
