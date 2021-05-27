@@ -10,34 +10,6 @@
 using namespace yas;
 using namespace yas::ui;
 
-#pragma mark - collection_layout::line
-
-bool collection_layout::line::operator==(line const &rhs) const {
-    if (this->new_line_min_offset != rhs.new_line_min_offset) {
-        return false;
-    }
-
-    auto const cell_count = this->cell_sizes.size();
-
-    if (cell_count != rhs.cell_sizes.size()) {
-        return false;
-    }
-
-    auto each = make_fast_each(cell_count);
-    while (yas_each_next(each)) {
-        auto const &idx = yas_each_index(each);
-        if (this->cell_sizes.at(idx) != rhs.cell_sizes.at(idx)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool collection_layout::line::operator!=(line const &rhs) const {
-    return !(*this == rhs);
-}
-
 #pragma mark - collection_layout
 
 collection_layout::collection_layout(args args)
@@ -53,7 +25,7 @@ collection_layout::collection_layout(args args)
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
       _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
-      _actual_frame(observing::value::holder<std::optional<ui::region>>::make_shared(std::nullopt)) {
+      _actual_cells_frame(observing::value::holder<std::optional<ui::region>>::make_shared(std::nullopt)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
     }
@@ -260,13 +232,13 @@ std::vector<layout_guide_rect_ptr> const &collection_layout::cell_guide_rects() 
     return this->_cell_guide_rects;
 }
 
-std::optional<ui::region> const &collection_layout::actual_frame() const {
-    return this->_actual_frame->value();
+std::optional<ui::region> const &collection_layout::actual_cells_frame() const {
+    return this->_actual_cells_frame->value();
 }
 
 observing::syncable collection_layout::observe_actual_frame(
     std::function<void(std::optional<ui::region> const &)> &&handler) {
-    return this->_actual_frame->observe(std::move(handler));
+    return this->_actual_cells_frame->observe(std::move(handler));
 }
 
 void collection_layout::_push_notify_waiting() {
@@ -287,7 +259,7 @@ void collection_layout::_update_layout() {
 
     if (preferred_cell_count == 0) {
         this->_cell_guide_rects.clear();
-        this->_actual_frame->set_value(std::nullopt);
+        this->_actual_cells_frame->set_value(std::nullopt);
         this->_actual_cell_count->set_value(0);
         return;
     }
@@ -392,7 +364,12 @@ void collection_layout::_update_layout() {
 
     this->_pop_notify_waiting();
 
-    this->_actual_frame->set_value(actual_frame);
+    if (actual_frame) {
+        this->_actual_cells_frame->set_value(actual_frame.value());
+    } else {
+        this->_actual_cells_frame->set_value(std::nullopt);
+    }
+
     this->_actual_cell_count->set_value(actual_cell_count);
 }
 

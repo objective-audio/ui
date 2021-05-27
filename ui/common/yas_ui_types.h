@@ -8,6 +8,7 @@
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
 #include <ui/yas_ui_shared_types.h>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -130,8 +131,11 @@ struct range {
 
     explicit operator bool() const;
 
-    float min() const;
-    float max() const;
+    [[nodiscard]] float min() const;
+    [[nodiscard]] float max() const;
+
+    [[nodiscard]] range combined(range const &) const;
+    [[nodiscard]] std::optional<range> intersected(range const &) const;
 
     [[nodiscard]] static range const &zero();
 };
@@ -183,6 +187,7 @@ struct region {
     [[nodiscard]] point center() const;
 
     [[nodiscard]] region combined(region const &) const;
+    [[nodiscard]] std::optional<region> intersected(region const &) const;
 
     [[nodiscard]] static region const &zero();
     [[nodiscard]] static region zero_centered(ui::size const &);

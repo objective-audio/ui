@@ -171,6 +171,23 @@ float range::max() const {
     return std::max(this->location, this->location + this->length);
 }
 
+range range::combined(range const &rhs) const {
+    float const min = std::min(this->min(), rhs.min());
+    float const max = std::max(this->max(), rhs.max());
+    return {min, max - min};
+}
+
+std::optional<range> range::intersected(range const &rhs) const {
+    float const min = std::max(this->min(), rhs.min());
+    float const max = std::min(this->max(), rhs.max());
+
+    if (min <= max) {
+        return range{min, max - min};
+    } else {
+        return std::nullopt;
+    }
+}
+
 range const &range::zero() {
     static range const _zero{.location = 0.0f, .length = 0.0f};
     return _zero;
@@ -268,11 +285,23 @@ point region::center() const {
 }
 
 region region::combined(region const &rhs) const {
-    float const left = std::min(this->left(), rhs.left());
-    float const bottom = std::min(this->bottom(), rhs.bottom());
-    float const right = std::max(this->right(), rhs.right());
-    float const top = std::max(this->top(), rhs.top());
-    return region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
+    auto const h_range = this->horizontal_range().combined(rhs.horizontal_range());
+    auto const v_range = this->vertical_range().combined(rhs.vertical_range());
+    return make_region(h_range, v_range);
+}
+
+std::optional<region> region::intersected(region const &rhs) const {
+    auto const h_range = this->horizontal_range().intersected(rhs.horizontal_range());
+    if (!h_range.has_value()) {
+        return std::nullopt;
+    }
+
+    auto const v_range = this->vertical_range().intersected(rhs.vertical_range());
+    if (!v_range.has_value()) {
+        return std::nullopt;
+    }
+
+    return make_region(h_range.value(), v_range.value());
 }
 
 region const &region::zero() {

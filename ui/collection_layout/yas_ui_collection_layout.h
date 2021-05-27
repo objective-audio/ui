@@ -6,36 +6,16 @@
 
 #include <cpp_utils/yas_result.h>
 #include <observing/yas_observing_umbrella.h>
+#include <ui/yas_ui_collection_layout_types.h>
 #include <ui/yas_ui_layout_guide.h>
-#include <ui/yas_ui_layout_types.h>
 #include <ui/yas_ui_ptr.h>
-#include <ui/yas_ui_types.h>
 
 #include <vector>
 
 namespace yas::ui {
 struct collection_layout {
-    struct line {
-        std::vector<ui::size> cell_sizes;
-        float new_line_min_offset = 0.0f;
-
-        bool operator==(line const &rhs) const;
-        bool operator!=(line const &rhs) const;
-    };
-
-    struct args {
-        ui::region frame = ui::region::zero();
-        std::size_t preferred_cell_count = 0;
-        ui::size default_cell_size = {1.0f, 1.0f};
-        std::vector<line> lines;
-        float row_spacing = 0.0f;
-        float col_spacing = 0.0f;
-        ui::layout_borders borders;
-        ui::layout_alignment alignment = ui::layout_alignment::min;
-        ui::layout_direction direction = ui::layout_direction::vertical;
-        ui::layout_order row_order = ui::layout_order::ascending;
-        ui::layout_order col_order = ui::layout_order::ascending;
-    };
+    using line = collection_layout_line;
+    using args = collection_layout_args;
 
     ui::layout_guide_rect_ptr const frame_guide_rect;
     ui::layout_borders const borders;
@@ -90,7 +70,7 @@ struct collection_layout {
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
     [[nodiscard]] std::vector<ui::layout_guide_rect_ptr> const &cell_guide_rects() const;
-    [[nodiscard]] std::optional<ui::region> const &actual_frame() const;
+    [[nodiscard]] std::optional<ui::region> const &actual_cells_frame() const;
     [[nodiscard]] observing::syncable observe_actual_frame(std::function<void(std::optional<ui::region> const &)> &&);
 
     [[nodiscard]] static collection_layout_ptr make_shared();
@@ -114,7 +94,7 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
     std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
-    observing::value::holder_ptr<std::optional<ui::region>> _actual_frame;
+    observing::value::holder_ptr<std::optional<ui::region>> _actual_cells_frame;
 
     ui::layout_guide_rect_ptr const _border_guide_rect = ui::layout_guide_rect::make_shared();
     observing::canceller_pool _pool;
