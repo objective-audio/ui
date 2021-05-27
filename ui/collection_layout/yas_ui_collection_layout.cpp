@@ -25,7 +25,7 @@ collection_layout::collection_layout(args args)
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
       _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
-      _actual_frame(observing::value::holder<std::optional<ui::region>>::make_shared(std::nullopt)) {
+      _actual_cells_frame(observing::value::holder<std::optional<ui::region>>::make_shared(std::nullopt)) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
     }
@@ -232,13 +232,13 @@ std::vector<layout_guide_rect_ptr> const &collection_layout::cell_guide_rects() 
     return this->_cell_guide_rects;
 }
 
-std::optional<ui::region> const &collection_layout::actual_frame() const {
-    return this->_actual_frame->value();
+std::optional<ui::region> const &collection_layout::actual_cells_frame() const {
+    return this->_actual_cells_frame->value();
 }
 
 observing::syncable collection_layout::observe_actual_frame(
     std::function<void(std::optional<ui::region> const &)> &&handler) {
-    return this->_actual_frame->observe(std::move(handler));
+    return this->_actual_cells_frame->observe(std::move(handler));
 }
 
 void collection_layout::_push_notify_waiting() {
@@ -259,7 +259,7 @@ void collection_layout::_update_layout() {
 
     if (preferred_cell_count == 0) {
         this->_cell_guide_rects.clear();
-        this->_actual_frame->set_value(std::nullopt);
+        this->_actual_cells_frame->set_value(std::nullopt);
         this->_actual_cell_count->set_value(0);
         return;
     }
@@ -366,11 +366,11 @@ void collection_layout::_update_layout() {
 
     if (actual_frame) {
         auto const &borders = this->borders;
-        this->_actual_frame->set_value(
+        this->_actual_cells_frame->set_value(
             actual_frame.value() +
             insets{.left = -borders.left, .right = borders.right, .bottom = -borders.bottom, .top = borders.top});
     } else {
-        this->_actual_frame->set_value(std::nullopt);
+        this->_actual_cells_frame->set_value(std::nullopt);
     }
 
     this->_actual_cell_count->set_value(actual_cell_count);
