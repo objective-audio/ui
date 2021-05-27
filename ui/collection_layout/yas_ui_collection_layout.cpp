@@ -364,7 +364,15 @@ void collection_layout::_update_layout() {
 
     this->_pop_notify_waiting();
 
-    this->_actual_frame->set_value(actual_frame);
+    if (actual_frame) {
+        auto const &borders = this->borders;
+        this->_actual_frame->set_value(
+            actual_frame.value() +
+            insets{.left = -borders.left, .right = borders.right, .bottom = -borders.bottom, .top = borders.top});
+    } else {
+        this->_actual_frame->set_value(std::nullopt);
+    }
+
     this->_actual_cell_count->set_value(actual_cell_count);
 }
 
