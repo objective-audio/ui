@@ -125,7 +125,7 @@ using namespace yas;
     XCTAssertEqual(layout->actual_cell_count(), 2);
 }
 
-- (void)test_actual_frame {
+- (void)test_actual_cells_frame {
     auto layout = ui::collection_layout::make_shared(
         {.frame = {.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 0});
 

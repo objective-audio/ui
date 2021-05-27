@@ -365,10 +365,7 @@ void collection_layout::_update_layout() {
     this->_pop_notify_waiting();
 
     if (actual_frame) {
-        auto const &borders = this->borders;
-        this->_actual_cells_frame->set_value(
-            actual_frame.value() +
-            insets{.left = -borders.left, .right = borders.right, .bottom = -borders.bottom, .top = borders.top});
+        this->_actual_cells_frame->set_value(actual_frame.value());
     } else {
         this->_actual_cells_frame->set_value(std::nullopt);
     }
