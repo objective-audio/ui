@@ -4,17 +4,14 @@
 
 #pragma once
 
+#include <ui/yas_ui_image_types.h>
 #include <ui/yas_ui_ptr.h>
-#include <ui/yas_ui_types.h>
 
 #include <functional>
 
 namespace yas::ui {
 struct image final {
-    struct args {
-        ui::uint_size point_size;
-        double scale_factor = 1.0;
-    };
+    using args = image_args;
 
     virtual ~image();
 

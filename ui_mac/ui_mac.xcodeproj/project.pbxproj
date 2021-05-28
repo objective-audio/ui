@@ -119,6 +119,7 @@
 		B6D3EEBC265CFCE200151540 /* yas_ui_strings_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3EEBB265CFCDF00151540 /* yas_ui_strings_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3EEC5265CFED200151540 /* yas_ui_texture_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3EEC4265CFED200151540 /* yas_ui_texture_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEEC9726612B5A00C4168B /* yas_ui_font_atlas_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9626612B5A00C4168B /* yas_ui_font_atlas_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DEEC9B26612DD500C4168B /* yas_ui_image_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9A26612DD500C4168B /* yas_ui_image_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -237,6 +238,7 @@
 		B6D3EEBB265CFCDF00151540 /* yas_ui_strings_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings_types.h; sourceTree = "<group>"; };
 		B6D3EEC4265CFED200151540 /* yas_ui_texture_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture_types.h; sourceTree = "<group>"; };
 		B6DEEC9626612B5A00C4168B /* yas_ui_font_atlas_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_font_atlas_types.h; sourceTree = "<group>"; };
+		B6DEEC9A26612DD500C4168B /* yas_ui_image_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_image_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -501,6 +503,7 @@
 		B69CD4E325E4A11900E3C33A /* image */ = {
 			isa = PBXGroup;
 			children = (
+				B6DEEC9A26612DD500C4168B /* yas_ui_image_types.h */,
 				B65AF8AF21E4D7E400C65DB5 /* yas_ui_image.cpp */,
 				B65AF86321E4D7E300C65DB5 /* yas_ui_image.h */,
 			);
@@ -686,6 +689,7 @@
 				B65AF90321E4D7E400C65DB5 /* yas_ui_rect_plane.h in Headers */,
 				B65AF8E121E4D7E400C65DB5 /* yas_ui_collection_layout.h in Headers */,
 				B65AF91021E4D7E400C65DB5 /* yas_ui_metal_system_protocol.h in Headers */,
+				B6DEEC9B26612DD500C4168B /* yas_ui_image_types.h in Headers */,
 				B65AF8DE21E4D7E400C65DB5 /* yas_ui_render_target_types.h in Headers */,
 				B6D3EEBC265CFCE200151540 /* yas_ui_strings_types.h in Headers */,
 				B6DEEC9726612B5A00C4168B /* yas_ui_font_atlas_types.h in Headers */,
