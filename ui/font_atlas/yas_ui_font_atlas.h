@@ -12,8 +12,6 @@ namespace yas::ui {
 class word_info;
 
 struct font_atlas final {
-    using args = font_atlas_args;
-
     virtual ~font_atlas();
 
     [[nodiscard]] std::string const &font_name() const;
@@ -32,7 +30,7 @@ struct font_atlas final {
     [[nodiscard]] observing::syncable observe_texture(observing::caller<texture_ptr>::handler_f &&);
     [[nodiscard]] observing::endable observe_texture_updated(observing::caller<ui::texture_ptr>::handler_f &&);
 
-    [[nodiscard]] static font_atlas_ptr make_shared(args);
+    [[nodiscard]] static font_atlas_ptr make_shared(font_atlas_args &&);
 
    private:
     class impl;
@@ -55,7 +53,7 @@ struct font_atlas final {
     std::optional<observing::cancellable_ptr> _texture_canceller = std::nullopt;
     observing::cancellable_ptr _texture_changed_canceller = nullptr;
 
-    font_atlas(args &&);
+    font_atlas(font_atlas_args &&);
 
     font_atlas(font_atlas const &) = delete;
     font_atlas(font_atlas &&) = delete;
