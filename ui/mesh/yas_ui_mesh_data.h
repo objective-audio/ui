@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cpp_utils/yas_objc_ptr.h>
+#include <ui/yas_ui_mesh_data_types.h>
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_renderer_dependency.h>
@@ -14,10 +15,7 @@
 
 namespace yas::ui {
 struct mesh_data : renderable_mesh_data, metal_object {
-    struct args {
-        std::size_t vertex_count = 0;
-        std::size_t index_count = 0;
-    };
+    using args = mesh_data_args;
 
     [[nodiscard]] ui::vertex2d_t const *vertices() const;
     [[nodiscard]] std::size_t vertex_count() const;

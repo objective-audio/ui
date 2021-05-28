@@ -121,6 +121,7 @@
 		B6DEEC9926612CB700C4168B /* yas_ui_font_atlas_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEEC9D26612ED700C4168B /* yas_ui_image_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9C26612ED700C4168B /* yas_ui_image_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEEC9F2661375000C4168B /* yas_ui_metal_encode_info_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DEECA52661395900C4168B /* yas_ui_mesh_data_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEECA42661395900C4168B /* yas_ui_mesh_data_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -244,6 +245,7 @@
 		B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_font_atlas_types.h; sourceTree = "<group>"; };
 		B6DEEC9C26612ED700C4168B /* yas_ui_image_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_image_types.h; sourceTree = "<group>"; };
 		B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_encode_info_types.h; sourceTree = "<group>"; };
+		B6DEECA42661395900C4168B /* yas_ui_mesh_data_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_mesh_data_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -341,6 +343,7 @@
 		B6629A0B25E69D1F00443098 /* mesh */ = {
 			isa = PBXGroup;
 			children = (
+				B6DEECA42661395900C4168B /* yas_ui_mesh_data_types.h */,
 				B6629A0C25E69D1F00443098 /* yas_ui_mesh_data.mm */,
 				B6629A0D25E69D1F00443098 /* yas_ui_mesh.mm */,
 				B6629A0E25E69D1F00443098 /* yas_ui_mesh.h */,
@@ -701,6 +704,7 @@
 				B6DEEC9D26612ED700C4168B /* yas_ui_image_types.h in Headers */,
 				B6629AB025E69D1F00443098 /* yas_ui_color.h in Headers */,
 				B6D3EEC1265CFD4400151540 /* yas_ui_strings_types.h in Headers */,
+				B6DEECA52661395900C4168B /* yas_ui_mesh_data_types.h in Headers */,
 				B6DEEC9926612CB700C4168B /* yas_ui_font_atlas_types.h in Headers */,
 				B6629ACB25E69D1F00443098 /* yas_ui_collection_layout.h in Headers */,
 				B6629ACA25E69D1F00443098 /* yas_ui_action.h in Headers */,
