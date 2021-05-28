@@ -10,7 +10,7 @@
 #include <ui/yas_ui_node.h>
 
 namespace yas::ui {
-struct translate_action_args {
+struct translate_action_args final {
     node_wptr target;
     ui::point begin_position = {.v = 0.0f};
     ui::point end_position = {.v = 0.0f};
@@ -24,7 +24,7 @@ struct translate_action_args {
     action_completion_f completion;
 };
 
-struct rotate_action_args {
+struct rotate_action_args final {
     node_wptr target;
     ui::angle begin_angle = {0.0f};
     ui::angle end_angle = {0.0f};
@@ -39,7 +39,7 @@ struct rotate_action_args {
     action_completion_f completion;
 };
 
-struct scale_action_args {
+struct scale_action_args final {
     node_wptr target;
     ui::size begin_scale = {.v = 1.0f};
     ui::size end_scale = {.v = 1.0f};
@@ -53,7 +53,7 @@ struct scale_action_args {
     action_completion_f completion;
 };
 
-struct color_action_args {
+struct color_action_args final {
     node_wptr target;
     ui::color begin_color = {.v = 1.0f};
     ui::color end_color = {.v = 1.0f};
@@ -67,7 +67,7 @@ struct color_action_args {
     action_completion_f completion;
 };
 
-struct alpha_action_args {
+struct alpha_action_args final {
     node_wptr target;
     float begin_alpha = 1.0f;
     float end_alpha = 1.0f;
