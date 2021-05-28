@@ -120,6 +120,7 @@
 		B6DE34D621E6323900E49BCB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34D021E631D900E49BCB /* UIKit.framework */; };
 		B6DEEC9926612CB700C4168B /* yas_ui_font_atlas_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEEC9D26612ED700C4168B /* yas_ui_image_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9C26612ED700C4168B /* yas_ui_image_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DEEC9F2661375000C4168B /* yas_ui_metal_encode_info_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -242,6 +243,7 @@
 		B6DE34D421E6322600E49BCB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
 		B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_font_atlas_types.h; sourceTree = "<group>"; };
 		B6DEEC9C26612ED700C4168B /* yas_ui_image_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_image_types.h; sourceTree = "<group>"; };
+		B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_encode_info_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -381,21 +383,22 @@
 		B6629A1D25E69D1F00443098 /* metal */ = {
 			isa = PBXGroup;
 			children = (
-				B6629A1E25E69D1F00443098 /* yas_ui_metal_system.mm */,
-				B6629A1F25E69D1F00443098 /* yas_ui_metal_render_encoder_dependency.h */,
-				B6629A2025E69D1F00443098 /* yas_ui_metal_render_encoder.mm */,
-				B6629A2125E69D1F00443098 /* yas_ui_metal_texture.h */,
-				B6629A2225E69D1F00443098 /* yas_ui_metal_system.h */,
-				B6629A2325E69D1F00443098 /* yas_ui_metal_system_protocol.h */,
-				B6629A2425E69D1F00443098 /* yas_ui_metal_types.mm */,
-				B6629A2525E69D1F00443098 /* yas_ui_metal_types.h */,
-				B6629A2625E69D1F00443098 /* yas_ui_metal_encode_info.mm */,
 				B6629A2725E69D1F00443098 /* view */,
-				B6629A2D25E69D1F00443098 /* yas_ui_metal_encode_info.h */,
-				B6629A2E25E69D1F00443098 /* yas_ui_metal_texture.mm */,
-				B6629A2F25E69D1F00443098 /* yas_ui_metal_render_encoder.h */,
 				B6629A3025E69D1F00443098 /* yas_ui_metal_dependency.cpp */,
 				B6629A3125E69D1F00443098 /* yas_ui_metal_dependency.h */,
+				B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */,
+				B6629A2D25E69D1F00443098 /* yas_ui_metal_encode_info.h */,
+				B6629A2625E69D1F00443098 /* yas_ui_metal_encode_info.mm */,
+				B6629A1F25E69D1F00443098 /* yas_ui_metal_render_encoder_dependency.h */,
+				B6629A2F25E69D1F00443098 /* yas_ui_metal_render_encoder.h */,
+				B6629A2025E69D1F00443098 /* yas_ui_metal_render_encoder.mm */,
+				B6629A2325E69D1F00443098 /* yas_ui_metal_system_protocol.h */,
+				B6629A2225E69D1F00443098 /* yas_ui_metal_system.h */,
+				B6629A1E25E69D1F00443098 /* yas_ui_metal_system.mm */,
+				B6629A2125E69D1F00443098 /* yas_ui_metal_texture.h */,
+				B6629A2E25E69D1F00443098 /* yas_ui_metal_texture.mm */,
+				B6629A2525E69D1F00443098 /* yas_ui_metal_types.h */,
+				B6629A2425E69D1F00443098 /* yas_ui_metal_types.mm */,
 			);
 			path = metal;
 			sourceTree = "<group>";
@@ -705,6 +708,7 @@
 				B6629AD025E69D1F00443098 /* yas_ui_detector.h in Headers */,
 				B6629AC625E69D1F00443098 /* yas_ui_types.h in Headers */,
 				B6629AD525E69D1F00443098 /* yas_ui_batch.h in Headers */,
+				B6DEEC9F2661375000C4168B /* yas_ui_metal_encode_info_types.h in Headers */,
 				B6629AC125E69D1F00443098 /* yas_ui_collider.h in Headers */,
 				B6629A9025E69D1F00443098 /* yas_ui_font_atlas.h in Headers */,
 				B69C9278265D48530083EFD7 /* yas_ui_collection_layout_types.h in Headers */,
