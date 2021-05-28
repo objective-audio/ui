@@ -5,7 +5,7 @@
 #pragma once
 
 namespace yas::ui {
-struct mesh_data_args {
+struct mesh_data_args final {
     std::size_t vertex_count = 0;
     std::size_t index_count = 0;
 };
