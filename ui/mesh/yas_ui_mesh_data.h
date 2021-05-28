@@ -15,8 +15,6 @@
 
 namespace yas::ui {
 struct mesh_data : renderable_mesh_data, metal_object {
-    using args = mesh_data_args;
-
     [[nodiscard]] ui::vertex2d_t const *vertices() const;
     [[nodiscard]] std::size_t vertex_count() const;
     [[nodiscard]] ui::index2d_t const *indices() const;
@@ -28,7 +26,7 @@ struct mesh_data : renderable_mesh_data, metal_object {
 
     [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system();
 
-    [[nodiscard]] static mesh_data_ptr make_shared(args);
+    [[nodiscard]] static mesh_data_ptr make_shared(mesh_data_args &&);
 
    protected:
     std::size_t _vertex_count;
@@ -38,7 +36,7 @@ struct mesh_data : renderable_mesh_data, metal_object {
     std::size_t _dynamic_buffer_index = 0;
     mesh_data_updates_t _updates;
 
-    mesh_data(args &&);
+    mesh_data(mesh_data_args &&);
 
     virtual std::size_t dynamic_buffer_count();
 
@@ -76,10 +74,10 @@ struct dynamic_mesh_data final : mesh_data {
 
     void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override;
 
-    [[nodiscard]] static dynamic_mesh_data_ptr make_shared(args);
+    [[nodiscard]] static dynamic_mesh_data_ptr make_shared(mesh_data_args &&);
 
    private:
-    dynamic_mesh_data(args &&);
+    dynamic_mesh_data(mesh_data_args &&);
 
     dynamic_mesh_data(dynamic_mesh_data const &) = delete;
     dynamic_mesh_data(dynamic_mesh_data &&) = delete;

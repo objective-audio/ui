@@ -10,7 +10,7 @@ using namespace yas::ui;
 
 #pragma mark - mesh_data
 
-mesh_data::mesh_data(args &&args)
+mesh_data::mesh_data(mesh_data_args &&args)
     : _vertex_count(args.vertex_count),
       _vertices(args.vertex_count),
       _index_count(args.index_count),
@@ -126,13 +126,13 @@ std::size_t mesh_data::dynamic_buffer_count() {
     return 1;
 }
 
-mesh_data_ptr mesh_data::make_shared(args args) {
+mesh_data_ptr mesh_data::make_shared(mesh_data_args &&args) {
     return std::shared_ptr<mesh_data>(new mesh_data{std::move(args)});
 }
 
 #pragma mark - dynamic_mesh_data
 
-dynamic_mesh_data::dynamic_mesh_data(mesh_data::args &&args) : mesh_data(std::move(args)) {
+dynamic_mesh_data::dynamic_mesh_data(mesh_data_args &&args) : mesh_data(std::move(args)) {
     this->_updates.flags.reset();
 }
 
@@ -185,6 +185,6 @@ std::size_t dynamic_mesh_data::dynamic_buffer_count() {
     return 2;
 }
 
-dynamic_mesh_data_ptr dynamic_mesh_data::make_shared(args args) {
+dynamic_mesh_data_ptr dynamic_mesh_data::make_shared(mesh_data_args &&args) {
     return std::shared_ptr<dynamic_mesh_data>(new dynamic_mesh_data{std::move(args)});
 }
