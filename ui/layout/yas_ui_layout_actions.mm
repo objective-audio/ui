@@ -27,7 +27,7 @@ std::shared_ptr<action> ui::make_action(layout_action_args &&args) {
     return action::make_continuous(std::move(continuous_args));
 }
 
-layout_animator::layout_animator(args args) : _args(std::move(args)) {
+layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(args)) {
     for (auto &guide_pair : this->_args.layout_guide_pairs) {
         auto &src_guide = guide_pair.source;
         auto &dst_guide = guide_pair.destination;
@@ -74,6 +74,6 @@ transform_f const &layout_animator::value_transformer() const {
     return this->_value_transformer;
 }
 
-layout_animator_ptr layout_animator::make_shared(args args) {
+layout_animator_ptr layout_animator::make_shared(layout_animator_args &&args) {
     return std::shared_ptr<layout_animator>(new layout_animator{std::move(args)});
 }

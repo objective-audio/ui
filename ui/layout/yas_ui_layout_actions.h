@@ -27,26 +27,26 @@ struct layout_action_args final {
 
 [[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action_args &&);
 
-struct layout_animator {
-    struct args {
-        ui::renderer_wptr renderer;
-        std::vector<ui::layout_guide_pair> layout_guide_pairs;
-        double duration = 0.3;
-    };
+struct layout_animator_args final {
+    ui::renderer_wptr renderer;
+    std::vector<ui::layout_guide_pair> layout_guide_pairs;
+    double duration = 0.3;
+};
 
+struct layout_animator {
     ~layout_animator();
 
     void set_value_transformer(ui::transform_f);
     [[nodiscard]] ui::transform_f const &value_transformer() const;
 
-    [[nodiscard]] static layout_animator_ptr make_shared(args);
+    [[nodiscard]] static layout_animator_ptr make_shared(layout_animator_args &&);
 
    private:
-    args _args;
+    layout_animator_args _args;
     ui::transform_f _value_transformer;
     observing::canceller_pool _pool;
 
-    explicit layout_animator(args);
+    explicit layout_animator(layout_animator_args &&);
 
     layout_animator(layout_animator const &) = delete;
     layout_animator(layout_animator &&) = delete;
