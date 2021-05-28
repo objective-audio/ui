@@ -7,7 +7,7 @@
 using namespace yas;
 using namespace yas::ui;
 
-image::image(image::args const &args)
+image::image(image_args &&args)
     : _point_size(args.point_size),
       _scale_factor(args.scale_factor),
       _actual_size(uint_size{static_cast<uint32_t>(args.point_size.width * args.scale_factor),
@@ -58,6 +58,6 @@ void image::draw(draw_handler_f const &function) {
     CGContextRestoreGState(this->_bitmap_context);
 }
 
-image_ptr image::make_shared(args const &args) {
+image_ptr image::make_shared(image_args &&args) {
     return std::shared_ptr<image>(new image{std::move(args)});
 }

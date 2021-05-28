@@ -11,8 +11,6 @@
 
 namespace yas::ui {
 struct image final {
-    using args = image_args;
-
     virtual ~image();
 
     [[nodiscard]] ui::uint_size point_size() const;
@@ -25,7 +23,7 @@ struct image final {
     void clear();
     void draw(ui::draw_handler_f const &);
 
-    [[nodiscard]] static image_ptr make_shared(args const &);
+    [[nodiscard]] static image_ptr make_shared(image_args &&);
 
    private:
     uint_size _point_size;
@@ -33,7 +31,7 @@ struct image final {
     uint_size _actual_size;
     CGContextRef _bitmap_context;
 
-    image(args const &);
+    image(image_args &&);
 
     image(image const &) = delete;
     image(image &&) = delete;
