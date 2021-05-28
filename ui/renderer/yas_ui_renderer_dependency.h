@@ -123,13 +123,14 @@ enum class background_update_reason : std::size_t {
 
 using background_updates_t = flagset<background_update_reason>;
 
-struct renderable_background {
-    virtual ~renderable_background() = default;
+struct renderer_background_interface {
+    virtual ~renderer_background_interface() = default;
 
     [[nodiscard]] virtual background_updates_t const &updates() const = 0;
     virtual void clear_updates() = 0;
 
-    [[nodiscard]] static renderable_background_ptr cast(renderable_background_ptr const &background) {
+    [[nodiscard]] static std::shared_ptr<renderer_background_interface> cast(
+        std::shared_ptr<renderer_background_interface> const &background) {
         return background;
     }
 };

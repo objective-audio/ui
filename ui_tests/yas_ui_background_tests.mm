@@ -15,25 +15,25 @@ using namespace yas;
 
 - (void)test_updates {
     auto const background = ui::background::make_shared();
-    auto const renderable = ui::renderable_background::cast(background);
+    auto const renderer_background = ui::renderer_background_interface::cast(background);
 
-    XCTAssertTrue(renderable->updates().flags.any());
+    XCTAssertTrue(renderer_background->updates().flags.any());
 
-    renderable->clear_updates();
+    renderer_background->clear_updates();
 
-    XCTAssertFalse(renderable->updates().flags.any());
+    XCTAssertFalse(renderer_background->updates().flags.any());
 
     background->set_color(ui::gray_color());
 
-    XCTAssertTrue(renderable->updates().flags.any());
+    XCTAssertTrue(renderer_background->updates().flags.any());
 
-    renderable->clear_updates();
+    renderer_background->clear_updates();
 
-    XCTAssertFalse(renderable->updates().flags.any());
+    XCTAssertFalse(renderer_background->updates().flags.any());
 
     background->set_alpha(0.5f);
 
-    XCTAssertTrue(renderable->updates().flags.any());
+    XCTAssertTrue(renderer_background->updates().flags.any());
 }
 
 - (void)test_color {

@@ -66,7 +66,7 @@ class render_encodable;
 class render_effectable;
 class render_stackable;
 class view_renderer_interface;
-class renderable_background;
+class renderer_background_interface;
 
 using action_target_ptr = std::shared_ptr<action_target>;
 using action_target_wptr = std::weak_ptr<action_target>;
@@ -134,5 +134,4 @@ using render_encodable_ptr = std::shared_ptr<render_encodable>;
 using render_effectable_ptr = std::shared_ptr<render_effectable>;
 using render_stackable_ptr = std::shared_ptr<render_stackable>;
 using view_renderer_interface_ptr = std::shared_ptr<view_renderer_interface>;
-using renderable_background_ptr = std::shared_ptr<renderable_background>;
 }  // namespace yas::ui
