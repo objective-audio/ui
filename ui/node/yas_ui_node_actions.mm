@@ -11,7 +11,7 @@ using namespace yas::ui;
 
 #pragma mark - translate_action
 
-std::shared_ptr<action> ui::make_action(translate_action::args args) {
+std::shared_ptr<action> ui::make_action(translate_action_args args) {
     auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
                                                    .loop_count = std::move(args.loop_count),
                                                    .value_transformer = std::move(args.value_transformer),
@@ -32,7 +32,7 @@ std::shared_ptr<action> ui::make_action(translate_action::args args) {
 
 #pragma mark - rotate_action
 
-std::shared_ptr<action> ui::make_action(rotate_action::args args) {
+std::shared_ptr<action> ui::make_action(rotate_action_args args) {
     auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
                                                    .loop_count = std::move(args.loop_count),
                                                    .value_transformer = std::move(args.value_transformer),
@@ -60,7 +60,7 @@ std::shared_ptr<action> ui::make_action(rotate_action::args args) {
 
 #pragma mark - scale_action
 
-std::shared_ptr<action> ui::make_action(scale_action::args args) {
+std::shared_ptr<action> ui::make_action(scale_action_args args) {
     auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
                                                    .loop_count = std::move(args.loop_count),
                                                    .value_transformer = std::move(args.value_transformer),
@@ -80,7 +80,7 @@ std::shared_ptr<action> ui::make_action(scale_action::args args) {
 
 #pragma mark - color_action
 
-std::shared_ptr<action> ui::make_action(color_action::args args) {
+std::shared_ptr<action> ui::make_action(color_action_args args) {
     auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
                                                    .loop_count = std::move(args.loop_count),
                                                    .value_transformer = std::move(args.value_transformer),
@@ -100,7 +100,7 @@ std::shared_ptr<action> ui::make_action(color_action::args args) {
 
 #pragma mark - alpha_action
 
-std::shared_ptr<action> ui::make_action(alpha_action::args args) {
+std::shared_ptr<action> ui::make_action(alpha_action_args args) {
     auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
                                                    .loop_count = std::move(args.loop_count),
                                                    .value_transformer = std::move(args.value_transformer),

@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct collection_layout_line {
+struct collection_layout_line final {
     std::vector<ui::size> cell_sizes;
     float new_line_min_offset = 0.0f;
 
@@ -18,7 +18,7 @@ struct collection_layout_line {
     bool operator!=(collection_layout_line const &rhs) const;
 };
 
-struct collection_layout_args {
+struct collection_layout_args final {
     ui::region frame = ui::region::zero();
     std::size_t preferred_cell_count = 0;
     ui::size default_cell_size = {1.0f, 1.0f};

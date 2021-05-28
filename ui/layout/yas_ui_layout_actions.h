@@ -11,44 +11,42 @@
 namespace yas::ui {
 class renderer;
 
-namespace layout_action {
-    struct args {
-        ui::layout_guide_wptr target;
-        float begin_value;
-        float end_value;
+struct layout_action_args final {
+    ui::layout_guide_wptr target;
+    float begin_value;
+    float end_value;
 
-        double duration = 0.3;
-        std::size_t loop_count = 1;
-        transform_f value_transformer;
+    double duration = 0.3;
+    std::size_t loop_count = 1;
+    transform_f value_transformer;
 
-        time_point_t begin_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-        action_completion_f completion;
-    };
-}  // namespace layout_action
+    time_point_t begin_time = std::chrono::system_clock::now();
+    double delay = 0.0;
+    action_completion_f completion;
+};
 
-[[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action::args &&);
+[[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action_args &&);
+
+struct layout_animator_args final {
+    ui::renderer_wptr renderer;
+    std::vector<ui::layout_guide_pair> layout_guide_pairs;
+    double duration = 0.3;
+};
 
 struct layout_animator {
-    struct args {
-        ui::renderer_wptr renderer;
-        std::vector<ui::layout_guide_pair> layout_guide_pairs;
-        double duration = 0.3;
-    };
-
     ~layout_animator();
 
     void set_value_transformer(ui::transform_f);
     [[nodiscard]] ui::transform_f const &value_transformer() const;
 
-    [[nodiscard]] static layout_animator_ptr make_shared(args);
+    [[nodiscard]] static layout_animator_ptr make_shared(layout_animator_args &&);
 
    private:
-    args _args;
+    layout_animator_args _args;
     ui::transform_f _value_transformer;
     observing::canceller_pool _pool;
 
-    explicit layout_animator(args);
+    explicit layout_animator(layout_animator_args &&);
 
     layout_animator(layout_animator const &) = delete;
     layout_animator(layout_animator &&) = delete;

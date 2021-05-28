@@ -34,7 +34,7 @@ struct font_atlas::impl {
     }
 };
 
-font_atlas::font_atlas(args &&args)
+font_atlas::font_atlas(font_atlas_args &&args)
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
       _font_size(args.font_size),
@@ -217,6 +217,6 @@ void font_atlas::_update_word_infos() {
     }
 }
 
-font_atlas_ptr font_atlas::make_shared(args args) {
+font_atlas_ptr font_atlas::make_shared(font_atlas_args &&args) {
     return std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
 }

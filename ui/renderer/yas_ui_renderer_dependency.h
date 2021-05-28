@@ -123,13 +123,14 @@ enum class background_update_reason : std::size_t {
 
 using background_updates_t = flagset<background_update_reason>;
 
-struct renderable_background {
-    virtual ~renderable_background() = default;
+struct renderer_background_interface {
+    virtual ~renderer_background_interface() = default;
 
     [[nodiscard]] virtual background_updates_t const &updates() const = 0;
     virtual void clear_updates() = 0;
 
-    [[nodiscard]] static renderable_background_ptr cast(renderable_background_ptr const &background) {
+    [[nodiscard]] static std::shared_ptr<renderer_background_interface> cast(
+        std::shared_ptr<renderer_background_interface> const &background) {
         return background;
     }
 };
@@ -164,16 +165,17 @@ struct renderable_collider {
     }
 };
 
-struct updatable_detector {
-    virtual ~updatable_detector() = default;
+struct renderer_detector_interface {
+    virtual ~renderer_detector_interface() = default;
 
     [[nodiscard]] virtual bool is_updating() = 0;
     virtual void begin_update() = 0;
     virtual void push_front_collider(ui::collider_ptr const &) = 0;
     virtual void end_update() = 0;
 
-    [[nodiscard]] static updatable_detector_ptr cast(updatable_detector_ptr const &updatable) {
-        return updatable;
+    [[nodiscard]] static std::shared_ptr<renderer_detector_interface> cast(
+        std::shared_ptr<renderer_detector_interface> const &detector) {
+        return detector;
     }
 };
 

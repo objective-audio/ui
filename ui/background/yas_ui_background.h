@@ -10,7 +10,7 @@
 namespace yas::ui {
 class color;
 
-struct background final : renderable_background {
+struct background final : renderer_background_interface {
     virtual ~background();
 
     void set_color(ui::color const &);

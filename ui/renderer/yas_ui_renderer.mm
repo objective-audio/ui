@@ -235,13 +235,13 @@ void renderer::view_appearance_did_change(yas_objc_view *const view, ui::appeara
 renderer::pre_render_result renderer::_pre_render() {
     this->_parallel_action->raw_action()->update(std::chrono::system_clock::now());
 
-    auto const bg_updates = renderable_background::cast(this->_background)->updates();
+    auto const bg_updates = renderer_background_interface::cast(this->_background)->updates();
 
     tree_updates tree_updates;
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
     if (tree_updates.is_collider_updated()) {
-        updatable_detector::cast(this->_detector)->begin_update();
+        renderer_detector_interface::cast(this->_detector)->begin_update();
     }
 
     if (this->_updates.flags.any() || bg_updates.flags.any() || tree_updates.is_any_updated()) {
@@ -252,9 +252,9 @@ renderer::pre_render_result renderer::_pre_render() {
 }
 
 void renderer::_post_render() {
-    renderable_background::cast(this->_background)->clear_updates();
+    renderer_background_interface::cast(this->_background)->clear_updates();
     renderable_node::cast(this->_root_node)->clear_updates();
-    updatable_detector::cast(this->_detector)->end_update();
+    renderer_detector_interface::cast(this->_detector)->end_update();
     this->_updates.flags.reset();
 }
 

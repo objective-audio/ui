@@ -4,23 +4,17 @@
 
 #pragma once
 
-#include <Metal/Metal.h>
 #include <ui/yas_ui_effect.h>
 #include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_metal_encode_info_types.h>
 #include <ui/yas_ui_ptr.h>
 
 #include <unordered_map>
 #include <vector>
 
 namespace yas::ui {
-class texture;
-
 struct metal_encode_info final {
-    struct args {
-        MTLRenderPassDescriptor *renderPassDescriptor = nil;
-        id<MTLRenderPipelineState> pipelineStateWithTexture = nil;
-        id<MTLRenderPipelineState> pipelineStateWithoutTexture = nil;
-    };
+    using args = metal_encode_info_args;
 
     virtual ~metal_encode_info();
 
