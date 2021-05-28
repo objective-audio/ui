@@ -9,7 +9,7 @@
 #include <string>
 
 namespace yas::ui {
-struct font_atlas_args {
+struct font_atlas_args final {
     std::string font_name;
     double font_size;
     std::string words;
