@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_font_atlas_types.h>
 #include <ui/yas_ui_texture.h>
 #include <ui/yas_ui_types.h>
 
@@ -12,12 +12,7 @@ namespace yas::ui {
 class word_info;
 
 struct font_atlas final {
-    struct args {
-        std::string font_name;
-        double font_size;
-        std::string words;
-        ui::texture_ptr texture = nullptr;
-    };
+    using args = font_atlas_args;
 
     virtual ~font_atlas();
 

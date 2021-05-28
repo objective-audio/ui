@@ -118,6 +118,7 @@
 		B6DE34CF21E6319400E49BCB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34CE21E6319400E49BCB /* CoreGraphics.framework */; };
 		B6DE34D521E6322600E49BCB /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34D421E6322600E49BCB /* CoreText.framework */; };
 		B6DE34D621E6323900E49BCB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DE34D021E631D900E49BCB /* UIKit.framework */; };
+		B6DEEC9926612CB700C4168B /* yas_ui_font_atlas_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -238,6 +239,7 @@
 		B6DE34D021E631D900E49BCB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		B6DE34D221E6322100E49BCB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		B6DE34D421E6322600E49BCB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
+		B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_font_atlas_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,6 +358,7 @@
 		B6629A1425E69D1F00443098 /* font_atlas */ = {
 			isa = PBXGroup;
 			children = (
+				B6DEEC9826612CB700C4168B /* yas_ui_font_atlas_types.h */,
 				B6629A1525E69D1F00443098 /* yas_ui_font_atlas.mm */,
 				B6629A1625E69D1F00443098 /* yas_ui_font_atlas.h */,
 			);
@@ -691,6 +694,7 @@
 				B6629AB625E69D1F00443098 /* yas_ui_effect.h in Headers */,
 				B6629AB025E69D1F00443098 /* yas_ui_color.h in Headers */,
 				B6D3EEC1265CFD4400151540 /* yas_ui_strings_types.h in Headers */,
+				B6DEEC9926612CB700C4168B /* yas_ui_font_atlas_types.h in Headers */,
 				B6629ACB25E69D1F00443098 /* yas_ui_collection_layout.h in Headers */,
 				B6629ACA25E69D1F00443098 /* yas_ui_action.h in Headers */,
 				B6629AD625E69D1F00443098 /* yas_ui_blur.h in Headers */,
