@@ -241,7 +241,7 @@ renderer::pre_render_result renderer::_pre_render() {
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
     if (tree_updates.is_collider_updated()) {
-        updatable_detector::cast(this->_detector)->begin_update();
+        renderer_detector_interface::cast(this->_detector)->begin_update();
     }
 
     if (this->_updates.flags.any() || bg_updates.flags.any() || tree_updates.is_any_updated()) {
@@ -254,7 +254,7 @@ renderer::pre_render_result renderer::_pre_render() {
 void renderer::_post_render() {
     renderer_background_interface::cast(this->_background)->clear_updates();
     renderable_node::cast(this->_root_node)->clear_updates();
-    updatable_detector::cast(this->_detector)->end_update();
+    renderer_detector_interface::cast(this->_detector)->end_update();
     this->_updates.flags.reset();
 }
 
