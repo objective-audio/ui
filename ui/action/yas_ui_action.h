@@ -4,66 +4,11 @@
 
 #pragma once
 
-#include <ui/yas_ui_ptr.h>
-#include <ui/yas_ui_transformer.h>
-#include <ui/yas_ui_types.h>
-
-#include <chrono>
-#include <unordered_set>
-#include <vector>
+#include <ui/yas_ui_action_types.h>
 
 namespace yas::ui {
-using time_point_t = std::chrono::time_point<std::chrono::system_clock>;
-using duration_t = std::chrono::duration<double>;
-using action_completion_f = std::function<void(void)>;
-using action_time_update_f = std::function<bool(time_point_t const &, action const &)>;
-using continuous_value_update_f = std::function<void(double const)>;
-
 struct action_target {
     virtual ~action_target() = default;
-};
-
-struct action_args final {
-    action_target_wptr target;
-    time_point_t begin_time = std::chrono::system_clock::now();
-    double delay = 0.0;
-    action_time_update_f time_updater;
-    action_completion_f completion;
-};
-
-struct continuous_action_args final {
-    double duration = 0.3;
-    std::size_t loop_count = 1;
-    continuous_value_update_f value_updater;
-    transform_f value_transformer;
-
-    action_target_wptr target;
-    time_point_t begin_time = std::chrono::system_clock::now();
-    double delay = 0.0;
-    action_completion_f completion;
-};
-
-struct sequence_action_args final {
-    struct element final {
-        action_ptr action;
-        double duration = 0.0;
-    };
-
-    std::vector<element> elements;
-
-    action_target_wptr target;
-    time_point_t begin_time = std::chrono::system_clock::now();
-    double delay = 0.0;
-    action_completion_f completion;
-};
-
-struct parallel_action_args final {
-    std::unordered_set<action_ptr> actions;
-
-    action_target_wptr target;
-    time_point_t begin_time = std::chrono::system_clock::now();
-    double delay = 0.0;
-    action_completion_f completion;
 };
 
 struct action final {

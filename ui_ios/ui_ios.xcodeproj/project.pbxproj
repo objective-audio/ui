@@ -122,6 +122,7 @@
 		B6DEEC9D26612ED700C4168B /* yas_ui_image_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9C26612ED700C4168B /* yas_ui_image_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEEC9F2661375000C4168B /* yas_ui_metal_encode_info_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEECA52661395900C4168B /* yas_ui_mesh_data_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEECA42661395900C4168B /* yas_ui_mesh_data_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6DEECA72661CA8200C4168B /* yas_ui_action_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEECA62661CA8200C4168B /* yas_ui_action_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -246,6 +247,7 @@
 		B6DEEC9C26612ED700C4168B /* yas_ui_image_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_image_types.h; sourceTree = "<group>"; };
 		B6DEEC9E2661375000C4168B /* yas_ui_metal_encode_info_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_encode_info_types.h; sourceTree = "<group>"; };
 		B6DEECA42661395900C4168B /* yas_ui_mesh_data_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_mesh_data_types.h; sourceTree = "<group>"; };
+		B6DEECA62661CA8200C4168B /* yas_ui_action_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_action_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -517,8 +519,9 @@
 		B6629A5C25E69D1F00443098 /* action */ = {
 			isa = PBXGroup;
 			children = (
-				B6629A5D25E69D1F00443098 /* yas_ui_action.mm */,
+				B6DEECA62661CA8200C4168B /* yas_ui_action_types.h */,
 				B6629A5E25E69D1F00443098 /* yas_ui_action.h */,
+				B6629A5D25E69D1F00443098 /* yas_ui_action.mm */,
 			);
 			path = action;
 			sourceTree = "<group>";
@@ -663,6 +666,7 @@
 				B6629AB225E69D1F00443098 /* yas_ui_render_info.h in Headers */,
 				B6629ABA25E69D1F00443098 /* yas_ui_transformer.h in Headers */,
 				B6629ADD25E69D1F00443098 /* yas_ui_strings.h in Headers */,
+				B6DEECA72661CA8200C4168B /* yas_ui_action_types.h in Headers */,
 				B6629A9A25E69D1F00443098 /* yas_ui_metal_system_protocol.h in Headers */,
 				B6629AB425E69D1F00443098 /* yas_ui_render_info_dependency.h in Headers */,
 				B6629A9E25E69D1F00443098 /* yas_ui_metal_view.h in Headers */,
