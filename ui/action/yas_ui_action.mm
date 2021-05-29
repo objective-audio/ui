@@ -129,7 +129,7 @@ action_ptr action::make_delayed(time_point_t const &begin_time, double const del
 #pragma mark -
 
 namespace yas::ui::parallel_action_utils {
-action_args time_updater_replaced_args(parallel_action::args &&parallel_args,
+action_args time_updater_replaced_args(parallel_action_args &&parallel_args,
                                        std::shared_ptr<std::unordered_set<action_ptr>> const &actions) {
     action_args args{.target = std::move(parallel_args.target),
                      .begin_time = std::move(parallel_args.begin_time),
@@ -150,7 +150,7 @@ action_args time_updater_replaced_args(parallel_action::args &&parallel_args,
 }
 }
 
-parallel_action::parallel_action(args &&args)
+parallel_action::parallel_action(parallel_action_args &&args)
     : _actions(std::make_shared<std::unordered_set<action_ptr>>(std::move(args.actions))),
       _raw_action(
           action::make_shared(parallel_action_utils::time_updater_replaced_args(std::move(args), this->_actions))) {
@@ -176,6 +176,6 @@ void parallel_action::erase_action(std::shared_ptr<action> const &action) {
     this->_actions->erase(action);
 }
 
-parallel_action_ptr parallel_action::make_shared(parallel_action::args &&args) {
+parallel_action_ptr parallel_action::make_shared(parallel_action_args &&args) {
     return parallel_action_ptr(new parallel_action{std::move(args)});
 }

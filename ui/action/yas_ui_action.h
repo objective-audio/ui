@@ -57,6 +57,15 @@ struct sequence_action_args final {
     action_completion_f completion;
 };
 
+struct parallel_action_args final {
+    std::unordered_set<action_ptr> actions;
+
+    action_target_wptr target;
+    time_point_t begin_time = std::chrono::system_clock::now();
+    double delay = 0.0;
+    action_completion_f completion;
+};
+
 struct action final {
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
@@ -90,15 +99,6 @@ struct action final {
 };
 
 struct parallel_action final {
-    struct args final {
-        std::unordered_set<action_ptr> actions;
-
-        action_target_wptr target;
-        time_point_t begin_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-        action_completion_f completion;
-    };
-
     action_ptr const &raw_action() const;
 
     [[nodiscard]] std::vector<action_ptr> actions() const;
@@ -107,13 +107,13 @@ struct parallel_action final {
     void insert_action(action_ptr);
     void erase_action(action_ptr const &);
 
-    [[nodiscard]] static parallel_action_ptr make_shared(args &&);
+    [[nodiscard]] static parallel_action_ptr make_shared(parallel_action_args &&);
 
    private:
     std::shared_ptr<std::unordered_set<action_ptr>> _actions;
     action_ptr _raw_action;
 
-    explicit parallel_action(args &&);
+    explicit parallel_action(parallel_action_args &&);
 
     parallel_action(parallel_action const &) = delete;
     parallel_action(parallel_action &&) = delete;
