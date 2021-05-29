@@ -69,8 +69,6 @@ class view_renderer_interface;
 class renderer_background_interface;
 
 using action_ptr = std::shared_ptr<action>;
-using parallel_action_ptr = std::shared_ptr<parallel_action>;
-using continuous_action_ptr = std::shared_ptr<continuous_action>;
 using batch_ptr = std::shared_ptr<batch>;
 using blur_ptr = std::shared_ptr<blur>;
 using button_ptr = std::shared_ptr<button>;

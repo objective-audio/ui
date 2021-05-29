@@ -176,6 +176,6 @@ void parallel_action::erase_action(std::shared_ptr<action> const &action) {
     this->_actions->erase(action);
 }
 
-parallel_action_ptr parallel_action::make_shared(parallel_action_args &&args) {
-    return parallel_action_ptr(new parallel_action{std::move(args)});
+std::shared_ptr<parallel_action> parallel_action::make_shared(parallel_action_args &&args) {
+    return std::shared_ptr<parallel_action>(new parallel_action{std::move(args)});
 }

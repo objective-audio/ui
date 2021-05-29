@@ -49,7 +49,7 @@ struct parallel_action final {
     void insert_action(action_ptr);
     void erase_action(action_ptr const &);
 
-    [[nodiscard]] static parallel_action_ptr make_shared(parallel_action_args &&);
+    [[nodiscard]] static std::shared_ptr<parallel_action> make_shared(parallel_action_args &&);
 
    private:
     std::shared_ptr<std::unordered_set<action_ptr>> _actions;
