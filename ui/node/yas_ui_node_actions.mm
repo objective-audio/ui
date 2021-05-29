@@ -12,13 +12,13 @@ using namespace yas::ui;
 #pragma mark - translate_action
 
 std::shared_ptr<action> ui::make_action(translate_action_args args) {
-    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
-                                                   .loop_count = std::move(args.loop_count),
-                                                   .value_transformer = std::move(args.value_transformer),
-                                                   .target = args.target,
-                                                   .begin_time = std::move(args.begin_time),
-                                                   .delay = std::move(args.delay),
-                                                   .completion = std::move(args.completion)};
+    auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
+                                                  .loop_count = std::move(args.loop_count),
+                                                  .value_transformer = std::move(args.value_transformer),
+                                                  .target = args.target,
+                                                  .begin_time = std::move(args.begin_time),
+                                                  .delay = std::move(args.delay),
+                                                  .completion = std::move(args.completion)};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
@@ -33,13 +33,13 @@ std::shared_ptr<action> ui::make_action(translate_action_args args) {
 #pragma mark - rotate_action
 
 std::shared_ptr<action> ui::make_action(rotate_action_args args) {
-    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
-                                                   .loop_count = std::move(args.loop_count),
-                                                   .value_transformer = std::move(args.value_transformer),
-                                                   .target = args.target,
-                                                   .begin_time = std::move(args.begin_time),
-                                                   .delay = std::move(args.delay),
-                                                   .completion = std::move(args.completion)};
+    auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
+                                                  .loop_count = std::move(args.loop_count),
+                                                  .value_transformer = std::move(args.value_transformer),
+                                                  .target = args.target,
+                                                  .begin_time = std::move(args.begin_time),
+                                                  .delay = std::move(args.delay),
+                                                  .completion = std::move(args.completion)};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
@@ -61,13 +61,13 @@ std::shared_ptr<action> ui::make_action(rotate_action_args args) {
 #pragma mark - scale_action
 
 std::shared_ptr<action> ui::make_action(scale_action_args args) {
-    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
-                                                   .loop_count = std::move(args.loop_count),
-                                                   .value_transformer = std::move(args.value_transformer),
-                                                   .target = args.target,
-                                                   .begin_time = std::move(args.begin_time),
-                                                   .delay = std::move(args.delay),
-                                                   .completion = std::move(args.completion)};
+    auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
+                                                  .loop_count = std::move(args.loop_count),
+                                                  .value_transformer = std::move(args.value_transformer),
+                                                  .target = args.target,
+                                                  .begin_time = std::move(args.begin_time),
+                                                  .delay = std::move(args.delay),
+                                                  .completion = std::move(args.completion)};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
@@ -81,13 +81,13 @@ std::shared_ptr<action> ui::make_action(scale_action_args args) {
 #pragma mark - color_action
 
 std::shared_ptr<action> ui::make_action(color_action_args args) {
-    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
-                                                   .loop_count = std::move(args.loop_count),
-                                                   .value_transformer = std::move(args.value_transformer),
-                                                   .target = args.target,
-                                                   .begin_time = std::move(args.begin_time),
-                                                   .delay = std::move(args.delay),
-                                                   .completion = std::move(args.completion)};
+    auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
+                                                  .loop_count = std::move(args.loop_count),
+                                                  .value_transformer = std::move(args.value_transformer),
+                                                  .target = args.target,
+                                                  .begin_time = std::move(args.begin_time),
+                                                  .delay = std::move(args.delay),
+                                                  .completion = std::move(args.completion)};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
@@ -101,13 +101,13 @@ std::shared_ptr<action> ui::make_action(color_action_args args) {
 #pragma mark - alpha_action
 
 std::shared_ptr<action> ui::make_action(alpha_action_args args) {
-    auto continuous_args = action::continuous_args{.duration = std::move(args.duration),
-                                                   .loop_count = std::move(args.loop_count),
-                                                   .value_transformer = std::move(args.value_transformer),
-                                                   .target = args.target,
-                                                   .begin_time = std::move(args.begin_time),
-                                                   .delay = std::move(args.delay),
-                                                   .completion = std::move(args.completion)};
+    auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
+                                                  .loop_count = std::move(args.loop_count),
+                                                  .value_transformer = std::move(args.value_transformer),
+                                                  .target = args.target,
+                                                  .begin_time = std::move(args.begin_time),
+                                                  .delay = std::move(args.delay),
+                                                  .completion = std::move(args.completion)};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {

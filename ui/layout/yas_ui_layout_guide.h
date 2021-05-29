@@ -5,7 +5,7 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_action.h>
+#include <ui/yas_ui_action_dependency.h>
 #include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_types.h>
 
@@ -104,7 +104,7 @@ struct layout_guide_range {
 };
 
 struct layout_guide_rect final {
-    struct ranges_args {
+    struct ranges_args final {
         ui::range horizontal_range;
         ui::range vertical_range;
     };

@@ -20,7 +20,6 @@ namespace yas::ui {
 class uint_size;
 class action;
 class metal_system;
-class action_target;
 enum class system_type;
 
 struct renderer final : view_renderer_interface {
@@ -83,7 +82,7 @@ struct renderer final : view_renderer_interface {
 
     ui::background_ptr const _background;
     ui::node_ptr const _root_node;
-    parallel_action_ptr const _parallel_action;
+    std::shared_ptr<parallel_action> const _parallel_action;
     ui::detector_ptr const _detector;
     ui::event_manager_ptr const _event_manager;
     ui::layout_guide_rect_ptr const _view_layout_guide_rect;
