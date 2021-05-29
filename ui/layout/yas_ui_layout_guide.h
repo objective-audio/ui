@@ -104,7 +104,7 @@ struct layout_guide_range {
 };
 
 struct layout_guide_rect final {
-    struct ranges_args {
+    struct ranges_args final {
         ui::range horizontal_range;
         ui::range vertical_range;
     };
