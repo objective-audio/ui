@@ -12,16 +12,16 @@ namespace yas::sample {
 struct big_button_text {
     void set_status(ui::button::method const);
 
-    ui::strings_ptr const &strings();
+    std::shared_ptr<ui::strings> const &strings();
 
-    static big_button_text_ptr make_shared(ui::font_atlas_ptr const &atlas);
+    static big_button_text_ptr make_shared(std::shared_ptr<ui::font_atlas> const &atlas);
 
    private:
-    ui::strings_ptr _strings;
+    std::shared_ptr<ui::strings> _strings;
     ui::button::method _status;
     observing::cancellable_ptr _strings_canceller = nullptr;
 
-    explicit big_button_text(ui::font_atlas_ptr const &atlas);
+    explicit big_button_text(std::shared_ptr<ui::font_atlas> const &atlas);
 
     void _update_strings_position();
 };

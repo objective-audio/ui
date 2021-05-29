@@ -81,7 +81,7 @@ void texture::set_scale_factor(double const scale_factor) {
     }
 }
 
-texture_element_ptr const &texture::add_draw_handler(uint_size size, draw_handler_f handler) {
+std::shared_ptr<texture_element> const &texture::add_draw_handler(uint_size size, draw_handler_f handler) {
     auto element = texture_element::make_shared(std::make_pair(std::move(size), std::move(handler)));
 
     if (this->_metal_texture) {
@@ -92,12 +92,12 @@ texture_element_ptr const &texture::add_draw_handler(uint_size size, draw_handle
     return this->_texture_elements.back();
 }
 
-void texture::remove_draw_handler(texture_element_ptr const &erase_element) {
+void texture::remove_draw_handler(std::shared_ptr<texture_element> const &erase_element) {
     erase_if(this->_texture_elements,
-             [&erase_element](texture_element_ptr const &element) { return element == erase_element; });
+             [&erase_element](std::shared_ptr<texture_element> const &element) { return element == erase_element; });
 }
 
-metal_texture_ptr const &texture::metal_texture() const {
+std::shared_ptr<metal_texture> const &texture::metal_texture() const {
     return this->_metal_texture;
 }
 
@@ -109,7 +109,7 @@ observing::endable texture::observe_size_updated(observing::caller<std::nullptr_
     return this->_size_notifier->observe(std::move(handler));
 }
 
-void texture::sync_scale_from_renderer(renderer_ptr const &renderer) {
+void texture::sync_scale_from_renderer(std::shared_ptr<renderer> const &renderer) {
     this->_scale_canceller =
         renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
@@ -135,7 +135,7 @@ setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &met
     return setup_metal_result{nullptr};
 }
 
-draw_image_result texture::_reserve_image_size(image_ptr const &image) {
+draw_image_result texture::_reserve_image_size(std::shared_ptr<image> const &image) {
     if (!image) {
         return draw_image_result{draw_image_error::image_is_null};
     }
@@ -155,7 +155,7 @@ draw_image_result texture::_reserve_image_size(image_ptr const &image) {
     return draw_image_result{uint_region{.origin = origin, .size = actual_image_size}};
 }
 
-draw_image_result texture::_replace_image(image_ptr const &image, uint_point const origin) {
+draw_image_result texture::_replace_image(std::shared_ptr<image> const &image, uint_point const origin) {
     if (!image) {
         return draw_image_result{draw_image_error::image_is_null};
     }
@@ -212,7 +212,7 @@ void texture::_add_images_to_metal_texture() {
     }
 }
 
-void texture::_add_image_to_metal_texture(texture_element_ptr const &element) {
+void texture::_add_image_to_metal_texture(std::shared_ptr<texture_element> const &element) {
     if (!this->_metal_texture) {
         throw std::runtime_error("metal_texture not found.");
     }
@@ -239,7 +239,7 @@ void texture::_size_updated() {
     this->_size_notifier->notify(nullptr);
 }
 
-texture_ptr texture::make_shared(texture_args &&args) {
+std::shared_ptr<texture> texture::make_shared(texture_args &&args) {
     return std::shared_ptr<texture>(new texture{std::move(args)});
 }
 

@@ -10,13 +10,13 @@
 
 namespace yas::sample {
 struct cursor_over_planes {
-    ui::node_ptr const &node();
+    std::shared_ptr<ui::node> const &node();
 
     static cursor_over_planes_ptr make_shared();
 
    private:
-    ui::node_ptr root_node = ui::node::make_shared();
-    std::vector<ui::node_ptr> _nodes;
+    std::shared_ptr<ui::node> root_node = ui::node::make_shared();
+    std::vector<std::shared_ptr<ui::node>> _nodes;
     observing::cancellable_ptr _renderer_canceller = nullptr;
 
     cursor_over_planes();

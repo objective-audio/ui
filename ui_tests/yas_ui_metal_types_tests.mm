@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_metal_types_tests : XCTestCase
 
@@ -22,7 +23,7 @@ using namespace yas;
 }
 
 - (void)test_to_mtl_origin {
-    ui::uint_point point{2, 5};
+    uint_point point{2, 5};
 
     auto mtl_origin = to_mtl_origin(point);
 
@@ -32,7 +33,7 @@ using namespace yas;
 }
 
 - (void)test_to_mtl_size {
-    ui::uint_size size{3, 17};
+    uint_size size{3, 17};
 
     auto mtl_size = to_mtl_size(size);
 
@@ -42,7 +43,7 @@ using namespace yas;
 }
 
 - (void)test_to_mtl_region {
-    ui::uint_region region{4, 2, 38, 888};
+    uint_region region{4, 2, 38, 888};
 
     auto mtl_region = to_mtl_region(region);
 
@@ -85,11 +86,11 @@ using namespace yas;
 }
 
 - (void)test_to_mtl_primitive_type {
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::point), MTLPrimitiveTypePoint);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line), MTLPrimitiveTypeLine);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::line_strip), MTLPrimitiveTypeLineStrip);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle), MTLPrimitiveTypeTriangle);
-    XCTAssertEqual(to_mtl_primitive_type(ui::primitive_type::triangle_strip), MTLPrimitiveTypeTriangleStrip);
+    XCTAssertEqual(to_mtl_primitive_type(primitive_type::point), MTLPrimitiveTypePoint);
+    XCTAssertEqual(to_mtl_primitive_type(primitive_type::line), MTLPrimitiveTypeLine);
+    XCTAssertEqual(to_mtl_primitive_type(primitive_type::line_strip), MTLPrimitiveTypeLineStrip);
+    XCTAssertEqual(to_mtl_primitive_type(primitive_type::triangle), MTLPrimitiveTypeTriangle);
+    XCTAssertEqual(to_mtl_primitive_type(primitive_type::triangle_strip), MTLPrimitiveTypeTriangleStrip);
 }
 
 @end

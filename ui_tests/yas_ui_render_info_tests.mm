@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_render_info_tests : XCTestCase
 
@@ -22,7 +23,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    ui::render_info info;
+    render_info info;
 
     XCTAssertFalse(info.detector);
     XCTAssertFalse(info.render_encodable);

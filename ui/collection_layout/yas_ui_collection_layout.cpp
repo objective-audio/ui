@@ -228,7 +228,7 @@ observing::syncable collection_layout::observe_col_order(observing::caller<layou
     return this->_col_order->observe(std::move(handler));
 }
 
-std::vector<layout_guide_rect_ptr> const &collection_layout::cell_guide_rects() const {
+std::vector<std::shared_ptr<layout_guide_rect>> const &collection_layout::cell_guide_rects() const {
     return this->_cell_guide_rects;
 }
 
@@ -518,10 +518,10 @@ region collection_layout::_direction_swapped_region_if_horizontal(region const &
     }
 }
 
-collection_layout_ptr collection_layout::make_shared() {
+std::shared_ptr<collection_layout> collection_layout::make_shared() {
     return make_shared({});
 }
 
-collection_layout_ptr collection_layout::make_shared(args args) {
+std::shared_ptr<collection_layout> collection_layout::make_shared(args args) {
     return std::shared_ptr<collection_layout>(new collection_layout{std::move(args)});
 }

@@ -77,19 +77,19 @@ layout_guide_point::layout_guide_point(ui::point &&origin)
 
 layout_guide_point::~layout_guide_point() = default;
 
-layout_guide_ptr &layout_guide_point::x() {
+std::shared_ptr<layout_guide> &layout_guide_point::x() {
     return this->_x_guide;
 }
 
-layout_guide_ptr &layout_guide_point::y() {
+std::shared_ptr<layout_guide> &layout_guide_point::y() {
     return this->_y_guide;
 }
 
-layout_guide_ptr const &layout_guide_point::x() const {
+std::shared_ptr<layout_guide> const &layout_guide_point::x() const {
     return this->_x_guide;
 }
 
-layout_guide_ptr const &layout_guide_point::y() const {
+std::shared_ptr<layout_guide> const &layout_guide_point::y() const {
     return this->_y_guide;
 }
 
@@ -149,23 +149,23 @@ layout_guide_range::layout_guide_range(ui::range &&range)
 
 layout_guide_range::~layout_guide_range() = default;
 
-layout_guide_ptr &layout_guide_range::min() {
+std::shared_ptr<layout_guide> &layout_guide_range::min() {
     return this->_min_guide;
 }
 
-layout_guide_ptr &layout_guide_range::max() {
+std::shared_ptr<layout_guide> &layout_guide_range::max() {
     return this->_max_guide;
 }
 
-layout_guide_ptr const &layout_guide_range::min() const {
+std::shared_ptr<layout_guide> const &layout_guide_range::min() const {
     return this->_min_guide;
 }
 
-layout_guide_ptr const &layout_guide_range::max() const {
+std::shared_ptr<layout_guide> const &layout_guide_range::max() const {
     return this->_max_guide;
 }
 
-layout_guide_ptr const &layout_guide_range::length() const {
+std::shared_ptr<layout_guide> const &layout_guide_range::length() const {
     return this->_length_guide;
 }
 
@@ -226,59 +226,59 @@ layout_guide_rect::layout_guide_rect(ui::region region)
 
 layout_guide_rect::~layout_guide_rect() = default;
 
-layout_guide_range_ptr &layout_guide_rect::horizontal_range() {
+std::shared_ptr<layout_guide_range> &layout_guide_rect::horizontal_range() {
     return this->_horizontal_range;
 }
 
-layout_guide_range_ptr &layout_guide_rect::vertical_range() {
+std::shared_ptr<layout_guide_range> &layout_guide_rect::vertical_range() {
     return this->_vertical_range;
 }
 
-layout_guide_range_ptr const &layout_guide_rect::horizontal_range() const {
+std::shared_ptr<layout_guide_range> const &layout_guide_rect::horizontal_range() const {
     return this->_horizontal_range;
 }
 
-layout_guide_range_ptr const &layout_guide_rect::vertical_range() const {
+std::shared_ptr<layout_guide_range> const &layout_guide_rect::vertical_range() const {
     return this->_vertical_range;
 }
 
-layout_guide_ptr &layout_guide_rect::left() {
+std::shared_ptr<layout_guide> &layout_guide_rect::left() {
     return this->horizontal_range()->min();
 }
 
-layout_guide_ptr &layout_guide_rect::right() {
+std::shared_ptr<layout_guide> &layout_guide_rect::right() {
     return this->horizontal_range()->max();
 }
 
-layout_guide_ptr &layout_guide_rect::bottom() {
+std::shared_ptr<layout_guide> &layout_guide_rect::bottom() {
     return this->vertical_range()->min();
 }
 
-layout_guide_ptr &layout_guide_rect::top() {
+std::shared_ptr<layout_guide> &layout_guide_rect::top() {
     return this->vertical_range()->max();
 }
 
-layout_guide_ptr const &layout_guide_rect::left() const {
+std::shared_ptr<layout_guide> const &layout_guide_rect::left() const {
     return this->horizontal_range()->min();
 }
 
-layout_guide_ptr const &layout_guide_rect::right() const {
+std::shared_ptr<layout_guide> const &layout_guide_rect::right() const {
     return this->horizontal_range()->max();
 }
 
-layout_guide_ptr const &layout_guide_rect::bottom() const {
+std::shared_ptr<layout_guide> const &layout_guide_rect::bottom() const {
     return this->vertical_range()->min();
 }
 
-layout_guide_ptr const &layout_guide_rect::top() const {
+std::shared_ptr<layout_guide> const &layout_guide_rect::top() const {
     return this->vertical_range()->max();
 }
 
-layout_guide_ptr const &layout_guide_rect::width() const {
+std::shared_ptr<layout_guide> const &layout_guide_rect::width() const {
     return this->horizontal_range()->length();
 }
 
-layout_guide_ptr const &layout_guide_rect::height() const {
+std::shared_ptr<layout_guide> const &layout_guide_rect::height() const {
     return this->vertical_range()->length();
 }
 

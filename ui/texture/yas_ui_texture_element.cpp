@@ -26,6 +26,6 @@ observing::syncable texture_element::observe_tex_coords(observing::caller<uint_r
     return this->_tex_coords->observe(std::move(handler));
 }
 
-texture_element_ptr texture_element::make_shared(draw_pair_t &&pair) {
+std::shared_ptr<texture_element> texture_element::make_shared(draw_pair_t &&pair) {
     return std::shared_ptr<texture_element>(new texture_element{std::move(pair)});
 }

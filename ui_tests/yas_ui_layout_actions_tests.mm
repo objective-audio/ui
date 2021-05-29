@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 using namespace std::chrono_literals;
 
 @interface yas_ui_layout_actions_tests : XCTestCase
@@ -23,10 +24,10 @@ using namespace std::chrono_literals;
 }
 
 - (void)test_update_layout_action {
-    auto target = ui::layout_guide::make_shared();
+    auto target = layout_guide::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action(
-        {.target = target, .begin_value = 0.0f, .end_value = 1.0f, .duration = 1.0, .begin_time = time});
+    auto action =
+        make_action({.target = target, .begin_value = 0.0f, .end_value = 1.0f, .duration = 1.0, .begin_time = time});
 
     action->update(time);
 
@@ -42,10 +43,10 @@ using namespace std::chrono_literals;
 }
 
 - (void)test_make_layout_guide_pairs_from_point_pair {
-    auto src_point = ui::layout_guide_point::make_shared();
-    auto dst_point = ui::layout_guide_point::make_shared();
+    auto src_point = layout_guide_point::make_shared();
+    auto dst_point = layout_guide_point::make_shared();
 
-    auto pairs = ui::make_layout_guide_pairs({.source = src_point, .destination = dst_point});
+    auto pairs = make_layout_guide_pairs({.source = src_point, .destination = dst_point});
 
     XCTAssertEqual(pairs.at(0).source, src_point->x());
     XCTAssertEqual(pairs.at(0).destination, dst_point->x());
@@ -54,10 +55,10 @@ using namespace std::chrono_literals;
 }
 
 - (void)test_make_layout_guide_pairs_from_range_pair {
-    auto src_range = ui::layout_guide_range::make_shared();
-    auto dst_range = ui::layout_guide_range::make_shared();
+    auto src_range = layout_guide_range::make_shared();
+    auto dst_range = layout_guide_range::make_shared();
 
-    auto pairs = ui::make_layout_guide_pairs({.source = src_range, .destination = dst_range});
+    auto pairs = make_layout_guide_pairs({.source = src_range, .destination = dst_range});
 
     XCTAssertEqual(pairs.at(0).source, src_range->min());
     XCTAssertEqual(pairs.at(0).destination, dst_range->min());
@@ -66,10 +67,10 @@ using namespace std::chrono_literals;
 }
 
 - (void)test_make_layout_guide_pairs_from_rect_pair {
-    auto src_rect = ui::layout_guide_rect::make_shared();
-    auto dst_rect = ui::layout_guide_rect::make_shared();
+    auto src_rect = layout_guide_rect::make_shared();
+    auto dst_rect = layout_guide_rect::make_shared();
 
-    auto pairs = ui::make_layout_guide_pairs({.source = src_rect, .destination = dst_rect});
+    auto pairs = make_layout_guide_pairs({.source = src_rect, .destination = dst_rect});
 
     XCTAssertEqual(pairs.at(0).source, src_rect->left());
     XCTAssertEqual(pairs.at(0).destination, dst_rect->left());

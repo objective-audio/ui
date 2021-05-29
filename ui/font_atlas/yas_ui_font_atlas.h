@@ -20,17 +20,18 @@ struct font_atlas final {
     [[nodiscard]] double const &descent() const;
     [[nodiscard]] double const &leading() const;
     [[nodiscard]] std::string const &words() const;
-    [[nodiscard]] ui::texture_ptr const &texture() const;
+    [[nodiscard]] std::shared_ptr<texture> const &texture() const;
 
     [[nodiscard]] ui::vertex2d_rect_t const &rect(std::string const &word) const;
     [[nodiscard]] ui::size advance(std::string const &word) const;
 
-    void set_texture(ui::texture_ptr const &);
+    void set_texture(std::shared_ptr<ui::texture> const &);
 
-    [[nodiscard]] observing::syncable observe_texture(observing::caller<texture_ptr>::handler_f &&);
-    [[nodiscard]] observing::endable observe_texture_updated(observing::caller<ui::texture_ptr>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_texture(observing::caller<std::shared_ptr<ui::texture>>::handler_f &&);
+    [[nodiscard]] observing::endable observe_texture_updated(
+        observing::caller<std::shared_ptr<ui::texture>>::handler_f &&);
 
-    [[nodiscard]] static font_atlas_ptr make_shared(font_atlas_args &&);
+    [[nodiscard]] static std::shared_ptr<font_atlas> make_shared(font_atlas_args &&);
 
    private:
     class impl;
@@ -43,11 +44,11 @@ struct font_atlas final {
     double const _descent;
     double const _leading;
     std::string const _words;
-    observing::fetcher_ptr<ui::texture_ptr> _texture_changed_fetcher = nullptr;
-    observing::notifier_ptr<ui::texture_ptr> const _texture_updated_notifier =
-        observing::notifier<ui::texture_ptr>::make_shared();
+    observing::fetcher_ptr<std::shared_ptr<ui::texture>> _texture_changed_fetcher = nullptr;
+    observing::notifier_ptr<std::shared_ptr<ui::texture>> const _texture_updated_notifier =
+        observing::notifier<std::shared_ptr<ui::texture>>::make_shared();
 
-    observing::value::holder_ptr<ui::texture_ptr> const _texture;
+    observing::value::holder_ptr<std::shared_ptr<ui::texture>> const _texture;
     std::vector<ui::word_info> _word_infos;
     std::vector<observing::cancellable_ptr> _element_cancellers;
     std::optional<observing::cancellable_ptr> _texture_canceller = std::nullopt;

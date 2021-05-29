@@ -10,6 +10,7 @@
 #import <sstream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_batch_tests : XCTestCase
 
@@ -26,13 +27,13 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto batch = ui::batch::make_shared();
+    auto batch = batch::make_shared();
 
     XCTAssertTrue(batch);
 
-    XCTAssertTrue(ui::renderable_batch::cast(batch));
-    XCTAssertTrue(ui::render_encodable::cast(batch));
-    XCTAssertTrue(ui::metal_object::cast(batch));
+    XCTAssertTrue(renderable_batch::cast(batch));
+    XCTAssertTrue(render_encodable::cast(batch));
+    XCTAssertTrue(metal_object::cast(batch));
 }
 
 - (void)test_render_mesh_building {
@@ -42,33 +43,33 @@ using namespace yas;
         return;
     }
 
-    auto batch = ui::batch::make_shared();
-    auto batch_renderable = ui::renderable_batch::cast(batch);
-    auto batch_encodable = ui::render_encodable::cast(batch);
+    auto batch = batch::make_shared();
+    auto batch_renderable = renderable_batch::cast(batch);
+    auto batch_encodable = render_encodable::cast(batch);
 
-    batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
-    auto mesh1 = ui::mesh::make_shared();
-    auto mesh2 = ui::mesh::make_shared();
-    auto mesh_data1 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    auto mesh_data2 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto mesh1 = mesh::make_shared();
+    auto mesh2 = mesh::make_shared();
+    auto mesh_data1 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto mesh_data2 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh1->set_mesh_data(mesh_data1);
     mesh2->set_mesh_data(mesh_data2);
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto mesh3 = ui::mesh::make_shared();
-    auto mesh_data3 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto mesh3 = mesh::make_shared();
+    auto mesh_data3 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh3->set_mesh_data(mesh_data3);
-    auto texture3 = ui::texture::make_shared(ui::texture_args{});
+    auto texture3 = texture::make_shared(texture_args{});
     mesh3->set_texture(texture3);
     batch_encodable->append_mesh(mesh3);
 
-    ui::metal_object::cast(mesh1)->metal_setup(metal_system);
-    ui::metal_object::cast(mesh2)->metal_setup(metal_system);
-    ui::metal_object::cast(mesh3)->metal_setup(metal_system);
+    metal_object::cast(mesh1)->metal_setup(metal_system);
+    metal_object::cast(mesh2)->metal_setup(metal_system);
+    metal_object::cast(mesh3)->metal_setup(metal_system);
 
     batch_renderable->commit_render_meshes_building();
 
@@ -90,16 +91,16 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto batch = ui::batch::make_shared();
-    auto batch_renderable = ui::renderable_batch::cast(batch);
-    auto batch_encodable = ui::render_encodable::cast(batch);
+    auto batch = batch::make_shared();
+    auto batch_renderable = renderable_batch::cast(batch);
+    auto batch_encodable = render_encodable::cast(batch);
 
-    auto mesh1 = ui::mesh::make_shared();
+    auto mesh1 = mesh::make_shared();
     mesh1->set_color({0.5f, 0.5f, 0.5f, 0.5f});
-    auto mesh_data1 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh_data1->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    auto mesh_data1 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh_data1->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 1.0f;
         vertex.position.y = 1.0f;
@@ -111,10 +112,10 @@ using namespace yas;
     });
     mesh1->set_mesh_data(mesh_data1);
 
-    auto mesh2 = ui::mesh::make_shared();
+    auto mesh2 = mesh::make_shared();
     mesh2->set_use_mesh_color(true);
-    auto mesh_data2 = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh_data2->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    auto mesh_data2 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    mesh_data2->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 2.0f;
         vertex.position.y = 2.0f;
@@ -130,10 +131,10 @@ using namespace yas;
     });
     mesh2->set_mesh_data(mesh_data2);
 
-    ui::metal_object::cast(mesh1)->metal_setup(metal_system);
-    ui::metal_object::cast(mesh2)->metal_setup(metal_system);
+    metal_object::cast(mesh1)->metal_setup(metal_system);
+    metal_object::cast(mesh2)->metal_setup(metal_system);
 
-    batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
@@ -146,8 +147,8 @@ using namespace yas;
     auto const &render_mesh = meshes.at(0);
     auto &render_mesh_data = render_mesh->mesh_data();
 
-    XCTAssertEqual(ui::renderable_mesh::cast(render_mesh)->render_vertex_count(), 2);
-    XCTAssertEqual(ui::renderable_mesh::cast(render_mesh)->render_index_count(), 2);
+    XCTAssertEqual(renderable_mesh::cast(render_mesh)->render_vertex_count(), 2);
+    XCTAssertEqual(renderable_mesh::cast(render_mesh)->render_index_count(), 2);
     XCTAssertEqual(render_mesh_data->vertex_count(), 2);
     XCTAssertEqual(render_mesh_data->index_count(), 2);
 
@@ -182,24 +183,24 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto batch = ui::batch::make_shared();
-    auto batch_renderable = ui::renderable_batch::cast(batch);
-    auto batch_encodable = ui::render_encodable::cast(batch);
+    auto batch = batch::make_shared();
+    auto batch_renderable = renderable_batch::cast(batch);
+    auto batch_encodable = render_encodable::cast(batch);
 
-    auto mesh = ui::mesh::make_shared();
-    auto mesh_data = ui::dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto mesh = mesh::make_shared();
+    auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    ui::metal_object::cast(mesh)->metal_setup(metal_system);
+    metal_object::cast(mesh)->metal_setup(metal_system);
 
-    mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    mesh_data->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         vertices.at(0).position.x = 1.0f;
         indices.at(0) = 3;
     });
 
-    batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
     batch_encodable->append_mesh(mesh);
     batch_renderable->commit_render_meshes_building();
 
@@ -214,12 +215,12 @@ using namespace yas;
     XCTAssertEqual(vertices[0].position.x, 1.0f);
     XCTAssertEqual(indices[0], 3);
 
-    mesh_data->write([](std::vector<ui::vertex2d_t> &vertices, std::vector<ui::index2d_t> &indices) {
+    mesh_data->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         vertices.at(0).position.x = 11.0f;
         indices.at(0) = 13;
     });
 
-    batch_renderable->begin_render_meshes_building(ui::batch_building_type::overwrite);
+    batch_renderable->begin_render_meshes_building(batch_building_type::overwrite);
     batch_renderable->commit_render_meshes_building();
 
     XCTAssertEqual(vertices[0].position.x, 11.0f);
@@ -233,36 +234,35 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto batch = ui::batch::make_shared();
-    auto batch_renderable = ui::renderable_batch::cast(batch);
-    auto batch_encodable = ui::render_encodable::cast(batch);
+    auto batch = batch::make_shared();
+    auto batch_renderable = renderable_batch::cast(batch);
+    auto batch_encodable = render_encodable::cast(batch);
 
-    auto mesh = ui::mesh::make_shared();
-    auto mesh_data = ui::mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto mesh = mesh::make_shared();
+    auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh->set_mesh_data(mesh_data);
 
-    ui::metal_object::cast(mesh)->metal_setup(metal_system);
+    metal_object::cast(mesh)->metal_setup(metal_system);
 
-    batch_renderable->begin_render_meshes_building(ui::batch_building_type::rebuild);
+    batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
     batch_encodable->append_mesh(mesh);
 
     batch_renderable->commit_render_meshes_building();
 
-    XCTAssertTrue(ui::metal_object::cast(batch)->metal_setup(metal_system));
+    XCTAssertTrue(metal_object::cast(batch)->metal_setup(metal_system));
 }
 
 - (void)test_batch_building_type_to_string {
-    XCTAssertEqual(to_string(ui::batch_building_type::rebuild), "rebuild");
-    XCTAssertEqual(to_string(ui::batch_building_type::overwrite), "overwrite");
-    XCTAssertEqual(to_string(ui::batch_building_type::none), "none");
+    XCTAssertEqual(to_string(batch_building_type::rebuild), "rebuild");
+    XCTAssertEqual(to_string(batch_building_type::overwrite), "overwrite");
+    XCTAssertEqual(to_string(batch_building_type::none), "none");
 }
 
 - (void)test_batch_building_type_ostream {
-    auto const types = {ui::batch_building_type::rebuild, ui::batch_building_type::overwrite,
-                        ui::batch_building_type::none};
+    auto const types = {batch_building_type::rebuild, batch_building_type::overwrite, batch_building_type::none};
 
     for (auto const &type : types) {
         std::ostringstream stream;

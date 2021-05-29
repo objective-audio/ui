@@ -23,13 +23,13 @@
 
 namespace yas::sample {
 struct main {
-    ui::renderer_ptr renderer = ui::renderer::make_shared(
+    std::shared_ptr<ui::renderer> renderer = ui::renderer::make_shared(
         ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object()));
 
     void setup();
 
    private:
-    ui::font_atlas_ptr _font_atlas =
+    std::shared_ptr<ui::font_atlas> _font_atlas =
         ui::font_atlas::make_shared({.font_name = "TrebuchetMS-Bold",
                                      .font_size = 26.0f,
                                      .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"});
@@ -52,9 +52,9 @@ struct main {
     observing::cancellable_ptr _button_canceller = nullptr;
     observing::cancellable_ptr _keyboard_canceller = nullptr;
 
-    ui::node_ptr _render_target_node = ui::node::make_shared();
-    ui::blur_ptr _blur = ui::blur::make_shared();
-    ui::rect_plane_ptr _plane_on_target = ui::rect_plane::make_shared(1);
+    std::shared_ptr<ui::node> _render_target_node = ui::node::make_shared();
+    std::shared_ptr<ui::blur> _blur = ui::blur::make_shared();
+    std::shared_ptr<ui::rect_plane> _plane_on_target = ui::rect_plane::make_shared(1);
     observing::cancellable_ptr _render_target_canceller = nullptr;
 };
 }  // namespace yas::sample

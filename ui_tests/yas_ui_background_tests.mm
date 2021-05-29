@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_background_tests : XCTestCase
 
@@ -14,8 +15,8 @@ using namespace yas;
 @implementation yas_ui_background_tests
 
 - (void)test_updates {
-    auto const background = ui::background::make_shared();
-    auto const renderer_background = ui::renderer_background_interface::cast(background);
+    auto const background = background::make_shared();
+    auto const renderer_background = renderer_background_interface::cast(background);
 
     XCTAssertTrue(renderer_background->updates().flags.any());
 
@@ -23,7 +24,7 @@ using namespace yas;
 
     XCTAssertFalse(renderer_background->updates().flags.any());
 
-    background->set_color(ui::gray_color());
+    background->set_color(gray_color());
 
     XCTAssertTrue(renderer_background->updates().flags.any());
 
@@ -37,27 +38,26 @@ using namespace yas;
 }
 
 - (void)test_color {
-    auto const background = ui::background::make_shared();
+    auto const background = background::make_shared();
 
-    XCTAssertTrue(background->color() == (ui::color{.v = 1.0f}));
+    XCTAssertTrue(background->color() == (color{.v = 1.0f}));
 
-    std::vector<ui::color> called;
+    std::vector<color> called;
 
-    auto canceller =
-        background->observe_color([&called](ui::color const &color) { called.emplace_back(color); }).sync();
+    auto canceller = background->observe_color([&called](color const &color) { called.emplace_back(color); }).sync();
 
     XCTAssertEqual(called.size(), 1);
-    XCTAssertTrue(called.at(0) == (ui::color{.v = 1.0f}));
+    XCTAssertTrue(called.at(0) == (color{.v = 1.0f}));
 
     background->set_color({.red = 1.0f, .green = 0.5f, .blue = 0.25f});
 
-    XCTAssertTrue(background->color() == (ui::color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
+    XCTAssertTrue(background->color() == (color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
     XCTAssertEqual(called.size(), 2);
-    XCTAssertTrue(called.at(1) == (ui::color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
+    XCTAssertTrue(called.at(1) == (color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
 }
 
 - (void)test_alpha {
-    auto const background = ui::background::make_shared();
+    auto const background = background::make_shared();
 
     XCTAssertEqual(background->alpha(), 1.0f);
 

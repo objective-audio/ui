@@ -74,6 +74,6 @@ transform_f const &layout_animator::value_transformer() const {
     return this->_value_transformer;
 }
 
-layout_animator_ptr layout_animator::make_shared(layout_animator_args &&args) {
+std::shared_ptr<layout_animator> layout_animator::make_shared(layout_animator_args &&args) {
     return std::shared_ptr<layout_animator>(new layout_animator{std::move(args)});
 }

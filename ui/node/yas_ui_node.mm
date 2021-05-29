@@ -29,17 +29,18 @@ using namespace yas::ui;
 #pragma mark - node
 
 node::node()
-    : _parent(observing::value::holder<node_wptr>::make_shared(node_ptr{nullptr})),
-      _renderer(observing::value::holder<renderer_wptr>::make_shared(renderer_ptr{nullptr})),
+    : _parent(observing::value::holder<std::weak_ptr<node>>::make_shared(std::shared_ptr<node>{nullptr})),
+      _renderer(
+          observing::value::holder<std::weak_ptr<ui::renderer>>::make_shared(std::shared_ptr<ui::renderer>{nullptr})),
       _position(observing::value::holder<point>::make_shared({.v = 0.0f})),
       _scale(observing::value::holder<size>::make_shared({.v = 1.0f})),
       _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
       _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
-      _mesh(observing::value::holder<mesh_ptr>::make_shared(nullptr)),
-      _collider(observing::value::holder<collider_ptr>::make_shared(nullptr)),
+      _mesh(observing::value::holder<std::shared_ptr<ui::mesh>>::make_shared(nullptr)),
+      _collider(observing::value::holder<std::shared_ptr<ui::collider>>::make_shared(nullptr)),
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
-      _render_target(observing::value::holder<render_target_ptr>::make_shared(nullptr)),
+      _render_target(observing::value::holder<std::shared_ptr<ui::render_target>>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
     // enabled
 
@@ -215,61 +216,62 @@ simd::float4x4 const &node::local_matrix() const {
     return this->_local_matrix;
 }
 
-void node::set_mesh(mesh_ptr const &mesh) {
+void node::set_mesh(std::shared_ptr<ui::mesh> const &mesh) {
     this->_mesh->set_value(mesh);
 }
 
-mesh_ptr const &node::mesh() const {
+std::shared_ptr<mesh> const &node::mesh() const {
     return this->_mesh->value();
 }
 
-observing::syncable node::observe_mesh(observing::caller<mesh_ptr>::handler_f &&handler) {
+observing::syncable node::observe_mesh(observing::caller<std::shared_ptr<ui::mesh>>::handler_f &&handler) {
     return this->_mesh->observe(std::move(handler));
 }
 
-void node::set_collider(collider_ptr const &collider) {
+void node::set_collider(std::shared_ptr<ui::collider> const &collider) {
     this->_collider->set_value(collider);
 }
 
-collider_ptr const &node::collider() const {
+std::shared_ptr<collider> const &node::collider() const {
     return this->_collider->value();
 }
 
-observing::syncable node::observe_collider(observing::caller<collider_ptr>::handler_f &&handler) {
+observing::syncable node::observe_collider(observing::caller<std::shared_ptr<ui::collider>>::handler_f &&handler) {
     return this->_collider->observe(std::move(handler));
 }
 
-void node::set_batch(batch_ptr const &batch) {
+void node::set_batch(std::shared_ptr<ui::batch> const &batch) {
     return this->_batch->set_value(batch);
 }
 
-batch_ptr const &node::batch() const {
+std::shared_ptr<batch> const &node::batch() const {
     return this->_batch->value();
 }
 
-observing::syncable node::observe_batch(observing::caller<batch_ptr>::handler_f &&handler) {
+observing::syncable node::observe_batch(observing::caller<std::shared_ptr<ui::batch>>::handler_f &&handler) {
     return this->_batch->observe(std::move(handler));
 }
 
-void node::set_render_target(render_target_ptr const &render_target) {
+void node::set_render_target(std::shared_ptr<ui::render_target> const &render_target) {
     this->_render_target->set_value(render_target);
 }
 
-render_target_ptr const &node::render_target() const {
+std::shared_ptr<render_target> const &node::render_target() const {
     return this->_render_target->value();
 }
 
-observing::syncable node::observe_render_target(observing::caller<render_target_ptr>::handler_f &&handler) {
+observing::syncable node::observe_render_target(
+    observing::caller<std::shared_ptr<ui::render_target>>::handler_f &&handler) {
     return this->_render_target->observe(std::move(handler));
 }
 
-void node::add_sub_node(node_ptr const &sub_node) {
+void node::add_sub_node(std::shared_ptr<node> const &sub_node) {
     sub_node->remove_from_super_node();
     this->_children.emplace_back(sub_node);
     this->_add_sub_node(this->_children.back());
 }
 
-void node::add_sub_node(node_ptr const &sub_node, std::size_t const idx) {
+void node::add_sub_node(std::shared_ptr<node> const &sub_node, std::size_t const idx) {
     sub_node->remove_from_super_node();
     auto iterator = this->_children.emplace(this->_children.begin() + idx, sub_node);
     this->_add_sub_node(*iterator);
@@ -281,19 +283,19 @@ void node::remove_from_super_node() {
     }
 }
 
-std::vector<node_ptr> const &node::children() const {
+std::vector<std::shared_ptr<node>> const &node::children() const {
     return this->_children;
 }
 
-std::vector<node_ptr> &node::children() {
+std::vector<std::shared_ptr<node>> &node::children() {
     return this->_children;
 }
 
-node_ptr node::parent() const {
+std::shared_ptr<node> node::parent() const {
     return this->_parent->value().lock();
 }
 
-renderer_ptr node::renderer() const {
+std::shared_ptr<renderer> node::renderer() const {
     return this->_renderer->value().lock();
 }
 
@@ -301,8 +303,8 @@ observing::endable node::observe(observing::caller<method>::handler_f &&handler)
     return this->_notifier->observe(std::move(handler));
 }
 
-observing::syncable node::observe_renderer(observing::caller<renderer_ptr>::handler_f &&handler) {
-    return this->_renderer->observe([handler = std::move(handler)](renderer_wptr const &weak_renderer) {
+observing::syncable node::observe_renderer(observing::caller<std::shared_ptr<ui::renderer>>::handler_f &&handler) {
+    return this->_renderer->observe([handler = std::move(handler)](std::weak_ptr<ui::renderer> const &weak_renderer) {
         if (auto renderer = weak_renderer.lock()) {
             handler(renderer);
         } else {
@@ -311,8 +313,8 @@ observing::syncable node::observe_renderer(observing::caller<renderer_ptr>::hand
     });
 }
 
-observing::syncable node::observe_parent(observing::caller<node_ptr>::handler_f &&handler) {
-    return this->_parent->observe([handler = std::move(handler)](node_wptr const &weak_node) {
+observing::syncable node::observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&handler) {
+    return this->_parent->observe([handler = std::move(handler)](std::weak_ptr<node> const &weak_node) {
         if (auto node = weak_node.lock()) {
             handler(node);
         } else {
@@ -393,7 +395,7 @@ setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_
     return setup_metal_result{nullptr};
 }
 
-void node::set_renderer(renderer_ptr const &renderer) {
+void node::set_renderer(std::shared_ptr<ui::renderer> const &renderer) {
     this->_renderer->set_value(renderer);
 }
 
@@ -593,7 +595,7 @@ void node::clear_updates() {
     }
 }
 
-void node::_add_sub_node(node_ptr &sub_node) {
+void node::_add_sub_node(std::shared_ptr<node> &sub_node) {
     sub_node->_parent->set_value(this->_weak_node);
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
@@ -603,11 +605,11 @@ void node::_add_sub_node(node_ptr &sub_node) {
 }
 
 void node::_remove_sub_node(node *sub_node) {
-    node_wptr weak_node = node_ptr{nullptr};
+    std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_set_renderer_recursively(nullptr);
 
-    erase_if(this->_children, [&sub_node](node_ptr const &node) { return node.get() == sub_node; });
+    erase_if(this->_children, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
 
     sub_node->_notifier->notify(method::removed_from_super);
 
@@ -616,14 +618,14 @@ void node::_remove_sub_node(node *sub_node) {
 
 void node::_remove_sub_nodes_on_destructor() {
     for (auto const &sub_node : this->_children) {
-        node_wptr weak_node = node_ptr{nullptr};
+        std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
         sub_node->_parent->set_value(std::move(weak_node));
         sub_node->_set_renderer_recursively(nullptr);
         sub_node->_notifier->notify(method::removed_from_super);
     }
 }
 
-void node::_set_renderer_recursively(renderer_ptr const &renderer) {
+void node::_set_renderer_recursively(std::shared_ptr<ui::renderer> const &renderer) {
     this->_renderer->set_value(renderer);
 
     for (auto const &sub_node : this->_children) {
@@ -689,25 +691,25 @@ std::ostream &operator<<(std::ostream &os, yas::ui::node::method const &method) 
     return os;
 }
 
-bool yas::operator==(yas::ui::node_wptr const &lhs, yas::ui::node_wptr const &rhs) {
+bool yas::operator==(std::weak_ptr<yas::ui::node> const &lhs, std::weak_ptr<yas::ui::node> const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();
     return (locked_lhs && locked_rhs && locked_lhs == locked_rhs);
 }
 
-bool yas::operator!=(yas::ui::node_wptr const &lhs, yas::ui::node_wptr const &rhs) {
+bool yas::operator!=(std::weak_ptr<yas::ui::node> const &lhs, std::weak_ptr<yas::ui::node> const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();
     return (!locked_lhs || !locked_rhs || locked_lhs != locked_rhs);
 }
 
-bool yas::ui::operator==(yas::ui::node_wptr const &lhs, yas::ui::node_wptr const &rhs) {
+bool yas::ui::operator==(std::weak_ptr<yas::ui::node> const &lhs, std::weak_ptr<yas::ui::node> const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();
     return (locked_lhs && locked_rhs && locked_lhs == locked_rhs);
 }
 
-bool yas::ui::operator!=(yas::ui::node_wptr const &lhs, yas::ui::node_wptr const &rhs) {
+bool yas::ui::operator!=(std::weak_ptr<yas::ui::node> const &lhs, std::weak_ptr<yas::ui::node> const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();
     return (!locked_lhs || !locked_rhs || locked_lhs != locked_rhs);

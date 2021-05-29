@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_layout_guide_tests : XCTestCase
 
@@ -21,24 +22,24 @@ using namespace yas;
     [super tearDown];
 }
 
-#pragma mark - ui::layout_guide
+#pragma mark - layout_guide
 
 - (void)test_create_guide {
-    auto guide = ui::layout_guide::make_shared();
+    auto guide = layout_guide::make_shared();
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 0.0f);
 }
 
 - (void)test_create_guide_with_value {
-    auto guide = ui::layout_guide::make_shared(1.0f);
+    auto guide = layout_guide::make_shared(1.0f);
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 1.0f);
 }
 
 - (void)test_notify_caller {
-    auto guide = ui::layout_guide::make_shared();
+    auto guide = layout_guide::make_shared();
 
     float notified_new_value = 0.0f;
 
@@ -79,7 +80,7 @@ using namespace yas;
 }
 
 - (void)test_notify_caller_canceled {
-    auto guide = ui::layout_guide::make_shared(1.0f);
+    auto guide = layout_guide::make_shared(1.0f);
 
     bool called = false;
 
@@ -95,10 +96,10 @@ using namespace yas;
     XCTAssertFalse(called);
 }
 
-#pragma mark - ui::layout_guide_point
+#pragma mark - layout_guide_point
 
 - (void)test_create_point {
-    auto point = ui::layout_guide_point::make_shared();
+    auto point = layout_guide_point::make_shared();
 
     XCTAssertTrue(point);
     XCTAssertTrue(point->x());
@@ -108,7 +109,7 @@ using namespace yas;
 }
 
 - (void)test_create_point_with_args {
-    auto point = ui::layout_guide_point::make_shared({1.0f, 2.0f});
+    auto point = layout_guide_point::make_shared({1.0f, 2.0f});
 
     XCTAssertTrue(point);
     XCTAssertTrue(point->x());
@@ -118,7 +119,7 @@ using namespace yas;
 }
 
 - (void)test_point_accessor {
-    auto point = ui::layout_guide_point::make_shared();
+    auto point = layout_guide_point::make_shared();
 
     XCTAssertTrue(point->point() == (ui::point{0.0f, 0.0f}));
 
@@ -128,11 +129,11 @@ using namespace yas;
 }
 
 - (void)test_chain_point {
-    auto guide_point = ui::layout_guide_point::make_shared();
+    auto guide_point = layout_guide_point::make_shared();
 
-    ui::point notified;
+    point notified;
 
-    auto canceller = guide_point->observe([&notified](ui::point const &point) { notified = point; }).end();
+    auto canceller = guide_point->observe([&notified](point const &point) { notified = point; }).end();
 
     guide_point->set_point({1.0f, 2.0f});
 
@@ -141,7 +142,7 @@ using namespace yas;
 }
 
 - (void)test_point_notify_caller {
-    auto point = ui::layout_guide_point::make_shared();
+    auto point = layout_guide_point::make_shared();
 
     float notified_x;
     float notified_y;
@@ -210,10 +211,10 @@ using namespace yas;
     XCTAssertEqual(notified_point.y, 10.0f);
 }
 
-#pragma mark - ui::layout_guide_range
+#pragma mark - layout_guide_range
 
 - (void)test_create_range {
-    auto range = ui::layout_guide_range::make_shared();
+    auto range = layout_guide_range::make_shared();
 
     XCTAssertTrue(range);
     XCTAssertTrue(range->min());
@@ -224,7 +225,7 @@ using namespace yas;
 }
 
 - (void)test_create_range_with_args {
-    auto range = ui::layout_guide_range::make_shared({.location = 1.0f, .length = 2.0f});
+    auto range = layout_guide_range::make_shared({.location = 1.0f, .length = 2.0f});
 
     XCTAssertTrue(range);
     XCTAssertTrue(range->min());
@@ -233,7 +234,7 @@ using namespace yas;
     XCTAssertEqual(range->max()->value(), 3.0f);
     XCTAssertEqual(range->length()->value(), 2.0f);
 
-    range = ui::layout_guide_range::make_shared({.location = 4.0f, .length = -6.0f});
+    range = layout_guide_range::make_shared({.location = 4.0f, .length = -6.0f});
 
     XCTAssertEqual(range->min()->value(), -2.0f);
     XCTAssertEqual(range->max()->value(), 4.0f);
@@ -241,7 +242,7 @@ using namespace yas;
 }
 
 - (void)test_range_accessor {
-    auto range = ui::layout_guide_range::make_shared();
+    auto range = layout_guide_range::make_shared();
 
     XCTAssertTrue(range->range() == (ui::range{.location = 0.0f, .length = 0.0f}));
 
@@ -251,11 +252,11 @@ using namespace yas;
 }
 
 - (void)test_chain_range {
-    auto guide_range = ui::layout_guide_range::make_shared();
+    auto guide_range = layout_guide_range::make_shared();
 
-    ui::range notified;
+    range notified;
 
-    auto observer = guide_range->observe([&notified](ui::range const &range) { notified = range; }).end();
+    auto observer = guide_range->observe([&notified](range const &range) { notified = range; }).end();
 
     guide_range->set_range({1.0f, 2.0f});
 
@@ -264,7 +265,7 @@ using namespace yas;
 }
 
 - (void)test_range_notify_caller {
-    auto range = ui::layout_guide_range::make_shared();
+    auto range = layout_guide_range::make_shared();
 
     struct edge {
         float min = 0.0f;
@@ -285,7 +286,7 @@ using namespace yas;
 
     auto clear_edges = [&notified_new_edge, &notified_range]() {
         notified_new_edge.clear();
-        notified_range = ui::range::zero();
+        notified_range = range::zero();
     };
 
     auto min_observer =
@@ -319,21 +320,21 @@ using namespace yas;
     range->set_range({3.0f, 4.0f});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_range == ui::range::zero());
+    XCTAssertTrue(notified_range == range::zero());
 
     range->push_notify_waiting();
 
     range->set_range({5.0f, 6.0f});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_range == ui::range::zero());
+    XCTAssertTrue(notified_range == range::zero());
 
     range->pop_notify_waiting();
 
     range->set_range({7.0f, 8.0f});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_range == ui::range::zero());
+    XCTAssertTrue(notified_range == range::zero());
 
     range->pop_notify_waiting();
 
@@ -355,7 +356,7 @@ using namespace yas;
 }
 
 - (void)test_range_set_by_guide {
-    auto range = ui::layout_guide_range::make_shared();
+    auto range = layout_guide_range::make_shared();
 
     range->max()->set_value(1.0f);
 
@@ -370,10 +371,10 @@ using namespace yas;
     XCTAssertEqual(range->length()->value(), 2.0f);
 }
 
-#pragma mark - ui::layout_guide_rect
+#pragma mark - layout_guide_rect
 
 - (void)test_create_rect {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     XCTAssertTrue(rect);
     XCTAssertTrue(rect->vertical_range());
@@ -396,8 +397,8 @@ using namespace yas;
 }
 
 - (void)test_create_rect_with_args {
-    auto rect = ui::layout_guide_rect::make_shared({.vertical_range = {.location = 11.0f, .length = 1.0f},
-                                                    .horizontal_range = {.location = 13.0f, .length = 2.0f}});
+    auto rect = layout_guide_rect::make_shared({.vertical_range = {.location = 11.0f, .length = 1.0f},
+                                                .horizontal_range = {.location = 13.0f, .length = 2.0f}});
 
     XCTAssertTrue(rect);
     XCTAssertTrue(rect->vertical_range());
@@ -420,7 +421,7 @@ using namespace yas;
 }
 
 - (void)test_rect_set_vertical_ranges {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     rect->set_vertical_range({.location = 100.0f, .length = 101.0f});
 
@@ -433,7 +434,7 @@ using namespace yas;
 }
 
 - (void)test_rect_set_horizontal_ranges {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     rect->set_horizontal_range({.location = 300.0f, .length = 102.0f});
 
@@ -446,7 +447,7 @@ using namespace yas;
 }
 
 - (void)test_rect_set_ranges {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     rect->set_ranges({.vertical_range = {.location = 11.0f, .length = 1.0f},
                       .horizontal_range = {.location = 13.0f, .length = 2.0f}});
@@ -460,7 +461,7 @@ using namespace yas;
 }
 
 - (void)test_rect_set_region {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
@@ -473,11 +474,11 @@ using namespace yas;
 }
 
 - (void)test_chain_rect {
-    auto guide_rect = ui::layout_guide_rect::make_shared();
+    auto guide_rect = layout_guide_rect::make_shared();
 
-    ui::region notified;
+    region notified;
 
-    auto observer = guide_rect->observe([&notified](ui::region const &region) { notified = region; }).end();
+    auto observer = guide_rect->observe([&notified](region const &region) { notified = region; }).end();
 
     guide_rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
@@ -488,7 +489,7 @@ using namespace yas;
 }
 
 - (void)test_rect_notify_caller {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     struct edge {
         float left = 0.0f;
@@ -508,11 +509,11 @@ using namespace yas;
     };
 
     edge notified_new_edge;
-    ui::region notified_region;
+    region notified_region;
 
     auto clear_edges = [&notified_new_edge, &notified_region]() {
         notified_new_edge.clear();
-        notified_region = ui::region::zero();
+        notified_region = region::zero();
     };
 
     auto left_observer =
@@ -543,8 +544,7 @@ using namespace yas;
                                    notified_new_height = value;
                                })
                                .end();
-    auto region_observer =
-        rect->observe([&notified_region](ui::region const &value) { notified_region = value; }).end();
+    auto region_observer = rect->observe([&notified_region](region const &value) { notified_region = value; }).end();
 
     rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
@@ -566,21 +566,21 @@ using namespace yas;
     rect->set_region({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_region == ui::region::zero());
+    XCTAssertTrue(notified_region == region::zero());
 
     rect->push_notify_waiting();
 
     rect->set_region({.origin = {9.0f, 10.0f}, .size = {11.0f, 12.0f}});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_region == ui::region::zero());
+    XCTAssertTrue(notified_region == region::zero());
 
     rect->pop_notify_waiting();
 
     rect->set_region({.origin = {13.0f, 14.0f}, .size = {15.0f, 16.0f}});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_region == ui::region::zero());
+    XCTAssertTrue(notified_region == region::zero());
 
     rect->pop_notify_waiting();
 
@@ -614,7 +614,7 @@ using namespace yas;
 }
 
 - (void)test_rect_set_by_guide {
-    auto rect = ui::layout_guide_rect::make_shared();
+    auto rect = layout_guide_rect::make_shared();
 
     // horizontal
 

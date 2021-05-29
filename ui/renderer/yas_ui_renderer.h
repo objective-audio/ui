@@ -13,15 +13,10 @@
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
 #include <ui/yas_ui_node.h>
-#include <ui/yas_ui_ptr.h>
+
 #include <vector>
 
 namespace yas::ui {
-class uint_size;
-class action;
-class metal_system;
-enum class system_type;
-
 struct renderer final : view_renderer_interface {
     virtual ~renderer();
 
@@ -33,21 +28,21 @@ struct renderer final : view_renderer_interface {
     [[nodiscard]] ui::system_type system_type() const;
     [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system() const;
 
-    [[nodiscard]] ui::background_ptr const &background() const;
+    [[nodiscard]] std::shared_ptr<background> const &background() const;
 
-    [[nodiscard]] ui::node_ptr const &root_node() const;
+    [[nodiscard]] std::shared_ptr<node> const &root_node() const;
 
-    [[nodiscard]] ui::event_manager_ptr const &event_manager() const;
+    [[nodiscard]] std::shared_ptr<event_manager> const &event_manager() const;
 
     [[nodiscard]] std::vector<std::shared_ptr<ui::action>> actions() const;
     void insert_action(std::shared_ptr<ui::action> const &);
     void erase_action(std::shared_ptr<ui::action> const &);
     void erase_action(std::shared_ptr<ui::action_target> const &target);
 
-    [[nodiscard]] ui::detector_ptr const &detector() const;
+    [[nodiscard]] std::shared_ptr<detector> const &detector() const;
 
-    [[nodiscard]] ui::layout_guide_rect_ptr const &view_layout_guide_rect() const;
-    [[nodiscard]] ui::layout_guide_rect_ptr const &safe_area_layout_guide_rect() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_rect> const &view_layout_guide_rect() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_rect> const &safe_area_layout_guide_rect() const;
 
     [[nodiscard]] ui::appearance appearance() const;
 
@@ -55,8 +50,8 @@ struct renderer final : view_renderer_interface {
     [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&);
     [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&);
 
-    [[nodiscard]] static renderer_ptr make_shared();
-    [[nodiscard]] static renderer_ptr make_shared(ui::metal_system_ptr const &);
+    [[nodiscard]] static std::shared_ptr<renderer> make_shared();
+    [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::metal_system> const &);
 
    private:
     enum class update_result {
@@ -69,7 +64,7 @@ struct renderer final : view_renderer_interface {
         updated,
     };
 
-    ui::metal_system_ptr _metal_system;
+    std::shared_ptr<ui::metal_system> _metal_system;
 
     ui::uint_size _view_size;
     ui::uint_size _drawable_size;
@@ -80,13 +75,13 @@ struct renderer final : view_renderer_interface {
     simd::float4x4 _projection_matrix;
     renderer_updates_t _updates;
 
-    ui::background_ptr const _background;
-    ui::node_ptr const _root_node;
+    std::shared_ptr<ui::background> const _background;
+    std::shared_ptr<node> const _root_node;
     std::shared_ptr<parallel_action> const _parallel_action;
-    ui::detector_ptr const _detector;
-    ui::event_manager_ptr const _event_manager;
-    ui::layout_guide_rect_ptr const _view_layout_guide_rect;
-    ui::layout_guide_rect_ptr const _safe_area_layout_guide_rect;
+    std::shared_ptr<ui::detector> const _detector;
+    std::shared_ptr<ui::event_manager> const _event_manager;
+    std::shared_ptr<layout_guide_rect> const _view_layout_guide_rect;
+    std::shared_ptr<layout_guide_rect> const _safe_area_layout_guide_rect;
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
@@ -97,7 +92,7 @@ struct renderer final : view_renderer_interface {
     renderer &operator=(renderer const &) = delete;
     renderer &operator=(renderer &&) = delete;
 
-    void _prepare(renderer_ptr const &);
+    void _prepare(std::shared_ptr<renderer> const &);
 
     void view_configure(yas_objc_view *const view) override;
     void view_size_will_change(yas_objc_view *const view, CGSize const size) override;
@@ -117,6 +112,6 @@ struct renderer final : view_renderer_interface {
 }  // namespace yas::ui
 
 namespace yas::ui {
-bool operator==(yas::ui::renderer_wptr const &, yas::ui::renderer_wptr const &);
-bool operator!=(yas::ui::renderer_wptr const &, yas::ui::renderer_wptr const &);
+bool operator==(std::weak_ptr<yas::ui::renderer> const &, std::weak_ptr<yas::ui::renderer> const &);
+bool operator!=(std::weak_ptr<yas::ui::renderer> const &, std::weak_ptr<yas::ui::renderer> const &);
 }  // namespace yas::ui

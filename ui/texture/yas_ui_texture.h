@@ -8,7 +8,6 @@
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_metal_system.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_texture_types.h>
 #include <ui/yas_ui_types.h>
 
@@ -31,17 +30,17 @@ struct texture : metal_object {
     void set_point_size(ui::uint_size);
     void set_scale_factor(double const);
 
-    [[nodiscard]] texture_element_ptr const &add_draw_handler(ui::uint_size, ui::draw_handler_f);
-    void remove_draw_handler(texture_element_ptr const &);
+    [[nodiscard]] std::shared_ptr<texture_element> const &add_draw_handler(ui::uint_size, ui::draw_handler_f);
+    void remove_draw_handler(std::shared_ptr<texture_element> const &);
 
     [[nodiscard]] std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
     [[nodiscard]] observing::endable observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
-    void sync_scale_from_renderer(ui::renderer_ptr const &);
+    void sync_scale_from_renderer(std::shared_ptr<renderer> const &);
 
-    [[nodiscard]] static texture_ptr make_shared(texture_args &&);
+    [[nodiscard]] static std::shared_ptr<texture> make_shared(texture_args &&);
 
    private:
     ui::uint_size _point_size;
@@ -51,13 +50,13 @@ struct texture : metal_object {
     ui::texture_usages_t const _usages;
     ui::pixel_format const _pixel_format;
 
-    ui::metal_texture_ptr _metal_texture = nullptr;
+    std::shared_ptr<ui::metal_texture> _metal_texture = nullptr;
 
-    ui::metal_system_ptr _metal_system = nullptr;
+    std::shared_ptr<metal_system> _metal_system = nullptr;
     uint32_t _max_line_height = 0;
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
-    std::vector<texture_element_ptr> _texture_elements;
+    std::vector<std::shared_ptr<texture_element>> _texture_elements;
     observing::cancellable_ptr _scale_canceller = nullptr;
     observing::notifier_ptr<std::nullptr_t> const _texture_notifier =
         observing::notifier<std::nullptr_t>::make_shared();
@@ -72,13 +71,13 @@ struct texture : metal_object {
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
-    draw_image_result _reserve_image_size(image_ptr const &image);
-    draw_image_result _replace_image(image_ptr const &image, uint_point const origin);
+    draw_image_result _reserve_image_size(std::shared_ptr<image> const &image);
+    draw_image_result _replace_image(std::shared_ptr<image> const &image, uint_point const origin);
     void _prepare_draw_pos(uint_size const size);
     void _move_draw_pos(uint_size const size);
     bool _can_draw(uint_size const size);
     void _add_images_to_metal_texture();
-    void _add_image_to_metal_texture(texture_element_ptr const &element);
+    void _add_image_to_metal_texture(std::shared_ptr<texture_element> const &element);
     void _size_updated();
 };
 }  // namespace yas::ui

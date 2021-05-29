@@ -8,6 +8,7 @@
 
 using namespace std::chrono_literals;
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_node_actions_tests : XCTestCase
 
@@ -24,13 +25,13 @@ using namespace yas;
 }
 
 - (void)test_update_translate_action {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto const action = ui::make_action({.target = target,
-                                         .begin_position = {0.0f, -1.0f},
-                                         .end_position = {1.0f, 1.0f},
-                                         .duration = 1.0,
-                                         .begin_time = time});
+    auto const action = make_action({.target = target,
+                                     .begin_position = {0.0f, -1.0f},
+                                     .end_position = {1.0f, 1.0f},
+                                     .duration = 1.0,
+                                     .begin_time = time});
 
     action->update(time);
 
@@ -49,14 +50,14 @@ using namespace yas;
 }
 
 - (void)test_update_rotate_action {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action({.target = target,
-                                   .begin_angle = 0.0f,
-                                   .end_angle = 360.0f,
-                                   .is_shortest = false,
-                                   .duration = 1.0,
-                                   .begin_time = time});
+    auto action = make_action({.target = target,
+                               .begin_angle = 0.0f,
+                               .end_angle = 360.0f,
+                               .is_shortest = false,
+                               .duration = 1.0,
+                               .begin_time = time});
 
     action->update(time);
 
@@ -72,14 +73,14 @@ using namespace yas;
 }
 
 - (void)test_update_rotate_action_shortest_1 {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action({.target = target,
-                                   .begin_angle = 0.0f,
-                                   .end_angle = 270.0f,
-                                   .is_shortest = true,
-                                   .duration = 1.0,
-                                   .begin_time = time});
+    auto action = make_action({.target = target,
+                               .begin_angle = 0.0f,
+                               .end_angle = 270.0f,
+                               .is_shortest = true,
+                               .duration = 1.0,
+                               .begin_time = time});
 
     action->update(time);
 
@@ -95,14 +96,14 @@ using namespace yas;
 }
 
 - (void)test_update_rotate_action_shortest_2 {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action({.target = target,
-                                   .begin_angle = -180.0f,
-                                   .end_angle = 90.0f,
-                                   .is_shortest = true,
-                                   .duration = 1.0,
-                                   .begin_time = time});
+    auto action = make_action({.target = target,
+                               .begin_angle = -180.0f,
+                               .end_angle = 90.0f,
+                               .is_shortest = true,
+                               .duration = 1.0,
+                               .begin_time = time});
 
     action->update(time);
 
@@ -118,13 +119,13 @@ using namespace yas;
 }
 
 - (void)test_update_scale_action {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action({.target = target,
-                                   .begin_scale = {0.0f, -1.0f},
-                                   .end_scale = {1.0f, 1.0f},
-                                   .duration = 1.0,
-                                   .begin_time = time});
+    auto action = make_action({.target = target,
+                               .begin_scale = {0.0f, -1.0f},
+                               .end_scale = {1.0f, 1.0f},
+                               .duration = 1.0,
+                               .begin_time = time});
 
     action->update(time);
 
@@ -143,15 +144,15 @@ using namespace yas;
 }
 
 - (void)test_update_color_action {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action({.target = target,
-                                   .begin_color = {0.0f, 0.25f, 0.5f},
-                                   .end_color = {1.0f, 0.75f, 0.5f},
-                                   .duration = 1.0,
-                                   .begin_time = time});
+    auto action = make_action({.target = target,
+                               .begin_color = {0.0f, 0.25f, 0.5f},
+                               .end_color = {1.0f, 0.75f, 0.5f},
+                               .duration = 1.0,
+                               .begin_time = time});
 
-    auto mesh = ui::mesh::make_shared();
+    auto mesh = mesh::make_shared();
     target->set_mesh(mesh);
 
     action->update(time);
@@ -174,12 +175,12 @@ using namespace yas;
 }
 
 - (void)test_update_alpha_action {
-    auto target = ui::node::make_shared();
+    auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
-    auto action = ui::make_action(
-        {.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .duration = 1.0, .begin_time = time});
+    auto action =
+        make_action({.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .duration = 1.0, .begin_time = time});
 
-    auto mesh = ui::mesh::make_shared();
+    auto mesh = mesh::make_shared();
     target->set_mesh(mesh);
 
     action->update(time);

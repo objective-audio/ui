@@ -7,7 +7,6 @@
 #include <cpp_utils/yas_flagset.h>
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_layout_guide.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_rect_plane.h>
 #include <ui/yas_ui_types.h>
 
@@ -31,8 +30,8 @@ struct button final {
 
     virtual ~button();
 
-    void set_texture(ui::texture_ptr const &);
-    [[nodiscard]] ui::texture_ptr const &texture() const;
+    void set_texture(std::shared_ptr<texture> const &);
+    [[nodiscard]] std::shared_ptr<texture> const &texture() const;
 
     [[nodiscard]] std::size_t state_count() const;
     void set_state_index(std::size_t const);
@@ -42,21 +41,21 @@ struct button final {
 
     [[nodiscard]] observing::endable observe(observing::caller<context>::handler_f &&);
 
-    [[nodiscard]] ui::rect_plane_ptr const &rect_plane();
+    [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
-    [[nodiscard]] ui::layout_guide_rect_ptr const &layout_guide_rect();
+    [[nodiscard]] std::shared_ptr<layout_guide_rect> const &layout_guide_rect();
 
-    [[nodiscard]] static button_ptr make_shared(ui::region const &);
-    [[nodiscard]] static button_ptr make_shared(ui::region const &, std::size_t const state_count);
+    [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &);
+    [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count);
 
    private:
-    ui::rect_plane_ptr _rect_plane;
-    ui::layout_guide_rect_ptr _layout_guide_rect;
+    std::shared_ptr<ui::rect_plane> _rect_plane;
+    std::shared_ptr<ui::layout_guide_rect> _layout_guide_rect;
     observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
     std::size_t _state_idx = 0;
     std::size_t _state_count;
 
-    ui::event_ptr _tracking_event = nullptr;
+    std::shared_ptr<event> _tracking_event = nullptr;
     observing::canceller_pool _pool;
 
     button(ui::region const &region, std::size_t const state_count);
@@ -67,16 +66,16 @@ struct button final {
     button &operator=(button &&) = delete;
 
     bool _is_tracking();
-    bool _is_tracking(ui::event_ptr const &);
-    void _set_tracking_event(ui::event_ptr const &);
+    bool _is_tracking(std::shared_ptr<event> const &);
+    void _set_tracking_event(std::shared_ptr<event> const &);
     void _update_rect_positions(ui::region const &region, std::size_t const state_count);
     void _update_rect_index();
     observing::cancellable_ptr _make_leave_chains();
     observing::cancellable_ptr _make_collider_chains();
-    void _update_tracking(ui::event_ptr const &event);
-    void _leave_or_enter_or_move_tracking(ui::event_ptr const &event);
-    void _cancel_tracking(ui::event_ptr const &event);
-    void _send_notify(method const method, ui::event_ptr const &event);
+    void _update_tracking(std::shared_ptr<event> const &event);
+    void _leave_or_enter_or_move_tracking(std::shared_ptr<event> const &event);
+    void _cancel_tracking(std::shared_ptr<event> const &event);
+    void _send_notify(method const method, std::shared_ptr<event> const &event);
 };
 }  // namespace yas::ui
 

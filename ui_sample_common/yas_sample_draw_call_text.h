@@ -11,16 +11,16 @@
 
 namespace yas::sample {
 struct draw_call_text {
-    ui::strings_ptr const &strings();
+    std::shared_ptr<ui::strings> const &strings();
 
-    static draw_call_text_ptr make_shared(ui::font_atlas_ptr const &);
+    static draw_call_text_ptr make_shared(std::shared_ptr<ui::font_atlas> const &);
 
    private:
-    ui::strings_ptr _strings;
+    std::shared_ptr<ui::strings> _strings;
     std::optional<timer> _timer = std::nullopt;
     observing::cancellable_ptr _renderer_canceller = nullptr;
 
-    explicit draw_call_text(ui::font_atlas_ptr const &);
+    explicit draw_call_text(std::shared_ptr<ui::font_atlas> const &);
 
     void _update_text();
 };

@@ -7,19 +7,20 @@
 #include <ui/yas_ui_collider.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark - big_button
 
 sample::big_button::big_button() {
     this->_button->rect_plane()->node()->set_collider(
-        ui::collider::make_shared(ui::shape::make_shared(ui::circle_shape{.radius = this->_radius})));
+        collider::make_shared(shape::make_shared(circle_shape{.radius = this->_radius})));
 }
 
-std::shared_ptr<ui::button> &sample::big_button::button() {
+std::shared_ptr<button> &sample::big_button::button() {
     return this->_button;
 }
 
-void sample::big_button::set_texture(ui::texture_ptr const &texture) {
+void sample::big_button::set_texture(std::shared_ptr<texture> const &texture) {
     auto const &data = this->_button->rect_plane()->data();
     data->clear_observers();
 
@@ -31,7 +32,7 @@ void sample::big_button::set_texture(ui::texture_ptr const &texture) {
 
     uint32_t const width = this->_radius * 2;
 
-    ui::uint_size image_size{width, width};
+    uint_size image_size{width, width};
 
     auto element0 = texture->add_draw_handler(image_size, [image_size](CGContextRef const ctx) {
         CGContextSetFillColorWithColor(ctx, [yas_objc_color colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0].CGColor);

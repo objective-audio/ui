@@ -5,14 +5,15 @@
 #include "yas_sample_main.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 void sample::main::setup() {
     auto &root_node = this->renderer->root_node();
 
     root_node->add_sub_node(this->_bg->rect_plane()->node());
 
-    auto batch_node = ui::node::make_shared();
-    batch_node->set_batch(ui::batch::make_shared());
+    auto batch_node = node::make_shared();
+    batch_node->set_batch(batch::make_shared());
     batch_node->add_sub_node(this->_cursor_over_planes->node());
     root_node->add_sub_node(std::move(batch_node));
 
@@ -51,42 +52,42 @@ void sample::main::setup() {
         ->set_to(this->_keyboard_canceller);
 
     auto button_pos_action =
-        ui::make_action({.target = this->_big_button->button()->rect_plane()->node(),
-                         .begin_position = {0.0f, 0.0f},
-                         .end_position = {32.0f, 0.0f},
-                         .duration = 5.0,
-                         .loop_count = 0,
-                         .value_transformer = [](float const value) { return sinf(M_PI * 2.0f * value); }});
+        make_action({.target = this->_big_button->button()->rect_plane()->node(),
+                     .begin_position = {0.0f, 0.0f},
+                     .end_position = {32.0f, 0.0f},
+                     .duration = 5.0,
+                     .loop_count = 0,
+                     .value_transformer = [](float const value) { return sinf(M_PI * 2.0f * value); }});
 
     this->renderer->insert_action(button_pos_action);
 
-    auto texture = ui::texture::make_shared({.point_size = {1024, 1024}});
+    auto texture = texture::make_shared({.point_size = {1024, 1024}});
     texture->sync_scale_from_renderer(this->renderer);
 
     this->_font_atlas->set_texture(texture);
     this->_big_button->set_texture(texture);
     this->_touch_holder->set_texture(texture);
 
-    auto render_target = ui::render_target::make_shared();
+    auto render_target = render_target::make_shared();
     render_target->sync_scale_from_renderer(this->renderer);
     render_target->set_effect(this->_blur->effect());
 
     auto blur_action =
-        ui::action::make_continuous({.duration = 5.0,
-                                     .loop_count = 0,
-                                     .value_transformer = ui::ping_pong_transformer(),
-                                     .value_updater = [weak_blur = to_weak(this->_blur)](double const value) {
-                                         if (auto blur = weak_blur.lock()) {
-                                             blur->set_sigma(value * 20.0);
-                                         }
-                                     }});
+        action::make_continuous({.duration = 5.0,
+                                 .loop_count = 0,
+                                 .value_transformer = ping_pong_transformer(),
+                                 .value_updater = [weak_blur = to_weak(this->_blur)](double const value) {
+                                     if (auto blur = weak_blur.lock()) {
+                                         blur->set_sigma(value * 20.0);
+                                     }
+                                 }});
 
     this->renderer->insert_action(blur_action);
 
     auto &view_guide = this->renderer->view_layout_guide_rect();
 
     view_guide
-        ->observe([render_target](ui::region const &region) { render_target->layout_guide_rect()->set_region(region); })
+        ->observe([render_target](region const &region) { render_target->layout_guide_rect()->set_region(region); })
         .sync()
         ->set_to(this->_render_target_canceller);
 
@@ -96,13 +97,13 @@ void sample::main::setup() {
 
     this->_plane_on_target->data()->set_rect_position(
         {.origin = {.x = -100.0f, .y = -100.0f}, .size = {.width = 50.0f, .height = 50.0f}}, 0);
-    this->_plane_on_target->node()->set_color(ui::cyan_color());
+    this->_plane_on_target->node()->set_color(cyan_color());
     this->_render_target_node->add_sub_node(this->_plane_on_target->node());
 
-    auto action = ui::make_action({.target = this->_plane_on_target->node(),
-                                   .begin_angle = 0.0f,
-                                   .end_angle = 360.0f,
-                                   .duration = 3.0,
-                                   .loop_count = 0});
+    auto action = make_action({.target = this->_plane_on_target->node(),
+                               .begin_angle = 0.0f,
+                               .end_angle = 360.0f,
+                               .duration = 3.0,
+                               .loop_count = 0});
     this->renderer->insert_action(action);
 }

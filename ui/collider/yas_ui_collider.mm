@@ -62,30 +62,31 @@ bool shape::hit_test(point const &pos) const {
     return this->_impl->hit_test(pos);
 }
 
-shape_ptr shape::make_shared(anywhere::type type) {
+std::shared_ptr<shape> shape::make_shared(anywhere::type type) {
     return std::shared_ptr<shape>(new shape{std::move(type)});
 }
 
-shape_ptr shape::make_shared(circle::type type) {
+std::shared_ptr<shape> shape::make_shared(circle::type type) {
     return std::shared_ptr<shape>(new shape{std::move(type)});
 }
 
-shape_ptr shape::make_shared(rect::type type) {
+std::shared_ptr<shape> shape::make_shared(rect::type type) {
     return std::shared_ptr<shape>(new shape{std::move(type)});
 }
 
 #pragma mark - collider
 
-collider::collider(shape_ptr &&shape) : _shape(observing::value::holder<shape_ptr>::make_shared(std::move(shape))) {
+collider::collider(std::shared_ptr<ui::shape> &&shape)
+    : _shape(observing::value::holder<std::shared_ptr<ui::shape>>::make_shared(std::move(shape))) {
 }
 
 collider::~collider() = default;
 
-void collider::set_shape(shape_ptr shape) {
+void collider::set_shape(std::shared_ptr<ui::shape> shape) {
     this->_shape->set_value(std::move(shape));
 }
 
-shape_ptr const &collider::shape() const {
+std::shared_ptr<shape> const &collider::shape() const {
     return this->_shape->value();
 }
 
@@ -106,7 +107,7 @@ bool collider::hit_test(point const &loc) const {
     return false;
 }
 
-observing::syncable collider::observe_shape(observing::caller<shape_ptr>::handler_f &&handler) {
+observing::syncable collider::observe_shape(observing::caller<std::shared_ptr<ui::shape>>::handler_f &&handler) {
     return this->_shape->observe(std::move(handler));
 }
 
@@ -122,10 +123,10 @@ void collider::set_matrix(simd::float4x4 const &matrix) {
     this->_matrix = std::move(matrix);
 }
 
-collider_ptr collider::make_shared() {
+std::shared_ptr<collider> collider::make_shared() {
     return make_shared(nullptr);
 }
 
-collider_ptr collider::make_shared(shape_ptr shape) {
+std::shared_ptr<collider> collider::make_shared(std::shared_ptr<ui::shape> shape) {
     return std::shared_ptr<collider>(new collider{std::move(shape)});
 }

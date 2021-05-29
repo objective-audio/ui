@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_encode_info_tests : XCTestCase
 
@@ -22,16 +23,16 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto info = ui::metal_encode_info::make_shared({nil, nil, nil});
+    auto info = metal_encode_info::make_shared({nil, nil, nil});
 
     XCTAssertTrue(info);
     XCTAssertEqual(info->meshes().size(), 0);
 }
 
 - (void)test_append_mesh {
-    auto info = ui::metal_encode_info::make_shared({nil, nil, nil});
-    auto mesh1 = ui::mesh::make_shared();
-    auto mesh2 = ui::mesh::make_shared();
+    auto info = metal_encode_info::make_shared({nil, nil, nil});
+    auto mesh1 = mesh::make_shared();
+    auto mesh2 = mesh::make_shared();
 
     info->append_mesh(mesh1);
 

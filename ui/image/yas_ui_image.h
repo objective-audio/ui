@@ -5,7 +5,6 @@
 #pragma once
 
 #include <ui/yas_ui_image_types.h>
-#include <ui/yas_ui_ptr.h>
 
 #include <functional>
 
@@ -23,7 +22,7 @@ struct image final {
     void clear();
     void draw(ui::draw_handler_f const &);
 
-    [[nodiscard]] static image_ptr make_shared(image_args &&);
+    [[nodiscard]] static std::shared_ptr<image> make_shared(image_args &&);
 
    private:
     uint_size _point_size;

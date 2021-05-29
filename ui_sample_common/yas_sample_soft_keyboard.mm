@@ -8,14 +8,15 @@
 #include <limits>
 
 using namespace yas;
+using namespace yas::ui;
 
 namespace yas::sample {
 struct soft_key {
-    std::shared_ptr<ui::button> const &button() {
+    std::shared_ptr<button> const &button() {
         return this->_button;
     }
 
-    ui::strings_ptr const &strings() const {
+    std::shared_ptr<strings> const &strings() const {
         return this->_strings;
     }
 
@@ -33,32 +34,32 @@ struct soft_key {
 
         if (animated) {
             renderer->insert_action(
-                ui::make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
+                make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
             renderer->insert_action(
-                ui::make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
+                make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
         } else {
             button_node->set_alpha(alpha);
             strings_node->set_alpha(alpha);
         }
     }
 
-    static soft_key_ptr make_shared(std::string key, float const width, ui::font_atlas_ptr const &atlas) {
+    static soft_key_ptr make_shared(std::string key, float const width, std::shared_ptr<font_atlas> const &atlas) {
         return std::shared_ptr<soft_key>(new soft_key(std::move(key), width, atlas));
     }
 
    private:
-    ui::button_ptr const _button;
-    ui::strings_ptr const _strings;
+    std::shared_ptr<ui::button> const _button;
+    std::shared_ptr<ui::strings> const _strings;
 
-    soft_key(std::string &&key, float const width, ui::font_atlas_ptr const &atlas)
-        : _button(ui::button::make_shared({.size = {width, width}})),
-          _strings(ui::strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
+    soft_key(std::string &&key, float const width, std::shared_ptr<font_atlas> const &atlas)
+        : _button(button::make_shared({.size = {width, width}})),
+          _strings(strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
         this->_button->rect_plane()->node()->mesh()->set_use_mesh_color(true);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 
         this->_strings->set_text(std::move(key));
-        this->_strings->set_alignment(ui::layout_alignment::mid);
+        this->_strings->set_alignment(layout_alignment::mid);
 
         this->_button->rect_plane()->node()->add_sub_node(this->_strings->rect_plane()->node());
 
@@ -71,9 +72,9 @@ struct soft_key {
 };
 }
 
-sample::soft_keyboard::soft_keyboard(ui::font_atlas_ptr const &atlas) : _font_atlas(atlas) {
+sample::soft_keyboard::soft_keyboard(std::shared_ptr<font_atlas> const &atlas) : _font_atlas(atlas) {
     this->_renderer_canceller = this->_root_node
-                                    ->observe_renderer([this](ui::renderer_ptr const &renderer) {
+                                    ->observe_renderer([this](std::shared_ptr<renderer> const &renderer) {
                                         if (renderer) {
                                             this->_setup_soft_keys_if_needed();
                                         } else {
@@ -83,7 +84,7 @@ sample::soft_keyboard::soft_keyboard(ui::font_atlas_ptr const &atlas) : _font_at
                                     .sync();
 }
 
-void sample::soft_keyboard::set_font_atlas(ui::font_atlas_ptr const &atlas) {
+void sample::soft_keyboard::set_font_atlas(std::shared_ptr<font_atlas> const &atlas) {
     if (this->_font_atlas != atlas) {
         this->_font_atlas = std::move(atlas);
 
@@ -91,7 +92,7 @@ void sample::soft_keyboard::set_font_atlas(ui::font_atlas_ptr const &atlas) {
     }
 }
 
-ui::node_ptr const &sample::soft_keyboard::node() {
+std::shared_ptr<node> const &sample::soft_keyboard::node() {
     return this->_root_node;
 }
 
@@ -115,21 +116,21 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     auto const spacing = 4.0f;
     auto const width = key_width * 3.0f + spacing * 4.0f;
 
-    std::vector<ui::size> cell_sizes;
+    std::vector<size> cell_sizes;
     cell_sizes.reserve(key_count);
     auto each = make_fast_each(key_count);
     while (yas_each_next(each)) {
         if (yas_each_index(each) == 0) {
-            cell_sizes.emplace_back(ui::size{0.0f, key_width});
+            cell_sizes.emplace_back(size{0.0f, key_width});
         } else {
-            cell_sizes.emplace_back(ui::size{key_width, key_width});
+            cell_sizes.emplace_back(size{key_width, key_width});
         }
     }
 
     this->_soft_keys.reserve(key_count);
     this->_soft_key_cancellers.reserve(key_count);
 
-    this->_collection_layout = ui::collection_layout::make_shared(
+    this->_collection_layout = collection_layout::make_shared(
         {.frame = {.size = {width, 0.0f}},
          .preferred_cell_count = key_count,
          .lines = {{.cell_sizes = cell_sizes}},
@@ -142,7 +143,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
 
         observing::cancellable_ptr canceller = soft_key->button()
                                                    ->observe([this, key](auto const &context) {
-                                                       if (context.method == ui::button::method::ended) {
+                                                       if (context.method == button::method::ended) {
                                                            this->_key_notifier->notify(key);
                                                        }
                                                    })
@@ -168,7 +169,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         this->_src_cell_guide_rects.resize(key_count);
     } else {
         while (this->_src_cell_guide_rects.size() < key_count) {
-            this->_src_cell_guide_rects.emplace_back(ui::layout_guide_rect::make_shared());
+            this->_src_cell_guide_rects.emplace_back(layout_guide_rect::make_shared());
         }
     }
 
@@ -176,7 +177,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
         this->_dst_cell_guide_rects.resize(key_count);
     } else {
         while (this->_dst_cell_guide_rects.size() < key_count) {
-            this->_dst_cell_guide_rects.emplace_back(ui::layout_guide_rect::make_shared());
+            this->_dst_cell_guide_rects.emplace_back(layout_guide_rect::make_shared());
         }
     }
 
@@ -244,7 +245,7 @@ void sample::soft_keyboard::_setup_soft_keys_layout() {
         return;
     }
 
-    std::vector<ui::layout_guide_pair> guide_pairs;
+    std::vector<layout_guide_pair> guide_pairs;
     guide_pairs.reserve(key_count * 4);
 
     auto each = make_fast_each(key_count);
@@ -256,7 +257,7 @@ void sample::soft_keyboard::_setup_soft_keys_layout() {
         auto weak_soft_key = to_weak(soft_key);
 
         dst_guide_rect
-            ->observe([weak_soft_key](ui::region const &value) {
+            ->observe([weak_soft_key](region const &value) {
                 if (auto const soft_key = weak_soft_key.lock()) {
                     soft_key->button()->rect_plane()->node()->set_position({value.origin.x, value.origin.y});
                     soft_key->button()->layout_guide_rect()->set_region({.size = value.size});
@@ -265,11 +266,11 @@ void sample::soft_keyboard::_setup_soft_keys_layout() {
             .end()
             ->add_to(this->_dst_rect_pool);
 
-        yas::move_back_insert(guide_pairs, ui::make_layout_guide_pairs({.source = this->_src_cell_guide_rects.at(idx),
-                                                                        .destination = dst_guide_rect}));
+        yas::move_back_insert(guide_pairs, make_layout_guide_pairs({.source = this->_src_cell_guide_rects.at(idx),
+                                                                    .destination = dst_guide_rect}));
     }
 
-    this->_cell_interporator = ui::layout_animator::make_shared(
+    this->_cell_interporator = layout_animator::make_shared(
         {.renderer = this->_root_node->renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f});
 }
 
@@ -356,6 +357,6 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
     }
 }
 
-sample::soft_keyboard_ptr sample::soft_keyboard::make_shared(ui::font_atlas_ptr const &atlas) {
+sample::soft_keyboard_ptr sample::soft_keyboard::make_shared(std::shared_ptr<font_atlas> const &atlas) {
     return std::shared_ptr<soft_keyboard>(new soft_keyboard{atlas});
 }

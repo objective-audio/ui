@@ -4,15 +4,13 @@
 
 #pragma once
 
-#include <ui/yas_ui_ptr.h>
-
-#include <string>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 struct font_atlas_args final {
     std::string font_name;
     double font_size;
     std::string words;
-    ui::texture_ptr texture = nullptr;
+    std::shared_ptr<texture> texture = nullptr;
 };
 }  // namespace yas::ui

@@ -31,13 +31,13 @@ using namespace yas::ui;
 
 @interface yas_objc_view (yas_ui_renderer)
 
-- (void)set_event_manager:(event_manager_ptr)manager;
+- (void)set_event_manager:(std::shared_ptr<event_manager>)manager;
 
 @end
 
 #pragma mark - renderer
 
-renderer::renderer(metal_system_ptr const &metal_system)
+renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system)
     : _metal_system(metal_system),
       _view_size({.width = 0, .height = 0}),
       _drawable_size({.width = 0, .height = 0}),
@@ -73,11 +73,11 @@ simd::float4x4 const &renderer::projection_matrix() const {
     return this->_projection_matrix;
 }
 
-background_ptr const &renderer::background() const {
+std::shared_ptr<background> const &renderer::background() const {
     return this->_background;
 }
 
-node_ptr const &renderer::root_node() const {
+std::shared_ptr<node> const &renderer::root_node() const {
     return this->_root_node;
 }
 
@@ -88,11 +88,11 @@ system_type renderer::system_type() const {
     return system_type::none;
 }
 
-metal_system_ptr const &renderer::metal_system() const {
+std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
 }
 
-event_manager_ptr const &renderer::event_manager() const {
+std::shared_ptr<event_manager> const &renderer::event_manager() const {
     return this->_event_manager;
 }
 
@@ -116,15 +116,15 @@ void renderer::erase_action(std::shared_ptr<action_target> const &target) {
     }
 }
 
-detector_ptr const &renderer::detector() const {
+std::shared_ptr<detector> const &renderer::detector() const {
     return this->_detector;
 }
 
-layout_guide_rect_ptr const &renderer::view_layout_guide_rect() const {
+std::shared_ptr<layout_guide_rect> const &renderer::view_layout_guide_rect() const {
     return this->_view_layout_guide_rect;
 }
 
-layout_guide_rect_ptr const &renderer::safe_area_layout_guide_rect() const {
+std::shared_ptr<layout_guide_rect> const &renderer::safe_area_layout_guide_rect() const {
     return this->_safe_area_layout_guide_rect;
 }
 
@@ -144,7 +144,7 @@ observing::syncable renderer::observe_appearance(observing::caller<ui::appearanc
     return this->_appearance->observe(std::move(handler));
 }
 
-void renderer::_prepare(renderer_ptr const &shared) {
+void renderer::_prepare(std::shared_ptr<renderer> const &shared) {
     renderable_node::cast(this->_root_node)->set_renderer(shared);
 }
 
@@ -336,23 +336,23 @@ bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_in
            insets1.right == insets2.right;
 }
 
-renderer_ptr renderer::make_shared() {
+std::shared_ptr<renderer> renderer::make_shared() {
     return make_shared(nullptr);
 }
 
-renderer_ptr renderer::make_shared(metal_system_ptr const &system) {
+std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system) {
     auto shared = std::shared_ptr<renderer>(new renderer{system});
     shared->_prepare(shared);
     return shared;
 }
 
-bool yas::ui::operator==(yas::ui::renderer_wptr const &lhs, yas::ui::renderer_wptr const &rhs) {
+bool yas::ui::operator==(std::weak_ptr<yas::ui::renderer> const &lhs, std::weak_ptr<yas::ui::renderer> const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();
     return (locked_lhs && locked_rhs && locked_lhs == locked_rhs);
 }
 
-bool yas::ui::operator!=(yas::ui::renderer_wptr const &lhs, yas::ui::renderer_wptr const &rhs) {
+bool yas::ui::operator!=(std::weak_ptr<yas::ui::renderer> const &lhs, std::weak_ptr<yas::ui::renderer> const &rhs) {
     auto locked_lhs = lhs.lock();
     auto locked_rhs = rhs.lock();
     return (!locked_lhs || !locked_rhs || locked_lhs != locked_rhs);

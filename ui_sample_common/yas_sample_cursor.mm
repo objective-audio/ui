@@ -6,29 +6,29 @@
 #include <cpp_utils/yas_fast_each.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 #pragma mark -
 
 namespace yas::sample::cursor_utils {
-static std::shared_ptr<ui::action> _make_rotate_action(ui::node_ptr const &target) {
-    auto rotate_action = ui::make_action({.target = target, .end_angle = -360.0f, .duration = 2.0f, .loop_count = 0});
+static std::shared_ptr<action> _make_rotate_action(std::shared_ptr<node> const &target) {
+    auto rotate_action = make_action({.target = target, .end_angle = -360.0f, .duration = 2.0f, .loop_count = 0});
 
-    auto scale_action = ui::make_action(
-        {.target = target,
-         .begin_scale = {.v = 10.0f},
-         .end_scale = {.v = 15.0f},
-         .duration = 5.0f,
-         .loop_count = 0,
-         .value_transformer = ui::connect({ui::ping_pong_transformer(), ui::ease_in_out_sine_transformer()})});
+    auto scale_action =
+        make_action({.target = target,
+                     .begin_scale = {.v = 10.0f},
+                     .end_scale = {.v = 15.0f},
+                     .duration = 5.0f,
+                     .loop_count = 0,
+                     .value_transformer = ui::connect({ping_pong_transformer(), ease_in_out_sine_transformer()})});
 
-    return ui::parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}})
-        ->raw_action();
+    return parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}})->raw_action();
 }
 
-static observing::endable _observe_event(ui::node_ptr const &node, ui::renderer_ptr const &renderer) {
-    return renderer->event_manager()->observe([weak_node = to_weak(node), weak_action = std::weak_ptr<ui::action>{}](
-                                                  ui::event_ptr const &event) mutable {
-        if (event->type() == ui::event_type::cursor) {
+static observing::endable _observe_event(std::shared_ptr<node> const &node, std::shared_ptr<renderer> const &renderer) {
+    return renderer->event_manager()->observe([weak_node = to_weak(node), weak_action = std::weak_ptr<action>{}](
+                                                  std::shared_ptr<event> const &event) mutable {
+        if (event->type() == event_type::cursor) {
             if (auto node = weak_node.lock()) {
                 auto const &value = event->get<ui::cursor>();
 
@@ -36,13 +36,13 @@ static observing::endable _observe_event(ui::node_ptr const &node, ui::renderer_
 
                 if (auto renderer = node->renderer()) {
                     for (auto child_node : node->children()) {
-                        auto make_fade_action = [](ui::node_ptr const &node, float const alpha) {
-                            return ui::make_action(
+                        auto make_fade_action = [](std::shared_ptr<ui::node> const &node, float const alpha) {
+                            return make_action(
                                 {.target = node, .begin_alpha = node->alpha(), .end_alpha = alpha, .duration = 0.5});
                         };
 
                         switch (event->phase()) {
-                            case ui::event_phase::began: {
+                            case event_phase::began: {
                                 if (auto prev_action = weak_action.lock()) {
                                     renderer->erase_action(prev_action);
                                 }
@@ -52,7 +52,7 @@ static observing::endable _observe_event(ui::node_ptr const &node, ui::renderer_
                                 weak_action = action;
                             } break;
 
-                            case ui::event_phase::ended: {
+                            case event_phase::ended: {
                                 if (auto prev_action = weak_action.lock()) {
                                     renderer->erase_action(prev_action);
                                 }
@@ -77,35 +77,35 @@ sample::cursor::cursor() {
     this->_setup_node();
 
     this->_node
-        ->observe_renderer(
-            [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &renderer) mutable {
-                if (renderer) {
-                    event_canceller = cursor_utils::_observe_event(this->_node, renderer).end();
-                    renderer->insert_action(cursor_utils::_make_rotate_action(this->_node));
-                } else {
-                    event_canceller = nullptr;
-                }
-            })
+        ->observe_renderer([this, event_canceller = observing::cancellable_ptr{nullptr}](
+                               std::shared_ptr<renderer> const &renderer) mutable {
+            if (renderer) {
+                event_canceller = cursor_utils::_observe_event(this->_node, renderer).end();
+                renderer->insert_action(cursor_utils::_make_rotate_action(this->_node));
+            } else {
+                event_canceller = nullptr;
+            }
+        })
         .end()
         ->set_to(this->_renderer_canceller);
 }
 
-ui::node_ptr const &sample::cursor::node() {
+std::shared_ptr<node> const &sample::cursor::node() {
     return this->_node;
 }
 
 void sample::cursor::_setup_node() {
     auto const count = 5;
     auto const angle_dif = 360.0f / count;
-    auto plane = ui::rect_plane::make_shared(count);
+    auto plane = rect_plane::make_shared(count);
 
-    ui::region region{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}};
-    auto trans_matrix = ui::matrix::translation(0.0f, 1.6f);
+    region region{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}};
+    auto trans_matrix = matrix::translation(0.0f, 1.6f);
 
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
-        plane->data()->set_rect_position(region, idx, ui::matrix::rotation(angle_dif * idx) * trans_matrix);
+        plane->data()->set_rect_position(region, idx, matrix::rotation(angle_dif * idx) * trans_matrix);
     }
 
     plane->node()->set_color({.red = 0.0f, .green = 0.6f, .blue = 1.0f});

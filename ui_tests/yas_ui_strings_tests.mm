@@ -7,6 +7,7 @@
 #import <iostream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_strings_tests : XCTestCase
 
@@ -23,14 +24,14 @@ using namespace yas;
 }
 
 - (void)test_create_without_args {
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
     XCTAssertTrue(strings);
     XCTAssertEqual(strings->text(), "");
     XCTAssertFalse(strings->font_atlas());
     XCTAssertTrue(strings->rect_plane());
     XCTAssertFalse(strings->line_height());
-    XCTAssertEqual(strings->alignment(), ui::layout_alignment::min);
+    XCTAssertEqual(strings->alignment(), layout_alignment::min);
 }
 
 - (void)test_create_with_args {
@@ -40,27 +41,27 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
-    auto font_atlas = ui::font_atlas::make_shared(
+    auto texture = texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
+    auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    ui::region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
+    region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
 
-    auto strings = ui::strings::make_shared({.max_word_count = 1,
-                                             .text = "test_text",
-                                             .font_atlas = font_atlas,
-                                             .line_height = 10.0f,
-                                             .frame = frame,
-                                             .alignment = ui::layout_alignment::mid});
+    auto strings = strings::make_shared({.max_word_count = 1,
+                                         .text = "test_text",
+                                         .font_atlas = font_atlas,
+                                         .line_height = 10.0f,
+                                         .frame = frame,
+                                         .alignment = layout_alignment::mid});
 
     XCTAssertTrue(strings);
     XCTAssertEqual(strings->rect_plane()->data()->dynamic_mesh_data()->max_vertex_count(), 4);
     XCTAssertEqual(strings->text(), "test_text");
     XCTAssertEqual(strings->font_atlas(), font_atlas);
     XCTAssertEqual(strings->line_height(), 10.0f);
-    XCTAssertEqual(strings->alignment(), ui::layout_alignment::mid);
+    XCTAssertEqual(strings->alignment(), layout_alignment::mid);
 }
 
 - (void)test_set_values {
@@ -70,13 +71,13 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
-    auto font_atlas = ui::font_atlas::make_shared(
+    auto texture = texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
+    auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
     strings->set_text("test_text");
 
@@ -95,21 +96,21 @@ using namespace yas;
     XCTAssertTrue(strings->line_height());
     XCTAssertEqual(*strings->line_height(), 20.0f);
 
-    strings->set_alignment(ui::layout_alignment::max);
+    strings->set_alignment(layout_alignment::max);
 
-    XCTAssertEqual(strings->alignment(), ui::layout_alignment::max);
+    XCTAssertEqual(strings->alignment(), layout_alignment::max);
 
     strings->frame_layout_guide_rect()->set_region({.origin = {0.0f, 0.0f}, .size = {1024.0f, 0.0f}});
 
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 0);
 
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
+    metal_object::cast(texture)->metal_setup(metal_system);
 
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 9);
 }
 
 - (void)test_observe_text {
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
     strings->set_text("a");
 
@@ -125,18 +126,18 @@ using namespace yas;
 }
 
 - (void)test_observe_font_atlas {
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
-    ui::font_atlas_ptr notified = nullptr;
+    std::shared_ptr<font_atlas> notified = nullptr;
 
     auto canceller =
-        strings->observe_font_atlas([&notified](ui::font_atlas_ptr const &font_atlas) { notified = font_atlas; })
+        strings
+            ->observe_font_atlas([&notified](std::shared_ptr<font_atlas> const &font_atlas) { notified = font_atlas; })
             .sync();
 
     XCTAssertFalse(notified);
 
-    auto font_atlas =
-        ui::font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
+    auto font_atlas = font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
 
     strings->set_font_atlas(font_atlas);
 
@@ -145,7 +146,7 @@ using namespace yas;
 }
 
 - (void)test_observe_line_height {
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
     std::optional<float> notified = std::nullopt;
 
@@ -162,28 +163,28 @@ using namespace yas;
 }
 
 - (void)test_observe_alignment {
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
-    ui::layout_alignment notified;
+    layout_alignment notified;
 
     auto canceller =
-        strings->observe_alignment([&notified](ui::layout_alignment const &alignment) { notified = alignment; }).sync();
+        strings->observe_alignment([&notified](layout_alignment const &alignment) { notified = alignment; }).sync();
 
-    XCTAssertEqual(notified, ui::layout_alignment::min);
+    XCTAssertEqual(notified, layout_alignment::min);
 
-    strings->set_alignment(ui::layout_alignment::max);
+    strings->set_alignment(layout_alignment::max);
 
-    XCTAssertEqual(notified, ui::layout_alignment::max);
+    XCTAssertEqual(notified, layout_alignment::max);
 }
 
 - (void)test_no_throw_without_atlas_or_texture {
-    auto strings = ui::strings::make_shared();
+    auto strings = strings::make_shared();
 
     XCTAssertNoThrow(strings->set_text("123"));
 
     XCTAssertNoThrow(strings->frame_layout_guide_rect()->set_region({.origin = {0.0f, 0.0f}, .size = {64.0f, 0.0f}}));
 
-    auto font_atlas = ui::font_atlas::make_shared(
+    auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = nullptr});
 
     XCTAssertNoThrow(strings->set_font_atlas(font_atlas));

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
-#include <ui/yas_ui_ptr.h>
 
 #include <ostream>
 
@@ -31,7 +30,7 @@ struct metal_object {
 
     virtual ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) = 0;
 
-    static metal_object_ptr cast(metal_object_ptr const &object) {
+    static std::shared_ptr<metal_object> cast(std::shared_ptr<metal_object> const &object) {
         return object;
     }
 };

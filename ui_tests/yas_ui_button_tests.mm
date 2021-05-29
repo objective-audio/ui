@@ -9,6 +9,7 @@
 #import "yas_test_metal_view_controller.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_button_tests : XCTestCase
 
@@ -26,7 +27,7 @@ using namespace yas;
 }
 
 - (void)test_initial {
-    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
 
     XCTAssertTrue(button);
     XCTAssertTrue(button->rect_plane());
@@ -35,13 +36,13 @@ using namespace yas;
 }
 
 - (void)test_initial_with_state_count {
-    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3);
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3);
 
     XCTAssertEqual(button->state_count(), 3);
 }
 
 - (void)test_state_index {
-    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2);
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2);
 
     XCTAssertNoThrow(button->set_state_index(1));
     XCTAssertEqual(button->state_index(), 1);
@@ -56,14 +57,14 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
-    auto renderer = ui::renderer::make_shared(metal_system);
+    auto metal_system = metal_system::make_shared(device.object());
+    auto renderer = renderer::make_shared(metal_system);
     [[YASTestMetalViewController sharedViewController].view.window setFrame:CGRectMake(0, 0, 2, 2) display:YES];
     [[YASTestMetalViewController sharedViewController] setRenderer:renderer];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"pre_render"];
 
-    auto pre_render_action = ui::action::make_shared(
+    auto pre_render_action = action::make_shared(
         {.time_updater = [expectation, self, &metal_system, count = int{0}](auto const &, auto const &) mutable {
             [expectation fulfill];
             return true;
@@ -71,62 +72,55 @@ using namespace yas;
 
     renderer->insert_action(pre_render_action);
 
-    auto button = ui::button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});
+    auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});
     renderer->root_node()->add_sub_node(button->rect_plane()->node());
 
-    std::vector<ui::button::method> observed_methods;
+    std::vector<button::method> observed_methods;
 
     auto canceller =
         button->observe([&observed_methods](auto const &context) { observed_methods.push_back(context.method); });
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
-    ui::event_manager_ptr const &event_manager = renderer->event_manager();
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::began, ui::touch_event{1, {0.0f, 0.0f}, 0});
+    std::shared_ptr<event_manager> const &event_manager = renderer->event_manager();
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::began, touch_event{1, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
-    XCTAssertEqual(observed_methods.back(), ui::button::method::began);
+    XCTAssertEqual(observed_methods.back(), button::method::began);
 
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::changed, ui::touch_event{1, {0.1f, 0.0f}, 0});
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::changed, touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 2);
-    XCTAssertEqual(observed_methods.back(), ui::button::method::moved);
+    XCTAssertEqual(observed_methods.back(), button::method::moved);
 
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::canceled, ui::touch_event{1, {0.1f, 0.0f}, 0});
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::canceled, touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 3);
-    XCTAssertEqual(observed_methods.back(), ui::button::method::canceled);
+    XCTAssertEqual(observed_methods.back(), button::method::canceled);
 
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::began, ui::touch_event{2, {0.0f, 0.0f}, 0});
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::changed, ui::touch_event{2, {1.0f, 1.0f}, 0});
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::began, touch_event{2, {0.0f, 0.0f}, 0});
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::changed, touch_event{2, {1.0f, 1.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 5);
-    XCTAssertEqual(observed_methods.back(), ui::button::method::leaved);
+    XCTAssertEqual(observed_methods.back(), button::method::leaved);
 
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::changed, ui::touch_event{2, {0.0f, 0.0f}, 0});
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::changed, touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 6);
-    XCTAssertEqual(observed_methods.back(), ui::button::method::entered);
+    XCTAssertEqual(observed_methods.back(), button::method::entered);
 
-    ui::event_inputtable::cast(event_manager)
-        ->input_touch_event(ui::event_phase::ended, ui::touch_event{2, {0.0f, 0.0f}, 0});
+    event_inputtable::cast(event_manager)->input_touch_event(event_phase::ended, touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 7);
-    XCTAssertEqual(observed_methods.back(), ui::button::method::ended);
+    XCTAssertEqual(observed_methods.back(), button::method::ended);
 }
 
 - (void)test_set_texture {
-    auto button = ui::button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
 
     XCTAssertFalse(button->rect_plane()->node()->mesh()->texture());
 
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}});
+    auto texture = texture::make_shared({.point_size = {8, 8}});
 
     button->set_texture(texture);
 
@@ -142,17 +136,17 @@ using namespace yas;
 }
 
 - (void)test_method_to_string {
-    XCTAssertEqual(to_string(ui::button::method::began), "began");
-    XCTAssertEqual(to_string(ui::button::method::entered), "entered");
-    XCTAssertEqual(to_string(ui::button::method::moved), "moved");
-    XCTAssertEqual(to_string(ui::button::method::leaved), "leaved");
-    XCTAssertEqual(to_string(ui::button::method::ended), "ended");
-    XCTAssertEqual(to_string(ui::button::method::canceled), "canceled");
+    XCTAssertEqual(to_string(button::method::began), "began");
+    XCTAssertEqual(to_string(button::method::entered), "entered");
+    XCTAssertEqual(to_string(button::method::moved), "moved");
+    XCTAssertEqual(to_string(button::method::leaved), "leaved");
+    XCTAssertEqual(to_string(button::method::ended), "ended");
+    XCTAssertEqual(to_string(button::method::canceled), "canceled");
 }
 
 - (void)test_method_ostream {
-    auto const methods = {ui::button::method::began, ui::button::method::entered, ui::button::method::leaved,
-                          ui::button::method::ended, ui::button::method::canceled};
+    auto const methods = {button::method::began, button::method::entered, button::method::leaved, button::method::ended,
+                          button::method::canceled};
 
     for (auto const &method : methods) {
         std::ostringstream stream;

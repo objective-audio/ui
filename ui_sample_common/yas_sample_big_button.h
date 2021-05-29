@@ -10,7 +10,7 @@
 
 namespace yas::sample {
 struct big_button {
-    void set_texture(ui::texture_ptr const &);
+    void set_texture(std::shared_ptr<ui::texture> const &);
 
     std::shared_ptr<ui::button> &button();
 

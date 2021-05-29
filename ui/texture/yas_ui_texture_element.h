@@ -5,7 +5,6 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
@@ -19,7 +18,7 @@ struct texture_element {
 
     [[nodiscard]] observing::syncable observe_tex_coords(observing::caller<uint_region>::handler_f &&);
 
-    [[nodiscard]] static texture_element_ptr make_shared(draw_pair_t &&);
+    [[nodiscard]] static std::shared_ptr<texture_element> make_shared(draw_pair_t &&);
 
    private:
     draw_pair_t const _draw_pair;

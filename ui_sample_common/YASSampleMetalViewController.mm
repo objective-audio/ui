@@ -6,6 +6,7 @@
 #import "yas_sample_main.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface YASSampleMetalViewController ()
 @end

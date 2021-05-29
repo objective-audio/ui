@@ -8,7 +8,6 @@
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_collection_layout_types.h>
 #include <ui/yas_ui_layout_guide.h>
-#include <ui/yas_ui_ptr.h>
 
 #include <vector>
 
@@ -17,7 +16,7 @@ struct collection_layout {
     using line = collection_layout_line;
     using args = collection_layout_args;
 
-    ui::layout_guide_rect_ptr const frame_guide_rect;
+    std::shared_ptr<layout_guide_rect> const frame_guide_rect;
     ui::layout_borders const borders;
 
     void set_preferred_cell_count(std::size_t const &);
@@ -69,12 +68,12 @@ struct collection_layout {
     [[nodiscard]] ui::layout_order const &col_order() const;
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
-    [[nodiscard]] std::vector<ui::layout_guide_rect_ptr> const &cell_guide_rects() const;
+    [[nodiscard]] std::vector<std::shared_ptr<layout_guide_rect>> const &cell_guide_rects() const;
     [[nodiscard]] std::optional<ui::region> const &actual_cells_frame() const;
     [[nodiscard]] observing::syncable observe_actual_frame(std::function<void(std::optional<ui::region> const &)> &&);
 
-    [[nodiscard]] static collection_layout_ptr make_shared();
-    [[nodiscard]] static collection_layout_ptr make_shared(args);
+    [[nodiscard]] static std::shared_ptr<collection_layout> make_shared();
+    [[nodiscard]] static std::shared_ptr<collection_layout> make_shared(args);
 
    private:
     struct cell_location {
@@ -93,10 +92,10 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _row_order;
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
-    std::vector<ui::layout_guide_rect_ptr> _cell_guide_rects;
+    std::vector<std::shared_ptr<layout_guide_rect>> _cell_guide_rects;
     observing::value::holder_ptr<std::optional<ui::region>> _actual_cells_frame;
 
-    ui::layout_guide_rect_ptr const _border_guide_rect = ui::layout_guide_rect::make_shared();
+    std::shared_ptr<layout_guide_rect> const _border_guide_rect = ui::layout_guide_rect::make_shared();
     observing::canceller_pool _pool;
 
     collection_layout(args);

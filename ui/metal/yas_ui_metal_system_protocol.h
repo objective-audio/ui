@@ -19,11 +19,11 @@ struct renderable_metal_system {
     virtual void view_configure(yas_objc_view *const) = 0;
     virtual void view_render(yas_objc_view *const view, ui::renderer const *) = 0;
     virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
-    virtual void mesh_encode(ui::mesh_ptr const &, id<MTLRenderCommandEncoder> const,
-                             ui::metal_encode_info_ptr const &) = 0;
-    virtual void push_render_target(ui::render_stackable_ptr const &, ui::render_target const *) = 0;
+    virtual void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
+                             std::shared_ptr<metal_encode_info> const &) = 0;
+    virtual void push_render_target(std::shared_ptr<render_stackable> const &, ui::render_target const *) = 0;
 
-    static renderable_metal_system_ptr cast(renderable_metal_system_ptr const &system) {
+    static std::shared_ptr<renderable_metal_system> cast(std::shared_ptr<renderable_metal_system> const &system) {
         return system;
     }
 };
@@ -37,7 +37,7 @@ struct makable_metal_system {
     [[nodiscard]] virtual objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() = 0;
     [[nodiscard]] virtual objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) = 0;
 
-    static makable_metal_system_ptr cast(makable_metal_system_ptr const &system) {
+    static std::shared_ptr<makable_metal_system> cast(std::shared_ptr<makable_metal_system> const &system) {
         return system;
     }
 };
@@ -50,7 +50,7 @@ struct testable_metal_system {
     [[nodiscard]] virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() = 0;
     [[nodiscard]] virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() = 0;
 
-    static testable_metal_system_ptr cast(testable_metal_system_ptr const &system) {
+    static std::shared_ptr<testable_metal_system> cast(std::shared_ptr<testable_metal_system> const &system) {
         return system;
     }
 };

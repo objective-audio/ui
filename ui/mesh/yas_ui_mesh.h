@@ -6,7 +6,6 @@
 
 #include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 class texture;
@@ -15,23 +14,23 @@ enum class primitive_type;
 struct mesh final : renderable_mesh, metal_object {
     virtual ~mesh();
 
-    [[nodiscard]] ui::mesh_data_ptr const &mesh_data() const;
-    [[nodiscard]] ui::texture_ptr const &texture() const;
+    [[nodiscard]] std::shared_ptr<mesh_data> const &mesh_data() const;
+    [[nodiscard]] std::shared_ptr<texture> const &texture() const;
     [[nodiscard]] simd::float4 const &color() const;
     [[nodiscard]] bool is_use_mesh_color() const;
     [[nodiscard]] ui::primitive_type const &primitive_type() const;
 
-    void set_mesh_data(ui::mesh_data_ptr const &);
-    void set_texture(ui::texture_ptr const &);
+    void set_mesh_data(std::shared_ptr<ui::mesh_data> const &);
+    void set_texture(std::shared_ptr<ui::texture> const &);
     void set_color(simd::float4 const &);
     void set_use_mesh_color(bool const);
     void set_primitive_type(ui::primitive_type const);
 
-    [[nodiscard]] static mesh_ptr make_shared();
+    [[nodiscard]] static std::shared_ptr<mesh> make_shared();
 
    private:
-    ui::mesh_data_ptr _mesh_data = nullptr;
-    ui::texture_ptr _texture = nullptr;
+    std::shared_ptr<ui::mesh_data> _mesh_data = nullptr;
+    std::shared_ptr<ui::texture> _texture = nullptr;
     ui::primitive_type _primitive_type = ui::primitive_type::triangle;
     simd::float4 _color = 1.0f;
     bool _use_mesh_color = false;

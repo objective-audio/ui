@@ -8,11 +8,12 @@
 #import "yas_test_metal_view_controller.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface YASUIMetalView (yas_ui_metal_view_tests)
 
-- (yas::ui::event_manager_ptr const &)event_manager;
-- (void)set_event_manager:(ui::event_manager_ptr)manager;
+- (std::shared_ptr<event_manager> const &)event_manager;
+- (void)set_event_manager:(std::shared_ptr<event_manager>)manager;
 
 @end
 
@@ -44,7 +45,7 @@ using namespace yas;
 - (void)test_cursor_event {
     auto view = [YASTestMetalViewController sharedViewController].metalView;
 
-    auto event_manager = ui::event_manager::make_shared();
+    auto event_manager = event_manager::make_shared();
     [view set_event_manager:event_manager];
 
     bool began_called = false;
@@ -58,13 +59,13 @@ using namespace yas;
     };
 
     auto canceller = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &event) {
-        XCTAssertEqual(event->type(), ui::event_type::cursor);
+        XCTAssertEqual(event->type(), event_type::cursor);
 
-        if (event->phase() == ui::event_phase::began) {
+        if (event->phase() == event_phase::began) {
             began_called = true;
-        } else if (event->phase() == ui::event_phase::ended) {
+        } else if (event->phase() == event_phase::ended) {
             ended_called = true;
-        } else if (event->phase() == ui::event_phase::changed) {
+        } else if (event->phase() == event_phase::changed) {
             changed_called = true;
         }
     });
@@ -97,7 +98,7 @@ using namespace yas;
 - (void)test_touch_event {
     auto view = [YASTestMetalViewController sharedViewController].metalView;
 
-    auto event_manager = ui::event_manager::make_shared();
+    auto event_manager = event_manager::make_shared();
     [view set_event_manager:event_manager];
 
     struct observed_values {
@@ -115,17 +116,17 @@ using namespace yas;
     observed_values values;
 
     auto canceller = event_manager->observe([&self, &values](auto const &event) {
-        if (event->type() == ui::event_type::cursor) {
+        if (event->type() == event_type::cursor) {
             return;
         }
 
-        XCTAssertEqual(event->type(), ui::event_type::touch);
+        XCTAssertEqual(event->type(), event_type::touch);
 
-        if (event->phase() == ui::event_phase::began) {
+        if (event->phase() == event_phase::began) {
             values.began_called = true;
-        } else if (event->phase() == ui::event_phase::ended) {
+        } else if (event->phase() == event_phase::ended) {
             values.ended_called = true;
-        } else if (event->phase() == ui::event_phase::changed) {
+        } else if (event->phase() == event_phase::changed) {
             values.changed_called = true;
         }
     });
@@ -204,7 +205,7 @@ using namespace yas;
 - (void)test_key_event {
     auto view = [YASTestMetalViewController sharedViewController].metalView;
 
-    auto event_manager = ui::event_manager::make_shared();
+    auto event_manager = event_manager::make_shared();
     [view set_event_manager:event_manager];
 
     struct observed_values {
@@ -227,18 +228,18 @@ using namespace yas;
 
     observed_values values;
 
-    auto canceller = event_manager->observe([&self, &values](ui::event_ptr const &event) {
-        XCTAssertEqual(event->type(), ui::event_type::key);
+    auto canceller = event_manager->observe([&self, &values](std::shared_ptr<event> const &event) {
+        XCTAssertEqual(event->type(), event_type::key);
 
-        if (event->phase() == ui::event_phase::began) {
+        if (event->phase() == event_phase::began) {
             values.began_called = true;
-        } else if (event->phase() == ui::event_phase::ended) {
+        } else if (event->phase() == event_phase::ended) {
             values.ended_called = true;
-        } else if (event->phase() == ui::event_phase::changed) {
+        } else if (event->phase() == event_phase::changed) {
             values.changed_called = true;
         }
 
-        auto const &key_event = event->get<ui::key>();
+        auto const &key_event = event->get<key>();
         values.key_code = key_event.key_code();
         values.characters = key_event.characters();
         values.raw_characters = key_event.raw_characters();

@@ -22,7 +22,7 @@ effect::metal_handler_f const &effect::metal_handler() const {
     return this->_metal_handler;
 }
 
-void effect::set_textures(texture_ptr const &src, texture_ptr const &dst) {
+void effect::set_textures(std::shared_ptr<texture> const &src, std::shared_ptr<texture> const &dst) {
     this->_src_texture = src;
     this->_dst_texture = dst;
     this->_updates.set(effect_update_reason::textures);
@@ -57,8 +57,8 @@ setup_metal_result effect::metal_setup(std::shared_ptr<metal_system> const &syst
 effect::metal_handler_f const &effect::through_metal_handler() {
     static metal_handler_f _handler = nullptr;
     if (!_handler) {
-        _handler = [](texture_ptr const &src_texture, texture_ptr const &dst_texture, metal_system_ptr const &,
-                      id<MTLCommandBuffer> const commandBuffer) mutable {
+        _handler = [](std::shared_ptr<texture> const &src_texture, std::shared_ptr<texture> const &dst_texture,
+                      std::shared_ptr<metal_system> const &, id<MTLCommandBuffer> const commandBuffer) mutable {
             auto const srcTexture = src_texture->metal_texture()->texture();
             auto const dstTexture = dst_texture->metal_texture()->texture();
             auto const width = std::min(srcTexture.width, dstTexture.width);
@@ -84,12 +84,12 @@ effect::metal_handler_f const &effect::through_metal_handler() {
     return _handler;
 }
 
-effect_ptr effect::make_through_effect() {
+std::shared_ptr<effect> effect::make_through_effect() {
     auto effect = effect::make_shared();
     effect->set_metal_handler(effect::through_metal_handler());
     return effect;
 }
 
-effect_ptr effect::make_shared() {
+std::shared_ptr<effect> effect::make_shared() {
     return std::shared_ptr<effect>(new effect{});
 }
