@@ -68,8 +68,6 @@ class render_stackable;
 class view_renderer_interface;
 class renderer_background_interface;
 
-using action_target_ptr = std::shared_ptr<action_target>;
-using action_target_wptr = std::weak_ptr<action_target>;
 using action_ptr = std::shared_ptr<action>;
 using parallel_action_ptr = std::shared_ptr<parallel_action>;
 using continuous_action_ptr = std::shared_ptr<continuous_action>;

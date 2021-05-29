@@ -108,7 +108,7 @@ void renderer::erase_action(std::shared_ptr<action> const &action) {
     this->_parallel_action->erase_action(action);
 }
 
-void renderer::erase_action(action_target_ptr const &target) {
+void renderer::erase_action(std::shared_ptr<action_target> const &target) {
     for (auto const &action : this->_parallel_action->actions()) {
         if (action->target() == target) {
             this->_parallel_action->erase_action(action);

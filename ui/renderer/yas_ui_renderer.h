@@ -20,7 +20,6 @@ namespace yas::ui {
 class uint_size;
 class action;
 class metal_system;
-class action_target;
 enum class system_type;
 
 struct renderer final : view_renderer_interface {

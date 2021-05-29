@@ -18,7 +18,7 @@ using action_time_update_f = std::function<bool(time_point_t const &, action con
 using continuous_value_update_f = std::function<void(double const)>;
 
 struct action_args final {
-    action_target_wptr target;
+    std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_time_update_f time_updater;
@@ -31,7 +31,7 @@ struct continuous_action_args final {
     continuous_value_update_f value_updater;
     transform_f value_transformer;
 
-    action_target_wptr target;
+    std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;
@@ -45,7 +45,7 @@ struct sequence_action_args final {
 
     std::vector<element> elements;
 
-    action_target_wptr target;
+    std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;
@@ -54,7 +54,7 @@ struct sequence_action_args final {
 struct parallel_action_args final {
     std::unordered_set<action_ptr> actions;
 
-    action_target_wptr target;
+    std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;

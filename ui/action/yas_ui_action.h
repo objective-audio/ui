@@ -4,15 +4,12 @@
 
 #pragma once
 
+#include <ui/yas_ui_action_dependency.h>
 #include <ui/yas_ui_action_types.h>
 
 namespace yas::ui {
-struct action_target {
-    virtual ~action_target() = default;
-};
-
 struct action final {
-    [[nodiscard]] action_target_ptr target() const;
+    [[nodiscard]] std::shared_ptr<action_target> target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
     [[nodiscard]] action_time_update_f const &time_updater() const;
@@ -26,7 +23,7 @@ struct action final {
     [[nodiscard]] static action_ptr make_sequence(sequence_action_args &&);
 
    private:
-    action_target_wptr _target;
+    std::weak_ptr<action_target> _target;
     time_point_t _begin_time = std::chrono::system_clock::now();
     duration_t _delay{0.0};
     action_time_update_f _time_updater;

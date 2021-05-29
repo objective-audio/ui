@@ -21,7 +21,7 @@ action::action(action_args &&args)
       _completion(std::move(args.completion)) {
 }
 
-action_target_ptr action::target() const {
+std::shared_ptr<action_target> action::target() const {
     return this->_target.lock();
 }
 

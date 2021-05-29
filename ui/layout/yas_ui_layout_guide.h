@@ -5,7 +5,7 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_action.h>
+#include <ui/yas_ui_action_dependency.h>
 #include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_types.h>
 
