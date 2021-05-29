@@ -68,7 +68,6 @@ class render_stackable;
 class view_renderer_interface;
 class renderer_background_interface;
 
-using action_ptr = std::shared_ptr<action>;
 using batch_ptr = std::shared_ptr<batch>;
 using blur_ptr = std::shared_ptr<blur>;
 using button_ptr = std::shared_ptr<button>;

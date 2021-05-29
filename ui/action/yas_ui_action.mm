@@ -60,15 +60,15 @@ duration_t action::time_diff(time_point_t const &time) const {
     return time - this->_begin_time - this->_delay;
 }
 
-action_ptr action::make_shared() {
+std::shared_ptr<action> action::make_shared() {
     return make_shared({});
 }
 
-action_ptr action::make_shared(action_args &&args) {
+std::shared_ptr<action> action::make_shared(action_args &&args) {
     return std::shared_ptr<action>(new action{std::move(args)});
 }
 
-action_ptr action::make_continuous(continuous_action_args &&continuous_args) {
+std::shared_ptr<action> action::make_continuous(continuous_action_args &&continuous_args) {
     auto args = action_args{.target = std::move(continuous_args.target),
                             .begin_time = std::move(continuous_args.begin_time),
                             .delay = std::move(continuous_args.delay),
@@ -118,7 +118,7 @@ std::shared_ptr<action> ui::action::make_sequence(sequence_action_args &&args) {
     return sequence->raw_action();
 }
 
-action_ptr action::make_delayed(time_point_t const &begin_time, double const delay) const {
+std::shared_ptr<action> action::make_delayed(time_point_t const &begin_time, double const delay) const {
     return make_shared({.target = this->_target,
                         .begin_time = begin_time,
                         .delay = delay,
@@ -130,7 +130,7 @@ action_ptr action::make_delayed(time_point_t const &begin_time, double const del
 
 namespace yas::ui::parallel_action_utils {
 action_args time_updater_replaced_args(parallel_action_args &&parallel_args,
-                                       std::shared_ptr<std::unordered_set<action_ptr>> const &actions) {
+                                       std::shared_ptr<std::unordered_set<std::shared_ptr<action>>> const &actions) {
     action_args args{.target = std::move(parallel_args.target),
                      .begin_time = std::move(parallel_args.begin_time),
                      .delay = std::move(parallel_args.delay),
@@ -151,12 +151,12 @@ action_args time_updater_replaced_args(parallel_action_args &&parallel_args,
 }
 
 parallel_action::parallel_action(parallel_action_args &&args)
-    : _actions(std::make_shared<std::unordered_set<action_ptr>>(std::move(args.actions))),
+    : _actions(std::make_shared<std::unordered_set<std::shared_ptr<action>>>(std::move(args.actions))),
       _raw_action(
           action::make_shared(parallel_action_utils::time_updater_replaced_args(std::move(args), this->_actions))) {
 }
 
-action_ptr const &parallel_action::raw_action() const {
+std::shared_ptr<action> const &parallel_action::raw_action() const {
     return this->_raw_action;
 }
 

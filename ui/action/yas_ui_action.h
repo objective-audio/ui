@@ -17,10 +17,10 @@ struct action final {
 
     bool update(time_point_t const &time);
 
-    [[nodiscard]] static action_ptr make_shared();
-    [[nodiscard]] static action_ptr make_shared(action_args &&);
-    [[nodiscard]] static action_ptr make_continuous(continuous_action_args &&);
-    [[nodiscard]] static action_ptr make_sequence(sequence_action_args &&);
+    [[nodiscard]] static std::shared_ptr<action> make_shared();
+    [[nodiscard]] static std::shared_ptr<action> make_shared(action_args &&);
+    [[nodiscard]] static std::shared_ptr<action> make_continuous(continuous_action_args &&);
+    [[nodiscard]] static std::shared_ptr<action> make_sequence(sequence_action_args &&);
 
    private:
     std::weak_ptr<action_target> _target;
@@ -32,7 +32,7 @@ struct action final {
     explicit action(action_args &&);
 
     [[nodiscard]] duration_t time_diff(time_point_t const &time) const;
-    [[nodiscard]] action_ptr make_delayed(time_point_t const &, double const) const;
+    [[nodiscard]] std::shared_ptr<action> make_delayed(time_point_t const &, double const) const;
 
     action(action const &) = delete;
     action(action &&) = delete;
@@ -41,19 +41,19 @@ struct action final {
 };
 
 struct parallel_action final {
-    action_ptr const &raw_action() const;
+    std::shared_ptr<action> const &raw_action() const;
 
-    [[nodiscard]] std::vector<action_ptr> actions() const;
+    [[nodiscard]] std::vector<std::shared_ptr<action>> actions() const;
     [[nodiscard]] std::size_t action_count() const;
 
-    void insert_action(action_ptr);
-    void erase_action(action_ptr const &);
+    void insert_action(std::shared_ptr<action>);
+    void erase_action(std::shared_ptr<action> const &);
 
     [[nodiscard]] static std::shared_ptr<parallel_action> make_shared(parallel_action_args &&);
 
    private:
-    std::shared_ptr<std::unordered_set<action_ptr>> _actions;
-    action_ptr _raw_action;
+    std::shared_ptr<std::unordered_set<std::shared_ptr<action>>> _actions;
+    std::shared_ptr<action> _raw_action;
 
     explicit parallel_action(parallel_action_args &&);
 

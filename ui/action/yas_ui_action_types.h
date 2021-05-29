@@ -39,7 +39,7 @@ struct continuous_action_args final {
 
 struct sequence_action_args final {
     struct element final {
-        action_ptr action;
+        std::shared_ptr<action> action;
         double duration = 0.0;
     };
 
@@ -52,7 +52,7 @@ struct sequence_action_args final {
 };
 
 struct parallel_action_args final {
-    std::unordered_set<action_ptr> actions;
+    std::unordered_set<std::shared_ptr<action>> actions;
 
     std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
