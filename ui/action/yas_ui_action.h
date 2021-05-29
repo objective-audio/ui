@@ -23,41 +23,41 @@ struct action_target {
     virtual ~action_target() = default;
 };
 
+struct action_args final {
+    action_target_wptr target;
+    time_point_t begin_time = std::chrono::system_clock::now();
+    double delay = 0.0;
+    action_time_update_f time_updater;
+    action_completion_f completion;
+};
+
+struct continuous_action_args final {
+    double duration = 0.3;
+    std::size_t loop_count = 1;
+    continuous_value_update_f value_updater;
+    transform_f value_transformer;
+
+    action_target_wptr target;
+    time_point_t begin_time = std::chrono::system_clock::now();
+    double delay = 0.0;
+    action_completion_f completion;
+};
+
+struct sequence_action_args final {
+    struct element final {
+        action_ptr action;
+        double duration = 0.0;
+    };
+
+    std::vector<element> elements;
+
+    action_target_wptr target;
+    time_point_t begin_time = std::chrono::system_clock::now();
+    double delay = 0.0;
+    action_completion_f completion;
+};
+
 struct action final {
-    struct args final {
-        action_target_wptr target;
-        time_point_t begin_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-        action_time_update_f time_updater;
-        action_completion_f completion;
-    };
-
-    struct continuous_args final {
-        double duration = 0.3;
-        std::size_t loop_count = 1;
-        continuous_value_update_f value_updater;
-        transform_f value_transformer;
-
-        action_target_wptr target;
-        time_point_t begin_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-        action_completion_f completion;
-    };
-
-    struct sequence_args final {
-        struct element final {
-            action_ptr action;
-            double duration = 0.0;
-        };
-
-        std::vector<element> elements;
-
-        action_target_wptr target;
-        time_point_t begin_time = std::chrono::system_clock::now();
-        double delay = 0.0;
-        action_completion_f completion;
-    };
-
     [[nodiscard]] action_target_ptr target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
@@ -67,9 +67,9 @@ struct action final {
     bool update(time_point_t const &time);
 
     [[nodiscard]] static action_ptr make_shared();
-    [[nodiscard]] static action_ptr make_shared(args &&);
-    [[nodiscard]] static action_ptr make_continuous(continuous_args &&);
-    [[nodiscard]] static action_ptr make_sequence(sequence_args &&);
+    [[nodiscard]] static action_ptr make_shared(action_args &&);
+    [[nodiscard]] static action_ptr make_continuous(continuous_action_args &&);
+    [[nodiscard]] static action_ptr make_sequence(sequence_action_args &&);
 
    private:
     action_target_wptr _target;
@@ -78,7 +78,7 @@ struct action final {
     action_time_update_f _time_updater;
     action_completion_f _completion;
 
-    explicit action(args &&);
+    explicit action(action_args &&);
 
     [[nodiscard]] duration_t time_diff(time_point_t const &time) const;
     [[nodiscard]] action_ptr make_delayed(time_point_t const &, double const) const;
