@@ -255,7 +255,12 @@ struct region {
     [[nodiscard]] static region zero_centered(ui::size const &);
 };
 
-ui::region make_region(ui::range const &horizontal, ui::range const &vertical);
+struct region_ranges_args final {
+    ui::range horizontal;
+    ui::range vertical;
+};
+
+ui::region make_region(region_ranges_args &&);
 
 enum class pivot {
     left,

@@ -307,7 +307,7 @@ region layout_guide_rect::region() const {
     auto h_range = this->_horizontal_range->range();
     auto v_range = this->_vertical_range->range();
 
-    return make_region(h_range, v_range);
+    return make_region({.horizontal = h_range, .vertical = v_range});
 }
 
 void layout_guide_rect::push_notify_waiting() {
