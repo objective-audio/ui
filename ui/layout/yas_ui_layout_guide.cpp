@@ -282,15 +282,15 @@ std::shared_ptr<layout_guide> const &layout_guide_rect::height() const {
     return this->vertical_range()->length();
 }
 
-void layout_guide_rect::set_horizontal_range(range range) {
+void layout_guide_rect::set_horizontal_range(range &&range) {
     this->_horizontal_range->set_range(std::move(range));
 }
 
-void layout_guide_rect::set_vertical_range(range range) {
+void layout_guide_rect::set_vertical_range(range &&range) {
     this->_vertical_range->set_range(std::move(range));
 }
 
-void layout_guide_rect::set_ranges(region_ranges_args args) {
+void layout_guide_rect::set_ranges(region_ranges_args &&args) {
     this->push_notify_waiting();
 
     this->set_vertical_range(std::move(args.vertical));
