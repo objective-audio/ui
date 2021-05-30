@@ -12,8 +12,6 @@
 #include <vector>
 
 namespace yas::ui {
-class color;
-
 struct rect_plane_data final {
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 

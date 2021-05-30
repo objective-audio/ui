@@ -12,9 +12,6 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-class image;
-class metal_texture;
-class texture_element;
 enum class draw_image_error;
 using draw_image_result = result<uint_region, draw_image_error>;
 

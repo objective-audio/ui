@@ -8,8 +8,6 @@
 #include <ui/yas_ui_renderer_dependency.h>
 
 namespace yas::ui {
-class color;
-
 struct background final : renderer_background_interface {
     virtual ~background();
 

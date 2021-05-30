@@ -11,8 +11,6 @@
 #include <ui/yas_ui_strings_types.h>
 
 namespace yas::ui {
-enum class layout_alignment;
-
 struct strings final {
     virtual ~strings();
 

@@ -8,8 +8,6 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-class image;
-
 struct texture_element {
     [[nodiscard]] ui::draw_pair_t const &draw_pair() const;
 

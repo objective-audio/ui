@@ -287,7 +287,7 @@ point region::center() const {
 region region::combined(region const &rhs) const {
     auto const h_range = this->horizontal_range().combined(rhs.horizontal_range());
     auto const v_range = this->vertical_range().combined(rhs.vertical_range());
-    return make_region(h_range, v_range);
+    return make_region({.horizontal = h_range, .vertical = v_range});
 }
 
 std::optional<region> region::intersected(region const &rhs) const {
@@ -301,7 +301,7 @@ std::optional<region> region::intersected(region const &rhs) const {
         return std::nullopt;
     }
 
-    return make_region(h_range.value(), v_range.value());
+    return make_region({.horizontal = h_range.value(), .vertical = v_range.value()});
 }
 
 region const &region::zero() {
@@ -313,8 +313,9 @@ region region::zero_centered(ui::size const &size) {
     return region{.origin = {.x = -size.width * 0.5f, .y = -size.height * 0.5f}, .size = size};
 }
 
-region ui::make_region(range const &horizontal, range const &vertical) {
-    return region{.origin = {horizontal.location, vertical.location}, .size = {horizontal.length, vertical.length}};
+region ui::make_region(region_ranges_args &&ranges) {
+    return region{.origin = {std::move(ranges.horizontal.location), std::move(ranges.vertical.location)},
+                  .size = {std::move(ranges.horizontal.length), std::move(ranges.vertical.length)}};
 }
 
 #pragma mark - vertex2d_rect_t
