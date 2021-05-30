@@ -215,13 +215,13 @@ std::shared_ptr<layout_guide_range> layout_guide_range::make_shared(ui::range ra
 
 #pragma mark - layout_guide_rect
 
-layout_guide_rect::layout_guide_rect(ranges_args args)
-    : _vertical_range(layout_guide_range::make_shared(std::move(args.vertical_range))),
-      _horizontal_range(layout_guide_range::make_shared(std::move(args.horizontal_range))) {
+layout_guide_rect::layout_guide_rect(region_ranges_args args)
+    : _vertical_range(layout_guide_range::make_shared(std::move(args.vertical))),
+      _horizontal_range(layout_guide_range::make_shared(std::move(args.horizontal))) {
 }
 
 layout_guide_rect::layout_guide_rect(ui::region region)
-    : layout_guide_rect({.horizontal_range = region.horizontal_range(), .vertical_range = region.vertical_range()}) {
+    : layout_guide_rect({.horizontal = region.horizontal_range(), .vertical = region.vertical_range()}) {
 }
 
 layout_guide_rect::~layout_guide_rect() = default;
@@ -290,17 +290,17 @@ void layout_guide_rect::set_vertical_range(range range) {
     this->_vertical_range->set_range(std::move(range));
 }
 
-void layout_guide_rect::set_ranges(ranges_args args) {
+void layout_guide_rect::set_ranges(region_ranges_args args) {
     this->push_notify_waiting();
 
-    this->set_vertical_range(std::move(args.vertical_range));
-    this->set_horizontal_range(std::move(args.horizontal_range));
+    this->set_vertical_range(std::move(args.vertical));
+    this->set_horizontal_range(std::move(args.horizontal));
 
     this->pop_notify_waiting();
 }
 
 void layout_guide_rect::set_region(ui::region const &region) {
-    this->set_ranges({.vertical_range = region.vertical_range(), .horizontal_range = region.horizontal_range()});
+    this->set_ranges({.vertical = region.vertical_range(), .horizontal = region.horizontal_range()});
 }
 
 region layout_guide_rect::region() const {
@@ -329,15 +329,15 @@ observing::syncable layout_guide_rect::observe(observing::caller<ui::region>::ha
 }
 
 std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared() {
-    return make_shared(ranges_args{.horizontal_range = {.v = 0.0f}, .vertical_range = {.v = 0.0f}});
+    return make_shared(region_ranges_args{.horizontal = {.v = 0.0f}, .vertical = {.v = 0.0f}});
 }
 
-std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared(ranges_args args) {
+std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared(region_ranges_args args) {
     return std::shared_ptr<layout_guide_rect>(new layout_guide_rect{std::move(args)});
 }
 
 std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared(ui::region region) {
-    return make_shared({.horizontal_range = region.horizontal_range(), .vertical_range = region.vertical_range()});
+    return make_shared({.horizontal = region.horizontal_range(), .vertical = region.vertical_range()});
 }
 
 #pragma mark - layout_guide_pair

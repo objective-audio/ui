@@ -397,8 +397,8 @@ using namespace yas::ui;
 }
 
 - (void)test_create_rect_with_args {
-    auto rect = layout_guide_rect::make_shared({.vertical_range = {.location = 11.0f, .length = 1.0f},
-                                                .horizontal_range = {.location = 13.0f, .length = 2.0f}});
+    auto rect = layout_guide_rect::make_shared(
+        {.vertical = {.location = 11.0f, .length = 1.0f}, .horizontal = {.location = 13.0f, .length = 2.0f}});
 
     XCTAssertTrue(rect);
     XCTAssertTrue(rect->vertical_range());
@@ -449,8 +449,8 @@ using namespace yas::ui;
 - (void)test_rect_set_ranges {
     auto rect = layout_guide_rect::make_shared();
 
-    rect->set_ranges({.vertical_range = {.location = 11.0f, .length = 1.0f},
-                      .horizontal_range = {.location = 13.0f, .length = 2.0f}});
+    rect->set_ranges(
+        {.vertical = {.location = 11.0f, .length = 1.0f}, .horizontal = {.location = 13.0f, .length = 2.0f}});
 
     XCTAssertEqual(rect->bottom()->value(), 11.0f);
     XCTAssertEqual(rect->top()->value(), 12.0f);

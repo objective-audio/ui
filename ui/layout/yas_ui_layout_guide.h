@@ -103,11 +103,6 @@ struct layout_guide_range {
 };
 
 struct layout_guide_rect final {
-    struct ranges_args final {
-        ui::range horizontal_range;
-        ui::range vertical_range;
-    };
-
     virtual ~layout_guide_rect();
 
     [[nodiscard]] std::shared_ptr<layout_guide_range> &horizontal_range();
@@ -128,7 +123,7 @@ struct layout_guide_rect final {
 
     void set_horizontal_range(ui::range);
     void set_vertical_range(ui::range);
-    void set_ranges(ranges_args);
+    void set_ranges(region_ranges_args);
     void set_region(ui::region const &);
 
     [[nodiscard]] ui::region region() const;
@@ -139,14 +134,14 @@ struct layout_guide_rect final {
     [[nodiscard]] observing::syncable observe(observing::caller<ui::region>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared();
-    [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ranges_args);
+    [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(region_ranges_args);
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ui::region);
 
    private:
     std::shared_ptr<layout_guide_range> _vertical_range;
     std::shared_ptr<layout_guide_range> _horizontal_range;
 
-    explicit layout_guide_rect(ranges_args);
+    explicit layout_guide_rect(region_ranges_args);
     explicit layout_guide_rect(ui::region);
 
     layout_guide_rect(layout_guide_rect const &) = delete;
