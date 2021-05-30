@@ -11,8 +11,6 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-class touch_event;
-
 struct button final {
     enum class method {
         began,

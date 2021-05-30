@@ -5,12 +5,11 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
+#include <ui/yas_ui_types.h>
 
 #include <ostream>
 
 namespace yas::ui {
-class metal_system;
-
 enum class setup_metal_error {
     unknown,
     create_vertex_buffer_failed,

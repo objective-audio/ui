@@ -8,9 +8,6 @@
 #include <ui/yas_ui_metal_dependency.h>
 
 namespace yas::ui {
-class texture;
-enum class primitive_type;
-
 struct mesh final : renderable_mesh, metal_object {
     virtual ~mesh();
 

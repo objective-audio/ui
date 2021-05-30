@@ -8,8 +8,6 @@
 #include <ui/yas_ui_layout_guide.h>
 
 namespace yas::ui {
-class renderer;
-
 struct layout_action_args final {
     std::weak_ptr<layout_guide> target;
     float begin_value;
