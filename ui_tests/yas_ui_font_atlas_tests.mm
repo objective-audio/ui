@@ -12,6 +12,7 @@
 #import <iostream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_font_atlas_tests : XCTestCase
 
@@ -34,10 +35,10 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
-    auto font_atlas = ui::font_atlas::make_shared(
+    auto texture = texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
+    auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
     XCTAssertEqual(font_atlas->font_name(), "HelveticaNeue");
@@ -60,18 +61,19 @@ using namespace yas;
         return;
     }
 
-    auto font_atlas =
-        ui::font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
+    auto font_atlas = font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
 
-    ui::texture_ptr observed_texture = nullptr;
+    std::shared_ptr<texture> observed_texture = nullptr;
 
-    auto canceller =
-        font_atlas->observe_texture([&observed_texture](ui::texture_ptr const &texture) { observed_texture = texture; })
-            .sync();
+    auto canceller = font_atlas
+                         ->observe_texture([&observed_texture](std::shared_ptr<texture> const &texture) {
+                             observed_texture = texture;
+                         })
+                         .sync();
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {256, 256}});
+    auto texture = texture::make_shared({.point_size = {256, 256}});
     font_atlas->set_texture(texture);
 
     XCTAssertEqual(font_atlas->texture(), texture);

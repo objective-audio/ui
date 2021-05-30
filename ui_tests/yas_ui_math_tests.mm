@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_math_tests : XCTestCase
 

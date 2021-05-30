@@ -7,7 +7,6 @@
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_objc_ptr.h>
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
@@ -24,13 +23,13 @@ struct metal_texture : metal_object {
 
     [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system() const;
 
-    [[nodiscard]] static metal_texture_ptr make_shared(ui::uint_size actual_size, ui::texture_usages_t const,
-                                                       ui::pixel_format const);
+    [[nodiscard]] static std::shared_ptr<metal_texture> make_shared(ui::uint_size actual_size,
+                                                                    ui::texture_usages_t const, ui::pixel_format const);
 
    private:
     ui::uint_size _size;
     MTLTextureUsage const _texture_usage;
-    ui::metal_system_ptr _metal_system = nullptr;
+    std::shared_ptr<ui::metal_system> _metal_system = nullptr;
     objc_ptr<id<MTLSamplerState>> _sampler_object;
     objc_ptr<id<MTLTexture>> _texture_object;
     objc_ptr<id<MTLArgumentEncoder>> _argument_encoder_object;

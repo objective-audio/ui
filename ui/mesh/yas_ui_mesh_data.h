@@ -7,7 +7,6 @@
 #include <cpp_utils/yas_objc_ptr.h>
 #include <ui/yas_ui_mesh_data_types.h>
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_types.h>
 
@@ -26,7 +25,7 @@ struct mesh_data : renderable_mesh_data, metal_object {
 
     [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system();
 
-    [[nodiscard]] static mesh_data_ptr make_shared(mesh_data_args &&);
+    [[nodiscard]] static std::shared_ptr<mesh_data> make_shared(mesh_data_args &&);
 
    protected:
     std::size_t _vertex_count;
@@ -41,7 +40,7 @@ struct mesh_data : renderable_mesh_data, metal_object {
     virtual std::size_t dynamic_buffer_count();
 
    private:
-    ui::metal_system_ptr _metal_system = nullptr;
+    std::shared_ptr<ui::metal_system> _metal_system = nullptr;
 
     objc_ptr<id<MTLBuffer>> _vertex_buffer;
     objc_ptr<id<MTLBuffer>> _index_buffer;
@@ -74,7 +73,7 @@ struct dynamic_mesh_data final : mesh_data {
 
     void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override;
 
-    [[nodiscard]] static dynamic_mesh_data_ptr make_shared(mesh_data_args &&);
+    [[nodiscard]] static std::shared_ptr<dynamic_mesh_data> make_shared(mesh_data_args &&);
 
    private:
     dynamic_mesh_data(mesh_data_args &&);

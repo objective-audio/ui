@@ -8,6 +8,7 @@
 #import <iostream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_metal_texture_tests : XCTestCase
 
@@ -24,10 +25,10 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto metal_texture = ui::metal_texture::make_shared(ui::uint_size{1, 2}, {ui::texture_usage::shader_read},
-                                                        ui::pixel_format::rgba8_unorm);
+    auto metal_texture =
+        metal_texture::make_shared(uint_size{1, 2}, {texture_usage::shader_read}, pixel_format::rgba8_unorm);
 
-    XCTAssertEqual(metal_texture->size(), (ui::uint_size{1, 2}));
+    XCTAssertEqual(metal_texture->size(), (uint_size{1, 2}));
     XCTAssertNil(metal_texture->samplerState());
     XCTAssertNil(metal_texture->texture());
     XCTAssertEqual(metal_texture->texture_type(), MTLTextureType2D);
@@ -37,10 +38,10 @@ using namespace yas;
 }
 
 - (void)test_create_for_render_target {
-    auto metal_texture = ui::metal_texture::make_shared(ui::uint_size{1, 2}, {ui::texture_usage::render_target},
-                                                        ui::pixel_format::bgra8_unorm);
+    auto metal_texture =
+        metal_texture::make_shared(uint_size{1, 2}, {texture_usage::render_target}, pixel_format::bgra8_unorm);
 
-    XCTAssertEqual(metal_texture->size(), (ui::uint_size{1, 2}));
+    XCTAssertEqual(metal_texture->size(), (uint_size{1, 2}));
     XCTAssertNil(metal_texture->samplerState());
     XCTAssertNil(metal_texture->texture());
     XCTAssertEqual(metal_texture->texture_type(), MTLTextureType2D);
@@ -56,11 +57,11 @@ using namespace yas;
         return;
     }
 
-    auto metal_texture = ui::metal_texture::make_shared(ui::uint_size{1, 2}, {ui::texture_usage::shader_read},
-                                                        ui::pixel_format::rgba8_unorm);
+    auto metal_texture =
+        metal_texture::make_shared(uint_size{1, 2}, {texture_usage::shader_read}, pixel_format::rgba8_unorm);
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
-    XCTAssertTrue(ui::metal_object::cast(metal_texture)->metal_setup(metal_system));
+    auto metal_system = metal_system::make_shared(device.object());
+    XCTAssertTrue(metal_object::cast(metal_texture)->metal_setup(metal_system));
 
     XCTAssertTrue(metal_texture->metal_system());
     XCTAssertNotNil(metal_texture->samplerState());

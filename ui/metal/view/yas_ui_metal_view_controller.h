@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initCommon NS_REQUIRES_SUPER;
 
-- (void)setRenderer:(yas::ui::view_renderer_interface_ptr const &)renderer;
-- (yas::ui::view_renderer_interface_ptr const &)renderer;
+- (void)setRenderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer;
+- (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer;
 
 @end
 

@@ -9,6 +9,7 @@
 #import "yas_test_metal_view_controller.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_metal_encode_info_tests : XCTestCase
 
@@ -26,7 +27,7 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto info = ui::metal_encode_info::make_shared({nil, nil, nil});
+    auto info = metal_encode_info::make_shared({nil, nil, nil});
 
     XCTAssertTrue(info);
 
@@ -45,30 +46,30 @@ using namespace yas;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"create_with_parameters"];
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
-    auto renderer = ui::renderer::make_shared(metal_system);
+    auto metal_system = metal_system::make_shared(device.object());
+    auto renderer = renderer::make_shared(metal_system);
 
     auto time_updater = [expectation, &self, &metal_system](auto const &, auto const &) mutable {
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
 
-        auto info = ui::metal_encode_info::make_shared(
+        auto info = metal_encode_info::make_shared(
             {view.currentRenderPassDescriptor,
-             ui::testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithTexture(),
-             ui::testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithoutTexture()});
+             testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithTexture(),
+             testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithoutTexture()});
 
         XCTAssertEqualObjects(info->renderPassDescriptor(), view.currentRenderPassDescriptor);
         XCTAssertEqualObjects(info->pipelineStateWithTexture(),
-                              ui::testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithTexture());
+                              testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithTexture());
         XCTAssertEqualObjects(info->pipelineStateWithoutTexture(),
-                              ui::testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithoutTexture());
+                              testable_metal_system::cast(metal_system)->mtlRenderPipelineStateWithoutTexture());
 
         [expectation fulfill];
 
         return true;
     };
 
-    auto pre_render_action = ui::action::make_shared({.time_updater = std::move(time_updater)});
+    auto pre_render_action = action::make_shared({.time_updater = std::move(time_updater)});
 
     renderer->insert_action(pre_render_action);
 
@@ -78,13 +79,13 @@ using namespace yas;
 }
 
 - (void)test_set_mesh {
-    auto info = ui::metal_encode_info::make_shared({nil, nil, nil});
+    auto info = metal_encode_info::make_shared({nil, nil, nil});
 
-    info->append_mesh(ui::mesh::make_shared());
+    info->append_mesh(mesh::make_shared());
 
     XCTAssertEqual(info->meshes().size(), 1);
 
-    info->append_mesh(ui::mesh::make_shared());
+    info->append_mesh(mesh::make_shared());
 
     XCTAssertEqual(info->meshes().size(), 2);
 }

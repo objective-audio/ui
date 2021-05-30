@@ -25,11 +25,11 @@ mesh::mesh() {
 
 mesh::~mesh() = default;
 
-mesh_data_ptr const &mesh::mesh_data() const {
+std::shared_ptr<mesh_data> const &mesh::mesh_data() const {
     return this->_mesh_data;
 }
 
-texture_ptr const &mesh::texture() const {
+std::shared_ptr<texture> const &mesh::texture() const {
     return this->_texture;
 }
 
@@ -45,7 +45,7 @@ primitive_type const &mesh::primitive_type() const {
     return this->_primitive_type;
 }
 
-void mesh::set_mesh_data(mesh_data_ptr const &mesh_data) {
+void mesh::set_mesh_data(std::shared_ptr<ui::mesh_data> const &mesh_data) {
     if (this->_mesh_data != mesh_data) {
         this->_mesh_data = std::move(mesh_data);
 
@@ -53,7 +53,7 @@ void mesh::set_mesh_data(mesh_data_ptr const &mesh_data) {
     }
 }
 
-void mesh::set_texture(texture_ptr const &texture) {
+void mesh::set_texture(std::shared_ptr<ui::texture> const &texture) {
     if (this->_texture != texture) {
         this->_texture = texture;
 
@@ -231,6 +231,6 @@ bool mesh::_needs_write(batch_building_type const &building_type) {
     return false;
 }
 
-mesh_ptr mesh::make_shared() {
+std::shared_ptr<mesh> mesh::make_shared() {
     return std::shared_ptr<mesh>(new mesh{});
 }

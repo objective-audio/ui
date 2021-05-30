@@ -7,26 +7,26 @@
 #include <ui/yas_ui_collider.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 namespace yas::sample::cursor_over_planes_utils {
-static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> const &nodes,
-                                                  ui::renderer_ptr const &renderer) {
+static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<node>> const &nodes,
+                                                  std::shared_ptr<renderer> const &renderer) {
     auto pool = observing::canceller_pool::make_shared();
 
     for (auto &node : nodes) {
         renderer->event_manager()
             ->observe([weak_node = to_weak(node),
-                       prev_detected = std::make_shared<bool>(false)](ui::event_ptr const &event) {
-                if (event->type() == ui::event_type::cursor) {
+                       prev_detected = std::make_shared<bool>(false)](std::shared_ptr<event> const &event) {
+                if (event->type() == event_type::cursor) {
                     auto const &cursor_event = event->get<ui::cursor>();
 
                     if (auto node = weak_node.lock()) {
                         if (auto renderer = node->renderer()) {
                             auto is_detected = renderer->detector()->detect(cursor_event.position(), node->collider());
 
-                            auto make_color_action = [](ui::node_ptr const &node, ui::color const &color) {
-                                return ui::make_action(
-                                    {.target = node, .begin_color = node->color(), .end_color = color});
+                            auto make_color_action = [](std::shared_ptr<ui::node> const &node, color const &color) {
+                                return make_action({.target = node, .begin_color = node->color(), .end_color = color});
                             };
 
                             if (is_detected && !*prev_detected) {
@@ -53,20 +53,20 @@ static observing::cancellable_ptr _observe_events(std::vector<ui::node_ptr> cons
 sample::cursor_over_planes::cursor_over_planes() {
     this->_setup_nodes();
 
-    this->_renderer_canceller =
-        root_node
-            ->observe_renderer(
-                [this, event_canceller = observing::cancellable_ptr{nullptr}](ui::renderer_ptr const &value) mutable {
-                    if (value) {
-                        event_canceller = cursor_over_planes_utils::_observe_events(this->_nodes, value);
-                    } else {
-                        event_canceller = nullptr;
-                    }
-                })
-            .end();
+    this->_renderer_canceller = root_node
+                                    ->observe_renderer([this, event_canceller = observing::cancellable_ptr{nullptr}](
+                                                           std::shared_ptr<renderer> const &value) mutable {
+                                        if (value) {
+                                            event_canceller =
+                                                cursor_over_planes_utils::_observe_events(this->_nodes, value);
+                                        } else {
+                                            event_canceller = nullptr;
+                                        }
+                                    })
+                                    .end();
 }
 
-ui::node_ptr const &sample::cursor_over_planes::node() {
+std::shared_ptr<node> const &sample::cursor_over_planes::node() {
     return this->root_node;
 }
 
@@ -77,16 +77,16 @@ void sample::cursor_over_planes::_setup_nodes() {
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
-        auto plane = ui::rect_plane::make_shared(1);
+        auto plane = rect_plane::make_shared(1);
         plane->data()->set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
         auto const &node = plane->node();
         node->set_position({100.0f, 0.0f});
         node->set_scale({10.0f, 30.0f});
         node->set_color({.v = 0.3f});
-        node->set_collider(ui::collider::make_shared(ui::shape::make_shared(ui::rect_shape{})));
+        node->set_collider(collider::make_shared(shape::make_shared(rect_shape{})));
 
-        auto handle_node = ui::node::make_shared();
+        auto handle_node = node::make_shared();
         handle_node->add_sub_node(node);
         handle_node->set_angle({360.0f / count * idx});
 

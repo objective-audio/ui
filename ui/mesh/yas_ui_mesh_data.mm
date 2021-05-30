@@ -46,7 +46,7 @@ void mesh_data::write(std::function<void(std::vector<vertex2d_t> &, std::vector<
     }
 }
 
-metal_system_ptr const &mesh_data::metal_system() {
+std::shared_ptr<metal_system> const &mesh_data::metal_system() {
     return this->_metal_system;
 }
 
@@ -126,7 +126,7 @@ std::size_t mesh_data::dynamic_buffer_count() {
     return 1;
 }
 
-mesh_data_ptr mesh_data::make_shared(mesh_data_args &&args) {
+std::shared_ptr<mesh_data> mesh_data::make_shared(mesh_data_args &&args) {
     return std::shared_ptr<mesh_data>(new mesh_data{std::move(args)});
 }
 
@@ -185,6 +185,6 @@ std::size_t dynamic_mesh_data::dynamic_buffer_count() {
     return 2;
 }
 
-dynamic_mesh_data_ptr dynamic_mesh_data::make_shared(mesh_data_args &&args) {
+std::shared_ptr<dynamic_mesh_data> dynamic_mesh_data::make_shared(mesh_data_args &&args) {
     return std::shared_ptr<dynamic_mesh_data>(new dynamic_mesh_data{std::move(args)});
 }

@@ -47,7 +47,7 @@ MTLTextureUsage metal_texture::texture_usage() const {
     return this->_texture_usage;
 }
 
-metal_system_ptr const &metal_texture::metal_system() const {
+std::shared_ptr<metal_system> const &metal_texture::metal_system() const {
     return this->_metal_system;
 }
 
@@ -138,7 +138,7 @@ setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> 
     return setup_metal_result{nullptr};
 }
 
-metal_texture_ptr metal_texture::make_shared(uint_size size, texture_usages_t const usages,
-                                             ui::pixel_format const format) {
+std::shared_ptr<metal_texture> metal_texture::make_shared(uint_size size, texture_usages_t const usages,
+                                                          ui::pixel_format const format) {
     return std::shared_ptr<metal_texture>(new metal_texture{std::move(size), usages, format});
 }

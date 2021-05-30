@@ -9,6 +9,7 @@
 
 using namespace simd;
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_matrix_tests : XCTestCase
 
@@ -25,7 +26,7 @@ using namespace yas;
 }
 
 - (void)test_scale {
-    auto m1 = ui::matrix::scale(2.0, 4.0);
+    auto m1 = matrix::scale(2.0, 4.0);
 
     float4x4 m2(float4{2.0f, 0.0f, 0.0f, 0.0f}, float4{0.0f, 4.0f, 0.0f, 0.0f}, float4{0.0f, 0.0f, 1.0f, 0.0f},
                 float4{0.0f, 0.0f, 0.0f, 1.0f});
@@ -39,7 +40,7 @@ using namespace yas;
 }
 
 - (void)test_translate {
-    auto m1 = ui::matrix::translation(3.0f, -1.0);
+    auto m1 = matrix::translation(3.0f, -1.0);
 
     float4x4 m2(float4{1.0f, 0.0f, 0.0f, 0.0f}, float4{0.0f, 1.0f, 0.0f, 0.0f}, float4{0.0f, 0.0f, 1.0f, 0.0f},
                 float4{3.0f, -1.0f, 0.0f, 1.0f});
@@ -53,13 +54,13 @@ using namespace yas;
 }
 
 - (void)test_rotation {
-    auto v = ui::matrix::rotation(90.0f) * float4{1.0f, 0.0f, 0.0f, 1.0f};
+    auto v = matrix::rotation(90.0f) * float4{1.0f, 0.0f, 0.0f, 1.0f};
     XCTAssertEqualWithAccuracy(v.x, 0.0f, 0.001f);
     XCTAssertEqualWithAccuracy(v.y, 1.0f, 0.001f);
 }
 
 - (void)test_ortho {
-    auto m = ui::matrix::ortho(0.0f, 100.0f, -20.0f, 20.0f, -1.0f, 1.0f);
+    auto m = matrix::ortho(0.0f, 100.0f, -20.0f, 20.0f, -1.0f, 1.0f);
 
     auto v = m * float4{0.0f, 0.0f, 0.0f, 1.0f};
 

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 struct encodable_effect {
@@ -13,7 +12,7 @@ struct encodable_effect {
 
     virtual void encode(id<MTLCommandBuffer> const) = 0;
 
-    [[nodiscard]] static encodable_effect_ptr cast(encodable_effect_ptr const &encodable) {
+    [[nodiscard]] static std::shared_ptr<encodable_effect> cast(std::shared_ptr<encodable_effect> const &encodable) {
         return encodable;
     }
 };

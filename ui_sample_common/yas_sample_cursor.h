@@ -10,12 +10,12 @@
 
 namespace yas::sample {
 struct cursor {
-    ui::node_ptr const &node();
+    std::shared_ptr<ui::node> const &node();
 
     static cursor_ptr make_shared();
 
    private:
-    ui::node_ptr const _node = ui::node::make_shared();
+    std::shared_ptr<ui::node> const _node = ui::node::make_shared();
     observing::cancellable_ptr _renderer_canceller = nullptr;
 
     cursor();

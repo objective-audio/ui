@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_types.h>
 
 #include <string>
@@ -130,7 +129,7 @@ struct event_inputtable {
     virtual void input_key_event(event_phase const, key_event const &) = 0;
     virtual void input_modifier_event(modifier_flags const &, double const timestamp) = 0;
 
-    static event_inputtable_ptr cast(event_inputtable_ptr const &inputtable) {
+    static std::shared_ptr<event_inputtable> cast(std::shared_ptr<event_inputtable> const &inputtable) {
         return inputtable;
     }
 };

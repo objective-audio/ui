@@ -5,7 +5,6 @@
 #pragma once
 
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_render_info_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
@@ -15,13 +14,13 @@ namespace yas::ui {
 struct batch final : renderable_batch, render_encodable, metal_object {
     virtual ~batch();
 
-    [[nodiscard]] static batch_ptr make_shared();
+    [[nodiscard]] static std::shared_ptr<batch> make_shared();
 
    private:
     std::vector<ui::batch_render_mesh_info> _render_mesh_infos;
-    std::vector<ui::mesh_ptr> _render_meshes;
+    std::vector<std::shared_ptr<mesh>> _render_meshes;
     ui::batch_building_type _building_type = ui::batch_building_type::none;
-    ui::metal_system_ptr _metal_system = nullptr;
+    std::shared_ptr<metal_system> _metal_system = nullptr;
 
     batch();
 
@@ -30,15 +29,15 @@ struct batch final : renderable_batch, render_encodable, metal_object {
     batch &operator=(batch const &) = delete;
     batch &operator=(batch &&) = delete;
 
-    std::vector<ui::mesh_ptr> const &meshes() override;
+    std::vector<std::shared_ptr<mesh>> const &meshes() override;
     void begin_render_meshes_building(batch_building_type const) override;
     void commit_render_meshes_building() override;
     void clear_render_meshes() override;
-    void append_mesh(ui::mesh_ptr const &) override;
+    void append_mesh(std::shared_ptr<mesh> const &) override;
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
-    ui::batch_render_mesh_info &_find_or_make_mesh_info(ui::texture_ptr const &);
-    ui::batch_render_mesh_info &_add_mesh_info(ui::texture_ptr const &);
+    ui::batch_render_mesh_info &_find_or_make_mesh_info(std::shared_ptr<texture> const &);
+    ui::batch_render_mesh_info &_add_mesh_info(std::shared_ptr<texture> const &);
 };
 }  // namespace yas::ui

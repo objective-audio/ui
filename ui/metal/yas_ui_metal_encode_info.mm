@@ -21,7 +21,7 @@ metal_encode_info::metal_encode_info(args &&args) {
 
 metal_encode_info::~metal_encode_info() = default;
 
-void metal_encode_info::append_mesh(mesh_ptr const &mesh) {
+void metal_encode_info::append_mesh(std::shared_ptr<mesh> const &mesh) {
     if (auto const &texture = mesh->texture()) {
         uintptr_t const identifier = texture->identifier();
         auto &textures = this->_textures;
@@ -32,7 +32,7 @@ void metal_encode_info::append_mesh(mesh_ptr const &mesh) {
     this->_meshes.emplace_back(mesh);
 }
 
-void metal_encode_info::append_effect(effect_ptr const &effect) {
+void metal_encode_info::append_effect(std::shared_ptr<effect> const &effect) {
     this->_effects.emplace_back(effect);
 }
 
@@ -48,18 +48,18 @@ id<MTLRenderPipelineState> metal_encode_info::pipelineStateWithoutTexture() cons
     return this->_pipe_line_state_without_texture.object();
 }
 
-std::vector<mesh_ptr> const &metal_encode_info::meshes() const {
+std::vector<std::shared_ptr<mesh>> const &metal_encode_info::meshes() const {
     return this->_meshes;
 }
 
-std::vector<effect_ptr> const &metal_encode_info::effects() const {
+std::vector<std::shared_ptr<effect>> const &metal_encode_info::effects() const {
     return this->_effects;
 }
 
-std::unordered_map<uintptr_t, texture_ptr> const &metal_encode_info::textures() const {
+std::unordered_map<uintptr_t, std::shared_ptr<texture>> const &metal_encode_info::textures() const {
     return this->_textures;
 }
 
-metal_encode_info_ptr metal_encode_info::make_shared(args args) {
+std::shared_ptr<metal_encode_info> metal_encode_info::make_shared(args args) {
     return std::shared_ptr<metal_encode_info>(new metal_encode_info{std::move(args)});
 }

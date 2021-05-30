@@ -175,8 +175,8 @@ void metal_system::prepare_uniforms_buffer(uint32_t const uniforms_count) {
     }
 }
 
-void metal_system::mesh_encode(mesh_ptr const &mesh, id<MTLRenderCommandEncoder> const encoder,
-                               metal_encode_info_ptr const &encode_info) {
+void metal_system::mesh_encode(std::shared_ptr<mesh> const &mesh, id<MTLRenderCommandEncoder> const encoder,
+                               std::shared_ptr<metal_encode_info> const &encode_info) {
     auto const currentUniformsBuffer = this->_uniforms_buffers[this->_uniforms_buffer_index].object();
 
     if (auto uniforms_ptr =
@@ -211,7 +211,8 @@ void metal_system::mesh_encode(mesh_ptr const &mesh, id<MTLRenderCommandEncoder>
     assert(this->_uniforms_buffer_offset + _uniforms2d_size < currentUniformsBuffer.length);
 }
 
-void metal_system::push_render_target(render_stackable_ptr const &stackable, render_target const *render_target) {
+void metal_system::push_render_target(std::shared_ptr<render_stackable> const &stackable,
+                                      render_target const *render_target) {
     renderable_render_target const *renderable = render_target;
 
     stackable->push_encode_info(
@@ -282,11 +283,11 @@ void metal_system::_render_nodes(renderer const *renderer, id<MTLCommandBuffer> 
     this->_last_encoded_mesh_count = result.encoded_mesh_count;
 }
 
-metal_system_ptr metal_system::make_shared(id<MTLDevice> const device) {
+std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device) {
     return make_shared(device, 4);
 }
 
-metal_system_ptr metal_system::make_shared(id<MTLDevice> const device, uint32_t const sample_count) {
+std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device, uint32_t const sample_count) {
     auto shared = std::shared_ptr<metal_system>(new metal_system{device, sample_count});
     shared->_weak_metal_system = shared;
     return shared;

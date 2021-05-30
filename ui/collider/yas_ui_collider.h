@@ -6,7 +6,6 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_types.h>
 
@@ -52,9 +51,9 @@ struct shape final {
 
     [[nodiscard]] bool hit_test(ui::point const &) const;
 
-    [[nodiscard]] static shape_ptr make_shared(anywhere::type);
-    [[nodiscard]] static shape_ptr make_shared(circle::type);
-    [[nodiscard]] static shape_ptr make_shared(rect::type);
+    [[nodiscard]] static std::shared_ptr<shape> make_shared(anywhere::type);
+    [[nodiscard]] static std::shared_ptr<shape> make_shared(circle::type);
+    [[nodiscard]] static std::shared_ptr<shape> make_shared(rect::type);
 
    private:
     std::shared_ptr<impl_base> _impl;
@@ -72,27 +71,27 @@ struct shape final {
 struct collider final : renderable_collider {
     virtual ~collider();
 
-    void set_shape(ui::shape_ptr);
-    [[nodiscard]] ui::shape_ptr const &shape() const;
+    void set_shape(std::shared_ptr<shape>);
+    [[nodiscard]] std::shared_ptr<shape> const &shape() const;
 
     void set_enabled(bool const);
     [[nodiscard]] bool is_enabled() const;
 
     [[nodiscard]] bool hit_test(ui::point const &) const;
 
-    [[nodiscard]] observing::syncable observe_shape(observing::caller<ui::shape_ptr>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_shape(observing::caller<std::shared_ptr<ui::shape>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_enabled(observing::caller<bool>::handler_f &&);
 
-    [[nodiscard]] static collider_ptr make_shared();
-    [[nodiscard]] static collider_ptr make_shared(ui::shape_ptr);
+    [[nodiscard]] static std::shared_ptr<collider> make_shared();
+    [[nodiscard]] static std::shared_ptr<collider> make_shared(std::shared_ptr<ui::shape>);
 
    private:
     simd::float4x4 _matrix = matrix_identity_float4x4;
 
-    observing::value::holder_ptr<ui::shape_ptr> const _shape;
+    observing::value::holder_ptr<std::shared_ptr<ui::shape>> const _shape;
     observing::value::holder_ptr<bool> const _enabled = observing::value::holder<bool>::make_shared(true);
 
-    explicit collider(ui::shape_ptr &&);
+    explicit collider(std::shared_ptr<ui::shape> &&);
 
     simd::float4x4 const &matrix() const override;
     void set_matrix(simd::float4x4 const &) override;

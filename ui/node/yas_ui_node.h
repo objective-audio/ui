@@ -15,15 +15,6 @@
 #include <vector>
 
 namespace yas::ui {
-class render_info;
-class point;
-class size;
-class color;
-class angle;
-class batch;
-class layout_guide;
-class layout_guide_point;
-
 struct node final : action_target, metal_object, renderable_node {
     enum class method {
         added_to_super,
@@ -65,35 +56,36 @@ struct node final : action_target, metal_object, renderable_node {
     [[nodiscard]] simd::float4x4 const &matrix() const;
     [[nodiscard]] simd::float4x4 const &local_matrix() const;
 
-    void set_mesh(ui::mesh_ptr const &);
-    [[nodiscard]] ui::mesh_ptr const &mesh() const;
-    [[nodiscard]] observing::syncable observe_mesh(observing::caller<ui::mesh_ptr>::handler_f &&);
+    void set_mesh(std::shared_ptr<mesh> const &);
+    [[nodiscard]] std::shared_ptr<mesh> const &mesh() const;
+    [[nodiscard]] observing::syncable observe_mesh(observing::caller<std::shared_ptr<ui::mesh>>::handler_f &&);
 
-    void set_collider(ui::collider_ptr const &);
-    [[nodiscard]] ui::collider_ptr const &collider() const;
-    [[nodiscard]] observing::syncable observe_collider(observing::caller<ui::collider_ptr>::handler_f &&);
+    void set_collider(std::shared_ptr<collider> const &);
+    [[nodiscard]] std::shared_ptr<collider> const &collider() const;
+    [[nodiscard]] observing::syncable observe_collider(observing::caller<std::shared_ptr<ui::collider>>::handler_f &&);
 
-    void set_batch(ui::batch_ptr const &);
-    [[nodiscard]] ui::batch_ptr const &batch() const;
-    [[nodiscard]] observing::syncable observe_batch(observing::caller<ui::batch_ptr>::handler_f &&);
+    void set_batch(std::shared_ptr<batch> const &);
+    [[nodiscard]] std::shared_ptr<batch> const &batch() const;
+    [[nodiscard]] observing::syncable observe_batch(observing::caller<std::shared_ptr<ui::batch>>::handler_f &&);
 
-    void set_render_target(ui::render_target_ptr const &);
-    [[nodiscard]] ui::render_target_ptr const &render_target() const;
-    [[nodiscard]] observing::syncable observe_render_target(observing::caller<ui::render_target_ptr>::handler_f &&);
+    void set_render_target(std::shared_ptr<render_target> const &);
+    [[nodiscard]] std::shared_ptr<render_target> const &render_target() const;
+    [[nodiscard]] observing::syncable observe_render_target(
+        observing::caller<std::shared_ptr<ui::render_target>>::handler_f &&);
 
-    void add_sub_node(ui::node_ptr const &);
-    void add_sub_node(ui::node_ptr const &, std::size_t const);
+    void add_sub_node(std::shared_ptr<node> const &);
+    void add_sub_node(std::shared_ptr<node> const &, std::size_t const);
     void remove_from_super_node();
 
-    [[nodiscard]] std::vector<ui::node_ptr> const &children() const;
-    [[nodiscard]] std::vector<ui::node_ptr> &children();
-    [[nodiscard]] ui::node_ptr parent() const;
+    [[nodiscard]] std::vector<std::shared_ptr<node>> const &children() const;
+    [[nodiscard]] std::vector<std::shared_ptr<node>> &children();
+    [[nodiscard]] std::shared_ptr<node> parent() const;
 
-    [[nodiscard]] ui::renderer_ptr renderer() const override;
+    [[nodiscard]] std::shared_ptr<ui::renderer> renderer() const override;
 
     [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
-    [[nodiscard]] observing::syncable observe_renderer(observing::caller<ui::renderer_ptr>::handler_f &&);
-    [[nodiscard]] observing::syncable observe_parent(observing::caller<ui::node_ptr>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_renderer(observing::caller<std::shared_ptr<ui::renderer>>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&);
 
     [[nodiscard]] ui::point convert_position(ui::point const &) const;
 
@@ -106,18 +98,18 @@ struct node final : action_target, metal_object, renderable_node {
    private:
     std::weak_ptr<node> _weak_node;
 
-    observing::value::holder_ptr<ui::node_wptr> const _parent;
-    observing::value::holder_ptr<ui::renderer_wptr> const _renderer;
+    observing::value::holder_ptr<std::weak_ptr<node>> const _parent;
+    observing::value::holder_ptr<std::weak_ptr<ui::renderer>> const _renderer;
 
     observing::value::holder_ptr<ui::point> const _position;
     observing::value::holder_ptr<ui::angle> const _angle;
     observing::value::holder_ptr<ui::size> const _scale;
     observing::value::holder_ptr<ui::color> const _color;
     observing::value::holder_ptr<float> const _alpha;
-    observing::value::holder_ptr<ui::mesh_ptr> const _mesh;
-    observing::value::holder_ptr<ui::collider_ptr> const _collider;
+    observing::value::holder_ptr<std::shared_ptr<ui::mesh>> const _mesh;
+    observing::value::holder_ptr<std::shared_ptr<ui::collider>> const _collider;
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> const _batch;
-    observing::value::holder_ptr<ui::render_target_ptr> const _render_target;
+    observing::value::holder_ptr<std::shared_ptr<ui::render_target>> const _render_target;
     observing::value::holder_ptr<bool> const _enabled;
 
     observing::canceller_pool _pool;
@@ -125,7 +117,7 @@ struct node final : action_target, metal_object, renderable_node {
     observing::cancellable_ptr _y_canceller = nullptr;
     observing::cancellable_ptr _position_canceller = nullptr;
 
-    std::vector<ui::node_ptr> _children;
+    std::vector<std::shared_ptr<node>> _children;
 
     mutable simd::float4x4 _matrix = matrix_identity_float4x4;
     mutable simd::float4x4 _local_matrix = matrix_identity_float4x4;
@@ -143,16 +135,16 @@ struct node final : action_target, metal_object, renderable_node {
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
-    void set_renderer(ui::renderer_ptr const &) override;
+    void set_renderer(std::shared_ptr<ui::renderer> const &) override;
     void fetch_updates(ui::tree_updates &) override;
     void build_render_info(ui::render_info &) override;
     bool is_rendering_color_exists() override;
     void clear_updates() override;
 
-    void _add_sub_node(ui::node_ptr &sub_node);
+    void _add_sub_node(std::shared_ptr<node> &sub_node);
     void _remove_sub_node(ui::node *sub_node);
     void _remove_sub_nodes_on_destructor();
-    void _set_renderer_recursively(ui::renderer_ptr const &);
+    void _set_renderer_recursively(std::shared_ptr<ui::renderer> const &);
     void _update_mesh_color();
     void _set_updated(ui::node_update_reason const);
     void _update_local_matrix() const;
@@ -167,10 +159,10 @@ std::string to_string(ui::node::method const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::node::method const &);
 
 namespace yas {
-bool operator==(yas::ui::node_wptr const &, yas::ui::node_wptr const &);
-bool operator!=(yas::ui::node_wptr const &, yas::ui::node_wptr const &);
+bool operator==(std::weak_ptr<yas::ui::node> const &, std::weak_ptr<yas::ui::node> const &);
+bool operator!=(std::weak_ptr<yas::ui::node> const &, std::weak_ptr<yas::ui::node> const &);
 namespace ui {
-    bool operator==(yas::ui::node_wptr const &, yas::ui::node_wptr const &);
-    bool operator!=(yas::ui::node_wptr const &, yas::ui::node_wptr const &);
+    bool operator==(std::weak_ptr<yas::ui::node> const &, std::weak_ptr<yas::ui::node> const &);
+    bool operator!=(std::weak_ptr<yas::ui::node> const &, std::weak_ptr<yas::ui::node> const &);
 }  // namespace ui
 }  // namespace yas

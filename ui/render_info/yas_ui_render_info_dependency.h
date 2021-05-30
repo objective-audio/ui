@@ -4,15 +4,17 @@
 
 #pragma once
 
-#include <ui/yas_ui_ptr.h>
+#include <ui/yas_ui_types.h>
+
+#include <memory>
 
 namespace yas::ui {
 struct render_encodable {
     virtual ~render_encodable() = default;
 
-    virtual void append_mesh(ui::mesh_ptr const &mesh) = 0;
+    virtual void append_mesh(std::shared_ptr<mesh> const &mesh) = 0;
 
-    static render_encodable_ptr cast(render_encodable_ptr const &encodable) {
+    static std::shared_ptr<render_encodable> cast(std::shared_ptr<render_encodable> const &encodable) {
         return encodable;
     }
 };
@@ -20,9 +22,9 @@ struct render_encodable {
 struct render_effectable {
     virtual ~render_effectable() = default;
 
-    virtual void append_effect(ui::effect_ptr const &effect) = 0;
+    virtual void append_effect(std::shared_ptr<effect> const &effect) = 0;
 
-    static render_effectable_ptr cast(render_effectable_ptr const &effectable) {
+    static std::shared_ptr<render_effectable> cast(std::shared_ptr<render_effectable> const &effectable) {
         return effectable;
     }
 };
@@ -30,11 +32,11 @@ struct render_effectable {
 struct render_stackable {
     virtual ~render_stackable() = default;
 
-    virtual void push_encode_info(ui::metal_encode_info_ptr const &) = 0;
+    virtual void push_encode_info(std::shared_ptr<metal_encode_info> const &) = 0;
     virtual void pop_encode_info() = 0;
-    virtual ui::metal_encode_info_ptr const &current_encode_info() = 0;
+    virtual std::shared_ptr<metal_encode_info> const &current_encode_info() = 0;
 
-    static render_stackable_ptr cast(render_stackable_ptr const &stackable) {
+    static std::shared_ptr<render_stackable> cast(std::shared_ptr<render_stackable> const &stackable) {
         return stackable;
     }
 };

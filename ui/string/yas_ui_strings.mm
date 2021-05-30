@@ -21,7 +21,7 @@ strings::strings(strings_args &&args)
           {.frame = args.frame, .alignment = args.alignment, .row_order = layout_order::descending})),
       _rect_plane(rect_plane::make_shared(args.max_word_count)),
       _text(observing::value::holder<std::string>::make_shared(std::move(args.text))),
-      _font_atlas(observing::value::holder<font_atlas_ptr>::make_shared(std::move(args.font_atlas))),
+      _font_atlas(observing::value::holder<std::shared_ptr<ui::font_atlas>>::make_shared(std::move(args.font_atlas))),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
     this->_prepare_chains();
@@ -34,7 +34,7 @@ void strings::set_text(std::string text) {
     this->_text->set_value(std::move(text));
 }
 
-void strings::set_font_atlas(font_atlas_ptr atlas) {
+void strings::set_font_atlas(std::shared_ptr<ui::font_atlas> atlas) {
     this->_font_atlas->set_value(std::move(atlas));
 }
 
@@ -50,7 +50,7 @@ std::string const &strings::text() const {
     return this->_text->value();
 }
 
-font_atlas_ptr const &strings::font_atlas() const {
+std::shared_ptr<font_atlas> const &strings::font_atlas() const {
     return this->_font_atlas->value();
 }
 
@@ -66,11 +66,11 @@ std::optional<region> const &strings::actual_frame() const {
     return this->_collection_layout->actual_cells_frame();
 }
 
-layout_guide_rect_ptr const &strings::frame_layout_guide_rect() {
+std::shared_ptr<layout_guide_rect> const &strings::frame_layout_guide_rect() {
     return this->_collection_layout->frame_guide_rect;
 }
 
-rect_plane_ptr const &strings::rect_plane() {
+std::shared_ptr<rect_plane> const &strings::rect_plane() {
     return this->_rect_plane;
 }
 
@@ -78,7 +78,8 @@ observing::syncable strings::observe_text(observing::caller<std::string>::handle
     return this->_text->observe(std::move(handler));
 }
 
-observing::syncable strings::observe_font_atlas(observing::caller<font_atlas_ptr>::handler_f &&handler) {
+observing::syncable strings::observe_font_atlas(
+    observing::caller<std::shared_ptr<ui::font_atlas>>::handler_f &&handler) {
     return this->_font_atlas->observe(std::move(handler));
 }
 
@@ -96,7 +97,7 @@ observing::syncable strings::observe_actual_frame(observing::caller<std::optiona
 
 void strings::_prepare_chains() {
     this->_font_atlas
-        ->observe([this](font_atlas_ptr const &font_atras) {
+        ->observe([this](std::shared_ptr<ui::font_atlas> const &font_atras) {
             this->_update_texture_observing();
             this->_update_layout();
         })
@@ -225,10 +226,10 @@ float strings::_cell_height() {
     }
 }
 
-strings_ptr strings::make_shared() {
+std::shared_ptr<strings> strings::make_shared() {
     return make_shared({});
 }
 
-strings_ptr strings::make_shared(strings_args &&args) {
+std::shared_ptr<strings> strings::make_shared(strings_args &&args) {
     return std::shared_ptr<strings>(new strings{std::move(args)});
 }

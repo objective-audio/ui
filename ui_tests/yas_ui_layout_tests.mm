@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_layout_tests : XCTestCase
 
@@ -22,8 +23,8 @@ using namespace yas;
 }
 
 - (void)test_make_fixed_layout {
-    auto src_guide = ui::layout_guide::make_shared(0.5f);
-    auto dst_guide = ui::layout_guide::make_shared(0.25f);
+    auto src_guide = layout_guide::make_shared(0.5f);
+    auto dst_guide = layout_guide::make_shared(0.25f);
 
     auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 8.0f); }).sync();
 
@@ -34,12 +35,12 @@ using namespace yas;
 }
 
 - (void)test_make_fixed_layout_with_point {
-    ui::point distances{.x = 0.5f, .y = 0.25f};
-    auto src_guide_point = ui::layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
-    auto dst_guide_point = ui::layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
+    point distances{.x = 0.5f, .y = 0.25f};
+    auto src_guide_point = layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
+    auto dst_guide_point = layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
 
     auto layout = src_guide_point
-                      ->observe([&dst_guide_point, distances](ui::point const &value) {
+                      ->observe([&dst_guide_point, distances](point const &value) {
                           dst_guide_point->set_point(value + distances);
                       })
                       .sync();
@@ -53,12 +54,12 @@ using namespace yas;
 }
 
 - (void)test_make_fixed_layout_with_rect {
-    ui::insets distances{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
-    auto src_guide_rect = ui::layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
-    auto dst_guide_rect = ui::layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
+    insets distances{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
+    auto src_guide_rect = layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
+    auto dst_guide_rect = layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
 
     auto layout = src_guide_rect
-                      ->observe([&dst_guide_rect, distances](ui::region const &region) {
+                      ->observe([&dst_guide_rect, distances](region const &region) {
                           dst_guide_rect->set_region(region + distances);
                       })
                       .sync();
@@ -76,8 +77,8 @@ using namespace yas;
 }
 
 - (void)test_fixed_layout_value_changed {
-    auto src_guide = ui::layout_guide::make_shared(2.0f);
-    auto dst_guide = ui::layout_guide::make_shared(-4.0f);
+    auto src_guide = layout_guide::make_shared(2.0f);
+    auto dst_guide = layout_guide::make_shared(-4.0f);
 
     auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 1.0f); }).sync();
 
@@ -91,9 +92,9 @@ using namespace yas;
 #pragma mark -
 
 - (void)test_min_layout {
-    auto src_guide_0 = ui::layout_guide::make_shared(1.0f);
-    auto src_guide_1 = ui::layout_guide::make_shared(2.0f);
-    auto dst_guide = ui::layout_guide::make_shared(-1.0f);
+    auto src_guide_0 = layout_guide::make_shared(1.0f);
+    auto src_guide_1 = layout_guide::make_shared(2.0f);
+    auto dst_guide = layout_guide::make_shared(-1.0f);
 
     auto cache0 = std::make_shared<std::optional<float>>();
     auto cache1 = std::make_shared<std::optional<float>>();
@@ -134,9 +135,9 @@ using namespace yas;
 }
 
 - (void)test_max_layout {
-    auto src_guide_0 = ui::layout_guide::make_shared(1.0f);
-    auto src_guide_1 = ui::layout_guide::make_shared(2.0f);
-    auto dst_guide = ui::layout_guide::make_shared(3.0f);
+    auto src_guide_0 = layout_guide::make_shared(1.0f);
+    auto src_guide_1 = layout_guide::make_shared(2.0f);
+    auto dst_guide = layout_guide::make_shared(3.0f);
 
     auto cache0 = std::make_shared<std::optional<float>>();
     auto cache1 = std::make_shared<std::optional<float>>();

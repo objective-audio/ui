@@ -9,6 +9,7 @@
 #import "yas_test_metal_view_controller.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_metal_view_controller_mac_tests : XCTestCase
 
@@ -59,7 +60,7 @@ using namespace yas;
         return;
     }
 
-    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()));
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
@@ -77,22 +78,22 @@ using namespace yas;
         return;
     }
 
-    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()));
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
     [viewController.view.window setFrame:CGRectMake(0, 0, 16, 16) display:YES];
 
-    XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
+    XCTAssertEqual(renderer->view_size(), (uint_size{0, 0}));
 
     [viewController setRenderer:renderer];
 
-    XCTAssertEqual(renderer->view_size(), (ui::uint_size{16, 16}));
+    XCTAssertEqual(renderer->view_size(), (uint_size{16, 16}));
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"view_size_changed"];
 
     auto canceller = renderer->view_layout_guide_rect()
-                         ->observe([&expectation](ui::region const &) {
+                         ->observe([&expectation](region const &) {
                              [expectation fulfill];
                              expectation = nil;
                          })
@@ -102,7 +103,7 @@ using namespace yas;
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
-    XCTAssertEqual(renderer->view_size(), (ui::uint_size{32, 32}));
+    XCTAssertEqual(renderer->view_size(), (uint_size{32, 32}));
 }
 
 @end

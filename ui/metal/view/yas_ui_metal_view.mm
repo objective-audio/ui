@@ -12,7 +12,7 @@ using namespace yas;
 
 namespace yas::ui::metal_view {
 struct cpp {
-    ui::event_manager_ptr event_manager = nullptr;
+    std::shared_ptr<event_manager> event_manager = nullptr;
 };
 }
 
@@ -45,11 +45,11 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
-- (ui::event_manager_ptr const &)event_manager {
+- (std::shared_ptr<ui::event_manager> const &)event_manager {
     return self->_cpp.event_manager;
 }
 
-- (void)set_event_manager:(ui::event_manager_ptr)manager {
+- (void)set_event_manager:(std::shared_ptr<ui::event_manager>)manager {
     self->_cpp.event_manager = std::move(manager);
 }
 

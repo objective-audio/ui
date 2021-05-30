@@ -6,13 +6,12 @@
 
 #include <ui/yas_ui_action.h>
 #include <ui/yas_ui_layout_guide.h>
-#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 class renderer;
 
 struct layout_action_args final {
-    ui::layout_guide_wptr target;
+    std::weak_ptr<layout_guide> target;
     float begin_value;
     float end_value;
 
@@ -28,7 +27,7 @@ struct layout_action_args final {
 [[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action_args &&);
 
 struct layout_animator_args final {
-    ui::renderer_wptr renderer;
+    std::weak_ptr<renderer> renderer;
     std::vector<ui::layout_guide_pair> layout_guide_pairs;
     double duration = 0.3;
 };
@@ -39,7 +38,7 @@ struct layout_animator {
     void set_value_transformer(ui::transform_f);
     [[nodiscard]] ui::transform_f const &value_transformer() const;
 
-    [[nodiscard]] static layout_animator_ptr make_shared(layout_animator_args &&);
+    [[nodiscard]] static std::shared_ptr<layout_animator> make_shared(layout_animator_args &&);
 
    private:
     layout_animator_args _args;

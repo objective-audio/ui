@@ -8,6 +8,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_image_tests : XCTestCase
 
@@ -24,7 +25,7 @@ using namespace yas;
 }
 
 - (void)test_create_without_scale_factor {
-    auto image = ui::image::make_shared({.point_size = {.width = 4, .height = 2}});
+    auto image = image::make_shared({.point_size = {.width = 4, .height = 2}});
 
     XCTAssertEqual(image->point_size().width, 4);
     XCTAssertEqual(image->point_size().height, 2);
@@ -35,7 +36,7 @@ using namespace yas;
 }
 
 - (void)test_create_with_scale_factor {
-    auto image = ui::image::make_shared({.point_size = {.width = 6, .height = 3}, .scale_factor = 2.0});
+    auto image = image::make_shared({.point_size = {.width = 6, .height = 3}, .scale_factor = 2.0});
 
     XCTAssertEqual(image->point_size().width, 6);
     XCTAssertEqual(image->point_size().height, 3);
@@ -46,7 +47,7 @@ using namespace yas;
 }
 
 - (void)test_draw {
-    auto image = ui::image::make_shared({.point_size = {.width = 2, .height = 2}});
+    auto image = image::make_shared({.point_size = {.width = 2, .height = 2}});
 
     image->draw([](auto const context) {
         CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);
@@ -60,7 +61,7 @@ using namespace yas;
 }
 
 - (void)test_clear {
-    auto image = ui::image::make_shared({.point_size = {.width = 2, .height = 2}});
+    auto image = image::make_shared({.point_size = {.width = 2, .height = 2}});
 
     image->draw([](auto const context) {
         CGContextSetFillColorWithColor(context, [NSColor whiteColor].CGColor);

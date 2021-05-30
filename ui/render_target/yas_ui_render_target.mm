@@ -40,10 +40,10 @@ render_target::render_target()
 
     this->_src_texture
         ->observe_metal_texture_changed([this](auto const &) {
-            texture_ptr const &texture = this->_src_texture;
+            std::shared_ptr<texture> const &texture = this->_src_texture;
             auto const renderPassDescriptor = *this->_render_pass_descriptor;
 
-            if (metal_texture_ptr const &metal_texture = texture->metal_texture()) {
+            if (std::shared_ptr<metal_texture> const &metal_texture = texture->metal_texture()) {
                 auto color_desc = objc_ptr_with_move_object([MTLRenderPassColorAttachmentDescriptor new]);
                 auto colorDesc = *color_desc;
                 colorDesc.texture = metal_texture->texture();
@@ -60,7 +60,7 @@ render_target::render_target()
 
     this->_dst_texture
         ->observe_size_updated([this](auto const &) {
-            texture_ptr const &texture = this->_dst_texture;
+            std::shared_ptr<texture> const &texture = this->_dst_texture;
             this->_data->set_rect_tex_coords(uint_region{.origin = uint_point::zero(), .size = texture->actual_size()},
                                              0);
         })
@@ -86,7 +86,7 @@ render_target::render_target()
         ->add_to(this->_pool);
 }
 
-layout_guide_rect_ptr &render_target::layout_guide_rect() {
+std::shared_ptr<layout_guide_rect> &render_target::layout_guide_rect() {
     return this->_layout_guide_rect;
 }
 
@@ -104,7 +104,7 @@ double render_target::scale_factor() const {
     return this->_scale_factor;
 }
 
-void render_target::set_effect(effect_ptr effect) {
+void render_target::set_effect(std::shared_ptr<ui::effect> effect) {
     if (this->_effect != effect) {
         this->_effect = effect ?: effect::make_through_effect();
 
@@ -113,11 +113,11 @@ void render_target::set_effect(effect_ptr effect) {
     }
 }
 
-effect_ptr const &render_target::effect() const {
+std::shared_ptr<effect> const &render_target::effect() const {
     return this->_effect;
 }
 
-void render_target::sync_scale_from_renderer(renderer_ptr const &renderer) {
+void render_target::sync_scale_from_renderer(std::shared_ptr<renderer> const &renderer) {
     this->_scale_canceller =
         renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
@@ -138,7 +138,7 @@ setup_metal_result render_target::metal_setup(std::shared_ptr<metal_system> cons
     return setup_metal_result{nullptr};
 }
 
-mesh_ptr const &render_target::mesh() const {
+std::shared_ptr<mesh> const &render_target::mesh() const {
     return _mesh;
 }
 
@@ -162,7 +162,7 @@ simd::float4x4 const &render_target::projection_matrix() const {
     return this->_projection_matrix;
 }
 
-bool render_target::push_encode_info(render_stackable_ptr const &stackable) {
+bool render_target::push_encode_info(std::shared_ptr<render_stackable> const &stackable) {
     if (!this->_is_size_enough()) {
         return false;
     }
@@ -200,6 +200,6 @@ bool render_target::_is_size_enough() {
     return false;
 }
 
-render_target_ptr render_target::make_shared() {
+std::shared_ptr<render_target> render_target::make_shared() {
     return std::shared_ptr<render_target>(new render_target{});
 }

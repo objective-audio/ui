@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_collection_layout_tests : XCTestCase
 
@@ -22,27 +23,27 @@ using namespace yas;
 }
 
 - (void)test_create {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
     XCTAssertTrue(layout);
 
-    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect->region() == (region{.origin = {0.0f, 0.0f}, .size = {0.0f, 0.0f}}));
     XCTAssertEqual(layout->preferred_cell_count(), 0);
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->default_cell_size() == (size{1.0f, 1.0f}));
     XCTAssertEqual(layout->lines().size(), 0);
     XCTAssertEqual(layout->row_spacing(), 0.0f);
     XCTAssertEqual(layout->col_spacing(), 0.0f);
-    XCTAssertEqual(layout->borders, (ui::layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
-    XCTAssertEqual(layout->alignment(), ui::layout_alignment::min);
-    XCTAssertEqual(layout->direction(), ui::layout_direction::vertical);
-    XCTAssertEqual(layout->row_order(), ui::layout_order::ascending);
-    XCTAssertEqual(layout->col_order(), ui::layout_order::ascending);
+    XCTAssertEqual(layout->borders, (layout_borders{0.0f, 0.0f, 0.0f, 0.0f}));
+    XCTAssertEqual(layout->alignment(), layout_alignment::min);
+    XCTAssertEqual(layout->direction(), layout_direction::vertical);
+    XCTAssertEqual(layout->row_order(), layout_order::ascending);
+    XCTAssertEqual(layout->col_order(), layout_order::ascending);
     XCTAssertEqual(layout->actual_cell_count(), 0);
     XCTAssertFalse(layout->actual_cells_frame().has_value());
 }
 
 - (void)test_create_with_args {
-    auto layout = ui::collection_layout::make_shared(
+    auto layout = collection_layout::make_shared(
         {.frame = {.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}},
          .preferred_cell_count = 10,
          .default_cell_size = {2.5f, 3.5f},
@@ -50,40 +51,40 @@ using namespace yas;
          .row_spacing = 4.0f,
          .col_spacing = 4.0f,
          .borders = {.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f},
-         .alignment = ui::layout_alignment::max,
-         .direction = ui::layout_direction::horizontal,
-         .row_order = ui::layout_order::descending,
-         .col_order = ui::layout_order::descending});
+         .alignment = layout_alignment::max,
+         .direction = layout_direction::horizontal,
+         .row_order = layout_order::descending,
+         .col_order = layout_order::descending});
 
     XCTAssertTrue(layout);
 
-    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect->region() == (region{.origin = {11.0f, 12.0f}, .size = {13.0f, 14.0f}}));
     XCTAssertEqual(layout->preferred_cell_count(), 10);
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{2.5f, 3.5f}));
+    XCTAssertTrue(layout->default_cell_size() == (size{2.5f, 3.5f}));
     XCTAssertEqual(layout->lines().size(), 1);
     XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 2);
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (ui::size{2.6f, 3.6f}));
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (ui::size{2.7f, 3.7f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (size{2.6f, 3.6f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (size{2.7f, 3.7f}));
     XCTAssertEqual(layout->lines().at(0).new_line_min_offset, 3.9f);
     XCTAssertEqual(layout->row_spacing(), 4.0f);
     XCTAssertEqual(layout->col_spacing(), 4.0f);
-    XCTAssertEqual(layout->borders, (ui::layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
-    XCTAssertEqual(layout->alignment(), ui::layout_alignment::max);
-    XCTAssertEqual(layout->direction(), ui::layout_direction::horizontal);
-    XCTAssertEqual(layout->row_order(), ui::layout_order::descending);
-    XCTAssertEqual(layout->col_order(), ui::layout_order::descending);
+    XCTAssertEqual(layout->borders, (layout_borders{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f}));
+    XCTAssertEqual(layout->alignment(), layout_alignment::max);
+    XCTAssertEqual(layout->direction(), layout_direction::horizontal);
+    XCTAssertEqual(layout->row_order(), layout_order::descending);
+    XCTAssertEqual(layout->col_order(), layout_order::descending);
     XCTAssertEqual(layout->actual_cell_count(), 0);
     XCTAssertFalse(layout->actual_cells_frame().has_value());
 }
 
 - (void)test_cell_layout_guide_rects {
     auto layout =
-        ui::collection_layout::make_shared({.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 9.0f}},
-                                            .preferred_cell_count = 4,
-                                            .default_cell_size = {2.0f, 3.0f},
-                                            .row_spacing = 1.0f,
-                                            .col_spacing = 1.0f,
-                                            .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
+        collection_layout::make_shared({.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 9.0f}},
+                                        .preferred_cell_count = 4,
+                                        .default_cell_size = {2.0f, 3.0f},
+                                        .row_spacing = 1.0f,
+                                        .col_spacing = 1.0f,
+                                        .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
@@ -111,7 +112,7 @@ using namespace yas;
 }
 
 - (void)test_actual_cell_count {
-    auto layout = ui::collection_layout::make_shared(
+    auto layout = collection_layout::make_shared(
         {.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
     XCTAssertEqual(layout->actual_cell_count(), 1);
@@ -126,30 +127,30 @@ using namespace yas;
 }
 
 - (void)test_actual_cells_frame {
-    auto layout = ui::collection_layout::make_shared(
+    auto layout = collection_layout::make_shared(
         {.frame = {.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 0});
 
     XCTAssertFalse(layout->actual_cells_frame().has_value());
 
     layout->set_preferred_cell_count(1);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
 
     layout->set_preferred_cell_count(2);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
 
     layout->set_preferred_cell_count(3);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
 
     layout->set_preferred_cell_count(4);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
 }
 
 - (void)test_observe_actual_cell_count {
-    auto layout = ui::collection_layout::make_shared(
+    auto layout = collection_layout::make_shared(
         {.frame = {.origin = {0.0f, 0.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
     std::size_t notified_count = 0;
@@ -168,14 +169,14 @@ using namespace yas;
 
 - (void)test_set_frame {
     auto layout =
-        ui::collection_layout::make_shared({.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}},
-                                            .preferred_cell_count = 4,
-                                            .default_cell_size = {2.0f, 3.0f},
-                                            .row_spacing = 1.0f,
-                                            .col_spacing = 1.0f,
-                                            .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
+        collection_layout::make_shared({.frame = {.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}},
+                                        .preferred_cell_count = 4,
+                                        .default_cell_size = {2.0f, 3.0f},
+                                        .row_spacing = 1.0f,
+                                        .col_spacing = 1.0f,
+                                        .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
 
-    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect->region() == (region{.origin = {2.0f, 4.0f}, .size = {8.0f, 16.0f}}));
 
     XCTAssertEqual(layout->frame_guide_rect->left()->value(), 2.0f);
     XCTAssertEqual(layout->frame_guide_rect->right()->value(), 10.0f);
@@ -186,7 +187,7 @@ using namespace yas;
 
     layout->frame_guide_rect->set_region({.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}});
 
-    XCTAssertTrue(layout->frame_guide_rect->region() == (ui::region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
+    XCTAssertTrue(layout->frame_guide_rect->region() == (region{.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}}));
 
     XCTAssertEqual(layout->frame_guide_rect->left()->value(), 3.0f);
     XCTAssertEqual(layout->frame_guide_rect->right()->value(), 10.0f);
@@ -215,10 +216,10 @@ using namespace yas;
 }
 
 - (void)test_limiting_row {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {1.0f, 0.0f}},
-                                                      .preferred_cell_count = 8,
-                                                      .default_cell_size = {1.0f, 1.0f},
-                                                      .direction = ui::layout_direction::vertical});
+    auto layout = collection_layout::make_shared({.frame = {.size = {1.0f, 0.0f}},
+                                                  .preferred_cell_count = 8,
+                                                  .default_cell_size = {1.0f, 1.0f},
+                                                  .direction = layout_direction::vertical});
 
     // フレームの高さが0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout->actual_cell_count(), 8);
@@ -228,7 +229,7 @@ using namespace yas;
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
-    layout->set_direction(ui::layout_direction::horizontal);
+    layout->set_direction(layout_direction::horizontal);
 
     // セルの並びを横にすれば高さの制限は受けない
     XCTAssertEqual(layout->actual_cell_count(), 8);
@@ -239,10 +240,10 @@ using namespace yas;
 }
 
 - (void)test_limiting_col {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {0.0f, 1.0f}},
-                                                      .preferred_cell_count = 8,
-                                                      .default_cell_size = {1.0f, 1.0f},
-                                                      .direction = ui::layout_direction::horizontal});
+    auto layout = collection_layout::make_shared({.frame = {.size = {0.0f, 1.0f}},
+                                                  .preferred_cell_count = 8,
+                                                  .default_cell_size = {1.0f, 1.0f},
+                                                  .direction = layout_direction::horizontal});
 
     // フレームの幅が0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout->actual_cell_count(), 8);
@@ -252,7 +253,7 @@ using namespace yas;
     // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
-    layout->set_direction(ui::layout_direction::vertical);
+    layout->set_direction(layout_direction::vertical);
 
     // セルの並びを縦にすれば高さの制限は受けない
     XCTAssertEqual(layout->actual_cell_count(), 8);
@@ -263,7 +264,7 @@ using namespace yas;
 }
 
 - (void)test_set_preferred_cell_count {
-    auto layout = ui::collection_layout::make_shared({.preferred_cell_count = 2});
+    auto layout = collection_layout::make_shared({.preferred_cell_count = 2});
 
     XCTAssertEqual(layout->preferred_cell_count(), 2);
 
@@ -277,11 +278,11 @@ using namespace yas;
 }
 
 - (void)test_set_default_cell_size {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3});
+    auto layout = collection_layout::make_shared({.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->default_cell_size() == (size{1.0f, 1.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -292,7 +293,7 @@ using namespace yas;
 
     layout->set_default_cell_size({2.0f, 3.0f});
 
-    XCTAssertTrue(layout->default_cell_size() == (ui::size{2.0f, 3.0f}));
+    XCTAssertTrue(layout->default_cell_size() == (size{2.0f, 3.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->bottom()->value(), 0.0f);
@@ -303,7 +304,7 @@ using namespace yas;
 }
 
 - (void)test_new_line_by_frame_only {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 5});
+    auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 5});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
@@ -315,11 +316,11 @@ using namespace yas;
     XCTAssertEqual(layout->lines().size(), 1);
     XCTAssertEqual(layout->lines().at(0).cell_sizes.size(), 5);
 
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (ui::size{2.0f, 2.0f}));
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(2) == (ui::size{3.0f, 3.0f}));
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(3) == (ui::size{1.0f, 1.0f}));
-    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(4) == (ui::size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(0) == (size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(1) == (size{2.0f, 2.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(2) == (size{3.0f, 3.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(3) == (size{1.0f, 1.0f}));
+    XCTAssertTrue(layout->lines().at(0).cell_sizes.at(4) == (size{2.0f, 2.0f}));
 
     XCTAssertEqual(cell_guide_rects.at(0)->left()->value(), 0.0f);
     XCTAssertEqual(cell_guide_rects.at(0)->right()->value(), 1.0f);
@@ -344,7 +345,7 @@ using namespace yas;
 }
 
 - (void)test_new_line_by_lines {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {10.0f, 0.0f}}, .preferred_cell_count = 5});
+    auto layout = collection_layout::make_shared({.frame = {.size = {10.0f, 0.0f}}, .preferred_cell_count = 5});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
@@ -379,11 +380,11 @@ using namespace yas;
 }
 
 - (void)test_new_line_by_frame_and_lines {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 5});
+    auto layout = collection_layout::make_shared({.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 5});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
-    ui::size const cell_size = {1.0f, 1.0f};
+    size const cell_size = {1.0f, 1.0f};
 
     layout->set_lines({{.cell_sizes = {cell_size, cell_size, cell_size}, .new_line_min_offset = 0.0f},
                        {.cell_sizes = {cell_size, cell_size}, .new_line_min_offset = 0.0f}});
@@ -417,10 +418,10 @@ using namespace yas;
 }
 
 - (void)test_set_cell_sizes_zero_width {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {3.0f, 0.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {0.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .right = 1.0f}});
+    auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 0.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {0.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .right = 1.0f}});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
@@ -443,7 +444,7 @@ using namespace yas;
 }
 
 - (void)test_set_row_spacing {
-    auto layout = ui::collection_layout::make_shared(
+    auto layout = collection_layout::make_shared(
         {.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3, .default_cell_size = {1.0f, 1.0f}});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
@@ -470,7 +471,7 @@ using namespace yas;
 }
 
 - (void)test_set_col_spacing {
-    auto layout = ui::collection_layout::make_shared(
+    auto layout = collection_layout::make_shared(
         {.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 3, .default_cell_size = {1.0f, 1.0f}});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
@@ -497,22 +498,22 @@ using namespace yas;
 }
 
 - (void)test_set_aligmnent {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    layout->set_alignment(ui::layout_alignment::mid);
+    layout->set_alignment(layout_alignment::mid);
 
-    XCTAssertEqual(layout->alignment(), ui::layout_alignment::mid);
+    XCTAssertEqual(layout->alignment(), layout_alignment::mid);
 
-    layout->set_alignment(ui::layout_alignment::max);
+    layout->set_alignment(layout_alignment::max);
 
-    XCTAssertEqual(layout->alignment(), ui::layout_alignment::max);
+    XCTAssertEqual(layout->alignment(), layout_alignment::max);
 }
 
 - (void)test_alignment_mid {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {5.0f, 0.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .alignment = ui::layout_alignment::mid});
+    auto layout = collection_layout::make_shared({.frame = {.size = {5.0f, 0.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .alignment = layout_alignment::mid});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
@@ -525,10 +526,10 @@ using namespace yas;
 }
 
 - (void)test_alignment_max {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {5.0f, 0.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .alignment = ui::layout_alignment::max});
+    auto layout = collection_layout::make_shared({.frame = {.size = {5.0f, 0.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .alignment = layout_alignment::max});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
@@ -541,169 +542,169 @@ using namespace yas;
 }
 
 - (void)test_set_direction {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    layout->set_direction(ui::layout_direction::horizontal);
+    layout->set_direction(layout_direction::horizontal);
 
-    XCTAssertEqual(layout->direction(), ui::layout_direction::horizontal);
+    XCTAssertEqual(layout->direction(), layout_direction::horizontal);
 }
 
 - (void)test_set_row_order {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    layout->set_row_order(ui::layout_order::descending);
+    layout->set_row_order(layout_order::descending);
 
-    XCTAssertEqual(layout->row_order(), ui::layout_order::descending);
+    XCTAssertEqual(layout->row_order(), layout_order::descending);
 }
 
 - (void)test_set_col_order {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    layout->set_col_order(ui::layout_order::descending);
+    layout->set_col_order(layout_order::descending);
 
-    XCTAssertEqual(layout->col_order(), ui::layout_order::descending);
+    XCTAssertEqual(layout->col_order(), layout_order::descending);
 }
 
 - (void)test_vertical_each_ascending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::vertical,
-                                                      .row_order = ui::layout_order::ascending,
-                                                      .col_order = ui::layout_order::ascending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::vertical,
+                                                  .row_order = layout_order::ascending,
+                                                  .col_order = layout_order::ascending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
 }
 
 - (void)test_vertical_row_descending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::vertical,
-                                                      .row_order = ui::layout_order::descending,
-                                                      .col_order = ui::layout_order::ascending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::vertical,
+                                                  .row_order = layout_order::descending,
+                                                  .col_order = layout_order::ascending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
 }
 
 - (void)test_vertical_col_descending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::vertical,
-                                                      .row_order = ui::layout_order::ascending,
-                                                      .col_order = ui::layout_order::descending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::vertical,
+                                                  .row_order = layout_order::ascending,
+                                                  .col_order = layout_order::descending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
 }
 
 - (void)test_vertical_each_descending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::vertical,
-                                                      .row_order = ui::layout_order::descending,
-                                                      .col_order = ui::layout_order::descending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {5.0f, 4.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::vertical,
+                                                  .row_order = layout_order::descending,
+                                                  .col_order = layout_order::descending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
 }
 
 - (void)test_horizontal_each_ascending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::horizontal,
-                                                      .row_order = ui::layout_order::ascending,
-                                                      .col_order = ui::layout_order::ascending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::horizontal,
+                                                  .row_order = layout_order::ascending,
+                                                  .col_order = layout_order::ascending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
 }
 
 - (void)test_horizontal_row_descending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::horizontal,
-                                                      .row_order = ui::layout_order::descending,
-                                                      .col_order = ui::layout_order::ascending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::horizontal,
+                                                  .row_order = layout_order::descending,
+                                                  .col_order = layout_order::ascending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
 }
 
 - (void)test_horizontal_col_descending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::horizontal,
-                                                      .row_order = ui::layout_order::ascending,
-                                                      .col_order = ui::layout_order::descending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::horizontal,
+                                                  .row_order = layout_order::ascending,
+                                                  .col_order = layout_order::descending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
     XCTAssertEqual(cell_guide_rects.size(), 3);
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
 }
 
 - (void)test_horizontal_each_descending_order {
-    auto layout = ui::collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
-                                                      .preferred_cell_count = 3,
-                                                      .default_cell_size = {2.0f, 1.0f},
-                                                      .borders = {.left = 1.0f, .bottom = 2.0f},
-                                                      .direction = ui::layout_direction::horizontal,
-                                                      .row_order = ui::layout_order::descending,
-                                                      .col_order = ui::layout_order::descending});
+    auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 6.0f}},
+                                                  .preferred_cell_count = 3,
+                                                  .default_cell_size = {2.0f, 1.0f},
+                                                  .borders = {.left = 1.0f, .bottom = 2.0f},
+                                                  .direction = layout_direction::horizontal,
+                                                  .row_order = layout_order::descending,
+                                                  .col_order = layout_order::descending});
 
     auto const &cell_guide_rects = layout->cell_guide_rects();
 
-    XCTAssertTrue(cell_guide_rects.at(0)->region() == (ui::region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(1)->region() == (ui::region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
-    XCTAssertTrue(cell_guide_rects.at(2)->region() == (ui::region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(0)->region() == (region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(1)->region() == (region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
+    XCTAssertTrue(cell_guide_rects.at(2)->region() == (region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
 }
 
 - (void)test_is_equal_line {
-    ui::collection_layout::line line1a{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 3.0f};
-    ui::collection_layout::line line1b{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 3.0f};
-    ui::collection_layout::line line2{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 4.0f};
-    ui::collection_layout::line line3{.cell_sizes = {{5.0f, 6.0f}}, .new_line_min_offset = 3.0f};
+    collection_layout::line line1a{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 3.0f};
+    collection_layout::line line1b{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 3.0f};
+    collection_layout::line line2{.cell_sizes = {{1.0f, 2.0f}}, .new_line_min_offset = 4.0f};
+    collection_layout::line line3{.cell_sizes = {{5.0f, 6.0f}}, .new_line_min_offset = 3.0f};
 
     XCTAssertTrue(line1a == line1a);
     XCTAssertTrue(line1a == line1b);
@@ -717,7 +718,7 @@ using namespace yas;
 }
 
 - (void)test_observe_preferred_cell_count {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
     std::optional<std::size_t> notified_count;
 
@@ -733,24 +734,24 @@ using namespace yas;
 }
 
 - (void)test_observe_alignment {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    std::optional<ui::layout_alignment> notified;
+    std::optional<layout_alignment> notified;
 
     auto observer = layout->observe_alignment([&notified](auto const &aligment) { notified = aligment; }).end();
 
     XCTAssertFalse(notified);
 
-    layout->set_alignment(ui::layout_alignment::max);
+    layout->set_alignment(layout_alignment::max);
 
     XCTAssertTrue(notified);
-    XCTAssertEqual(*notified, ui::layout_alignment::max);
+    XCTAssertEqual(*notified, layout_alignment::max);
 }
 
 - (void)test_observe_lines {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    std::optional<std::vector<ui::collection_layout::line>> notified;
+    std::optional<std::vector<collection_layout::line>> notified;
 
     auto observer = layout->observe_lines([&notified](auto const &lines) { notified = lines; }).end();
 
@@ -763,9 +764,9 @@ using namespace yas;
 }
 
 - (void)test_observe_default_cell_size {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    std::optional<ui::size> notified;
+    std::optional<size> notified;
 
     auto observer = layout->observe_default_cell_size([&notified](auto const &size) { notified = size; }).end();
 
@@ -779,52 +780,52 @@ using namespace yas;
 }
 
 - (void)test_observe_row_order {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    std::optional<ui::layout_order> notified;
+    std::optional<layout_order> notified;
 
     auto observer = layout->observe_row_order([&notified](auto const &order) { notified = order; }).end();
 
     XCTAssertFalse(notified);
 
-    layout->set_row_order(ui::layout_order::descending);
+    layout->set_row_order(layout_order::descending);
 
     XCTAssertTrue(notified);
-    XCTAssertEqual(*notified, ui::layout_order::descending);
+    XCTAssertEqual(*notified, layout_order::descending);
 }
 
 - (void)test_observe_col_order {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    std::optional<ui::layout_order> notified;
+    std::optional<layout_order> notified;
 
     auto observer = layout->observe_col_order([&notified](auto const &order) { notified = order; }).end();
 
     XCTAssertFalse(notified);
 
-    layout->set_col_order(ui::layout_order::descending);
+    layout->set_col_order(layout_order::descending);
 
     XCTAssertTrue(notified);
-    XCTAssertEqual(*notified, ui::layout_order::descending);
+    XCTAssertEqual(*notified, layout_order::descending);
 }
 
 - (void)test_observe_direction {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
-    std::optional<ui::layout_direction> notified;
+    std::optional<layout_direction> notified;
 
     auto observer = layout->observe_direction([&notified](auto const &direction) { notified = direction; }).end();
 
     XCTAssertFalse(notified);
 
-    layout->set_direction(ui::layout_direction::horizontal);
+    layout->set_direction(layout_direction::horizontal);
 
     XCTAssertTrue(notified);
-    XCTAssertEqual(*notified, ui::layout_direction::horizontal);
+    XCTAssertEqual(*notified, layout_direction::horizontal);
 }
 
 - (void)test_observe_row_spacing {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
     std::optional<float> notified;
 
@@ -839,7 +840,7 @@ using namespace yas;
 }
 
 - (void)test_observe_col_spacing {
-    auto layout = ui::collection_layout::make_shared();
+    auto layout = collection_layout::make_shared();
 
     std::optional<float> notified;
 

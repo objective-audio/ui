@@ -6,7 +6,6 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_action_dependency.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
@@ -40,10 +39,10 @@ struct layout_guide final : action_target {
 struct layout_guide_point final {
     virtual ~layout_guide_point();
 
-    [[nodiscard]] ui::layout_guide_ptr &x();
-    [[nodiscard]] ui::layout_guide_ptr &y();
-    [[nodiscard]] ui::layout_guide_ptr const &x() const;
-    [[nodiscard]] ui::layout_guide_ptr const &y() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> &x();
+    [[nodiscard]] std::shared_ptr<layout_guide> &y();
+    [[nodiscard]] std::shared_ptr<layout_guide> const &x() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &y() const;
 
     void set_point(ui::point);
     [[nodiscard]] ui::point point() const;
@@ -57,8 +56,8 @@ struct layout_guide_point final {
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
 
    private:
-    layout_guide_ptr _x_guide;
-    layout_guide_ptr _y_guide;
+    std::shared_ptr<layout_guide> _x_guide;
+    std::shared_ptr<layout_guide> _y_guide;
 
     explicit layout_guide_point(ui::point &&);
 
@@ -71,11 +70,11 @@ struct layout_guide_point final {
 struct layout_guide_range {
     virtual ~layout_guide_range() final;
 
-    [[nodiscard]] layout_guide_ptr &min();
-    [[nodiscard]] layout_guide_ptr &max();
-    [[nodiscard]] layout_guide_ptr const &min() const;
-    [[nodiscard]] layout_guide_ptr const &max() const;
-    [[nodiscard]] layout_guide_ptr const &length() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> &min();
+    [[nodiscard]] std::shared_ptr<layout_guide> &max();
+    [[nodiscard]] std::shared_ptr<layout_guide> const &min() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &max() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &length() const;
 
     void set_range(ui::range const &);
     [[nodiscard]] ui::range range() const;
@@ -89,9 +88,9 @@ struct layout_guide_range {
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
 
    private:
-    layout_guide_ptr _min_guide;
-    layout_guide_ptr _max_guide;
-    layout_guide_ptr _length_guide;
+    std::shared_ptr<layout_guide> _min_guide;
+    std::shared_ptr<layout_guide> _max_guide;
+    std::shared_ptr<layout_guide> _length_guide;
     observing::cancellable_ptr _min_canceller;
     observing::cancellable_ptr _max_canceller;
 
@@ -111,21 +110,21 @@ struct layout_guide_rect final {
 
     virtual ~layout_guide_rect();
 
-    [[nodiscard]] layout_guide_range_ptr &horizontal_range();
-    [[nodiscard]] layout_guide_range_ptr &vertical_range();
-    [[nodiscard]] layout_guide_range_ptr const &horizontal_range() const;
-    [[nodiscard]] layout_guide_range_ptr const &vertical_range() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_range> &horizontal_range();
+    [[nodiscard]] std::shared_ptr<layout_guide_range> &vertical_range();
+    [[nodiscard]] std::shared_ptr<layout_guide_range> const &horizontal_range() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_range> const &vertical_range() const;
 
-    [[nodiscard]] layout_guide_ptr &left();
-    [[nodiscard]] layout_guide_ptr &right();
-    [[nodiscard]] layout_guide_ptr &bottom();
-    [[nodiscard]] layout_guide_ptr &top();
-    [[nodiscard]] layout_guide_ptr const &left() const;
-    [[nodiscard]] layout_guide_ptr const &right() const;
-    [[nodiscard]] layout_guide_ptr const &bottom() const;
-    [[nodiscard]] layout_guide_ptr const &top() const;
-    [[nodiscard]] layout_guide_ptr const &width() const;
-    [[nodiscard]] layout_guide_ptr const &height() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> &left();
+    [[nodiscard]] std::shared_ptr<layout_guide> &right();
+    [[nodiscard]] std::shared_ptr<layout_guide> &bottom();
+    [[nodiscard]] std::shared_ptr<layout_guide> &top();
+    [[nodiscard]] std::shared_ptr<layout_guide> const &left() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &right() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &bottom() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &top() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &width() const;
+    [[nodiscard]] std::shared_ptr<layout_guide> const &height() const;
 
     void set_horizontal_range(ui::range);
     void set_vertical_range(ui::range);
@@ -144,8 +143,8 @@ struct layout_guide_rect final {
     [[nodiscard]] static std::shared_ptr<layout_guide_rect> make_shared(ui::region);
 
    private:
-    layout_guide_range_ptr _vertical_range;
-    layout_guide_range_ptr _horizontal_range;
+    std::shared_ptr<layout_guide_range> _vertical_range;
+    std::shared_ptr<layout_guide_range> _horizontal_range;
 
     explicit layout_guide_rect(ranges_args);
     explicit layout_guide_rect(ui::region);
@@ -157,23 +156,23 @@ struct layout_guide_rect final {
 };
 
 struct layout_guide_pair {
-    ui::layout_guide_ptr source;
-    ui::layout_guide_ptr destination;
+    std::shared_ptr<layout_guide> source;
+    std::shared_ptr<layout_guide> destination;
 };
 
 struct layout_guide_point_pair {
-    ui::layout_guide_point_ptr source;
-    ui::layout_guide_point_ptr destination;
+    std::shared_ptr<layout_guide_point> source;
+    std::shared_ptr<layout_guide_point> destination;
 };
 
 struct layout_guide_range_pair {
-    ui::layout_guide_range_ptr source;
-    ui::layout_guide_range_ptr destination;
+    std::shared_ptr<layout_guide_range> source;
+    std::shared_ptr<layout_guide_range> destination;
 };
 
 struct layout_guide_rect_pair {
-    ui::layout_guide_rect_ptr source;
-    ui::layout_guide_rect_ptr destination;
+    std::shared_ptr<layout_guide_rect> source;
+    std::shared_ptr<layout_guide_rect> destination;
 };
 
 std::vector<ui::layout_guide_pair> make_layout_guide_pairs(layout_guide_point_pair);

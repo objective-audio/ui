@@ -42,12 +42,12 @@ font_atlas::font_atlas(font_atlas_args &&args)
       _descent(CTFontGetDescent(this->_impl->_ct_font_ref.object())),
       _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
       _words(std::move(args.words)),
-      _texture(observing::value::holder<texture_ptr>::make_shared(args.texture)) {
-    this->_texture_changed_fetcher =
-        observing::fetcher<texture_ptr>::make_shared([this]() { return std::optional<texture_ptr>{this->texture()}; });
+      _texture(observing::value::holder<std::shared_ptr<ui::texture>>::make_shared(args.texture)) {
+    this->_texture_changed_fetcher = observing::fetcher<std::shared_ptr<ui::texture>>::make_shared(
+        [this]() { return std::optional<std::shared_ptr<ui::texture>>{this->texture()}; });
 
     this->_texture
-        ->observe([this](texture_ptr const &texture) {
+        ->observe([this](std::shared_ptr<ui::texture> const &texture) {
             this->_update_word_infos();
 
             if (texture) {
@@ -92,7 +92,7 @@ std::string const &font_atlas::words() const {
     return this->_words;
 }
 
-texture_ptr const &font_atlas::texture() const {
+std::shared_ptr<texture> const &font_atlas::texture() const {
     return this->_texture->value();
 }
 
@@ -132,17 +132,18 @@ size font_atlas::advance(std::string const &word) const {
     return {.width = static_cast<float>(advances[0].width), .height = static_cast<float>(advances[0].height)};
 }
 
-void font_atlas::set_texture(texture_ptr const &texture) {
+void font_atlas::set_texture(std::shared_ptr<ui::texture> const &texture) {
     if (this->texture() != texture) {
         this->_texture->set_value(texture);
     }
 }
 
-observing::syncable font_atlas::observe_texture(observing::caller<texture_ptr>::handler_f &&handler) {
+observing::syncable font_atlas::observe_texture(observing::caller<std::shared_ptr<ui::texture>>::handler_f &&handler) {
     return this->_texture_changed_fetcher->observe(std::move(handler));
 }
 
-observing::endable font_atlas::observe_texture_updated(observing::caller<texture_ptr>::handler_f &&handler) {
+observing::endable font_atlas::observe_texture_updated(
+    observing::caller<std::shared_ptr<ui::texture>>::handler_f &&handler) {
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 
@@ -217,6 +218,6 @@ void font_atlas::_update_word_infos() {
     }
 }
 
-font_atlas_ptr font_atlas::make_shared(font_atlas_args &&args) {
+std::shared_ptr<font_atlas> font_atlas::make_shared(font_atlas_args &&args) {
     return std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
 }

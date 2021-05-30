@@ -10,6 +10,7 @@
 #import <sstream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_texture_tests : XCTestCase
 
@@ -32,12 +33,12 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {2, 1}, .scale_factor = 2.0});
+    auto texture = texture::make_shared({.point_size = {2, 1}, .scale_factor = 2.0});
 
-    XCTAssertTrue(texture->point_size() == (ui::uint_size{2, 1}));
-    XCTAssertTrue(texture->actual_size() == (ui::uint_size{4, 2}));
+    XCTAssertTrue(texture->point_size() == (uint_size{2, 1}));
+    XCTAssertTrue(texture->actual_size() == (uint_size{4, 2}));
     XCTAssertEqual(texture->scale_factor(), 2.0);
     XCTAssertEqual(texture->depth(), 1);
     XCTAssertEqual(texture->has_alpha(), false);
@@ -52,10 +53,10 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
+    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    metal_object::cast(texture)->metal_setup(metal_system);
 
     auto draw_handler = [](CGContextRef const context) {
         auto const width = CGBitmapContextGetWidth(context);
@@ -93,9 +94,9 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
     bool called = false;
 
@@ -105,7 +106,7 @@ using namespace yas;
 
     texture->remove_draw_handler(element);
 
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
+    metal_object::cast(texture)->metal_setup(metal_system);
 
     XCTAssertFalse(called);
 }
@@ -117,15 +118,15 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
     auto draw_handler = [](CGContextRef const) {};
 
-    ui::texture_element_ptr const &element = texture->add_draw_handler({1, 1}, draw_handler);
+    std::shared_ptr<texture_element> const &element = texture->add_draw_handler({1, 1}, draw_handler);
 
-    XCTAssertTrue(element->tex_coords() == ui::uint_region::zero());
+    XCTAssertTrue(element->tex_coords() == uint_region::zero());
 
     bool called = false;
 
@@ -133,18 +134,18 @@ using namespace yas;
 
     XCTAssertFalse(called);
 
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
+    metal_object::cast(texture)->metal_setup(metal_system);
 
     XCTAssertTrue(called);
-    XCTAssertFalse(element->tex_coords() == ui::uint_region::zero());
+    XCTAssertFalse(element->tex_coords() == uint_region::zero());
 
     called = false;
 
     texture->set_scale_factor(2.0);
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
+    metal_object::cast(texture)->metal_setup(metal_system);
 
     XCTAssertTrue(called);
-    XCTAssertFalse(element->tex_coords() == ui::uint_region::zero());
+    XCTAssertFalse(element->tex_coords() == uint_region::zero());
 }
 
 - (void)test_is_equal {
@@ -154,11 +155,11 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture1a = ui::texture::make_shared(ui::texture_args{});
+    auto texture1a = texture::make_shared(texture_args{});
     auto texture1b = texture1a;
-    auto texture2 = ui::texture::make_shared(ui::texture_args{});
+    auto texture2 = texture::make_shared(texture_args{});
 
     XCTAssertTrue(texture1a == texture1a);
     XCTAssertTrue(texture1a == texture1b);
@@ -172,11 +173,11 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture1a = ui::texture::make_shared(ui::texture_args{});
+    auto texture1a = texture::make_shared(texture_args{});
     auto texture1b = texture1a;
-    auto texture2 = ui::texture::make_shared(ui::texture_args{});
+    auto texture2 = texture::make_shared(texture_args{});
 
     XCTAssertFalse(texture1a != texture1a);
     XCTAssertFalse(texture1a != texture1b);
@@ -190,21 +191,21 @@ using namespace yas;
         return;
     }
 
-    auto metal_system = ui::metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object());
 
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
     std::size_t received;
 
     auto canceller = texture->observe_metal_texture_changed([&received](auto const &) { received += 1; });
 
-    ui::metal_object::cast(texture)->metal_setup(metal_system);
+    metal_object::cast(texture)->metal_setup(metal_system);
 
     XCTAssertEqual(received, 1);
 }
 
 - (void)test_observe_size_updated {
-    auto texture = ui::texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
     std::size_t received;
 

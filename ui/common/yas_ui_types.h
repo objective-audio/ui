@@ -13,6 +13,68 @@
 #include <string>
 
 namespace yas::ui {
+class action_target;
+class action;
+class parallel_action;
+class continuous_action;
+class batch;
+class blur;
+class button;
+class collection_layout;
+class shape;
+class collider;
+class detector;
+class effect;
+class event;
+class event_manager;
+class font_atlas;
+class image;
+class layout_animator;
+class layout_guide;
+class layout_guide_point;
+class layout_guide_range;
+class layout_guide_rect;
+class mesh_data;
+class dynamic_mesh_data;
+class mesh;
+class metal_encode_info;
+class metal_render_encoder;
+class metal_system;
+class metal_texture;
+class node;
+class rect_plane_data;
+class rect_plane;
+class render_target;
+class renderer;
+class strings;
+class texture_element;
+class texture;
+class color;
+class background;
+class angle;
+
+class renderable_render_target;
+class updatable_action;
+class renderable_batch;
+class renderable_collider;
+class renderer_detector_interface;
+class renderable_effect;
+class encodable_effect;
+class event_inputtable;
+class manageable_event;
+class renderable_mesh;
+class renderable_mesh_data;
+class metal_object;
+class renderable_metal_system;
+class makable_metal_system;
+class testable_metal_system;
+class renderable_node;
+class render_encodable;
+class render_effectable;
+class render_stackable;
+class view_renderer_interface;
+class renderer_background_interface;
+
 enum class system_type {
     none,
     metal,

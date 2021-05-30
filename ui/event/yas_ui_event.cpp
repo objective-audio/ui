@@ -157,19 +157,19 @@ std::shared_ptr<event_impl_base> event::_impl() const {
     }
 }
 
-event_ptr event::make_shared(cursor const &cursor) {
+std::shared_ptr<event> event::make_shared(cursor const &cursor) {
     return std::shared_ptr<event>(new event{cursor});
 }
 
-event_ptr event::make_shared(touch const &touch) {
+std::shared_ptr<event> event::make_shared(touch const &touch) {
     return std::shared_ptr<event>(new event{touch});
 }
 
-event_ptr event::make_shared(key const &key) {
+std::shared_ptr<event> event::make_shared(key const &key) {
     return std::shared_ptr<event>(new event{key});
 }
 
-event_ptr event::make_shared(modifier const &modifier) {
+std::shared_ptr<event> event::make_shared(modifier const &modifier) {
     return std::shared_ptr<event>(new event{modifier});
 }
 
@@ -180,7 +180,7 @@ event_manager::event_manager() {
 
 event_manager::~event_manager() = default;
 
-observing::endable event_manager::observe(observing::caller<event_ptr>::handler_f &&handler) {
+observing::endable event_manager::observe(observing::caller<std::shared_ptr<event>>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
@@ -217,7 +217,7 @@ void event_manager::input_touch_event(event_phase const phase, touch_event const
         if (this->_touch_events.count(identifer) > 0) {
             return;
         }
-        event_ptr event = event::make_shared(touch_tag);
+        std::shared_ptr<event> event = event::make_shared(touch_tag);
         this->_touch_events.emplace(std::make_pair(identifer, std::move(event)));
     }
 
@@ -241,7 +241,7 @@ void event_manager::input_key_event(event_phase const phase, key_event const &va
         if (this->_key_events.count(key_code) > 0) {
             return;
         }
-        event_ptr event = event::make_shared(key_tag);
+        std::shared_ptr<event> event = event::make_shared(key_tag);
         this->_key_events.emplace(std::make_pair(key_code, std::move(event)));
     }
 
@@ -266,7 +266,7 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
     for (auto const &flag : all_flags) {
         if (flags & flag) {
             if (this->_modifier_events.count(flag) == 0) {
-                event_ptr const event = event::make_shared(modifier_tag);
+                std::shared_ptr<event> const event = event::make_shared(modifier_tag);
                 event->set<modifier>(modifier_event{flag, timestamp});
                 event->set_phase(event_phase::began);
                 this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
@@ -286,7 +286,7 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
     }
 }
 
-event_manager_ptr event_manager::make_shared() {
+std::shared_ptr<event_manager> event_manager::make_shared() {
     return std::shared_ptr<event_manager>(new event_manager{});
 }
 

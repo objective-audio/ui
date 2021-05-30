@@ -14,7 +14,8 @@ using namespace yas::ui;
 
 #pragma mark - rect_plane_data
 
-rect_plane_data::rect_plane_data(dynamic_mesh_data_ptr mesh_data) : _dynamic_mesh_data(std::move(mesh_data)) {
+rect_plane_data::rect_plane_data(std::shared_ptr<ui::dynamic_mesh_data> &&mesh_data)
+    : _dynamic_mesh_data(std::move(mesh_data)) {
 }
 
 rect_plane_data::~rect_plane_data() = default;
@@ -137,12 +138,13 @@ void rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::size_
     });
 }
 
-void rect_plane_data::observe_rect_tex_coords(texture_element_ptr const &element, std::size_t const rect_idx) {
+void rect_plane_data::observe_rect_tex_coords(std::shared_ptr<texture_element> const &element,
+                                              std::size_t const rect_idx) {
     this->_observe_rect_tex_coords(*this, element, rect_idx, nullptr);
 }
 
-void rect_plane_data::observe_rect_tex_coords(texture_element_ptr const &element, std::size_t const rect_idx,
-                                              tex_coords_transform_f transformer) {
+void rect_plane_data::observe_rect_tex_coords(std::shared_ptr<texture_element> const &element,
+                                              std::size_t const rect_idx, tex_coords_transform_f transformer) {
     this->_observe_rect_tex_coords(*this, element, rect_idx, std::move(transformer));
 }
 
@@ -150,11 +152,11 @@ void rect_plane_data::clear_observers() {
     this->_element_cancellers.clear();
 }
 
-dynamic_mesh_data_ptr const &rect_plane_data::dynamic_mesh_data() {
+std::shared_ptr<dynamic_mesh_data> const &rect_plane_data::dynamic_mesh_data() {
     return this->_dynamic_mesh_data;
 }
 
-void rect_plane_data::_observe_rect_tex_coords(rect_plane_data &data, texture_element_ptr const &element,
+void rect_plane_data::_observe_rect_tex_coords(rect_plane_data &data, std::shared_ptr<texture_element> const &element,
                                                std::size_t const rect_idx, tex_coords_transform_f &&transformer) {
     this->_element_cancellers.emplace_back(
         element
@@ -165,15 +167,16 @@ void rect_plane_data::_observe_rect_tex_coords(rect_plane_data &data, texture_el
             .sync());
 }
 
-rect_plane_data_ptr rect_plane_data::make_shared(dynamic_mesh_data_ptr mesh_data) {
+std::shared_ptr<rect_plane_data> rect_plane_data::make_shared(std::shared_ptr<ui::dynamic_mesh_data> &&mesh_data) {
     return std::shared_ptr<rect_plane_data>(new rect_plane_data{std::move(mesh_data)});
 }
 
-rect_plane_data_ptr rect_plane_data::make_shared(std::size_t const max_rect_count) {
+std::shared_ptr<rect_plane_data> rect_plane_data::make_shared(std::size_t const max_rect_count) {
     return make_shared(max_rect_count, max_rect_count);
 }
 
-rect_plane_data_ptr rect_plane_data::make_shared(std::size_t const rect_count, std::size_t const index_count) {
+std::shared_ptr<rect_plane_data> rect_plane_data::make_shared(std::size_t const rect_count,
+                                                              std::size_t const index_count) {
     auto shared =
         make_shared(dynamic_mesh_data::make_shared({.vertex_count = rect_count * 4, .index_count = index_count * 6}));
 
@@ -195,28 +198,28 @@ rect_plane_data_ptr rect_plane_data::make_shared(std::size_t const rect_count, s
 
 #pragma mark - rect_plane
 
-rect_plane::rect_plane(rect_plane_data_ptr const &plane_data) : _rect_plane_data(plane_data) {
+rect_plane::rect_plane(std::shared_ptr<rect_plane_data> &&plane_data) : _rect_plane_data(std::move(plane_data)) {
     auto mesh = mesh::make_shared();
     mesh->set_mesh_data(this->data()->dynamic_mesh_data());
     this->node()->set_mesh(std::move(mesh));
 }
 
-node_ptr const &rect_plane::node() {
+std::shared_ptr<node> const &rect_plane::node() {
     return this->_node;
 }
 
-rect_plane_data_ptr const &rect_plane::data() {
+std::shared_ptr<rect_plane_data> const &rect_plane::data() {
     return this->_rect_plane_data;
 }
 
-rect_plane_ptr rect_plane::make_shared(rect_plane_data_ptr const &rect_plane_data) {
-    return std::shared_ptr<rect_plane>(new rect_plane{rect_plane_data});
+std::shared_ptr<rect_plane> rect_plane::make_shared(std::shared_ptr<rect_plane_data> &&rect_plane_data) {
+    return std::shared_ptr<rect_plane>(new rect_plane{std::move(rect_plane_data)});
 }
 
-rect_plane_ptr rect_plane::make_shared(std::size_t const rect_count) {
+std::shared_ptr<rect_plane> rect_plane::make_shared(std::size_t const rect_count) {
     return make_shared(rect_count, rect_count);
 }
 
-rect_plane_ptr rect_plane::make_shared(std::size_t const rect_count, std::size_t const index_count) {
+std::shared_ptr<rect_plane> rect_plane::make_shared(std::size_t const rect_count, std::size_t const index_count) {
     return make_shared(rect_plane_data::make_shared(rect_count, index_count));
 }

@@ -8,6 +8,7 @@
 #import <iostream>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_metal_system_tests : XCTestCase
 
@@ -30,11 +31,11 @@ using namespace yas;
         return;
     }
 
-    auto system = ui::metal_system::make_shared(device.object());
+    auto system = metal_system::make_shared(device.object());
 
     XCTAssertTrue(system);
 
-    auto const testable = ui::testable_metal_system::cast(system);
+    auto const testable = testable_metal_system::cast(system);
 
     XCTAssertNotNil(testable->mtlDevice());
     XCTAssertEqual(testable->sample_count(), 4);
@@ -47,11 +48,11 @@ using namespace yas;
         return;
     }
 
-    auto system = ui::metal_system::make_shared(device.object(), 1);
+    auto system = metal_system::make_shared(device.object(), 1);
 
     XCTAssertTrue(system);
 
-    auto const testable = ui::testable_metal_system::cast(system);
+    auto const testable = testable_metal_system::cast(system);
 
     XCTAssertNotNil(testable->mtlDevice());
     XCTAssertEqual(testable->sample_count(), 1);

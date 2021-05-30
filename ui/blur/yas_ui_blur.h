@@ -6,20 +6,19 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_effect.h>
-#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 struct blur {
     void set_sigma(double const);
     [[nodiscard]] double sigma() const;
 
-    [[nodiscard]] ui::effect_ptr const &effect() const;
+    [[nodiscard]] std::shared_ptr<effect> const &effect() const;
 
-    [[nodiscard]] static blur_ptr make_shared();
+    [[nodiscard]] static std::shared_ptr<blur> make_shared();
 
    private:
     double _sigma = 0.0;
-    ui::effect_ptr _effect;
+    std::shared_ptr<ui::effect> _effect;
 
     blur();
 

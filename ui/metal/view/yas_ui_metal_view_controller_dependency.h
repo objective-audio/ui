@@ -5,7 +5,7 @@
 #pragma once
 
 #include <ui/yas_ui_objc.h>
-#include <ui/yas_ui_ptr.h>
+
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {

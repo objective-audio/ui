@@ -6,8 +6,8 @@
 
 #include <Metal/Metal.h>
 #include <simd/simd.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_render_target_types.h>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 enum class mesh_update_reason : std::size_t {
@@ -55,15 +55,16 @@ using renderer_updates_t = flagset<renderer_update_reason>;
 struct renderable_render_target {
     virtual ~renderable_render_target() = default;
 
-    [[nodiscard]] virtual ui::mesh_ptr const &mesh() const = 0;
-    [[nodiscard]] virtual ui::effect_ptr const &effect() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<mesh> const &mesh() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<effect> const &effect() const = 0;
     [[nodiscard]] virtual render_target_updates_t const &updates() const = 0;
     virtual void clear_updates() = 0;
     [[nodiscard]] virtual MTLRenderPassDescriptor *renderPassDescriptor() const = 0;
     [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
-    [[nodiscard]] virtual bool push_encode_info(ui::render_stackable_ptr const &) = 0;
+    [[nodiscard]] virtual bool push_encode_info(std::shared_ptr<render_stackable> const &) = 0;
 
-    static renderable_render_target_ptr cast(renderable_render_target_ptr const &render_target) {
+    static std::shared_ptr<renderable_render_target> cast(
+        std::shared_ptr<renderable_render_target> const &render_target) {
         return render_target;
     }
 };
@@ -102,14 +103,14 @@ struct tree_updates {
 struct renderable_node {
     virtual ~renderable_node() = default;
 
-    [[nodiscard]] virtual ui::renderer_ptr renderer() const = 0;
-    virtual void set_renderer(ui::renderer_ptr const &) = 0;
+    [[nodiscard]] virtual std::shared_ptr<renderer> renderer() const = 0;
+    virtual void set_renderer(std::shared_ptr<ui::renderer> const &) = 0;
     virtual void fetch_updates(ui::tree_updates &) = 0;
     virtual void build_render_info(ui::render_info &) = 0;
     [[nodiscard]] virtual bool is_rendering_color_exists() = 0;
     virtual void clear_updates() = 0;
 
-    [[nodiscard]] static renderable_node_ptr cast(renderable_node_ptr const &node) {
+    [[nodiscard]] static std::shared_ptr<renderable_node> cast(std::shared_ptr<renderable_node> const &node) {
         return node;
     }
 };
@@ -144,12 +145,12 @@ enum class batch_building_type {
 struct renderable_batch {
     virtual ~renderable_batch() = default;
 
-    [[nodiscard]] virtual std::vector<ui::mesh_ptr> const &meshes() = 0;
+    [[nodiscard]] virtual std::vector<std::shared_ptr<mesh>> const &meshes() = 0;
     virtual void begin_render_meshes_building(batch_building_type const) = 0;
     virtual void commit_render_meshes_building() = 0;
     virtual void clear_render_meshes() = 0;
 
-    [[nodiscard]] static renderable_batch_ptr cast(renderable_batch_ptr const &batch) {
+    [[nodiscard]] static std::shared_ptr<renderable_batch> cast(std::shared_ptr<renderable_batch> const &batch) {
         return batch;
     }
 };
@@ -160,7 +161,8 @@ struct renderable_collider {
     [[nodiscard]] virtual simd::float4x4 const &matrix() const = 0;
     virtual void set_matrix(simd::float4x4 const &) = 0;
 
-    [[nodiscard]] static renderable_collider_ptr cast(renderable_collider_ptr const &renderable) {
+    [[nodiscard]] static std::shared_ptr<renderable_collider> cast(
+        std::shared_ptr<renderable_collider> const &renderable) {
         return renderable;
     }
 };
@@ -170,7 +172,7 @@ struct renderer_detector_interface {
 
     [[nodiscard]] virtual bool is_updating() = 0;
     virtual void begin_update() = 0;
-    virtual void push_front_collider(ui::collider_ptr const &) = 0;
+    virtual void push_front_collider(std::shared_ptr<collider> const &) = 0;
     virtual void end_update() = 0;
 
     [[nodiscard]] static std::shared_ptr<renderer_detector_interface> cast(
@@ -191,7 +193,8 @@ struct renderable_mesh_data {
     virtual void update_render_buffer() = 0;
     virtual void clear_updates() = 0;
 
-    [[nodiscard]] static renderable_mesh_data_ptr cast(renderable_mesh_data_ptr const &mesh_data) {
+    [[nodiscard]] static std::shared_ptr<renderable_mesh_data> cast(
+        std::shared_ptr<renderable_mesh_data> const &mesh_data) {
         return mesh_data;
     }
 };
@@ -211,7 +214,7 @@ struct renderable_mesh {
     [[nodiscard]] virtual bool is_rendering_color_exists() = 0;
     virtual void clear_updates() = 0;
 
-    [[nodiscard]] static renderable_mesh_ptr cast(renderable_mesh_ptr const &mesh) {
+    [[nodiscard]] static std::shared_ptr<renderable_mesh> cast(std::shared_ptr<renderable_mesh> const &mesh) {
         return mesh;
     }
 };
@@ -219,11 +222,11 @@ struct renderable_mesh {
 struct renderable_effect {
     virtual ~renderable_effect() = default;
 
-    virtual void set_textures(ui::texture_ptr const &src, ui::texture_ptr const &dst) = 0;
+    virtual void set_textures(std::shared_ptr<texture> const &src, std::shared_ptr<texture> const &dst) = 0;
     [[nodiscard]] virtual ui::effect_updates_t &updates() = 0;
     virtual void clear_updates() = 0;
 
-    [[nodiscard]] static renderable_effect_ptr cast(renderable_effect_ptr const &effect) {
+    [[nodiscard]] static std::shared_ptr<renderable_effect> cast(std::shared_ptr<renderable_effect> const &effect) {
         return effect;
     }
 };

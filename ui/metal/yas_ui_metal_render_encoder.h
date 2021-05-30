@@ -5,7 +5,6 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <ui/yas_ui_ptr.h>
 #include <ui/yas_ui_render_info_dependency.h>
 
 #include <deque>
@@ -20,16 +19,16 @@ struct metal_render_encoder final : render_encodable, render_effectable, render_
 
     virtual ~metal_render_encoder();
 
-    [[nodiscard]] std::deque<ui::metal_encode_info_ptr> const &all_encode_infos();
+    [[nodiscard]] std::deque<std::shared_ptr<metal_encode_info>> const &all_encode_infos();
 
     encode_result_t encode(std::shared_ptr<ui::metal_system> const &metal_system,
                            id<MTLCommandBuffer> const commandBuffer);
 
-    [[nodiscard]] static metal_render_encoder_ptr make_shared();
+    [[nodiscard]] static std::shared_ptr<metal_render_encoder> make_shared();
 
    private:
-    std::deque<ui::metal_encode_info_ptr> _all_encode_infos;
-    std::deque<ui::metal_encode_info_ptr> _current_encode_infos;
+    std::deque<std::shared_ptr<metal_encode_info>> _all_encode_infos;
+    std::deque<std::shared_ptr<metal_encode_info>> _current_encode_infos;
 
     metal_render_encoder();
 
@@ -38,11 +37,11 @@ struct metal_render_encoder final : render_encodable, render_effectable, render_
     metal_render_encoder &operator=(metal_render_encoder const &) = delete;
     metal_render_encoder &operator=(metal_render_encoder &&) = delete;
 
-    void append_mesh(ui::mesh_ptr const &mesh) override;
-    void append_effect(ui::effect_ptr const &effect) override;
-    void push_encode_info(ui::metal_encode_info_ptr const &) override;
+    void append_mesh(std::shared_ptr<mesh> const &mesh) override;
+    void append_effect(std::shared_ptr<effect> const &effect) override;
+    void push_encode_info(std::shared_ptr<metal_encode_info> const &) override;
     void pop_encode_info() override;
-    ui::metal_encode_info_ptr const &current_encode_info() override;
+    std::shared_ptr<metal_encode_info> const &current_encode_info() override;
 
     uint32_t _mesh_count_in_all_encode_infos() const;
 };

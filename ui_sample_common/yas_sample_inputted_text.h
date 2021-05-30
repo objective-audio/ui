@@ -12,17 +12,17 @@ namespace yas::sample {
 struct inputted_text {
     void append_text(std::string text);
 
-    ui::strings_ptr const &strings();
+    std::shared_ptr<ui::strings> const &strings();
 
-    static inputted_text_ptr make_shared(ui::font_atlas_ptr const &);
+    static inputted_text_ptr make_shared(std::shared_ptr<ui::font_atlas> const &);
 
    private:
-    ui::strings_ptr _strings;
+    std::shared_ptr<ui::strings> _strings;
     observing::cancellable_ptr _renderer_canceller = nullptr;
-    ui::layout_guide_point_ptr _layout_guide_point = ui::layout_guide_point::make_shared();
+    std::shared_ptr<ui::layout_guide_point> _layout_guide_point = ui::layout_guide_point::make_shared();
 
-    explicit inputted_text(ui::font_atlas_ptr const &atlas);
+    explicit inputted_text(std::shared_ptr<ui::font_atlas> const &atlas);
 
-    void _update_text(ui::event_ptr const &event);
+    void _update_text(std::shared_ptr<ui::event> const &event);
 };
 }  // namespace yas::sample

@@ -5,34 +5,36 @@
 #include "yas_sample_inputted_text.h"
 
 using namespace yas;
+using namespace yas::ui;
 
-sample::inputted_text::inputted_text(ui::font_atlas_ptr const &font_atlas)
-    : _strings(ui::strings::make_shared(
-          {.font_atlas = font_atlas, .max_word_count = 512, .alignment = ui::layout_alignment::min})) {
+sample::inputted_text::inputted_text(std::shared_ptr<font_atlas> const &font_atlas)
+    : _strings(
+          strings::make_shared({.font_atlas = font_atlas, .max_word_count = 512, .alignment = layout_alignment::min})) {
     this->_strings->rect_plane()
         ->node()
-        ->observe_renderer([this, pool = observing::canceller_pool::make_shared()](ui::renderer_ptr const &renderer) {
-            pool->cancel();
+        ->observe_renderer(
+            [this, pool = observing::canceller_pool::make_shared()](std::shared_ptr<renderer> const &renderer) {
+                pool->cancel();
 
-            if (renderer) {
-                renderer->event_manager()
-                    ->observe([this](ui::event_ptr const &event) {
-                        if (event->type() == ui::event_type::key) {
-                            this->_update_text(event);
-                        }
-                    })
-                    .end()
-                    ->add_to(*pool);
+                if (renderer) {
+                    renderer->event_manager()
+                        ->observe([this](std::shared_ptr<event> const &event) {
+                            if (event->type() == event_type::key) {
+                                this->_update_text(event);
+                            }
+                        })
+                        .end()
+                        ->add_to(*pool);
 
-                renderer->safe_area_layout_guide_rect()
-                    ->observe([this](ui::region const &region) {
-                        this->_strings->frame_layout_guide_rect()->set_region(region +
-                                                                              ui::insets{4.0f, -4.0f, 4.0f, -4.0f});
-                    })
-                    .sync()
-                    ->add_to(*pool);
-            }
-        })
+                    renderer->safe_area_layout_guide_rect()
+                        ->observe([this](region const &region) {
+                            this->_strings->frame_layout_guide_rect()->set_region(region +
+                                                                                  insets{4.0f, -4.0f, 4.0f, -4.0f});
+                        })
+                        .sync()
+                        ->add_to(*pool);
+                }
+            })
         .end()
         ->set_to(this->_renderer_canceller);
 }
@@ -41,13 +43,13 @@ void sample::inputted_text::append_text(std::string text) {
     this->_strings->set_text(this->_strings->text() + text);
 }
 
-ui::strings_ptr const &sample::inputted_text::strings() {
+std::shared_ptr<strings> const &sample::inputted_text::strings() {
     return this->_strings;
 }
 
-void sample::inputted_text::_update_text(ui::event_ptr const &event) {
-    if (event->phase() == ui::event_phase::began || event->phase() == ui::event_phase::changed) {
-        auto const key_code = event->get<ui::key>().key_code();
+void sample::inputted_text::_update_text(std::shared_ptr<event> const &event) {
+    if (event->phase() == event_phase::began || event->phase() == event_phase::changed) {
+        auto const key_code = event->get<key>().key_code();
 
         switch (key_code) {
             case 51: {  // delete key
@@ -58,12 +60,12 @@ void sample::inputted_text::_update_text(ui::event_ptr const &event) {
             } break;
 
             default: {
-                append_text(event->get<ui::key>().characters());
+                append_text(event->get<key>().characters());
             } break;
         }
     }
 }
 
-sample::inputted_text_ptr sample::inputted_text::make_shared(ui::font_atlas_ptr const &atlas) {
+sample::inputted_text_ptr sample::inputted_text::make_shared(std::shared_ptr<font_atlas> const &atlas) {
     return std::shared_ptr<inputted_text>(new inputted_text{atlas});
 }

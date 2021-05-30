@@ -13,7 +13,7 @@ using namespace yas;
 
 namespace yas::ui {
 struct metal_view_cpp {
-    ui::view_renderer_interface_ptr renderable{nullptr};
+    std::shared_ptr<view_renderer_interface> renderable{nullptr};
 };
 }
 
@@ -106,7 +106,7 @@ struct metal_view_cpp {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderer:(yas::ui::view_renderer_interface_ptr const &)renderable {
+- (void)setRenderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
     self->_cpp.renderable = renderable;
 
     if (renderable) {
@@ -116,7 +116,7 @@ struct metal_view_cpp {
     }
 }
 
-- (yas::ui::view_renderer_interface_ptr const &)renderer {
+- (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
     return self->_cpp.renderable;
 }
 

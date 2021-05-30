@@ -6,6 +6,7 @@
 #import <ui/ui.h>
 
 using namespace yas;
+using namespace yas::ui;
 
 @interface yas_ui_transformer_tests : XCTestCase
 
@@ -22,7 +23,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_sine_transformer {
-    auto const &transformer = ui::ease_in_sine_transformer();
+    auto const &transformer = ease_in_sine_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.019f, 0.001f);
@@ -36,7 +37,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_sine_transformer {
-    auto const &transformer = ui::ease_out_sine_transformer();
+    auto const &transformer = ease_out_sine_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.195f, 0.001f);
@@ -50,7 +51,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_sine_transformer {
-    auto const &transformer = ui::ease_in_out_sine_transformer();
+    auto const &transformer = ease_in_out_sine_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.038f, 0.001f);
@@ -64,7 +65,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_quad_transformer {
-    auto const &transformer = ui::ease_in_quad_transformer();
+    auto const &transformer = ease_in_quad_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.0156f, 0.001f);
@@ -78,7 +79,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_quad_transformer {
-    auto const &transformer = ui::ease_out_quad_transformer();
+    auto const &transformer = ease_out_quad_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.234f, 0.001f);
@@ -92,7 +93,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_quad_transformer {
-    auto const &transformer = ui::ease_in_out_quad_transformer();
+    auto const &transformer = ease_in_out_quad_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.031f, 0.001f);
@@ -106,7 +107,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_cubic_transformer {
-    auto const &transformer = ui::ease_in_cubic_transformer();
+    auto const &transformer = ease_in_cubic_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.002f, 0.001f);
@@ -120,7 +121,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_cubic_transformer {
-    auto const &transformer = ui::ease_out_cubic_transformer();
+    auto const &transformer = ease_out_cubic_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.33f, 0.001f);
@@ -134,7 +135,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_cubic_transformer {
-    auto const &transformer = ui::ease_in_out_cubic_transformer();
+    auto const &transformer = ease_in_out_cubic_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.008f, 0.001f);
@@ -148,7 +149,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_quart_transformer {
-    auto const &transformer = ui::ease_in_quart_transformer();
+    auto const &transformer = ease_in_quart_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.000f, 0.001f);
@@ -162,7 +163,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_quart_transformer {
-    auto const &transformer = ui::ease_out_quart_transformer();
+    auto const &transformer = ease_out_quart_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.414f, 0.001f);
@@ -176,7 +177,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_quart_transformer {
-    auto const &transformer = ui::ease_in_out_quart_transformer();
+    auto const &transformer = ease_in_out_quart_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.002f, 0.001f);
@@ -190,7 +191,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_quint_transformer {
-    auto const &transformer = ui::ease_in_quint_transformer();
+    auto const &transformer = ease_in_quint_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.000f, 0.001f);
@@ -204,7 +205,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_quint_transformer {
-    auto const &transformer = ui::ease_out_quint_transformer();
+    auto const &transformer = ease_out_quint_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.487f, 0.001f);
@@ -217,7 +218,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_quint_transformer {
-    auto const &transformer = ui::ease_in_out_quint_transformer();
+    auto const &transformer = ease_in_out_quint_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.000f, 0.001f);
@@ -231,7 +232,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_expo_transformer {
-    auto const &transformer = ui::ease_in_expo_transformer();
+    auto const &transformer = ease_in_expo_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.002f, 0.001f);
@@ -245,7 +246,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_expo_transformer {
-    auto const &transformer = ui::ease_out_expo_transformer();
+    auto const &transformer = ease_out_expo_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.580f, 0.001f);
@@ -259,7 +260,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_expo_transformer {
-    auto const &transformer = ui::ease_in_out_expo_transformer();
+    auto const &transformer = ease_in_out_expo_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.003f, 0.001f);
@@ -273,7 +274,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_circ_transformer {
-    auto const &transformer = ui::ease_in_circ_transformer();
+    auto const &transformer = ease_in_circ_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.008f, 0.001f);
@@ -287,7 +288,7 @@ using namespace yas;
 }
 
 - (void)test_ease_out_circ_transformer {
-    auto const &transformer = ui::ease_out_circ_transformer();
+    auto const &transformer = ease_out_circ_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.484f, 0.001f);
@@ -301,7 +302,7 @@ using namespace yas;
 }
 
 - (void)test_ease_in_out_circ_transformer {
-    auto const &transformer = ui::ease_in_out_circ_transformer();
+    auto const &transformer = ease_in_out_circ_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqualWithAccuracy(transformer(0.125f), 0.016f, 0.001f);
@@ -315,7 +316,7 @@ using namespace yas;
 }
 
 - (void)test_ping_pong_transformer {
-    auto const &transformer = ui::ping_pong_transformer();
+    auto const &transformer = ping_pong_transformer();
 
     XCTAssertEqual(transformer(0.0f), 0.0f);
     XCTAssertEqual(transformer(0.25f), 0.5f);
@@ -325,7 +326,7 @@ using namespace yas;
 }
 
 - (void)test_reverse_transformer {
-    auto const &transformer = ui::reverse_transformer();
+    auto const &transformer = reverse_transformer();
 
     XCTAssertEqual(transformer(0.0f), 1.0f);
     XCTAssertEqual(transformer(0.25f), 0.75f);
@@ -335,7 +336,7 @@ using namespace yas;
 }
 
 - (void)test_connect {
-    auto transformer = ui::connect({ui::ping_pong_transformer(), ui::reverse_transformer()});
+    auto transformer = connect({ping_pong_transformer(), reverse_transformer()});
 
     XCTAssertEqual(transformer(0.0f), 1.0f);
     XCTAssertEqual(transformer(0.25f), 0.5f);

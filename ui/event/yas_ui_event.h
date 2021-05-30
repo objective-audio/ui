@@ -6,7 +6,6 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_event_protocol.h>
-#include <ui/yas_ui_ptr.h>
 
 namespace yas::ui {
 class event_impl_base;
@@ -33,10 +32,10 @@ struct event final {
     bool operator==(event const &) const;
     bool operator!=(event const &) const;
 
-    [[nodiscard]] static event_ptr make_shared(cursor const &);
-    [[nodiscard]] static event_ptr make_shared(touch const &);
-    [[nodiscard]] static event_ptr make_shared(key const &);
-    [[nodiscard]] static event_ptr make_shared(modifier const &);
+    [[nodiscard]] static std::shared_ptr<event> make_shared(cursor const &);
+    [[nodiscard]] static std::shared_ptr<event> make_shared(touch const &);
+    [[nodiscard]] static std::shared_ptr<event> make_shared(key const &);
+    [[nodiscard]] static std::shared_ptr<event> make_shared(modifier const &);
 
    private:
     std::shared_ptr<impl<cursor>> _cursor_impl = nullptr;
@@ -60,17 +59,18 @@ struct event final {
 struct event_manager : event_inputtable {
     virtual ~event_manager() final;
 
-    [[nodiscard]] observing::endable observe(observing::caller<event_ptr>::handler_f &&);
+    [[nodiscard]] observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&);
 
-    [[nodiscard]] static event_manager_ptr make_shared();
+    [[nodiscard]] static std::shared_ptr<event_manager> make_shared();
 
    private:
-    event_ptr _cursor_event{nullptr};
-    std::unordered_map<uintptr_t, event_ptr> _touch_events;
-    std::unordered_map<uint16_t, event_ptr> _key_events;
-    std::unordered_map<uint32_t, event_ptr> _modifier_events;
+    std::shared_ptr<event> _cursor_event{nullptr};
+    std::unordered_map<uintptr_t, std::shared_ptr<event>> _touch_events;
+    std::unordered_map<uint16_t, std::shared_ptr<event>> _key_events;
+    std::unordered_map<uint32_t, std::shared_ptr<event>> _modifier_events;
 
-    observing::notifier_ptr<event_ptr> const _notifier = observing::notifier<event_ptr>::make_shared();
+    observing::notifier_ptr<std::shared_ptr<event>> const _notifier =
+        observing::notifier<std::shared_ptr<event>>::make_shared();
 
     event_manager();
 

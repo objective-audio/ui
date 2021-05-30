@@ -58,6 +58,6 @@ void image::draw(draw_handler_f const &function) {
     CGContextRestoreGState(this->_bitmap_context);
 }
 
-image_ptr image::make_shared(image_args &&args) {
+std::shared_ptr<image> image::make_shared(image_args &&args) {
     return std::shared_ptr<image>(new image{std::move(args)});
 }

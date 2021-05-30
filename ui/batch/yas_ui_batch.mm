@@ -20,7 +20,7 @@ batch::batch() {
 
 batch::~batch() = default;
 
-std::vector<mesh_ptr> const &batch::meshes() {
+std::vector<std::shared_ptr<mesh>> const &batch::meshes() {
     return this->_render_meshes;
 }
 
@@ -57,7 +57,7 @@ void batch::commit_render_meshes_building() {
     }
 
     if (this->_building_type == batch_building_type::rebuild) {
-        std::vector<mesh_ptr> render_meshes;
+        std::vector<std::shared_ptr<mesh>> render_meshes;
         render_meshes.reserve(this->_render_mesh_infos.size());
         for (batch_render_mesh_info const &mesh_info : this->_render_mesh_infos) {
             auto const &render_mesh = mesh_info.render_mesh;
@@ -85,7 +85,7 @@ void batch::clear_render_meshes() {
     this->_render_mesh_infos.clear();
 }
 
-void batch::append_mesh(mesh_ptr const &mesh) {
+void batch::append_mesh(std::shared_ptr<mesh> const &mesh) {
     if (this->_building_type == batch_building_type::rebuild) {
         batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
 
@@ -105,7 +105,7 @@ setup_metal_result batch::metal_setup(std::shared_ptr<metal_system> const &syste
     return setup_metal_result{nullptr};
 }
 
-batch_render_mesh_info &batch::_find_or_make_mesh_info(texture_ptr const &texture) {
+batch_render_mesh_info &batch::_find_or_make_mesh_info(std::shared_ptr<texture> const &texture) {
     for (auto &info : this->_render_mesh_infos) {
         if (info.render_mesh->texture() == texture) {
             return info;
@@ -115,7 +115,7 @@ batch_render_mesh_info &batch::_find_or_make_mesh_info(texture_ptr const &textur
     return this->_add_mesh_info(texture);
 }
 
-batch_render_mesh_info &batch::_add_mesh_info(texture_ptr const &texture) {
+batch_render_mesh_info &batch::_add_mesh_info(std::shared_ptr<texture> const &texture) {
     this->_render_mesh_infos.emplace_back(batch_render_mesh_info{});
     auto &info = this->_render_mesh_infos.back();
     info.render_mesh->set_texture(texture);
@@ -123,6 +123,6 @@ batch_render_mesh_info &batch::_add_mesh_info(texture_ptr const &texture) {
     return info;
 }
 
-batch_ptr batch::make_shared() {
+std::shared_ptr<batch> batch::make_shared() {
     return std::shared_ptr<batch>(new batch{});
 }
