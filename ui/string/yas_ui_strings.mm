@@ -24,7 +24,7 @@ strings::strings(strings_args &&args)
       _font_atlas(observing::value::holder<std::shared_ptr<ui::font_atlas>>::make_shared(std::move(args.font_atlas))),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
-    this->_prepare_chains();
+    this->_prepare_observings();
     this->_update_layout();
 }
 
@@ -95,7 +95,7 @@ observing::syncable strings::observe_actual_frame(observing::caller<std::optiona
     return this->_collection_layout->observe_actual_frame(std::move(handler));
 }
 
-void strings::_prepare_chains() {
+void strings::_prepare_observings() {
     this->_font_atlas
         ->observe([this](std::shared_ptr<ui::font_atlas> const &font_atras) {
             this->_update_texture_observing();

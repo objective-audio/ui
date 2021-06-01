@@ -42,8 +42,8 @@ button::button(region const &region, std::size_t const state_count)
                         .end()
                         ->add_to(*pool);
 
-                    this->_make_leave_chains()->add_to(*pool);
-                    this->_make_collider_chains()->add_to(*pool);
+                    this->_make_leave_observings()->add_to(*pool);
+                    this->_make_collider_observings()->add_to(*pool);
                 }
             })
         .end()
@@ -138,7 +138,7 @@ void button::_update_rect_index() {
     this->_rect_plane->data()->set_rect_index(0, idx);
 }
 
-observing::cancellable_ptr button::_make_leave_chains() {
+observing::cancellable_ptr button::_make_leave_observings() {
     std::shared_ptr<node> const &node = this->_rect_plane->node();
 
     auto pool = observing::canceller_pool::make_shared();
@@ -187,7 +187,7 @@ observing::cancellable_ptr button::_make_leave_chains() {
     return pool;
 }
 
-observing::cancellable_ptr button::_make_collider_chains() {
+observing::cancellable_ptr button::_make_collider_observings() {
     auto &node = this->_rect_plane->node();
 
     auto pool = observing::canceller_pool::make_shared();
