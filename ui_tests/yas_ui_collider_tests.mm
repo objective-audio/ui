@@ -120,7 +120,7 @@ using namespace yas::ui;
     XCTAssertFalse(collider->hit_test({.v = 0.0f}));
 }
 
-- (void)test_chain_shape {
+- (void)test_observe_shape {
     auto collider = collider::make_shared();
 
     std::shared_ptr<shape> received{nullptr};
@@ -134,7 +134,7 @@ using namespace yas::ui;
     XCTAssertTrue(received->type_info() == typeid(shape::anywhere));
 }
 
-- (void)test_chain_enabled {
+- (void)test_observe_enabled {
     auto collider = collider::make_shared();
 
     bool received = true;

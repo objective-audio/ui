@@ -128,7 +128,7 @@ using namespace yas::ui;
     XCTAssertTrue(point->point() == (ui::point{1.0f, -1.0f}));
 }
 
-- (void)test_chain_point {
+- (void)test_observe_point {
     auto guide_point = layout_guide_point::make_shared();
 
     point notified;
@@ -251,7 +251,7 @@ using namespace yas::ui;
     XCTAssertTrue(range->range() == (ui::range{1.0f, 2.0f}));
 }
 
-- (void)test_chain_range {
+- (void)test_observe_range {
     auto guide_range = layout_guide_range::make_shared();
 
     range notified;
@@ -473,7 +473,7 @@ using namespace yas::ui;
     XCTAssertEqual(rect->height()->value(), 4.0f);
 }
 
-- (void)test_chain_rect {
+- (void)test_observe_rect {
     auto guide_rect = layout_guide_rect::make_shared();
 
     region notified;

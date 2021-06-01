@@ -277,7 +277,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(called.at(1), node::method::removed_from_super);
 }
 
-- (void)test_chain_renderer {
+- (void)test_observe_renderer {
     std::shared_ptr<renderer> notified{nullptr};
 
     auto node = node::make_shared();

@@ -618,7 +618,7 @@ using namespace yas::ui;
     ended_called = false;
 }
 
-- (void)test_chain_input_cursor_events {
+- (void)test_observe_input_cursor_events {
     auto manager = event_manager::make_shared();
 
     bool began_called = false;
@@ -662,7 +662,7 @@ using namespace yas::ui;
     XCTAssertFalse(ended_called);
 }
 
-- (void)test_chain_input_touch_events {
+- (void)test_observe_input_touch_events {
     auto manager = event_manager::make_shared();
 
     bool began_called = false;
@@ -718,7 +718,7 @@ using namespace yas::ui;
     XCTAssertFalse(ended_called);
 }
 
-- (void)test_chain_input_key_events {
+- (void)test_observe_input_key_events {
     auto manager = event_manager::make_shared();
 
     bool began_called = false;
@@ -774,7 +774,7 @@ using namespace yas::ui;
     XCTAssertFalse(ended_called);
 }
 
-- (void)test_chain_input_modifier_events {
+- (void)test_observe_input_modifier_events {
     auto manager = event_manager::make_shared();
 
     bool began_called = false;
@@ -843,7 +843,7 @@ using namespace yas::ui;
     ended_called = false;
 }
 
-- (void)test_chain {
+- (void)test_observe {
     auto manager = event_manager::make_shared();
     std::vector<std::shared_ptr<event>> called_events;
 
