@@ -60,7 +60,7 @@ class renderable_collider;
 class renderer_detector_interface;
 class renderable_effect;
 class encodable_effect;
-class event_inputtable;
+class metal_view_event_manager_interface;
 class manageable_event;
 class renderable_mesh;
 class renderable_mesh_data;

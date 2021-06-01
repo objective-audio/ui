@@ -57,7 +57,7 @@ struct event final {
     std::shared_ptr<event_impl_base> _impl() const;
 };
 
-struct event_manager : event_inputtable {
+struct event_manager : metal_view_event_manager_interface {
     virtual ~event_manager() final;
 
     [[nodiscard]] observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&);
