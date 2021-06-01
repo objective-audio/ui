@@ -9,10 +9,11 @@
 #include "yas_ui_types.h"
 
 using namespace yas;
+using namespace yas::ui;
 
 namespace yas::ui::metal_view {
 struct cpp {
-    std::shared_ptr<event_manager> event_manager = nullptr;
+    std::shared_ptr<metal_view_event_manager_interface> event_manager = nullptr;
 };
 }
 
@@ -45,11 +46,11 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
-- (std::shared_ptr<ui::event_manager> const &)event_manager {
+- (std::shared_ptr<metal_view_event_manager_interface> const &)event_manager {
     return self->_cpp.event_manager;
 }
 
-- (void)set_event_manager:(std::shared_ptr<ui::event_manager>)manager {
+- (void)set_event_manager:(std::shared_ptr<ui::metal_view_event_manager_interface>)manager {
     self->_cpp.event_manager = std::move(manager);
 }
 
