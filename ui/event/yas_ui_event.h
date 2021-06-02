@@ -5,7 +5,7 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_event_protocol.h>
+#include <ui/yas_ui_event_types.h>
 #include <ui/yas_ui_metal_view_dependency.h>
 
 namespace yas::ui {

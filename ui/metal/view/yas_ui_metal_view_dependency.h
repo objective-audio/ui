@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <ui/yas_ui_event_protocol.h>
+#include <ui/yas_ui_event_types.h>
 
 namespace yas::ui {
 struct metal_view_event_manager_interface {
@@ -16,8 +16,8 @@ struct metal_view_event_manager_interface {
     virtual void input_modifier_event(modifier_flags const &, double const timestamp) = 0;
 
     static std::shared_ptr<metal_view_event_manager_interface> cast(
-        std::shared_ptr<metal_view_event_manager_interface> const &inputtable) {
-        return inputtable;
+        std::shared_ptr<metal_view_event_manager_interface> const &manager) {
+        return manager;
     }
 };
 }  // namespace yas::ui

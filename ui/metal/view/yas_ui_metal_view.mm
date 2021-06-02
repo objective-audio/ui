@@ -138,33 +138,29 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendCursorEvent:(NSEvent *)event {
     if (self->_cpp.event_manager) {
-        ui::event_inputtable::cast(self->_cpp.event_manager)
-            ->input_cursor_event(ui::cursor_event{[self _position:event], event.timestamp});
+        self->_cpp.event_manager->input_cursor_event(ui::cursor_event{[self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
     if (self->_cpp.event_manager) {
-        ui::event_inputtable::cast(self->_cpp.event_manager)
-            ->input_touch_event(std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event],
-                                                                  event.timestamp});
+        self->_cpp.event_manager->input_touch_event(
+            std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendKeyEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
     if (self->_cpp.event_manager) {
-        ui::event_inputtable::cast(self->_cpp.event_manager)
-            ->input_key_event(
-                std::move(phase),
-                ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
-                              to_string((__bridge CFStringRef)event.charactersIgnoringModifiers), event.timestamp});
+        self->_cpp.event_manager->input_key_event(
+            std::move(phase),
+            ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
+                          to_string((__bridge CFStringRef)event.charactersIgnoringModifiers), event.timestamp});
     }
 }
 
 - (void)_sendModifierEvent:(NSEvent *)event {
     if (self->_cpp.event_manager) {
-        ui::event_inputtable::cast(self->_cpp.event_manager)
-            ->input_modifier_event(ui::modifier_flags(event.modifierFlags), event.timestamp);
+        self->_cpp.event_manager->input_modifier_event(ui::modifier_flags(event.modifierFlags), event.timestamp);
     }
 }
 

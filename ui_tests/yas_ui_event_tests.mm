@@ -298,7 +298,7 @@ using namespace yas::ui;
     auto manager = event_manager::make_shared();
 
     XCTAssertTrue(manager);
-    XCTAssertTrue(event_inputtable::cast(manager));
+    XCTAssertTrue(metal_view_event_manager_interface::cast(manager));
 }
 
 - (void)test_input_cursor_event_began {
@@ -317,7 +317,7 @@ using namespace yas::ui;
         called = true;
     });
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{0.25f, 0.125f}, 101.0});
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(cursor_event{{0.25f, 0.125f}, 101.0});
 
     XCTAssertTrue(called);
 }
@@ -339,7 +339,8 @@ using namespace yas::ui;
         called = true;
     });
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{100, {256.0f, 512.0f}, 201.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{100, {256.0f, 512.0f}, 201.0});
 
     XCTAssertTrue(called);
 }
@@ -361,7 +362,8 @@ using namespace yas::ui;
         called = true;
     });
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{200, "xyz", "uvw", 301.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began,
+                                                                       key_event{200, "xyz", "uvw", 301.0});
 
     XCTAssertTrue(called);
 }
@@ -386,7 +388,7 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_modifier_event(
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(
         modifier_flags(modifier_flags::alternate | modifier_flags::function), 0.0);
 
     XCTAssertTrue(alt_called);
@@ -409,29 +411,34 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -455,39 +462,46 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{2, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -511,39 +525,39 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -567,51 +581,51 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(
         modifier_flags(modifier_flags::alpha_shift | modifier_flags::command), 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
@@ -634,29 +648,34 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(
+        cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -680,39 +699,46 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{2, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::ended,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -736,39 +762,39 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -792,51 +818,51 @@ using namespace yas::ui;
         }
     });
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(
         modifier_flags(modifier_flags::alpha_shift | modifier_flags::command), 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
@@ -852,7 +878,7 @@ using namespace yas::ui;
     auto canceller =
         manager->observe([&called_events](std::shared_ptr<event> const &event) { called_events.push_back(event); });
 
-    event_inputtable::cast(manager)->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::cursor);
@@ -860,7 +886,8 @@ using namespace yas::ui;
 
     clear();
 
-    event_inputtable::cast(manager)->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_touch_event(event_phase::began,
+                                                                         touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::touch);
@@ -868,7 +895,7 @@ using namespace yas::ui;
 
     clear();
 
-    event_inputtable::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    metal_view_event_manager_interface::cast(manager)->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::key);
@@ -876,7 +903,7 @@ using namespace yas::ui;
 
     clear();
 
-    event_inputtable::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    metal_view_event_manager_interface::cast(manager)->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::modifier);

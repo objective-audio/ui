@@ -1,5 +1,5 @@
 //
-//  yas_ui_event_protocol.h
+//  yas_ui_event_types.h
 //
 
 #pragma once
