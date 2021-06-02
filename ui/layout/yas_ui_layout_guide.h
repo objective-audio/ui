@@ -6,10 +6,11 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_action_dependency.h>
+#include <ui/yas_ui_layout_target.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct layout_guide final : action_target {
+struct layout_guide final : action_target, layout_value_target {
     virtual ~layout_guide();
 
     void set_value(float const);
@@ -34,9 +35,11 @@ struct layout_guide final : action_target {
     layout_guide(layout_guide &&) = delete;
     layout_guide &operator=(layout_guide const &) = delete;
     layout_guide &operator=(layout_guide &&) = delete;
+
+    void set_layout_value(float const) override;
 };
 
-struct layout_guide_point final {
+struct layout_guide_point final : layout_point_target {
     virtual ~layout_guide_point();
 
     [[nodiscard]] std::shared_ptr<layout_guide> &x();
@@ -65,9 +68,11 @@ struct layout_guide_point final {
     layout_guide_point(layout_guide_point &&) = delete;
     layout_guide_point &operator=(layout_guide_point const &) = delete;
     layout_guide_point &operator=(layout_guide_point &&) = delete;
+
+    void set_layout_point(ui::point const &) override;
 };
 
-struct layout_guide_range {
+struct layout_guide_range final : layout_range_target {
     virtual ~layout_guide_range() final;
 
     [[nodiscard]] std::shared_ptr<layout_guide> &min();
@@ -100,9 +105,11 @@ struct layout_guide_range {
     layout_guide_range(layout_guide_range &&) = delete;
     layout_guide_range &operator=(layout_guide_range const &) = delete;
     layout_guide_range &operator=(layout_guide_range &&) = delete;
+
+    void set_layout_range(ui::range const &) override;
 };
 
-struct layout_guide_rect final {
+struct layout_guide_rect final : layout_region_target {
     virtual ~layout_guide_rect();
 
     [[nodiscard]] std::shared_ptr<layout_guide_range> &horizontal_range();
@@ -148,6 +155,8 @@ struct layout_guide_rect final {
     layout_guide_rect(layout_guide_rect &&) = delete;
     layout_guide_rect &operator=(layout_guide_rect const &) = delete;
     layout_guide_rect &operator=(layout_guide_rect &&) = delete;
+
+    void set_layout_region(ui::region const &) override;
 };
 
 struct layout_guide_pair {

@@ -61,6 +61,10 @@ observing::syncable layout_guide::observe(observing::caller<float>::handler_f &&
     return value_syncable;
 }
 
+void layout_guide::set_layout_value(float const value) {
+    this->set_value(value);
+}
+
 std::shared_ptr<layout_guide> layout_guide::make_shared() {
     return make_shared(0.0f);
 }
@@ -121,6 +125,10 @@ observing::syncable layout_guide_point::observe(observing::caller<ui::point>::ha
     auto y_syncable = this->_y_guide->observe([this, handler](float const &) { handler(this->point()); });
     y_syncable.merge(std::move(x_endable));
     return y_syncable;
+}
+
+void layout_guide_point::set_layout_point(ui::point const &point) {
+    this->set_point(point);
 }
 
 std::shared_ptr<layout_guide_point> layout_guide_point::make_shared() {
@@ -203,6 +211,10 @@ observing::syncable layout_guide_range::observe(observing::caller<ui::range>::ha
     auto max_syncable = this->_max_guide->observe([this, handler](float const &) { handler(this->range()); });
     max_syncable.merge(std::move(min_endable));
     return max_syncable;
+}
+
+void layout_guide_range::set_layout_range(ui::range const &range) {
+    this->set_range(range);
 }
 
 std::shared_ptr<layout_guide_range> layout_guide_range::make_shared() {
@@ -326,6 +338,10 @@ observing::syncable layout_guide_rect::observe(observing::caller<ui::region>::ha
     auto h_syncable = this->_horizontal_range->observe([this, handler](range const &) { handler(this->region()); });
     h_syncable.merge(std::move(v_endable));
     return h_syncable;
+}
+
+void layout_guide_rect::set_layout_region(ui::region const &region) {
+    this->set_region(region);
 }
 
 std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared() {
