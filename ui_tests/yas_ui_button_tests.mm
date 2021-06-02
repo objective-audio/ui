@@ -82,41 +82,34 @@ using namespace yas::ui;
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
-    std::shared_ptr<event_manager> const &event_manager = renderer->event_manager();
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::began, touch_event{1, {0.0f, 0.0f}, 0});
+    std::shared_ptr<metal_view_event_manager_interface> const event_manager = renderer->event_manager();
+    event_manager->input_touch_event(event_phase::began, touch_event{1, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
     XCTAssertEqual(observed_methods.back(), button::method::began);
 
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::changed, touch_event{1, {0.1f, 0.0f}, 0});
+    event_manager->input_touch_event(event_phase::changed, touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 2);
     XCTAssertEqual(observed_methods.back(), button::method::moved);
 
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::canceled, touch_event{1, {0.1f, 0.0f}, 0});
+    event_manager->input_touch_event(event_phase::canceled, touch_event{1, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 3);
     XCTAssertEqual(observed_methods.back(), button::method::canceled);
 
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::began, touch_event{2, {0.0f, 0.0f}, 0});
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::changed, touch_event{2, {1.0f, 1.0f}, 0});
+    event_manager->input_touch_event(event_phase::began, touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager->input_touch_event(event_phase::changed, touch_event{2, {1.0f, 1.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 5);
     XCTAssertEqual(observed_methods.back(), button::method::leaved);
 
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::changed, touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager->input_touch_event(event_phase::changed, touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 6);
     XCTAssertEqual(observed_methods.back(), button::method::entered);
 
-    metal_view_event_manager_interface::cast(event_manager)
-        ->input_touch_event(event_phase::ended, touch_event{2, {0.0f, 0.0f}, 0});
+    event_manager->input_touch_event(event_phase::ended, touch_event{2, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 7);
     XCTAssertEqual(observed_methods.back(), button::method::ended);
