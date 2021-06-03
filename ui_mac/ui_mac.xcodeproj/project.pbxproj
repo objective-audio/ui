@@ -110,6 +110,8 @@
 		B65AF95021E4DC5200C65DB5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF94F21E4DC5200C65DB5 /* AppKit.framework */; };
 		B65AF95221E4DC5800C65DB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */; };
 		B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */; };
+		B68474FA2668D4A6008B5202 /* yas_ui_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */; };
+		B68474FB2668D4A6008B5202 /* yas_ui_layout.h in Headers */ = {isa = PBXBuildFile; fileRef = B68474F92668D4A6008B5202 /* yas_ui_layout.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609E724B39FB200F9962D /* yas_ui_background.mm */; };
 		B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */ = {isa = PBXBuildFile; fileRef = B69609E824B39FB200F9962D /* yas_ui_background.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69C9276265D48340083EFD7 /* yas_ui_collection_layout_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B69C9275265D48340083EFD7 /* yas_ui_collection_layout_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -124,8 +126,7 @@
 		B6DEECA92661CBA900C4168B /* yas_ui_action_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEECA82661CBA900C4168B /* yas_ui_action_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DEECAD2661CC9600C4168B /* yas_ui_action_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEECAC2661CC9600C4168B /* yas_ui_action_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6E2F72C2666872C0008067E /* yas_ui_metal_view_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F72B2666872C0008067E /* yas_ui_metal_view_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B6E2F7312667BCB20008067E /* yas_ui_layout_target.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6E2F72F2667BCB20008067E /* yas_ui_layout_target.cpp */; };
-		B6E2F7322667BCB20008067E /* yas_ui_layout_target.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F7302667BCB20008067E /* yas_ui_layout_target.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6E2F7322667BCB20008067E /* yas_ui_layout_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -235,6 +236,8 @@
 		B65AF94F21E4DC5200C65DB5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_layout.cpp; sourceTree = "<group>"; };
+		B68474F92668D4A6008B5202 /* yas_ui_layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout.h; sourceTree = "<group>"; };
 		B69609E724B39FB200F9962D /* yas_ui_background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background.mm; sourceTree = "<group>"; };
 		B69609E824B39FB200F9962D /* yas_ui_background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_background.h; sourceTree = "<group>"; };
 		B69C9275265D48340083EFD7 /* yas_ui_collection_layout_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_collection_layout_types.h; sourceTree = "<group>"; };
@@ -249,8 +252,7 @@
 		B6DEECA82661CBA900C4168B /* yas_ui_action_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_action_types.h; sourceTree = "<group>"; };
 		B6DEECAC2661CC9600C4168B /* yas_ui_action_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_action_dependency.h; sourceTree = "<group>"; };
 		B6E2F72B2666872C0008067E /* yas_ui_metal_view_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_view_dependency.h; sourceTree = "<group>"; };
-		B6E2F72F2667BCB20008067E /* yas_ui_layout_target.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_layout_target.cpp; sourceTree = "<group>"; };
-		B6E2F7302667BCB20008067E /* yas_ui_layout_target.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_target.h; sourceTree = "<group>"; };
+		B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_dependency.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -530,10 +532,11 @@
 				B65AF87F21E4D7E400C65DB5 /* yas_ui_layout_actions.mm */,
 				B65AF8B121E4D7E400C65DB5 /* yas_ui_layout_guide.cpp */,
 				B65AF86721E4D7E400C65DB5 /* yas_ui_layout_guide.h */,
-				B6E2F72F2667BCB20008067E /* yas_ui_layout_target.cpp */,
-				B6E2F7302667BCB20008067E /* yas_ui_layout_target.h */,
+				B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */,
 				B65AF87321E4D7E400C65DB5 /* yas_ui_layout_types.cpp */,
 				B65AF86D21E4D7E400C65DB5 /* yas_ui_layout_types.h */,
+				B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */,
+				B68474F92668D4A6008B5202 /* yas_ui_layout.h */,
 			);
 			path = layout;
 			sourceTree = "<group>";
@@ -675,6 +678,7 @@
 				B69609EA24B39FB200F9962D /* yas_ui_background.h in Headers */,
 				B6E2F72C2666872C0008067E /* yas_ui_metal_view_dependency.h in Headers */,
 				B65AF8D521E4D7E400C65DB5 /* yas_ui_image.h in Headers */,
+				B68474FB2668D4A6008B5202 /* yas_ui_layout.h in Headers */,
 				B65AF91921E4D7E400C65DB5 /* yas_ui_action.h in Headers */,
 				B65AF92021E4D7E400C65DB5 /* yas_ui_render_info_dependency.h in Headers */,
 				B65AF90821E4D7E400C65DB5 /* yas_ui_metal_texture.h in Headers */,
@@ -703,7 +707,7 @@
 				B65AF8DF21E4D7E400C65DB5 /* yas_ui_layout_types.h in Headers */,
 				B65AF93821E4D7E400C65DB5 /* yas_ui_metal_view_controller.h in Headers */,
 				B65AF90221E4D7E400C65DB5 /* yas_ui_angle.h in Headers */,
-				B6E2F7322667BCB20008067E /* yas_ui_layout_target.h in Headers */,
+				B6E2F7322667BCB20008067E /* yas_ui_layout_dependency.h in Headers */,
 				B65AF8DC21E4D7E400C65DB5 /* yas_ui_layout_actions.h in Headers */,
 				B65AF93C21E4D7E400C65DB5 /* yas_ui_node_actions.h in Headers */,
 				B65AF8F821E4D7E400C65DB5 /* yas_ui_texture.h in Headers */,
@@ -819,6 +823,7 @@
 				B65AF8F121E4D7E400C65DB5 /* yas_ui_layout_actions.mm in Sources */,
 				B65AF92521E4D7E400C65DB5 /* yas_ui_metal_view_controller.mm in Sources */,
 				B65AF8FD21E4D7E400C65DB5 /* yas_ui_texture.mm in Sources */,
+				B68474FA2668D4A6008B5202 /* yas_ui_layout.cpp in Sources */,
 				B65AF8D721E4D7E400C65DB5 /* yas_ui_texture_element.cpp in Sources */,
 				B65AF90B21E4D7E400C65DB5 /* yas_ui_math.cpp in Sources */,
 				B65AF93421E4D7E400C65DB5 /* yas_ui_effect.mm in Sources */,
@@ -833,7 +838,6 @@
 				B65AF93721E4D7E400C65DB5 /* yas_ui_color.cpp in Sources */,
 				B65AF90E21E4D7E400C65DB5 /* yas_ui_node.mm in Sources */,
 				B65AF8E621E4D7E400C65DB5 /* yas_ui_mesh.mm in Sources */,
-				B6E2F7312667BCB20008067E /* yas_ui_layout_target.cpp in Sources */,
 				B65AF91721E4D7E400C65DB5 /* yas_ui_button.mm in Sources */,
 				B65AF8EA21E4D7E400C65DB5 /* yas_ui_render_target.mm in Sources */,
 				B65AF8EE21E4D7E400C65DB5 /* yas_ui_font_atlas.mm in Sources */,
