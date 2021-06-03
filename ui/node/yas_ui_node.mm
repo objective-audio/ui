@@ -595,6 +595,10 @@ void node::clear_updates() {
     }
 }
 
+void node::set_layout_point(ui::point const &point) {
+    this->set_position(point);
+}
+
 void node::_add_sub_node(std::shared_ptr<node> &sub_node) {
     sub_node->_parent->set_value(this->_weak_node);
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());

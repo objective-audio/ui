@@ -7,6 +7,7 @@
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_action_dependency.h>
 #include <ui/yas_ui_collider.h>
+#include <ui/yas_ui_layout_target.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_renderer.h>
@@ -15,7 +16,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct node final : action_target, metal_object, renderable_node {
+struct node final : action_target, metal_object, renderable_node, layout_point_target {
     enum class method {
         added_to_super,
         removed_from_super,
@@ -140,6 +141,8 @@ struct node final : action_target, metal_object, renderable_node {
     void build_render_info(ui::render_info &) override;
     bool is_rendering_color_exists() override;
     void clear_updates() override;
+
+    void set_layout_point(ui::point const &) override;
 
     void _add_sub_node(std::shared_ptr<node> &sub_node);
     void _remove_sub_node(ui::node *sub_node);
