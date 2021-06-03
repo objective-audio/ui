@@ -31,7 +31,7 @@ using namespace yas::ui;
 
 @interface yas_objc_view (yas_ui_renderer)
 
-- (void)set_event_manager:(std::shared_ptr<event_manager>)manager;
+- (void)set_event_manager:(std::shared_ptr<metal_view_event_manager_interface>)manager;
 
 @end
 

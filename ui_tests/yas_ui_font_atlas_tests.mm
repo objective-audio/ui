@@ -54,7 +54,7 @@ using namespace yas::ui;
     XCTAssertEqual(font_atlas->leading(), CTFontGetLeading(ct_font_obj));
 }
 
-- (void)test_chain_texture {
+- (void)test_observe_texture {
     auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;

@@ -5,7 +5,8 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_event_protocol.h>
+#include <ui/yas_ui_event_types.h>
+#include <ui/yas_ui_metal_view_dependency.h>
 
 namespace yas::ui {
 class event_impl_base;
@@ -56,7 +57,7 @@ struct event final {
     std::shared_ptr<event_impl_base> _impl() const;
 };
 
-struct event_manager : event_inputtable {
+struct event_manager : metal_view_event_manager_interface {
     virtual ~event_manager() final;
 
     [[nodiscard]] observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&);

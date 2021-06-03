@@ -68,8 +68,8 @@ struct button final {
     void _set_tracking_event(std::shared_ptr<event> const &);
     void _update_rect_positions(ui::region const &region, std::size_t const state_count);
     void _update_rect_index();
-    observing::cancellable_ptr _make_leave_chains();
-    observing::cancellable_ptr _make_collider_chains();
+    observing::cancellable_ptr _make_leave_observings();
+    observing::cancellable_ptr _make_collider_observings();
     void _update_tracking(std::shared_ptr<event> const &event);
     void _leave_or_enter_or_move_tracking(std::shared_ptr<event> const &event);
     void _cancel_tracking(std::shared_ptr<event> const &event);

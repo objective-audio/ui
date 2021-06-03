@@ -1,8 +1,8 @@
 //
-//  yas_ui_event_protocol.cpp
+//  yas_ui_event_types.cpp
 //
 
-#include "yas_ui_event_protocol.h"
+#include "yas_ui_event_types.h"
 
 using namespace yas;
 using namespace yas::ui;

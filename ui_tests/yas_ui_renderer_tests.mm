@@ -121,7 +121,7 @@ using namespace yas::ui;
                                                              static_cast<uint32_t>(128 * scale_factor)}));
 }
 
-- (void)test_chain_scale_factor {
+- (void)test_observe_scale_factor {
     auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
         std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;

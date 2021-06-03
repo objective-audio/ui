@@ -60,7 +60,7 @@ using namespace yas::ui;
     XCTAssertEqual(justified.at(3), 6.0f);
 }
 
-- (void)test_chain {
+- (void)test_observe {
     auto first_src_guide = layout_guide::make_shared(1.0f);
     auto second_src_guide = layout_guide::make_shared(2.0f);
     auto first_dst_guide = layout_guide::make_shared();
@@ -99,7 +99,7 @@ using namespace yas::ui;
     XCTAssertEqual(second_dst_guide->value(), 2.0f);
 }
 
-- (void)test_chain_value_changed_one_dst {
+- (void)test_observe_value_changed_one_dst {
     auto first_src_guide = layout_guide::make_shared(0.0f);
     auto second_src_guide = layout_guide::make_shared(0.0f);
     auto dst_guide = layout_guide::make_shared(100.0f);
@@ -144,7 +144,7 @@ using namespace yas::ui;
     XCTAssertEqual(dst_guide->value(), 1.0f);
 }
 
-- (void)test_chain_many_dst {
+- (void)test_observe_many_dst {
     auto first_src_guide = layout_guide::make_shared(-1.0f);
     auto second_src_guide = layout_guide::make_shared(3.0f);
     auto dst_guide_0 = layout_guide::make_shared();
