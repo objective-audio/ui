@@ -50,6 +50,24 @@ using namespace yas::ui;
     canceller->cancel();
 }
 
+- (void)test_layout_constant_with_range {
+    auto const src_guide = layout_guide_range::make_shared({.location = 1.0f, .length = 2.0f});
+    auto const dst_guide = layout_guide_range::make_shared({.location = 3.0f, .length = 4.0f});
+
+    auto const canceller = layout(src_guide, dst_guide, [](ui::range const &range) {
+                               float const min = range.min() - 0.5f;
+                               float const max = range.max() + 0.25f;
+                               return ui::range{.location = min, .length = max - min};
+                           }).sync();
+
+    XCTAssertEqual(src_guide->range().location, 1.0f);
+    XCTAssertEqual(src_guide->range().length, 2.0f);
+    XCTAssertEqual(dst_guide->range().location, 0.5f);
+    XCTAssertEqual(dst_guide->range().length, 2.75f);
+
+    canceller->cancel();
+}
+
 - (void)test_layout_constant_with_region {
     auto const src_guide = layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
     auto const dst_guide = layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
