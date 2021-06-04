@@ -85,14 +85,6 @@ layout_guide_point::layout_guide_point(ui::point &&origin)
 
 layout_guide_point::~layout_guide_point() = default;
 
-std::shared_ptr<layout_guide> &layout_guide_point::x() {
-    return this->_x_guide;
-}
-
-std::shared_ptr<layout_guide> &layout_guide_point::y() {
-    return this->_y_guide;
-}
-
 std::shared_ptr<layout_guide> const &layout_guide_point::x() const {
     return this->_x_guide;
 }
@@ -173,14 +165,6 @@ layout_guide_range::layout_guide_range(ui::range &&range)
 }
 
 layout_guide_range::~layout_guide_range() = default;
-
-std::shared_ptr<layout_guide> &layout_guide_range::min() {
-    return this->_min_guide;
-}
-
-std::shared_ptr<layout_guide> &layout_guide_range::max() {
-    return this->_max_guide;
-}
 
 std::shared_ptr<layout_guide> const &layout_guide_range::min() const {
     return this->_min_guide;
@@ -273,22 +257,6 @@ std::shared_ptr<layout_guide_range> const &layout_guide_rect::horizontal_range()
 
 std::shared_ptr<layout_guide_range> const &layout_guide_rect::vertical_range() const {
     return this->_vertical_range;
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::left() {
-    return this->horizontal_range()->min();
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::right() {
-    return this->horizontal_range()->max();
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::bottom() {
-    return this->vertical_range()->min();
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::top() {
-    return this->vertical_range()->max();
 }
 
 std::shared_ptr<layout_guide> const &layout_guide_rect::left() const {

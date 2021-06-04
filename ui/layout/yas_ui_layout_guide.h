@@ -43,8 +43,6 @@ struct layout_guide final : action_target, layout_value_target, layout_value_sou
 struct layout_guide_point final : layout_point_target, layout_point_source {
     virtual ~layout_guide_point();
 
-    [[nodiscard]] std::shared_ptr<layout_guide> &x();
-    [[nodiscard]] std::shared_ptr<layout_guide> &y();
     [[nodiscard]] std::shared_ptr<layout_guide> const &x() const;
     [[nodiscard]] std::shared_ptr<layout_guide> const &y() const;
 
@@ -78,8 +76,6 @@ struct layout_guide_point final : layout_point_target, layout_point_source {
 struct layout_guide_range final : layout_range_target, layout_range_source {
     virtual ~layout_guide_range();
 
-    [[nodiscard]] std::shared_ptr<layout_guide> &min();
-    [[nodiscard]] std::shared_ptr<layout_guide> &max();
     [[nodiscard]] std::shared_ptr<layout_guide> const &min() const;
     [[nodiscard]] std::shared_ptr<layout_guide> const &max() const;
     [[nodiscard]] std::shared_ptr<layout_guide> const &length() const;
@@ -121,10 +117,6 @@ struct layout_guide_rect final : layout_region_target, layout_region_source {
     [[nodiscard]] std::shared_ptr<layout_guide_range> const &horizontal_range() const;
     [[nodiscard]] std::shared_ptr<layout_guide_range> const &vertical_range() const;
 
-    [[nodiscard]] std::shared_ptr<layout_guide> &left();
-    [[nodiscard]] std::shared_ptr<layout_guide> &right();
-    [[nodiscard]] std::shared_ptr<layout_guide> &bottom();
-    [[nodiscard]] std::shared_ptr<layout_guide> &top();
     [[nodiscard]] std::shared_ptr<layout_guide> const &left() const;
     [[nodiscard]] std::shared_ptr<layout_guide> const &right() const;
     [[nodiscard]] std::shared_ptr<layout_guide> const &bottom() const;
