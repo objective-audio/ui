@@ -85,14 +85,6 @@ layout_guide_point::layout_guide_point(ui::point &&origin)
 
 layout_guide_point::~layout_guide_point() = default;
 
-std::shared_ptr<layout_guide> &layout_guide_point::x() {
-    return this->_x_guide;
-}
-
-std::shared_ptr<layout_guide> &layout_guide_point::y() {
-    return this->_y_guide;
-}
-
 std::shared_ptr<layout_guide> const &layout_guide_point::x() const {
     return this->_x_guide;
 }
@@ -101,11 +93,20 @@ std::shared_ptr<layout_guide> const &layout_guide_point::y() const {
     return this->_y_guide;
 }
 
-void layout_guide_point::set_point(ui::point point) {
+void layout_guide_point::set_point(ui::point &&point) {
     this->push_notify_waiting();
 
     this->_x_guide->set_value(std::move(point.x));
     this->_y_guide->set_value(std::move(point.y));
+
+    this->pop_notify_waiting();
+}
+
+void layout_guide_point::set_point(ui::point const &point) {
+    this->push_notify_waiting();
+
+    this->_x_guide->set_value(point.x);
+    this->_y_guide->set_value(point.y);
 
     this->pop_notify_waiting();
 }
@@ -164,14 +165,6 @@ layout_guide_range::layout_guide_range(ui::range &&range)
 }
 
 layout_guide_range::~layout_guide_range() = default;
-
-std::shared_ptr<layout_guide> &layout_guide_range::min() {
-    return this->_min_guide;
-}
-
-std::shared_ptr<layout_guide> &layout_guide_range::max() {
-    return this->_max_guide;
-}
 
 std::shared_ptr<layout_guide> const &layout_guide_range::min() const {
     return this->_min_guide;
@@ -266,22 +259,6 @@ std::shared_ptr<layout_guide_range> const &layout_guide_rect::vertical_range() c
     return this->_vertical_range;
 }
 
-std::shared_ptr<layout_guide> &layout_guide_rect::left() {
-    return this->horizontal_range()->min();
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::right() {
-    return this->horizontal_range()->max();
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::bottom() {
-    return this->vertical_range()->min();
-}
-
-std::shared_ptr<layout_guide> &layout_guide_rect::top() {
-    return this->vertical_range()->max();
-}
-
 std::shared_ptr<layout_guide> const &layout_guide_rect::left() const {
     return this->horizontal_range()->min();
 }
@@ -310,8 +287,16 @@ void layout_guide_rect::set_horizontal_range(range &&range) {
     this->_horizontal_range->set_range(std::move(range));
 }
 
+void layout_guide_rect::set_horizontal_range(ui::range const &range) {
+    this->_horizontal_range->set_range(range);
+}
+
 void layout_guide_rect::set_vertical_range(range &&range) {
     this->_vertical_range->set_range(std::move(range));
+}
+
+void layout_guide_rect::set_vertical_range(range const &range) {
+    this->_vertical_range->set_range(range);
 }
 
 void layout_guide_rect::set_ranges(region_ranges_args &&args) {
