@@ -101,11 +101,20 @@ std::shared_ptr<layout_guide> const &layout_guide_point::y() const {
     return this->_y_guide;
 }
 
-void layout_guide_point::set_point(ui::point point) {
+void layout_guide_point::set_point(ui::point &&point) {
     this->push_notify_waiting();
 
     this->_x_guide->set_value(std::move(point.x));
     this->_y_guide->set_value(std::move(point.y));
+
+    this->pop_notify_waiting();
+}
+
+void layout_guide_point::set_point(ui::point const &point) {
+    this->push_notify_waiting();
+
+    this->_x_guide->set_value(point.x);
+    this->_y_guide->set_value(point.y);
 
     this->pop_notify_waiting();
 }

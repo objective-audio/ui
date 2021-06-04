@@ -48,7 +48,8 @@ struct layout_guide_point final : layout_point_target, layout_point_source {
     [[nodiscard]] std::shared_ptr<layout_guide> const &x() const;
     [[nodiscard]] std::shared_ptr<layout_guide> const &y() const;
 
-    void set_point(ui::point);
+    void set_point(ui::point &&);
+    void set_point(ui::point const &);
     [[nodiscard]] ui::point point() const;
 
     void push_notify_waiting();
