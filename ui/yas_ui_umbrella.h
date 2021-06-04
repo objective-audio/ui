@@ -16,6 +16,7 @@
 #include <ui/yas_ui_event.h>
 #include <ui/yas_ui_font_atlas.h>
 #include <ui/yas_ui_image.h>
+#include <ui/yas_ui_layout.h>
 #include <ui/yas_ui_layout_actions.h>
 #include <ui/yas_ui_math.h>
 #include <ui/yas_ui_matrix.h>

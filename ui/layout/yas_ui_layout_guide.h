@@ -6,11 +6,11 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_action_dependency.h>
-#include <ui/yas_ui_layout_target.h>
+#include <ui/yas_ui_layout_dependency.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct layout_guide final : action_target, layout_value_target {
+struct layout_guide final : action_target, layout_value_target, layout_value_source {
     virtual ~layout_guide();
 
     void set_value(float const);
@@ -37,9 +37,10 @@ struct layout_guide final : action_target, layout_value_target {
     layout_guide &operator=(layout_guide &&) = delete;
 
     void set_layout_value(float const) override;
+    observing::syncable observe_layout_value(std::function<void(float const &)> &&) override;
 };
 
-struct layout_guide_point final : layout_point_target {
+struct layout_guide_point final : layout_point_target, layout_point_source {
     virtual ~layout_guide_point();
 
     [[nodiscard]] std::shared_ptr<layout_guide> &x();
@@ -70,10 +71,11 @@ struct layout_guide_point final : layout_point_target {
     layout_guide_point &operator=(layout_guide_point &&) = delete;
 
     void set_layout_point(ui::point const &) override;
+    observing::syncable observe_layout_point(std::function<void(ui::point const &)> &&) override;
 };
 
-struct layout_guide_range final : layout_range_target {
-    virtual ~layout_guide_range() final;
+struct layout_guide_range final : layout_range_target, layout_range_source {
+    virtual ~layout_guide_range();
 
     [[nodiscard]] std::shared_ptr<layout_guide> &min();
     [[nodiscard]] std::shared_ptr<layout_guide> &max();
@@ -107,9 +109,10 @@ struct layout_guide_range final : layout_range_target {
     layout_guide_range &operator=(layout_guide_range &&) = delete;
 
     void set_layout_range(ui::range const &) override;
+    observing::syncable observe_layout_range(std::function<void(ui::range const &)> &&) override;
 };
 
-struct layout_guide_rect final : layout_region_target {
+struct layout_guide_rect final : layout_region_target, layout_region_source {
     virtual ~layout_guide_rect();
 
     [[nodiscard]] std::shared_ptr<layout_guide_range> &horizontal_range();
@@ -157,6 +160,7 @@ struct layout_guide_rect final : layout_region_target {
     layout_guide_rect &operator=(layout_guide_rect &&) = delete;
 
     void set_layout_region(ui::region const &) override;
+    observing::syncable observe_layout_region(std::function<void(ui::region const &)> &&) override;
 };
 
 struct layout_guide_pair {

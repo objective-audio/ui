@@ -65,6 +65,10 @@ void layout_guide::set_layout_value(float const value) {
     this->set_value(value);
 }
 
+observing::syncable layout_guide::observe_layout_value(std::function<void(float const &)> &&handler) {
+    return this->observe(std::move(handler));
+}
+
 std::shared_ptr<layout_guide> layout_guide::make_shared() {
     return make_shared(0.0f);
 }
@@ -129,6 +133,10 @@ observing::syncable layout_guide_point::observe(observing::caller<ui::point>::ha
 
 void layout_guide_point::set_layout_point(ui::point const &point) {
     this->set_point(point);
+}
+
+observing::syncable layout_guide_point::observe_layout_point(std::function<void(ui::point const &)> &&handler) {
+    return this->observe(std::move(handler));
 }
 
 std::shared_ptr<layout_guide_point> layout_guide_point::make_shared() {
@@ -215,6 +223,10 @@ observing::syncable layout_guide_range::observe(observing::caller<ui::range>::ha
 
 void layout_guide_range::set_layout_range(ui::range const &range) {
     this->set_range(range);
+}
+
+observing::syncable layout_guide_range::observe_layout_range(std::function<void(ui::range const &)> &&handler) {
+    return this->observe(std::move(handler));
 }
 
 std::shared_ptr<layout_guide_range> layout_guide_range::make_shared() {
@@ -342,6 +354,10 @@ observing::syncable layout_guide_rect::observe(observing::caller<ui::region>::ha
 
 void layout_guide_rect::set_layout_region(ui::region const &region) {
     this->set_region(region);
+}
+
+observing::syncable layout_guide_rect::observe_layout_region(std::function<void(ui::region const &)> &&handler) {
+    return this->observe(std::move(handler));
 }
 
 std::shared_ptr<layout_guide_rect> layout_guide_rect::make_shared() {

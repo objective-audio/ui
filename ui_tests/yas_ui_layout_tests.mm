@@ -22,102 +22,104 @@ using namespace yas::ui;
     [super tearDown];
 }
 
-- (void)test_make_fixed_layout {
-    auto src_guide = layout_guide::make_shared(0.5f);
-    auto dst_guide = layout_guide::make_shared(0.25f);
+- (void)test_layout_constant_with_value {
+    auto const src_guide = layout_guide::make_shared(0.5f);
+    auto const dst_guide = layout_guide::make_shared(0.25f);
 
-    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 8.0f); }).sync();
-
-    XCTAssertTrue(layout);
+    auto const canceller = layout(src_guide, dst_guide, [](float const &value) { return value + 8.0f; }).sync();
 
     XCTAssertEqual(src_guide->value(), 0.5f);
     XCTAssertEqual(dst_guide->value(), 8.5f);
+
+    canceller->cancel();
 }
 
-- (void)test_make_fixed_layout_with_point {
-    point distances{.x = 0.5f, .y = 0.25f};
-    auto src_guide_point = layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
-    auto dst_guide_point = layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
+- (void)test_layout_constant_with_point {
+    auto const src_guide = layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
+    auto const dst_guide = layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
 
-    auto layout = src_guide_point
-                      ->observe([&dst_guide_point, distances](point const &value) {
-                          dst_guide_point->set_point(value + distances);
-                      })
-                      .sync();
+    auto const canceller = layout(src_guide, dst_guide, [](ui::point const &point) {
+                               return point + ui::point{.x = 0.5f, .y = 0.25f};
+                           }).sync();
 
-    XCTAssertTrue(layout);
+    XCTAssertEqual(src_guide->point().x, 1.0f);
+    XCTAssertEqual(src_guide->point().y, 2.0f);
+    XCTAssertEqual(dst_guide->point().x, 1.5f);
+    XCTAssertEqual(dst_guide->point().y, 2.25f);
 
-    XCTAssertEqual(src_guide_point->point().x, 1.0f);
-    XCTAssertEqual(src_guide_point->point().y, 2.0f);
-    XCTAssertEqual(dst_guide_point->point().x, 1.5f);
-    XCTAssertEqual(dst_guide_point->point().y, 2.25f);
+    canceller->cancel();
 }
 
-- (void)test_make_fixed_layout_with_rect {
-    insets distances{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
-    auto src_guide_rect = layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
-    auto dst_guide_rect = layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
+- (void)test_layout_constant_with_region {
+    auto const src_guide = layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
+    auto const dst_guide = layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
 
-    auto layout = src_guide_rect
-                      ->observe([&dst_guide_rect, distances](region const &region) {
-                          dst_guide_rect->set_region(region + distances);
-                      })
-                      .sync();
+    auto const canceller = layout(src_guide, dst_guide, [](ui::region const &region) {
+                               return region + insets{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
+                           }).sync();
 
-    XCTAssertTrue(layout);
+    XCTAssertEqual(src_guide->left()->value(), 10.0f);
+    XCTAssertEqual(src_guide->right()->value(), 11.0f);
+    XCTAssertEqual(src_guide->bottom()->value(), 12.0f);
+    XCTAssertEqual(src_guide->top()->value(), 13.0f);
+    XCTAssertEqual(dst_guide->left()->value(), 15.0f);
+    XCTAssertEqual(dst_guide->right()->value(), 17.0f);
+    XCTAssertEqual(dst_guide->bottom()->value(), 19.0f);
+    XCTAssertEqual(dst_guide->top()->value(), 21.0f);
 
-    XCTAssertEqual(src_guide_rect->left()->value(), 10.0f);
-    XCTAssertEqual(src_guide_rect->right()->value(), 11.0f);
-    XCTAssertEqual(src_guide_rect->bottom()->value(), 12.0f);
-    XCTAssertEqual(src_guide_rect->top()->value(), 13.0f);
-    XCTAssertEqual(dst_guide_rect->left()->value(), 15.0f);
-    XCTAssertEqual(dst_guide_rect->right()->value(), 17.0f);
-    XCTAssertEqual(dst_guide_rect->bottom()->value(), 19.0f);
-    XCTAssertEqual(dst_guide_rect->top()->value(), 21.0f);
+    canceller->cancel();
 }
 
-- (void)test_fixed_layout_value_changed {
-    auto src_guide = layout_guide::make_shared(2.0f);
-    auto dst_guide = layout_guide::make_shared(-4.0f);
+- (void)test_layout_constant_value_changed {
+    auto const src_guide = layout_guide::make_shared(2.0f);
+    auto const dst_guide = layout_guide::make_shared(-4.0f);
 
-    auto layout = src_guide->observe([&dst_guide](float const &value) { dst_guide->set_value(value + 1.0f); }).sync();
+    auto const canceller = layout(src_guide, dst_guide, [](float const &value) { return value + 1.0f; }).sync();
 
     XCTAssertEqual(dst_guide->value(), 3.0f);
 
     src_guide->set_value(5.0f);
 
     XCTAssertEqual(dst_guide->value(), 6.0f);
+
+    canceller->cancel();
 }
 
 #pragma mark -
 
 - (void)test_min_layout {
-    auto src_guide_0 = layout_guide::make_shared(1.0f);
-    auto src_guide_1 = layout_guide::make_shared(2.0f);
-    auto dst_guide = layout_guide::make_shared(-1.0f);
+    auto const src_guide_0 = layout_guide::make_shared(1.0f);
+    auto const src_guide_1 = layout_guide::make_shared(2.0f);
+    auto const dst_guide = layout_guide::make_shared(-1.0f);
 
-    auto cache0 = std::make_shared<std::optional<float>>();
-    auto cache1 = std::make_shared<std::optional<float>>();
+    struct cache {
+        std::optional<float> value0;
+        std::optional<float> value1;
 
-    auto set_min = [&dst_guide, cache0, cache1] {
-        if (cache0->has_value() && cache1->has_value()) {
-            dst_guide->set_value(std::min(**cache0, **cache1));
+        std::optional<float> min() {
+            if (value0.has_value() && value1.has_value()) {
+                return std::min(value0.value(), value1.value());
+            } else if (value0.has_value()) {
+                return value0.value();
+            } else if (value1.has_value()) {
+                return value1.value();
+            } else {
+                return std::nullopt;
+            }
         }
     };
 
-    auto canceller0 = src_guide_0
-                          ->observe([cache0, set_min](float const &value) {
-                              *cache0 = value;
-                              set_min();
-                          })
-                          .sync();
+    auto const cache = std::make_shared<struct cache>();
 
-    auto canceller1 = src_guide_1
-                          ->observe([cache1, set_min](float const &value) {
-                              *cache1 = value;
-                              set_min();
-                          })
-                          .sync();
+    auto canceller0 = layout(src_guide_0, dst_guide, [cache](float const &value) {
+                          cache->value0 = value;
+                          return *cache->min();
+                      }).sync();
+
+    auto canceller1 = layout(src_guide_1, dst_guide, [cache](float const &value) {
+                          cache->value1 = value;
+                          return *cache->min();
+                      }).sync();
 
     XCTAssertEqual(dst_guide->value(), 1.0f);
 
@@ -132,49 +134,6 @@ using namespace yas::ui;
     src_guide_1->set_value(1.0f);
 
     XCTAssertEqual(dst_guide->value(), 1.0f);
-}
-
-- (void)test_max_layout {
-    auto src_guide_0 = layout_guide::make_shared(1.0f);
-    auto src_guide_1 = layout_guide::make_shared(2.0f);
-    auto dst_guide = layout_guide::make_shared(3.0f);
-
-    auto cache0 = std::make_shared<std::optional<float>>();
-    auto cache1 = std::make_shared<std::optional<float>>();
-
-    auto set_max = [&dst_guide, cache0, cache1] {
-        if (cache0->has_value() && cache1->has_value()) {
-            dst_guide->set_value(std::max(**cache0, **cache1));
-        }
-    };
-
-    auto canceller0 = src_guide_0
-                          ->observe([cache0, set_max](float const &value) {
-                              *cache0 = value;
-                              set_max();
-                          })
-                          .sync();
-
-    auto canceller1 = src_guide_1
-                          ->observe([cache1, set_max](float const &value) {
-                              *cache1 = value;
-                              set_max();
-                          })
-                          .sync();
-
-    XCTAssertEqual(dst_guide->value(), 2.0f);
-
-    src_guide_0->set_value(5.0f);
-
-    XCTAssertEqual(dst_guide->value(), 5.0f);
-
-    src_guide_0->set_value(-1.0f);
-
-    XCTAssertEqual(dst_guide->value(), 2.0f);
-
-    src_guide_1->set_value(4.0f);
-
-    XCTAssertEqual(dst_guide->value(), 4.0f);
 }
 
 @end
