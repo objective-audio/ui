@@ -125,7 +125,9 @@ struct layout_guide_rect final : layout_region_target, layout_region_source {
     [[nodiscard]] std::shared_ptr<layout_guide> const &height() const;
 
     void set_horizontal_range(ui::range &&);
+    void set_horizontal_range(ui::range const &);
     void set_vertical_range(ui::range &&);
+    void set_vertical_range(ui::range const &);
     void set_ranges(region_ranges_args &&);
     void set_region(ui::region const &);
 

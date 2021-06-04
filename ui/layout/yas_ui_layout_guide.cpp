@@ -287,8 +287,16 @@ void layout_guide_rect::set_horizontal_range(range &&range) {
     this->_horizontal_range->set_range(std::move(range));
 }
 
+void layout_guide_rect::set_horizontal_range(ui::range const &range) {
+    this->_horizontal_range->set_range(range);
+}
+
 void layout_guide_rect::set_vertical_range(range &&range) {
     this->_vertical_range->set_range(std::move(range));
+}
+
+void layout_guide_rect::set_vertical_range(range const &range) {
+    this->_vertical_range->set_range(range);
 }
 
 void layout_guide_rect::set_ranges(region_ranges_args &&args) {
