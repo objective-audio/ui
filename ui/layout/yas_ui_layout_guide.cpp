@@ -244,14 +244,6 @@ layout_guide_rect::layout_guide_rect(ui::region region)
 
 layout_guide_rect::~layout_guide_rect() = default;
 
-std::shared_ptr<layout_guide_range> &layout_guide_rect::horizontal_range() {
-    return this->_horizontal_range;
-}
-
-std::shared_ptr<layout_guide_range> &layout_guide_rect::vertical_range() {
-    return this->_vertical_range;
-}
-
 std::shared_ptr<layout_guide_range> const &layout_guide_rect::horizontal_range() const {
     return this->_horizontal_range;
 }
