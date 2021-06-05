@@ -73,7 +73,7 @@ using namespace yas::ui;
     auto const dst_guide = layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
 
     auto const canceller = layout(src_guide, dst_guide, [](ui::region const &region) {
-                               return region + insets{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
+                               return region + region_insets{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
                            }).sync();
 
     XCTAssertEqual(src_guide->left()->value(), 10.0f);

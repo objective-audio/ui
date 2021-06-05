@@ -112,8 +112,6 @@ struct layout_guide_range final : layout_range_target, layout_range_source {
 struct layout_guide_rect final : layout_region_target, layout_region_source {
     virtual ~layout_guide_rect();
 
-    [[nodiscard]] std::shared_ptr<layout_guide_range> &horizontal_range();
-    [[nodiscard]] std::shared_ptr<layout_guide_range> &vertical_range();
     [[nodiscard]] std::shared_ptr<layout_guide_range> const &horizontal_range() const;
     [[nodiscard]] std::shared_ptr<layout_guide_range> const &vertical_range() const;
 

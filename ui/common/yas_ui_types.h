@@ -187,6 +187,18 @@ struct size {
     [[nodiscard]] static size const &zero();
 };
 
+struct range_insets {
+    float min;
+    float max;
+
+    bool operator==(range_insets const &rhs) const;
+    bool operator!=(range_insets const &rhs) const;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] static range_insets const &zero();
+};
+
 struct range {
     union {
         struct {
@@ -198,11 +210,16 @@ struct range {
 
     bool operator==(range const &rhs) const;
     bool operator!=(range const &rhs) const;
+    range operator+(range_insets const &rhs) const;
+    range operator-(range_insets const &rhs) const;
+    range &operator+=(range_insets const &rhs);
+    range &operator-=(range_insets const &rhs);
 
     explicit operator bool() const;
 
     [[nodiscard]] float min() const;
     [[nodiscard]] float max() const;
+    [[nodiscard]] range_insets insets() const;
 
     [[nodiscard]] range combined(range const &) const;
     [[nodiscard]] std::optional<range> intersected(range const &) const;
@@ -210,7 +227,7 @@ struct range {
     [[nodiscard]] static range const &zero();
 };
 
-struct insets {
+struct region_insets {
     union {
         struct {
             float left;
@@ -221,12 +238,12 @@ struct insets {
         simd::float4 v;
     };
 
-    bool operator==(insets const &rhs) const;
-    bool operator!=(insets const &rhs) const;
+    bool operator==(region_insets const &rhs) const;
+    bool operator!=(region_insets const &rhs) const;
 
     explicit operator bool() const;
 
-    [[nodiscard]] static insets const &zero();
+    [[nodiscard]] static region_insets const &zero();
 };
 
 struct region {
@@ -240,10 +257,10 @@ struct region {
 
     bool operator==(region const &rhs) const;
     bool operator!=(region const &rhs) const;
-    region operator+(insets const &rhs) const;
-    region operator-(insets const &rhs) const;
-    region &operator+=(insets const &rhs);
-    region &operator-=(insets const &rhs);
+    region operator+(region_insets const &rhs) const;
+    region operator-(region_insets const &rhs) const;
+    region &operator+=(region_insets const &rhs);
+    region &operator-=(region_insets const &rhs);
 
     explicit operator bool() const;
 
@@ -253,7 +270,7 @@ struct region {
     [[nodiscard]] float right() const;
     [[nodiscard]] float bottom() const;
     [[nodiscard]] float top() const;
-    [[nodiscard]] insets insets() const;
+    [[nodiscard]] region_insets insets() const;
     [[nodiscard]] point center() const;
 
     [[nodiscard]] region combined(region const &) const;
@@ -322,10 +339,11 @@ std::string to_string(ui::pivot const &);
 std::string to_string(ui::uint_point const &);
 std::string to_string(ui::uint_size const &);
 std::string to_string(ui::uint_region const &);
-std::string to_string(ui::insets const &);
+std::string to_string(ui::region_insets const &);
 std::string to_string(ui::region const &);
 std::string to_string(ui::point const &);
 std::string to_string(ui::size const &);
+std::string to_string(ui::range_insets const &);
 std::string to_string(ui::range const &);
 std::string to_string(ui::appearance const &);
 std::string to_string(simd::float2 const &);
@@ -343,10 +361,11 @@ bool is_equal(simd::float4x4 const &, simd::float4x4 const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_size const &);
 std::ostream &operator<<(std::ostream &, yas::ui::uint_region const &);
-std::ostream &operator<<(std::ostream &, yas::ui::insets const &);
+std::ostream &operator<<(std::ostream &, yas::ui::region_insets const &);
 std::ostream &operator<<(std::ostream &, yas::ui::region const &);
 std::ostream &operator<<(std::ostream &, yas::ui::point const &);
 std::ostream &operator<<(std::ostream &, yas::ui::size const &);
+std::ostream &operator<<(std::ostream &, yas::ui::range_insets const &);
 std::ostream &operator<<(std::ostream &, yas::ui::range const &);
 std::ostream &operator<<(std::ostream &, yas::ui::appearance const &);
 
