@@ -30,7 +30,7 @@ struct layout_animator_args final {
     double duration = 0.3;
 };
 
-struct layout_animator {
+struct layout_animator final {
     ~layout_animator();
 
     void set_value_transformer(ui::transform_f);
