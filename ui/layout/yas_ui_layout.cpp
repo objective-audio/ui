@@ -32,6 +32,17 @@ observing::syncable ui::layout(std::shared_ptr<layout_point_source> const &src_g
         });
 }
 
+observing::syncable ui::layout(std::shared_ptr<layout_range_source> const &src_guide,
+                               std::shared_ptr<layout_range_target> const &dst_target,
+                               std::function<ui::range(ui::range const &)> &&convert) {
+    return src_guide->observe_layout_range(
+        [weak_target = to_weak(dst_target), convert = std::move(convert)](ui::range const &range) {
+            if (auto const target = weak_target.lock()) {
+                target->set_layout_range(convert(range));
+            }
+        });
+}
+
 observing::syncable ui::layout(std::shared_ptr<layout_region_source> const &src_guide,
                                std::shared_ptr<layout_region_target> const &dst_target,
                                std::function<ui::region(ui::region const &)> &&convert) {
