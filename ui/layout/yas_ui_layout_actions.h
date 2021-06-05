@@ -9,7 +9,7 @@
 
 namespace yas::ui {
 struct layout_action_args final {
-    std::weak_ptr<layout_guide> target;
+    std::weak_ptr<layout_guide_value> target;
     float begin_value;
     float end_value;
 

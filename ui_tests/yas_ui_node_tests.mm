@@ -625,7 +625,7 @@ struct test_render_encoder : render_encodable {
 }
 
 - (void)test_attach_x_layout_guide {
-    auto x_guide = layout_guide::make_shared(-1.0f);
+    auto x_guide = layout_guide_value::make_shared(-1.0f);
 
     auto node = node::make_shared();
     node->attach_x_layout_guide(*x_guide);
@@ -638,7 +638,7 @@ struct test_render_encoder : render_encodable {
 }
 
 - (void)test_attach_y_layout_guide {
-    auto y_guide = layout_guide::make_shared(-1.0f);
+    auto y_guide = layout_guide_value::make_shared(-1.0f);
 
     auto node = node::make_shared();
     node->attach_y_layout_guide(*y_guide);

@@ -10,8 +10,8 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct layout_guide final : action_target, layout_value_target, layout_value_source {
-    virtual ~layout_guide();
+struct layout_guide_value final : action_target, layout_value_target, layout_value_source {
+    virtual ~layout_guide_value();
 
     void set_value(float const);
     float const &value() const;
@@ -21,20 +21,20 @@ struct layout_guide final : action_target, layout_value_target, layout_value_sou
 
     [[nodiscard]] observing::syncable observe(observing::caller<float>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<layout_guide> make_shared();
-    [[nodiscard]] static std::shared_ptr<layout_guide> make_shared(float const);
+    [[nodiscard]] static std::shared_ptr<layout_guide_value> make_shared();
+    [[nodiscard]] static std::shared_ptr<layout_guide_value> make_shared(float const);
 
    private:
     observing::value::holder_ptr<float> _value;
     observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
     std::optional<float> _pushed_value;
 
-    explicit layout_guide(float const);
+    explicit layout_guide_value(float const);
 
-    layout_guide(layout_guide const &) = delete;
-    layout_guide(layout_guide &&) = delete;
-    layout_guide &operator=(layout_guide const &) = delete;
-    layout_guide &operator=(layout_guide &&) = delete;
+    layout_guide_value(layout_guide_value const &) = delete;
+    layout_guide_value(layout_guide_value &&) = delete;
+    layout_guide_value &operator=(layout_guide_value const &) = delete;
+    layout_guide_value &operator=(layout_guide_value &&) = delete;
 
     void set_layout_value(float const) override;
     observing::syncable observe_layout_value(std::function<void(float const &)> &&) override;
@@ -43,8 +43,8 @@ struct layout_guide final : action_target, layout_value_target, layout_value_sou
 struct layout_guide_point final : layout_point_target, layout_point_source {
     virtual ~layout_guide_point();
 
-    [[nodiscard]] std::shared_ptr<layout_guide> const &x() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &y() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &x() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &y() const;
 
     void set_point(ui::point &&);
     void set_point(ui::point const &);
@@ -59,8 +59,8 @@ struct layout_guide_point final : layout_point_target, layout_point_source {
     [[nodiscard]] static std::shared_ptr<layout_guide_point> make_shared(ui::point);
 
    private:
-    std::shared_ptr<layout_guide> _x_guide;
-    std::shared_ptr<layout_guide> _y_guide;
+    std::shared_ptr<layout_guide_value> _x_guide;
+    std::shared_ptr<layout_guide_value> _y_guide;
 
     explicit layout_guide_point(ui::point &&);
 
@@ -76,9 +76,9 @@ struct layout_guide_point final : layout_point_target, layout_point_source {
 struct layout_guide_range final : layout_range_target, layout_range_source {
     virtual ~layout_guide_range();
 
-    [[nodiscard]] std::shared_ptr<layout_guide> const &min() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &max() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &length() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &min() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &max() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &length() const;
 
     void set_range(ui::range const &);
     [[nodiscard]] ui::range range() const;
@@ -92,9 +92,9 @@ struct layout_guide_range final : layout_range_target, layout_range_source {
     [[nodiscard]] static std::shared_ptr<layout_guide_range> make_shared(ui::range);
 
    private:
-    std::shared_ptr<layout_guide> _min_guide;
-    std::shared_ptr<layout_guide> _max_guide;
-    std::shared_ptr<layout_guide> _length_guide;
+    std::shared_ptr<layout_guide_value> _min_guide;
+    std::shared_ptr<layout_guide_value> _max_guide;
+    std::shared_ptr<layout_guide_value> _length_guide;
     observing::cancellable_ptr _min_canceller;
     observing::cancellable_ptr _max_canceller;
 
@@ -117,12 +117,12 @@ struct layout_guide_rect final : layout_region_target, layout_region_source {
     [[nodiscard]] std::shared_ptr<layout_guide_range> const &horizontal_range() const;
     [[nodiscard]] std::shared_ptr<layout_guide_range> const &vertical_range() const;
 
-    [[nodiscard]] std::shared_ptr<layout_guide> const &left() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &right() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &bottom() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &top() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &width() const;
-    [[nodiscard]] std::shared_ptr<layout_guide> const &height() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &left() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &right() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &bottom() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &top() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &width() const;
+    [[nodiscard]] std::shared_ptr<layout_guide_value> const &height() const;
 
     void set_horizontal_range(ui::range &&);
     void set_horizontal_range(ui::range const &);
@@ -159,8 +159,8 @@ struct layout_guide_rect final : layout_region_target, layout_region_source {
 };
 
 struct layout_guide_pair {
-    std::shared_ptr<layout_guide> source;
-    std::shared_ptr<layout_guide> destination;
+    std::shared_ptr<layout_guide_value> source;
+    std::shared_ptr<layout_guide_value> destination;
 };
 
 struct layout_guide_point_pair {

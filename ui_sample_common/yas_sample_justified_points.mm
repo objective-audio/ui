@@ -13,12 +13,12 @@ static std::size_t constexpr x_point_count = 16;
 static std::size_t constexpr y_point_count = 8;
 static std::size_t constexpr all_point_count = x_point_count + y_point_count;
 
-static std::vector<std::shared_ptr<layout_guide>> make_layout_guides(std::size_t const count) {
-    std::vector<std::shared_ptr<layout_guide>> guides;
+static std::vector<std::shared_ptr<layout_guide_value>> make_layout_guides(std::size_t const count) {
+    std::vector<std::shared_ptr<layout_guide_value>> guides;
     guides.reserve(count);
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
-        guides.emplace_back(layout_guide::make_shared());
+        guides.emplace_back(layout_guide_value::make_shared());
     }
     return guides;
 }
@@ -37,7 +37,7 @@ sample::justified_points::justified_points()
                 pool->cancel();
 
                 if (renderer) {
-                    std::vector<std::weak_ptr<layout_guide>> x_receivers;
+                    std::vector<std::weak_ptr<layout_guide_value>> x_receivers;
                     for (auto &guide : this->_x_layout_guides) {
                         x_receivers.push_back(to_weak(guide));
                     }
@@ -73,7 +73,7 @@ sample::justified_points::justified_points()
                         }
                     }
 
-                    std::vector<std::weak_ptr<layout_guide>> y_receivers;
+                    std::vector<std::weak_ptr<layout_guide_value>> y_receivers;
                     for (auto &guide : this->_y_layout_guides) {
                         y_receivers.push_back(to_weak(guide));
                     }

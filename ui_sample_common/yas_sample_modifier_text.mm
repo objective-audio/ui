@@ -9,7 +9,7 @@ using namespace yas;
 using namespace yas::ui;
 
 sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atlas,
-                                     std::shared_ptr<layout_guide> const &bottom_guide)
+                                     std::shared_ptr<layout_guide_value> const &bottom_guide)
     : _strings(
           strings::make_shared({.font_atlas = font_atlas, .max_word_count = 64, .alignment = layout_alignment::max})),
       _bottom_guide(bottom_guide) {
@@ -102,6 +102,6 @@ void sample::modifier_text::_update_text(std::shared_ptr<event> const &event,
 }
 
 sample::modifier_text_ptr sample::modifier_text::make_shared(std::shared_ptr<font_atlas> const &atlas,
-                                                             std::shared_ptr<layout_guide> const &bottom_guide) {
+                                                             std::shared_ptr<layout_guide_value> const &bottom_guide) {
     return std::shared_ptr<modifier_text>(new modifier_text{atlas, bottom_guide});
 }
