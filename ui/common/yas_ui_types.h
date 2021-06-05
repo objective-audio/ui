@@ -30,7 +30,7 @@ class event_manager;
 class font_atlas;
 class image;
 class layout_animator;
-class layout_guide;
+class layout_guide_value;
 class layout_guide_point;
 class layout_guide_range;
 class layout_guide_rect;

@@ -22,24 +22,24 @@ using namespace yas::ui;
     [super tearDown];
 }
 
-#pragma mark - layout_guide
+#pragma mark - layout_guide_value
 
 - (void)test_create_guide {
-    auto guide = layout_guide::make_shared();
+    auto guide = layout_guide_value::make_shared();
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 0.0f);
 }
 
 - (void)test_create_guide_with_value {
-    auto guide = layout_guide::make_shared(1.0f);
+    auto guide = layout_guide_value::make_shared(1.0f);
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 1.0f);
 }
 
 - (void)test_notify_caller {
-    auto guide = layout_guide::make_shared();
+    auto guide = layout_guide_value::make_shared();
 
     float notified_new_value = 0.0f;
 
@@ -80,7 +80,7 @@ using namespace yas::ui;
 }
 
 - (void)test_notify_caller_canceled {
-    auto guide = layout_guide::make_shared(1.0f);
+    auto guide = layout_guide_value::make_shared(1.0f);
 
     bool called = false;
 

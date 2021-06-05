@@ -9,22 +9,23 @@
 using namespace yas;
 using namespace yas::ui;
 
-#pragma mark - layout_guide
+#pragma mark - layout_guide_value
 
-layout_guide::layout_guide(float const value) : _value(observing::value::holder<float>::make_shared(value)) {
+layout_guide_value::layout_guide_value(float const value)
+    : _value(observing::value::holder<float>::make_shared(value)) {
 }
 
-layout_guide::~layout_guide() = default;
+layout_guide_value::~layout_guide_value() = default;
 
-void layout_guide::set_value(float const value) {
+void layout_guide_value::set_value(float const value) {
     this->_value->set_value(value);
 }
 
-float const &layout_guide::value() const {
+float const &layout_guide_value::value() const {
     return this->_value->value();
 }
 
-void layout_guide::push_notify_waiting() {
+void layout_guide_value::push_notify_waiting() {
     if (this->_wait_count->value() == 0) {
         this->_pushed_value = this->_value->value();
     }
@@ -32,7 +33,7 @@ void layout_guide::push_notify_waiting() {
     this->_wait_count->set_value(this->_wait_count->value() + 1);
 }
 
-void layout_guide::pop_notify_waiting() {
+void layout_guide_value::pop_notify_waiting() {
     this->_wait_count->set_value(this->_wait_count->value() - 1);
 
     if (this->_wait_count == 0) {
@@ -40,7 +41,7 @@ void layout_guide::pop_notify_waiting() {
     }
 }
 
-observing::syncable layout_guide::observe(observing::caller<float>::handler_f &&handler) {
+observing::syncable layout_guide_value::observe(observing::caller<float>::handler_f &&handler) {
     auto value_syncable = this->_value->observe([handler, this](float const &value) {
         if (this->_wait_count->value() == 0) {
             handler(value);
@@ -61,35 +62,35 @@ observing::syncable layout_guide::observe(observing::caller<float>::handler_f &&
     return value_syncable;
 }
 
-void layout_guide::set_layout_value(float const value) {
+void layout_guide_value::set_layout_value(float const value) {
     this->set_value(value);
 }
 
-observing::syncable layout_guide::observe_layout_value(std::function<void(float const &)> &&handler) {
+observing::syncable layout_guide_value::observe_layout_value(std::function<void(float const &)> &&handler) {
     return this->observe(std::move(handler));
 }
 
-std::shared_ptr<layout_guide> layout_guide::make_shared() {
+std::shared_ptr<layout_guide_value> layout_guide_value::make_shared() {
     return make_shared(0.0f);
 }
 
-std::shared_ptr<layout_guide> layout_guide::make_shared(float const value) {
-    return std::shared_ptr<layout_guide>{new layout_guide{value}};
+std::shared_ptr<layout_guide_value> layout_guide_value::make_shared(float const value) {
+    return std::shared_ptr<layout_guide_value>{new layout_guide_value{value}};
 }
 
 #pragma mark - layout_guide_point
 
 layout_guide_point::layout_guide_point(ui::point &&origin)
-    : _x_guide(layout_guide::make_shared(origin.x)), _y_guide(layout_guide::make_shared(origin.y)) {
+    : _x_guide(layout_guide_value::make_shared(origin.x)), _y_guide(layout_guide_value::make_shared(origin.y)) {
 }
 
 layout_guide_point::~layout_guide_point() = default;
 
-std::shared_ptr<layout_guide> const &layout_guide_point::x() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_point::x() const {
     return this->_x_guide;
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_point::y() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_point::y() const {
     return this->_y_guide;
 }
 
@@ -151,9 +152,9 @@ std::shared_ptr<layout_guide_point> layout_guide_point::make_shared(ui::point po
 #pragma mark - layout_guide_range
 
 layout_guide_range::layout_guide_range(ui::range &&range)
-    : _min_guide(layout_guide::make_shared(range.min())),
-      _max_guide(layout_guide::make_shared(range.max())),
-      _length_guide(layout_guide::make_shared(range.length)) {
+    : _min_guide(layout_guide_value::make_shared(range.min())),
+      _max_guide(layout_guide_value::make_shared(range.max())),
+      _length_guide(layout_guide_value::make_shared(range.length)) {
     this->_min_canceller =
         this->_min_guide
             ->observe([this](float const &min) { this->_length_guide->set_value(this->max()->value() - min); })
@@ -166,15 +167,15 @@ layout_guide_range::layout_guide_range(ui::range &&range)
 
 layout_guide_range::~layout_guide_range() = default;
 
-std::shared_ptr<layout_guide> const &layout_guide_range::min() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_range::min() const {
     return this->_min_guide;
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_range::max() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_range::max() const {
     return this->_max_guide;
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_range::length() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_range::length() const {
     return this->_length_guide;
 }
 
@@ -259,27 +260,27 @@ std::shared_ptr<layout_guide_range> const &layout_guide_rect::vertical_range() c
     return this->_vertical_range;
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_rect::left() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_rect::left() const {
     return this->horizontal_range()->min();
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_rect::right() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_rect::right() const {
     return this->horizontal_range()->max();
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_rect::bottom() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_rect::bottom() const {
     return this->vertical_range()->min();
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_rect::top() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_rect::top() const {
     return this->vertical_range()->max();
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_rect::width() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_rect::width() const {
     return this->horizontal_range()->length();
 }
 
-std::shared_ptr<layout_guide> const &layout_guide_rect::height() const {
+std::shared_ptr<layout_guide_value> const &layout_guide_rect::height() const {
     return this->vertical_range()->length();
 }
 

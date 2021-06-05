@@ -24,7 +24,7 @@ using namespace std::chrono_literals;
 }
 
 - (void)test_update_layout_action {
-    auto target = layout_guide::make_shared();
+    auto target = layout_guide_value::make_shared();
     auto time = std::chrono::system_clock::now();
     auto action =
         make_action({.target = target, .begin_value = 0.0f, .end_value = 1.0f, .duration = 1.0, .begin_time = time});
