@@ -149,6 +149,25 @@ size const &size::zero() {
     return _zero;
 }
 
+#pragma mark - range_insets
+
+bool range_insets::operator==(range_insets const &rhs) const {
+    return this->min == rhs.min && this->max == rhs.max;
+}
+
+bool range_insets::operator!=(range_insets const &rhs) const {
+    return !(*this == rhs);
+}
+
+range_insets::operator bool() const {
+    return this->min != 0.0f && this->max != 0.0f;
+}
+
+range_insets const &range_insets::zero() {
+    static range_insets const _zero{.min = 0.0f, .max = 0.0f};
+    return _zero;
+}
+
 #pragma mark - range
 
 bool range::operator==(range const &rhs) const {
@@ -157,6 +176,28 @@ bool range::operator==(range const &rhs) const {
 
 bool range::operator!=(range const &rhs) const {
     return this->location != rhs.location || this->length != rhs.length;
+}
+
+range range::operator+(range_insets const &rhs) const {
+    float const min = this->min() + rhs.min;
+    float const max = this->max() + rhs.max;
+    return range{.location = min, .length = max - min};
+}
+
+range range::operator-(range_insets const &rhs) const {
+    float const min = this->min() - rhs.min;
+    float const max = this->max() - rhs.max;
+    return range{.location = min, .length = max - min};
+}
+
+range &range::operator+=(range_insets const &rhs) {
+    *this = *this + rhs;
+    return *this;
+}
+
+range &range::operator-=(range_insets const &rhs) {
+    *this = *this - rhs;
+    return *this;
 }
 
 range::operator bool() const {
@@ -169,6 +210,10 @@ float range::min() const {
 
 float range::max() const {
     return std::max(this->location, this->location + this->length);
+}
+
+range_insets range::insets() const {
+    return {.min = this->min(), .max = this->max()};
 }
 
 range range::combined(range const &rhs) const {
@@ -193,22 +238,22 @@ range const &range::zero() {
     return _zero;
 }
 
-#pragma mark - insets
+#pragma mark - region_insets
 
-bool insets::operator==(insets const &rhs) const {
+bool region_insets::operator==(region_insets const &rhs) const {
     return this->left == rhs.left && this->right == rhs.right && this->bottom == rhs.bottom && this->top == rhs.top;
 }
 
-bool insets::operator!=(insets const &rhs) const {
+bool region_insets::operator!=(region_insets const &rhs) const {
     return this->left != rhs.left || this->right != rhs.right || this->bottom != rhs.bottom || this->top != rhs.top;
 }
 
-insets::operator bool() const {
+region_insets::operator bool() const {
     return this->left != 0.0f || this->right != 0.0f || this->bottom != 0.0f || this->top != 0.0f;
 }
 
-insets const &insets::zero() {
-    static insets const _zero{.left = 0.0f, .right = 0.0f, .bottom = 0.0f, .top = 0.0f};
+region_insets const &region_insets::zero() {
+    static region_insets const _zero{.left = 0.0f, .right = 0.0f, .bottom = 0.0f, .top = 0.0f};
     return _zero;
 }
 
@@ -222,7 +267,7 @@ bool region::operator!=(region const &rhs) const {
     return this->origin != rhs.origin || this->size != rhs.size;
 }
 
-region region::operator+(ui::insets const &rhs) const {
+region region::operator+(ui::region_insets const &rhs) const {
     float const left = this->left() + rhs.left;
     float const right = this->right() + rhs.right;
     float const bottom = this->bottom() + rhs.bottom;
@@ -230,7 +275,7 @@ region region::operator+(ui::insets const &rhs) const {
     return region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
 }
 
-region region::operator-(ui::insets const &rhs) const {
+region region::operator-(ui::region_insets const &rhs) const {
     float const left = this->left() - rhs.left;
     float const right = this->right() - rhs.right;
     float const bottom = this->bottom() - rhs.bottom;
@@ -238,12 +283,12 @@ region region::operator-(ui::insets const &rhs) const {
     return region{.origin = {left, bottom}, .size = {right - left, top - bottom}};
 }
 
-region &region::operator+=(ui::insets const &rhs) {
+region &region::operator+=(ui::region_insets const &rhs) {
     *this = *this + rhs;
     return *this;
 }
 
-region &region::operator-=(ui::insets const &rhs) {
+region &region::operator-=(ui::region_insets const &rhs) {
     *this = *this - rhs;
     return *this;
 }
@@ -276,8 +321,9 @@ float region::top() const {
     return std::max(this->origin.y, this->origin.y + this->size.height);
 }
 
-insets region::insets() const {
-    return ui::insets{.left = this->left(), .right = this->right(), .bottom = this->bottom(), .top = this->top()};
+region_insets region::insets() const {
+    return ui::region_insets{
+        .left = this->left(), .right = this->right(), .bottom = this->bottom(), .top = this->top()};
 }
 
 point region::center() const {
@@ -400,7 +446,7 @@ std::string yas::to_string(uint_region const &region) {
     return "{" + to_string(region.origin) + ", " + to_string(region.size) + "}";
 }
 
-std::string yas::to_string(insets const &insets) {
+std::string yas::to_string(region_insets const &insets) {
     return "{" + std::to_string(insets.left) + ", " + std::to_string(insets.right) + ", " +
            std::to_string(insets.bottom) + ", " + std::to_string(insets.top) + "}";
 }
@@ -415,6 +461,10 @@ std::string yas::to_string(point const &point) {
 
 std::string yas::to_string(size const &size) {
     return "{" + std::to_string(size.width) + ", " + std::to_string(size.height) + "}";
+}
+
+std::string yas::to_string(ui::range_insets const &insets) {
+    return "{" + std::to_string(insets.min) + ", " + std::to_string(insets.max) + "}";
 }
 
 std::string yas::to_string(range const &range) {
@@ -483,7 +533,7 @@ std::ostream &operator<<(std::ostream &os, yas::ui::uint_region const &region) {
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, yas::ui::insets const &insets) {
+std::ostream &operator<<(std::ostream &os, yas::ui::region_insets const &insets) {
     os << to_string(insets);
     return os;
 }
@@ -500,6 +550,11 @@ std::ostream &operator<<(std::ostream &os, yas::ui::point const &point) {
 
 std::ostream &operator<<(std::ostream &os, yas::ui::size const &size) {
     os << to_string(size);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::range_insets const &insets) {
+    os << to_string(insets);
     return os;
 }
 

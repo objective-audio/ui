@@ -28,8 +28,8 @@ sample::inputted_text::inputted_text(std::shared_ptr<font_atlas> const &font_atl
 
                     renderer->safe_area_layout_guide_rect()
                         ->observe([this](region const &region) {
-                            this->_strings->frame_layout_guide_rect()->set_region(region +
-                                                                                  insets{4.0f, -4.0f, 4.0f, -4.0f});
+                            this->_strings->frame_layout_guide_rect()->set_region(
+                                region + region_insets{4.0f, -4.0f, 4.0f, -4.0f});
                         })
                         .sync()
                         ->add_to(*pool);
