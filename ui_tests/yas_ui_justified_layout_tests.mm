@@ -61,11 +61,11 @@ using namespace yas::ui;
 }
 
 - (void)test_observe {
-    auto first_src_guide = layout_guide_value::make_shared(1.0f);
-    auto second_src_guide = layout_guide_value::make_shared(2.0f);
-    auto first_dst_guide = layout_guide_value::make_shared();
-    auto second_dst_guide = layout_guide_value::make_shared();
-    std::array<std::shared_ptr<layout_guide_value>, 2> receivers{first_dst_guide, second_dst_guide};
+    auto first_src_guide = layout_value_guide::make_shared(1.0f);
+    auto second_src_guide = layout_value_guide::make_shared(2.0f);
+    auto first_dst_guide = layout_value_guide::make_shared();
+    auto second_dst_guide = layout_value_guide::make_shared();
+    std::array<std::shared_ptr<layout_value_guide>, 2> receivers{first_dst_guide, second_dst_guide};
 
     auto first_cache = std::make_shared<std::optional<float>>();
     auto second_cache = std::make_shared<std::optional<float>>();
@@ -100,9 +100,9 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_value_changed_one_dst {
-    auto first_src_guide = layout_guide_value::make_shared(0.0f);
-    auto second_src_guide = layout_guide_value::make_shared(0.0f);
-    auto dst_guide = layout_guide_value::make_shared(100.0f);
+    auto first_src_guide = layout_value_guide::make_shared(0.0f);
+    auto second_src_guide = layout_value_guide::make_shared(0.0f);
+    auto dst_guide = layout_value_guide::make_shared(100.0f);
 
     auto first_cache = std::make_shared<std::optional<float>>();
     auto second_cache = std::make_shared<std::optional<float>>();
@@ -145,12 +145,12 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_many_dst {
-    auto first_src_guide = layout_guide_value::make_shared(-1.0f);
-    auto second_src_guide = layout_guide_value::make_shared(3.0f);
-    auto dst_guide_0 = layout_guide_value::make_shared();
-    auto dst_guide_1 = layout_guide_value::make_shared();
-    auto dst_guide_2 = layout_guide_value::make_shared();
-    std::array<std::shared_ptr<layout_guide_value>, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
+    auto first_src_guide = layout_value_guide::make_shared(-1.0f);
+    auto second_src_guide = layout_value_guide::make_shared(3.0f);
+    auto dst_guide_0 = layout_value_guide::make_shared();
+    auto dst_guide_1 = layout_value_guide::make_shared();
+    auto dst_guide_2 = layout_value_guide::make_shared();
+    std::array<std::shared_ptr<layout_value_guide>, 3> receivers{dst_guide_0, dst_guide_1, dst_guide_2};
 
     auto first_cache = std::make_shared<std::optional<float>>();
     auto second_cache = std::make_shared<std::optional<float>>();
@@ -184,9 +184,9 @@ using namespace yas::ui;
 }
 
 - (void)test_zero_ratio {
-    auto first_src_guide = layout_guide_value::make_shared(0.0f);
-    auto second_src_guide = layout_guide_value::make_shared(2.0f);
-    auto dst_guide = layout_guide_value::make_shared();
+    auto first_src_guide = layout_value_guide::make_shared(0.0f);
+    auto second_src_guide = layout_value_guide::make_shared(2.0f);
+    auto dst_guide = layout_value_guide::make_shared();
 
     auto first_cache = std::make_shared<std::optional<float>>();
     auto second_cache = std::make_shared<std::optional<float>>();

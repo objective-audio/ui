@@ -17,33 +17,33 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                                std::shared_ptr<renderer> const &renderer) mutable {
             if (renderer) {
                 auto const &strings = this->strings();
-                auto &strings_guide_rect = strings->frame_layout_guide_rect();
-                auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
+                auto &strings_frame_guide = strings->frame_layout_region_guide();
+                auto const &safe_area_guide = renderer->safe_area_layout_region_guide();
 
                 auto pool = observing::canceller_pool::make_shared();
 
-                safe_area_guide_rect->left()
-                    ->observe([weak_rect = to_weak(strings_guide_rect)](float const &value) {
-                        if (auto const rect = weak_rect.lock()) {
-                            rect->right()->set_value(value + 4.0f);
+                safe_area_guide->left()
+                    ->observe([weak_rect = to_weak(strings_frame_guide)](float const &value) {
+                        if (auto const region = weak_rect.lock()) {
+                            region->right()->set_value(value + 4.0f);
                         }
                     })
                     .sync()
                     ->add_to(*pool);
 
-                safe_area_guide_rect->right()
-                    ->observe([weak_rect = to_weak(strings_guide_rect)](float const &value) {
-                        if (auto const rect = weak_rect.lock()) {
-                            rect->right()->set_value(value - 4.0f);
+                safe_area_guide->right()
+                    ->observe([weak_guide = to_weak(strings_frame_guide)](float const &value) {
+                        if (auto const guide = weak_guide.lock()) {
+                            guide->right()->set_value(value - 4.0f);
                         }
                     })
                     .sync()
                     ->add_to(*pool);
 
-                safe_area_guide_rect->bottom()
-                    ->observe([weak_rect = to_weak(strings_guide_rect)](float const &value) {
-                        if (auto const rect = weak_rect.lock()) {
-                            rect->bottom()->set_value(value + 4.0f);
+                safe_area_guide->bottom()
+                    ->observe([weak_guide = to_weak(strings_frame_guide)](float const &value) {
+                        if (auto const guide = weak_guide.lock()) {
+                            guide->bottom()->set_value(value + 4.0f);
                         }
                     })
                     .sync()
@@ -60,11 +60,11 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                         distance += font_atlas->ascent() + font_atlas->descent();
                     }
 
-                    strings->frame_layout_guide_rect()
+                    strings->frame_layout_region_guide()
                         ->bottom()
                         ->observe([weak_strings = to_weak(strings), distance](float const &value) {
                             if (auto const strings = weak_strings.lock()) {
-                                strings->frame_layout_guide_rect()->top()->set_value(value + distance);
+                                strings->frame_layout_region_guide()->top()->set_value(value + distance);
                             }
                         })
                         .sync()

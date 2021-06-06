@@ -41,14 +41,14 @@ struct button final {
 
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
-    [[nodiscard]] std::shared_ptr<layout_guide_rect> const &layout_guide_rect();
+    [[nodiscard]] std::shared_ptr<layout_region_guide> const &layout_region_guide();
 
     [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &);
     [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count);
 
    private:
     std::shared_ptr<ui::rect_plane> _rect_plane;
-    std::shared_ptr<ui::layout_guide_rect> _layout_guide_rect;
+    std::shared_ptr<ui::layout_region_guide> _layout_region_guide;
     observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
     std::size_t _state_idx = 0;
     std::size_t _state_count;

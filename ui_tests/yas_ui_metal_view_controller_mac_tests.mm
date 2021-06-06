@@ -92,7 +92,7 @@ using namespace yas::ui;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"view_size_changed"];
 
-    auto canceller = renderer->view_layout_guide_rect()
+    auto canceller = renderer->view_layout_region_guide()
                          ->observe([&expectation](region const &) {
                              [expectation fulfill];
                              expectation = nil;

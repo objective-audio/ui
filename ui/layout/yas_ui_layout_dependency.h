@@ -11,25 +11,32 @@ namespace yas::ui {
 struct layout_value_source {
     virtual ~layout_value_source() = default;
 
-    virtual observing::syncable observe_layout_value(std::function<void(float const &)> &&) = 0;
+    [[nodiscard]] virtual observing::syncable observe_layout_value(std::function<void(float const &)> &&) = 0;
 };
 
 struct layout_point_source {
     virtual ~layout_point_source() = default;
 
-    virtual observing::syncable observe_layout_point(std::function<void(ui::point const &)> &&) = 0;
+    [[nodiscard]] virtual observing::syncable observe_layout_point(std::function<void(ui::point const &)> &&) = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_value_source> layout_x_value_source() = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_value_source> layout_y_value_source() = 0;
 };
 
 struct layout_range_source {
     virtual ~layout_range_source() = default;
 
-    virtual observing::syncable observe_layout_range(std::function<void(ui::range const &)> &&) = 0;
+    [[nodiscard]] virtual observing::syncable observe_layout_range(std::function<void(ui::range const &)> &&) = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_value_source> layout_min_value_source() = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_value_source> layout_max_value_source() = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_value_source> layout_length_value_source() = 0;
 };
 
 struct layout_region_source {
     virtual ~layout_region_source() = default;
 
-    virtual observing::syncable observe_layout_region(std::function<void(ui::region const &)> &&) = 0;
+    [[nodiscard]] virtual observing::syncable observe_layout_region(std::function<void(ui::region const &)> &&) = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_range_source> layout_horizontal_range_source() = 0;
+    [[nodiscard]] virtual std::shared_ptr<layout_range_source> layout_vertical_range_source() = 0;
 };
 
 struct layout_value_target {

@@ -39,7 +39,7 @@ struct main {
     sample::inputted_text_ptr _inputted_text = sample::inputted_text::make_shared(_font_atlas);
     sample::draw_call_text_ptr _draw_call_text = sample::draw_call_text::make_shared(_font_atlas);
     sample::modifier_text_ptr _modifier_text =
-        sample::modifier_text::make_shared(_font_atlas, _draw_call_text->strings()->frame_layout_guide_rect()->top());
+        sample::modifier_text::make_shared(_font_atlas, _draw_call_text->strings()->frame_layout_region_guide()->top());
     sample::bg_ptr _bg = sample::bg::make_shared();
     sample::cursor_over_planes_ptr _cursor_over_planes = sample::cursor_over_planes::make_shared();
     sample::big_button_ptr _big_button = sample::big_button::make_shared();

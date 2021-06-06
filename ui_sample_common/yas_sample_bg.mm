@@ -10,8 +10,8 @@ using namespace yas::ui;
 sample::bg::bg() {
     this->_rect_plane->node()->set_color({.v = 0.75f});
 
-    this->_rect_canceller =
-        this->_layout_guide_rect
+    this->_region_canceller =
+        this->_layout_region_guide
             ->observe([this](region const &region) { this->rect_plane()->data()->set_rect_position(region, 0); })
             .end();
 
@@ -21,8 +21,8 @@ sample::bg::bg() {
                                    std::shared_ptr<renderer> const &value) mutable {
                 if (value) {
                     canceller =
-                        value->safe_area_layout_guide_rect()
-                            ->observe([this](region const &region) { this->_layout_guide_rect->set_region(region); })
+                        value->safe_area_layout_region_guide()
+                            ->observe([this](region const &region) { this->_layout_region_guide->set_region(region); })
                             .sync();
                 } else {
                     canceller = nullptr;

@@ -50,8 +50,8 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system)
       _parallel_action(parallel_action::make_shared({})),
       _detector(detector::make_shared()),
       _event_manager(event_manager::make_shared()),
-      _view_layout_guide_rect(layout_guide_rect::make_shared()),
-      _safe_area_layout_guide_rect(layout_guide_rect::make_shared()),
+      _view_layout_region_guide(layout_region_guide::make_shared()),
+      _safe_area_layout_region_guide(layout_region_guide::make_shared()),
       _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
 }
 
@@ -120,12 +120,12 @@ std::shared_ptr<detector> const &renderer::detector() const {
     return this->_detector;
 }
 
-std::shared_ptr<layout_guide_rect> const &renderer::view_layout_guide_rect() const {
-    return this->_view_layout_guide_rect;
+std::shared_ptr<layout_region_guide> const &renderer::view_layout_region_guide() const {
+    return this->_view_layout_region_guide;
 }
 
-std::shared_ptr<layout_guide_rect> const &renderer::safe_area_layout_guide_rect() const {
-    return this->_safe_area_layout_guide_rect;
+std::shared_ptr<layout_region_guide> const &renderer::safe_area_layout_region_guide() const {
+    return this->_safe_area_layout_region_guide;
 }
 
 appearance renderer::appearance() const {
@@ -186,8 +186,8 @@ void renderer::view_size_will_change(yas_objc_view *const view, CGSize const dra
     }
 
     if (to_bool(update_view_size_result) || to_bool(update_safe_area_result)) {
-        this->_update_layout_guide_rect();
-        this->_update_safe_area_layout_guide_rect();
+        this->_update_layout_region_guide();
+        this->_update_safe_area_layout_region_guide();
 
         if (to_bool(update_scale_result)) {
             this->_scale_factor_notify->set_value(this->_scale_factor);
@@ -203,7 +203,7 @@ void renderer::view_safe_area_insets_did_change(yas_objc_view *const view, yas_e
     auto const update_result = this->_update_safe_area_insets(insets);
 
     if (to_bool(update_result)) {
-        this->_update_safe_area_layout_guide_rect();
+        this->_update_safe_area_layout_region_guide();
     }
 }
 
@@ -308,17 +308,17 @@ renderer::update_result renderer::_update_safe_area_insets(yas_edge_insets const
     }
 }
 
-void renderer::_update_layout_guide_rect() {
+void renderer::_update_layout_region_guide() {
     float const view_width = this->_view_size.width;
     float const view_height = this->_view_size.height;
 
-    this->_view_layout_guide_rect->set_region(
+    this->_view_layout_region_guide->set_region(
         {.origin = {-view_width * 0.5f, -view_height * 0.5f}, .size = {view_width, view_height}});
 
-    this->_updates.set(renderer_update_reason::view_rect);
+    this->_updates.set(renderer_update_reason::view_region);
 }
 
-void renderer::_update_safe_area_layout_guide_rect() {
+void renderer::_update_safe_area_layout_region_guide() {
     float const view_width = this->_view_size.width;
     float const view_height = this->_view_size.height;
     float const origin_x = -view_width * 0.5f + this->_safe_area_insets.left;
@@ -326,9 +326,9 @@ void renderer::_update_safe_area_layout_guide_rect() {
     float const width = view_width - this->_safe_area_insets.left - this->_safe_area_insets.right;
     float const height = view_height - this->_safe_area_insets.bottom - this->_safe_area_insets.top;
 
-    this->_safe_area_layout_guide_rect->set_region({.origin = {origin_x, origin_y}, .size = {width, height}});
+    this->_safe_area_layout_region_guide->set_region({.origin = {origin_x, origin_y}, .size = {width, height}});
 
-    this->_updates.set(renderer_update_reason::safe_area_rect);
+    this->_updates.set(renderer_update_reason::safe_area_region);
 }
 
 bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2) {

@@ -9,7 +9,7 @@ using namespace yas;
 using namespace yas::ui;
 
 sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atlas,
-                                     std::shared_ptr<layout_guide_value> const &bottom_guide)
+                                     std::shared_ptr<layout_value_guide> const &bottom_guide)
     : _strings(
           strings::make_shared({.font_atlas = font_atlas, .max_word_count = 64, .alignment = layout_alignment::max})),
       _bottom_guide(bottom_guide) {
@@ -29,25 +29,25 @@ sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atl
                         .end()
                         ->add_to(*pool);
 
-                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide_rect();
+                    auto const &safe_area_guide_rect = renderer->safe_area_layout_region_guide();
 
                     safe_area_guide_rect->left()
                         ->observe([this](float const &value) {
-                            this->_strings->frame_layout_guide_rect()->left()->set_value(value + 4.0f);
+                            this->_strings->frame_layout_region_guide()->left()->set_value(value + 4.0f);
                         })
                         .sync()
                         ->add_to(*pool);
 
                     safe_area_guide_rect->right()
                         ->observe([this](float const &value) {
-                            this->_strings->frame_layout_guide_rect()->right()->set_value(value - 4.0f);
+                            this->_strings->frame_layout_region_guide()->right()->set_value(value - 4.0f);
                         })
                         .sync()
                         ->add_to(*pool);
 
                     this->_bottom_guide
                         ->observe([this](float const &value) {
-                            this->_strings->frame_layout_guide_rect()->bottom()->set_value(value + 4.0f);
+                            this->_strings->frame_layout_region_guide()->bottom()->set_value(value + 4.0f);
                         })
                         .sync()
                         ->add_to(*pool);
@@ -61,10 +61,10 @@ sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atl
                                 distance += font_atlas->ascent() + font_atlas->descent();
                             }
 
-                            this->_strings->frame_layout_guide_rect()
+                            this->_strings->frame_layout_region_guide()
                                 ->bottom()
                                 ->observe([this, distance](float const &value) {
-                                    this->_strings->frame_layout_guide_rect()->top()->set_value(value + distance);
+                                    this->_strings->frame_layout_region_guide()->top()->set_value(value + distance);
                                 })
                                 .sync()
                                 ->set_to(top_layout);
@@ -102,6 +102,6 @@ void sample::modifier_text::_update_text(std::shared_ptr<event> const &event,
 }
 
 sample::modifier_text_ptr sample::modifier_text::make_shared(std::shared_ptr<font_atlas> const &atlas,
-                                                             std::shared_ptr<layout_guide_value> const &bottom_guide) {
+                                                             std::shared_ptr<layout_value_guide> const &bottom_guide) {
     return std::shared_ptr<modifier_text>(new modifier_text{atlas, bottom_guide});
 }

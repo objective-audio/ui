@@ -23,8 +23,8 @@ using namespace yas::ui;
 }
 
 - (void)test_layout_constant_with_value {
-    auto const src_guide = layout_guide_value::make_shared(0.5f);
-    auto const dst_guide = layout_guide_value::make_shared(0.25f);
+    auto const src_guide = layout_value_guide::make_shared(0.5f);
+    auto const dst_guide = layout_value_guide::make_shared(0.25f);
 
     auto const canceller = layout(src_guide, dst_guide, [](float const &value) { return value + 8.0f; }).sync();
 
@@ -35,8 +35,8 @@ using namespace yas::ui;
 }
 
 - (void)test_layout_constant_with_point {
-    auto const src_guide = layout_guide_point::make_shared({.x = 1.0f, .y = 2.0f});
-    auto const dst_guide = layout_guide_point::make_shared({.x = 3.0f, .y = 4.0f});
+    auto const src_guide = layout_point_guide::make_shared({.x = 1.0f, .y = 2.0f});
+    auto const dst_guide = layout_point_guide::make_shared({.x = 3.0f, .y = 4.0f});
 
     auto const canceller = layout(src_guide, dst_guide, [](ui::point const &point) {
                                return point + ui::point{.x = 0.5f, .y = 0.25f};
@@ -51,8 +51,8 @@ using namespace yas::ui;
 }
 
 - (void)test_layout_constant_with_range {
-    auto const src_guide = layout_guide_range::make_shared({.location = 1.0f, .length = 2.0f});
-    auto const dst_guide = layout_guide_range::make_shared({.location = 3.0f, .length = 4.0f});
+    auto const src_guide = layout_range_guide::make_shared({.location = 1.0f, .length = 2.0f});
+    auto const dst_guide = layout_range_guide::make_shared({.location = 3.0f, .length = 4.0f});
 
     auto const canceller = layout(src_guide, dst_guide, [](ui::range const &range) {
                                float const min = range.min() - 0.5f;
@@ -69,8 +69,8 @@ using namespace yas::ui;
 }
 
 - (void)test_layout_constant_with_region {
-    auto const src_guide = layout_guide_rect::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
-    auto const dst_guide = layout_guide_rect::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
+    auto const src_guide = layout_region_guide::make_shared({.origin = {10.0f, 12.0f}, .size = {1.0f, 1.0f}});
+    auto const dst_guide = layout_region_guide::make_shared({.origin = {100.0f, 110.0f}, .size = {120.0f, 130.0f}});
 
     auto const canceller = layout(src_guide, dst_guide, [](ui::region const &region) {
                                return region + region_insets{.left = 5.0f, .right = 6.0f, .bottom = 7.0f, .top = 8.0f};
@@ -89,8 +89,8 @@ using namespace yas::ui;
 }
 
 - (void)test_layout_constant_value_changed {
-    auto const src_guide = layout_guide_value::make_shared(2.0f);
-    auto const dst_guide = layout_guide_value::make_shared(-4.0f);
+    auto const src_guide = layout_value_guide::make_shared(2.0f);
+    auto const dst_guide = layout_value_guide::make_shared(-4.0f);
 
     auto const canceller = layout(src_guide, dst_guide, [](float const &value) { return value + 1.0f; }).sync();
 
@@ -106,9 +106,9 @@ using namespace yas::ui;
 #pragma mark -
 
 - (void)test_min_layout {
-    auto const src_guide_0 = layout_guide_value::make_shared(1.0f);
-    auto const src_guide_1 = layout_guide_value::make_shared(2.0f);
-    auto const dst_guide = layout_guide_value::make_shared(-1.0f);
+    auto const src_guide_0 = layout_value_guide::make_shared(1.0f);
+    auto const src_guide_1 = layout_value_guide::make_shared(2.0f);
+    auto const dst_guide = layout_value_guide::make_shared(-1.0f);
 
     struct cache {
         std::optional<float> value0;
