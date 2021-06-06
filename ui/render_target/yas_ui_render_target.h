@@ -15,7 +15,7 @@
 
 namespace yas::ui {
 struct render_target : metal_object, renderable_render_target {
-    std::shared_ptr<layout_guide_rect> &layout_guide_rect();
+    std::shared_ptr<layout_region_guide> &layout_region_guide();
 
     void set_scale_factor(double const);
     [[nodiscard]] double scale_factor() const;
@@ -28,7 +28,7 @@ struct render_target : metal_object, renderable_render_target {
     [[nodiscard]] static std::shared_ptr<render_target> make_shared();
 
    private:
-    std::shared_ptr<ui::layout_guide_rect> _layout_guide_rect;
+    std::shared_ptr<ui::layout_region_guide> _layout_region_guide;
     std::shared_ptr<ui::effect> _effect;
     double _scale_factor;
 

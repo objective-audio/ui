@@ -44,8 +44,8 @@ enum class effect_update_reason : std::size_t {
 using effect_updates_t = flagset<effect_update_reason>;
 
 enum class renderer_update_reason : std::size_t {
-    view_rect,
-    safe_area_rect,
+    view_region,
+    safe_area_region,
 
     count,
 };

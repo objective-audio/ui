@@ -25,7 +25,7 @@ struct strings final {
     [[nodiscard]] ui::layout_alignment const &alignment() const;
     [[nodiscard]] std::optional<region> const &actual_frame() const;
 
-    [[nodiscard]] std::shared_ptr<layout_guide_rect> const &frame_layout_guide_rect();
+    [[nodiscard]] std::shared_ptr<layout_region_guide> const &frame_layout_region_guide();
 
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
@@ -50,7 +50,7 @@ struct strings final {
     std::size_t const _max_word_count = 0;
     observing::canceller_pool _texture_pool;
     observing::canceller_pool _property_pool;
-    observing::canceller_pool _cell_rect_pool;
+    observing::canceller_pool _cell_region_pool;
 
     explicit strings(strings_args &&);
 

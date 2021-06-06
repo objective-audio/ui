@@ -16,7 +16,7 @@ struct collection_layout {
     using line = collection_layout_line;
     using args = collection_layout_args;
 
-    std::shared_ptr<layout_guide_rect> const frame_guide_rect;
+    std::shared_ptr<layout_region_guide> const frame_region_guide;
     ui::layout_borders const borders;
 
     void set_preferred_cell_count(std::size_t const &);
@@ -68,7 +68,7 @@ struct collection_layout {
     [[nodiscard]] ui::layout_order const &col_order() const;
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
-    [[nodiscard]] std::vector<std::shared_ptr<layout_guide_rect>> const &cell_guide_rects() const;
+    [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &cell_region_guides() const;
     [[nodiscard]] std::optional<ui::region> const &actual_cells_frame() const;
     [[nodiscard]] observing::syncable observe_actual_frame(std::function<void(std::optional<ui::region> const &)> &&);
 
@@ -92,10 +92,10 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _row_order;
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
-    std::vector<std::shared_ptr<layout_guide_rect>> _cell_guide_rects;
+    std::vector<std::shared_ptr<layout_region_guide>> _cell_region_guides;
     observing::value::holder_ptr<std::optional<ui::region>> _actual_cells_frame;
 
-    std::shared_ptr<layout_guide_rect> const _border_guide_rect = ui::layout_guide_rect::make_shared();
+    std::shared_ptr<layout_region_guide> const _border_region_guide;
     observing::canceller_pool _pool;
 
     collection_layout(args);
@@ -115,7 +115,7 @@ struct collection_layout {
     float _transformed_col_diff(std::size_t const idx);
     float _transformed_row_cell_diff(std::size_t const idx);
     float _transformed_row_new_line_diff(std::size_t const idx);
-    ui::region _transformed_border_rect();
+    ui::region _transformed_border_region();
     ui::region _direction_swapped_region_if_horizontal(ui::region const &region);
 };
 }  // namespace yas::ui

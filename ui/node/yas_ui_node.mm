@@ -328,7 +328,7 @@ point node::convert_position(point const &loc) const {
     return {loc4.x, loc4.y};
 }
 
-void node::attach_x_layout_guide(layout_guide_value &guide) {
+void node::attach_x_layout_guide(layout_value_guide &guide) {
     this->_x_canceller =
         guide.observe([this](float const &x) {
                  this->_position->set_value(point{x, this->position().y});
@@ -338,7 +338,7 @@ void node::attach_x_layout_guide(layout_guide_value &guide) {
     this->_position_canceller = nullptr;
 }
 
-void node::attach_y_layout_guide(layout_guide_value &guide) {
+void node::attach_y_layout_guide(layout_value_guide &guide) {
     this->_y_canceller =
         guide.observe([this](float const &y) {
                  this->_position->set_value(point{this->position().x, y});
@@ -348,7 +348,7 @@ void node::attach_y_layout_guide(layout_guide_value &guide) {
     this->_position_canceller = nullptr;
 }
 
-void node::attach_position_layout_guides(layout_guide_point &guide_point) {
+void node::attach_position_layout_guides(layout_point_guide &guide_point) {
     this->_position_canceller =
         guide_point.observe([this](auto const &position) { this->_position->set_value(position); }).sync();
 

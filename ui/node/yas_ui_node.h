@@ -90,9 +90,9 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
 
     [[nodiscard]] ui::point convert_position(ui::point const &) const;
 
-    void attach_x_layout_guide(ui::layout_guide_value &);
-    void attach_y_layout_guide(ui::layout_guide_value &);
-    void attach_position_layout_guides(ui::layout_guide_point &);
+    void attach_x_layout_guide(ui::layout_value_guide &);
+    void attach_y_layout_guide(ui::layout_value_guide &);
+    void attach_position_layout_guides(ui::layout_point_guide &);
 
     [[nodiscard]] static std::shared_ptr<node> make_shared();
 

@@ -22,24 +22,24 @@ using namespace yas::ui;
     [super tearDown];
 }
 
-#pragma mark - layout_guide_value
+#pragma mark - layout_value_guide
 
 - (void)test_create_guide {
-    auto guide = layout_guide_value::make_shared();
+    auto guide = layout_value_guide::make_shared();
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 0.0f);
 }
 
 - (void)test_create_guide_with_value {
-    auto guide = layout_guide_value::make_shared(1.0f);
+    auto guide = layout_value_guide::make_shared(1.0f);
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 1.0f);
 }
 
 - (void)test_notify_caller {
-    auto guide = layout_guide_value::make_shared();
+    auto guide = layout_value_guide::make_shared();
 
     float notified_new_value = 0.0f;
 
@@ -80,7 +80,7 @@ using namespace yas::ui;
 }
 
 - (void)test_notify_caller_canceled {
-    auto guide = layout_guide_value::make_shared(1.0f);
+    auto guide = layout_value_guide::make_shared(1.0f);
 
     bool called = false;
 
@@ -99,7 +99,7 @@ using namespace yas::ui;
 #pragma mark - layout_guide_point
 
 - (void)test_create_point {
-    auto point = layout_guide_point::make_shared();
+    auto point = layout_point_guide::make_shared();
 
     XCTAssertTrue(point);
     XCTAssertTrue(point->x());
@@ -109,7 +109,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_point_with_args {
-    auto point = layout_guide_point::make_shared({1.0f, 2.0f});
+    auto point = layout_point_guide::make_shared({1.0f, 2.0f});
 
     XCTAssertTrue(point);
     XCTAssertTrue(point->x());
@@ -119,7 +119,7 @@ using namespace yas::ui;
 }
 
 - (void)test_point_accessor {
-    auto point = layout_guide_point::make_shared();
+    auto point = layout_point_guide::make_shared();
 
     XCTAssertTrue(point->point() == (ui::point{0.0f, 0.0f}));
 
@@ -129,7 +129,7 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_point {
-    auto guide_point = layout_guide_point::make_shared();
+    auto guide_point = layout_point_guide::make_shared();
 
     point notified;
 
@@ -142,7 +142,7 @@ using namespace yas::ui;
 }
 
 - (void)test_point_notify_caller {
-    auto point = layout_guide_point::make_shared();
+    auto point = layout_point_guide::make_shared();
 
     float notified_x;
     float notified_y;
@@ -214,7 +214,7 @@ using namespace yas::ui;
 #pragma mark - layout_guide_range
 
 - (void)test_create_range {
-    auto range = layout_guide_range::make_shared();
+    auto range = layout_range_guide::make_shared();
 
     XCTAssertTrue(range);
     XCTAssertTrue(range->min());
@@ -225,7 +225,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_range_with_args {
-    auto range = layout_guide_range::make_shared({.location = 1.0f, .length = 2.0f});
+    auto range = layout_range_guide::make_shared({.location = 1.0f, .length = 2.0f});
 
     XCTAssertTrue(range);
     XCTAssertTrue(range->min());
@@ -234,7 +234,7 @@ using namespace yas::ui;
     XCTAssertEqual(range->max()->value(), 3.0f);
     XCTAssertEqual(range->length()->value(), 2.0f);
 
-    range = layout_guide_range::make_shared({.location = 4.0f, .length = -6.0f});
+    range = layout_range_guide::make_shared({.location = 4.0f, .length = -6.0f});
 
     XCTAssertEqual(range->min()->value(), -2.0f);
     XCTAssertEqual(range->max()->value(), 4.0f);
@@ -242,7 +242,7 @@ using namespace yas::ui;
 }
 
 - (void)test_range_accessor {
-    auto range = layout_guide_range::make_shared();
+    auto range = layout_range_guide::make_shared();
 
     XCTAssertTrue(range->range() == (ui::range{.location = 0.0f, .length = 0.0f}));
 
@@ -252,7 +252,7 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_range {
-    auto guide_range = layout_guide_range::make_shared();
+    auto guide_range = layout_range_guide::make_shared();
 
     range notified;
 
@@ -265,7 +265,7 @@ using namespace yas::ui;
 }
 
 - (void)test_range_notify_caller {
-    auto range = layout_guide_range::make_shared();
+    auto range = layout_range_guide::make_shared();
 
     struct edge {
         float min = 0.0f;
@@ -356,7 +356,7 @@ using namespace yas::ui;
 }
 
 - (void)test_range_set_by_guide {
-    auto range = layout_guide_range::make_shared();
+    auto const range = layout_range_guide::make_shared();
 
     range->max()->set_value(1.0f);
 
@@ -371,125 +371,127 @@ using namespace yas::ui;
     XCTAssertEqual(range->length()->value(), 2.0f);
 }
 
-#pragma mark - layout_guide_rect
+#pragma mark - layout_region_guide
 
-- (void)test_create_rect {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_create_region {
+    auto const region = layout_region_guide::make_shared();
 
-    XCTAssertTrue(rect);
-    XCTAssertTrue(rect->vertical_range());
-    XCTAssertTrue(rect->horizontal_range());
-    XCTAssertTrue(rect->left());
-    XCTAssertTrue(rect->right());
-    XCTAssertTrue(rect->bottom());
-    XCTAssertTrue(rect->top());
+    XCTAssertTrue(region);
+    XCTAssertTrue(region->vertical_range());
+    XCTAssertTrue(region->horizontal_range());
+    XCTAssertTrue(region->left());
+    XCTAssertTrue(region->right());
+    XCTAssertTrue(region->bottom());
+    XCTAssertTrue(region->top());
 
-    XCTAssertEqual(rect->vertical_range()->min()->value(), 0.0f);
-    XCTAssertEqual(rect->vertical_range()->max()->value(), 0.0f);
-    XCTAssertEqual(rect->horizontal_range()->min()->value(), 0.0f);
-    XCTAssertEqual(rect->horizontal_range()->max()->value(), 0.0f);
-    XCTAssertEqual(rect->left()->value(), 0.0f);
-    XCTAssertEqual(rect->right()->value(), 0.0f);
-    XCTAssertEqual(rect->bottom()->value(), 0.0f);
-    XCTAssertEqual(rect->top()->value(), 0.0f);
-    XCTAssertEqual(rect->width()->value(), 0.0f);
-    XCTAssertEqual(rect->height()->value(), 0.0f);
+    XCTAssertEqual(region->vertical_range()->min()->value(), 0.0f);
+    XCTAssertEqual(region->vertical_range()->max()->value(), 0.0f);
+    XCTAssertEqual(region->horizontal_range()->min()->value(), 0.0f);
+    XCTAssertEqual(region->horizontal_range()->max()->value(), 0.0f);
+    XCTAssertEqual(region->left()->value(), 0.0f);
+    XCTAssertEqual(region->right()->value(), 0.0f);
+    XCTAssertEqual(region->bottom()->value(), 0.0f);
+    XCTAssertEqual(region->top()->value(), 0.0f);
+    XCTAssertEqual(region->width()->value(), 0.0f);
+    XCTAssertEqual(region->height()->value(), 0.0f);
 }
 
-- (void)test_create_rect_with_args {
-    auto rect = layout_guide_rect::make_shared(
+- (void)test_create_region_with_args {
+    auto const region = layout_region_guide::make_shared(
         {.vertical = {.location = 11.0f, .length = 1.0f}, .horizontal = {.location = 13.0f, .length = 2.0f}});
 
-    XCTAssertTrue(rect);
-    XCTAssertTrue(rect->vertical_range());
-    XCTAssertTrue(rect->horizontal_range());
-    XCTAssertTrue(rect->left());
-    XCTAssertTrue(rect->right());
-    XCTAssertTrue(rect->bottom());
-    XCTAssertTrue(rect->top());
+    XCTAssertTrue(region);
+    XCTAssertTrue(region->vertical_range());
+    XCTAssertTrue(region->horizontal_range());
+    XCTAssertTrue(region->left());
+    XCTAssertTrue(region->right());
+    XCTAssertTrue(region->bottom());
+    XCTAssertTrue(region->top());
 
-    XCTAssertEqual(rect->vertical_range()->min()->value(), 11.0f);
-    XCTAssertEqual(rect->vertical_range()->max()->value(), 12.0f);
-    XCTAssertEqual(rect->horizontal_range()->min()->value(), 13.0f);
-    XCTAssertEqual(rect->horizontal_range()->max()->value(), 15.0f);
-    XCTAssertEqual(rect->bottom()->value(), 11.0f);
-    XCTAssertEqual(rect->top()->value(), 12.0f);
-    XCTAssertEqual(rect->left()->value(), 13.0f);
-    XCTAssertEqual(rect->right()->value(), 15.0f);
-    XCTAssertEqual(rect->width()->value(), 2.0f);
-    XCTAssertEqual(rect->height()->value(), 1.0f);
+    XCTAssertEqual(region->vertical_range()->min()->value(), 11.0f);
+    XCTAssertEqual(region->vertical_range()->max()->value(), 12.0f);
+    XCTAssertEqual(region->horizontal_range()->min()->value(), 13.0f);
+    XCTAssertEqual(region->horizontal_range()->max()->value(), 15.0f);
+    XCTAssertEqual(region->bottom()->value(), 11.0f);
+    XCTAssertEqual(region->top()->value(), 12.0f);
+    XCTAssertEqual(region->left()->value(), 13.0f);
+    XCTAssertEqual(region->right()->value(), 15.0f);
+    XCTAssertEqual(region->width()->value(), 2.0f);
+    XCTAssertEqual(region->height()->value(), 1.0f);
 }
 
-- (void)test_rect_set_vertical_ranges {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_region_set_vertical_ranges {
+    auto const region = layout_region_guide::make_shared();
 
-    rect->set_vertical_range({.location = 100.0f, .length = 101.0f});
+    region->set_vertical_range({.location = 100.0f, .length = 101.0f});
 
-    XCTAssertEqual(rect->bottom()->value(), 100.0f);
-    XCTAssertEqual(rect->top()->value(), 201.0f);
-    XCTAssertEqual(rect->left()->value(), 0.0f);
-    XCTAssertEqual(rect->right()->value(), 0.0f);
-    XCTAssertEqual(rect->width()->value(), 0.0f);
-    XCTAssertEqual(rect->height()->value(), 101.0f);
+    XCTAssertEqual(region->bottom()->value(), 100.0f);
+    XCTAssertEqual(region->top()->value(), 201.0f);
+    XCTAssertEqual(region->left()->value(), 0.0f);
+    XCTAssertEqual(region->right()->value(), 0.0f);
+    XCTAssertEqual(region->width()->value(), 0.0f);
+    XCTAssertEqual(region->height()->value(), 101.0f);
 }
 
-- (void)test_rect_set_horizontal_ranges {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_region_set_horizontal_ranges {
+    auto const region = layout_region_guide::make_shared();
 
-    rect->set_horizontal_range({.location = 300.0f, .length = 102.0f});
+    region->set_horizontal_range({.location = 300.0f, .length = 102.0f});
 
-    XCTAssertEqual(rect->bottom()->value(), 0.0f);
-    XCTAssertEqual(rect->top()->value(), 0.0f);
-    XCTAssertEqual(rect->left()->value(), 300.0f);
-    XCTAssertEqual(rect->right()->value(), 402.0f);
-    XCTAssertEqual(rect->width()->value(), 102.0f);
-    XCTAssertEqual(rect->height()->value(), 0.0f);
+    XCTAssertEqual(region->bottom()->value(), 0.0f);
+    XCTAssertEqual(region->top()->value(), 0.0f);
+    XCTAssertEqual(region->left()->value(), 300.0f);
+    XCTAssertEqual(region->right()->value(), 402.0f);
+    XCTAssertEqual(region->width()->value(), 102.0f);
+    XCTAssertEqual(region->height()->value(), 0.0f);
 }
 
-- (void)test_rect_set_ranges {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_region_set_ranges {
+    auto const region = layout_region_guide::make_shared();
 
-    rect->set_ranges(
+    region->set_ranges(
         {.vertical = {.location = 11.0f, .length = 1.0f}, .horizontal = {.location = 13.0f, .length = 2.0f}});
 
-    XCTAssertEqual(rect->bottom()->value(), 11.0f);
-    XCTAssertEqual(rect->top()->value(), 12.0f);
-    XCTAssertEqual(rect->left()->value(), 13.0f);
-    XCTAssertEqual(rect->right()->value(), 15.0f);
-    XCTAssertEqual(rect->width()->value(), 2.0f);
-    XCTAssertEqual(rect->height()->value(), 1.0f);
+    XCTAssertEqual(region->bottom()->value(), 11.0f);
+    XCTAssertEqual(region->top()->value(), 12.0f);
+    XCTAssertEqual(region->left()->value(), 13.0f);
+    XCTAssertEqual(region->right()->value(), 15.0f);
+    XCTAssertEqual(region->width()->value(), 2.0f);
+    XCTAssertEqual(region->height()->value(), 1.0f);
 }
 
-- (void)test_rect_set_region {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_region_set_region {
+    auto const region = layout_region_guide::make_shared();
 
-    rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+    region->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
-    XCTAssertEqual(rect->bottom()->value(), 2.0f);
-    XCTAssertEqual(rect->top()->value(), 6.0f);
-    XCTAssertEqual(rect->left()->value(), 1.0f);
-    XCTAssertEqual(rect->right()->value(), 4.0f);
-    XCTAssertEqual(rect->width()->value(), 3.0f);
-    XCTAssertEqual(rect->height()->value(), 4.0f);
+    XCTAssertEqual(region->bottom()->value(), 2.0f);
+    XCTAssertEqual(region->top()->value(), 6.0f);
+    XCTAssertEqual(region->left()->value(), 1.0f);
+    XCTAssertEqual(region->right()->value(), 4.0f);
+    XCTAssertEqual(region->width()->value(), 3.0f);
+    XCTAssertEqual(region->height()->value(), 4.0f);
 }
 
-- (void)test_observe_rect {
-    auto guide_rect = layout_guide_rect::make_shared();
+- (void)test_observe_region {
+    auto const region_guide = layout_region_guide::make_shared();
 
     region notified;
 
-    auto observer = guide_rect->observe([&notified](region const &region) { notified = region; }).end();
+    auto canceller = region_guide->observe([&notified](region const &region) { notified = region; }).end();
 
-    guide_rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+    region_guide->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
     XCTAssertEqual(notified.origin.x, 1.0f);
     XCTAssertEqual(notified.origin.y, 2.0f);
     XCTAssertEqual(notified.size.width, 3.0f);
     XCTAssertEqual(notified.size.height, 4.0f);
+
+    canceller->cancel();
 }
 
-- (void)test_rect_notify_caller {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_region_notify_caller {
+    auto const region_guide = layout_region_guide::make_shared();
 
     struct edge {
         float left = 0.0f;
@@ -517,36 +519,37 @@ using namespace yas::ui;
     };
 
     auto left_observer =
-        rect->left()
+        region_guide->left()
             ->observe([&notified_new_left = notified_new_edge.left](float const &value) { notified_new_left = value; })
             .end();
-    auto right_observer = rect->right()
+    auto right_observer = region_guide->right()
                               ->observe([&notified_new_right = notified_new_edge.right](float const &value) {
                                   notified_new_right = value;
                               })
                               .end();
-    auto bottom_observer = rect->bottom()
+    auto bottom_observer = region_guide->bottom()
                                ->observe([&notified_new_bottom = notified_new_edge.bottom](float const &value) {
                                    notified_new_bottom = value;
                                })
                                .end();
     auto top_observer =
-        rect->top()
+        region_guide->top()
             ->observe([&notified_new_top = notified_new_edge.top](float const &value) { notified_new_top = value; })
             .end();
-    auto width_observer = rect->width()
+    auto width_observer = region_guide->width()
                               ->observe([&notified_new_width = notified_new_edge.width](float const &value) {
                                   notified_new_width = value;
                               })
                               .end();
-    auto height_observer = rect->height()
+    auto height_observer = region_guide->height()
                                ->observe([&notified_new_height = notified_new_edge.height](float const &value) {
                                    notified_new_height = value;
                                })
                                .end();
-    auto region_observer = rect->observe([&notified_region](region const &value) { notified_region = value; }).end();
+    auto region_observer =
+        region_guide->observe([&notified_region](region const &value) { notified_region = value; }).end();
 
-    rect->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
+    region_guide->set_region({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}});
 
     XCTAssertEqual(notified_new_edge.left, 1.0f);
     XCTAssertEqual(notified_new_edge.right, 4.0f);
@@ -561,28 +564,28 @@ using namespace yas::ui;
 
     clear_edges();
 
-    rect->push_notify_waiting();
+    region_guide->push_notify_waiting();
 
-    rect->set_region({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
-
-    XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_region == region::zero());
-
-    rect->push_notify_waiting();
-
-    rect->set_region({.origin = {9.0f, 10.0f}, .size = {11.0f, 12.0f}});
+    region_guide->set_region({.origin = {5.0f, 6.0f}, .size = {7.0f, 8.0f}});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_region == region::zero());
 
-    rect->pop_notify_waiting();
+    region_guide->push_notify_waiting();
 
-    rect->set_region({.origin = {13.0f, 14.0f}, .size = {15.0f, 16.0f}});
+    region_guide->set_region({.origin = {9.0f, 10.0f}, .size = {11.0f, 12.0f}});
 
     XCTAssertTrue(notified_new_edge.is_all_zero());
     XCTAssertTrue(notified_region == region::zero());
 
-    rect->pop_notify_waiting();
+    region_guide->pop_notify_waiting();
+
+    region_guide->set_region({.origin = {13.0f, 14.0f}, .size = {15.0f, 16.0f}});
+
+    XCTAssertTrue(notified_new_edge.is_all_zero());
+    XCTAssertTrue(notified_region == region::zero());
+
+    region_guide->pop_notify_waiting();
 
     XCTAssertEqual(notified_new_edge.left, 13.0f);
     XCTAssertEqual(notified_new_edge.right, 28.0f);
@@ -598,7 +601,7 @@ using namespace yas::ui;
 
     clear_edges();
 
-    rect->set_region({.origin = {17.0f, 18.0f}, .size = {19.0f, 20.0f}});
+    region_guide->set_region({.origin = {17.0f, 18.0f}, .size = {19.0f, 20.0f}});
 
     XCTAssertEqual(notified_new_edge.left, 17.0f);
     XCTAssertEqual(notified_new_edge.right, 36.0f);
@@ -613,36 +616,36 @@ using namespace yas::ui;
     XCTAssertEqual(notified_region.size.height, 20.0f);
 }
 
-- (void)test_rect_set_by_guide {
-    auto rect = layout_guide_rect::make_shared();
+- (void)test_region_set_by_guide {
+    auto const region = layout_region_guide::make_shared();
 
     // horizontal
 
-    rect->right()->set_value(1.0f);
+    region->right()->set_value(1.0f);
 
-    XCTAssertEqual(rect->left()->value(), 0.0f);
-    XCTAssertEqual(rect->right()->value(), 1.0f);
-    XCTAssertEqual(rect->width()->value(), 1.0f);
+    XCTAssertEqual(region->left()->value(), 0.0f);
+    XCTAssertEqual(region->right()->value(), 1.0f);
+    XCTAssertEqual(region->width()->value(), 1.0f);
 
-    rect->left()->set_value(-1.0f);
+    region->left()->set_value(-1.0f);
 
-    XCTAssertEqual(rect->left()->value(), -1.0f);
-    XCTAssertEqual(rect->right()->value(), 1.0f);
-    XCTAssertEqual(rect->width()->value(), 2.0f);
+    XCTAssertEqual(region->left()->value(), -1.0f);
+    XCTAssertEqual(region->right()->value(), 1.0f);
+    XCTAssertEqual(region->width()->value(), 2.0f);
 
     // vertical
 
-    rect->top()->set_value(1.0f);
+    region->top()->set_value(1.0f);
 
-    XCTAssertEqual(rect->bottom()->value(), 0.0f);
-    XCTAssertEqual(rect->top()->value(), 1.0f);
-    XCTAssertEqual(rect->height()->value(), 1.0f);
+    XCTAssertEqual(region->bottom()->value(), 0.0f);
+    XCTAssertEqual(region->top()->value(), 1.0f);
+    XCTAssertEqual(region->height()->value(), 1.0f);
 
-    rect->bottom()->set_value(-1.0f);
+    region->bottom()->set_value(-1.0f);
 
-    XCTAssertEqual(rect->bottom()->value(), -1.0f);
-    XCTAssertEqual(rect->top()->value(), 1.0f);
-    XCTAssertEqual(rect->height()->value(), 2.0f);
+    XCTAssertEqual(region->bottom()->value(), -1.0f);
+    XCTAssertEqual(region->top()->value(), 1.0f);
+    XCTAssertEqual(region->height()->value(), 2.0f);
 }
 
 @end

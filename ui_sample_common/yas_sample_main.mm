@@ -29,8 +29,8 @@ void sample::main::setup() {
     this->_big_button->button()->rect_plane()->node()->add_sub_node(
         this->_big_button_text->strings()->rect_plane()->node());
 
-    auto const big_button_region = this->_big_button->button()->layout_guide_rect()->region();
-    this->_big_button_text->strings()->frame_layout_guide_rect()->set_region(
+    auto const big_button_region = this->_big_button->button()->layout_region_guide()->region();
+    this->_big_button_text->strings()->frame_layout_region_guide()->set_region(
         {.origin = {.x = big_button_region.left()}, .size = {.width = big_button_region.size.width}});
 
     this->_big_button->button()
@@ -84,10 +84,10 @@ void sample::main::setup() {
 
     this->renderer->insert_action(blur_action);
 
-    auto &view_guide = this->renderer->view_layout_guide_rect();
+    auto &view_guide = this->renderer->view_layout_region_guide();
 
     view_guide
-        ->observe([render_target](region const &region) { render_target->layout_guide_rect()->set_region(region); })
+        ->observe([render_target](region const &region) { render_target->layout_region_guide()->set_region(region); })
         .sync()
         ->set_to(this->_render_target_canceller);
 

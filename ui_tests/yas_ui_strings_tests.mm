@@ -100,7 +100,7 @@ using namespace yas::ui;
 
     XCTAssertEqual(strings->alignment(), layout_alignment::max);
 
-    strings->frame_layout_guide_rect()->set_region({.origin = {0.0f, 0.0f}, .size = {1024.0f, 0.0f}});
+    strings->frame_layout_region_guide()->set_region({.origin = {0.0f, 0.0f}, .size = {1024.0f, 0.0f}});
 
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 0);
 
@@ -182,7 +182,7 @@ using namespace yas::ui;
 
     XCTAssertNoThrow(strings->set_text("123"));
 
-    XCTAssertNoThrow(strings->frame_layout_guide_rect()->set_region({.origin = {0.0f, 0.0f}, .size = {64.0f, 0.0f}}));
+    XCTAssertNoThrow(strings->frame_layout_region_guide()->set_region({.origin = {0.0f, 0.0f}, .size = {64.0f, 0.0f}}));
 
     auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = nullptr});

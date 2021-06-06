@@ -18,8 +18,8 @@ struct justified_points final {
 
    private:
     std::shared_ptr<ui::rect_plane> _rect_plane;
-    std::vector<std::shared_ptr<ui::layout_guide_value>> _x_layout_guides;
-    std::vector<std::shared_ptr<ui::layout_guide_value>> _y_layout_guides;
+    std::vector<std::shared_ptr<ui::layout_value_guide>> _x_layout_guides;
+    std::vector<std::shared_ptr<ui::layout_value_guide>> _y_layout_guides;
     observing::cancellable_ptr _renderer_canceller = nullptr;
     observing::canceller_pool _guide_pool;
 

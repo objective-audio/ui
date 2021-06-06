@@ -66,8 +66,8 @@ std::optional<region> const &strings::actual_frame() const {
     return this->_collection_layout->actual_cells_frame();
 }
 
-std::shared_ptr<layout_guide_rect> const &strings::frame_layout_guide_rect() {
-    return this->_collection_layout->frame_guide_rect;
+std::shared_ptr<layout_region_guide> const &strings::frame_layout_region_guide() {
+    return this->_collection_layout->frame_region_guide;
 }
 
 std::shared_ptr<rect_plane> const &strings::rect_plane() {
@@ -139,7 +139,7 @@ void strings::_update_texture_observing() {
 }
 
 void strings::_update_layout() {
-    this->_cell_rect_pool.cancel();
+    this->_cell_region_pool.cancel();
 
     auto const &font_atlas = this->_font_atlas->value();
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
@@ -203,13 +203,13 @@ void strings::_update_layout() {
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         auto const word = eliminated_text.substr(idx, 1);
-        auto const &cell_rect = this->_collection_layout->cell_guide_rects().at(idx);
+        auto const &cell_region = this->_collection_layout->cell_region_guides().at(idx);
 
-        cell_rect->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
+        cell_region->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
             .end()
-            ->add_to(this->_cell_rect_pool);
+            ->add_to(this->_cell_region_pool);
 
-        handler(idx, word, cell_rect->region());
+        handler(idx, word, cell_region->region());
     }
 }
 

@@ -19,7 +19,7 @@ struct inputted_text {
    private:
     std::shared_ptr<ui::strings> _strings;
     observing::cancellable_ptr _renderer_canceller = nullptr;
-    std::shared_ptr<ui::layout_guide_point> _layout_guide_point = ui::layout_guide_point::make_shared();
+    std::shared_ptr<ui::layout_point_guide> _layout_guide_point = ui::layout_point_guide::make_shared();
 
     explicit inputted_text(std::shared_ptr<ui::font_atlas> const &atlas);
 
