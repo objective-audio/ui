@@ -71,6 +71,8 @@ struct layout_guide_point final : layout_point_target, layout_point_source {
 
     void set_layout_point(ui::point const &) override;
     observing::syncable observe_layout_point(std::function<void(ui::point const &)> &&) override;
+    std::shared_ptr<layout_value_source> layout_x_value_source() override;
+    std::shared_ptr<layout_value_source> layout_y_value_source() override;
 };
 
 struct layout_guide_range final : layout_range_target, layout_range_source {
@@ -107,6 +109,9 @@ struct layout_guide_range final : layout_range_target, layout_range_source {
 
     void set_layout_range(ui::range const &) override;
     observing::syncable observe_layout_range(std::function<void(ui::range const &)> &&) override;
+    std::shared_ptr<layout_value_source> layout_min_value_source() override;
+    std::shared_ptr<layout_value_source> layout_max_value_source() override;
+    std::shared_ptr<layout_value_source> layout_length_value_source() override;
 };
 
 struct layout_guide_rect final : layout_region_target, layout_region_source {
@@ -154,6 +159,8 @@ struct layout_guide_rect final : layout_region_target, layout_region_source {
 
     void set_layout_region(ui::region const &) override;
     observing::syncable observe_layout_region(std::function<void(ui::region const &)> &&) override;
+    std::shared_ptr<layout_range_source> layout_horizontal_range_source() override;
+    std::shared_ptr<layout_range_source> layout_vertical_range_source() override;
 };
 
 struct layout_guide_pair {
