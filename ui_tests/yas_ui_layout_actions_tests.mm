@@ -67,19 +67,19 @@ using namespace std::chrono_literals;
 }
 
 - (void)test_make_layout_guide_pairs_from_region_pair {
-    auto const src_region = layout_region_guide::make_shared();
-    auto const dst_region = layout_region_guide::make_shared();
+    auto const src_guide = layout_region_guide::make_shared();
+    auto const dst_guide = layout_region_guide::make_shared();
 
-    auto const pairs = make_layout_guide_pairs({.source = src_region, .destination = dst_region});
+    auto const pairs = make_layout_guide_pairs({.source = src_guide, .destination = dst_guide});
 
-    XCTAssertEqual(pairs.at(0).source, src_region->left());
-    XCTAssertEqual(pairs.at(0).destination, dst_region->left());
-    XCTAssertEqual(pairs.at(1).source, src_region->right());
-    XCTAssertEqual(pairs.at(1).destination, dst_region->right());
-    XCTAssertEqual(pairs.at(2).source, src_region->bottom());
-    XCTAssertEqual(pairs.at(2).destination, dst_region->bottom());
-    XCTAssertEqual(pairs.at(3).source, src_region->top());
-    XCTAssertEqual(pairs.at(3).destination, dst_region->top());
+    XCTAssertEqual(pairs.at(0).source, src_guide->left());
+    XCTAssertEqual(pairs.at(0).destination, dst_guide->left());
+    XCTAssertEqual(pairs.at(1).source, src_guide->right());
+    XCTAssertEqual(pairs.at(1).destination, dst_guide->right());
+    XCTAssertEqual(pairs.at(2).source, src_guide->bottom());
+    XCTAssertEqual(pairs.at(2).destination, dst_guide->bottom());
+    XCTAssertEqual(pairs.at(3).source, src_guide->top());
+    XCTAssertEqual(pairs.at(3).destination, dst_guide->top());
 }
 
 @end

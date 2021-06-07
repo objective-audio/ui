@@ -17,8 +17,8 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                                std::shared_ptr<renderer> const &renderer) mutable {
             if (renderer) {
                 auto const &strings = this->strings();
-                auto &strings_frame_guide = strings->frame_layout_region_guide();
-                auto const &safe_area_guide = renderer->safe_area_layout_region_guide();
+                auto &strings_frame_guide = strings->preferred_layout_guide();
+                auto const &safe_area_guide = renderer->safe_area_layout_guide();
 
                 auto pool = observing::canceller_pool::make_shared();
 
@@ -60,11 +60,11 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                         distance += font_atlas->ascent() + font_atlas->descent();
                     }
 
-                    strings->frame_layout_region_guide()
+                    strings->preferred_layout_guide()
                         ->bottom()
                         ->observe([weak_strings = to_weak(strings), distance](float const &value) {
                             if (auto const strings = weak_strings.lock()) {
-                                strings->frame_layout_region_guide()->top()->set_value(value + distance);
+                                strings->preferred_layout_guide()->top()->set_value(value + distance);
                             }
                         })
                         .sync()

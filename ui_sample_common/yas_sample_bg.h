@@ -16,7 +16,7 @@ struct bg {
 
    private:
     std::shared_ptr<ui::rect_plane> _rect_plane = ui::rect_plane::make_shared(1);
-    std::shared_ptr<ui::layout_region_guide> _layout_region_guide = ui::layout_region_guide::make_shared();
+    std::shared_ptr<ui::layout_region_guide> _layout_guide = ui::layout_region_guide::make_shared();
     observing::cancellable_ptr _renderer_canceller = nullptr;
     observing::cancellable_ptr _region_canceller = nullptr;
 

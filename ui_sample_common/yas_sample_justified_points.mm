@@ -42,7 +42,7 @@ sample::justified_points::justified_points()
                         x_receivers.push_back(to_weak(guide));
                     }
 
-                    auto weak_region_guide = to_weak(renderer->view_layout_region_guide());
+                    auto weak_region_guide = to_weak(renderer->view_layout_guide());
 
                     auto x_justifying = [weak_region_guide, x_receivers](float const &) {
                         if (auto const region_guide = weak_region_guide.lock()) {
@@ -58,8 +58,8 @@ sample::justified_points::justified_points()
                         }
                     };
 
-                    renderer->view_layout_region_guide()->left()->observe(x_justifying).end()->add_to(*pool);
-                    renderer->view_layout_region_guide()->right()->observe(x_justifying).sync()->add_to(*pool);
+                    renderer->view_layout_guide()->left()->observe(x_justifying).end()->add_to(*pool);
+                    renderer->view_layout_guide()->right()->observe(x_justifying).sync()->add_to(*pool);
 
                     std::array<float, sample::y_point_count - 1> y_ratios;
 
@@ -92,8 +92,8 @@ sample::justified_points::justified_points()
                         }
                     };
 
-                    renderer->view_layout_region_guide()->bottom()->observe(y_justifying).end()->add_to(*pool);
-                    renderer->view_layout_region_guide()->top()->observe(y_justifying).sync()->add_to(*pool);
+                    renderer->view_layout_guide()->bottom()->observe(y_justifying).end()->add_to(*pool);
+                    renderer->view_layout_guide()->top()->observe(y_justifying).sync()->add_to(*pool);
                 }
             })
         .sync()

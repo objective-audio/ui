@@ -66,8 +66,8 @@ region strings::actual_frame() const {
     return this->_collection_layout->actual_cells_frame();
 }
 
-std::shared_ptr<layout_region_guide> const &strings::frame_layout_region_guide() const {
-    return this->_collection_layout->frame_region_guide;
+std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() const {
+    return this->_collection_layout->frame_layout_guide;
 }
 
 std::shared_ptr<layout_region_source> strings::actual_frame_layout_source() const {
@@ -203,7 +203,7 @@ void strings::_update_layout() {
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         auto const word = eliminated_text.substr(idx, 1);
-        auto const &cell_region = this->_collection_layout->cell_region_guides().at(idx);
+        auto const &cell_region = this->_collection_layout->cell_layout_guides().at(idx);
 
         cell_region->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
             .end()
