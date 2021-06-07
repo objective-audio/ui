@@ -25,7 +25,7 @@ collection_layout::collection_layout(args args)
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
       _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
-      _actual_cells_frame(observing::value::holder<std::optional<ui::region>>::make_shared(std::nullopt)),
+      _actual_cells_frame_guide(layout_region_guide::make_shared()),
       _border_region_guide(ui::layout_region_guide::make_shared()) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
@@ -233,13 +233,12 @@ std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::cell
     return this->_cell_region_guides;
 }
 
-std::optional<ui::region> const &collection_layout::actual_cells_frame() const {
-    return this->_actual_cells_frame->value();
+ui::region collection_layout::actual_cells_frame() const {
+    return this->_actual_cells_frame_guide->region();
 }
 
-observing::syncable collection_layout::observe_actual_frame(
-    std::function<void(std::optional<ui::region> const &)> &&handler) {
-    return this->_actual_cells_frame->observe(std::move(handler));
+std::shared_ptr<layout_region_source> collection_layout::actual_cells_frame_layout_source() const {
+    return this->_actual_cells_frame_guide;
 }
 
 void collection_layout::_push_notify_waiting() {
@@ -255,120 +254,135 @@ void collection_layout::_pop_notify_waiting() {
 }
 
 void collection_layout::_update_layout() {
-    auto frame_region = this->_direction_swapped_region_if_horizontal(this->frame_region_guide->region());
+    auto const frame_region = this->_direction_swapped_region_if_horizontal(this->frame_region_guide->region());
     auto const &preferred_cell_count = this->preferred_cell_count();
+    auto const border_region = this->_transformed_border_region();
+    auto const border_abs_size = size{fabsf(border_region.size.width), fabsf(border_region.size.height)};
 
-    if (preferred_cell_count == 0) {
-        this->_cell_region_guides.clear();
-        this->_actual_cells_frame->set_value(std::nullopt);
-        this->_actual_cell_count->set_value(0);
-        return;
-    }
-
-    auto const is_col_limiting = frame_region.size.width != 0;
-    auto const is_row_limiting = frame_region.size.height != 0;
-    auto const border_rect = this->_transformed_border_region();
-    auto const border_abs_size = size{fabsf(border_rect.size.width), fabsf(border_rect.size.height)};
-    std::vector<std::vector<region>> regions;
-    float row_max_diff = 0.0f;
-    point origin = {.v = 0.0f};
-    std::vector<region> row_regions;
+    std::optional<region> actual_frame{std::nullopt};
     std::size_t actual_cell_count = 0;
 
-    auto each = make_fast_each(preferred_cell_count);
-    while (yas_each_next(each)) {
-        auto const &idx = yas_each_index(each);
-        auto cell_size = this->_transformed_cell_size(idx);
+    if (preferred_cell_count > 0) {
+        auto const is_col_limiting = frame_region.size.width != 0;
+        auto const is_row_limiting = frame_region.size.height != 0;
+        std::vector<std::vector<region>> regions;
+        float row_max_diff = 0.0f;
+        point origin = {.v = 0.0f};
+        std::vector<region> row_regions;
 
-        if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
-            this->_is_top_of_new_line(idx)) {
-            regions.emplace_back(std::move(row_regions));
+        auto each = make_fast_each(preferred_cell_count);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
+            auto const cell_size = this->_transformed_cell_size(idx);
 
-            auto const row_new_line_diff = this->_transformed_row_new_line_diff(idx);
-            if (std::fabsf(row_new_line_diff) > std::fabs(row_max_diff)) {
-                row_max_diff = row_new_line_diff;
+            if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
+                this->_is_top_of_new_line(idx)) {
+                regions.emplace_back(std::move(row_regions));
+
+                auto const row_new_line_diff = this->_transformed_row_new_line_diff(idx);
+                if (std::fabsf(row_new_line_diff) > std::fabs(row_max_diff)) {
+                    row_max_diff = row_new_line_diff;
+                }
+
+                origin.x = 0.0f;
+                origin.y += row_max_diff;
+
+                row_regions.clear();
+                row_max_diff = 0.0f;
             }
 
-            origin.x = 0.0f;
-            origin.y += row_max_diff;
-
-            row_regions.clear();
-            row_max_diff = 0.0f;
-        }
-
-        if (is_row_limiting && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
-            break;
-        }
-
-        row_regions.emplace_back(region{.origin = {origin.x + border_rect.origin.x, origin.y + border_rect.origin.y},
-                                        .size = {cell_size.width, cell_size.height}});
-
-        ++actual_cell_count;
-
-        if (auto const row_cell_diff = this->_transformed_row_cell_diff(idx)) {
-            if (std::fabsf(row_cell_diff) > std::fabs(row_max_diff)) {
-                row_max_diff = row_cell_diff;
+            if (is_row_limiting && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
+                break;
             }
+
+            row_regions.emplace_back(
+                region{.origin = {origin.x + border_region.origin.x, origin.y + border_region.origin.y},
+                       .size = {cell_size.width, cell_size.height}});
+
+            ++actual_cell_count;
+
+            if (auto const row_cell_diff = this->_transformed_row_cell_diff(idx)) {
+                if (std::fabsf(row_cell_diff) > std::fabs(row_max_diff)) {
+                    row_max_diff = row_cell_diff;
+                }
+            }
+
+            origin.x += this->_transformed_col_diff(idx);
         }
 
-        origin.x += this->_transformed_col_diff(idx);
-    }
-
-    if (row_regions.size() > 0) {
-        regions.emplace_back(std::move(row_regions));
-    }
-
-    if (actual_cell_count < this->_cell_region_guides.size()) {
-        this->_cell_region_guides.resize(actual_cell_count);
-    } else {
-        while (this->_cell_region_guides.size() < actual_cell_count) {
-            this->_cell_region_guides.emplace_back(layout_region_guide::make_shared());
-        }
-    }
-
-    this->_push_notify_waiting();
-
-    std::size_t idx = 0;
-    std::optional<region> actual_frame{std::nullopt};
-
-    for (auto const &row_regions : regions) {
         if (row_regions.size() > 0) {
-            auto align_offset = 0.0f;
-            auto const alignment = this->_alignment->value();
+            regions.emplace_back(std::move(row_regions));
+        }
 
-            if (alignment != layout_alignment::min) {
-                auto const content_width =
-                    row_regions.back().origin.x + row_regions.back().size.width - row_regions.front().origin.x;
-                align_offset = border_rect.size.width - content_width;
-
-                if (alignment == layout_alignment::mid) {
-                    align_offset *= 0.5f;
-                }
-            }
-
-            for (auto const &region : row_regions) {
-                ui::region const aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
-                                                .size = region.size};
-                this->_cell_region_guides.at(idx)->set_region(
-                    this->_direction_swapped_region_if_horizontal(aligned_region));
-
-                if (!actual_frame.has_value()) {
-                    actual_frame = this->_cell_region_guides.at(idx)->region();
-                } else {
-                    actual_frame = actual_frame->combined(this->_cell_region_guides.at(idx)->region());
-                }
-
-                ++idx;
+        if (actual_cell_count < this->_cell_region_guides.size()) {
+            this->_cell_region_guides.resize(actual_cell_count);
+        } else {
+            while (this->_cell_region_guides.size() < actual_cell_count) {
+                this->_cell_region_guides.emplace_back(layout_region_guide::make_shared());
             }
         }
-    }
 
-    this->_pop_notify_waiting();
+        this->_push_notify_waiting();
+
+        std::size_t idx = 0;
+
+        for (auto const &row_regions : regions) {
+            if (row_regions.size() > 0) {
+                auto align_offset = 0.0f;
+                auto const alignment = this->_alignment->value();
+
+                if (alignment != layout_alignment::min) {
+                    auto const content_width =
+                        row_regions.back().origin.x + row_regions.back().size.width - row_regions.front().origin.x;
+                    align_offset = border_region.size.width - content_width;
+
+                    if (alignment == layout_alignment::mid) {
+                        align_offset *= 0.5f;
+                    }
+                }
+
+                for (auto const &region : row_regions) {
+                    ui::region const aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
+                                                    .size = region.size};
+                    this->_cell_region_guides.at(idx)->set_region(
+                        this->_direction_swapped_region_if_horizontal(aligned_region));
+
+                    if (!actual_frame.has_value()) {
+                        actual_frame = this->_cell_region_guides.at(idx)->region();
+                    } else {
+                        actual_frame = actual_frame->combined(this->_cell_region_guides.at(idx)->region());
+                    }
+
+                    ++idx;
+                }
+            }
+        }
+
+        this->_pop_notify_waiting();
+    }
 
     if (actual_frame) {
-        this->_actual_cells_frame->set_value(actual_frame.value());
+        this->_actual_cells_frame_guide->set_region(actual_frame.value());
     } else {
-        this->_actual_cells_frame->set_value(std::nullopt);
+        this->_cell_region_guides.clear();
+
+        float align_offset;
+
+        switch (this->_alignment->value()) {
+            case layout_alignment::min:
+                align_offset = 0.0f;
+                break;
+            case layout_alignment::mid:
+                align_offset = border_region.size.width * 0.5f;
+                break;
+            case layout_alignment::max:
+                align_offset = border_region.size.width;
+                break;
+        }
+
+        ui::region const aligned_region{.origin = {border_region.origin.x + align_offset, border_region.origin.y},
+                                        .size = size::zero()};
+        this->_actual_cells_frame_guide->set_region(this->_direction_swapped_region_if_horizontal(aligned_region));
     }
 
     this->_actual_cell_count->set_value(actual_cell_count);

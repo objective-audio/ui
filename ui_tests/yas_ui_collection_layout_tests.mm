@@ -39,7 +39,7 @@ using namespace yas::ui;
     XCTAssertEqual(layout->row_order(), layout_order::ascending);
     XCTAssertEqual(layout->col_order(), layout_order::ascending);
     XCTAssertEqual(layout->actual_cell_count(), 0);
-    XCTAssertFalse(layout->actual_cells_frame().has_value());
+    XCTAssertTrue(layout->actual_cells_frame() == ui::region::zero());
 }
 
 - (void)test_create_with_args {
@@ -74,7 +74,7 @@ using namespace yas::ui;
     XCTAssertEqual(layout->row_order(), layout_order::descending);
     XCTAssertEqual(layout->col_order(), layout_order::descending);
     XCTAssertEqual(layout->actual_cell_count(), 0);
-    XCTAssertFalse(layout->actual_cells_frame().has_value());
+    XCTAssertTrue(layout->actual_cells_frame() == (ui::region{.origin = {18.0f, 19.0f}, .size = ui::size::zero()}));
 }
 
 - (void)test_cell_layout_region_guides {
@@ -127,26 +127,58 @@ using namespace yas::ui;
 }
 
 - (void)test_actual_cells_frame {
-    auto layout = collection_layout::make_shared(
-        {.frame = {.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 0});
+    auto const layout = collection_layout::make_shared(
+        {.frame = {.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
-    XCTAssertFalse(layout->actual_cells_frame().has_value());
-
-    layout->set_preferred_cell_count(1);
-
-    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
 
     layout->set_preferred_cell_count(2);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
 
     layout->set_preferred_cell_count(3);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
 
     layout->set_preferred_cell_count(4);
 
-    XCTAssertTrue(layout->actual_cells_frame().value() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+}
+
+- (void)test_actual_cells_frame_count_zero {
+    auto const layout = collection_layout::make_shared({.frame = {.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}},
+                                                        .borders = {1.0f, 1.0f, 1.0f, 1.0f},
+                                                        .preferred_cell_count = 0});
+
+    layout->set_alignment(layout_alignment::min);
+    layout->set_direction(layout_direction::vertical);
+
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 3.0f}, .size = ui::size::zero()}));
+
+    layout->set_alignment(layout_alignment::mid);
+    layout->set_direction(layout_direction::vertical);
+
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.5f, 3.0f}, .size = ui::size::zero()}));
+
+    layout->set_alignment(layout_alignment::max);
+    layout->set_direction(layout_direction::vertical);
+
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {3.0f, 3.0f}, .size = ui::size::zero()}));
+
+    layout->set_alignment(layout_alignment::min);
+    layout->set_direction(layout_direction::horizontal);
+
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 3.0f}, .size = ui::size::zero()}));
+
+    layout->set_alignment(layout_alignment::mid);
+    layout->set_direction(layout_direction::horizontal);
+
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 4.0f}, .size = ui::size::zero()}));
+
+    layout->set_alignment(layout_alignment::max);
+    layout->set_direction(layout_direction::horizontal);
+
+    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 5.0f}, .size = ui::size::zero()}));
 }
 
 - (void)test_observe_actual_cell_count {

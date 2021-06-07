@@ -23,9 +23,10 @@ struct strings final {
     [[nodiscard]] std::shared_ptr<ui::font_atlas> const &font_atlas() const;
     [[nodiscard]] std::optional<float> const &line_height() const;
     [[nodiscard]] ui::layout_alignment const &alignment() const;
-    [[nodiscard]] std::optional<region> const &actual_frame() const;
+    [[nodiscard]] region actual_frame() const;
 
-    [[nodiscard]] std::shared_ptr<layout_region_guide> const &frame_layout_region_guide();
+    [[nodiscard]] std::shared_ptr<layout_region_guide> const &frame_layout_region_guide() const;
+    [[nodiscard]] std::shared_ptr<layout_region_source> actual_frame_layout_source() const;
 
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
@@ -34,7 +35,6 @@ struct strings final {
         observing::caller<std::shared_ptr<ui::font_atlas>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
-    [[nodiscard]] observing::syncable observe_actual_frame(observing::caller<std::optional<region>>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<strings> make_shared();
     [[nodiscard]] static std::shared_ptr<strings> make_shared(strings_args &&);
