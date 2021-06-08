@@ -17,7 +17,7 @@ using namespace yas;
 using namespace yas::ui;
 
 render_target::render_target()
-    : _layout_region_guide(layout_region_guide::make_shared()),
+    : _layout_guide(layout_region_guide::make_shared()),
       _effect(effect::make_through_effect()),
       _scale_factor(1.0),
       _data(rect_plane_data::make_shared(1)),
@@ -67,7 +67,7 @@ render_target::render_target()
         .end()
         ->add_to(this->_pool);
 
-    this->_layout_region_guide
+    this->_layout_guide
         ->observe([this](region const &region) {
             uint_size size{.width = static_cast<uint32_t>(region.size.width),
                            .height = static_cast<uint32_t>(region.size.height)};
@@ -86,8 +86,8 @@ render_target::render_target()
         ->add_to(this->_pool);
 }
 
-std::shared_ptr<layout_region_guide> &render_target::layout_region_guide() {
-    return this->_layout_region_guide;
+std::shared_ptr<layout_region_guide> &render_target::layout_guide() {
+    return this->_layout_guide;
 }
 
 void render_target::set_scale_factor(double const scale_factor) {

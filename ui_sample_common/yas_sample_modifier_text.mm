@@ -29,25 +29,25 @@ sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atl
                         .end()
                         ->add_to(*pool);
 
-                    auto const &safe_area_guide_rect = renderer->safe_area_layout_region_guide();
+                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide();
 
                     safe_area_guide_rect->left()
                         ->observe([this](float const &value) {
-                            this->_strings->frame_layout_region_guide()->left()->set_value(value + 4.0f);
+                            this->_strings->preferred_layout_guide()->left()->set_value(value + 4.0f);
                         })
                         .sync()
                         ->add_to(*pool);
 
                     safe_area_guide_rect->right()
                         ->observe([this](float const &value) {
-                            this->_strings->frame_layout_region_guide()->right()->set_value(value - 4.0f);
+                            this->_strings->preferred_layout_guide()->right()->set_value(value - 4.0f);
                         })
                         .sync()
                         ->add_to(*pool);
 
                     this->_bottom_guide
                         ->observe([this](float const &value) {
-                            this->_strings->frame_layout_region_guide()->bottom()->set_value(value + 4.0f);
+                            this->_strings->preferred_layout_guide()->bottom()->set_value(value + 4.0f);
                         })
                         .sync()
                         ->add_to(*pool);
@@ -61,10 +61,10 @@ sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atl
                                 distance += font_atlas->ascent() + font_atlas->descent();
                             }
 
-                            this->_strings->frame_layout_region_guide()
+                            this->_strings->preferred_layout_guide()
                                 ->bottom()
                                 ->observe([this, distance](float const &value) {
-                                    this->_strings->frame_layout_region_guide()->top()->set_value(value + distance);
+                                    this->_strings->preferred_layout_guide()->top()->set_value(value + distance);
                                 })
                                 .sync()
                                 ->set_to(top_layout);

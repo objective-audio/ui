@@ -16,7 +16,7 @@ struct collection_layout {
     using line = collection_layout_line;
     using args = collection_layout_args;
 
-    std::shared_ptr<layout_region_guide> const frame_region_guide;
+    std::shared_ptr<layout_region_guide> const frame_layout_guide;
     ui::layout_borders const borders;
 
     void set_preferred_cell_count(std::size_t const &);
@@ -68,9 +68,9 @@ struct collection_layout {
     [[nodiscard]] ui::layout_order const &col_order() const;
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
-    [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &cell_region_guides() const;
-    [[nodiscard]] std::optional<ui::region> const &actual_cells_frame() const;
-    [[nodiscard]] observing::syncable observe_actual_frame(std::function<void(std::optional<ui::region> const &)> &&);
+    [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &cell_layout_guides() const;
+    [[nodiscard]] ui::region actual_cells_frame() const;
+    [[nodiscard]] std::shared_ptr<layout_region_source> actual_cells_frame_layout_source() const;
 
     [[nodiscard]] static std::shared_ptr<collection_layout> make_shared();
     [[nodiscard]] static std::shared_ptr<collection_layout> make_shared(args);
@@ -92,10 +92,10 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _row_order;
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
-    std::vector<std::shared_ptr<layout_region_guide>> _cell_region_guides;
-    observing::value::holder_ptr<std::optional<ui::region>> _actual_cells_frame;
+    std::vector<std::shared_ptr<layout_region_guide>> _cell_layout_guides;
+    std::shared_ptr<layout_region_guide> const _actual_cells_frame_layout_guide;
 
-    std::shared_ptr<layout_region_guide> const _border_region_guide;
+    std::shared_ptr<layout_region_guide> const _border_layout_guide;
     observing::canceller_pool _pool;
 
     collection_layout(args);

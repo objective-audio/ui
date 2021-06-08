@@ -41,8 +41,8 @@ struct renderer final : view_renderer_interface {
 
     [[nodiscard]] std::shared_ptr<detector> const &detector() const;
 
-    [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_region_guide() const;
-    [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_region_guide() const;
+    [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_guide() const;
+    [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_guide() const;
 
     [[nodiscard]] ui::appearance appearance() const;
 
@@ -80,8 +80,8 @@ struct renderer final : view_renderer_interface {
     std::shared_ptr<parallel_action> const _parallel_action;
     std::shared_ptr<ui::detector> const _detector;
     std::shared_ptr<ui::event_manager> const _event_manager;
-    std::shared_ptr<layout_region_guide> const _view_layout_region_guide;
-    std::shared_ptr<layout_region_guide> const _safe_area_layout_region_guide;
+    std::shared_ptr<layout_region_guide> const _view_layout_guide;
+    std::shared_ptr<layout_region_guide> const _safe_area_layout_guide;
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
@@ -105,8 +105,8 @@ struct renderer final : view_renderer_interface {
     update_result _update_view_size(CGSize const v_size, CGSize const d_size);
     update_result _update_scale_factor();
     update_result _update_safe_area_insets(yas_edge_insets const insets);
-    void _update_layout_region_guide();
-    void _update_safe_area_layout_region_guide();
+    void _update_view_layout_guide();
+    void _update_safe_area_layout_guide();
     bool _is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2);
 };
 }  // namespace yas::ui

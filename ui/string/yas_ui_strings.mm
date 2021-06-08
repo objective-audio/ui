@@ -62,12 +62,16 @@ layout_alignment const &strings::alignment() const {
     return this->_collection_layout->alignment();
 }
 
-std::optional<region> const &strings::actual_frame() const {
+region strings::actual_frame() const {
     return this->_collection_layout->actual_cells_frame();
 }
 
-std::shared_ptr<layout_region_guide> const &strings::frame_layout_region_guide() {
-    return this->_collection_layout->frame_region_guide;
+std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() const {
+    return this->_collection_layout->frame_layout_guide;
+}
+
+std::shared_ptr<layout_region_source> strings::actual_frame_layout_source() const {
+    return this->_collection_layout->actual_cells_frame_layout_source();
 }
 
 std::shared_ptr<rect_plane> const &strings::rect_plane() {
@@ -89,10 +93,6 @@ observing::syncable strings::observe_line_height(observing::caller<std::optional
 
 observing::syncable strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
     return this->_collection_layout->observe_alignment(std::move(handler));
-}
-
-observing::syncable strings::observe_actual_frame(observing::caller<std::optional<region>>::handler_f &&handler) {
-    return this->_collection_layout->observe_actual_frame(std::move(handler));
 }
 
 void strings::_prepare_observings() {
@@ -203,7 +203,7 @@ void strings::_update_layout() {
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         auto const word = eliminated_text.substr(idx, 1);
-        auto const &cell_region = this->_collection_layout->cell_region_guides().at(idx);
+        auto const &cell_region = this->_collection_layout->cell_layout_guides().at(idx);
 
         cell_region->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
             .end()

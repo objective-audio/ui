@@ -20,11 +20,11 @@ using namespace yas::ui;
 
 button::button(region const &region, std::size_t const state_count)
     : _rect_plane(rect_plane::make_shared(state_count * 2, 1)),
-      _layout_region_guide(layout_region_guide::make_shared(region)),
+      _layout_guide(layout_region_guide::make_shared(region)),
       _state_count(state_count) {
     this->_rect_plane->node()->set_collider(collider::make_shared());
 
-    this->_update_rect_positions(this->_layout_region_guide->region(), state_count);
+    this->_update_rect_positions(this->_layout_guide->region(), state_count);
     this->_update_rect_index();
 
     this->_rect_plane->node()
@@ -49,7 +49,7 @@ button::button(region const &region, std::size_t const state_count)
         .end()
         ->add_to(this->_pool);
 
-    this->_layout_region_guide
+    this->_layout_guide
         ->observe([this, state_count = this->_state_count](ui::region const &value) {
             this->_update_rect_positions(value, state_count);
         })
@@ -99,8 +99,8 @@ std::shared_ptr<rect_plane> const &button::rect_plane() {
     return this->_rect_plane;
 }
 
-std::shared_ptr<layout_region_guide> const &button::layout_region_guide() {
-    return this->_layout_region_guide;
+std::shared_ptr<layout_region_guide> const &button::layout_guide() {
+    return this->_layout_guide;
 }
 
 bool button::_is_tracking() {
