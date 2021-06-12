@@ -17,13 +17,13 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                                std::shared_ptr<renderer> const &renderer) mutable {
             if (renderer) {
                 auto const &strings = this->strings();
-                auto &strings_frame_guide = strings->preferred_layout_guide();
+                auto &strings_preferred_guide = strings->preferred_layout_guide();
                 auto const &safe_area_guide = renderer->safe_area_layout_guide();
 
                 auto pool = observing::canceller_pool::make_shared();
 
                 safe_area_guide->left()
-                    ->observe([weak_rect = to_weak(strings_frame_guide)](float const &value) {
+                    ->observe([weak_rect = to_weak(strings_preferred_guide)](float const &value) {
                         if (auto const region = weak_rect.lock()) {
                             region->right()->set_value(value + 4.0f);
                         }
@@ -32,7 +32,7 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                     ->add_to(*pool);
 
                 safe_area_guide->right()
-                    ->observe([weak_guide = to_weak(strings_frame_guide)](float const &value) {
+                    ->observe([weak_guide = to_weak(strings_preferred_guide)](float const &value) {
                         if (auto const guide = weak_guide.lock()) {
                             guide->right()->set_value(value - 4.0f);
                         }
@@ -41,7 +41,7 @@ sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_a
                     ->add_to(*pool);
 
                 safe_area_guide->bottom()
-                    ->observe([weak_guide = to_weak(strings_frame_guide)](float const &value) {
+                    ->observe([weak_guide = to_weak(strings_preferred_guide)](float const &value) {
                         if (auto const guide = weak_guide.lock()) {
                             guide->bottom()->set_value(value + 4.0f);
                         }

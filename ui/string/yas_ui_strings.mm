@@ -67,11 +67,11 @@ region strings::actual_frame() const {
 }
 
 std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() const {
-    return this->_collection_layout->frame_layout_guide;
+    return this->_collection_layout->preferred_layout_guide();
 }
 
-std::shared_ptr<layout_region_source> strings::actual_frame_layout_source() const {
-    return this->_collection_layout->actual_cells_frame_layout_source();
+std::shared_ptr<layout_region_source> strings::actual_layout_source() const {
+    return this->_collection_layout->actual_cells_layout_source();
 }
 
 std::shared_ptr<rect_plane> const &strings::rect_plane() {

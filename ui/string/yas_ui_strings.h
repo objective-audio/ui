@@ -26,7 +26,7 @@ struct strings final {
     [[nodiscard]] region actual_frame() const;
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &preferred_layout_guide() const;
-    [[nodiscard]] std::shared_ptr<layout_region_source> actual_frame_layout_source() const;
+    [[nodiscard]] std::shared_ptr<layout_region_source> actual_layout_source() const;
 
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
