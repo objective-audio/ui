@@ -13,7 +13,7 @@ using namespace yas::ui;
 #pragma mark - collection_layout
 
 collection_layout::collection_layout(args args)
-    : frame_layout_guide(layout_region_guide::make_shared(std::move(args.frame))),
+    : _preferred_layout_guide(layout_region_guide::make_shared(std::move(args.frame))),
       borders(std::move(args.borders)),
       _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
       _actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
@@ -31,35 +31,35 @@ collection_layout::collection_layout(args args)
         throw std::runtime_error("borders value is negative.");
     }
 
-    this->frame_layout_guide->left()
+    this->_preferred_layout_guide->left()
         ->observe([this, adding = borders.left](float const &value) {
             this->_border_layout_guide->left()->set_value(value + adding);
         })
         .sync()
         ->add_to(this->_pool);
 
-    this->frame_layout_guide->right()
+    this->_preferred_layout_guide->right()
         ->observe([this, adding = -borders.right](float const &value) {
             this->_border_layout_guide->right()->set_value(value + adding);
         })
         .sync()
         ->add_to(this->_pool);
 
-    this->frame_layout_guide->bottom()
+    this->_preferred_layout_guide->bottom()
         ->observe([this, adding = borders.bottom](float const &value) {
             this->_border_layout_guide->bottom()->set_value(value + adding);
         })
         .sync()
         ->add_to(this->_pool);
 
-    this->frame_layout_guide->top()
+    this->_preferred_layout_guide->top()
         ->observe([this, adding = -borders.top](float const &value) {
             this->_border_layout_guide->top()->set_value(value + adding);
         })
         .sync()
         ->add_to(this->_pool);
 
-    this->frame_layout_guide->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
+    this->_preferred_layout_guide->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
     this->_border_layout_guide->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
 
     this->_row_spacing->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
@@ -73,6 +73,10 @@ collection_layout::collection_layout(args args)
     this->_lines->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_pool);
 
     this->_update_layout();
+}
+
+std::shared_ptr<layout_region_guide> const &collection_layout::preferred_layout_guide() const {
+    return this->_preferred_layout_guide;
 }
 
 void collection_layout::set_preferred_cell_count(std::size_t const &count) {
@@ -254,7 +258,7 @@ void collection_layout::_pop_notify_waiting() {
 }
 
 void collection_layout::_update_layout() {
-    auto const frame_region = this->_direction_swapped_region_if_horizontal(this->frame_layout_guide->region());
+    auto const frame_region = this->_direction_swapped_region_if_horizontal(this->_preferred_layout_guide->region());
     auto const &preferred_cell_count = this->preferred_cell_count();
     auto const border_region = this->_transformed_border_region();
     auto const border_abs_size = size{fabsf(border_region.size.width), fabsf(border_region.size.height)};

@@ -16,7 +16,7 @@ struct collection_layout {
     using line = collection_layout_line;
     using args = collection_layout_args;
 
-    std::shared_ptr<layout_region_guide> const frame_layout_guide;
+    [[nodiscard]] std::shared_ptr<layout_region_guide> const &preferred_layout_guide() const;
     ui::layout_borders const borders;
 
     void set_preferred_cell_count(std::size_t const &);
@@ -80,6 +80,8 @@ struct collection_layout {
         std::size_t line_idx;
         std::size_t cell_idx;
     };
+
+    std::shared_ptr<layout_region_guide> const _preferred_layout_guide;
 
     observing::value::holder_ptr<std::size_t> const _preferred_cell_count;
     observing::value::holder_ptr<std::size_t> const _actual_cell_count;

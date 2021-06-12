@@ -188,25 +188,27 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
 
     this->_frame_cancellers.emplace_back(safe_area_guide->left()
                                              ->observe([this](float const &value) {
-                                                 this->_collection_layout->frame_layout_guide->left()->set_value(value);
-                                             })
-                                             .sync());
-    this->_frame_cancellers.emplace_back(safe_area_guide->bottom()
-                                             ->observe([this](float const &value) {
-                                                 this->_collection_layout->frame_layout_guide->bottom()->set_value(
+                                                 this->_collection_layout->preferred_layout_guide()->left()->set_value(
                                                      value);
                                              })
                                              .sync());
+    this->_frame_cancellers.emplace_back(
+        safe_area_guide->bottom()
+            ->observe([this](float const &value) {
+                this->_collection_layout->preferred_layout_guide()->bottom()->set_value(value);
+            })
+            .sync());
     this->_frame_cancellers.emplace_back(safe_area_guide->top()
                                              ->observe([this](float const &value) {
-                                                 this->_collection_layout->frame_layout_guide->top()->set_value(value);
+                                                 this->_collection_layout->preferred_layout_guide()->top()->set_value(
+                                                     value);
                                              })
                                              .sync());
 
     auto apply_to_frame_right = [this, width] {
         auto const &safe_area_guide = this->_root_node->renderer()->safe_area_layout_guide();
         auto const min = std::min(safe_area_guide->left()->value() + width, safe_area_guide->right()->value());
-        this->_collection_layout->frame_layout_guide->right()->set_value(min);
+        this->_collection_layout->preferred_layout_guide()->right()->set_value(min);
     };
 
     this->_frame_cancellers.emplace_back(
