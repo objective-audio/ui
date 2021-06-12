@@ -25,7 +25,7 @@ collection_layout::collection_layout(args args)
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
       _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
-      _actual_cells_frame_layout_guide(layout_region_guide::make_shared()),
+      _actual_cells_layout_guide(layout_region_guide::make_shared()),
       _border_layout_guide(ui::layout_region_guide::make_shared()) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
@@ -238,11 +238,11 @@ std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::cell
 }
 
 ui::region collection_layout::actual_cells_frame() const {
-    return this->_actual_cells_frame_layout_guide->region();
+    return this->_actual_cells_layout_guide->region();
 }
 
-std::shared_ptr<layout_region_source> collection_layout::actual_cells_frame_layout_source() const {
-    return this->_actual_cells_frame_layout_guide;
+std::shared_ptr<layout_region_source> collection_layout::actual_cells_layout_source() const {
+    return this->_actual_cells_layout_guide;
 }
 
 void collection_layout::_push_notify_waiting() {
@@ -366,7 +366,7 @@ void collection_layout::_update_layout() {
     }
 
     if (actual_frame) {
-        this->_actual_cells_frame_layout_guide->set_region(actual_frame.value());
+        this->_actual_cells_layout_guide->set_region(actual_frame.value());
     } else {
         this->_cell_layout_guides.clear();
 
@@ -386,8 +386,7 @@ void collection_layout::_update_layout() {
 
         ui::region const aligned_region{.origin = {border_region.origin.x + align_offset, border_region.origin.y},
                                         .size = size::zero()};
-        this->_actual_cells_frame_layout_guide->set_region(
-            this->_direction_swapped_region_if_horizontal(aligned_region));
+        this->_actual_cells_layout_guide->set_region(this->_direction_swapped_region_if_horizontal(aligned_region));
     }
 
     this->_actual_cell_count->set_value(actual_cell_count);

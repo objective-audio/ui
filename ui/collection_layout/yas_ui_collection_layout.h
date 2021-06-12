@@ -70,7 +70,7 @@ struct collection_layout {
 
     [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &cell_layout_guides() const;
     [[nodiscard]] ui::region actual_cells_frame() const;
-    [[nodiscard]] std::shared_ptr<layout_region_source> actual_cells_frame_layout_source() const;
+    [[nodiscard]] std::shared_ptr<layout_region_source> actual_cells_layout_source() const;
 
     [[nodiscard]] static std::shared_ptr<collection_layout> make_shared();
     [[nodiscard]] static std::shared_ptr<collection_layout> make_shared(args);
@@ -95,7 +95,7 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
     std::vector<std::shared_ptr<layout_region_guide>> _cell_layout_guides;
-    std::shared_ptr<layout_region_guide> const _actual_cells_frame_layout_guide;
+    std::shared_ptr<layout_region_guide> const _actual_cells_layout_guide;
 
     std::shared_ptr<layout_region_guide> const _border_layout_guide;
     observing::canceller_pool _pool;
