@@ -371,6 +371,10 @@ void collection_layout::_update_layout() {
     }
 
     if (actual_frame) {
+        if (actual_cell_guides.size() != this->_actual_cell_layout_guides->value().size()) {
+            this->_actual_cell_layout_guides->set_value(std::move(actual_cell_guides));
+        }
+
         this->_actual_frame_layout_guide->set_region(actual_frame.value());
     } else {
         this->_actual_cell_layout_guides->set_value({});
@@ -392,10 +396,6 @@ void collection_layout::_update_layout() {
         ui::region const aligned_region{.origin = {border_region.origin.x + align_offset, border_region.origin.y},
                                         .size = size::zero()};
         this->_actual_frame_layout_guide->set_region(this->_direction_swapped_region_if_horizontal(aligned_region));
-    }
-
-    if (actual_cell_guides.size() != this->_actual_cell_layout_guides->value().size()) {
-        this->_actual_cell_layout_guides->set_value(std::move(actual_cell_guides));
     }
 }
 
