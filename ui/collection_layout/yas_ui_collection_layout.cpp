@@ -241,7 +241,7 @@ ui::region collection_layout::actual_cells_frame() const {
     return this->_actual_cells_layout_guide->region();
 }
 
-std::shared_ptr<layout_region_source> collection_layout::actual_cells_layout_source() const {
+std::shared_ptr<layout_region_source> collection_layout::actual_frame_layout_source() const {
     return this->_actual_cells_layout_guide;
 }
 
