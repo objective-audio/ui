@@ -25,7 +25,6 @@ struct collection_layout {
     [[nodiscard]] observing::syncable observe_preferred_cell_count(observing::caller<std::size_t>::handler_f &&);
 
     [[nodiscard]] std::size_t actual_cell_count() const;
-    [[nodiscard]] observing::syncable observe_actual_cell_count(observing::caller<std::size_t>::handler_f &&);
 
     void set_default_cell_size(ui::size const &);
     void set_default_cell_size(ui::size &&);
@@ -69,6 +68,8 @@ struct collection_layout {
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
     [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &cell_layout_guides() const;
+    [[nodiscard]] observing::syncable observe_cell_layout_guides(
+        std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&);
     [[nodiscard]] ui::region actual_cells_frame() const;
     [[nodiscard]] std::shared_ptr<layout_region_source> actual_frame_layout_source() const;
 
@@ -84,7 +85,6 @@ struct collection_layout {
     std::shared_ptr<layout_region_guide> const _preferred_layout_guide;
 
     observing::value::holder_ptr<std::size_t> const _preferred_cell_count;
-    observing::value::holder_ptr<std::size_t> const _actual_cell_count;
     observing::value::holder_ptr<ui::size> const _default_cell_size;
     observing::value::holder_ptr<std::vector<ui::collection_layout::line>> const _lines;
     observing::value::holder_ptr<float> const _row_spacing;
@@ -94,7 +94,7 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _row_order;
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
-    std::vector<std::shared_ptr<layout_region_guide>> _cell_layout_guides;
+    observing::vector::holder_ptr<std::shared_ptr<layout_region_guide>> _cell_layout_guides;
     std::shared_ptr<layout_region_guide> const _actual_cells_layout_guide;
 
     std::shared_ptr<layout_region_guide> const _border_layout_guide;
