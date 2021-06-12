@@ -293,7 +293,7 @@ void sample::soft_keyboard::_update_soft_key_count() {
         auto const &idx = yas_each_index(each);
         if (idx < layout_count) {
             if (idx >= this->_fixed_cell_layouts.size()) {
-                auto const &src_guide_rect = this->_collection_layout->cell_layout_guides().at(idx);
+                auto const &src_guide_rect = this->_collection_layout->actual_cell_layout_guides().at(idx);
                 auto weak_dst_guide = to_weak(this->_src_cell_layout_guides.at(idx));
 
                 auto pool = observing::canceller_pool::make_shared();

@@ -229,7 +229,7 @@ observing::syncable collection_layout::observe_col_order(observing::caller<layou
     return this->_col_order->observe(std::move(handler));
 }
 
-std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::cell_layout_guides() const {
+std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::actual_cell_layout_guides() const {
     return this->_cell_layout_guides->value();
 }
 
