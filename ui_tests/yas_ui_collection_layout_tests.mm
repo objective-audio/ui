@@ -189,7 +189,7 @@ using namespace yas::ui;
     std::size_t notified_count = 0;
 
     auto canceller =
-        layout->observe_cell_layout_guides([&notified_count](auto const &guides) { notified_count = guides.size(); })
+        layout->observe_actual_cell_layout_guides([&notified_count](auto const &guides) { notified_count = guides.size(); })
             .end();
 
     layout->set_preferred_cell_count(5);

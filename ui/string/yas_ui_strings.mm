@@ -108,7 +108,7 @@ void strings::_prepare_observings() {
 
     this->_line_height->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
 
-    this->_collection_layout->observe_cell_layout_guides([this](auto const &) { this->_update_layout(); })
+    this->_collection_layout->observe_actual_cell_layout_guides([this](auto const &) { this->_update_layout(); })
         .end()
         ->add_to(this->_property_pool);
 

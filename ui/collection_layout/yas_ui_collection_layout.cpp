@@ -233,7 +233,7 @@ std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::actu
     return this->_cell_layout_guides->value();
 }
 
-observing::syncable collection_layout::observe_cell_layout_guides(
+observing::syncable collection_layout::observe_actual_cell_layout_guides(
     std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&handler) {
     return this->_cell_layout_guides->observe(
         [handler = std::move(handler)](auto const &event) { handler(event.elements); });

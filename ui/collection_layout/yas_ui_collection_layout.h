@@ -68,7 +68,7 @@ struct collection_layout {
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
     [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &actual_cell_layout_guides() const;
-    [[nodiscard]] observing::syncable observe_cell_layout_guides(
+    [[nodiscard]] observing::syncable observe_actual_cell_layout_guides(
         std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&);
     [[nodiscard]] ui::region actual_cells_frame() const;
     [[nodiscard]] std::shared_ptr<layout_region_source> actual_frame_layout_source() const;
