@@ -94,7 +94,7 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _row_order;
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
-    observing::vector::holder_ptr<std::shared_ptr<layout_region_guide>> _cell_layout_guides;
+    observing::value::holder_ptr<std::vector<std::shared_ptr<layout_region_guide>>> _cell_layout_guides;
     std::shared_ptr<layout_region_guide> const _actual_cells_layout_guide;
 
     std::shared_ptr<layout_region_guide> const _border_layout_guide;

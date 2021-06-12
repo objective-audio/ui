@@ -24,7 +24,7 @@ collection_layout::collection_layout(args args)
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
       _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
-      _cell_layout_guides(observing::vector::holder<std::shared_ptr<layout_region_guide>>::make_shared()),
+      _cell_layout_guides(observing::value::holder<std::vector<std::shared_ptr<layout_region_guide>>>::make_shared({})),
       _actual_cells_layout_guide(layout_region_guide::make_shared()),
       _border_layout_guide(ui::layout_region_guide::make_shared()) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
@@ -97,7 +97,7 @@ observing::syncable collection_layout::observe_preferred_cell_count(
 }
 
 std::size_t collection_layout::actual_cell_count() const {
-    return this->_cell_layout_guides->size();
+    return this->_cell_layout_guides->value().size();
 }
 
 void collection_layout::set_default_cell_size(size const &size) {
@@ -235,8 +235,7 @@ std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::actu
 
 observing::syncable collection_layout::observe_actual_cell_layout_guides(
     std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&handler) {
-    return this->_cell_layout_guides->observe(
-        [handler = std::move(handler)](auto const &event) { handler(event.elements); });
+    return this->_cell_layout_guides->observe(std::move(handler));
 }
 
 ui::region collection_layout::actual_frame() const {
@@ -325,7 +324,7 @@ void collection_layout::_update_layout() {
         while (yas_each_next(actual_each)) {
             auto const &idx = yas_each_index(actual_each);
             if (idx < this->_cell_layout_guides->value().size()) {
-                actual_cell_guides.emplace_back(this->_cell_layout_guides->at(idx));
+                actual_cell_guides.emplace_back(this->_cell_layout_guides->value().at(idx));
             } else {
                 actual_cell_guides.emplace_back(layout_region_guide::make_shared());
             }
@@ -373,7 +372,7 @@ void collection_layout::_update_layout() {
     if (actual_frame) {
         this->_actual_cells_layout_guide->set_region(actual_frame.value());
     } else {
-        this->_cell_layout_guides->clear();
+        this->_cell_layout_guides->set_value({});
 
         float align_offset;
 
@@ -394,8 +393,8 @@ void collection_layout::_update_layout() {
         this->_actual_cells_layout_guide->set_region(this->_direction_swapped_region_if_horizontal(aligned_region));
     }
 
-    if (actual_cell_guides.size() != this->_cell_layout_guides->size()) {
-        this->_cell_layout_guides->replace(std::move(actual_cell_guides));
+    if (actual_cell_guides.size() != this->_cell_layout_guides->value().size()) {
+        this->_cell_layout_guides->set_value(std::move(actual_cell_guides));
     }
 }
 
