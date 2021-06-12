@@ -277,9 +277,9 @@ void collection_layout::_update_layout() {
         point origin = {.v = 0.0f};
         std::vector<region> row_regions;
 
-        auto each = make_fast_each(preferred_cell_count);
-        while (yas_each_next(each)) {
-            auto const &idx = yas_each_index(each);
+        auto preferred_each = make_fast_each(preferred_cell_count);
+        while (yas_each_next(preferred_each)) {
+            auto const &idx = yas_each_index(preferred_each);
             auto const cell_size = this->_transformed_cell_size(idx);
 
             if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
@@ -321,12 +321,12 @@ void collection_layout::_update_layout() {
             regions.emplace_back(std::move(row_regions));
         }
 
-        actual_cell_guides = this->_cell_layout_guides->value();
-
-        if (actual_cell_count < actual_cell_guides.size()) {
-            actual_cell_guides.resize(actual_cell_count);
-        } else {
-            while (actual_cell_guides.size() < actual_cell_count) {
+        auto actual_each = make_fast_each(actual_cell_count);
+        while (yas_each_next(actual_each)) {
+            auto const &idx = yas_each_index(actual_each);
+            if (idx < this->_cell_layout_guides->value().size()) {
+                actual_cell_guides.emplace_back(this->_cell_layout_guides->at(idx));
+            } else {
                 actual_cell_guides.emplace_back(layout_region_guide::make_shared());
             }
         }
