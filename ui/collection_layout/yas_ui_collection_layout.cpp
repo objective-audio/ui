@@ -239,7 +239,7 @@ observing::syncable collection_layout::observe_actual_cell_layout_guides(
         [handler = std::move(handler)](auto const &event) { handler(event.elements); });
 }
 
-ui::region collection_layout::actual_cells_frame() const {
+ui::region collection_layout::actual_frame() const {
     return this->_actual_cells_layout_guide->region();
 }
 

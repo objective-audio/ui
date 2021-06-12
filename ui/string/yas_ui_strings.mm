@@ -63,7 +63,7 @@ layout_alignment const &strings::alignment() const {
 }
 
 region strings::actual_frame() const {
-    return this->_collection_layout->actual_cells_frame();
+    return this->_collection_layout->actual_frame();
 }
 
 std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() const {

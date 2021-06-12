@@ -70,7 +70,7 @@ struct collection_layout {
     [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &actual_cell_layout_guides() const;
     [[nodiscard]] observing::syncable observe_actual_cell_layout_guides(
         std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&);
-    [[nodiscard]] ui::region actual_cells_frame() const;
+    [[nodiscard]] ui::region actual_frame() const;
     [[nodiscard]] std::shared_ptr<layout_region_source> actual_frame_layout_source() const;
 
     [[nodiscard]] static std::shared_ptr<collection_layout> make_shared();
