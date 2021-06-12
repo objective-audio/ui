@@ -158,7 +158,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
     }
 
     this->_collection_layout
-        ->observe_actual_cell_count([this](auto const &) {
+        ->observe_actual_cell_layout_guides([this](auto const &) {
             this->_update_soft_keys_enabled(true);
             this->_update_soft_key_count();
         })
