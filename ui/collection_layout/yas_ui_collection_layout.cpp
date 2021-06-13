@@ -16,7 +16,6 @@ collection_layout::collection_layout(args args)
     : _preferred_layout_guide(layout_region_guide::make_shared(std::move(args.frame))),
       borders(std::move(args.borders)),
       _preferred_cell_count(observing::value::holder<std::size_t>::make_shared(args.preferred_cell_count)),
-      _actual_cell_count(observing::value::holder<std::size_t>::make_shared(std::size_t(0))),
       _default_cell_size(observing::value::holder<size>::make_shared(std::move(args.default_cell_size))),
       _lines(observing::value::holder<std::vector<collection_layout::line>>::make_shared(std::move(args.lines))),
       _row_spacing(observing::value::holder<float>::make_shared(args.row_spacing)),
@@ -25,7 +24,9 @@ collection_layout::collection_layout(args args)
       _direction(observing::value::holder<layout_direction>::make_shared(args.direction)),
       _row_order(observing::value::holder<layout_order>::make_shared(args.row_order)),
       _col_order(observing::value::holder<layout_order>::make_shared(args.col_order)),
-      _actual_cells_layout_guide(layout_region_guide::make_shared()),
+      _actual_cell_layout_guides(
+          observing::value::holder<std::vector<std::shared_ptr<layout_region_guide>>>::make_shared({})),
+      _actual_frame_layout_guide(layout_region_guide::make_shared()),
       _border_layout_guide(ui::layout_region_guide::make_shared()) {
     if (borders.left < 0 || borders.right < 0 || borders.bottom < 0 || borders.top < 0) {
         throw std::runtime_error("borders value is negative.");
@@ -97,11 +98,7 @@ observing::syncable collection_layout::observe_preferred_cell_count(
 }
 
 std::size_t collection_layout::actual_cell_count() const {
-    return this->_actual_cell_count->value();
-}
-
-observing::syncable collection_layout::observe_actual_cell_count(observing::caller<std::size_t>::handler_f &&handler) {
-    return this->_actual_cell_count->observe(std::move(handler));
+    return this->_actual_cell_layout_guides->value().size();
 }
 
 void collection_layout::set_default_cell_size(size const &size) {
@@ -233,26 +230,31 @@ observing::syncable collection_layout::observe_col_order(observing::caller<layou
     return this->_col_order->observe(std::move(handler));
 }
 
-std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::cell_layout_guides() const {
-    return this->_cell_layout_guides;
+std::vector<std::shared_ptr<layout_region_guide>> const &collection_layout::actual_cell_layout_guides() const {
+    return this->_actual_cell_layout_guides->value();
 }
 
-ui::region collection_layout::actual_cells_frame() const {
-    return this->_actual_cells_layout_guide->region();
+observing::syncable collection_layout::observe_actual_cell_layout_guides(
+    std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&handler) {
+    return this->_actual_cell_layout_guides->observe(std::move(handler));
 }
 
-std::shared_ptr<layout_region_source> collection_layout::actual_cells_layout_source() const {
-    return this->_actual_cells_layout_guide;
+ui::region collection_layout::actual_frame() const {
+    return this->_actual_frame_layout_guide->region();
+}
+
+std::shared_ptr<layout_region_source> collection_layout::actual_frame_layout_source() const {
+    return this->_actual_frame_layout_guide;
 }
 
 void collection_layout::_push_notify_waiting() {
-    for (auto const &guide : this->_cell_layout_guides) {
+    for (auto const &guide : this->_actual_cell_layout_guides->value()) {
         guide->push_notify_waiting();
     }
 }
 
 void collection_layout::_pop_notify_waiting() {
-    for (auto const &guide : this->_cell_layout_guides) {
+    for (auto const &guide : this->_actual_cell_layout_guides->value()) {
         guide->pop_notify_waiting();
     }
 }
@@ -265,6 +267,7 @@ void collection_layout::_update_layout() {
 
     std::optional<region> actual_frame{std::nullopt};
     std::size_t actual_cell_count = 0;
+    std::vector<std::shared_ptr<layout_region_guide>> actual_cell_guides;
 
     if (preferred_cell_count > 0) {
         auto const is_col_limiting = frame_region.size.width != 0;
@@ -274,9 +277,9 @@ void collection_layout::_update_layout() {
         point origin = {.v = 0.0f};
         std::vector<region> row_regions;
 
-        auto each = make_fast_each(preferred_cell_count);
-        while (yas_each_next(each)) {
-            auto const &idx = yas_each_index(each);
+        auto preferred_each = make_fast_each(preferred_cell_count);
+        while (yas_each_next(preferred_each)) {
+            auto const &idx = yas_each_index(preferred_each);
             auto const cell_size = this->_transformed_cell_size(idx);
 
             if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
@@ -318,11 +321,13 @@ void collection_layout::_update_layout() {
             regions.emplace_back(std::move(row_regions));
         }
 
-        if (actual_cell_count < this->_cell_layout_guides.size()) {
-            this->_cell_layout_guides.resize(actual_cell_count);
-        } else {
-            while (this->_cell_layout_guides.size() < actual_cell_count) {
-                this->_cell_layout_guides.emplace_back(layout_region_guide::make_shared());
+        auto actual_each = make_fast_each(actual_cell_count);
+        while (yas_each_next(actual_each)) {
+            auto const &idx = yas_each_index(actual_each);
+            if (idx < this->_actual_cell_layout_guides->value().size()) {
+                actual_cell_guides.emplace_back(this->_actual_cell_layout_guides->value().at(idx));
+            } else {
+                actual_cell_guides.emplace_back(layout_region_guide::make_shared());
             }
         }
 
@@ -348,13 +353,13 @@ void collection_layout::_update_layout() {
                 for (auto const &region : row_regions) {
                     ui::region const aligned_region{.origin = {region.origin.x + align_offset, region.origin.y},
                                                     .size = region.size};
-                    this->_cell_layout_guides.at(idx)->set_region(
+                    actual_cell_guides.at(idx)->set_region(
                         this->_direction_swapped_region_if_horizontal(aligned_region));
 
                     if (!actual_frame.has_value()) {
-                        actual_frame = this->_cell_layout_guides.at(idx)->region();
+                        actual_frame = actual_cell_guides.at(idx)->region();
                     } else {
-                        actual_frame = actual_frame->combined(this->_cell_layout_guides.at(idx)->region());
+                        actual_frame = actual_frame->combined(actual_cell_guides.at(idx)->region());
                     }
 
                     ++idx;
@@ -366,9 +371,13 @@ void collection_layout::_update_layout() {
     }
 
     if (actual_frame) {
-        this->_actual_cells_layout_guide->set_region(actual_frame.value());
+        if (actual_cell_guides.size() != this->_actual_cell_layout_guides->value().size()) {
+            this->_actual_cell_layout_guides->set_value(std::move(actual_cell_guides));
+        }
+
+        this->_actual_frame_layout_guide->set_region(actual_frame.value());
     } else {
-        this->_cell_layout_guides.clear();
+        this->_actual_cell_layout_guides->set_value({});
 
         float align_offset;
 
@@ -386,10 +395,8 @@ void collection_layout::_update_layout() {
 
         ui::region const aligned_region{.origin = {border_region.origin.x + align_offset, border_region.origin.y},
                                         .size = size::zero()};
-        this->_actual_cells_layout_guide->set_region(this->_direction_swapped_region_if_horizontal(aligned_region));
+        this->_actual_frame_layout_guide->set_region(this->_direction_swapped_region_if_horizontal(aligned_region));
     }
-
-    this->_actual_cell_count->set_value(actual_cell_count);
 }
 
 std::optional<collection_layout::cell_location> collection_layout::_cell_location(std::size_t const cell_idx) {

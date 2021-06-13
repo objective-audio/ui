@@ -39,7 +39,7 @@ using namespace yas::ui;
     XCTAssertEqual(layout->row_order(), layout_order::ascending);
     XCTAssertEqual(layout->col_order(), layout_order::ascending);
     XCTAssertEqual(layout->actual_cell_count(), 0);
-    XCTAssertTrue(layout->actual_cells_frame() == ui::region::zero());
+    XCTAssertTrue(layout->actual_frame() == ui::region::zero());
 }
 
 - (void)test_create_with_args {
@@ -75,7 +75,7 @@ using namespace yas::ui;
     XCTAssertEqual(layout->row_order(), layout_order::descending);
     XCTAssertEqual(layout->col_order(), layout_order::descending);
     XCTAssertEqual(layout->actual_cell_count(), 0);
-    XCTAssertTrue(layout->actual_cells_frame() == (ui::region{.origin = {18.0f, 19.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (ui::region{.origin = {18.0f, 19.0f}, .size = ui::size::zero()}));
 }
 
 - (void)test_cell_layout_guides {
@@ -87,29 +87,29 @@ using namespace yas::ui;
                                         .col_spacing = 1.0f,
                                         .borders = {.left = 1.0f, .right = 1.0f, .bottom = 1.0f, .top = 1.0f}});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &actual_cell_guides = layout->actual_cell_layout_guides();
 
-    XCTAssertEqual(cell_region_guides.size(), 4);
+    XCTAssertEqual(actual_cell_guides.size(), 4);
 
-    XCTAssertEqual(cell_region_guides.at(0)->left()->value(), 3.0f);
-    XCTAssertEqual(cell_region_guides.at(0)->right()->value(), 5.0f);
-    XCTAssertEqual(cell_region_guides.at(0)->bottom()->value(), 5.0f);
-    XCTAssertEqual(cell_region_guides.at(0)->top()->value(), 8.0f);
+    XCTAssertEqual(actual_cell_guides.at(0)->left()->value(), 3.0f);
+    XCTAssertEqual(actual_cell_guides.at(0)->right()->value(), 5.0f);
+    XCTAssertEqual(actual_cell_guides.at(0)->bottom()->value(), 5.0f);
+    XCTAssertEqual(actual_cell_guides.at(0)->top()->value(), 8.0f);
 
-    XCTAssertEqual(cell_region_guides.at(1)->left()->value(), 6.0f);
-    XCTAssertEqual(cell_region_guides.at(1)->right()->value(), 8.0f);
-    XCTAssertEqual(cell_region_guides.at(1)->bottom()->value(), 5.0f);
-    XCTAssertEqual(cell_region_guides.at(1)->top()->value(), 8.0f);
+    XCTAssertEqual(actual_cell_guides.at(1)->left()->value(), 6.0f);
+    XCTAssertEqual(actual_cell_guides.at(1)->right()->value(), 8.0f);
+    XCTAssertEqual(actual_cell_guides.at(1)->bottom()->value(), 5.0f);
+    XCTAssertEqual(actual_cell_guides.at(1)->top()->value(), 8.0f);
 
-    XCTAssertEqual(cell_region_guides.at(2)->left()->value(), 3.0f);
-    XCTAssertEqual(cell_region_guides.at(2)->right()->value(), 5.0f);
-    XCTAssertEqual(cell_region_guides.at(2)->bottom()->value(), 9.0f);
-    XCTAssertEqual(cell_region_guides.at(2)->top()->value(), 12.0f);
+    XCTAssertEqual(actual_cell_guides.at(2)->left()->value(), 3.0f);
+    XCTAssertEqual(actual_cell_guides.at(2)->right()->value(), 5.0f);
+    XCTAssertEqual(actual_cell_guides.at(2)->bottom()->value(), 9.0f);
+    XCTAssertEqual(actual_cell_guides.at(2)->top()->value(), 12.0f);
 
-    XCTAssertEqual(cell_region_guides.at(3)->left()->value(), 6.0f);
-    XCTAssertEqual(cell_region_guides.at(3)->right()->value(), 8.0f);
-    XCTAssertEqual(cell_region_guides.at(3)->bottom()->value(), 9.0f);
-    XCTAssertEqual(cell_region_guides.at(3)->top()->value(), 12.0f);
+    XCTAssertEqual(actual_cell_guides.at(3)->left()->value(), 6.0f);
+    XCTAssertEqual(actual_cell_guides.at(3)->right()->value(), 8.0f);
+    XCTAssertEqual(actual_cell_guides.at(3)->bottom()->value(), 9.0f);
+    XCTAssertEqual(actual_cell_guides.at(3)->top()->value(), 12.0f);
 }
 
 - (void)test_actual_cell_count {
@@ -131,19 +131,19 @@ using namespace yas::ui;
     auto const layout = collection_layout::make_shared(
         {.frame = {.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}, .preferred_cell_count = 1});
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 1.0f}}));
 
     layout->set_preferred_cell_count(2);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
 
     layout->set_preferred_cell_count(3);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
 
     layout->set_preferred_cell_count(4);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 2.0f}}));
 }
 
 - (void)test_actual_cells_frame_count_zero {
@@ -154,32 +154,32 @@ using namespace yas::ui;
     layout->set_alignment(layout_alignment::min);
     layout->set_direction(layout_direction::vertical);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 3.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {2.0f, 3.0f}, .size = ui::size::zero()}));
 
     layout->set_alignment(layout_alignment::mid);
     layout->set_direction(layout_direction::vertical);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.5f, 3.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {2.5f, 3.0f}, .size = ui::size::zero()}));
 
     layout->set_alignment(layout_alignment::max);
     layout->set_direction(layout_direction::vertical);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {3.0f, 3.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {3.0f, 3.0f}, .size = ui::size::zero()}));
 
     layout->set_alignment(layout_alignment::min);
     layout->set_direction(layout_direction::horizontal);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 3.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {2.0f, 3.0f}, .size = ui::size::zero()}));
 
     layout->set_alignment(layout_alignment::mid);
     layout->set_direction(layout_direction::horizontal);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 4.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {2.0f, 4.0f}, .size = ui::size::zero()}));
 
     layout->set_alignment(layout_alignment::max);
     layout->set_direction(layout_direction::horizontal);
 
-    XCTAssertTrue(layout->actual_cells_frame() == (region{.origin = {2.0f, 5.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(layout->actual_frame() == (region{.origin = {2.0f, 5.0f}, .size = ui::size::zero()}));
 }
 
 - (void)test_observe_actual_cell_count {
@@ -188,8 +188,10 @@ using namespace yas::ui;
 
     std::size_t notified_count = 0;
 
-    auto canceller =
-        layout->observe_actual_cell_count([&notified_count](auto const &count) { notified_count = count; }).end();
+    auto canceller = layout
+                         ->observe_actual_cell_layout_guides(
+                             [&notified_count](auto const &guides) { notified_count = guides.size(); })
+                         .end();
 
     layout->set_preferred_cell_count(5);
 
@@ -217,7 +219,7 @@ using namespace yas::ui;
     XCTAssertEqual(layout->preferred_layout_guide()->bottom()->value(), 4.0f);
     XCTAssertEqual(layout->preferred_layout_guide()->top()->value(), 20.0f);
 
-    auto const &cell_region_guide = layout->cell_layout_guides();
+    auto const &cell_region_guide = layout->actual_cell_layout_guides();
 
     layout->preferred_layout_guide()->set_region({.origin = {3.0f, 5.0f}, .size = {7.0f, 16.0f}});
 
@@ -315,7 +317,7 @@ using namespace yas::ui;
 - (void)test_set_default_cell_size {
     auto layout = collection_layout::make_shared({.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertTrue(layout->default_cell_size() == (size{1.0f, 1.0f}));
 
@@ -341,7 +343,7 @@ using namespace yas::ui;
 - (void)test_new_line_by_frame_only {
     auto layout = collection_layout::make_shared({.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 5});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(layout->lines().size(), 0);
 
@@ -382,7 +384,7 @@ using namespace yas::ui;
 - (void)test_new_line_by_lines {
     auto layout = collection_layout::make_shared({.frame = {.size = {10.0f, 0.0f}}, .preferred_cell_count = 5});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     layout->set_lines({{.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}, {3.0f, 3.0f}}, .new_line_min_offset = 0.0f},
                        {.cell_sizes = {{1.0f, 1.0f}, {2.0f, 2.0f}}, .new_line_min_offset = 0.0f}});
@@ -417,7 +419,7 @@ using namespace yas::ui;
 - (void)test_new_line_by_frame_and_lines {
     auto layout = collection_layout::make_shared({.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 5});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     size const cell_size = {1.0f, 1.0f};
 
@@ -458,7 +460,7 @@ using namespace yas::ui;
                                                   .default_cell_size = {0.0f, 1.0f},
                                                   .borders = {.left = 1.0f, .right = 1.0f}});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(layout->actual_cell_count(), 3);
 
@@ -482,7 +484,7 @@ using namespace yas::ui;
     auto layout = collection_layout::make_shared(
         {.frame = {.size = {2.0f, 0.0f}}, .preferred_cell_count = 3, .default_cell_size = {1.0f, 1.0f}});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(layout->row_spacing(), 0.0f);
 
@@ -509,7 +511,7 @@ using namespace yas::ui;
     auto layout = collection_layout::make_shared(
         {.frame = {.size = {3.0f, 0.0f}}, .preferred_cell_count = 3, .default_cell_size = {1.0f, 1.0f}});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(layout->col_spacing(), 0.0f);
 
@@ -550,7 +552,7 @@ using namespace yas::ui;
                                                   .default_cell_size = {2.0f, 1.0f},
                                                   .alignment = layout_alignment::mid});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.at(0)->left()->value(), 0.5f);
     XCTAssertEqual(cell_region_guides.at(0)->bottom()->value(), 0.0f);
@@ -566,7 +568,7 @@ using namespace yas::ui;
                                                   .default_cell_size = {2.0f, 1.0f},
                                                   .alignment = layout_alignment::max});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.at(0)->left()->value(), 1.0f);
     XCTAssertEqual(cell_region_guides.at(0)->bottom()->value(), 0.0f);
@@ -609,7 +611,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::ascending,
                                                   .col_order = layout_order::ascending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {1.0f, 2.0f}, .size = {2.0f, 1.0f}}));
@@ -626,7 +628,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::descending,
                                                   .col_order = layout_order::ascending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {1.0f, 3.0f}, .size = {2.0f, 1.0f}}));
@@ -643,7 +645,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::ascending,
                                                   .col_order = layout_order::descending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {3.0f, 2.0f}, .size = {2.0f, 1.0f}}));
@@ -660,7 +662,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::descending,
                                                   .col_order = layout_order::descending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {3.0f, 3.0f}, .size = {2.0f, 1.0f}}));
@@ -677,7 +679,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::ascending,
                                                   .col_order = layout_order::ascending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {1.0f, 2.0f}, .size = {1.0f, 2.0f}}));
@@ -694,7 +696,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::descending,
                                                   .col_order = layout_order::ascending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));
@@ -711,7 +713,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::ascending,
                                                   .col_order = layout_order::descending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertEqual(cell_region_guides.size(), 3);
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {1.0f, 4.0f}, .size = {1.0f, 2.0f}}));
@@ -728,7 +730,7 @@ using namespace yas::ui;
                                                   .row_order = layout_order::descending,
                                                   .col_order = layout_order::descending});
 
-    auto const &cell_region_guides = layout->cell_layout_guides();
+    auto const &cell_region_guides = layout->actual_cell_layout_guides();
 
     XCTAssertTrue(cell_region_guides.at(0)->region() == (region{.origin = {2.0f, 4.0f}, .size = {1.0f, 2.0f}}));
     XCTAssertTrue(cell_region_guides.at(1)->region() == (region{.origin = {2.0f, 2.0f}, .size = {1.0f, 2.0f}}));

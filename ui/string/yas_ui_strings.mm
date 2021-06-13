@@ -63,7 +63,7 @@ layout_alignment const &strings::alignment() const {
 }
 
 region strings::actual_frame() const {
-    return this->_collection_layout->actual_cells_frame();
+    return this->_collection_layout->actual_frame();
 }
 
 std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() const {
@@ -71,7 +71,7 @@ std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() co
 }
 
 std::shared_ptr<layout_region_source> strings::actual_layout_source() const {
-    return this->_collection_layout->actual_cells_layout_source();
+    return this->_collection_layout->actual_frame_layout_source();
 }
 
 std::shared_ptr<rect_plane> const &strings::rect_plane() {
@@ -108,7 +108,7 @@ void strings::_prepare_observings() {
 
     this->_line_height->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
 
-    this->_collection_layout->observe_actual_cell_count([this](auto const &) { this->_update_layout(); })
+    this->_collection_layout->observe_actual_cell_layout_guides([this](auto const &) { this->_update_layout(); })
         .end()
         ->add_to(this->_property_pool);
 
@@ -203,7 +203,7 @@ void strings::_update_layout() {
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         auto const word = eliminated_text.substr(idx, 1);
-        auto const &cell_region = this->_collection_layout->cell_layout_guides().at(idx);
+        auto const &cell_region = this->_collection_layout->actual_cell_layout_guides().at(idx);
 
         cell_region->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
             .end()
