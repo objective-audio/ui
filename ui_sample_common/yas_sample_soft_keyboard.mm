@@ -29,13 +29,13 @@ struct soft_key {
 
         float const alpha = enabled ? 1.0f : 0.0f;
 
-        renderer->erase_action(button_node);
-        renderer->erase_action(strings_node);
+        renderer->action_manager()->erase_action(button_node);
+        renderer->action_manager()->erase_action(strings_node);
 
         if (animated) {
-            renderer->insert_action(
+            renderer->action_manager()->insert_action(
                 make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
-            renderer->insert_action(
+            renderer->action_manager()->insert_action(
                 make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
         } else {
             button_node->set_alpha(alpha);

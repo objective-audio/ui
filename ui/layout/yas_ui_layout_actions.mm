@@ -4,7 +4,8 @@
 
 #include "yas_ui_layout_actions.h"
 #include <cpp_utils/yas_each_index.h>
-#include "yas_ui_renderer.h"
+#include <ui/yas_ui_action_manager.h>
+#include <ui/yas_ui_renderer.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -43,14 +44,14 @@ layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(
                 auto dst_guide = weak_dst_guide.lock();
 
                 if (renderer && dst_guide) {
-                    renderer->erase_action(dst_guide);
+                    renderer->action_manager()->erase_action(dst_guide);
 
                     auto action = make_action({.target = dst_guide,
                                                .begin_value = dst_guide->value(),
                                                .end_value = value,
                                                .duration = args.duration,
                                                .value_transformer = this->value_transformer()});
-                    renderer->insert_action(action);
+                    renderer->action_manager()->insert_action(action);
                 }
             })
             .end()
@@ -61,7 +62,7 @@ layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(
 layout_animator::~layout_animator() {
     if (auto renderer = this->_args.renderer.lock()) {
         for (auto const &guide_pair : this->_args.layout_guide_pairs) {
-            renderer->erase_action(guide_pair.destination);
+            renderer->action_manager()->erase_action(guide_pair.destination);
         }
     }
 }

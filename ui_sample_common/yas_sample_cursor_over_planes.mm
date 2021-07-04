@@ -30,11 +30,11 @@ static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<no
                             };
 
                             if (is_detected && !*prev_detected) {
-                                renderer->erase_action(node);
-                                renderer->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
+                                renderer->action_manager()->erase_action(node);
+                                renderer->action_manager()->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
                             } else if (!is_detected && *prev_detected) {
-                                renderer->erase_action(node);
-                                renderer->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
+                                renderer->action_manager()->erase_action(node);
+                                renderer->action_manager()->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
                             }
 
                             *prev_detected = is_detected;

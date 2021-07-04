@@ -34,7 +34,6 @@ using namespace yas::ui;
     XCTAssertFalse(renderer->metal_system());
 
     XCTAssertTrue(renderer->root_node());
-    XCTAssertEqual(renderer->actions().size(), 0);
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
     XCTAssertEqual(renderer->drawable_size(), (ui::uint_size{0, 0}));
@@ -42,6 +41,7 @@ using namespace yas::ui;
 
     XCTAssertTrue(view_renderer);
     XCTAssertTrue(renderer->event_manager());
+    XCTAssertTrue(renderer->action_manager());
     XCTAssertTrue(renderer->detector());
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::none);
@@ -67,33 +67,6 @@ using namespace yas::ui;
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::metal);
     XCTAssertTrue(renderer->metal_system());
-}
-
-- (void)test_action {
-    auto renderer = ui::renderer::make_shared();
-
-    auto target1 = ui::node::make_shared();
-    auto target2 = ui::node::make_shared();
-    auto action1 = ui::action::make_shared({.target = target1});
-    auto action2 = ui::action::make_shared({.target = target2});
-
-    renderer->insert_action(action1);
-
-    XCTAssertEqual(renderer->actions().size(), 1);
-    XCTAssertEqual(renderer->actions().at(0), action1);
-
-    renderer->insert_action(action2);
-
-    XCTAssertEqual(renderer->actions().size(), 2);
-
-    renderer->erase_action(target1);
-
-    XCTAssertEqual(renderer->actions().size(), 1);
-    XCTAssertEqual(renderer->actions().at(0), action2);
-
-    renderer->erase_action(action2);
-
-    XCTAssertEqual(renderer->actions().size(), 0);
 }
 
 - (void)test_view_configure {

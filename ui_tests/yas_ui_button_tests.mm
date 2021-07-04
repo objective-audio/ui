@@ -70,7 +70,7 @@ using namespace yas::ui;
             return true;
         }});
 
-    renderer->insert_action(pre_render_action);
+    renderer->action_manager()->insert_action(pre_render_action);
 
     auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});
     renderer->root_node()->add_sub_node(button->rect_plane()->node());
