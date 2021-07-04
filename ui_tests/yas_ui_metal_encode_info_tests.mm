@@ -71,7 +71,7 @@ using namespace yas::ui;
 
     auto pre_render_action = action::make_shared({.time_updater = std::move(time_updater)});
 
-    renderer->insert_action(pre_render_action);
+    renderer->action_manager()->insert_action(pre_render_action);
 
     [[YASTestMetalViewController sharedViewController] setRenderer:renderer];
 

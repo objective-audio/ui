@@ -6,6 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_action_types.h>
 #include <ui/yas_ui_render_target_types.h>
 #include <ui/yas_ui_types.h>
 
@@ -229,6 +230,12 @@ struct renderable_effect {
     [[nodiscard]] static std::shared_ptr<renderable_effect> cast(std::shared_ptr<renderable_effect> const &effect) {
         return effect;
     }
+};
+
+struct renderer_action_manager {
+    virtual ~renderer_action_manager() = default;
+
+    virtual void update(time_point_t const &) = 0;
 };
 }  // namespace yas::ui
 

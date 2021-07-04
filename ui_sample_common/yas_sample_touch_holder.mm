@@ -129,7 +129,7 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
         parallel_action::make_shared({.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
             ->raw_action();
 
-    root_node->renderer()->insert_action(action);
+    root_node->renderer()->action_manager()->insert_action(action);
 
     this->_objects.emplace(std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
 }
@@ -148,7 +148,7 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
         auto &touch_object = this->_objects.at(identifier);
 
         if (auto prev_action = touch_object.scale_action.lock()) {
-            renderer->erase_action(prev_action);
+            renderer->action_manager()->erase_action(prev_action);
             touch_object.scale_action.reset();
         }
 
@@ -172,7 +172,7 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
                           {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
                           ->raw_action();
 
-        renderer->insert_action(action);
+        renderer->action_manager()->insert_action(action);
 
         this->_objects.erase(identifier);
     }

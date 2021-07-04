@@ -8,6 +8,7 @@
 #include <objc_utils/yas_objc_macros.h>
 #include <observing/yas_observing_umbrella.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_action_manager.h>
 #include <ui/yas_ui_detector.h>
 #include <ui/yas_ui_event.h>
 #include <ui/yas_ui_layout_guide.h>
@@ -33,12 +34,7 @@ struct renderer final : view_renderer_interface {
     [[nodiscard]] std::shared_ptr<node> const &root_node() const;
 
     [[nodiscard]] std::shared_ptr<event_manager> const &event_manager() const;
-
-    [[nodiscard]] std::vector<std::shared_ptr<ui::action>> actions() const;
-    void insert_action(std::shared_ptr<ui::action> const &);
-    void erase_action(std::shared_ptr<ui::action> const &);
-    void erase_action(std::shared_ptr<ui::action_target> const &target);
-
+    [[nodiscard]] std::shared_ptr<action_manager> const &action_manager() const;
     [[nodiscard]] std::shared_ptr<detector> const &detector() const;
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_guide() const;
@@ -77,9 +73,10 @@ struct renderer final : view_renderer_interface {
 
     std::shared_ptr<ui::background> const _background;
     std::shared_ptr<node> const _root_node;
-    std::shared_ptr<parallel_action> const _parallel_action;
     std::shared_ptr<ui::detector> const _detector;
     std::shared_ptr<ui::event_manager> const _event_manager;
+    std::shared_ptr<ui::action_manager> const _action_manager;
+    std::shared_ptr<ui::renderer_action_manager> const _renderer_action_manager;
     std::shared_ptr<layout_region_guide> const _view_layout_guide;
     std::shared_ptr<layout_region_guide> const _safe_area_layout_guide;
 

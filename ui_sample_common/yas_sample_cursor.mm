@@ -44,21 +44,21 @@ static observing::endable _observe_event(std::shared_ptr<node> const &node, std:
                         switch (event->phase()) {
                             case event_phase::began: {
                                 if (auto prev_action = weak_action.lock()) {
-                                    renderer->erase_action(prev_action);
+                                    renderer->action_manager()->erase_action(prev_action);
                                 }
 
                                 auto action = make_fade_action(child_node, 1.0f);
-                                renderer->insert_action(action);
+                                renderer->action_manager()->insert_action(action);
                                 weak_action = action;
                             } break;
 
                             case event_phase::ended: {
                                 if (auto prev_action = weak_action.lock()) {
-                                    renderer->erase_action(prev_action);
+                                    renderer->action_manager()->erase_action(prev_action);
                                 }
 
                                 auto action = make_fade_action(child_node, 0.0f);
-                                renderer->insert_action(action);
+                                renderer->action_manager()->insert_action(action);
                                 weak_action = action;
                             } break;
 
@@ -81,7 +81,7 @@ sample::cursor::cursor() {
                                std::shared_ptr<renderer> const &renderer) mutable {
             if (renderer) {
                 event_canceller = cursor_utils::_observe_event(this->_node, renderer).end();
-                renderer->insert_action(cursor_utils::_make_rotate_action(this->_node));
+                renderer->action_manager()->insert_action(cursor_utils::_make_rotate_action(this->_node));
             } else {
                 event_canceller = nullptr;
             }
