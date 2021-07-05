@@ -27,7 +27,8 @@ using namespace yas::ui;
 }
 
 - (void)test_initial {
-    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, ui::event_manager::make_shared(),
+                                      ui::detector::make_shared());
 
     XCTAssertTrue(button);
     XCTAssertTrue(button->rect_plane());
@@ -36,13 +37,15 @@ using namespace yas::ui;
 }
 
 - (void)test_initial_with_state_count {
-    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3);
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3,
+                                      ui::event_manager::make_shared(), ui::detector::make_shared());
 
     XCTAssertEqual(button->state_count(), 3);
 }
 
 - (void)test_state_index {
-    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2);
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2,
+                                      ui::event_manager::make_shared(), ui::detector::make_shared());
 
     XCTAssertNoThrow(button->set_state_index(1));
     XCTAssertEqual(button->state_index(), 1);
@@ -72,7 +75,8 @@ using namespace yas::ui;
 
     renderer->action_manager()->insert_action(pre_render_action);
 
-    auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}});
+    auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, renderer->event_manager(),
+                                      renderer->detector());
     renderer->root_node()->add_sub_node(button->rect_plane()->node());
 
     std::vector<button::method> observed_methods;
@@ -116,7 +120,8 @@ using namespace yas::ui;
 }
 
 - (void)test_set_texture {
-    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}});
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, ui::event_manager::make_shared(),
+                                      ui::detector::make_shared());
 
     XCTAssertFalse(button->rect_plane()->node()->mesh()->texture());
 

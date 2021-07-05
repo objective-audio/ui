@@ -12,42 +12,33 @@
 #include "yas_ui_mesh.h"
 #include "yas_ui_node.h"
 #include "yas_ui_rect_plane.h"
-#include "yas_ui_renderer.h"
 #include "yas_ui_texture.h"
 
 using namespace yas;
 using namespace yas::ui;
 
-button::button(region const &region, std::size_t const state_count)
+button::button(region const &region, std::size_t const state_count,
+               std::shared_ptr<ui::event_manager> const &event_manager, std::shared_ptr<ui::detector> const &detector)
     : _rect_plane(rect_plane::make_shared(state_count * 2, 1)),
       _layout_guide(layout_region_guide::make_shared(region)),
-      _state_count(state_count) {
+      _state_count(state_count),
+      _weak_detector(detector) {
     this->_rect_plane->node()->set_collider(collider::make_shared());
 
     this->_update_rect_positions(this->_layout_guide->region(), state_count);
     this->_update_rect_index();
 
-    this->_rect_plane->node()
-        ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](std::shared_ptr<renderer> const &renderer) {
-                pool->cancel();
-
-                if (renderer) {
-                    renderer->event_manager()
-                        ->observe([this](auto const &event) {
-                            if (event->type() == event_type::touch) {
-                                this->_update_tracking(event);
-                            }
-                        })
-                        .end()
-                        ->add_to(*pool);
-
-                    this->_make_leave_observings()->add_to(*pool);
-                    this->_make_collider_observings()->add_to(*pool);
-                }
-            })
+    event_manager
+        ->observe([this](auto const &event) {
+            if (event->type() == event_type::touch) {
+                this->_update_tracking(event);
+            }
+        })
         .end()
         ->add_to(this->_pool);
+
+    this->_make_leave_observings()->add_to(this->_pool);
+    this->_make_collider_observings()->add_to(this->_pool);
 
     this->_layout_guide
         ->observe([this, state_count = this->_state_count](ui::region const &value) {
@@ -219,9 +210,7 @@ observing::cancellable_ptr button::_make_collider_observings() {
 
 void button::_update_tracking(std::shared_ptr<event> const &event) {
     auto &node = this->_rect_plane->node();
-    if (auto const renderer = node->renderer()) {
-        auto const &detector = renderer->detector();
-
+    if (auto const detector = this->_weak_detector.lock()) {
         auto const &touch_event = event->get<touch>();
         switch (event->phase()) {
             case event_phase::began:
@@ -254,8 +243,7 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
 
 void button::_leave_or_enter_or_move_tracking(std::shared_ptr<event> const &event) {
     auto &node = this->_rect_plane->node();
-    if (auto const renderer = node->renderer()) {
-        auto const &detector = renderer->detector();
+    if (auto const detector = this->_weak_detector.lock()) {
         auto const &touch_event = event->get<touch>();
         bool const is_event_tracking = this->_is_tracking(event);
         bool is_detected = detector->detect(touch_event.position(), node->collider());
@@ -284,12 +272,16 @@ void button::_send_notify(method const method, std::shared_ptr<event> const &eve
     this->_notifier->notify(context);
 }
 
-std::shared_ptr<button> button::make_shared(region const &region) {
-    return make_shared(region, 1);
+std::shared_ptr<button> button::make_shared(region const &region,
+                                            std::shared_ptr<ui::event_manager> const &event_manager,
+                                            std::shared_ptr<ui::detector> const &detector) {
+    return make_shared(region, 1, event_manager, detector);
 }
 
-std::shared_ptr<button> button::make_shared(region const &region, std::size_t const state_count) {
-    return std::shared_ptr<button>(new button{region, state_count});
+std::shared_ptr<button> button::make_shared(region const &region, std::size_t const state_count,
+                                            std::shared_ptr<ui::event_manager> const &event_manager,
+                                            std::shared_ptr<ui::detector> const &detector) {
+    return std::shared_ptr<button>(new button{region, state_count, event_manager, detector});
 }
 
 #pragma mark -

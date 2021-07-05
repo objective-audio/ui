@@ -11,34 +11,38 @@ using namespace yas::ui;
 
 namespace yas::sample::cursor_over_planes_utils {
 static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<node>> const &nodes,
-                                                  std::shared_ptr<renderer> const &renderer) {
+                                                  std::shared_ptr<ui::event_manager> const &event_manager,
+                                                  std::shared_ptr<ui::action_manager> const &action_manager,
+                                                  std::shared_ptr<ui::detector> const &detector) {
     auto pool = observing::canceller_pool::make_shared();
 
     for (auto &node : nodes) {
-        renderer->event_manager()
-            ->observe([weak_node = to_weak(node),
+        event_manager
+            ->observe([weak_node = to_weak(node), weak_action_manager = to_weak(action_manager),
+                       weak_detector = to_weak(detector),
                        prev_detected = std::make_shared<bool>(false)](std::shared_ptr<event> const &event) {
                 if (event->type() == event_type::cursor) {
                     auto const &cursor_event = event->get<ui::cursor>();
 
-                    if (auto node = weak_node.lock()) {
-                        if (auto renderer = node->renderer()) {
-                            auto is_detected = renderer->detector()->detect(cursor_event.position(), node->collider());
+                    auto const node = weak_node.lock();
+                    auto const action_manager = weak_action_manager.lock();
+                    auto const detector = weak_detector.lock();
+                    if (node && action_manager && detector) {
+                        auto is_detected = detector->detect(cursor_event.position(), node->collider());
 
-                            auto make_color_action = [](std::shared_ptr<ui::node> const &node, color const &color) {
-                                return make_action({.target = node, .begin_color = node->color(), .end_color = color});
-                            };
+                        auto make_color_action = [](std::shared_ptr<ui::node> const &node, color const &color) {
+                            return make_action({.target = node, .begin_color = node->color(), .end_color = color});
+                        };
 
-                            if (is_detected && !*prev_detected) {
-                                renderer->action_manager()->erase_action(node);
-                                renderer->action_manager()->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
-                            } else if (!is_detected && *prev_detected) {
-                                renderer->action_manager()->erase_action(node);
-                                renderer->action_manager()->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
-                            }
-
-                            *prev_detected = is_detected;
+                        if (is_detected && !*prev_detected) {
+                            action_manager->erase_action(node);
+                            action_manager->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
+                        } else if (!is_detected && *prev_detected) {
+                            action_manager->erase_action(node);
+                            action_manager->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
                         }
+
+                        *prev_detected = is_detected;
                     }
                 }
             })
@@ -50,20 +54,13 @@ static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<no
 }
 }
 
-sample::cursor_over_planes::cursor_over_planes() {
+sample::cursor_over_planes::cursor_over_planes(std::shared_ptr<ui::event_manager> const &event_manager,
+                                               std::shared_ptr<ui::action_manager> const &action_manager,
+                                               std::shared_ptr<ui::detector> const &detector) {
     this->_setup_nodes();
 
-    this->_renderer_canceller = root_node
-                                    ->observe_renderer([this, event_canceller = observing::cancellable_ptr{nullptr}](
-                                                           std::shared_ptr<renderer> const &value) mutable {
-                                        if (value) {
-                                            event_canceller =
-                                                cursor_over_planes_utils::_observe_events(this->_nodes, value);
-                                        } else {
-                                            event_canceller = nullptr;
-                                        }
-                                    })
-                                    .end();
+    cursor_over_planes_utils::_observe_events(this->_nodes, event_manager, action_manager, detector)
+        ->set_to(this->_event_canceller);
 }
 
 std::shared_ptr<node> const &sample::cursor_over_planes::node() {
@@ -96,6 +93,8 @@ void sample::cursor_over_planes::_setup_nodes() {
     }
 }
 
-sample::cursor_over_planes_ptr sample::cursor_over_planes::make_shared() {
-    return std::shared_ptr<cursor_over_planes>(new cursor_over_planes{});
+sample::cursor_over_planes_ptr sample::cursor_over_planes::make_shared(
+    std::shared_ptr<ui::event_manager> const &event_manager, std::shared_ptr<ui::action_manager> const &action_manager,
+    std::shared_ptr<ui::detector> const &detector) {
+    return std::shared_ptr<cursor_over_planes>(new cursor_over_planes{event_manager, action_manager, detector});
 }

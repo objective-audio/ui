@@ -8,6 +8,8 @@
 #include <ui/yas_ui_layout_guide.h>
 
 namespace yas::ui {
+class action_manager;
+
 struct layout_action_args final {
     std::weak_ptr<layout_value_guide> target;
     float begin_value;
@@ -25,7 +27,7 @@ struct layout_action_args final {
 [[nodiscard]] std::shared_ptr<ui::action> make_action(layout_action_args &&);
 
 struct layout_animator_args final {
-    std::weak_ptr<renderer> renderer;
+    std::weak_ptr<action_manager> action_manager;
     std::vector<ui::layout_value_guide_pair> layout_guide_pairs;
     double duration = 0.3;
 };

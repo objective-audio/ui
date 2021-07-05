@@ -25,16 +25,18 @@ static std::shared_ptr<action> _make_rotate_action(std::shared_ptr<node> const &
     return parallel_action::make_shared({.actions = {std::move(rotate_action), std::move(scale_action)}})->raw_action();
 }
 
-static observing::endable _observe_event(std::shared_ptr<node> const &node, std::shared_ptr<renderer> const &renderer) {
-    return renderer->event_manager()->observe([weak_node = to_weak(node), weak_action = std::weak_ptr<action>{}](
-                                                  std::shared_ptr<event> const &event) mutable {
+static observing::endable _observe_event(std::shared_ptr<node> const &node,
+                                         std::shared_ptr<event_manager> const &event_manager,
+                                         std::shared_ptr<action_manager> const &action_manager) {
+    return event_manager->observe([weak_node = to_weak(node), weak_action_manager = to_weak(action_manager),
+                                   weak_action = std::weak_ptr<action>{}](std::shared_ptr<event> const &event) mutable {
         if (event->type() == event_type::cursor) {
             if (auto node = weak_node.lock()) {
                 auto const &value = event->get<ui::cursor>();
 
                 node->set_position(node->parent()->convert_position(value.position()));
 
-                if (auto renderer = node->renderer()) {
+                if (auto const action_manager = weak_action_manager.lock()) {
                     for (auto child_node : node->children()) {
                         auto make_fade_action = [](std::shared_ptr<ui::node> const &node, float const alpha) {
                             return make_action(
@@ -44,21 +46,21 @@ static observing::endable _observe_event(std::shared_ptr<node> const &node, std:
                         switch (event->phase()) {
                             case event_phase::began: {
                                 if (auto prev_action = weak_action.lock()) {
-                                    renderer->action_manager()->erase_action(prev_action);
+                                    action_manager->erase_action(prev_action);
                                 }
 
                                 auto action = make_fade_action(child_node, 1.0f);
-                                renderer->action_manager()->insert_action(action);
+                                action_manager->insert_action(action);
                                 weak_action = action;
                             } break;
 
                             case event_phase::ended: {
                                 if (auto prev_action = weak_action.lock()) {
-                                    renderer->action_manager()->erase_action(prev_action);
+                                    action_manager->erase_action(prev_action);
                                 }
 
                                 auto action = make_fade_action(child_node, 0.0f);
-                                renderer->action_manager()->insert_action(action);
+                                action_manager->insert_action(action);
                                 weak_action = action;
                             } break;
 
@@ -73,21 +75,12 @@ static observing::endable _observe_event(std::shared_ptr<node> const &node, std:
 }
 }
 
-sample::cursor::cursor() {
+sample::cursor::cursor(std::shared_ptr<ui::event_manager> const &event_manager,
+                       std::shared_ptr<ui::action_manager> const &action_manager) {
     this->_setup_node();
 
-    this->_node
-        ->observe_renderer([this, event_canceller = observing::cancellable_ptr{nullptr}](
-                               std::shared_ptr<renderer> const &renderer) mutable {
-            if (renderer) {
-                event_canceller = cursor_utils::_observe_event(this->_node, renderer).end();
-                renderer->action_manager()->insert_action(cursor_utils::_make_rotate_action(this->_node));
-            } else {
-                event_canceller = nullptr;
-            }
-        })
-        .end()
-        ->set_to(this->_renderer_canceller);
+    cursor_utils::_observe_event(this->_node, event_manager, action_manager).end()->set_to(this->_event_canceller);
+    action_manager->insert_action(cursor_utils::_make_rotate_action(this->_node));
 }
 
 std::shared_ptr<node> const &sample::cursor::node() {
@@ -113,6 +106,7 @@ void sample::cursor::_setup_node() {
     this->_node->add_sub_node(plane->node());
 }
 
-sample::cursor_ptr sample::cursor::make_shared() {
-    return std::shared_ptr<cursor>(new cursor{});
+sample::cursor_ptr sample::cursor::make_shared(std::shared_ptr<ui::event_manager> const &event_manager,
+                                               std::shared_ptr<ui::action_manager> const &action_manager) {
+    return std::shared_ptr<cursor>(new cursor{event_manager, action_manager});
 }

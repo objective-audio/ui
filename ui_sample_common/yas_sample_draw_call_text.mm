@@ -7,9 +7,11 @@
 using namespace yas;
 using namespace yas::ui;
 
-sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_atlas)
+sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_atlas,
+                                       std::shared_ptr<ui::metal_system> const &metal_system)
     : _strings(strings::make_shared(
-          {.text = "---", .alignment = layout_alignment::max, .font_atlas = font_atlas, .max_word_count = 32})) {
+          {.text = "---", .alignment = layout_alignment::max, .font_atlas = font_atlas, .max_word_count = 32})),
+      _weak_metal_system(metal_system) {
     this->_strings->rect_plane()
         ->node()
         ->observe_renderer([this, layouts_pool = observing::canceller_pool_ptr{nullptr},
@@ -100,16 +102,15 @@ std::shared_ptr<strings> const &sample::draw_call_text::strings() {
 void sample::draw_call_text::_update_text() {
     std::string text = "---";
 
-    if (auto renderer = this->_strings->rect_plane()->node()->renderer()) {
-        if (auto metal_system = renderer->metal_system()) {
-            std::size_t const count = metal_system->last_encoded_mesh_count();
-            text = "drawcall:" + std::to_string(count);
-        }
+    if (auto const metal_system = this->_weak_metal_system.lock()) {
+        std::size_t const count = metal_system->last_encoded_mesh_count();
+        text = "drawcall:" + std::to_string(count);
     }
 
     this->_strings->set_text(text);
 }
 
-sample::draw_call_text_ptr sample::draw_call_text::make_shared(std::shared_ptr<font_atlas> const &atlas) {
-    return std::shared_ptr<draw_call_text>(new draw_call_text{atlas});
+sample::draw_call_text_ptr sample::draw_call_text::make_shared(std::shared_ptr<font_atlas> const &atlas,
+                                                               std::shared_ptr<ui::metal_system> const &metal_system) {
+    return std::shared_ptr<draw_call_text>(new draw_call_text{atlas, metal_system});
 }

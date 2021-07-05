@@ -14,13 +14,13 @@ struct big_button {
 
     std::shared_ptr<ui::button> &button();
 
-    static big_button_ptr make_shared();
+    static big_button_ptr make_shared(std::shared_ptr<ui::event_manager> const &,
+                                      std::shared_ptr<ui::detector> const &);
 
    private:
     float const _radius = 60;
-    std::shared_ptr<ui::button> _button = ui::button::make_shared(
-        {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}});
+    std::shared_ptr<ui::button> _button;
 
-    big_button();
+    big_button(std::shared_ptr<ui::event_manager> const &, std::shared_ptr<ui::detector> const &);
 };
 }  // namespace yas::sample

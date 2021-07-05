@@ -13,13 +13,15 @@ class soft_key;
 using soft_key_ptr = std::shared_ptr<soft_key>;
 
 struct soft_keyboard {
-    void set_font_atlas(std::shared_ptr<ui::font_atlas> const &);
-
     std::shared_ptr<ui::node> const &node();
 
     [[nodiscard]] observing::endable observe(observing::caller<std::string>::handler_f &&);
 
-    static soft_keyboard_ptr make_shared(std::shared_ptr<ui::font_atlas> const &);
+    static soft_keyboard_ptr make_shared(std::shared_ptr<ui::font_atlas> const &,
+                                         std::shared_ptr<ui::event_manager> const &,
+                                         std::shared_ptr<ui::action_manager> const &,
+                                         std::shared_ptr<ui::detector> const &,
+                                         std::shared_ptr<ui::layout_region_source> const &safe_area_guide);
 
    private:
     std::shared_ptr<ui::node> _root_node = ui::node::make_shared();
@@ -29,7 +31,7 @@ struct soft_keyboard {
     std::shared_ptr<ui::font_atlas> _font_atlas;
 
     std::shared_ptr<ui::collection_layout> _collection_layout = nullptr;
-    std::vector<observing::cancellable_ptr> _frame_cancellers;
+    observing::canceller_pool _frame_pool;
 
     std::vector<observing::cancellable_ptr> _soft_key_cancellers;
     observing::cancellable_ptr _renderer_canceller = nullptr;
@@ -40,11 +42,14 @@ struct soft_keyboard {
     std::vector<observing::cancellable_ptr> _fixed_cell_layouts;
     observing::canceller_pool _dst_rect_pool;
 
-    explicit soft_keyboard(std::shared_ptr<ui::font_atlas> const &);
+    explicit soft_keyboard(std::shared_ptr<ui::font_atlas> const &, std::shared_ptr<ui::event_manager> const &,
+                           std::shared_ptr<ui::action_manager> const &, std::shared_ptr<ui::detector> const &,
+                           std::shared_ptr<ui::layout_region_source> const &);
 
-    void _setup_soft_keys_if_needed();
-    void _dispose_soft_keys();
-    void _setup_soft_keys_layout();
+    void _setup_soft_keys_if_needed(std::shared_ptr<ui::event_manager> const &,
+                                    std::shared_ptr<ui::action_manager> const &, std::shared_ptr<ui::detector> const &,
+                                    std::shared_ptr<ui::layout_region_source> const &safe_area_guide);
+    void _setup_soft_keys_layout(std::shared_ptr<ui::action_manager> const &);
     void _update_soft_key_count();
     void _update_soft_keys_enabled(bool animated);
 };
