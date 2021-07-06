@@ -23,37 +23,46 @@ struct soft_key {
     void set_enabled(bool const enabled, bool const animated = false) {
         auto const &button_node = button()->rect_plane()->node();
         auto const &strings_node = this->_strings->rect_plane()->node();
-        auto renderer = button_node->renderer();
 
         button_node->collider()->set_enabled(enabled);
 
         float const alpha = enabled ? 1.0f : 0.0f;
 
-        renderer->action_manager()->erase_action(button_node);
-        renderer->action_manager()->erase_action(strings_node);
+        if (auto const action_manager = this->_weak_action_manager.lock()) {
+            action_manager->erase_action(button_node);
+            action_manager->erase_action(strings_node);
 
-        if (animated) {
-            renderer->action_manager()->insert_action(
-                make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
-            renderer->action_manager()->insert_action(
-                make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
-        } else {
-            button_node->set_alpha(alpha);
-            strings_node->set_alpha(alpha);
+            if (animated) {
+                action_manager->insert_action(
+                    make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
+                action_manager->insert_action(
+                    make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
+            } else {
+                button_node->set_alpha(alpha);
+                strings_node->set_alpha(alpha);
+            }
         }
     }
 
-    static soft_key_ptr make_shared(std::string key, float const width, std::shared_ptr<font_atlas> const &atlas) {
-        return std::shared_ptr<soft_key>(new soft_key(std::move(key), width, atlas));
+    static soft_key_ptr make_shared(std::string key, float const width, std::shared_ptr<font_atlas> const &atlas,
+                                    std::shared_ptr<ui::event_manager> const &event_manager,
+                                    std::shared_ptr<ui::action_manager> const &action_manager,
+                                    std::shared_ptr<ui::detector> const &detector) {
+        return std::shared_ptr<soft_key>(
+            new soft_key(std::move(key), width, atlas, event_manager, action_manager, detector));
     }
 
    private:
     std::shared_ptr<ui::button> const _button;
     std::shared_ptr<ui::strings> const _strings;
+    std::weak_ptr<ui::action_manager> const _weak_action_manager;
 
-    soft_key(std::string &&key, float const width, std::shared_ptr<font_atlas> const &atlas)
-        : _button(button::make_shared({.size = {width, width}})),
-          _strings(strings::make_shared({.font_atlas = atlas, .max_word_count = 1})) {
+    soft_key(std::string &&key, float const width, std::shared_ptr<font_atlas> const &atlas,
+             std::shared_ptr<ui::event_manager> const &event_manager,
+             std::shared_ptr<ui::action_manager> const &action_manager, std::shared_ptr<ui::detector> const &detector)
+        : _button(button::make_shared({.size = {width, width}}, event_manager, detector)),
+          _strings(strings::make_shared({.font_atlas = atlas, .max_word_count = 1})),
+          _weak_action_manager(action_manager) {
         this->_button->rect_plane()->node()->mesh()->set_use_mesh_color(true);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
@@ -72,24 +81,13 @@ struct soft_key {
 };
 }
 
-sample::soft_keyboard::soft_keyboard(std::shared_ptr<font_atlas> const &atlas) : _font_atlas(atlas) {
-    this->_renderer_canceller = this->_root_node
-                                    ->observe_renderer([this](std::shared_ptr<renderer> const &renderer) {
-                                        if (renderer) {
-                                            this->_setup_soft_keys_if_needed();
-                                        } else {
-                                            this->_dispose_soft_keys();
-                                        }
-                                    })
-                                    .sync();
-}
-
-void sample::soft_keyboard::set_font_atlas(std::shared_ptr<font_atlas> const &atlas) {
-    if (this->_font_atlas != atlas) {
-        this->_font_atlas = std::move(atlas);
-
-        this->_setup_soft_keys_if_needed();
-    }
+sample::soft_keyboard::soft_keyboard(std::shared_ptr<font_atlas> const &atlas,
+                                     std::shared_ptr<ui::event_manager> const &event_manager,
+                                     std::shared_ptr<action_manager> const &action_manager,
+                                     std::shared_ptr<ui::detector> const &detector,
+                                     std::shared_ptr<layout_region_source> const &safe_area_guide)
+    : _font_atlas(atlas) {
+    this->_setup_soft_keys_if_needed(event_manager, action_manager, detector, safe_area_guide);
 }
 
 std::shared_ptr<node> const &sample::soft_keyboard::node() {
@@ -100,16 +98,9 @@ observing::endable sample::soft_keyboard::observe(observing::caller<std::string>
     return this->_key_notifier->observe(std::move(handler));
 }
 
-void sample::soft_keyboard::_setup_soft_keys_if_needed() {
-    if (this->_soft_keys.size() > 0 && this->_soft_key_cancellers.size() > 0 && this->_collection_layout &&
-        this->_frame_cancellers.size() > 0 && this->_actual_cell_count_canceller) {
-        return;
-    }
-
-    if (!this->_font_atlas || !this->_root_node->renderer()) {
-        return;
-    }
-
+void sample::soft_keyboard::_setup_soft_keys_if_needed(
+    std::shared_ptr<event_manager> const &event_manager, std::shared_ptr<action_manager> const &action_manager,
+    std::shared_ptr<ui::detector> const &detector, std::shared_ptr<ui::layout_region_source> const &safe_area_guide) {
     auto const keys = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     auto const key_count = keys.size();
     auto const key_width = 36.0f;
@@ -139,7 +130,8 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
          .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}});
 
     for (auto const &key : keys) {
-        sample::soft_key_ptr soft_key = sample::soft_key::make_shared(key, key_width, this->_font_atlas);
+        sample::soft_key_ptr soft_key =
+            sample::soft_key::make_shared(key, key_width, this->_font_atlas, event_manager, action_manager, detector);
 
         observing::cancellable_ptr canceller = soft_key->button()
                                                    ->observe([this, key](auto const &context) {
@@ -183,59 +175,33 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed() {
 
     this->_fixed_cell_layouts.reserve(key_count);
 
-    auto const &renderer = this->_root_node->renderer();
-    auto const &safe_area_guide = renderer->safe_area_layout_guide();
+    ui::layout(safe_area_guide->layout_horizontal_range_source()->layout_min_value_source(),
+               this->_collection_layout->preferred_layout_guide()->left(), [](float const &value) { return value; })
+        .sync()
+        ->add_to(this->_frame_pool);
 
-    this->_frame_cancellers.emplace_back(safe_area_guide->left()
-                                             ->observe([this](float const &value) {
-                                                 this->_collection_layout->preferred_layout_guide()->left()->set_value(
-                                                     value);
-                                             })
-                                             .sync());
-    this->_frame_cancellers.emplace_back(
-        safe_area_guide->bottom()
-            ->observe([this](float const &value) {
-                this->_collection_layout->preferred_layout_guide()->bottom()->set_value(value);
-            })
-            .sync());
-    this->_frame_cancellers.emplace_back(safe_area_guide->top()
-                                             ->observe([this](float const &value) {
-                                                 this->_collection_layout->preferred_layout_guide()->top()->set_value(
-                                                     value);
-                                             })
-                                             .sync());
+    ui::layout(safe_area_guide->layout_vertical_range_source()->layout_min_value_source(),
+               this->_collection_layout->preferred_layout_guide()->bottom(), [](float const &value) { return value; })
+        .sync()
+        ->add_to(this->_frame_pool);
 
-    auto apply_to_frame_right = [this, width] {
-        auto const &safe_area_guide = this->_root_node->renderer()->safe_area_layout_guide();
-        auto const min = std::min(safe_area_guide->left()->value() + width, safe_area_guide->right()->value());
-        this->_collection_layout->preferred_layout_guide()->right()->set_value(min);
-    };
+    ui::layout(safe_area_guide->layout_vertical_range_source()->layout_max_value_source(),
+               this->_collection_layout->preferred_layout_guide()->top(), [](float const &value) { return value; })
+        .sync()
+        ->add_to(this->_frame_pool);
 
-    this->_frame_cancellers.emplace_back(
-        safe_area_guide->left()->observe([apply_to_frame_right](float const &value) { apply_to_frame_right(); }).end());
-    this->_frame_cancellers.emplace_back(
-        safe_area_guide->right()
-            ->observe([apply_to_frame_right](float const &value) { apply_to_frame_right(); })
-            .sync());
+    ui::layout(safe_area_guide->layout_horizontal_range_source(),
+               this->_collection_layout->preferred_layout_guide()->right(),
+               [width](ui::range const &range) { return std::min(range.min() + width, range.max()); })
+        .sync()
+        ->add_to(this->_frame_pool);
 
-    this->_setup_soft_keys_layout();
+    this->_setup_soft_keys_layout(action_manager);
     this->_update_soft_key_count();
     this->_update_soft_keys_enabled(false);
 }
 
-void sample::soft_keyboard::_dispose_soft_keys() {
-    this->_soft_keys.clear();
-    this->_soft_key_cancellers.clear();
-    this->_frame_cancellers.clear();
-    this->_collection_layout = nullptr;
-    this->_actual_cell_count_canceller = nullptr;
-    this->_src_cell_layout_guides.clear();
-    this->_dst_cell_layout_guides.clear();
-    this->_cell_interporator = nullptr;
-    this->_dst_rect_pool.cancel();
-}
-
-void sample::soft_keyboard::_setup_soft_keys_layout() {
+void sample::soft_keyboard::_setup_soft_keys_layout(std::shared_ptr<action_manager> const &action_manager) {
     auto const key_count = this->_soft_keys.size();
 
     if (key_count == 0 || !this->_collection_layout) {
@@ -272,7 +238,7 @@ void sample::soft_keyboard::_setup_soft_keys_layout() {
     }
 
     this->_cell_interporator = layout_animator::make_shared(
-        {.renderer = this->_root_node->renderer(), .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f});
+        {.action_manager = action_manager, .layout_guide_pairs = std::move(guide_pairs), .duration = 0.3f});
 }
 
 void sample::soft_keyboard::_update_soft_key_count() {
@@ -358,6 +324,10 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
     }
 }
 
-sample::soft_keyboard_ptr sample::soft_keyboard::make_shared(std::shared_ptr<font_atlas> const &atlas) {
-    return std::shared_ptr<soft_keyboard>(new soft_keyboard{atlas});
+sample::soft_keyboard_ptr sample::soft_keyboard::make_shared(
+    std::shared_ptr<font_atlas> const &atlas, std::shared_ptr<ui::event_manager> const &event_manager,
+    std::shared_ptr<ui::action_manager> const &action_manager, std::shared_ptr<ui::detector> const &detector,
+    std::shared_ptr<layout_region_source> const &safe_area_guide) {
+    return std::shared_ptr<soft_keyboard>(
+        new soft_keyboard{atlas, event_manager, action_manager, detector, safe_area_guide});
 }

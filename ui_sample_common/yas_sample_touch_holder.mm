@@ -14,26 +14,18 @@ struct touch_object {
 };
 }
 
-sample::touch_holder::touch_holder() {
+sample::touch_holder::touch_holder(std::shared_ptr<ui::event_manager> const &event_manager,
+                                   std::shared_ptr<ui::action_manager> const &action_manager) {
     this->_rect_plane_data->set_rect_position({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, 0);
 
-    this->_renderer_canceller = root_node
-                                    ->observe_renderer([this, event_canceller = observing::cancellable_ptr{nullptr}](
-                                                           std::shared_ptr<renderer> const &renderer) mutable {
-                                        if (renderer) {
-                                            renderer->event_manager()
-                                                ->observe([this](auto const &event) {
-                                                    if (event->type() == event_type::touch) {
-                                                        this->_update_touch_node(event);
-                                                    }
-                                                })
-                                                .end()
-                                                ->set_to(event_canceller);
-                                        } else {
-                                            event_canceller = nullptr;
-                                        }
-                                    })
-                                    .end();
+    event_manager
+        ->observe([this, weak_action_manager = to_weak(action_manager)](auto const &event) {
+            if (event->type() == event_type::touch) {
+                this->_update_touch_node(event, weak_action_manager.lock());
+            }
+        })
+        .end()
+        ->set_to(this->_event_canceller);
 }
 
 void sample::touch_holder::set_texture(std::shared_ptr<texture> const &texture) {
@@ -58,13 +50,14 @@ std::shared_ptr<node> const &sample::touch_holder::node() {
     return this->root_node;
 }
 
-void sample::touch_holder::_update_touch_node(std::shared_ptr<event> const &event) {
+void sample::touch_holder::_update_touch_node(std::shared_ptr<event> const &event,
+                                              std::shared_ptr<ui::action_manager> const &action_manager) {
     auto const identifier = event->identifier();
     auto const &value = event->get<touch>();
 
     switch (event->phase()) {
         case event_phase::began: {
-            this->_insert_touch_node(identifier);
+            this->_insert_touch_node(identifier, action_manager);
             this->_move_touch_node(identifier, value.position());
         } break;
 
@@ -75,7 +68,7 @@ void sample::touch_holder::_update_touch_node(std::shared_ptr<event> const &even
         case event_phase::ended:
         case event_phase::canceled: {
             this->_move_touch_node(identifier, value.position());
-            this->_erase_touch_node(identifier);
+            this->_erase_touch_node(identifier, action_manager);
         } break;
 
         default:
@@ -93,7 +86,8 @@ void sample::touch_holder::_set_texture(std::shared_ptr<texture> const &texture)
     }
 }
 
-void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
+void sample::touch_holder::_insert_touch_node(uintptr_t const identifier,
+                                              std::shared_ptr<ui::action_manager> const &action_manager) {
     if (this->_objects.count(identifier) > 0) {
         return;
     }
@@ -129,7 +123,9 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier) {
         parallel_action::make_shared({.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
             ->raw_action();
 
-    root_node->renderer()->action_manager()->insert_action(action);
+    if (action_manager) {
+        action_manager->insert_action(action);
+    }
 
     this->_objects.emplace(std::make_pair(identifier, touch_object{.node = std::move(node), .scale_action = action}));
 }
@@ -142,13 +138,16 @@ void sample::touch_holder::_move_touch_node(uintptr_t const identifier, point co
     }
 }
 
-void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
-    auto renderer = root_node->renderer();
+void sample::touch_holder::_erase_touch_node(uintptr_t const identifier,
+                                             std::shared_ptr<ui::action_manager> const &action_manager) {
     if (this->_objects.count(identifier)) {
         auto &touch_object = this->_objects.at(identifier);
 
         if (auto prev_action = touch_object.scale_action.lock()) {
-            renderer->action_manager()->erase_action(prev_action);
+            if (action_manager) {
+                action_manager->erase_action(prev_action);
+            }
+
             touch_object.scale_action.reset();
         }
 
@@ -172,12 +171,15 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier) {
                           {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
                           ->raw_action();
 
-        renderer->action_manager()->insert_action(action);
+        if (action_manager) {
+            action_manager->insert_action(action);
+        }
 
         this->_objects.erase(identifier);
     }
 }
 
-sample::touch_holder_ptr sample::touch_holder::make_shared() {
-    return std::shared_ptr<touch_holder>(new touch_holder{});
+sample::touch_holder_ptr sample::touch_holder::make_shared(std::shared_ptr<ui::event_manager> const &event_manager,
+                                                           std::shared_ptr<ui::action_manager> const &action_manager) {
+    return std::shared_ptr<touch_holder>(new touch_holder{event_manager, action_manager});
 }

@@ -5,7 +5,6 @@
 #include "yas_ui_layout_actions.h"
 #include <cpp_utils/yas_each_index.h>
 #include <ui/yas_ui_action_manager.h>
-#include <ui/yas_ui_renderer.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -40,18 +39,18 @@ layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(
         src_guide
             ->observe([this, weak_dst_guide](float const &value) {
                 auto const &args = this->_args;
-                auto renderer = args.renderer.lock();
-                auto dst_guide = weak_dst_guide.lock();
+                std::shared_ptr<ui::action_manager> const action_manager = args.action_manager.lock();
+                std::shared_ptr<ui::layout_value_guide> const dst_guide = weak_dst_guide.lock();
 
-                if (renderer && dst_guide) {
-                    renderer->action_manager()->erase_action(dst_guide);
+                if (action_manager && dst_guide) {
+                    action_manager->erase_action(dst_guide);
 
                     auto action = make_action({.target = dst_guide,
                                                .begin_value = dst_guide->value(),
                                                .end_value = value,
                                                .duration = args.duration,
                                                .value_transformer = this->value_transformer()});
-                    renderer->action_manager()->insert_action(action);
+                    action_manager->insert_action(action);
                 }
             })
             .end()
@@ -60,9 +59,9 @@ layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(
 }
 
 layout_animator::~layout_animator() {
-    if (auto renderer = this->_args.renderer.lock()) {
+    if (auto const action_manager = this->_args.action_manager.lock()) {
         for (auto const &guide_pair : this->_args.layout_guide_pairs) {
-            renderer->action_manager()->erase_action(guide_pair.destination);
+            action_manager->erase_action(guide_pair.destination);
         }
     }
 }

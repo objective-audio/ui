@@ -13,14 +13,16 @@ namespace yas::sample {
 struct draw_call_text {
     std::shared_ptr<ui::strings> const &strings();
 
-    static draw_call_text_ptr make_shared(std::shared_ptr<ui::font_atlas> const &);
+    static draw_call_text_ptr make_shared(std::shared_ptr<ui::font_atlas> const &,
+                                          std::shared_ptr<ui::metal_system> const &);
 
    private:
     std::shared_ptr<ui::strings> _strings;
     std::optional<timer> _timer = std::nullopt;
+    std::weak_ptr<ui::metal_system> _weak_metal_system;
     observing::cancellable_ptr _renderer_canceller = nullptr;
 
-    explicit draw_call_text(std::shared_ptr<ui::font_atlas> const &);
+    draw_call_text(std::shared_ptr<ui::font_atlas> const &, std::shared_ptr<ui::metal_system> const &);
 
     void _update_text();
 };

@@ -23,31 +23,38 @@
 
 namespace yas::sample {
 struct main {
-    std::shared_ptr<ui::renderer> renderer = ui::renderer::make_shared(
+    std::shared_ptr<ui::renderer> const renderer = ui::renderer::make_shared(
         ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object()));
 
     void setup();
 
    private:
-    std::shared_ptr<ui::font_atlas> _font_atlas =
+    std::shared_ptr<ui::font_atlas> const _font_atlas =
         ui::font_atlas::make_shared({.font_name = "TrebuchetMS-Bold",
                                      .font_size = 26.0f,
                                      .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"});
 
-    sample::touch_holder_ptr _touch_holder = sample::touch_holder::make_shared();
-    sample::cursor_ptr _cursor = sample::cursor::make_shared();
-    sample::inputted_text_ptr _inputted_text = sample::inputted_text::make_shared(_font_atlas);
-    sample::draw_call_text_ptr _draw_call_text = sample::draw_call_text::make_shared(_font_atlas);
-    sample::modifier_text_ptr _modifier_text =
+    sample::touch_holder_ptr const _touch_holder =
+        sample::touch_holder::make_shared(renderer->event_manager(), renderer->action_manager());
+    sample::cursor_ptr const _cursor =
+        sample::cursor::make_shared(renderer->event_manager(), renderer->action_manager());
+    sample::inputted_text_ptr const _inputted_text = sample::inputted_text::make_shared(_font_atlas);
+    sample::draw_call_text_ptr const _draw_call_text =
+        sample::draw_call_text::make_shared(_font_atlas, renderer->metal_system());
+    sample::modifier_text_ptr const _modifier_text =
         sample::modifier_text::make_shared(_font_atlas, _draw_call_text->strings()->preferred_layout_guide()->top());
-    sample::bg_ptr _bg = sample::bg::make_shared();
-    sample::cursor_over_planes_ptr _cursor_over_planes = sample::cursor_over_planes::make_shared();
-    sample::big_button_ptr _big_button = sample::big_button::make_shared();
-    sample::big_button_text_ptr _big_button_text = sample::big_button_text::make_shared(_font_atlas);
-    sample::soft_keyboard_ptr _soft_keyboard = sample::soft_keyboard::make_shared(_font_atlas);
-    sample::justified_points_ptr _justified_points = sample::justified_points::make_shared();
+    sample::bg_ptr const _bg = sample::bg::make_shared();
+    sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
+        renderer->event_manager(), renderer->action_manager(), renderer->detector());
+    sample::big_button_ptr const _big_button =
+        sample::big_button::make_shared(renderer->event_manager(), renderer->detector());
+    sample::big_button_text_ptr const _big_button_text = sample::big_button_text::make_shared(_font_atlas);
+    sample::soft_keyboard_ptr const _soft_keyboard =
+        sample::soft_keyboard::make_shared(_font_atlas, renderer->event_manager(), renderer->action_manager(),
+                                           renderer->detector(), renderer->safe_area_layout_guide());
+    sample::justified_points_ptr const _justified_points = sample::justified_points::make_shared();
 
-    std::shared_ptr<ui::batch> _batch = ui::batch::make_shared();
+    std::shared_ptr<ui::batch> const _batch = ui::batch::make_shared();
 
     observing::cancellable_ptr _button_canceller = nullptr;
     observing::cancellable_ptr _keyboard_canceller = nullptr;
