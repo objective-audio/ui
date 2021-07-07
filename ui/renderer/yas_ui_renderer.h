@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct renderer final : view_renderer_interface {
+struct renderer final : view_renderer_interface, node_parent_interface {
     virtual ~renderer();
 
     [[nodiscard]] ui::uint_size const &view_size() const;
@@ -90,6 +90,8 @@ struct renderer final : view_renderer_interface {
     renderer &operator=(renderer &&) = delete;
 
     void _prepare(std::shared_ptr<renderer> const &);
+
+    simd::float4x4 const &matrix_as_parent() const override;
 
     void view_configure(yas_objc_view *const view) override;
     void view_size_will_change(yas_objc_view *const view, CGSize const size) override;

@@ -10,13 +10,14 @@
 #include <ui/yas_ui_layout_dependency.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_metal_dependency.h>
+#include <ui/yas_ui_node_dependency.h>
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
 #include <vector>
 
 namespace yas::ui {
-struct node final : action_target, metal_object, renderable_node, layout_point_target {
+struct node final : action_target, metal_object, renderable_node, layout_point_target, node_parent_interface {
     enum class method {
         added_to_super,
         removed_from_super,
@@ -98,6 +99,7 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
 
    private:
     std::weak_ptr<node> _weak_node;
+    std::weak_ptr<node_parent_interface> _weak_parent;
 
     observing::value::holder_ptr<std::weak_ptr<node>> const _parent;
     observing::value::holder_ptr<std::weak_ptr<ui::renderer>> const _renderer;
@@ -137,6 +139,9 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     void set_renderer(std::shared_ptr<ui::renderer> const &) override;
+    simd::float4x4 const &matrix_as_parent() const override;
+    void set_parent(std::shared_ptr<node_parent_interface> const &) override;
+
     void fetch_updates(ui::tree_updates &) override;
     void build_render_info(ui::render_info &) override;
     bool is_rendering_color_exists() override;
