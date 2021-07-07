@@ -8,89 +8,52 @@ using namespace yas;
 using namespace yas::ui;
 
 sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_atlas,
-                                       std::shared_ptr<ui::metal_system> const &metal_system)
+                                       std::shared_ptr<ui::metal_system> const &metal_system,
+                                       std::shared_ptr<layout_region_source> const &safe_area_guide)
     : _strings(strings::make_shared(
           {.text = "---", .alignment = layout_alignment::max, .font_atlas = font_atlas, .max_word_count = 32})),
       _weak_metal_system(metal_system) {
-    this->_strings->rect_plane()
-        ->node()
-        ->observe_renderer([this, layouts_pool = observing::canceller_pool_ptr{nullptr},
-                            strings_observer = observing::cancellable_ptr{nullptr}](
-                               std::shared_ptr<renderer> const &renderer) mutable {
-            if (renderer) {
-                auto const &strings = this->strings();
-                auto &strings_preferred_guide = strings->preferred_layout_guide();
-                auto const &safe_area_guide = renderer->safe_area_layout_guide();
+    auto const &strings = this->strings();
+    auto &strings_preferred_guide = strings->preferred_layout_guide();
 
-                auto pool = observing::canceller_pool::make_shared();
+    auto pool = observing::canceller_pool::make_shared();
 
-                safe_area_guide->left()
-                    ->observe([weak_rect = to_weak(strings_preferred_guide)](float const &value) {
-                        if (auto const region = weak_rect.lock()) {
-                            region->right()->set_value(value + 4.0f);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-
-                safe_area_guide->right()
-                    ->observe([weak_guide = to_weak(strings_preferred_guide)](float const &value) {
-                        if (auto const guide = weak_guide.lock()) {
-                            guide->right()->set_value(value - 4.0f);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-
-                safe_area_guide->bottom()
-                    ->observe([weak_guide = to_weak(strings_preferred_guide)](float const &value) {
-                        if (auto const guide = weak_guide.lock()) {
-                            guide->bottom()->set_value(value + 4.0f);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-
-                layouts_pool = pool;
-
-                auto strings_handler = [top_layout = observing::cancellable_ptr{nullptr}](
-                                           std::shared_ptr<ui::strings> const &strings) mutable {
-                    float distance = 0.0f;
-
-                    if (strings->font_atlas()) {
-                        auto const &font_atlas = strings->font_atlas();
-                        distance += font_atlas->ascent() + font_atlas->descent();
-                    }
-
-                    strings->preferred_layout_guide()
-                        ->bottom()
-                        ->observe([weak_strings = to_weak(strings), distance](float const &value) {
-                            if (auto const strings = weak_strings.lock()) {
-                                strings->preferred_layout_guide()->top()->set_value(value + distance);
-                            }
-                        })
-                        .sync()
-                        ->set_to(top_layout);
-                };
-
-                strings_handler(strings);
-
-                strings_observer = strings
-                                       ->observe_font_atlas([strings_handler = std::move(strings_handler),
-                                                             weak_strings = to_weak(strings)](
-                                                                std::shared_ptr<ui::font_atlas> const &) mutable {
-                                           if (auto strings = weak_strings.lock()) {
-                                               strings_handler(strings);
-                                           }
-                                       })
-                                       .end();
-            } else {
-                layouts_pool = nullptr;
-                strings_observer = nullptr;
+    safe_area_guide->layout_horizontal_range_source()
+        ->layout_min_value_source()
+        ->observe_layout_value([weak_rect = to_weak(strings_preferred_guide)](float const &value) {
+            if (auto const region = weak_rect.lock()) {
+                region->right()->set_value(value + 4.0f);
             }
         })
-        .end()
-        ->set_to(this->_renderer_canceller);
+        .sync()
+        ->add_to(this->_pool);
+
+    safe_area_guide->layout_horizontal_range_source()
+        ->layout_max_value_source()
+        ->observe_layout_value([weak_guide = to_weak(strings_preferred_guide)](float const &value) {
+            if (auto const guide = weak_guide.lock()) {
+                guide->right()->set_value(value - 4.0f);
+            }
+        })
+        .sync()
+        ->add_to(this->_pool);
+
+    safe_area_guide->layout_vertical_range_source()
+        ->layout_min_value_source()
+        ->observe_layout_value([weak_guide = to_weak(strings_preferred_guide)](float const &value) {
+            if (auto const guide = weak_guide.lock()) {
+                guide->bottom()->set_value(value + 4.0f);
+            }
+        })
+        .sync()
+        ->add_to(this->_pool);
+
+    float const distance = font_atlas->ascent() + font_atlas->descent();
+
+    ui::layout(strings->preferred_layout_guide()->bottom(), strings->preferred_layout_guide()->top(),
+               [distance](float const &value) { return value + distance; })
+        .sync()
+        ->add_to(this->_pool);
 
     this->_timer = timer{1.0, true, [this] { this->_update_text(); }};
 }
@@ -110,7 +73,8 @@ void sample::draw_call_text::_update_text() {
     this->_strings->set_text(text);
 }
 
-sample::draw_call_text_ptr sample::draw_call_text::make_shared(std::shared_ptr<font_atlas> const &atlas,
-                                                               std::shared_ptr<ui::metal_system> const &metal_system) {
-    return std::shared_ptr<draw_call_text>(new draw_call_text{atlas, metal_system});
+sample::draw_call_text_ptr sample::draw_call_text::make_shared(
+    std::shared_ptr<font_atlas> const &atlas, std::shared_ptr<ui::metal_system> const &metal_system,
+    std::shared_ptr<layout_region_source> const &safe_area_guide) {
+    return std::shared_ptr<draw_call_text>(new draw_call_text{atlas, metal_system, safe_area_guide});
 }
