@@ -38,12 +38,13 @@ struct main {
         sample::touch_holder::make_shared(renderer->event_manager(), renderer->action_manager());
     sample::cursor_ptr const _cursor =
         sample::cursor::make_shared(renderer->event_manager(), renderer->action_manager());
-    sample::inputted_text_ptr const _inputted_text = sample::inputted_text::make_shared(_font_atlas);
+    sample::inputted_text_ptr const _inputted_text =
+        sample::inputted_text::make_shared(_font_atlas, renderer->event_manager(), renderer->safe_area_layout_guide());
     sample::draw_call_text_ptr const _draw_call_text =
-        sample::draw_call_text::make_shared(_font_atlas, renderer->metal_system());
+        sample::draw_call_text::make_shared(_font_atlas, renderer->metal_system(), renderer->safe_area_layout_guide());
     sample::modifier_text_ptr const _modifier_text =
         sample::modifier_text::make_shared(_font_atlas, _draw_call_text->strings()->preferred_layout_guide()->top());
-    sample::bg_ptr const _bg = sample::bg::make_shared();
+    sample::bg_ptr const _bg = sample::bg::make_shared(renderer->safe_area_layout_guide());
     sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
         renderer->event_manager(), renderer->action_manager(), renderer->detector());
     sample::big_button_ptr const _big_button =
@@ -52,7 +53,8 @@ struct main {
     sample::soft_keyboard_ptr const _soft_keyboard =
         sample::soft_keyboard::make_shared(_font_atlas, renderer->event_manager(), renderer->action_manager(),
                                            renderer->detector(), renderer->safe_area_layout_guide());
-    sample::justified_points_ptr const _justified_points = sample::justified_points::make_shared();
+    sample::justified_points_ptr const _justified_points =
+        sample::justified_points::make_shared(renderer->view_layout_guide());
 
     std::shared_ptr<ui::batch> const _batch = ui::batch::make_shared();
 
