@@ -58,12 +58,10 @@ struct main {
 
     std::shared_ptr<ui::batch> const _batch = ui::batch::make_shared();
 
-    observing::cancellable_ptr _button_canceller = nullptr;
-    observing::cancellable_ptr _keyboard_canceller = nullptr;
-
     std::shared_ptr<ui::node> const _render_target_node = ui::node::make_shared();
     std::shared_ptr<ui::blur> const _blur = ui::blur::make_shared();
     std::shared_ptr<ui::rect_plane> const _plane_on_target = ui::rect_plane::make_shared(1);
-    observing::cancellable_ptr _render_target_canceller = nullptr;
+
+    observing::canceller_pool _pool;
 };
 }  // namespace yas::sample
