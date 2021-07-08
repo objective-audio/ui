@@ -15,5 +15,10 @@ struct node_parent_interface {
     virtual ~node_parent_interface() = default;
 
     virtual simd::float4x4 const &matrix_as_parent() const = 0;
+
+    [[nodiscard]] static std::shared_ptr<node_parent_interface> cast(
+        std::shared_ptr<node_parent_interface> const &parent) {
+        return parent;
+    }
 };
 }  // namespace yas::ui
