@@ -303,16 +303,6 @@ observing::endable node::observe(observing::caller<method>::handler_f &&handler)
     return this->_notifier->observe(std::move(handler));
 }
 
-observing::syncable node::observe_renderer(observing::caller<std::shared_ptr<ui::renderer>>::handler_f &&handler) {
-    return this->_renderer->observe([handler = std::move(handler)](std::weak_ptr<ui::renderer> const &weak_renderer) {
-        if (auto renderer = weak_renderer.lock()) {
-            handler(renderer);
-        } else {
-            handler(nullptr);
-        }
-    });
-}
-
 observing::syncable node::observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&handler) {
     return this->_parent->observe([handler = std::move(handler)](std::weak_ptr<node> const &weak_node) {
         if (auto node = weak_node.lock()) {

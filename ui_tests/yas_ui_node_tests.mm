@@ -277,25 +277,6 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(called.at(1), node::method::removed_from_super);
 }
 
-- (void)test_observe_renderer {
-    std::shared_ptr<renderer> notified{nullptr};
-
-    auto node = node::make_shared();
-
-    auto observer =
-        node->observe_renderer([&notified](std::shared_ptr<renderer> const &renderer) { notified = renderer; }).end();
-
-    auto renderer = renderer::make_shared();
-
-    renderable_node::cast(node)->set_renderer(renderer);
-
-    XCTAssertEqual(notified, renderer);
-
-    renderable_node::cast(node)->set_renderer(nullptr);
-
-    XCTAssertTrue(!notified);
-}
-
 - (void)test_fetch_updates {
     auto node = node::make_shared();
 

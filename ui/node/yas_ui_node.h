@@ -86,7 +86,6 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     [[nodiscard]] std::shared_ptr<ui::renderer> renderer() const override;
 
     [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
-    [[nodiscard]] observing::syncable observe_renderer(observing::caller<std::shared_ptr<ui::renderer>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&);
 
     [[nodiscard]] ui::point convert_position(ui::point const &) const;
