@@ -67,12 +67,12 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertEqual(node->children().size(), 0);
     XCTAssertFalse(node->parent());
-    XCTAssertFalse(node->renderer());
 
     XCTAssertTrue(node->is_enabled());
 
     XCTAssertTrue(renderable_node::cast(node));
     XCTAssertTrue(metal_object::cast(node));
+    XCTAssertTrue(node_parent_interface::cast(node));
 }
 
 - (void)test_set_variables {
@@ -231,12 +231,7 @@ struct test_render_encoder : render_encodable {
 
     auto const renderable = renderable_node::cast(node);
 
-    XCTAssertFalse(renderable->renderer());
-
-    renderable->set_renderer(renderer);
-
-    XCTAssertTrue(renderable->renderer());
-    XCTAssertEqual(renderable->renderer(), renderer);
+#warning todo
 }
 
 - (void)test_observe_add_and_remove_node {
@@ -553,19 +548,6 @@ struct test_render_encoder : render_encodable {
     simd::float4x4 expected_matrix = root_local_matrix * sub_local_matrix;
 
     XCTAssertTrue(is_equal(sub_node->matrix(), expected_matrix));
-}
-
-- (void)test_set_renderer_recursively {
-    auto renderer = renderer::make_shared();
-
-    auto node = node::make_shared();
-    auto sub_node = node::make_shared();
-    node->add_sub_node(sub_node);
-
-    renderer->root_node()->add_sub_node(node);
-
-    XCTAssertTrue(node->renderer());
-    XCTAssertTrue(sub_node->renderer());
 }
 
 - (void)test_node_method_to_string {

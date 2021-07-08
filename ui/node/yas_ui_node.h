@@ -83,8 +83,6 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     [[nodiscard]] std::vector<std::shared_ptr<node>> &children();
     [[nodiscard]] std::shared_ptr<node> parent() const;
 
-    [[nodiscard]] std::shared_ptr<ui::renderer> renderer() const override;
-
     [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
     [[nodiscard]] observing::syncable observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&);
 
@@ -101,7 +99,6 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     std::weak_ptr<node_parent_interface> _weak_parent;
 
     observing::value::holder_ptr<std::weak_ptr<node>> const _parent;
-    observing::value::holder_ptr<std::weak_ptr<ui::renderer>> const _renderer;
 
     observing::value::holder_ptr<ui::point> const _position;
     observing::value::holder_ptr<ui::angle> const _angle;
@@ -137,7 +134,6 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
-    void set_renderer(std::shared_ptr<ui::renderer> const &) override;
     simd::float4x4 const &matrix_as_parent() const override;
     void set_parent(std::shared_ptr<node_parent_interface> const &) override;
 
@@ -151,7 +147,6 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     void _add_sub_node(std::shared_ptr<node> &sub_node);
     void _remove_sub_node(ui::node *sub_node);
     void _remove_sub_nodes_on_destructor();
-    void _set_renderer_recursively(std::shared_ptr<ui::renderer> const &);
     void _update_mesh_color();
     void _set_updated(ui::node_update_reason const);
     void _update_local_matrix() const;

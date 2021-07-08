@@ -30,8 +30,6 @@ using namespace yas::ui;
 
 node::node()
     : _parent(observing::value::holder<std::weak_ptr<node>>::make_shared(std::shared_ptr<node>{nullptr})),
-      _renderer(
-          observing::value::holder<std::weak_ptr<ui::renderer>>::make_shared(std::shared_ptr<ui::renderer>{nullptr})),
       _position(observing::value::holder<point>::make_shared({.v = 0.0f})),
       _scale(observing::value::holder<size>::make_shared({.v = 1.0f})),
       _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
@@ -295,10 +293,6 @@ std::shared_ptr<node> node::parent() const {
     return this->_parent->value().lock();
 }
 
-std::shared_ptr<renderer> node::renderer() const {
-    return this->_renderer->value().lock();
-}
-
 observing::endable node::observe(observing::caller<method>::handler_f &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
@@ -383,10 +377,6 @@ setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_
     }
 
     return setup_metal_result{nullptr};
-}
-
-void node::set_renderer(std::shared_ptr<ui::renderer> const &renderer) {
-    this->_renderer->set_value(renderer);
 }
 
 simd::float4x4 const &node::matrix_as_parent() const {
@@ -600,7 +590,6 @@ void node::set_layout_point(ui::point const &point) {
 void node::_add_sub_node(std::shared_ptr<node> &sub_node) {
     sub_node->_parent->set_value(this->_weak_node);
     sub_node->_weak_parent = this->_weak_node;
-    sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
     sub_node->_notifier->notify(method::added_to_super);
 
@@ -611,7 +600,6 @@ void node::_remove_sub_node(node *sub_node) {
     std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_weak_parent.reset();
-    sub_node->_set_renderer_recursively(nullptr);
 
     erase_if(this->_children, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
 
@@ -625,16 +613,7 @@ void node::_remove_sub_nodes_on_destructor() {
         std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
         sub_node->_parent->set_value(std::move(weak_node));
         sub_node->_weak_parent.reset();
-        sub_node->_set_renderer_recursively(nullptr);
         sub_node->_notifier->notify(method::removed_from_super);
-    }
-}
-
-void node::_set_renderer_recursively(std::shared_ptr<ui::renderer> const &renderer) {
-    this->_renderer->set_value(renderer);
-
-    for (auto const &sub_node : this->_children) {
-        sub_node->_set_renderer_recursively(renderer);
     }
 }
 

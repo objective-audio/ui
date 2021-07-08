@@ -130,7 +130,6 @@ observing::syncable renderer::observe_appearance(observing::caller<ui::appearanc
 }
 
 void renderer::_prepare(std::shared_ptr<renderer> const &shared) {
-    renderable_node::cast(this->_root_node)->set_renderer(shared);
     renderable_node::cast(this->_root_node)->set_parent(shared);
 }
 
