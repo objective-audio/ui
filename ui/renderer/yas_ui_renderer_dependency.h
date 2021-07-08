@@ -7,6 +7,7 @@
 #include <Metal/Metal.h>
 #include <simd/simd.h>
 #include <ui/yas_ui_action_types.h>
+#include <ui/yas_ui_node_dependency.h>
 #include <ui/yas_ui_render_target_types.h>
 #include <ui/yas_ui_types.h>
 
@@ -106,6 +107,7 @@ struct renderable_node {
 
     [[nodiscard]] virtual std::shared_ptr<renderer> renderer() const = 0;
     virtual void set_renderer(std::shared_ptr<ui::renderer> const &) = 0;
+    virtual void set_parent(std::shared_ptr<node_parent_interface> const &) = 0;
     virtual void fetch_updates(ui::tree_updates &) = 0;
     virtual void build_render_info(ui::render_info &) = 0;
     [[nodiscard]] virtual bool is_rendering_color_exists() = 0;

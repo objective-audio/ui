@@ -131,6 +131,11 @@ observing::syncable renderer::observe_appearance(observing::caller<ui::appearanc
 
 void renderer::_prepare(std::shared_ptr<renderer> const &shared) {
     renderable_node::cast(this->_root_node)->set_renderer(shared);
+    renderable_node::cast(this->_root_node)->set_parent(shared);
+}
+
+simd::float4x4 const &renderer::matrix_as_parent() const {
+    return this->_projection_matrix;
 }
 
 void renderer::view_configure(yas_objc_view *const view) {

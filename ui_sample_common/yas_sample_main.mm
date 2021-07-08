@@ -40,7 +40,7 @@ void sample::main::setup() {
             }
         })
         .end()
-        ->set_to(this->_button_canceller);
+        ->add_to(this->_pool);
 
     this->_soft_keyboard
         ->observe([weak_text = to_weak(this->_inputted_text)](std::string const &key) {
@@ -49,7 +49,7 @@ void sample::main::setup() {
             }
         })
         .end()
-        ->set_to(this->_keyboard_canceller);
+        ->add_to(this->_pool);
 
     auto button_pos_action =
         make_action({.target = this->_big_button->button()->rect_plane()->node(),
@@ -88,7 +88,7 @@ void sample::main::setup() {
 
     view_guide->observe([render_target](region const &region) { render_target->layout_guide()->set_region(region); })
         .sync()
-        ->set_to(this->_render_target_canceller);
+        ->add_to(this->_pool);
 
     this->_render_target_node->set_render_target(render_target);
 

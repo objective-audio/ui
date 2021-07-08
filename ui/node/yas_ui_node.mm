@@ -303,16 +303,6 @@ observing::endable node::observe(observing::caller<method>::handler_f &&handler)
     return this->_notifier->observe(std::move(handler));
 }
 
-observing::syncable node::observe_renderer(observing::caller<std::shared_ptr<ui::renderer>>::handler_f &&handler) {
-    return this->_renderer->observe([handler = std::move(handler)](std::weak_ptr<ui::renderer> const &weak_renderer) {
-        if (auto renderer = weak_renderer.lock()) {
-            handler(renderer);
-        } else {
-            handler(nullptr);
-        }
-    });
-}
-
 observing::syncable node::observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&handler) {
     return this->_parent->observe([handler = std::move(handler)](std::weak_ptr<node> const &weak_node) {
         if (auto node = weak_node.lock()) {
@@ -324,7 +314,7 @@ observing::syncable node::observe_parent(observing::caller<std::shared_ptr<node>
 }
 
 point node::convert_position(point const &loc) const {
-    auto const loc4 = simd::float4x4(matrix_invert(this->matrix())) * to_float4(loc.v);
+    auto const loc4 = simd::float4x4(matrix_invert(this->matrix_as_parent())) * to_float4(loc.v);
     return {loc4.x, loc4.y};
 }
 
@@ -397,6 +387,14 @@ setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_
 
 void node::set_renderer(std::shared_ptr<ui::renderer> const &renderer) {
     this->_renderer->set_value(renderer);
+}
+
+simd::float4x4 const &node::matrix_as_parent() const {
+    return this->matrix();
+}
+
+void node::set_parent(std::shared_ptr<node_parent_interface> const &parent) {
+    this->_weak_parent = parent;
 }
 
 void node::fetch_updates(tree_updates &tree_updates) {
@@ -601,6 +599,7 @@ void node::set_layout_point(ui::point const &point) {
 
 void node::_add_sub_node(std::shared_ptr<node> &sub_node) {
     sub_node->_parent->set_value(this->_weak_node);
+    sub_node->_weak_parent = this->_weak_node;
     sub_node->_set_renderer_recursively(this->_renderer->value().lock());
 
     sub_node->_notifier->notify(method::added_to_super);
@@ -611,6 +610,7 @@ void node::_add_sub_node(std::shared_ptr<node> &sub_node) {
 void node::_remove_sub_node(node *sub_node) {
     std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
     sub_node->_parent->set_value(std::move(weak_node));
+    sub_node->_weak_parent.reset();
     sub_node->_set_renderer_recursively(nullptr);
 
     erase_if(this->_children, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
@@ -624,6 +624,7 @@ void node::_remove_sub_nodes_on_destructor() {
     for (auto const &sub_node : this->_children) {
         std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
         sub_node->_parent->set_value(std::move(weak_node));
+        sub_node->_weak_parent.reset();
         sub_node->_set_renderer_recursively(nullptr);
         sub_node->_notifier->notify(method::removed_from_super);
     }
@@ -660,19 +661,15 @@ void node::_update_local_matrix() const {
 }
 
 void node::_update_matrix() const {
-    if (auto locked_parent = this->_parent->value().lock()) {
-        this->_matrix = locked_parent->matrix();
-    } else {
-        if (auto locked_renderer = this->renderer()) {
-            this->_matrix = locked_renderer->projection_matrix();
-        } else {
-            this->_matrix = matrix_identity_float4x4;
-        }
+    simd::float4x4 parent_matrix = matrix_identity_float4x4;
+
+    if (auto locked_parent = this->_weak_parent.lock()) {
+        parent_matrix = locked_parent->matrix_as_parent();
     }
 
     this->_update_local_matrix();
 
-    this->_matrix = this->_matrix * this->_local_matrix;
+    this->_matrix = parent_matrix * this->_local_matrix;
 }
 
 std::shared_ptr<node> node::make_shared() {

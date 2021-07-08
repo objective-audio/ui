@@ -43,7 +43,8 @@ struct main {
     sample::draw_call_text_ptr const _draw_call_text =
         sample::draw_call_text::make_shared(_font_atlas, renderer->metal_system(), renderer->safe_area_layout_guide());
     sample::modifier_text_ptr const _modifier_text =
-        sample::modifier_text::make_shared(_font_atlas, _draw_call_text->strings()->preferred_layout_guide()->top());
+        sample::modifier_text::make_shared(_font_atlas, renderer->event_manager(), renderer->safe_area_layout_guide(),
+                                           _draw_call_text->strings()->preferred_layout_guide()->top());
     sample::bg_ptr const _bg = sample::bg::make_shared(renderer->safe_area_layout_guide());
     sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
         renderer->event_manager(), renderer->action_manager(), renderer->detector());
@@ -58,12 +59,10 @@ struct main {
 
     std::shared_ptr<ui::batch> const _batch = ui::batch::make_shared();
 
-    observing::cancellable_ptr _button_canceller = nullptr;
-    observing::cancellable_ptr _keyboard_canceller = nullptr;
+    std::shared_ptr<ui::node> const _render_target_node = ui::node::make_shared();
+    std::shared_ptr<ui::blur> const _blur = ui::blur::make_shared();
+    std::shared_ptr<ui::rect_plane> const _plane_on_target = ui::rect_plane::make_shared(1);
 
-    std::shared_ptr<ui::node> _render_target_node = ui::node::make_shared();
-    std::shared_ptr<ui::blur> _blur = ui::blur::make_shared();
-    std::shared_ptr<ui::rect_plane> _plane_on_target = ui::rect_plane::make_shared(1);
-    observing::cancellable_ptr _render_target_canceller = nullptr;
+    observing::canceller_pool _pool;
 };
 }  // namespace yas::sample
