@@ -9,72 +9,60 @@ using namespace yas;
 using namespace yas::ui;
 
 sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atlas,
+                                     std::shared_ptr<ui::event_manager> const &event_manager,
+                                     std::shared_ptr<ui::layout_region_source> const &safe_area_guide,
                                      std::shared_ptr<layout_value_guide> const &bottom_guide)
     : _strings(
           strings::make_shared({.font_atlas = font_atlas, .max_word_count = 64, .alignment = layout_alignment::max})),
       _bottom_guide(bottom_guide) {
-    this->_strings->rect_plane()
-        ->node()
-        ->observe_renderer(
-            [this, pool = observing::canceller_pool::make_shared()](std::shared_ptr<renderer> const &renderer) {
-                pool->cancel();
-
-                if (renderer) {
-                    renderer->event_manager()
-                        ->observe([this, flags = std::unordered_set<modifier_flags>{}](auto const &event) mutable {
-                            if (event->type() == event_type::modifier) {
-                                this->_update_text(event, flags);
-                            }
-                        })
-                        .end()
-                        ->add_to(*pool);
-
-                    auto const &safe_area_guide_rect = renderer->safe_area_layout_guide();
-
-                    safe_area_guide_rect->left()
-                        ->observe([this](float const &value) {
-                            this->_strings->preferred_layout_guide()->left()->set_value(value + 4.0f);
-                        })
-                        .sync()
-                        ->add_to(*pool);
-
-                    safe_area_guide_rect->right()
-                        ->observe([this](float const &value) {
-                            this->_strings->preferred_layout_guide()->right()->set_value(value - 4.0f);
-                        })
-                        .sync()
-                        ->add_to(*pool);
-
-                    this->_bottom_guide
-                        ->observe([this](float const &value) {
-                            this->_strings->preferred_layout_guide()->bottom()->set_value(value + 4.0f);
-                        })
-                        .sync()
-                        ->add_to(*pool);
-
-                    this->_strings
-                        ->observe_font_atlas([this, top_layout = observing::cancellable_ptr{nullptr}](
-                                                 std::shared_ptr<ui::font_atlas> const &value) mutable {
-                            float distance = 0.0f;
-
-                            if (auto const &font_atlas = this->_strings->font_atlas()) {
-                                distance += font_atlas->ascent() + font_atlas->descent();
-                            }
-
-                            this->_strings->preferred_layout_guide()
-                                ->bottom()
-                                ->observe([this, distance](float const &value) {
-                                    this->_strings->preferred_layout_guide()->top()->set_value(value + distance);
-                                })
-                                .sync()
-                                ->set_to(top_layout);
-                        })
-                        .sync()
-                        ->add_to(*pool);
-                }
-            })
+    event_manager
+        ->observe([this, flags = std::unordered_set<modifier_flags>{}](auto const &event) mutable {
+            if (event->type() == event_type::modifier) {
+                this->_update_text(event, flags);
+            }
+        })
         .end()
-        ->set_to(this->_renderer_canceller);
+        ->add_to(this->_pool);
+
+    safe_area_guide->layout_horizontal_range_source()
+        ->layout_min_value_source()
+        ->observe_layout_value(
+            [this](float const &value) { this->_strings->preferred_layout_guide()->left()->set_value(value + 4.0f); })
+        .sync()
+        ->add_to(this->_pool);
+
+    safe_area_guide->layout_horizontal_range_source()
+        ->layout_max_value_source()
+        ->observe_layout_value(
+            [this](float const &value) { this->_strings->preferred_layout_guide()->right()->set_value(value - 4.0f); })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_bottom_guide
+        ->observe(
+            [this](float const &value) { this->_strings->preferred_layout_guide()->bottom()->set_value(value + 4.0f); })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_strings
+        ->observe_font_atlas([this, top_layout = observing::cancellable_ptr{nullptr}](
+                                 std::shared_ptr<ui::font_atlas> const &value) mutable {
+            float distance = 0.0f;
+
+            if (auto const &font_atlas = this->_strings->font_atlas()) {
+                distance += font_atlas->ascent() + font_atlas->descent();
+            }
+
+            this->_strings->preferred_layout_guide()
+                ->bottom()
+                ->observe([this, distance](float const &value) {
+                    this->_strings->preferred_layout_guide()->top()->set_value(value + distance);
+                })
+                .sync()
+                ->set_to(top_layout);
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 std::shared_ptr<strings> const &sample::modifier_text::strings() {
@@ -101,7 +89,9 @@ void sample::modifier_text::_update_text(std::shared_ptr<event> const &event,
     this->_strings->set_text(joined(flag_texts, " + "));
 }
 
-sample::modifier_text_ptr sample::modifier_text::make_shared(std::shared_ptr<font_atlas> const &atlas,
-                                                             std::shared_ptr<layout_value_guide> const &bottom_guide) {
-    return std::shared_ptr<modifier_text>(new modifier_text{atlas, bottom_guide});
+sample::modifier_text_ptr sample::modifier_text::make_shared(
+    std::shared_ptr<font_atlas> const &atlas, std::shared_ptr<ui::event_manager> const &event_manager,
+    std::shared_ptr<ui::layout_region_source> const &safe_area_guide,
+    std::shared_ptr<layout_value_guide> const &bottom_guide) {
+    return std::shared_ptr<modifier_text>(new modifier_text{atlas, event_manager, safe_area_guide, bottom_guide});
 }

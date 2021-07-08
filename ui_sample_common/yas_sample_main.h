@@ -43,7 +43,8 @@ struct main {
     sample::draw_call_text_ptr const _draw_call_text =
         sample::draw_call_text::make_shared(_font_atlas, renderer->metal_system(), renderer->safe_area_layout_guide());
     sample::modifier_text_ptr const _modifier_text =
-        sample::modifier_text::make_shared(_font_atlas, _draw_call_text->strings()->preferred_layout_guide()->top());
+        sample::modifier_text::make_shared(_font_atlas, renderer->event_manager(), renderer->safe_area_layout_guide(),
+                                           _draw_call_text->strings()->preferred_layout_guide()->top());
     sample::bg_ptr const _bg = sample::bg::make_shared(renderer->safe_area_layout_guide());
     sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
         renderer->event_manager(), renderer->action_manager(), renderer->detector());
