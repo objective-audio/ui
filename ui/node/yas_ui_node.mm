@@ -297,19 +297,8 @@ observing::endable node::observe(observing::caller<method>::handler_f &&handler)
     return this->_notifier->observe(std::move(handler));
 }
 
-observing::syncable node::observe_parent(observing::caller<std::shared_ptr<node>>::handler_f &&handler) {
-    return this->_parent->observe([handler = std::move(handler)](std::weak_ptr<node> const &weak_node) {
-        if (auto node = weak_node.lock()) {
-            handler(node);
-        } else {
-            handler(nullptr);
-        }
-    });
-}
-
 point node::convert_position(point const &loc) const {
-    auto const loc4 = simd::float4x4(matrix_invert(this->matrix_as_parent())) * to_float4(loc.v);
-    return {loc4.x, loc4.y};
+    return this->convert_position_as_parent(loc);
 }
 
 void node::attach_x_layout_guide(layout_value_guide &guide) {
