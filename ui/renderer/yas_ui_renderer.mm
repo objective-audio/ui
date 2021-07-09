@@ -29,12 +29,6 @@
 using namespace yas;
 using namespace yas::ui;
 
-@interface yas_objc_view (yas_ui_renderer)
-
-- (void)set_event_manager:(std::shared_ptr<metal_view_event_manager_interface>)manager;
-
-@end
-
 #pragma mark - renderer
 
 renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
@@ -151,8 +145,6 @@ void renderer::view_configure(yas_objc_view *const view) {
             throw std::runtime_error("system not found.");
         } break;
     }
-
-    [view set_event_manager:this->_event_manager];
 }
 
 void renderer::view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) {
