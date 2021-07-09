@@ -18,7 +18,7 @@ using namespace yas::ui;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self setRenderer:_main.renderer];
+    [self set_renderer:_main.renderer];
     [self set_event_manager:_main.event_manager];
 
     self->_main.setup();

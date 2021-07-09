@@ -106,7 +106,7 @@ struct metal_view_cpp {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
+- (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
     self->_cpp.renderable = renderable;
 
     if (renderable) {

@@ -23,7 +23,7 @@ using namespace yas::ui;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] setRenderer:nullptr];
+    [[YASTestMetalViewController sharedViewController] set_renderer:nullptr];
     [super tearDown];
 }
 
@@ -66,7 +66,7 @@ using namespace yas::ui;
 
     XCTAssertFalse(viewController.renderer);
 
-    [viewController setRenderer:renderer];
+    [viewController set_renderer:renderer];
 
     XCTAssertTrue(viewController.renderer);
 }
@@ -86,7 +86,7 @@ using namespace yas::ui;
 
     XCTAssertEqual(renderer->view_size(), (uint_size{0, 0}));
 
-    [viewController setRenderer:renderer];
+    [viewController set_renderer:renderer];
 
     XCTAssertEqual(renderer->view_size(), (uint_size{16, 16}));
 
