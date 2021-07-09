@@ -24,7 +24,6 @@ using namespace yas::ui;
 
 - (void)tearDown {
     [[YASTestMetalViewController sharedViewController] set_renderer:nullptr];
-    [[YASTestMetalViewController sharedViewController] set_event_manager:nullptr];
     [super tearDown];
 }
 
@@ -41,8 +40,6 @@ using namespace yas::ui;
     XCTAssertEqual(renderer->scale_factor(), 0.0);
 
     XCTAssertTrue(view_renderer);
-    XCTAssertTrue(renderer->event_manager());
-    XCTAssertTrue(renderer->action_manager());
     XCTAssertTrue(renderer->detector());
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::none);
@@ -64,7 +61,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr);
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::metal);
     XCTAssertTrue(renderer->metal_system());
@@ -80,7 +77,7 @@ using namespace yas::ui;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr);
     std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
@@ -105,7 +102,7 @@ using namespace yas::ui;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()));
+    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr);
     std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     double notified = 0.0f;

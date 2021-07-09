@@ -48,7 +48,8 @@ using namespace yas::ui;
     XCTestExpectation *expectation = [self expectationWithDescription:@"create_with_parameters"];
 
     auto metal_system = metal_system::make_shared(device.object());
-    auto renderer = renderer::make_shared(metal_system);
+    auto action_manager = ui::action_manager::make_shared();
+    auto renderer = renderer::make_shared(metal_system, action_manager);
 
     auto time_updater = [expectation, &self, &metal_system](auto const &, auto const &) mutable {
         auto view = [YASTestMetalViewController sharedViewController].metalView;
@@ -72,7 +73,7 @@ using namespace yas::ui;
 
     auto pre_render_action = action::make_shared({.time_updater = std::move(time_updater)});
 
-    renderer->action_manager()->insert_action(pre_render_action);
+    action_manager->insert_action(pre_render_action);
 
     [[YASTestMetalViewController sharedViewController] set_renderer:renderer];
 

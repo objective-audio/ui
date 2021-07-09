@@ -43,7 +43,6 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
       _background(background::make_shared()),
       _root_node(node::make_shared()),
       _detector(detector::make_shared()),
-      _event_manager(event_manager::make_shared()),
       _action_manager(action_manager),
       _view_layout_guide(layout_region_guide::make_shared()),
       _safe_area_layout_guide(layout_region_guide::make_shared()),
@@ -85,10 +84,6 @@ system_type renderer::system_type() const {
 
 std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
-}
-
-std::shared_ptr<event_manager> const &renderer::event_manager() const {
-    return this->_event_manager;
 }
 
 std::shared_ptr<detector> const &renderer::detector() const {
