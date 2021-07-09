@@ -59,7 +59,7 @@ void sample::main::setup() {
                      .loop_count = 0,
                      .value_transformer = [](float const value) { return sinf(M_PI * 2.0f * value); }});
 
-    this->renderer->action_manager()->insert_action(button_pos_action);
+    this->action_manager->insert_action(button_pos_action);
 
     auto texture = texture::make_shared({.point_size = {1024, 1024}});
     texture->sync_scale_from_renderer(this->renderer);
@@ -82,7 +82,7 @@ void sample::main::setup() {
                                      }
                                  }});
 
-    this->renderer->action_manager()->insert_action(blur_action);
+    this->action_manager->insert_action(blur_action);
 
     auto &view_guide = this->renderer->view_layout_guide();
 
@@ -104,5 +104,5 @@ void sample::main::setup() {
                                .end_angle = 360.0f,
                                .duration = 3.0,
                                .loop_count = 0});
-    this->renderer->action_manager()->insert_action(action);
+    this->action_manager->insert_action(action);
 }

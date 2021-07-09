@@ -29,15 +29,10 @@
 using namespace yas;
 using namespace yas::ui;
 
-@interface yas_objc_view (yas_ui_renderer)
-
-- (void)set_event_manager:(std::shared_ptr<metal_view_event_manager_interface>)manager;
-
-@end
-
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system)
+renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
+                   std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_size({.width = 0, .height = 0}),
       _drawable_size({.width = 0, .height = 0}),
@@ -48,9 +43,7 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system)
       _background(background::make_shared()),
       _root_node(node::make_shared()),
       _detector(detector::make_shared()),
-      _event_manager(event_manager::make_shared()),
-      _action_manager(action_manager::make_shared()),
-      _renderer_action_manager(this->_action_manager),
+      _action_manager(action_manager),
       _view_layout_guide(layout_region_guide::make_shared()),
       _safe_area_layout_guide(layout_region_guide::make_shared()),
       _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
@@ -91,14 +84,6 @@ system_type renderer::system_type() const {
 
 std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
-}
-
-std::shared_ptr<event_manager> const &renderer::event_manager() const {
-    return this->_event_manager;
-}
-
-std::shared_ptr<action_manager> const &renderer::action_manager() const {
-    return this->_action_manager;
 }
 
 std::shared_ptr<detector> const &renderer::detector() const {
@@ -155,8 +140,6 @@ void renderer::view_configure(yas_objc_view *const view) {
             throw std::runtime_error("system not found.");
         } break;
     }
-
-    [view set_event_manager:this->_event_manager];
 }
 
 void renderer::view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) {
@@ -222,7 +205,7 @@ void renderer::view_appearance_did_change(yas_objc_view *const view, ui::appeara
 }
 
 renderer::pre_render_result renderer::_pre_render() {
-    this->_renderer_action_manager->update(std::chrono::system_clock::now());
+    this->_action_manager->update(std::chrono::system_clock::now());
 
     auto const bg_updates = renderer_background_interface::cast(this->_background)->updates();
 
@@ -326,11 +309,12 @@ bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_in
 }
 
 std::shared_ptr<renderer> renderer::make_shared() {
-    return make_shared(nullptr);
+    return make_shared(nullptr, nullptr);
 }
 
-std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system) {
-    auto shared = std::shared_ptr<renderer>(new renderer{system});
+std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system,
+                                                std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
+    auto shared = std::shared_ptr<renderer>(new renderer{system, action_manager});
     shared->_prepare(shared);
     return shared;
 }

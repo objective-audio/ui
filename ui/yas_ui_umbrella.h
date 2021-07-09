@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <ui/yas_ui_action_manager.h>
 #include <ui/yas_ui_angle.h>
 #include <ui/yas_ui_background.h>
 #include <ui/yas_ui_batch.h>

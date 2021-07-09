@@ -23,7 +23,8 @@ using namespace yas::ui;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] setRenderer:nullptr];
+    [[YASTestMetalViewController sharedViewController] set_renderer:nullptr];
+    [[YASTestMetalViewController sharedViewController] set_event_manager:nullptr];
     [super tearDown];
 }
 
@@ -60,13 +61,13 @@ using namespace yas::ui;
         return;
     }
 
-    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()));
+    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()), nullptr);
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
     XCTAssertFalse(viewController.renderer);
 
-    [viewController setRenderer:renderer];
+    [viewController set_renderer:renderer];
 
     XCTAssertTrue(viewController.renderer);
 }
@@ -78,7 +79,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()));
+    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()), nullptr);
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
@@ -86,7 +87,7 @@ using namespace yas::ui;
 
     XCTAssertEqual(renderer->view_size(), (uint_size{0, 0}));
 
-    [viewController setRenderer:renderer];
+    [viewController set_renderer:renderer];
 
     XCTAssertEqual(renderer->view_size(), (uint_size{16, 16}));
 

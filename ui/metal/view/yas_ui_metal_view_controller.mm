@@ -106,7 +106,7 @@ struct metal_view_cpp {
     return (YASUIMetalView *)self.view;
 }
 
-- (void)setRenderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
+- (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
     self->_cpp.renderable = renderable;
 
     if (renderable) {
@@ -118,6 +118,14 @@ struct metal_view_cpp {
 
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
     return self->_cpp.renderable;
+}
+
+- (void)set_event_manager:(std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager {
+    [self.metalView set_event_manager:event_manager];
+}
+
+- (std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager {
+    return [self.metalView event_manager];
 }
 
 #pragma mark -
