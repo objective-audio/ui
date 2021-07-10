@@ -123,8 +123,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 #elif TARGET_OS_MAC
 
-- (yas_edge_insets)uiSafeAreaInsets {
-    return NSEdgeInsetsZero;
+- (yas::ui::region_insets)uiSafeAreaInsets {
+    return ui::region_insets::zero();
 }
 
 - (ui::appearance)uiAppearance {

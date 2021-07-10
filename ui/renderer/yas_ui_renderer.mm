@@ -162,7 +162,7 @@ void renderer::view_size_will_change(yas_objc_view *const view, CGSize const dra
     }
 }
 
-void renderer::view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) {
+void renderer::view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) {
     if (!to_bool(this->system_type())) {
         throw std::runtime_error("system not found.");
     }
@@ -264,12 +264,12 @@ renderer::update_result renderer::_update_scale_factor() {
     }
 }
 
-renderer::update_result renderer::_update_safe_area_insets(yas_edge_insets const insets) {
+renderer::update_result renderer::_update_safe_area_insets(ui::region_insets const insets) {
     auto const prev_insets = this->_safe_area_insets;
 
     this->_safe_area_insets = insets;
 
-    if (this->_is_equal_edge_insets(this->_safe_area_insets, prev_insets)) {
+    if (this->_safe_area_insets == prev_insets) {
         return update_result::no_change;
     } else {
         return update_result::changed;
@@ -297,11 +297,6 @@ void renderer::_update_safe_area_layout_guide() {
     this->_safe_area_layout_guide->set_region({.origin = {origin_x, origin_y}, .size = {width, height}});
 
     this->_updates.set(renderer_update_reason::safe_area_region);
-}
-
-bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2) {
-    return insets1.top == insets2.top && insets1.left == insets2.left && insets1.bottom == insets2.bottom &&
-           insets1.right == insets2.right;
 }
 
 std::shared_ptr<renderer> renderer::make_shared() {

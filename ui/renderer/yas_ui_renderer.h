@@ -63,7 +63,7 @@ struct renderer final : view_renderer_interface, node_parent_interface {
     ui::uint_size _drawable_size;
     double _scale_factor{0.0f};
     observing::value::holder_ptr<double> _scale_factor_notify;
-    yas_edge_insets _safe_area_insets;
+    region_insets _safe_area_insets{region_insets::zero()};
     observing::value::holder_ptr<ui::appearance> _appearance;
     simd::float4x4 _projection_matrix;
     renderer_updates_t _updates;
@@ -91,7 +91,7 @@ struct renderer final : view_renderer_interface, node_parent_interface {
 
     void view_configure(yas_objc_view *const view) override;
     void view_size_will_change(yas_objc_view *const view, CGSize const size) override;
-    void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) override;
+    void view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) override;
     void view_render(yas_objc_view *const view) override;
     void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) override;
 
@@ -99,10 +99,9 @@ struct renderer final : view_renderer_interface, node_parent_interface {
     void _post_render();
     update_result _update_view_size(CGSize const v_size, CGSize const d_size);
     update_result _update_scale_factor();
-    update_result _update_safe_area_insets(yas_edge_insets const insets);
+    update_result _update_safe_area_insets(ui::region_insets const insets);
     void _update_view_layout_guide();
     void _update_safe_area_layout_guide();
-    bool _is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2);
 };
 }  // namespace yas::ui
 

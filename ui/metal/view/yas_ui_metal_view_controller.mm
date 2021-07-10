@@ -154,7 +154,7 @@ struct metal_view_cpp {
 
 #pragma mark - YASUIMetalViewDelegate
 
-- (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(yas_edge_insets)insets {
+- (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(ui::region_insets)insets {
     if (self->_cpp.renderable && self.metalView) {
         self->_cpp.renderable->view_safe_area_insets_did_change(self.metalView, insets);
     }
