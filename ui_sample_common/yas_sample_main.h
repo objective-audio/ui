@@ -23,10 +23,11 @@
 
 namespace yas::sample {
 struct main {
+    std::shared_ptr<ui::detector> const detector = ui::detector::make_shared();
     std::shared_ptr<ui::event_manager> const event_manager = ui::event_manager::make_shared();
     std::shared_ptr<ui::action_manager> const action_manager = ui::action_manager::make_shared();
     std::shared_ptr<ui::renderer> const renderer = ui::renderer::make_shared(
-        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object()),
+        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object()), detector,
         action_manager);
 
     void setup();
