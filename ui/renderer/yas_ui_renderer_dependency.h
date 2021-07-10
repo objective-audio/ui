@@ -169,12 +169,10 @@ struct renderable_collider {
     }
 };
 
-struct renderer_detector_interface {
+struct renderer_detector_interface : render_info_detector_interface {
     virtual ~renderer_detector_interface() = default;
 
-    [[nodiscard]] virtual bool is_updating() = 0;
     virtual void begin_update() = 0;
-    virtual void push_front_collider(std::shared_ptr<collider> const &) = 0;
     virtual void end_update() = 0;
 
     [[nodiscard]] static std::shared_ptr<renderer_detector_interface> cast(

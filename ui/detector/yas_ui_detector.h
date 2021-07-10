@@ -12,7 +12,7 @@
 #include <deque>
 
 namespace yas::ui {
-struct detector final : renderer_detector_interface, render_info_detector_interface {
+struct detector final : renderer_detector_interface {
     virtual ~detector();
 
     [[nodiscard]] std::optional<std::shared_ptr<collider>> detect(ui::point const &) const;
