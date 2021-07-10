@@ -120,7 +120,9 @@ void metal_system::view_configure(yas_objc_view *const objc_view) {
     view.sampleCount = this->_sample_count;
 }
 
-void metal_system::view_render(yas_objc_view *const objc_view, renderer const *renderer) {
+void metal_system::view_render(yas_objc_view *const objc_view,
+                               std::shared_ptr<ui::render_info_detector_interface> const &detector,
+                               simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node) {
     if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
         return;
     }
@@ -142,8 +144,7 @@ void metal_system::view_render(yas_objc_view *const objc_view, renderer const *r
 
     this->_uniforms_buffer_offset = 0;
 
-    this->_render_nodes(renderer->detector(), renderer->projection_matrix(), renderer->root_node(), commandBuffer,
-                        renderPassDesc);
+    this->_render_nodes(detector, projection_matrix, node, commandBuffer, renderPassDesc);
 
     [commandBuffer addCompletedHandler:[semaphore = this->_inflight_semaphore](id<MTLCommandBuffer> _Nonnull) {
         dispatch_semaphore_signal(semaphore.object());
@@ -260,7 +261,7 @@ id<MTLRenderPipelineState> metal_system::mtlRenderPipelineStateWithoutTexture() 
 }
 
 void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &detector,
-                                 simd::float4x4 const &matrix, std::shared_ptr<ui::node> const &node,
+                                 simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node,
                                  id<MTLCommandBuffer> const commandBuffer,
                                  MTLRenderPassDescriptor *const renderPassDesc) {
     auto const metal_render_encoder = metal_render_encoder::make_shared();
@@ -276,8 +277,8 @@ void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interf
                             .render_encodable = render_encodable::cast(metal_render_encoder),
                             .render_effectable = render_effectable::cast(metal_render_encoder),
                             .render_stackable = render_stackable::cast(metal_render_encoder),
-                            .matrix = matrix,
-                            .mesh_matrix = matrix};
+                            .matrix = projection_matrix,
+                            .mesh_matrix = projection_matrix};
 
     metal_object::cast(node)->metal_setup(metal_system);
     renderable_node::cast(node)->build_render_info(render_info);

@@ -17,7 +17,8 @@ struct renderable_metal_system {
     virtual ~renderable_metal_system() = default;
 
     virtual void view_configure(yas_objc_view *const) = 0;
-    virtual void view_render(yas_objc_view *const view, ui::renderer const *) = 0;
+    virtual void view_render(yas_objc_view *const view, std::shared_ptr<ui::render_info_detector_interface> const &,
+                             simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
     virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
     virtual void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
                              std::shared_ptr<metal_encode_info> const &) = 0;

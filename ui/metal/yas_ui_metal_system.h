@@ -54,7 +54,8 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     metal_system &operator=(metal_system &&) = delete;
 
     void view_configure(yas_objc_view *const) override;
-    void view_render(yas_objc_view *const view, ui::renderer const *) override;
+    void view_render(yas_objc_view *const, std::shared_ptr<ui::render_info_detector_interface> const &,
+                     simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
     void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
                      std::shared_ptr<metal_encode_info> const &) override;
@@ -71,8 +72,8 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
 
-    void _render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &, simd::float4x4 const &matrix,
-                       std::shared_ptr<ui::node> const &node, id<MTLCommandBuffer> const,
-                       MTLRenderPassDescriptor *consts);
+    void _render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &,
+                       simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &,
+                       id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
 };
 }  // namespace yas::ui

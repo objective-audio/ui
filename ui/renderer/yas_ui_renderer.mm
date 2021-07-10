@@ -193,7 +193,8 @@ void renderer::view_render(yas_objc_view *const view) {
             metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
         }
 
-        renderable_metal_system::cast(this->_metal_system)->view_render(view, this);
+        renderable_metal_system::cast(this->_metal_system)
+            ->view_render(view, this->_detector, this->_projection_matrix, this->_root_node);
     }
 
     this->_post_render();
