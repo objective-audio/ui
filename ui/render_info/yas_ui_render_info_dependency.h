@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_types.h>
 
 #include <memory>
