@@ -71,6 +71,8 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
 
-    void _render_nodes(ui::renderer const *renderer, id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
+    void _render_nodes(std::shared_ptr<ui::detector> const &, simd::float4x4 const &matrix,
+                       std::shared_ptr<ui::node> const &node, id<MTLCommandBuffer> const,
+                       MTLRenderPassDescriptor *consts);
 };
 }  // namespace yas::ui
