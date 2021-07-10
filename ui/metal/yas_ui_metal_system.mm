@@ -259,8 +259,9 @@ id<MTLRenderPipelineState> metal_system::mtlRenderPipelineStateWithoutTexture() 
     return this->_pipeline_state_without_texture.object();
 }
 
-void metal_system::_render_nodes(std::shared_ptr<ui::detector> const &detector, simd::float4x4 const &matrix,
-                                 std::shared_ptr<ui::node> const &node, id<MTLCommandBuffer> const commandBuffer,
+void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &detector,
+                                 simd::float4x4 const &matrix, std::shared_ptr<ui::node> const &node,
+                                 id<MTLCommandBuffer> const commandBuffer,
                                  MTLRenderPassDescriptor *const renderPassDesc) {
     auto metal_render_encoder = metal_render_encoder::make_shared();
     render_stackable::cast(metal_render_encoder)
