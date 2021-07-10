@@ -4,14 +4,15 @@
 
 #include "yas_ui_render_target.h"
 #include <cpp_utils/yas_unless.h>
-#include "yas_ui_effect.h"
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_matrix.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_metal_texture.h"
-#include "yas_ui_rect_plane.h"
-#include "yas_ui_renderer.h"
-#include "yas_ui_texture.h"
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_matrix.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_metal_texture.h>
+#include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_renderer.h>
+#include <ui/yas_ui_texture.h>
+#include <ui/yas_ui_view_look.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -117,9 +118,9 @@ std::shared_ptr<effect> const &render_target::effect() const {
     return this->_effect;
 }
 
-void render_target::sync_scale_from_renderer(std::shared_ptr<renderer> const &renderer) {
+void render_target::sync_scale_from_view_look(std::shared_ptr<view_look> const &view_look) {
     this->_scale_canceller =
-        renderer->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
+        view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 setup_metal_result render_target::metal_setup(std::shared_ptr<metal_system> const &metal_system) {

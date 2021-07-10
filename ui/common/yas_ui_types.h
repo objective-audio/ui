@@ -60,6 +60,7 @@ class texture;
 class color;
 class background;
 class angle;
+class view_look;
 
 class renderable_render_target;
 class updatable_action;

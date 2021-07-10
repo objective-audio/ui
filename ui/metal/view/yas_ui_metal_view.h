@@ -14,7 +14,7 @@
 
 @property (nonatomic, yas_weak_for_property) id<YASUIMetalViewDelegate> uiDelegate;
 
-- (yas_edge_insets)uiSafeAreaInsets;
+- (yas::ui::region_insets)uiSafeAreaInsets;
 - (yas::ui::appearance)uiAppearance;
 
 - (std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager;
@@ -24,6 +24,6 @@
 
 @protocol YASUIMetalViewDelegate <NSObject>
 
-- (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(yas_edge_insets)insets;
+- (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(yas::ui::region_insets)insets;
 
 @end

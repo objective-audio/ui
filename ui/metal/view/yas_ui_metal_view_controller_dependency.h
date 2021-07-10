@@ -14,7 +14,7 @@ struct view_renderer_interface {
 
     virtual void view_configure(yas_objc_view *const view) = 0;
     virtual void view_size_will_change(yas_objc_view *const view, CGSize const size) = 0;
-    virtual void view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) = 0;
+    virtual void view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) = 0;
     virtual void view_render(yas_objc_view *const view) = 0;
     virtual void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) = 0;
 };

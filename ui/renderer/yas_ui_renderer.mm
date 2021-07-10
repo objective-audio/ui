@@ -8,6 +8,7 @@
 #include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_to_bool.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_view_look.h>
 #include <chrono>
 #include "yas_ui_action.h"
 #include "yas_ui_background.h"
@@ -30,41 +31,19 @@ using namespace yas::ui;
 
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system, std::shared_ptr<ui::detector> const &detector,
+renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
+                   std::shared_ptr<ui::view_look> const &view_look, std::shared_ptr<ui::detector> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
-      _view_size({.width = 0, .height = 0}),
-      _drawable_size({.width = 0, .height = 0}),
-      _scale_factor_notify(observing::value::holder<double>::make_shared(0.0f)),
-      _safe_area_insets({.top = 0, .left = 0, .bottom = 0, .right = 0}),
-      _appearance(observing::value::holder<ui::appearance>::make_shared(appearance::normal)),
-      _projection_matrix(matrix_identity_float4x4),
+      _view_look(view_look),
       _background(background::make_shared()),
       _root_node(node::make_shared()),
       _detector(detector),
       _action_manager(action_manager),
-      _view_layout_guide(layout_region_guide::make_shared()),
-      _safe_area_layout_guide(layout_region_guide::make_shared()),
       _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
 }
 
 renderer::~renderer() = default;
-
-uint_size const &renderer::view_size() const {
-    return this->_view_size;
-}
-
-uint_size const &renderer::drawable_size() const {
-    return this->_drawable_size;
-}
-
-double renderer::scale_factor() const {
-    return this->_scale_factor;
-}
-
-simd::float4x4 const &renderer::projection_matrix() const {
-    return this->_projection_matrix;
-}
 
 std::shared_ptr<background> const &renderer::background() const {
     return this->_background;
@@ -85,28 +64,8 @@ std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
 }
 
-std::shared_ptr<layout_region_guide> const &renderer::view_layout_guide() const {
-    return this->_view_layout_guide;
-}
-
-std::shared_ptr<layout_region_guide> const &renderer::safe_area_layout_guide() const {
-    return this->_safe_area_layout_guide;
-}
-
-appearance renderer::appearance() const {
-    return this->_appearance->value();
-}
-
 observing::endable renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
     return this->_will_render_notifier->observe(std::move(handler));
-}
-
-observing::syncable renderer::observe_scale_factor(observing::caller<double>::handler_f &&handler) {
-    return this->_scale_factor_notify->observe(std::move(handler));
-}
-
-observing::syncable renderer::observe_appearance(observing::caller<ui::appearance>::handler_f &&handler) {
-    return this->_appearance->observe(std::move(handler));
 }
 
 void renderer::_prepare(std::shared_ptr<renderer> const &shared) {
@@ -114,7 +73,7 @@ void renderer::_prepare(std::shared_ptr<renderer> const &shared) {
 }
 
 simd::float4x4 const &renderer::matrix_as_parent() const {
-    return this->_projection_matrix;
+    return this->_view_look->projection_matrix();
 }
 
 void renderer::view_configure(yas_objc_view *const view) {
@@ -122,10 +81,10 @@ void renderer::view_configure(yas_objc_view *const view) {
         case system_type::metal: {
             if (auto metalView = objc_cast<YASUIMetalView>(view)) {
                 renderable_metal_system::cast(this->_metal_system)->view_configure(view);
-                this->_safe_area_insets = metalView.uiSafeAreaInsets;
+                this->_view_look->set_safe_area_insets(metalView.uiSafeAreaInsets);
                 auto const drawable_size = metalView.drawableSize;
                 this->view_size_will_change(view, drawable_size);
-                this->_appearance->set_value(metalView.uiAppearance);
+                this->_view_look->set_appearance(metalView.uiAppearance);
             } else {
                 throw std::runtime_error("view not for metal.");
             }
@@ -142,36 +101,26 @@ void renderer::view_size_will_change(yas_objc_view *const view, CGSize const dra
         throw std::runtime_error("system not found.");
     }
 
-    auto const view_size = view.bounds.size;
-    auto const update_view_size_result = this->_update_view_size(view_size, drawable_size);
-    auto const update_scale_result = this->_update_scale_factor();
-    update_result update_safe_area_result = update_result::no_change;
+    ui::uint_size const view_size{.width = static_cast<uint32_t>(view.bounds.size.width),
+                                  .height = static_cast<uint32_t>(view.bounds.size.height)};
+    ui::uint_size const drawable_usize{.width = static_cast<uint32_t>(drawable_size.width),
+                                       .height = static_cast<uint32_t>(drawable_size.height)};
 
+    auto safe_area_insets = ui::region_insets::zero();
     if ([view isKindOfClass:[YASUIMetalView class]]) {
         auto const metalView = (YASUIMetalView *)view;
-        update_safe_area_result = this->_update_safe_area_insets(metalView.uiSafeAreaInsets);
+        safe_area_insets = metalView.uiSafeAreaInsets;
     }
 
-    if (to_bool(update_view_size_result) || to_bool(update_safe_area_result)) {
-        this->_update_view_layout_guide();
-        this->_update_safe_area_layout_guide();
-
-        if (to_bool(update_scale_result)) {
-            this->_scale_factor_notify->set_value(this->_scale_factor);
-        }
-    }
+    this->_view_look->set_view_sizes(view_size, drawable_usize, safe_area_insets);
 }
 
-void renderer::view_safe_area_insets_did_change(yas_objc_view *const view, yas_edge_insets const insets) {
+void renderer::view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) {
     if (!to_bool(this->system_type())) {
         throw std::runtime_error("system not found.");
     }
 
-    auto const update_result = this->_update_safe_area_insets(insets);
-
-    if (to_bool(update_result)) {
-        this->_update_safe_area_layout_guide();
-    }
+    this->_view_look->set_safe_area_insets(insets);
 }
 
 void renderer::view_render(yas_objc_view *const view) {
@@ -190,14 +139,14 @@ void renderer::view_render(yas_objc_view *const view) {
         }
 
         renderable_metal_system::cast(this->_metal_system)
-            ->view_render(view, this->_detector, this->_projection_matrix, this->_root_node);
+            ->view_render(view, this->_detector, this->_view_look->projection_matrix(), this->_root_node);
     }
 
     this->_post_render();
 }
 
 void renderer::view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) {
-    this->_appearance->set_value(appearance);
+    this->_view_look->set_appearance(appearance);
 }
 
 renderer::pre_render_result renderer::_pre_render() {
@@ -226,92 +175,11 @@ void renderer::_post_render() {
     this->_updates.flags.reset();
 }
 
-renderer::update_result renderer::_update_view_size(CGSize const v_size, CGSize const d_size) {
-    auto const prev_view_size = this->_view_size;
-    auto const prev_drawable_size = this->_drawable_size;
-
-    float const half_width = v_size.width * 0.5f;
-    float const half_height = v_size.height * 0.5f;
-
-    this->_view_size = {static_cast<uint32_t>(v_size.width), static_cast<uint32_t>(v_size.height)};
-    this->_drawable_size = {static_cast<uint32_t>(d_size.width), static_cast<uint32_t>(d_size.height)};
-
-    if (this->_view_size == prev_view_size && this->_drawable_size == prev_drawable_size) {
-        return update_result::no_change;
-    } else {
-        this->_projection_matrix = matrix::ortho(-half_width, half_width, -half_height, half_height, -1.0f, 1.0f);
-        return update_result::changed;
-    }
-}
-
-renderer::update_result renderer::_update_scale_factor() {
-    auto const prev_scale_factor = this->_scale_factor;
-
-    if (this->_view_size.width > 0 && this->_drawable_size.width > 0) {
-        this->_scale_factor =
-            static_cast<double>(this->_drawable_size.width) / static_cast<double>(this->_view_size.width);
-    } else if (this->_view_size.height > 0 && this->_drawable_size.height > 0) {
-        this->_scale_factor =
-            static_cast<double>(this->_drawable_size.height) / static_cast<double>(this->_view_size.height);
-    } else {
-        this->_scale_factor = 0.0;
-    }
-
-    if (std::abs(this->_scale_factor - prev_scale_factor) < std::numeric_limits<double>::epsilon()) {
-        return update_result::no_change;
-    } else {
-        return update_result::changed;
-    }
-}
-
-renderer::update_result renderer::_update_safe_area_insets(yas_edge_insets const insets) {
-    auto const prev_insets = this->_safe_area_insets;
-
-    this->_safe_area_insets = insets;
-
-    if (this->_is_equal_edge_insets(this->_safe_area_insets, prev_insets)) {
-        return update_result::no_change;
-    } else {
-        return update_result::changed;
-    }
-}
-
-void renderer::_update_view_layout_guide() {
-    float const view_width = this->_view_size.width;
-    float const view_height = this->_view_size.height;
-
-    this->_view_layout_guide->set_region(
-        {.origin = {-view_width * 0.5f, -view_height * 0.5f}, .size = {view_width, view_height}});
-
-    this->_updates.set(renderer_update_reason::view_region);
-}
-
-void renderer::_update_safe_area_layout_guide() {
-    float const view_width = this->_view_size.width;
-    float const view_height = this->_view_size.height;
-    float const origin_x = -view_width * 0.5f + this->_safe_area_insets.left;
-    float const origin_y = -view_height * 0.5f + this->_safe_area_insets.bottom;
-    float const width = view_width - this->_safe_area_insets.left - this->_safe_area_insets.right;
-    float const height = view_height - this->_safe_area_insets.bottom - this->_safe_area_insets.top;
-
-    this->_safe_area_layout_guide->set_region({.origin = {origin_x, origin_y}, .size = {width, height}});
-
-    this->_updates.set(renderer_update_reason::safe_area_region);
-}
-
-bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_insets const &insets2) {
-    return insets1.top == insets2.top && insets1.left == insets2.left && insets1.bottom == insets2.bottom &&
-           insets1.right == insets2.right;
-}
-
-std::shared_ptr<renderer> renderer::make_shared() {
-    return make_shared(nullptr, nullptr, nullptr);
-}
-
 std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system,
+                                                std::shared_ptr<ui::view_look> const &view_look,
                                                 std::shared_ptr<ui::detector> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
-    auto shared = std::shared_ptr<renderer>(new renderer{system, detector, action_manager});
+    auto shared = std::shared_ptr<renderer>(new renderer{system, view_look, detector, action_manager});
     shared->_prepare(shared);
     return shared;
 }

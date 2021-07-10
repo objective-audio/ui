@@ -50,7 +50,7 @@ using namespace yas::ui;
     auto metal_system = metal_system::make_shared(device.object());
     auto detector = ui::detector::make_shared();
     auto action_manager = ui::action_manager::make_shared();
-    auto renderer = renderer::make_shared(metal_system, detector, action_manager);
+    auto renderer = renderer::make_shared(metal_system, ui::view_look::make_shared(), detector, action_manager);
 
     auto time_updater = [expectation, &self, &metal_system](auto const &, auto const &) mutable {
         auto view = [YASTestMetalViewController sharedViewController].metalView;

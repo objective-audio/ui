@@ -227,7 +227,7 @@ struct test_render_encoder : render_encodable {
 
 - (void)test_renderable_node {
     auto node = node::make_shared();
-    auto renderer = renderer::make_shared();
+    auto renderer = renderer::make_shared(nullptr, nullptr, nullptr, nullptr);
 
     auto const renderable = renderable_node::cast(node);
 
