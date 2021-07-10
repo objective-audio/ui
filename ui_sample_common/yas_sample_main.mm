@@ -62,14 +62,14 @@ void sample::main::setup() {
     this->action_manager->insert_action(button_pos_action);
 
     auto texture = texture::make_shared({.point_size = {1024, 1024}});
-    texture->sync_scale_from_renderer(this->renderer);
+    texture->sync_scale_from_view_look(this->view_look);
 
     this->_font_atlas->set_texture(texture);
     this->_big_button->set_texture(texture);
     this->_touch_holder->set_texture(texture);
 
     auto render_target = render_target::make_shared();
-    render_target->sync_scale_from_renderer(this->renderer);
+    render_target->sync_scale_from_view_look(this->view_look);
     render_target->set_effect(this->_blur->effect());
 
     auto blur_action =
@@ -84,7 +84,7 @@ void sample::main::setup() {
 
     this->action_manager->insert_action(blur_action);
 
-    auto &view_guide = this->renderer->view_layout_guide();
+    auto &view_guide = this->view_look->view_layout_guide();
 
     view_guide->observe([render_target](region const &region) { render_target->layout_guide()->set_region(region); })
         .sync()

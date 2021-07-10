@@ -23,7 +23,7 @@ struct render_target : metal_object, renderable_render_target {
     void set_effect(std::shared_ptr<ui::effect>);
     [[nodiscard]] std::shared_ptr<ui::effect> const &effect() const override;
 
-    void sync_scale_from_renderer(std::shared_ptr<renderer> const &);
+    void sync_scale_from_view_look(std::shared_ptr<view_look> const &);
 
     [[nodiscard]] static std::shared_ptr<render_target> make_shared();
 

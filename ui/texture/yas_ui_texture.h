@@ -35,7 +35,7 @@ struct texture : metal_object {
     [[nodiscard]] observing::endable observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
-    void sync_scale_from_renderer(std::shared_ptr<renderer> const &);
+    void sync_scale_from_view_look(std::shared_ptr<view_look> const &);
 
     [[nodiscard]] static std::shared_ptr<texture> make_shared(texture_args &&);
 
