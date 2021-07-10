@@ -425,9 +425,8 @@ void node::build_render_info(render_info &render_info) {
             renderable_collider::cast(collider)->set_matrix(this->_matrix);
 
             if (auto const &detector = render_info.detector) {
-                auto const renderer_detector = renderer_detector_interface::cast(detector);
-                if (renderer_detector->is_updating()) {
-                    renderer_detector->push_front_collider(collider);
+                if (detector->is_updating()) {
+                    detector->push_front_collider(collider);
                 }
             }
         }

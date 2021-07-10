@@ -19,7 +19,6 @@
 #include "yas_ui_metal_system.h"
 #include "yas_ui_metal_view.h"
 #include "yas_ui_node.h"
-#include "yas_ui_render_info.h"
 #include "yas_ui_types.h"
 
 #if TARGET_OS_IPHONE

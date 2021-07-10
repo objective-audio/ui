@@ -259,17 +259,18 @@ id<MTLRenderPipelineState> metal_system::mtlRenderPipelineStateWithoutTexture() 
     return this->_pipeline_state_without_texture.object();
 }
 
-void metal_system::_render_nodes(std::shared_ptr<ui::detector> const &detector, simd::float4x4 const &matrix,
-                                 std::shared_ptr<ui::node> const &node, id<MTLCommandBuffer> const commandBuffer,
+void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &detector,
+                                 simd::float4x4 const &matrix, std::shared_ptr<ui::node> const &node,
+                                 id<MTLCommandBuffer> const commandBuffer,
                                  MTLRenderPassDescriptor *const renderPassDesc) {
-    auto metal_render_encoder = metal_render_encoder::make_shared();
+    auto const metal_render_encoder = metal_render_encoder::make_shared();
     render_stackable::cast(metal_render_encoder)
         ->push_encode_info(metal_encode_info::make_shared(
             {.renderPassDescriptor = renderPassDesc,
              .pipelineStateWithTexture = this->_multi_sample_pipeline_state_with_texture.object(),
              .pipelineStateWithoutTexture = this->_multi_sample_pipeline_state_without_texture.object()}));
 
-    auto metal_system = this->_weak_metal_system.lock();
+    auto const metal_system = this->_weak_metal_system.lock();
 
     render_info render_info{.detector = detector,
                             .render_encodable = render_encodable::cast(metal_render_encoder),
@@ -281,7 +282,7 @@ void metal_system::_render_nodes(std::shared_ptr<ui::detector> const &detector, 
     metal_object::cast(node)->metal_setup(metal_system);
     renderable_node::cast(node)->build_render_info(render_info);
 
-    auto result = metal_render_encoder->encode(metal_system, commandBuffer);
+    auto const result = metal_render_encoder->encode(metal_system, commandBuffer);
     this->_last_encoded_mesh_count = result.encoded_mesh_count;
 }
 
