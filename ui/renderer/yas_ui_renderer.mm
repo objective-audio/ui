@@ -145,10 +145,6 @@ void renderer::view_render(yas_objc_view *const view) {
     this->_post_render();
 }
 
-void renderer::view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) {
-    this->_view_look->set_appearance(appearance);
-}
-
 renderer::pre_render_result renderer::_pre_render() {
     this->_action_manager->update(std::chrono::system_clock::now());
 

@@ -99,9 +99,7 @@ struct metal_view_cpp {
 #endif
 
 - (void)appearanceDidChange:(yas::ui::appearance)appearance {
-    if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable->view_appearance_did_change(self.metalView, appearance);
-    }
+    self->_cpp.view_look->set_appearance(appearance);
 }
 
 - (YASUIMetalView *)metalView {

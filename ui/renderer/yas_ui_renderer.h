@@ -73,7 +73,6 @@ struct renderer final : view_renderer_interface, node_parent_interface {
     void view_size_will_change(yas_objc_view *const view, CGSize const size) override;
     void view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) override;
     void view_render(yas_objc_view *const view) override;
-    void view_appearance_did_change(yas_objc_view *const view, ui::appearance const) override;
 
     pre_render_result _pre_render();
     void _post_render();
