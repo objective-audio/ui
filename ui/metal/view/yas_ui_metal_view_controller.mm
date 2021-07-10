@@ -5,7 +5,8 @@
 #include "yas_ui_metal_view_controller.h"
 #include <objc_utils/yas_objc_unowned.h>
 #include <observing/yas_observing_umbrella.h>
-#include "yas_ui_color.h"
+#include <ui/yas_ui_color.h>
+#include <ui/yas_ui_view_look.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +14,7 @@ using namespace yas;
 
 namespace yas::ui {
 struct metal_view_cpp {
+    std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
     std::shared_ptr<view_renderer_interface> renderable{nullptr};
 };
 }
@@ -104,6 +106,10 @@ struct metal_view_cpp {
 
 - (YASUIMetalView *)metalView {
     return (YASUIMetalView *)self.view;
+}
+
+- (std::shared_ptr<yas::ui::view_look> const &)view_look {
+    return self->_cpp.view_look;
 }
 
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
