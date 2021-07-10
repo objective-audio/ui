@@ -23,7 +23,7 @@
 
 namespace yas::sample {
 struct main {
-    std::shared_ptr<ui::view_look> const view_look = ui::view_look::make_shared();
+    std::shared_ptr<ui::view_look> const view_look;
     std::shared_ptr<ui::detector> const detector = ui::detector::make_shared();
     std::shared_ptr<ui::event_manager> const event_manager = ui::event_manager::make_shared();
     std::shared_ptr<ui::action_manager> const action_manager = ui::action_manager::make_shared();
@@ -32,6 +32,8 @@ struct main {
         detector, action_manager);
 
     void setup();
+
+    [[nodiscard]] static std::shared_ptr<main> make_shared(std::shared_ptr<ui::view_look> const &);
 
    private:
     std::shared_ptr<ui::font_atlas> const _font_atlas =
@@ -65,5 +67,7 @@ struct main {
     std::shared_ptr<ui::rect_plane> const _plane_on_target = ui::rect_plane::make_shared(1);
 
     observing::canceller_pool _pool;
+
+    main(std::shared_ptr<ui::view_look> const &);
 };
 }  // namespace yas::sample

@@ -5,14 +5,18 @@
 #include "yas_ui_metal_view_controller.h"
 #include <objc_utils/yas_objc_unowned.h>
 #include <observing/yas_observing_umbrella.h>
-#include "yas_ui_color.h"
+#include <ui/yas_ui_color.h>
+#include <ui/yas_ui_metal_view_utils.h>
+#include <ui/yas_ui_view_look.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 using namespace yas;
+using namespace yas::ui;
 
 namespace yas::ui {
 struct metal_view_cpp {
+    std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
     std::shared_ptr<view_renderer_interface> renderable{nullptr};
 };
 }
@@ -69,6 +73,9 @@ struct metal_view_cpp {
 
     self.metalView.delegate = self;
     self.metalView.uiDelegate = self;
+
+    [self updateViewLookSizesWithDrawableSize:self.metalView.drawableSize];
+    self->_cpp.view_look->set_appearance(self.metalView.uiAppearance);
 }
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
@@ -97,13 +104,15 @@ struct metal_view_cpp {
 #endif
 
 - (void)appearanceDidChange:(yas::ui::appearance)appearance {
-    if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable->view_appearance_did_change(self.metalView, appearance);
-    }
+    self->_cpp.view_look->set_appearance(appearance);
 }
 
 - (YASUIMetalView *)metalView {
     return (YASUIMetalView *)self.view;
+}
+
+- (std::shared_ptr<yas::ui::view_look> const &)view_look {
+    return self->_cpp.view_look;
 }
 
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
@@ -140,10 +149,8 @@ struct metal_view_cpp {
 
 #pragma mark - MTKViewDelegate
 
-- (void)mtkView:(YASUIMetalView *)view drawableSizeWillChange:(CGSize)size {
-    if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable->view_size_will_change(self.metalView, size);
-    }
+- (void)mtkView:(YASUIMetalView *)view drawableSizeWillChange:(CGSize)drawable_size {
+    [self updateViewLookSizesWithDrawableSize:drawable_size];
 }
 
 - (void)drawInMTKView:(YASUIMetalView *)view {
@@ -155,9 +162,15 @@ struct metal_view_cpp {
 #pragma mark - YASUIMetalViewDelegate
 
 - (void)uiMetalView:(YASUIMetalView *)view safeAreaInsetsDidChange:(ui::region_insets)insets {
-    if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable->view_safe_area_insets_did_change(self.metalView, insets);
-    }
+    self->_cpp.view_look->set_safe_area_insets(insets);
+}
+
+#pragma mark - Private
+
+- (void)updateViewLookSizesWithDrawableSize:(CGSize)drawable_size {
+    self->_cpp.view_look->set_view_sizes(metal_view_utils::to_uint_size(self.view.bounds.size),
+                                         metal_view_utils::to_uint_size(drawable_size),
+                                         self.metalView.uiSafeAreaInsets);
 }
 
 @end

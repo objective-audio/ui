@@ -81,9 +81,6 @@ void renderer::view_configure(yas_objc_view *const view) {
         case system_type::metal: {
             if (auto metalView = objc_cast<YASUIMetalView>(view)) {
                 renderable_metal_system::cast(this->_metal_system)->view_configure(view);
-                this->_view_look->set_safe_area_insets(metalView.uiSafeAreaInsets);
-                auto const drawable_size = metalView.drawableSize;
-                this->view_size_will_change(view, drawable_size);
                 this->_view_look->set_appearance(metalView.uiAppearance);
             } else {
                 throw std::runtime_error("view not for metal.");
@@ -94,33 +91,6 @@ void renderer::view_configure(yas_objc_view *const view) {
             throw std::runtime_error("system not found.");
         } break;
     }
-}
-
-void renderer::view_size_will_change(yas_objc_view *const view, CGSize const drawable_size) {
-    if (!to_bool(this->system_type())) {
-        throw std::runtime_error("system not found.");
-    }
-
-    ui::uint_size const view_size{.width = static_cast<uint32_t>(view.bounds.size.width),
-                                  .height = static_cast<uint32_t>(view.bounds.size.height)};
-    ui::uint_size const drawable_usize{.width = static_cast<uint32_t>(drawable_size.width),
-                                       .height = static_cast<uint32_t>(drawable_size.height)};
-
-    auto safe_area_insets = ui::region_insets::zero();
-    if ([view isKindOfClass:[YASUIMetalView class]]) {
-        auto const metalView = (YASUIMetalView *)view;
-        safe_area_insets = metalView.uiSafeAreaInsets;
-    }
-
-    this->_view_look->set_view_sizes(view_size, drawable_usize, safe_area_insets);
-}
-
-void renderer::view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) {
-    if (!to_bool(this->system_type())) {
-        throw std::runtime_error("system not found.");
-    }
-
-    this->_view_look->set_safe_area_insets(insets);
 }
 
 void renderer::view_render(yas_objc_view *const view) {
@@ -143,10 +113,6 @@ void renderer::view_render(yas_objc_view *const view) {
     }
 
     this->_post_render();
-}
-
-void renderer::view_appearance_did_change(yas_objc_view *const view, ui::appearance const appearance) {
-    this->_view_look->set_appearance(appearance);
 }
 
 renderer::pre_render_result renderer::_pre_render() {

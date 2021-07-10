@@ -7,6 +7,9 @@
 using namespace yas;
 using namespace yas::ui;
 
+sample::main::main(std::shared_ptr<ui::view_look> const &view_look) : view_look(view_look) {
+}
+
 void sample::main::setup() {
     auto &root_node = this->renderer->root_node();
 
@@ -105,4 +108,8 @@ void sample::main::setup() {
                                .duration = 3.0,
                                .loop_count = 0});
     this->action_manager->insert_action(action);
+}
+
+std::shared_ptr<sample::main> sample::main::make_shared(std::shared_ptr<ui::view_look> const &view_look) {
+    return std::shared_ptr<main>(new main{view_look});
 }

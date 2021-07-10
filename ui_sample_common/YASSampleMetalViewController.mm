@@ -12,16 +12,18 @@ using namespace yas::ui;
 @end
 
 @implementation YASSampleMetalViewController {
-    sample::main _main;
+    std::shared_ptr<sample::main> _main;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self set_renderer:_main.renderer];
-    [self set_event_manager:_main.event_manager];
+    self->_main = sample::main::make_shared([self view_look]);
 
-    self->_main.setup();
+    [self set_renderer:_main->renderer];
+    [self set_event_manager:_main->event_manager];
+
+    self->_main->setup();
 
 #if TARGET_OS_IPHONE
     self.view.multipleTouchEnabled = YES;
