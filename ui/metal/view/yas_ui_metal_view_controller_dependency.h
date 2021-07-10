@@ -5,7 +5,6 @@
 #pragma once
 
 #include <ui/yas_ui_objc.h>
-
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
@@ -13,8 +12,6 @@ struct view_renderer_interface {
     virtual ~view_renderer_interface() = default;
 
     virtual void view_configure(yas_objc_view *const view) = 0;
-    virtual void view_size_will_change(yas_objc_view *const view, CGSize const size) = 0;
-    virtual void view_safe_area_insets_did_change(yas_objc_view *const view, ui::region_insets const insets) = 0;
     virtual void view_render(yas_objc_view *const view) = 0;
 };
 }  // namespace yas::ui
