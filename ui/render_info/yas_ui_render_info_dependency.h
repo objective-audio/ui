@@ -42,13 +42,14 @@ struct render_stackable {
     }
 };
 
-struct render_detectable {
-    virtual ~render_detectable() = default;
+struct render_info_detector_interface {
+    virtual ~render_info_detector_interface() = default;
 
     [[nodiscard]] virtual bool is_updating() = 0;
     virtual void push_front_collider(std::shared_ptr<collider> const &) = 0;
 
-    [[nodiscard]] static std::shared_ptr<render_detectable> cast(std::shared_ptr<render_detectable> const &detectable) {
+    [[nodiscard]] static std::shared_ptr<render_info_detector_interface> cast(
+        std::shared_ptr<render_info_detector_interface> const &detectable) {
         return detectable;
     }
 };
