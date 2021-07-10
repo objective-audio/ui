@@ -41,7 +41,6 @@ struct renderer final : view_renderer_interface, node_parent_interface {
     [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&);
     [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<renderer> make_shared();
     [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::metal_system> const &,
                                                                std::shared_ptr<ui::detector> const &,
                                                                std::shared_ptr<ui::renderer_action_manager> const &);
@@ -77,8 +76,8 @@ struct renderer final : view_renderer_interface, node_parent_interface {
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
-    explicit renderer(std::shared_ptr<ui::metal_system> const &, std::shared_ptr<ui::detector> const &,
-                      std::shared_ptr<ui::renderer_action_manager> const &);
+    renderer(std::shared_ptr<ui::metal_system> const &, std::shared_ptr<ui::detector> const &,
+             std::shared_ptr<ui::renderer_action_manager> const &);
 
     renderer(renderer const &) = delete;
     renderer(renderer &&) = delete;

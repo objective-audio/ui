@@ -299,10 +299,6 @@ void renderer::_update_safe_area_layout_guide() {
     this->_updates.set(renderer_update_reason::safe_area_region);
 }
 
-std::shared_ptr<renderer> renderer::make_shared() {
-    return make_shared(nullptr, nullptr, nullptr);
-}
-
 std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system,
                                                 std::shared_ptr<ui::detector> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
