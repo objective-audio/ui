@@ -18,7 +18,7 @@ using namespace yas::ui;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self->_main = sample::main::make_shared(ui::view_look::make_shared());
+    self->_main = sample::main::make_shared([self view_look]);
 
     [self set_renderer:_main->renderer];
     [self set_event_manager:_main->event_manager];
