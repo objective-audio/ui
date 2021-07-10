@@ -14,7 +14,7 @@ struct render_encodable {
 
     virtual void append_mesh(std::shared_ptr<mesh> const &mesh) = 0;
 
-    static std::shared_ptr<render_encodable> cast(std::shared_ptr<render_encodable> const &encodable) {
+    [[nodiscard]] static std::shared_ptr<render_encodable> cast(std::shared_ptr<render_encodable> const &encodable) {
         return encodable;
     }
 };
@@ -24,7 +24,7 @@ struct render_effectable {
 
     virtual void append_effect(std::shared_ptr<effect> const &effect) = 0;
 
-    static std::shared_ptr<render_effectable> cast(std::shared_ptr<render_effectable> const &effectable) {
+    [[nodiscard]] static std::shared_ptr<render_effectable> cast(std::shared_ptr<render_effectable> const &effectable) {
         return effectable;
     }
 };
@@ -36,7 +36,7 @@ struct render_stackable {
     virtual void pop_encode_info() = 0;
     virtual std::shared_ptr<metal_encode_info> const &current_encode_info() = 0;
 
-    static std::shared_ptr<render_stackable> cast(std::shared_ptr<render_stackable> const &stackable) {
+    [[nodiscard]] static std::shared_ptr<render_stackable> cast(std::shared_ptr<render_stackable> const &stackable) {
         return stackable;
     }
 };
