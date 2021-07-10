@@ -85,10 +85,6 @@ std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
 }
 
-std::shared_ptr<detector> const &renderer::detector() const {
-    return this->_detector;
-}
-
 std::shared_ptr<layout_region_guide> const &renderer::view_layout_guide() const {
     return this->_view_layout_guide;
 }

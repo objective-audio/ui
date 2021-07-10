@@ -49,11 +49,11 @@ struct main {
                                            _draw_call_text->strings()->preferred_layout_guide()->top());
     sample::bg_ptr const _bg = sample::bg::make_shared(renderer->safe_area_layout_guide());
     sample::cursor_over_planes_ptr const _cursor_over_planes =
-        sample::cursor_over_planes::make_shared(event_manager, action_manager, renderer->detector());
-    sample::big_button_ptr const _big_button = sample::big_button::make_shared(event_manager, renderer->detector());
+        sample::cursor_over_planes::make_shared(event_manager, action_manager, detector);
+    sample::big_button_ptr const _big_button = sample::big_button::make_shared(event_manager, detector);
     sample::big_button_text_ptr const _big_button_text = sample::big_button_text::make_shared(_font_atlas);
     sample::soft_keyboard_ptr const _soft_keyboard = sample::soft_keyboard::make_shared(
-        _font_atlas, event_manager, action_manager, renderer->detector(), renderer->safe_area_layout_guide());
+        _font_atlas, event_manager, action_manager, detector, renderer->safe_area_layout_guide());
     sample::justified_points_ptr const _justified_points =
         sample::justified_points::make_shared(renderer->view_layout_guide());
 
