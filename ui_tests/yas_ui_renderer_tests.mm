@@ -40,7 +40,6 @@ using namespace yas::ui;
     XCTAssertEqual(renderer->scale_factor(), 0.0);
 
     XCTAssertTrue(view_renderer);
-    XCTAssertTrue(renderer->detector());
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::none);
     XCTAssertFalse(renderer->metal_system());
@@ -50,7 +49,6 @@ using namespace yas::ui;
     std::shared_ptr<ui::renderer const> renderer = ui::renderer::make_shared();
 
     XCTAssertTrue(renderer->root_node());
-    XCTAssertTrue(renderer->detector());
     XCTAssertFalse(renderer->metal_system());
 }
 
@@ -61,7 +59,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr);
+    auto renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, nullptr);
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::metal);
     XCTAssertTrue(renderer->metal_system());
@@ -77,7 +75,7 @@ using namespace yas::ui;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr);
+    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, nullptr);
     std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     XCTAssertEqual(renderer->view_size(), (ui::uint_size{0, 0}));
@@ -102,7 +100,7 @@ using namespace yas::ui;
     auto view = [YASTestMetalViewController sharedViewController].metalView;
     [view.window setFrame:CGRectMake(0, 0, 256, 128) display:YES];
 
-    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr);
+    auto const renderer = ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, nullptr);
     std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     double notified = 0.0f;

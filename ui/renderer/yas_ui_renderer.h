@@ -32,8 +32,6 @@ struct renderer final : view_renderer_interface, node_parent_interface {
 
     [[nodiscard]] std::shared_ptr<node> const &root_node() const;
 
-    [[nodiscard]] std::shared_ptr<detector> const &detector() const;
-
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_guide() const;
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_guide() const;
 
@@ -45,6 +43,7 @@ struct renderer final : view_renderer_interface, node_parent_interface {
 
     [[nodiscard]] static std::shared_ptr<renderer> make_shared();
     [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::metal_system> const &,
+                                                               std::shared_ptr<ui::detector> const &,
                                                                std::shared_ptr<ui::renderer_action_manager> const &);
 
    private:
@@ -78,7 +77,8 @@ struct renderer final : view_renderer_interface, node_parent_interface {
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
-    explicit renderer(std::shared_ptr<ui::metal_system> const &, std::shared_ptr<ui::renderer_action_manager> const &);
+    explicit renderer(std::shared_ptr<ui::metal_system> const &, std::shared_ptr<ui::detector> const &,
+                      std::shared_ptr<ui::renderer_action_manager> const &);
 
     renderer(renderer const &) = delete;
     renderer(renderer &&) = delete;

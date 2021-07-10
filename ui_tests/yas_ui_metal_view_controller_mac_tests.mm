@@ -61,7 +61,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()), nullptr);
+    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()), nullptr, nullptr);
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
@@ -79,7 +79,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()), nullptr);
+    auto renderer = renderer::make_shared(metal_system::make_shared(device.object()), nullptr, nullptr);
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 

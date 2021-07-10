@@ -62,10 +62,11 @@ using namespace yas::ui;
     }
 
     auto const metal_system = metal_system::make_shared(device.object());
+    auto const detector = ui::detector::make_shared();
     auto const event_manager = ui::event_manager::make_shared();
     std::shared_ptr<metal_view_event_manager_interface> const view_event_manager = event_manager;
     auto const action_manager = ui::action_manager::make_shared();
-    auto const renderer = renderer::make_shared(metal_system, action_manager);
+    auto const renderer = renderer::make_shared(metal_system, detector, action_manager);
     [[YASTestMetalViewController sharedViewController].view.window setFrame:CGRectMake(0, 0, 2, 2) display:YES];
     [[YASTestMetalViewController sharedViewController] set_renderer:renderer];
     [[YASTestMetalViewController sharedViewController] set_event_manager:event_manager];
@@ -80,8 +81,7 @@ using namespace yas::ui;
 
     action_manager->insert_action(pre_render_action);
 
-    auto button =
-        button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, event_manager, renderer->detector());
+    auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, event_manager, detector);
     renderer->root_node()->add_sub_node(button->rect_plane()->node());
 
     std::vector<button::method> observed_methods;

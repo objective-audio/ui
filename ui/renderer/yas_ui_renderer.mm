@@ -30,7 +30,7 @@ using namespace yas::ui;
 
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
+renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system, std::shared_ptr<ui::detector> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_size({.width = 0, .height = 0}),
@@ -41,7 +41,7 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
       _projection_matrix(matrix_identity_float4x4),
       _background(background::make_shared()),
       _root_node(node::make_shared()),
-      _detector(detector::make_shared()),
+      _detector(detector),
       _action_manager(action_manager),
       _view_layout_guide(layout_region_guide::make_shared()),
       _safe_area_layout_guide(layout_region_guide::make_shared()),
@@ -83,10 +83,6 @@ system_type renderer::system_type() const {
 
 std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
-}
-
-std::shared_ptr<detector> const &renderer::detector() const {
-    return this->_detector;
 }
 
 std::shared_ptr<layout_region_guide> const &renderer::view_layout_guide() const {
@@ -193,7 +189,8 @@ void renderer::view_render(yas_objc_view *const view) {
             metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
         }
 
-        renderable_metal_system::cast(this->_metal_system)->view_render(view, this);
+        renderable_metal_system::cast(this->_metal_system)
+            ->view_render(view, this->_detector, this->_projection_matrix, this->_root_node);
     }
 
     this->_post_render();
@@ -308,12 +305,13 @@ bool renderer::_is_equal_edge_insets(yas_edge_insets const &insets1, yas_edge_in
 }
 
 std::shared_ptr<renderer> renderer::make_shared() {
-    return make_shared(nullptr, nullptr);
+    return make_shared(nullptr, nullptr, nullptr);
 }
 
 std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system,
+                                                std::shared_ptr<ui::detector> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
-    auto shared = std::shared_ptr<renderer>(new renderer{system, action_manager});
+    auto shared = std::shared_ptr<renderer>(new renderer{system, detector, action_manager});
     shared->_prepare(shared);
     return shared;
 }

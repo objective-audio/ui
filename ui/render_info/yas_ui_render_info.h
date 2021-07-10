@@ -9,7 +9,7 @@
 #include <ui/yas_ui_render_info_dependency.h>
 
 namespace yas::ui {
-struct render_info {
+struct render_info final {
     simd::float4x4 matrix = matrix_identity_float4x4;
     simd::float4x4 mesh_matrix = matrix_identity_float4x4;
     std::shared_ptr<render_info_detector_interface> detector = nullptr;
