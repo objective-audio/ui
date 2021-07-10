@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_types.h>
 
 #include <memory>
@@ -38,6 +39,17 @@ struct render_stackable {
 
     [[nodiscard]] static std::shared_ptr<render_stackable> cast(std::shared_ptr<render_stackable> const &stackable) {
         return stackable;
+    }
+};
+
+struct render_detectable {
+    virtual ~render_detectable() = default;
+
+    [[nodiscard]] virtual bool is_updating() = 0;
+    virtual void push_front_collider(std::shared_ptr<collider> const &) = 0;
+
+    [[nodiscard]] static std::shared_ptr<render_detectable> cast(std::shared_ptr<render_detectable> const &detectable) {
+        return detectable;
     }
 };
 }  // namespace yas::ui
