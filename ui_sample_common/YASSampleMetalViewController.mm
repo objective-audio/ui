@@ -13,6 +13,7 @@ using namespace yas::ui;
 
 @implementation YASSampleMetalViewController {
     std::shared_ptr<sample::main> _main;
+    observing::canceller_pool _pool;
 }
 
 - (void)viewDidLoad {

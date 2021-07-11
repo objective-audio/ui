@@ -5,6 +5,7 @@
 #include "yas_ui_view_look.h"
 
 #include <cpp_utils/yas_to_bool.h>
+#include <ui/yas_ui_background.h>
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_matrix.h>
 
@@ -17,6 +18,7 @@ view_look::view_look()
       _scale_factor_notify(observing::value::holder<double>::make_shared(0.0f)),
       _safe_area_insets(region_insets::zero()),
       _appearance(observing::value::holder<ui::appearance>::make_shared(appearance::normal)),
+      _background(ui::background::make_shared()),
       _projection_matrix(matrix_identity_float4x4),
       _view_layout_guide(layout_region_guide::make_shared()),
       _safe_area_layout_guide(layout_region_guide::make_shared()) {
@@ -76,6 +78,10 @@ std::shared_ptr<layout_region_guide> const &view_look::safe_area_layout_guide() 
 
 appearance view_look::appearance() const {
     return this->_appearance->value();
+}
+
+std::shared_ptr<ui::background> view_look::background() const {
+    return this->_background;
 }
 
 observing::syncable view_look::observe_scale_factor(observing::caller<double>::handler_f &&handler) {

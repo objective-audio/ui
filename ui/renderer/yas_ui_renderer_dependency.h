@@ -124,20 +124,6 @@ enum class background_update_reason : std::size_t {
     count,
 };
 
-using background_updates_t = flagset<background_update_reason>;
-
-struct renderer_background_interface {
-    virtual ~renderer_background_interface() = default;
-
-    [[nodiscard]] virtual background_updates_t const &updates() const = 0;
-    virtual void clear_updates() = 0;
-
-    [[nodiscard]] static std::shared_ptr<renderer_background_interface> cast(
-        std::shared_ptr<renderer_background_interface> const &background) {
-        return background;
-    }
-};
-
 enum class batch_building_type {
     none,
     rebuild,
