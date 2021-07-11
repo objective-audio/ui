@@ -36,7 +36,6 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_look(view_look),
-      _background(background::make_shared()),
       _root_node(node::make_shared()),
       _detector(detector),
       _action_manager(action_manager),
@@ -44,10 +43,6 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
 }
 
 renderer::~renderer() = default;
-
-std::shared_ptr<background> const &renderer::background() const {
-    return this->_background;
-}
 
 std::shared_ptr<node> const &renderer::root_node() const {
     return this->_root_node;
@@ -101,13 +96,6 @@ void renderer::view_render(yas_objc_view *const view) {
     this->_will_render_notifier->notify(nullptr);
 
     if (to_bool(this->_pre_render())) {
-        if ([view isKindOfClass:[YASUIMetalView class]]) {
-            auto const metalView = (YASUIMetalView *)view;
-            auto const &color = this->background()->color();
-            auto const &alpha = this->background()->alpha();
-            metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
-        }
-
         renderable_metal_system::cast(this->_metal_system)
             ->view_render(view, this->_detector, this->_view_look->projection_matrix(), this->_root_node);
     }
@@ -118,8 +106,6 @@ void renderer::view_render(yas_objc_view *const view) {
 renderer::pre_render_result renderer::_pre_render() {
     this->_action_manager->update(std::chrono::system_clock::now());
 
-    auto const bg_updates = renderer_background_interface::cast(this->_background)->updates();
-
     tree_updates tree_updates;
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
@@ -127,7 +113,7 @@ renderer::pre_render_result renderer::_pre_render() {
         renderer_detector_interface::cast(this->_detector)->begin_update();
     }
 
-    if (this->_updates.flags.any() || bg_updates.flags.any() || tree_updates.is_any_updated()) {
+    if (this->_updates.flags.any() || tree_updates.is_any_updated()) {
         return pre_render_result::updated;
     }
 
@@ -135,7 +121,6 @@ renderer::pre_render_result renderer::_pre_render() {
 }
 
 void renderer::_post_render() {
-    renderer_background_interface::cast(this->_background)->clear_updates();
     renderable_node::cast(this->_root_node)->clear_updates();
     renderer_detector_interface::cast(this->_detector)->end_update();
     this->_updates.flags.reset();

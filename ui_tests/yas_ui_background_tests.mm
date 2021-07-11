@@ -14,29 +14,6 @@ using namespace yas::ui;
 
 @implementation yas_ui_background_tests
 
-- (void)test_updates {
-    auto const background = background::make_shared();
-    auto const renderer_background = renderer_background_interface::cast(background);
-
-    XCTAssertTrue(renderer_background->updates().flags.any());
-
-    renderer_background->clear_updates();
-
-    XCTAssertFalse(renderer_background->updates().flags.any());
-
-    background->set_color(gray_color());
-
-    XCTAssertTrue(renderer_background->updates().flags.any());
-
-    renderer_background->clear_updates();
-
-    XCTAssertFalse(renderer_background->updates().flags.any());
-
-    background->set_alpha(0.5f);
-
-    XCTAssertTrue(renderer_background->updates().flags.any());
-}
-
 - (void)test_color {
     auto const background = background::make_shared();
 

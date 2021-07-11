@@ -64,8 +64,12 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     [self.uiDelegate uiMetalView:self safeAreaInsetsDidChange:self.uiSafeAreaInsets];
 }
 
-- (yas_edge_insets)uiSafeAreaInsets {
-    return self.safeAreaInsets;
+- (ui::region_insets)uiSafeAreaInsets {
+    auto const edge_insets = self.safeAreaInsets;
+    return {.left = static_cast<float>(edge_insets.left),
+            .right = static_cast<float>(edge_insets.right),
+            .bottom = static_cast<float>(edge_insets.bottom),
+            .top = static_cast<float>(edge_insets.top)};
 }
 
 - (ui::appearance)uiAppearance {

@@ -23,6 +23,7 @@ struct view_look final {
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_guide() const;
 
     [[nodiscard]] ui::appearance appearance() const;
+    [[nodiscard]] std::shared_ptr<ui::background> background() const;
 
     [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&);
     [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&);
@@ -38,9 +39,10 @@ struct view_look final {
     ui::uint_size _view_size;
     ui::uint_size _drawable_size;
     double _scale_factor{0.0f};
-    observing::value::holder_ptr<double> _scale_factor_notify;
+    observing::value::holder_ptr<double> const _scale_factor_notify;
     region_insets _safe_area_insets;
-    observing::value::holder_ptr<ui::appearance> _appearance;
+    observing::value::holder_ptr<ui::appearance> const _appearance;
+    std::shared_ptr<ui::background> const _background;
     simd::float4x4 _projection_matrix;
 
     std::shared_ptr<layout_region_guide> const _view_layout_guide;

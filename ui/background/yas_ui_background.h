@@ -5,10 +5,10 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_renderer_dependency.h>
+#include <ui/yas_ui_color.h>
 
 namespace yas::ui {
-struct background final : renderer_background_interface {
+struct background final {
     virtual ~background();
 
     void set_color(ui::color const &);
@@ -26,18 +26,11 @@ struct background final : renderer_background_interface {
     observing::value::holder_ptr<ui::color> _color;
     observing::value::holder_ptr<float> _alpha;
 
-    background_updates_t _updates;
-
-    observing::canceller_pool _pool;
-
     background();
 
     background(background const &) = delete;
     background(background &&) = delete;
     background &operator=(background const &) = delete;
     background &operator=(background &&) = delete;
-
-    ui::background_updates_t const &updates() const override;
-    void clear_updates() override;
 };
 }  // namespace yas::ui

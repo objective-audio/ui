@@ -23,8 +23,6 @@ struct renderer final : view_renderer_interface, node_parent_interface {
     [[nodiscard]] ui::system_type system_type() const;
     [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system() const;
 
-    [[nodiscard]] std::shared_ptr<background> const &background() const;
-
     [[nodiscard]] std::shared_ptr<node> const &root_node() const;
 
     [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
@@ -50,7 +48,6 @@ struct renderer final : view_renderer_interface, node_parent_interface {
 
     renderer_updates_t _updates;
 
-    std::shared_ptr<ui::background> const _background;
     std::shared_ptr<node> const _root_node;
     std::shared_ptr<ui::detector> const _detector;
     std::shared_ptr<ui::renderer_action_manager> const _action_manager;
