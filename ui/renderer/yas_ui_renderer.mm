@@ -32,11 +32,12 @@ using namespace yas::ui;
 #pragma mark - renderer
 
 renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
-                   std::shared_ptr<ui::view_look> const &view_look, std::shared_ptr<ui::detector> const &detector,
+                   std::shared_ptr<ui::view_look> const &view_look, std::shared_ptr<ui::node> const &root_node,
+                   std::shared_ptr<ui::detector> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_look(view_look),
-      _root_node(node::make_shared()),
+      _root_node(root_node),
       _detector(detector),
       _action_manager(action_manager),
       _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
@@ -128,9 +129,10 @@ void renderer::_post_render() {
 
 std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system,
                                                 std::shared_ptr<ui::view_look> const &view_look,
+                                                std::shared_ptr<ui::node> const &root_node,
                                                 std::shared_ptr<ui::detector> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
-    auto shared = std::shared_ptr<renderer>(new renderer{system, view_look, detector, action_manager});
+    auto shared = std::shared_ptr<renderer>(new renderer{system, view_look, root_node, detector, action_manager});
     shared->_prepare(shared);
     return shared;
 }

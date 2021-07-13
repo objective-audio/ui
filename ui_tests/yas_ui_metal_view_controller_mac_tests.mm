@@ -62,8 +62,9 @@ using namespace yas::ui;
     }
 
     auto const view_look = ui::view_look::make_shared();
+    auto const root_node = ui::node::make_shared();
     auto const renderer =
-        renderer::make_shared(metal_system::make_shared(device.object()), view_look, nullptr, nullptr);
+        renderer::make_shared(metal_system::make_shared(device.object()), view_look, root_node, nullptr, nullptr);
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 
@@ -72,43 +73,6 @@ using namespace yas::ui;
     [viewController set_renderer:renderer];
 
     XCTAssertTrue(viewController.renderer);
-}
-
-- (void)test_drawable_size_will_change {
-    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    auto const view_look = ui::view_look::make_shared();
-    auto const renderer =
-        renderer::make_shared(metal_system::make_shared(device.object()), view_look, nullptr, nullptr);
-
-    auto viewController = [YASTestMetalViewController sharedViewController];
-
-    [viewController.view.window setFrame:CGRectMake(0, 0, 16, 16) display:YES];
-
-    XCTAssertEqual(view_look->view_size(), (uint_size{0, 0}));
-
-    [viewController set_renderer:renderer];
-
-    XCTAssertEqual(view_look->view_size(), (uint_size{16, 16}));
-
-    XCTestExpectation *expectation = [self expectationWithDescription:@"view_size_changed"];
-
-    auto canceller = view_look->view_layout_guide()
-                         ->observe([&expectation](region const &) {
-                             [expectation fulfill];
-                             expectation = nil;
-                         })
-                         .end();
-
-    [viewController.view.window setFrame:CGRectMake(0, 0, 32, 32) display:YES];
-
-    [self waitForExpectationsWithTimeout:1.0 handler:NULL];
-
-    XCTAssertEqual(view_look->view_size(), (uint_size{32, 32}));
 }
 
 @end
