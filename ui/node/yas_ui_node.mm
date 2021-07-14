@@ -640,8 +640,13 @@ void node::_update_matrix() const {
 }
 
 std::shared_ptr<node> node::make_shared() {
+    return make_shared(nullptr);
+}
+
+std::shared_ptr<node> node::make_shared(std::shared_ptr<node_parent_interface> const &parent) {
     auto shared = std::shared_ptr<node>(new node{});
     shared->_weak_node = shared;
+    shared->set_parent(parent);
     return shared;
 }
 

@@ -11,7 +11,7 @@ sample::main::main(std::shared_ptr<ui::view_look> const &view_look) : view_look(
 }
 
 void sample::main::setup() {
-    auto &root_node = this->renderer->root_node();
+    auto const &root_node = this->root_node;
 
     root_node->add_sub_node(this->_bg->rect_plane()->node());
 

@@ -84,7 +84,7 @@ using namespace yas::ui;
     action_manager->insert_action(pre_render_action);
 
     auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, event_manager, detector);
-    renderer->root_node()->add_sub_node(button->rect_plane()->node());
+    root_node->add_sub_node(button->rect_plane()->node());
 
     std::vector<button::method> observed_methods;
 

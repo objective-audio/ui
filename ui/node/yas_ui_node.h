@@ -92,6 +92,7 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     void attach_position_layout_guides(ui::layout_point_guide &);
 
     [[nodiscard]] static std::shared_ptr<node> make_shared();
+    [[nodiscard]] static std::shared_ptr<node> make_shared(std::shared_ptr<node_parent_interface> const &);
 
    private:
     std::weak_ptr<node> _weak_node;
