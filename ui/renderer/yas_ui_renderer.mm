@@ -64,14 +64,6 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-void renderer::_prepare(std::shared_ptr<renderer> const &shared) {
-    renderable_node::cast(this->_root_node)->set_parent(shared);
-}
-
-simd::float4x4 const &renderer::matrix_as_parent() const {
-    return this->_view_look->projection_matrix();
-}
-
 void renderer::view_configure(yas_objc_view *const view) {
     switch (this->system_type()) {
         case system_type::metal: {
@@ -132,9 +124,7 @@ std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system
                                                 std::shared_ptr<ui::node> const &root_node,
                                                 std::shared_ptr<ui::detector> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
-    auto shared = std::shared_ptr<renderer>(new renderer{system, view_look, root_node, detector, action_manager});
-    shared->_prepare(shared);
-    return shared;
+    return std::shared_ptr<renderer>(new renderer{system, view_look, root_node, detector, action_manager});
 }
 
 bool yas::ui::operator==(std::weak_ptr<yas::ui::renderer> const &lhs, std::weak_ptr<yas::ui::renderer> const &rhs) {

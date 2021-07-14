@@ -24,7 +24,7 @@
 namespace yas::sample {
 struct main {
     std::shared_ptr<ui::view_look> const view_look;
-    std::shared_ptr<ui::node> const root_node = ui::node::make_shared();
+    std::shared_ptr<ui::node> const root_node = ui::node::make_shared(view_look);
     std::shared_ptr<ui::detector> const detector = ui::detector::make_shared();
     std::shared_ptr<ui::event_manager> const event_manager = ui::event_manager::make_shared();
     std::shared_ptr<ui::action_manager> const action_manager = ui::action_manager::make_shared();

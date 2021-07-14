@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct renderer final : view_renderer_interface, node_parent_interface {
+struct renderer final : view_renderer_interface {
     virtual ~renderer();
 
     [[nodiscard]] ui::system_type system_type() const;
@@ -63,10 +63,6 @@ struct renderer final : view_renderer_interface, node_parent_interface {
     renderer(renderer &&) = delete;
     renderer &operator=(renderer const &) = delete;
     renderer &operator=(renderer &&) = delete;
-
-    void _prepare(std::shared_ptr<renderer> const &);
-
-    simd::float4x4 const &matrix_as_parent() const override;
 
     void view_configure(yas_objc_view *const view) override;
     void view_render(yas_objc_view *const view) override;

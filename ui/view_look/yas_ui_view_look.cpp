@@ -92,6 +92,10 @@ observing::syncable view_look::observe_appearance(observing::caller<ui::appearan
     return this->_appearance->observe(std::move(handler));
 }
 
+simd::float4x4 const &view_look::matrix_as_parent() const {
+    return this->projection_matrix();
+}
+
 std::shared_ptr<view_look> view_look::make_shared() {
     return std::shared_ptr<view_look>(new view_look{});
 }
