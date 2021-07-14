@@ -23,8 +23,6 @@ struct renderer final : view_renderer_interface {
     [[nodiscard]] ui::system_type system_type() const;
     [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system() const;
 
-    [[nodiscard]] std::shared_ptr<node> const &root_node() const;
-
     [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::metal_system> const &,

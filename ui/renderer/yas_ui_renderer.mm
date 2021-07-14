@@ -45,10 +45,6 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
 
 renderer::~renderer() = default;
 
-std::shared_ptr<node> const &renderer::root_node() const {
-    return this->_root_node;
-}
-
 system_type renderer::system_type() const {
     if (this->_metal_system) {
         return system_type::metal;
