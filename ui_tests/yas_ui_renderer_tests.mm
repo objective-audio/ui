@@ -29,13 +29,10 @@ using namespace yas::ui;
 
 - (void)test_create {
     auto const view_look = ui::view_look::make_shared();
-    auto const root_node = ui::node::make_shared();
-    auto const renderer = ui::renderer::make_shared(nullptr, nullptr, root_node, nullptr, nullptr);
+    auto const renderer = ui::renderer::make_shared(nullptr, nullptr, nullptr, nullptr, nullptr);
     std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
     XCTAssertFalse(renderer->metal_system());
-
-    XCTAssertTrue(renderer->root_node());
 
     XCTAssertTrue(view_renderer);
 
@@ -44,11 +41,9 @@ using namespace yas::ui;
 }
 
 - (void)test_const_getter {
-    auto const root_node = ui::node::make_shared();
     std::shared_ptr<ui::renderer const> renderer =
-        ui::renderer::make_shared(nullptr, nullptr, root_node, nullptr, nullptr);
+        ui::renderer::make_shared(nullptr, nullptr, nullptr, nullptr, nullptr);
 
-    XCTAssertTrue(renderer->root_node());
     XCTAssertFalse(renderer->metal_system());
 }
 
@@ -59,9 +54,8 @@ using namespace yas::ui;
         return;
     }
 
-    auto const root_node = ui::node::make_shared();
     auto renderer =
-        ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, root_node, nullptr, nullptr);
+        ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, nullptr, nullptr, nullptr);
 
     XCTAssertEqual(renderer->system_type(), ui::system_type::metal);
     XCTAssertTrue(renderer->metal_system());
