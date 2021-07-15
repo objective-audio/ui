@@ -5,10 +5,10 @@
 #include "yas_ui_metal_encode_info.h"
 #include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_stl_utils.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_texture.h>
 #include <unordered_map>
 #include <vector>
-#include "yas_ui_mesh.h"
-#include "yas_ui_texture.h"
 
 using namespace yas;
 using namespace yas::ui;

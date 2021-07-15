@@ -5,8 +5,8 @@
 #include "yas_ui_metal_view.h"
 #include <cpp_utils/yas_cf_utils.h>
 #include <cpp_utils/yas_objc_ptr.h>
-#include "yas_ui_event.h"
-#include "yas_ui_types.h"
+#include <ui/yas_ui_event.h>
+#include <ui/yas_ui_types.h>
 
 using namespace yas;
 using namespace yas::ui;

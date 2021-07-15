@@ -4,15 +4,15 @@
 
 #include "yas_ui_button.h"
 #include <cpp_utils/yas_fast_each.h>
-#include "yas_ui_angle.h"
-#include "yas_ui_collider.h"
-#include "yas_ui_detector.h"
-#include "yas_ui_event.h"
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_node.h"
-#include "yas_ui_rect_plane.h"
-#include "yas_ui_texture.h"
+#include <ui/yas_ui_angle.h>
+#include <ui/yas_ui_collider.h>
+#include <ui/yas_ui_detector.h>
+#include <ui/yas_ui_event.h>
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_node.h>
+#include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_texture.h>
 
 using namespace yas;
 using namespace yas::ui;

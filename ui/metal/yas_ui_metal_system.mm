@@ -4,18 +4,18 @@
 
 #include "yas_ui_metal_system.h"
 #include <cpp_utils/yas_each_index.h>
-#include "yas_ui_mesh.h"
-#include "yas_ui_mesh_data.h"
-#include "yas_ui_metal_encode_info.h"
-#include "yas_ui_metal_render_encoder.h"
-#include "yas_ui_metal_texture.h"
-#include "yas_ui_metal_types.h"
-#include "yas_ui_metal_view.h"
-#include "yas_ui_node.h"
-#include "yas_ui_render_info.h"
-#include "yas_ui_render_target.h"
-#include "yas_ui_renderer.h"
-#include "yas_ui_texture.h"
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_metal_encode_info.h>
+#include <ui/yas_ui_metal_render_encoder.h>
+#include <ui/yas_ui_metal_texture.h>
+#include <ui/yas_ui_metal_types.h>
+#include <ui/yas_ui_metal_view.h>
+#include <ui/yas_ui_node.h>
+#include <ui/yas_ui_render_info.h>
+#include <ui/yas_ui_render_target.h>
+#include <ui/yas_ui_renderer.h>
+#include <ui/yas_ui_texture.h>
 
 using namespace yas;
 using namespace yas::ui;

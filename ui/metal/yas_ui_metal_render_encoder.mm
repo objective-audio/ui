@@ -4,13 +4,13 @@
 
 #include "yas_ui_metal_render_encoder.h"
 #include <cpp_utils/yas_objc_ptr.h>
-#include "yas_ui_effect.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_metal_encode_info.h"
-#include "yas_ui_metal_render_encoder_dependency.h"
-#include "yas_ui_metal_texture.h"
-#include "yas_ui_renderer.h"
-#include "yas_ui_texture.h"
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_metal_encode_info.h>
+#include <ui/yas_ui_metal_render_encoder_dependency.h>
+#include <ui/yas_ui_metal_texture.h>
+#include <ui/yas_ui_renderer.h>
+#include <ui/yas_ui_texture.h>
 
 using namespace yas;
 using namespace yas::ui;

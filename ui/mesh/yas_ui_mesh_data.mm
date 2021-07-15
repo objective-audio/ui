@@ -3,7 +3,7 @@
 //
 
 #include "yas_ui_mesh_data.h"
-#include "yas_ui_metal_system.h"
+#include <ui/yas_ui_metal_system.h>
 
 using namespace yas;
 using namespace yas::ui;
