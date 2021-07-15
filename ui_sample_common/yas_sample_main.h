@@ -24,8 +24,7 @@
 namespace yas::sample {
 struct main {
     std::shared_ptr<ui::view_look> const view_look;
-    std::shared_ptr<ui::metal_system> const metal_system =
-        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object());
+    std::shared_ptr<ui::metal_system> const metal_system;
     std::shared_ptr<ui::node> const root_node = ui::node::make_shared(view_look);
     std::shared_ptr<ui::detector> const detector = ui::detector::make_shared();
     std::shared_ptr<ui::event_manager> const event_manager = ui::event_manager::make_shared();
@@ -35,7 +34,8 @@ struct main {
 
     void setup();
 
-    [[nodiscard]] static std::shared_ptr<main> make_shared(std::shared_ptr<ui::view_look> const &);
+    [[nodiscard]] static std::shared_ptr<main> make_shared(std::shared_ptr<ui::view_look> const &,
+                                                           std::shared_ptr<ui::metal_system> const &);
 
    private:
     std::shared_ptr<ui::font_atlas> const _font_atlas =
@@ -70,6 +70,6 @@ struct main {
 
     observing::canceller_pool _pool;
 
-    main(std::shared_ptr<ui::view_look> const &);
+    main(std::shared_ptr<ui::view_look> const &, std::shared_ptr<ui::metal_system> const &);
 };
 }  // namespace yas::sample

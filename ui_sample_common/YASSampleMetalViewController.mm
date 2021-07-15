@@ -19,7 +19,7 @@ using namespace yas::ui;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self->_main = sample::main::make_shared([self view_look]);
+    self->_main = sample::main::make_shared([self view_look], [self metal_system]);
 
     [self set_renderer:_main->renderer];
     [self set_event_manager:_main->event_manager];
