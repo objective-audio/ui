@@ -3,8 +3,8 @@
 //
 
 #include "yas_ui_metal_texture.h"
-#include "yas_ui_metal_system.h"
-#include "yas_ui_metal_types.h"
+#include <ui/yas_ui_metal_system.h>
+#include <ui/yas_ui_metal_types.h>
 
 using namespace yas;
 using namespace yas::ui;

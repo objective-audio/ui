@@ -4,9 +4,9 @@
 
 #include "yas_ui_event.h"
 
-#include <unordered_map>
+#include <ui/yas_ui_types.h>
 
-#include "yas_ui_types.h"
+#include <unordered_map>
 
 using namespace yas;
 using namespace yas::ui;

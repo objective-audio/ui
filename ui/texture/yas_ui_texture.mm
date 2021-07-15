@@ -6,13 +6,13 @@
 #include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_stl_utils.h>
 #include <cpp_utils/yas_unless.h>
+#include <ui/yas_ui_image.h>
+#include <ui/yas_ui_metal_texture.h>
+#include <ui/yas_ui_metal_types.h>
+#include <ui/yas_ui_renderer.h>
+#include <ui/yas_ui_texture_element.h>
 #include <ui/yas_ui_view_look.h>
 #include <map>
-#include "yas_ui_image.h"
-#include "yas_ui_metal_texture.h"
-#include "yas_ui_metal_types.h"
-#include "yas_ui_renderer.h"
-#include "yas_ui_texture_element.h"
 
 using namespace yas;
 using namespace yas::ui;

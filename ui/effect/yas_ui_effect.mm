@@ -3,8 +3,8 @@
 //
 
 #include "yas_ui_effect.h"
-#include "yas_ui_metal_texture.h"
-#include "yas_ui_texture.h"
+#include <ui/yas_ui_metal_texture.h>
+#include <ui/yas_ui_texture.h>
 
 using namespace yas;
 using namespace yas::ui;

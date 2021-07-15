@@ -8,9 +8,9 @@
 #include <cpp_utils/yas_cf_ref.h>
 #include <cpp_utils/yas_cf_utils.h>
 #include <cpp_utils/yas_each_index.h>
-#include "yas_ui_image.h"
-#include "yas_ui_math.h"
-#include "yas_ui_texture_element.h"
+#include <ui/yas_ui_image.h>
+#include <ui/yas_ui_math.h>
+#include <ui/yas_ui_texture_element.h>
 
 using namespace yas;
 using namespace yas::ui;

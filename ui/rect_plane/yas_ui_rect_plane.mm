@@ -4,10 +4,10 @@
 
 #include "yas_ui_rect_plane.h"
 #include <cpp_utils/yas_fast_each.h>
-#include "yas_ui_color.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_mesh_data.h"
-#include "yas_ui_node.h"
+#include <ui/yas_ui_color.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_node.h>
 
 using namespace yas;
 using namespace yas::ui;

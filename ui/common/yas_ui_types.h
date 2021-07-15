@@ -84,12 +84,6 @@ class render_stackable;
 class view_renderer_interface;
 class renderer_background_interface;
 
-enum class system_type {
-    none,
-    metal,
-    //        open_gl,
-};
-
 enum class pixel_format { rgba8_unorm, bgra8_unorm };
 
 enum class texture_usage {

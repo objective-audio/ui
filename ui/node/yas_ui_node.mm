@@ -6,22 +6,22 @@
 #include <cpp_utils/yas_stl_utils.h>
 #include <cpp_utils/yas_to_bool.h>
 #include <cpp_utils/yas_unless.h>
-#include "yas_ui_angle.h"
-#include "yas_ui_batch.h"
-#include "yas_ui_collider.h"
-#include "yas_ui_color.h"
-#include "yas_ui_detector.h"
-#include "yas_ui_effect.h"
-#include "yas_ui_layout_guide.h"
-#include "yas_ui_math.h"
-#include "yas_ui_matrix.h"
-#include "yas_ui_mesh.h"
-#include "yas_ui_mesh_data.h"
-#include "yas_ui_metal_encode_info.h"
-#include "yas_ui_metal_system.h"
-#include "yas_ui_render_info.h"
-#include "yas_ui_render_target.h"
-#include "yas_ui_types.h"
+#include <ui/yas_ui_angle.h>
+#include <ui/yas_ui_batch.h>
+#include <ui/yas_ui_collider.h>
+#include <ui/yas_ui_color.h>
+#include <ui/yas_ui_detector.h>
+#include <ui/yas_ui_effect.h>
+#include <ui/yas_ui_layout_guide.h>
+#include <ui/yas_ui_math.h>
+#include <ui/yas_ui_matrix.h>
+#include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_metal_encode_info.h>
+#include <ui/yas_ui_metal_system.h>
+#include <ui/yas_ui_render_info.h>
+#include <ui/yas_ui_render_target.h>
+#include <ui/yas_ui_types.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -372,10 +372,6 @@ simd::float4x4 const &node::matrix_as_parent() const {
     return this->matrix();
 }
 
-void node::set_parent(std::shared_ptr<node_parent_interface> const &parent) {
-    this->_weak_parent = parent;
-}
-
 void node::fetch_updates(tree_updates &tree_updates) {
     if (this->_enabled->value()) {
         tree_updates.node_updates.flags |= this->_updates.flags;
@@ -646,7 +642,7 @@ std::shared_ptr<node> node::make_shared() {
 std::shared_ptr<node> node::make_shared(std::shared_ptr<node_parent_interface> const &parent) {
     auto shared = std::shared_ptr<node>(new node{});
     shared->_weak_node = shared;
-    shared->set_parent(parent);
+    shared->_weak_parent = parent;
     return shared;
 }
 
