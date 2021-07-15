@@ -138,12 +138,6 @@ struct metal_view_cpp {
 
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
     self->_cpp.renderable = renderable;
-
-    if (renderable) {
-        renderable->view_configure(self.metalView);
-    } else {
-        self.metalView.device = nil;
-    }
 }
 
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {

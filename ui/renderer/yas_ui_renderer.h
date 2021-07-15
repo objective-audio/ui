@@ -59,7 +59,6 @@ struct renderer final : view_renderer_interface {
     renderer &operator=(renderer const &) = delete;
     renderer &operator=(renderer &&) = delete;
 
-    void view_configure(yas_objc_view *const view) override;
     void view_render(yas_objc_view *const view) override;
 
     pre_render_result _pre_render();

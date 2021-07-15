@@ -49,16 +49,6 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-void renderer::view_configure(yas_objc_view *const view) {
-    if (auto const metalView = objc_cast<YASUIMetalView>(view)) {
-        if (this->_metal_system) {
-            this->_metal_system->view_configure(view);
-        }
-    } else {
-        throw std::runtime_error("view not for metal.");
-    }
-}
-
 void renderer::view_render(yas_objc_view *const view) {
     if (!this->_metal_system) {
         throw std::runtime_error("metal_system not found.");
