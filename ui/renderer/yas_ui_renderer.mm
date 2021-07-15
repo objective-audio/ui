@@ -31,7 +31,7 @@ using namespace yas::ui;
 
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
+renderer::renderer(std::shared_ptr<ui::renderable_metal_system> const &metal_system,
                    std::shared_ptr<ui::view_look> const &view_look, std::shared_ptr<ui::node> const &root_node,
                    std::shared_ptr<ui::detector> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
@@ -52,7 +52,7 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
 void renderer::view_configure(yas_objc_view *const view) {
     if (auto const metalView = objc_cast<YASUIMetalView>(view)) {
         if (this->_metal_system) {
-            renderable_metal_system::cast(this->_metal_system)->view_configure(view);
+            this->_metal_system->view_configure(view);
         }
     } else {
         throw std::runtime_error("view not for metal.");
@@ -67,8 +67,8 @@ void renderer::view_render(yas_objc_view *const view) {
     this->_will_render_notifier->notify(nullptr);
 
     if (to_bool(this->_pre_render())) {
-        renderable_metal_system::cast(this->_metal_system)
-            ->view_render(view, this->_detector, this->_view_look->projection_matrix(), this->_root_node);
+        this->_metal_system->view_render(view, this->_detector, this->_view_look->projection_matrix(),
+                                         this->_root_node);
     }
 
     this->_post_render();
@@ -97,7 +97,7 @@ void renderer::_post_render() {
     this->_updates.flags.reset();
 }
 
-std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::metal_system> const &system,
+std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderable_metal_system> const &system,
                                                 std::shared_ptr<ui::view_look> const &view_look,
                                                 std::shared_ptr<ui::node> const &root_node,
                                                 std::shared_ptr<ui::detector> const &detector,
