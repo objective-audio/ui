@@ -7,6 +7,7 @@
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_background.h>
 #include <ui/yas_ui_color.h>
+#include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_view_utils.h>
 #include <ui/yas_ui_view_look.h>
 
@@ -18,6 +19,8 @@ using namespace yas::ui;
 namespace yas::ui {
 struct metal_view_cpp {
     std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
+    std::shared_ptr<metal_system> const metal_system =
+        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object());
     std::shared_ptr<view_renderer_interface> renderable{nullptr};
     observing::canceller_pool bg_pool;
 };
@@ -125,6 +128,10 @@ struct metal_view_cpp {
 
 - (std::shared_ptr<yas::ui::view_look> const &)view_look {
     return self->_cpp.view_look;
+}
+
+- (std::shared_ptr<yas::ui::metal_system> const &)metal_system {
+    return self->_cpp.metal_system;
 }
 
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
