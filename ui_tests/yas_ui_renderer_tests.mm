@@ -23,7 +23,6 @@ using namespace yas::ui;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] set_renderer:nullptr];
     [super tearDown];
 }
 
@@ -32,31 +31,7 @@ using namespace yas::ui;
     auto const renderer = ui::renderer::make_shared(nullptr, nullptr, nullptr, nullptr, nullptr);
     std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
 
-    XCTAssertFalse(renderer->metal_system());
-
     XCTAssertTrue(view_renderer);
-
-    XCTAssertFalse(renderer->metal_system());
-}
-
-- (void)test_const_getter {
-    std::shared_ptr<ui::renderer const> renderer =
-        ui::renderer::make_shared(nullptr, nullptr, nullptr, nullptr, nullptr);
-
-    XCTAssertFalse(renderer->metal_system());
-}
-
-- (void)test_metal_system {
-    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    auto renderer =
-        ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, nullptr, nullptr, nullptr);
-
-    XCTAssertTrue(renderer->metal_system());
 }
 
 @end

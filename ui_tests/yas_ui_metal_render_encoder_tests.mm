@@ -88,13 +88,14 @@ using namespace yas::ui;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"encode"];
 
+    auto const metal_system = metal_system::make_shared(device.object());
     auto const root_node = ui::node::make_shared();
     auto const detector = ui::detector::make_shared();
     auto const action_manager = ui::action_manager::make_shared();
-    auto const renderer = renderer::make_shared(metal_system::make_shared(device.object()),
-                                                ui::view_look::make_shared(), root_node, detector, action_manager);
+    auto const renderer =
+        renderer::make_shared(metal_system, ui::view_look::make_shared(), root_node, detector, action_manager);
 
-    auto time_updater = [&metal_system = renderer->metal_system(), expectation, &self](auto const &, auto const &) {
+    auto time_updater = [&metal_system, expectation, &self](auto const &, auto const &) {
         auto mtlDevice = testable_metal_system::cast(metal_system)->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
