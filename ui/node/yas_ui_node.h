@@ -135,7 +135,6 @@ struct node final : action_target, metal_object, renderable_node, layout_point_t
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     simd::float4x4 const &matrix_as_parent() const override;
-    void set_parent(std::shared_ptr<node_parent_interface> const &) override;
 
     void fetch_updates(ui::tree_updates &) override;
     void build_render_info(ui::render_info &) override;

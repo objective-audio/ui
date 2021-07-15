@@ -106,7 +106,6 @@ struct tree_updates {
 struct renderable_node {
     virtual ~renderable_node() = default;
 
-    virtual void set_parent(std::shared_ptr<node_parent_interface> const &) = 0;
     virtual void fetch_updates(ui::tree_updates &) = 0;
     virtual void build_render_info(ui::render_info &) = 0;
     [[nodiscard]] virtual bool is_rendering_color_exists() = 0;
