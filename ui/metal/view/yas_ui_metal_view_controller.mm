@@ -69,6 +69,8 @@ struct metal_view_cpp {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    ui::renderable_metal_system::cast(self->_cpp.metal_system)->view_configure(self.metalView);
+
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
     [self.metalView addObserver:self
                      forKeyPath:@"effectiveAppearance"
