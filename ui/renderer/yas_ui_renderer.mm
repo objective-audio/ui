@@ -57,7 +57,6 @@ void renderer::view_configure(yas_objc_view *const view) {
     if (auto const metalView = objc_cast<YASUIMetalView>(view)) {
         if (this->_metal_system) {
             renderable_metal_system::cast(this->_metal_system)->view_configure(view);
-            this->_view_look->set_appearance(metalView.uiAppearance);
         }
     } else {
         throw std::runtime_error("view not for metal.");
