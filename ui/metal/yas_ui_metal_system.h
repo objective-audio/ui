@@ -11,6 +11,8 @@ namespace yas::ui {
 struct metal_system final : renderable_metal_system, makable_metal_system, testable_metal_system {
     virtual ~metal_system();
 
+    [[nodiscard]] id<MTLDevice> mtlDevice();
+    [[nodiscard]] uint32_t sample_count();
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const);
@@ -53,7 +55,6 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     metal_system &operator=(metal_system const &) = delete;
     metal_system &operator=(metal_system &&) = delete;
 
-    void view_configure(yas_objc_view *const) override;
     void view_render(yas_objc_view *const, std::shared_ptr<ui::render_info_detector_interface> const &,
                      simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
@@ -67,8 +68,6 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override;
     objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) override;
 
-    id<MTLDevice> mtlDevice() override;
-    uint32_t sample_count() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
 

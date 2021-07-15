@@ -30,8 +30,6 @@ struct makable_metal_system {
 struct testable_metal_system {
     virtual ~testable_metal_system() = default;
 
-    [[nodiscard]] virtual id<MTLDevice> mtlDevice() = 0;
-    [[nodiscard]] virtual uint32_t sample_count() = 0;
     [[nodiscard]] virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() = 0;
     [[nodiscard]] virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() = 0;
 

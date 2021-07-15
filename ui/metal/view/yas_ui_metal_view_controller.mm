@@ -69,7 +69,9 @@ struct metal_view_cpp {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    ui::renderable_metal_system::cast(self->_cpp.metal_system)->view_configure(self.metalView);
+    auto const &metal_system = self->_cpp.metal_system;
+    self.metalView.device = metal_system->mtlDevice();
+    self.metalView.sampleCount = metal_system->sample_count();
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
     [self.metalView addObserver:self
