@@ -96,7 +96,7 @@ using namespace yas::ui;
         renderer::make_shared(metal_system, ui::view_look::make_shared(), root_node, detector, action_manager);
 
     auto time_updater = [&metal_system, expectation, &self](auto const &, auto const &) {
-        auto mtlDevice = testable_metal_system::cast(metal_system)->mtlDevice();
+        auto mtlDevice = metal_system->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
