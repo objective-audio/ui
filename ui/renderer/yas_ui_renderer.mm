@@ -45,13 +45,6 @@ renderer::renderer(std::shared_ptr<ui::metal_system> const &metal_system,
 
 renderer::~renderer() = default;
 
-system_type renderer::system_type() const {
-    if (this->_metal_system) {
-        return system_type::metal;
-    }
-    return system_type::none;
-}
-
 std::shared_ptr<metal_system> const &renderer::metal_system() const {
     return this->_metal_system;
 }
@@ -61,19 +54,13 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
 }
 
 void renderer::view_configure(yas_objc_view *const view) {
-    switch (this->system_type()) {
-        case system_type::metal: {
-            if (auto metalView = objc_cast<YASUIMetalView>(view)) {
-                renderable_metal_system::cast(this->_metal_system)->view_configure(view);
-                this->_view_look->set_appearance(metalView.uiAppearance);
-            } else {
-                throw std::runtime_error("view not for metal.");
-            }
-        } break;
-
-        case system_type::none: {
-            throw std::runtime_error("system not found.");
-        } break;
+    if (auto const metalView = objc_cast<YASUIMetalView>(view)) {
+        if (this->_metal_system) {
+            renderable_metal_system::cast(this->_metal_system)->view_configure(view);
+            this->_view_look->set_appearance(metalView.uiAppearance);
+        }
+    } else {
+        throw std::runtime_error("view not for metal.");
     }
 }
 

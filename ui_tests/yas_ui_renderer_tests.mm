@@ -36,7 +36,6 @@ using namespace yas::ui;
 
     XCTAssertTrue(view_renderer);
 
-    XCTAssertEqual(renderer->system_type(), ui::system_type::none);
     XCTAssertFalse(renderer->metal_system());
 }
 
@@ -57,7 +56,6 @@ using namespace yas::ui;
     auto renderer =
         ui::renderer::make_shared(ui::metal_system::make_shared(device.object()), nullptr, nullptr, nullptr, nullptr);
 
-    XCTAssertEqual(renderer->system_type(), ui::system_type::metal);
     XCTAssertTrue(renderer->metal_system());
 }
 
