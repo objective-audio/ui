@@ -11,6 +11,7 @@
 #include <ui/yas_ui_node_dependency.h>
 #include <ui/yas_ui_render_info_dependency.h>
 #include <ui/yas_ui_render_target_types.h>
+#include <ui/yas_ui_renderer_dependency_cpp.h>
 #include <ui/yas_ui_types.h>
 
 @class YASUIMetalView;
