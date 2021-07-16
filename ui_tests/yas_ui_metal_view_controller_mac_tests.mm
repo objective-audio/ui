@@ -67,7 +67,7 @@ using namespace yas::ui;
 
     XCTAssertFalse(viewController.renderer);
 
-    [viewController set_renderer:renderer];
+    [viewController configure_with_metal_system:nullptr renderer:renderer];
 
     XCTAssertTrue(viewController.renderer);
 }
