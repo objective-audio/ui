@@ -32,8 +32,8 @@ using namespace yas::ui;
 #pragma mark - renderer
 
 renderer::renderer(std::shared_ptr<ui::renderable_metal_system> const &metal_system,
-                   std::shared_ptr<ui::view_look> const &view_look, std::shared_ptr<ui::node> const &root_node,
-                   std::shared_ptr<ui::detector> const &detector,
+                   std::shared_ptr<ui::renderable_view_look> const &view_look,
+                   std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::detector> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_look(view_look),
@@ -88,7 +88,7 @@ void renderer::_post_render() {
 }
 
 std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderable_metal_system> const &system,
-                                                std::shared_ptr<ui::view_look> const &view_look,
+                                                std::shared_ptr<ui::renderable_view_look> const &view_look,
                                                 std::shared_ptr<ui::node> const &root_node,
                                                 std::shared_ptr<ui::detector> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
