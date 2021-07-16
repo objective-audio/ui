@@ -61,6 +61,7 @@ class color;
 class background;
 class angle;
 class view_look;
+class render_info;
 
 class renderable_render_target;
 class updatable_action;
@@ -83,6 +84,8 @@ class render_effectable;
 class render_stackable;
 class view_renderer_interface;
 class renderer_background_interface;
+
+enum class batch_building_type;
 
 enum class pixel_format { rgba8_unorm, bgra8_unorm };
 
