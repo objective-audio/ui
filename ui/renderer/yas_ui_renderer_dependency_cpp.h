@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_action_types.h>
 #include <ui/yas_ui_render_info_dependency.h>
 #include <ui/yas_ui_render_target_types.h>
 
@@ -142,9 +143,59 @@ struct renderer_detector_interface : render_info_detector_interface {
     }
 };
 
+struct renderable_mesh {
+    virtual ~renderable_mesh() = default;
+
+    [[nodiscard]] virtual simd::float4x4 const &matrix() = 0;
+    virtual void set_matrix(simd::float4x4 const &) = 0;
+    [[nodiscard]] virtual std::size_t render_vertex_count() = 0;
+    [[nodiscard]] virtual std::size_t render_index_count() = 0;
+    [[nodiscard]] virtual mesh_updates_t const &updates() = 0;
+    [[nodiscard]] virtual bool pre_render() = 0;
+    virtual void batch_render(batch_render_mesh_info &, ui::batch_building_type const) = 0;
+    [[nodiscard]] virtual bool is_rendering_color_exists() = 0;
+    virtual void clear_updates() = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderable_mesh> cast(std::shared_ptr<renderable_mesh> const &mesh) {
+        return mesh;
+    }
+};
+
+struct renderable_effect {
+    virtual ~renderable_effect() = default;
+
+    virtual void set_textures(std::shared_ptr<texture> const &src, std::shared_ptr<texture> const &dst) = 0;
+    [[nodiscard]] virtual ui::effect_updates_t &updates() = 0;
+    virtual void clear_updates() = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderable_effect> cast(std::shared_ptr<renderable_effect> const &effect) {
+        return effect;
+    }
+};
+
+struct renderer_action_manager {
+    virtual ~renderer_action_manager() = default;
+
+    virtual void update(time_point_t const &) = 0;
+};
+
 struct renderable_view_look {
     virtual ~renderable_view_look() = default;
 
     [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
 };
 }  // namespace yas::ui
+
+namespace yas {
+std::string to_string(ui::node_update_reason const &);
+std::string to_string(ui::batch_building_type const &);
+std::string to_string(ui::mesh_data_update_reason const &);
+std::string to_string(ui::mesh_update_reason const &);
+std::string to_string(ui::effect_update_reason const &);
+std::string to_string(ui::effect_updates_t const &);
+}  // namespace yas
+
+std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &);
+std::ostream &operator<<(std::ostream &os, yas::ui::batch_building_type const &);
+std::ostream &operator<<(std::ostream &os, yas::ui::mesh_data_update_reason const &);
+std::ostream &operator<<(std::ostream &os, yas::ui::mesh_update_reason const &);

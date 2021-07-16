@@ -62,6 +62,7 @@ class background;
 class angle;
 class view_look;
 class render_info;
+class batch_render_mesh_info;
 
 class renderable_render_target;
 class updatable_action;
