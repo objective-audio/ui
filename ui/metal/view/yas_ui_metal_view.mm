@@ -46,8 +46,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
-- (void)set_event_manager:(std::shared_ptr<ui::metal_view_event_manager_interface>)manager {
-    self->_cpp.event_manager = std::move(manager);
+- (void)set_event_manager:(std::shared_ptr<ui::metal_view_event_manager_interface> const &)manager {
+    self->_cpp.event_manager = manager;
 }
 
 - (BOOL)acceptsFirstResponder {
