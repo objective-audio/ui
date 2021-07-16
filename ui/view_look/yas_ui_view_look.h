@@ -6,10 +6,11 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_node_dependency.h>
+#include <ui/yas_ui_renderer_dependency_cpp.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct view_look final : node_parent_interface {
+struct view_look final : node_parent_interface, renderable_view_look {
     void set_view_sizes(ui::uint_size const view_size, ui::uint_size const drawable_size,
                         region_insets const safe_area_insets);
     void set_safe_area_insets(region_insets const);
@@ -18,7 +19,7 @@ struct view_look final : node_parent_interface {
     [[nodiscard]] ui::uint_size const &view_size() const;
     [[nodiscard]] ui::uint_size const &drawable_size() const;
     [[nodiscard]] double scale_factor() const;
-    [[nodiscard]] simd::float4x4 const &projection_matrix() const;
+    [[nodiscard]] simd::float4x4 const &projection_matrix() const override;
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_guide() const;
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_guide() const;

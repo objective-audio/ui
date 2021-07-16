@@ -13,6 +13,7 @@
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
 #include <ui/yas_ui_node.h>
+#include <ui/yas_ui_renderer_dependency_cpp.h>
 
 #include <vector>
 
