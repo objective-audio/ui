@@ -32,7 +32,6 @@ using namespace yas::ui;
     auto view = view_ptr.object();
 
     XCTAssertNotNil(view);
-    XCTAssertFalse([view event_manager]);
     XCTAssertTrue([view acceptsFirstResponder]);
 }
 
