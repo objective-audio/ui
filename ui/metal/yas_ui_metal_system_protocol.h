@@ -13,22 +13,6 @@
 #include <ui/yas_ui_render_info_dependency.h>
 
 namespace yas::ui {
-struct renderable_metal_system {
-    virtual ~renderable_metal_system() = default;
-
-    virtual void view_configure(yas_objc_view *const) = 0;
-    virtual void view_render(yas_objc_view *const view, std::shared_ptr<ui::render_info_detector_interface> const &,
-                             simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
-    virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
-    virtual void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
-                             std::shared_ptr<metal_encode_info> const &) = 0;
-    virtual void push_render_target(std::shared_ptr<render_stackable> const &, ui::render_target const *) = 0;
-
-    static std::shared_ptr<renderable_metal_system> cast(std::shared_ptr<renderable_metal_system> const &system) {
-        return system;
-    }
-};
-
 struct makable_metal_system {
     virtual ~makable_metal_system() = default;
 
@@ -46,8 +30,6 @@ struct makable_metal_system {
 struct testable_metal_system {
     virtual ~testable_metal_system() = default;
 
-    [[nodiscard]] virtual id<MTLDevice> mtlDevice() = 0;
-    [[nodiscard]] virtual uint32_t sample_count() = 0;
     [[nodiscard]] virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() = 0;
     [[nodiscard]] virtual id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() = 0;
 

@@ -24,17 +24,18 @@
 namespace yas::sample {
 struct main {
     std::shared_ptr<ui::view_look> const view_look;
+    std::shared_ptr<ui::metal_system> const metal_system;
     std::shared_ptr<ui::node> const root_node = ui::node::make_shared(view_look);
     std::shared_ptr<ui::detector> const detector = ui::detector::make_shared();
     std::shared_ptr<ui::event_manager> const event_manager = ui::event_manager::make_shared();
     std::shared_ptr<ui::action_manager> const action_manager = ui::action_manager::make_shared();
-    std::shared_ptr<ui::renderer> const renderer = ui::renderer::make_shared(
-        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object()), view_look,
-        root_node, detector, action_manager);
+    std::shared_ptr<ui::renderer> const renderer =
+        ui::renderer::make_shared(metal_system, view_look, root_node, detector, action_manager);
 
     void setup();
 
-    [[nodiscard]] static std::shared_ptr<main> make_shared(std::shared_ptr<ui::view_look> const &);
+    [[nodiscard]] static std::shared_ptr<main> make_shared(std::shared_ptr<ui::view_look> const &,
+                                                           std::shared_ptr<ui::metal_system> const &);
 
    private:
     std::shared_ptr<ui::font_atlas> const _font_atlas =
@@ -47,7 +48,7 @@ struct main {
     sample::inputted_text_ptr const _inputted_text =
         sample::inputted_text::make_shared(_font_atlas, event_manager, view_look->safe_area_layout_guide());
     sample::draw_call_text_ptr const _draw_call_text =
-        sample::draw_call_text::make_shared(_font_atlas, renderer->metal_system(), view_look->safe_area_layout_guide());
+        sample::draw_call_text::make_shared(_font_atlas, metal_system, view_look->safe_area_layout_guide());
     sample::modifier_text_ptr const _modifier_text =
         sample::modifier_text::make_shared(_font_atlas, event_manager, view_look->safe_area_layout_guide(),
                                            _draw_call_text->strings()->preferred_layout_guide()->top());
@@ -69,6 +70,6 @@ struct main {
 
     observing::canceller_pool _pool;
 
-    main(std::shared_ptr<ui::view_look> const &);
+    main(std::shared_ptr<ui::view_look> const &, std::shared_ptr<ui::metal_system> const &);
 };
 }  // namespace yas::sample

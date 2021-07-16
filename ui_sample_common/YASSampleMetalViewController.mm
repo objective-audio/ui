@@ -19,10 +19,14 @@ using namespace yas::ui;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self->_main = sample::main::make_shared([self view_look]);
+    auto const metal_system =
+        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object());
 
-    [self set_renderer:_main->renderer];
-    [self set_event_manager:_main->event_manager];
+    self->_main = sample::main::make_shared([self view_look], metal_system);
+
+    [self configure:metal_system];
+    [self set_renderer:self->_main->renderer];
+    [self set_event_manager:self->_main->event_manager];
 
     self->_main->setup();
 

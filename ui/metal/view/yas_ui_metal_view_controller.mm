@@ -7,6 +7,7 @@
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_background.h>
 #include <ui/yas_ui_color.h>
+#include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_view_utils.h>
 #include <ui/yas_ui_view_look.h>
 
@@ -127,14 +128,13 @@ struct metal_view_cpp {
     return self->_cpp.view_look;
 }
 
+- (void)configure:(std::shared_ptr<yas::ui::metal_system> const &)metal_system {
+    self.metalView.device = metal_system->mtlDevice();
+    self.metalView.sampleCount = metal_system->sample_count();
+}
+
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
     self->_cpp.renderable = renderable;
-
-    if (renderable) {
-        renderable->view_configure(self.metalView);
-    } else {
-        self.metalView.device = nil;
-    }
 }
 
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {

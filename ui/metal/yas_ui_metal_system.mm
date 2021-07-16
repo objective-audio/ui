@@ -110,16 +110,6 @@ std::size_t metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
 }
 
-void metal_system::view_configure(yas_objc_view *const objc_view) {
-    if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
-        return;
-    }
-
-    auto view = (YASUIMetalView *const)objc_view;
-    view.device = this->_device.object();
-    view.sampleCount = this->_sample_count;
-}
-
 void metal_system::view_render(yas_objc_view *const objc_view,
                                std::shared_ptr<ui::render_info_detector_interface> const &detector,
                                simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node) {

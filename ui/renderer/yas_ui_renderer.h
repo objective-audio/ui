@@ -20,11 +20,9 @@ namespace yas::ui {
 struct renderer final : view_renderer_interface {
     virtual ~renderer();
 
-    [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system() const;
-
     [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::metal_system> const &,
+    [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::renderable_metal_system> const &,
                                                                std::shared_ptr<ui::view_look> const &,
                                                                std::shared_ptr<ui::node> const &,
                                                                std::shared_ptr<ui::detector> const &,
@@ -41,7 +39,7 @@ struct renderer final : view_renderer_interface {
         updated,
     };
 
-    std::shared_ptr<ui::metal_system> _metal_system;
+    std::shared_ptr<ui::renderable_metal_system> _metal_system;
     std::shared_ptr<ui::view_look> _view_look;
 
     renderer_updates_t _updates;
@@ -52,7 +50,7 @@ struct renderer final : view_renderer_interface {
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
-    renderer(std::shared_ptr<ui::metal_system> const &, std::shared_ptr<ui::view_look> const &,
+    renderer(std::shared_ptr<ui::renderable_metal_system> const &, std::shared_ptr<ui::view_look> const &,
              std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::detector> const &,
              std::shared_ptr<ui::renderer_action_manager> const &);
 
@@ -61,7 +59,6 @@ struct renderer final : view_renderer_interface {
     renderer &operator=(renderer const &) = delete;
     renderer &operator=(renderer &&) = delete;
 
-    void view_configure(yas_objc_view *const view) override;
     void view_render(yas_objc_view *const view) override;
 
     pre_render_result _pre_render();

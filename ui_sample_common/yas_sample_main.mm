@@ -7,7 +7,9 @@
 using namespace yas;
 using namespace yas::ui;
 
-sample::main::main(std::shared_ptr<ui::view_look> const &view_look) : view_look(view_look) {
+sample::main::main(std::shared_ptr<ui::view_look> const &view_look,
+                   std::shared_ptr<ui::metal_system> const &metal_system)
+    : view_look(view_look), metal_system(metal_system) {
 }
 
 void sample::main::setup() {
@@ -110,6 +112,7 @@ void sample::main::setup() {
     this->action_manager->insert_action(action);
 }
 
-std::shared_ptr<sample::main> sample::main::make_shared(std::shared_ptr<ui::view_look> const &view_look) {
-    return std::shared_ptr<main>(new main{view_look});
+std::shared_ptr<sample::main> sample::main::make_shared(std::shared_ptr<ui::view_look> const &view_look,
+                                                        std::shared_ptr<ui::metal_system> const &metal_system) {
+    return std::shared_ptr<main>(new main{view_look, metal_system});
 }

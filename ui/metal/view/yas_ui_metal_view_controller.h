@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (std::shared_ptr<yas::ui::view_look> const &)view_look;
 
+- (void)configure:(std::shared_ptr<yas::ui::metal_system> const &)metal_system;
+
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer;
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer;
 

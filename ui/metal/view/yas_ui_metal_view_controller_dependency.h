@@ -11,7 +11,6 @@ namespace yas::ui {
 struct view_renderer_interface {
     virtual ~view_renderer_interface() = default;
 
-    virtual void view_configure(yas_objc_view *const view) = 0;
     virtual void view_render(yas_objc_view *const view) = 0;
 };
 }  // namespace yas::ui
