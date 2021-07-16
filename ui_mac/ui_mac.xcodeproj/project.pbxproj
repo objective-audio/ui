@@ -626,10 +626,10 @@
 		B69CD4F025E4A1BA00E3C33A /* renderer */ = {
 			isa = PBXGroup;
 			children = (
-				B65AF86021E4D7E300C65DB5 /* yas_ui_renderer.h */,
-				B65AF89521E4D7E400C65DB5 /* yas_ui_renderer.mm */,
 				B69CD50625E4A53A00E3C33A /* yas_ui_renderer_dependency.h */,
 				B65AF89421E4D7E400C65DB5 /* yas_ui_renderer_dependency.mm */,
+				B65AF86021E4D7E300C65DB5 /* yas_ui_renderer.h */,
+				B65AF89521E4D7E400C65DB5 /* yas_ui_renderer.mm */,
 			);
 			path = renderer;
 			sourceTree = "<group>";
