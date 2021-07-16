@@ -31,11 +31,14 @@ using namespace yas::ui;
         return;
     }
 
-    auto system = metal_system::make_shared(device.object());
+    auto const system = metal_system::make_shared(device.object());
 
     XCTAssertTrue(system);
-    XCTAssertNotNil(system->mtlDevice());
-    XCTAssertEqual(system->sample_count(), 4);
+
+    std::shared_ptr<view_metal_system_interface> const view_metal_system = system;
+
+    XCTAssertNotNil(view_metal_system->mtlDevice());
+    XCTAssertEqual(view_metal_system->sample_count(), 4);
 }
 
 - (void)test_create_with_sample_count {
@@ -45,11 +48,14 @@ using namespace yas::ui;
         return;
     }
 
-    auto system = metal_system::make_shared(device.object(), 1);
+    auto const system = metal_system::make_shared(device.object(), 1);
 
     XCTAssertTrue(system);
-    XCTAssertNotNil(system->mtlDevice());
-    XCTAssertEqual(system->sample_count(), 1);
+
+    std::shared_ptr<view_metal_system_interface> const view_metal_system = system;
+
+    XCTAssertNotNil(view_metal_system->mtlDevice());
+    XCTAssertEqual(view_metal_system->sample_count(), 1);
 }
 
 @end

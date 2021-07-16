@@ -128,13 +128,17 @@ struct metal_view_cpp {
     return self->_cpp.view_look;
 }
 
-- (void)configure:(std::shared_ptr<yas::ui::metal_system> const &)metal_system {
-    self.metalView.device = metal_system->mtlDevice();
-    self.metalView.sampleCount = metal_system->sample_count();
-}
+- (void)configure_with_metal_system:(std::shared_ptr<yas::ui::view_metal_system_interface> const &)metal_system
+                           renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
+    if (metal_system) {
+        self.metalView.device = metal_system->mtlDevice();
+        self.metalView.sampleCount = metal_system->sample_count();
+    } else {
+        self.metalView.device = nil;
+        self.metalView.sampleCount = 1;
+    }
 
-- (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
-    self->_cpp.renderable = renderable;
+    self->_cpp.renderable = renderer;
 }
 
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {

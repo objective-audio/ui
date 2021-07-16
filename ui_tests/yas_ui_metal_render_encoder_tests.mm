@@ -22,7 +22,7 @@ using namespace yas::ui;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] set_renderer:nullptr];
+    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr renderer:nullptr];
     [[YASTestMetalViewController sharedViewController] set_event_manager:nullptr];
     [super tearDown];
 }
@@ -96,7 +96,8 @@ using namespace yas::ui;
         renderer::make_shared(metal_system, ui::view_look::make_shared(), root_node, detector, action_manager);
 
     auto time_updater = [&metal_system, expectation, &self](auto const &, auto const &) {
-        auto mtlDevice = metal_system->mtlDevice();
+        std::shared_ptr<view_metal_system_interface> const view_metal_system = metal_system;
+        auto mtlDevice = view_metal_system->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
         XCTAssertNotNil(view.currentRenderPassDescriptor);
@@ -137,7 +138,7 @@ using namespace yas::ui;
 
     action_manager->insert_action(pre_render_action);
 
-    [[YASTestMetalViewController sharedViewController] set_renderer:renderer];
+    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:metal_system renderer:renderer];
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
