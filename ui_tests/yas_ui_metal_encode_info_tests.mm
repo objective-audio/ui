@@ -78,7 +78,7 @@ using namespace yas::ui;
 
     action_manager->insert_action(pre_render_action);
 
-    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr renderer:renderer];
+    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:metal_system renderer:renderer];
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 }
