@@ -59,19 +59,6 @@ struct renderable_node {
     }
 };
 
-enum class background_update_reason : std::size_t {
-    color,
-    alpha,
-
-    count,
-};
-
-enum class batch_building_type {
-    none,
-    rebuild,
-    overwrite,
-};
-
 struct renderable_batch {
     virtual ~renderable_batch() = default;
 

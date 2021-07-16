@@ -64,6 +64,19 @@ enum class node_update_reason : std::size_t {
 
 using node_updates_t = flagset<node_update_reason>;
 
+enum class background_update_reason : std::size_t {
+    color,
+    alpha,
+
+    count,
+};
+
+enum class batch_building_type {
+    none,
+    rebuild,
+    overwrite,
+};
+
 struct renderable_view_look {
     virtual ~renderable_view_look() = default;
 
