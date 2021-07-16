@@ -6,6 +6,8 @@
 
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_render_info_dependency.h>
+#include <ui/yas_ui_render_target_types.h>
 
 namespace yas::ui {
 enum class mesh_update_reason : std::size_t {
@@ -75,6 +77,69 @@ enum class batch_building_type {
     none,
     rebuild,
     overwrite,
+};
+
+struct tree_updates {
+    node_updates_t node_updates;
+    mesh_updates_t mesh_updates;
+    mesh_data_updates_t mesh_data_updates;
+    render_target_updates_t render_target_updates;
+    effect_updates_t effect_updates;
+
+    [[nodiscard]] bool is_any_updated() const;
+    [[nodiscard]] bool is_collider_updated() const;
+    [[nodiscard]] bool is_render_target_updated() const;
+    [[nodiscard]] ui::batch_building_type batch_building_type() const;
+};
+
+struct renderable_node {
+    virtual ~renderable_node() = default;
+
+    virtual void fetch_updates(ui::tree_updates &) = 0;
+    virtual void build_render_info(ui::render_info &) = 0;
+    [[nodiscard]] virtual bool is_rendering_color_exists() = 0;
+    virtual void clear_updates() = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderable_node> cast(std::shared_ptr<renderable_node> const &node) {
+        return node;
+    }
+};
+
+struct renderable_batch {
+    virtual ~renderable_batch() = default;
+
+    [[nodiscard]] virtual std::vector<std::shared_ptr<mesh>> const &meshes() = 0;
+    virtual void begin_render_meshes_building(batch_building_type const) = 0;
+    virtual void commit_render_meshes_building() = 0;
+    virtual void clear_render_meshes() = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderable_batch> cast(std::shared_ptr<renderable_batch> const &batch) {
+        return batch;
+    }
+};
+
+struct renderable_collider {
+    virtual ~renderable_collider() = default;
+
+    [[nodiscard]] virtual simd::float4x4 const &matrix() const = 0;
+    virtual void set_matrix(simd::float4x4 const &) = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderable_collider> cast(
+        std::shared_ptr<renderable_collider> const &renderable) {
+        return renderable;
+    }
+};
+
+struct renderer_detector_interface : render_info_detector_interface {
+    virtual ~renderer_detector_interface() = default;
+
+    virtual void begin_update() = 0;
+    virtual void end_update() = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderer_detector_interface> cast(
+        std::shared_ptr<renderer_detector_interface> const &detector) {
+        return detector;
+    }
 };
 
 struct renderable_view_look {
