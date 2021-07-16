@@ -13,6 +13,8 @@
 #include <ui/yas_ui_render_target_types.h>
 #include <ui/yas_ui_types.h>
 
+@class YASUIMetalView;
+
 namespace yas::ui {
 enum class mesh_update_reason : std::size_t {
     mesh_data,
@@ -226,7 +228,7 @@ struct renderer_action_manager {
 struct renderable_metal_system {
     virtual ~renderable_metal_system() = default;
 
-    virtual void view_render(yas_objc_view *const view, std::shared_ptr<ui::render_info_detector_interface> const &,
+    virtual void view_render(YASUIMetalView *const view, std::shared_ptr<ui::render_info_detector_interface> const &,
                              simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
     virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
     virtual void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,

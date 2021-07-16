@@ -57,7 +57,7 @@ struct metal_system final : renderable_metal_system,
     metal_system &operator=(metal_system const &) = delete;
     metal_system &operator=(metal_system &&) = delete;
 
-    void view_render(yas_objc_view *const, std::shared_ptr<ui::render_info_detector_interface> const &,
+    void view_render(YASUIMetalView *const, std::shared_ptr<ui::render_info_detector_interface> const &,
                      simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
     void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
