@@ -23,7 +23,6 @@ using namespace yas::ui;
 
 - (void)tearDown {
     [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr renderer:nullptr];
-    [[YASTestMetalViewController sharedViewController] set_event_manager:nullptr];
     [super tearDown];
 }
 

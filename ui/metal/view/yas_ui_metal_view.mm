@@ -13,7 +13,7 @@ using namespace yas::ui;
 
 namespace yas::ui::metal_view {
 struct cpp {
-    std::shared_ptr<metal_view_event_manager_interface> event_manager = nullptr;
+    std::weak_ptr<metal_view_event_manager_interface> event_manager;
 };
 }
 
@@ -46,12 +46,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
-- (std::shared_ptr<metal_view_event_manager_interface> const &)event_manager {
-    return self->_cpp.event_manager;
-}
-
-- (void)set_event_manager:(std::shared_ptr<ui::metal_view_event_manager_interface>)manager {
-    self->_cpp.event_manager = std::move(manager);
+- (void)set_event_manager:(std::shared_ptr<ui::metal_view_event_manager_interface> const &)manager {
+    self->_cpp.event_manager = manager;
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -95,9 +91,9 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
-    if (self->_cpp.event_manager) {
-        self->_cpp.event_manager->input_touch_event(
-            std::move(phase), ui::touch_event{uintptr_t(touch), [self _position:touch], touch.timestamp});
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_touch_event(std::move(phase),
+                                         ui::touch_event{uintptr_t(touch), [self _position:touch], touch.timestamp});
     }
 }
 
@@ -142,21 +138,21 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)_sendCursorEvent:(NSEvent *)event {
-    if (self->_cpp.event_manager) {
-        self->_cpp.event_manager->input_cursor_event(ui::cursor_event{[self _position:event], event.timestamp});
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_cursor_event(ui::cursor_event{[self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    if (self->_cpp.event_manager) {
-        self->_cpp.event_manager->input_touch_event(
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_touch_event(
             std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event], event.timestamp});
     }
 }
 
 - (void)_sendKeyEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
-    if (self->_cpp.event_manager) {
-        self->_cpp.event_manager->input_key_event(
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_key_event(
             std::move(phase),
             ui::key_event{event.keyCode, to_string((__bridge CFStringRef)event.characters),
                           to_string((__bridge CFStringRef)event.charactersIgnoringModifiers), event.timestamp});
@@ -164,8 +160,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)_sendModifierEvent:(NSEvent *)event {
-    if (self->_cpp.event_manager) {
-        self->_cpp.event_manager->input_modifier_event(ui::modifier_flags(event.modifierFlags), event.timestamp);
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_modifier_event(ui::modifier_flags(event.modifierFlags), event.timestamp);
     }
 }
 

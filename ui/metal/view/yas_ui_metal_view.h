@@ -17,8 +17,7 @@
 - (yas::ui::region_insets)uiSafeAreaInsets;
 - (yas::ui::appearance)uiAppearance;
 
-- (std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager;
-- (void)set_event_manager:(std::shared_ptr<yas::ui::metal_view_event_manager_interface>)manager;
+- (void)set_event_manager:(std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)manager;
 
 @end
 
