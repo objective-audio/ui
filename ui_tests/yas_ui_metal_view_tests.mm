@@ -10,13 +10,6 @@
 using namespace yas;
 using namespace yas::ui;
 
-@interface YASUIMetalView (yas_ui_metal_view_tests)
-
-- (std::shared_ptr<event_manager> const &)event_manager;
-- (void)set_event_manager:(std::shared_ptr<event_manager>)manager;
-
-@end
-
 @interface yas_ui_metal_view_tests : XCTestCase
 
 @end
@@ -29,7 +22,7 @@ using namespace yas::ui;
 
 - (void)tearDown {
     [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr renderer:nullptr];
-    [[YASTestMetalViewController sharedViewController] set_event_manager:nullptr];
+    [[YASTestMetalViewController sharedViewController].metalView set_event_manager:nullptr];
     [super tearDown];
 }
 

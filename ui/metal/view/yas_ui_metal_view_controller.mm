@@ -145,14 +145,6 @@ struct metal_view_cpp {
     return self->_cpp.renderable;
 }
 
-- (void)set_event_manager:(std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager {
-    [self.metalView set_event_manager:event_manager];
-}
-
-- (std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager {
-    return [self.metalView event_manager];
-}
-
 #pragma mark -
 
 - (void)setPaused:(BOOL)pause {
