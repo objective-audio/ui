@@ -235,7 +235,8 @@ struct renderable_metal_system {
                              std::shared_ptr<metal_encode_info> const &) = 0;
     virtual void push_render_target(std::shared_ptr<render_stackable> const &, ui::render_target const *) = 0;
 
-    static std::shared_ptr<renderable_metal_system> cast(std::shared_ptr<renderable_metal_system> const &system) {
+    [[nodiscard]] static std::shared_ptr<renderable_metal_system> cast(
+        std::shared_ptr<renderable_metal_system> const &system) {
         return system;
     }
 };
