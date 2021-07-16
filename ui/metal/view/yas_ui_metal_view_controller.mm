@@ -19,8 +19,6 @@ using namespace yas::ui;
 namespace yas::ui {
 struct metal_view_cpp {
     std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
-    std::shared_ptr<metal_system> const metal_system =
-        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object());
     std::shared_ptr<view_renderer_interface> renderable{nullptr};
     observing::canceller_pool bg_pool;
 };
@@ -68,10 +66,6 @@ struct metal_view_cpp {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    auto const &metal_system = self->_cpp.metal_system;
-    self.metalView.device = metal_system->mtlDevice();
-    self.metalView.sampleCount = metal_system->sample_count();
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
     [self.metalView addObserver:self
@@ -134,8 +128,9 @@ struct metal_view_cpp {
     return self->_cpp.view_look;
 }
 
-- (std::shared_ptr<yas::ui::metal_system> const &)metal_system {
-    return self->_cpp.metal_system;
+- (void)configure:(std::shared_ptr<yas::ui::metal_system> const &)metal_system {
+    self.metalView.device = metal_system->mtlDevice();
+    self.metalView.sampleCount = metal_system->sample_count();
 }
 
 - (void)set_renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderable {
