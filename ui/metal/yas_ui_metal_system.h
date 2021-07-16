@@ -6,13 +6,15 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <ui/yas_ui_metal_system_protocol.h>
+#include <ui/yas_ui_metal_view_controller_dependency.h>
 
 namespace yas::ui {
-struct metal_system final : renderable_metal_system, makable_metal_system, testable_metal_system {
+struct metal_system final : renderable_metal_system,
+                            makable_metal_system,
+                            testable_metal_system,
+                            view_metal_system_interface {
     virtual ~metal_system();
 
-    [[nodiscard]] id<MTLDevice> mtlDevice();
-    [[nodiscard]] uint32_t sample_count();
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const);
@@ -67,6 +69,9 @@ struct metal_system final : renderable_metal_system, makable_metal_system, testa
     objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override;
     objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override;
     objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) override;
+
+    [[nodiscard]] id<MTLDevice> mtlDevice() override;
+    [[nodiscard]] uint32_t sample_count() override;
 
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;

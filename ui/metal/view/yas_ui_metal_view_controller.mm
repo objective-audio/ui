@@ -128,7 +128,7 @@ struct metal_view_cpp {
     return self->_cpp.view_look;
 }
 
-- (void)configure:(std::shared_ptr<yas::ui::metal_system> const &)metal_system {
+- (void)configure:(std::shared_ptr<yas::ui::view_metal_system_interface> const &)metal_system {
     self.metalView.device = metal_system->mtlDevice();
     self.metalView.sampleCount = metal_system->sample_count();
 }
