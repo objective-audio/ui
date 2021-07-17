@@ -7,6 +7,8 @@
 #include <ui/yas_ui_objc.h>
 #include <ui/yas_ui_types.h>
 
+@class YASUIMetalView;
+
 namespace yas::ui {
 struct view_metal_system_interface {
     virtual ~view_metal_system_interface() = default;

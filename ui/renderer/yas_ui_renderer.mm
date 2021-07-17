@@ -3,24 +3,8 @@
 //
 
 #include "yas_ui_renderer.h"
-#include <cpp_utils/yas_each_index.h>
-#include <cpp_utils/yas_objc_cast.h>
-#include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_to_bool.h>
-#include <simd/simd.h>
-#include <ui/yas_ui_action.h>
-#include <ui/yas_ui_background.h>
-#include <ui/yas_ui_color.h>
-#include <ui/yas_ui_detector.h>
-#include <ui/yas_ui_math.h>
-#include <ui/yas_ui_matrix.h>
-#include <ui/yas_ui_mesh.h>
-#include <ui/yas_ui_metal_system.h>
-#include <ui/yas_ui_metal_view.h>
 #include <ui/yas_ui_node.h>
-#include <ui/yas_ui_types.h>
-#include <ui/yas_ui_view_look.h>
-#include <chrono>
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIView.h>

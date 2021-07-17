@@ -4,17 +4,9 @@
 
 #pragma once
 
-#include <Metal/Metal.h>
-#include <objc_utils/yas_objc_macros.h>
 #include <observing/yas_observing_umbrella.h>
-#include <simd/simd.h>
-#include <ui/yas_ui_detector.h>
-#include <ui/yas_ui_event.h>
-#include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
-#include <ui/yas_ui_node.h>
-
-#include <vector>
+#include <ui/yas_ui_renderer_dependency.h>
 
 namespace yas::ui {
 struct renderer final : view_renderer_interface {
