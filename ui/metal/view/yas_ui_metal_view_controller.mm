@@ -8,6 +8,8 @@
 #include <ui/yas_ui_background.h>
 #include <ui/yas_ui_color.h>
 #include <ui/yas_ui_metal_system.h>
+#include <ui/yas_ui_metal_view_controller_dependency.h>
+#include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 #include <ui/yas_ui_metal_view_utils.h>
 #include <ui/yas_ui_view_look.h>
 

@@ -85,6 +85,7 @@ class render_effectable;
 class render_stackable;
 class view_renderer_interface;
 class renderer_background_interface;
+class view_metal_system_interface;
 
 enum class batch_building_type;
 
