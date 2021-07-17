@@ -33,7 +33,8 @@ using namespace yas::ui;
 
 renderer::renderer(std::shared_ptr<ui::renderable_metal_system> const &metal_system,
                    std::shared_ptr<ui::renderable_view_look> const &view_look,
-                   std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::detector> const &detector,
+                   std::shared_ptr<ui::node> const &root_node,
+                   std::shared_ptr<ui::renderer_detector_interface> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_look(view_look),
@@ -71,7 +72,7 @@ renderer::pre_render_result renderer::_pre_render() {
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
     if (tree_updates.is_collider_updated()) {
-        renderer_detector_interface::cast(this->_detector)->begin_update();
+        this->_detector->begin_update();
     }
 
     if (this->_updates.flags.any() || tree_updates.is_any_updated()) {
@@ -83,14 +84,14 @@ renderer::pre_render_result renderer::_pre_render() {
 
 void renderer::_post_render() {
     renderable_node::cast(this->_root_node)->clear_updates();
-    renderer_detector_interface::cast(this->_detector)->end_update();
+    this->_detector->end_update();
     this->_updates.flags.reset();
 }
 
 std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderable_metal_system> const &system,
                                                 std::shared_ptr<ui::renderable_view_look> const &view_look,
                                                 std::shared_ptr<ui::node> const &root_node,
-                                                std::shared_ptr<ui::detector> const &detector,
+                                                std::shared_ptr<ui::renderer_detector_interface> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
     return std::shared_ptr<renderer>(new renderer{system, view_look, root_node, detector, action_manager});
 }
