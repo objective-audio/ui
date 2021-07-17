@@ -10,7 +10,7 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct view_look final : node_parent_interface, renderable_view_look {
+struct view_look final : node_parent_interface, renderer_view_look {
     void set_view_sizes(ui::uint_size const view_size, ui::uint_size const drawable_size,
                         region_insets const safe_area_insets);
     void set_safe_area_insets(region_insets const);
