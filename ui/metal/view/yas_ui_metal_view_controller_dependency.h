@@ -20,6 +20,6 @@ struct view_metal_system_interface {
 struct view_renderer_interface {
     virtual ~view_renderer_interface() = default;
 
-    virtual void view_render(YASUIMetalView *const view) = 0;
+    virtual void view_render() = 0;
 };
 }  // namespace yas::ui

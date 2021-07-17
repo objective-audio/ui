@@ -162,8 +162,8 @@ struct metal_view_cpp {
 }
 
 - (void)drawInMTKView:(YASUIMetalView *)view {
-    if (self->_cpp.renderer && self.metalView) {
-        self->_cpp.renderer->view_render(self.metalView);
+    if (self->_cpp.renderer) {
+        self->_cpp.renderer->view_render();
     }
 }
 

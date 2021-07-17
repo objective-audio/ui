@@ -33,7 +33,7 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-void renderer::view_render(YASUIMetalView *const view) {
+void renderer::view_render() {
     if (!this->_metal_system) {
         throw std::runtime_error("metal_system not found.");
     }
