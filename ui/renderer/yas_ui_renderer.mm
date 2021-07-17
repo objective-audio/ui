@@ -41,8 +41,7 @@ void renderer::view_render(YASUIMetalView *const view) {
     this->_will_render_notifier->notify(nullptr);
 
     if (to_bool(this->_pre_render())) {
-        this->_metal_system->view_render(view, this->_detector, this->_view_look->projection_matrix(),
-                                         this->_root_node);
+        this->_metal_system->view_render(this->_detector, this->_view_look->projection_matrix(), this->_root_node);
     }
 
     this->_post_render();

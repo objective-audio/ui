@@ -110,9 +110,13 @@ std::size_t metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
 }
 
-void metal_system::view_render(YASUIMetalView *const view,
-                               std::shared_ptr<ui::render_info_detector_interface> const &detector,
+void metal_system::view_render(std::shared_ptr<ui::render_info_detector_interface> const &detector,
                                simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node) {
+    if (!this->_metal_view) {
+        return;
+    }
+
+    auto const *view = this->_metal_view.object();
     auto renderPassDesc = view.currentRenderPassDescriptor;
     auto currentDrawable = view.currentDrawable;
 
