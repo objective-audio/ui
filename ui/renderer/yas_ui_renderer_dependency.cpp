@@ -1,8 +1,8 @@
 //
-//  yas_ui_renderer_dependency_cpp.cpp
+//  yas_ui_renderer_dependency.cpp
 //
 
-#include "yas_ui_renderer_dependency_cpp.h"
+#include "yas_ui_renderer_dependency.h"
 
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_stl_utils.h>

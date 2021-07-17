@@ -6,7 +6,7 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_node_dependency.h>
-#include <ui/yas_ui_renderer_dependency_cpp.h>
+#include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
