@@ -26,7 +26,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_mesh_data {
-    auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto const mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
     XCTAssertEqual(mesh_data->vertex_count(), 4);
     XCTAssertEqual(mesh_data->index_count(), 6);
@@ -39,7 +39,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_dynamic_mesh_data {
-    auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto const mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
     XCTAssertEqual(mesh_data->vertex_count(), 4);
     XCTAssertEqual(mesh_data->index_count(), 6);
@@ -51,7 +51,7 @@ using namespace yas::ui;
 }
 
 - (void)test_write_mesh_data {
-    auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto const mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
     mesh_data->write([self](auto &vertices, auto &indices) {
         XCTAssertEqual(vertices.size(), 4);
@@ -101,7 +101,7 @@ using namespace yas::ui;
 }
 
 - (void)test_set_variables_dynamic_mesh_data {
-    auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto const mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
     XCTAssertEqual(mesh_data->vertex_count(), 4);
     XCTAssertEqual(mesh_data->index_count(), 6);
@@ -127,7 +127,7 @@ using namespace yas::ui;
 }
 
 - (void)test_clear_updates {
-    auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto const mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
     XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().flags.any());
 
@@ -137,7 +137,7 @@ using namespace yas::ui;
 }
 
 - (void)test_updates {
-    auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto const mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
     renderable_mesh_data::cast(mesh_data)->clear_updates();
     mesh_data->set_index_count(1);
@@ -166,9 +166,9 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
+    auto const mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
     XCTAssertTrue(metal_object::cast(mesh_data)->metal_setup(metal_system));
 }

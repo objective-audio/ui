@@ -58,7 +58,7 @@ using namespace yas::ui;
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto mesh3 = mesh::make_shared();
     auto mesh_data3 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
@@ -91,7 +91,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto batch = batch::make_shared();
     auto batch_renderable = renderable_batch::cast(batch);
@@ -183,7 +183,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto batch = batch::make_shared();
     auto batch_renderable = renderable_batch::cast(batch);
@@ -234,7 +234,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto batch = batch::make_shared();
     auto batch_renderable = renderable_batch::cast(batch);

@@ -31,7 +31,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto const system = metal_system::make_shared(device.object());
+    auto const system = metal_system::make_shared(device.object(), nil);
 
     XCTAssertTrue(system);
 
@@ -48,7 +48,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto const system = metal_system::make_shared(device.object(), 1);
+    auto const system = metal_system::make_shared(device.object(), nil, 1);
 
     XCTAssertTrue(system);
 

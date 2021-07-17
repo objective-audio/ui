@@ -46,7 +46,7 @@ using namespace yas::ui;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"create_with_parameters"];
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
     auto root_node = ui::node::make_shared();
     auto detector = ui::detector::make_shared();
     auto action_manager = ui::action_manager::make_shared();

@@ -61,7 +61,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto const metal_system = metal_system::make_shared(device.object());
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const view_look = ui::view_look::make_shared();
     auto const root_node = ui::node::make_shared();
     auto const detector = ui::detector::make_shared();

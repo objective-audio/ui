@@ -87,7 +87,7 @@ using namespace yas::ui;
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"encode"];
 
-    auto const metal_system = metal_system::make_shared(device.object());
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const root_node = ui::node::make_shared();
     auto const detector = ui::detector::make_shared();
     auto const action_manager = ui::action_manager::make_shared();

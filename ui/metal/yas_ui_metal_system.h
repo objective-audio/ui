@@ -17,8 +17,9 @@ struct metal_system final : renderer_metal_system,
 
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
-    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const);
-    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, uint32_t const sample_count);
+    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);
+    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const,
+                                                                   uint32_t const sample_count);
 
    private:
     uint32_t _sample_count;
@@ -35,6 +36,9 @@ struct metal_system final : renderer_metal_system,
     objc_ptr<id<MTLCommandQueue>> _command_queue;
     objc_ptr<id<MTLLibrary>> _default_library;
 
+#warning todo weakで保持したい
+    objc_ptr<YASUIMetalView *> _metal_view;
+
     objc_ptr<dispatch_semaphore_t> _inflight_semaphore;
 
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_with_texture;
@@ -50,7 +54,7 @@ struct metal_system final : renderer_metal_system,
 
     std::weak_ptr<metal_system> _weak_metal_system;
 
-    metal_system(id<MTLDevice> const, uint32_t const sample_count);
+    metal_system(id<MTLDevice> const, YASUIMetalView *const, uint32_t const sample_count);
 
     metal_system(metal_system const &) = delete;
     metal_system(metal_system &&) = delete;

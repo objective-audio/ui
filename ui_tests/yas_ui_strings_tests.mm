@@ -41,7 +41,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
     auto font_atlas = font_atlas::make_shared(
@@ -71,7 +71,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
     auto font_atlas = font_atlas::make_shared(

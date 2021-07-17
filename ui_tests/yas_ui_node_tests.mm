@@ -419,7 +419,7 @@ struct test_render_encoder : render_encodable {
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto root_mesh = mesh::make_shared();
     auto root_mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
@@ -452,7 +452,7 @@ struct test_render_encoder : render_encodable {
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto node = node::make_shared();
     auto sub_node = node::make_shared();
@@ -631,7 +631,7 @@ struct test_render_encoder : render_encodable {
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto parent_batch_node = node::make_shared();
     auto child_batch_node1 = node::make_shared();
@@ -1135,7 +1135,7 @@ struct test_render_encoder : render_encodable {
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto batch_node = node::make_shared();
     batch_node->set_batch(batch::make_shared());
