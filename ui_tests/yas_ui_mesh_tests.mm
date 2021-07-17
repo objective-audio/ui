@@ -60,7 +60,7 @@ using namespace yas::ui;
     auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {16, 8}, .scale_factor = 1.0});
 
@@ -90,7 +90,7 @@ using namespace yas::ui;
     auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {16, 8}, .scale_factor = 1.0});
 
@@ -146,7 +146,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     XCTAssertNil(renderable_mesh_data::cast(mesh_data)->vertexBuffer());
     XCTAssertNil(renderable_mesh_data::cast(mesh_data)->indexBuffer());
@@ -173,7 +173,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     XCTAssertNil(renderable_mesh_data::cast(mesh_data)->vertexBuffer());
     XCTAssertNil(renderable_mesh_data::cast(mesh_data)->indexBuffer());
@@ -200,7 +200,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto const renderable = renderable_mesh_data::cast(mesh_data);
 
@@ -355,7 +355,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});

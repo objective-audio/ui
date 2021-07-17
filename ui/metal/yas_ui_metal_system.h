@@ -6,10 +6,10 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <ui/yas_ui_metal_system_protocol.h>
-#include <ui/yas_ui_metal_view_controller_dependency.h>
+#include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 
 namespace yas::ui {
-struct metal_system final : renderable_metal_system,
+struct metal_system final : renderer_metal_system,
                             makable_metal_system,
                             testable_metal_system,
                             view_metal_system_interface {
@@ -17,8 +17,9 @@ struct metal_system final : renderable_metal_system,
 
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
-    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const);
-    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, uint32_t const sample_count);
+    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);
+    [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const,
+                                                                   uint32_t const sample_count);
 
    private:
     uint32_t _sample_count;
@@ -35,6 +36,9 @@ struct metal_system final : renderable_metal_system,
     objc_ptr<id<MTLCommandQueue>> _command_queue;
     objc_ptr<id<MTLLibrary>> _default_library;
 
+#warning todo weakで保持したい
+    objc_ptr<YASUIMetalView *> _metal_view;
+
     objc_ptr<dispatch_semaphore_t> _inflight_semaphore;
 
     objc_ptr<id<MTLRenderPipelineState>> _multi_sample_pipeline_state_with_texture;
@@ -50,14 +54,14 @@ struct metal_system final : renderable_metal_system,
 
     std::weak_ptr<metal_system> _weak_metal_system;
 
-    metal_system(id<MTLDevice> const, uint32_t const sample_count);
+    metal_system(id<MTLDevice> const, YASUIMetalView *const, uint32_t const sample_count);
 
     metal_system(metal_system const &) = delete;
     metal_system(metal_system &&) = delete;
     metal_system &operator=(metal_system const &) = delete;
     metal_system &operator=(metal_system &&) = delete;
 
-    void view_render(yas_objc_view *const, std::shared_ptr<ui::render_info_detector_interface> const &,
+    void view_render(std::shared_ptr<ui::render_info_detector_interface> const &,
                      simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
     void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,

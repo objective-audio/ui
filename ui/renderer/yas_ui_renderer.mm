@@ -3,24 +3,8 @@
 //
 
 #include "yas_ui_renderer.h"
-#include <cpp_utils/yas_each_index.h>
-#include <cpp_utils/yas_objc_cast.h>
-#include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_to_bool.h>
-#include <simd/simd.h>
-#include <ui/yas_ui_action.h>
-#include <ui/yas_ui_background.h>
-#include <ui/yas_ui_color.h>
-#include <ui/yas_ui_detector.h>
-#include <ui/yas_ui_math.h>
-#include <ui/yas_ui_matrix.h>
-#include <ui/yas_ui_mesh.h>
-#include <ui/yas_ui_metal_system.h>
-#include <ui/yas_ui_metal_view.h>
 #include <ui/yas_ui_node.h>
-#include <ui/yas_ui_types.h>
-#include <ui/yas_ui_view_look.h>
-#include <chrono>
 
 #if TARGET_OS_IPHONE
 #include <UIKit/UIView.h>
@@ -31,9 +15,9 @@ using namespace yas::ui;
 
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::renderable_metal_system> const &metal_system,
-                   std::shared_ptr<ui::view_look> const &view_look, std::shared_ptr<ui::node> const &root_node,
-                   std::shared_ptr<ui::detector> const &detector,
+renderer::renderer(std::shared_ptr<ui::renderer_metal_system> const &metal_system,
+                   std::shared_ptr<ui::renderer_view_look> const &view_look, std::shared_ptr<ui::node> const &root_node,
+                   std::shared_ptr<ui::renderer_detector_interface> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
     : _metal_system(metal_system),
       _view_look(view_look),
@@ -49,7 +33,7 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-void renderer::view_render(yas_objc_view *const view) {
+void renderer::view_render() {
     if (!this->_metal_system) {
         throw std::runtime_error("metal_system not found.");
     }
@@ -57,8 +41,7 @@ void renderer::view_render(yas_objc_view *const view) {
     this->_will_render_notifier->notify(nullptr);
 
     if (to_bool(this->_pre_render())) {
-        this->_metal_system->view_render(view, this->_detector, this->_view_look->projection_matrix(),
-                                         this->_root_node);
+        this->_metal_system->view_render(this->_detector, this->_view_look->projection_matrix(), this->_root_node);
     }
 
     this->_post_render();
@@ -71,7 +54,7 @@ renderer::pre_render_result renderer::_pre_render() {
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
 
     if (tree_updates.is_collider_updated()) {
-        renderer_detector_interface::cast(this->_detector)->begin_update();
+        this->_detector->begin_update();
     }
 
     if (this->_updates.flags.any() || tree_updates.is_any_updated()) {
@@ -83,14 +66,14 @@ renderer::pre_render_result renderer::_pre_render() {
 
 void renderer::_post_render() {
     renderable_node::cast(this->_root_node)->clear_updates();
-    renderer_detector_interface::cast(this->_detector)->end_update();
+    this->_detector->end_update();
     this->_updates.flags.reset();
 }
 
-std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderable_metal_system> const &system,
-                                                std::shared_ptr<ui::view_look> const &view_look,
+std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderer_metal_system> const &system,
+                                                std::shared_ptr<ui::renderer_view_look> const &view_look,
                                                 std::shared_ptr<ui::node> const &root_node,
-                                                std::shared_ptr<ui::detector> const &detector,
+                                                std::shared_ptr<ui::renderer_detector_interface> const &detector,
                                                 std::shared_ptr<ui::renderer_action_manager> const &action_manager) {
     return std::shared_ptr<renderer>(new renderer{system, view_look, root_node, detector, action_manager});
 }

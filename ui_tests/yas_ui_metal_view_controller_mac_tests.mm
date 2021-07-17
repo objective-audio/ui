@@ -62,7 +62,7 @@ using namespace yas::ui;
 
     auto const view_look = ui::view_look::make_shared();
     auto const renderer =
-        renderer::make_shared(metal_system::make_shared(device.object()), view_look, nullptr, nullptr, nullptr);
+        renderer::make_shared(metal_system::make_shared(device.object(), nil), view_look, nullptr, nullptr, nullptr);
 
     auto viewController = [YASTestMetalViewController sharedViewController];
 

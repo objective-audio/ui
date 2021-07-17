@@ -33,7 +33,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {2, 1}, .scale_factor = 2.0});
 
@@ -53,7 +53,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
     metal_object::cast(texture)->metal_setup(metal_system);
@@ -94,7 +94,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
@@ -118,7 +118,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 
@@ -155,7 +155,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture1a = texture::make_shared(texture_args{});
     auto texture1b = texture1a;
@@ -173,7 +173,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture1a = texture::make_shared(texture_args{});
     auto texture1b = texture1a;
@@ -191,7 +191,7 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object());
+    auto metal_system = metal_system::make_shared(device.object(), nil);
 
     auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
 

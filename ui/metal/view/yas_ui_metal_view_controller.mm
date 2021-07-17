@@ -8,6 +8,8 @@
 #include <ui/yas_ui_background.h>
 #include <ui/yas_ui_color.h>
 #include <ui/yas_ui_metal_system.h>
+#include <ui/yas_ui_metal_view_controller_dependency.h>
+#include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 #include <ui/yas_ui_metal_view_utils.h>
 #include <ui/yas_ui_view_look.h>
 
@@ -19,7 +21,7 @@ using namespace yas::ui;
 namespace yas::ui {
 struct metal_view_cpp {
     std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
-    std::shared_ptr<view_renderer_interface> renderable{nullptr};
+    std::shared_ptr<view_renderer_interface> renderer{nullptr};
     observing::canceller_pool bg_pool;
 };
 }
@@ -138,11 +140,11 @@ struct metal_view_cpp {
         self.metalView.sampleCount = 1;
     }
 
-    self->_cpp.renderable = renderer;
+    self->_cpp.renderer = renderer;
 }
 
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
-    return self->_cpp.renderable;
+    return self->_cpp.renderer;
 }
 
 #pragma mark -
@@ -162,8 +164,8 @@ struct metal_view_cpp {
 }
 
 - (void)drawInMTKView:(YASUIMetalView *)view {
-    if (self->_cpp.renderable && self.metalView) {
-        self->_cpp.renderable->view_render(self.metalView);
+    if (self->_cpp.renderer) {
+        self->_cpp.renderer->view_render();
     }
 }
 

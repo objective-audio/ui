@@ -4,14 +4,11 @@
 
 #pragma once
 
-#include <Metal/Metal.h>
-#include <objc_utils/yas_objc_macros.h>
+#include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
 #include <ui/yas_ui_action_types.h>
-#include <ui/yas_ui_node_dependency.h>
 #include <ui/yas_ui_render_info_dependency.h>
 #include <ui/yas_ui_render_target_types.h>
-#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 enum class mesh_update_reason : std::size_t {
@@ -56,25 +53,6 @@ enum class renderer_update_reason : std::size_t {
 
 using renderer_updates_t = flagset<renderer_update_reason>;
 
-struct renderable_render_target {
-    virtual ~renderable_render_target() = default;
-
-    [[nodiscard]] virtual std::shared_ptr<mesh> const &mesh() const = 0;
-    [[nodiscard]] virtual std::shared_ptr<effect> const &effect() const = 0;
-    [[nodiscard]] virtual render_target_updates_t const &updates() const = 0;
-    virtual void clear_updates() = 0;
-    [[nodiscard]] virtual MTLRenderPassDescriptor *renderPassDescriptor() const = 0;
-    [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
-    [[nodiscard]] virtual bool push_encode_info(std::shared_ptr<render_stackable> const &) = 0;
-
-    static std::shared_ptr<renderable_render_target> cast(
-        std::shared_ptr<renderable_render_target> const &render_target) {
-        return render_target;
-    }
-};
-
-class render_info;
-
 enum class node_update_reason : std::size_t {
     geometry,
     mesh,
@@ -89,7 +67,18 @@ enum class node_update_reason : std::size_t {
 
 using node_updates_t = flagset<node_update_reason>;
 
-enum class batch_building_type;
+enum class background_update_reason : std::size_t {
+    color,
+    alpha,
+
+    count,
+};
+
+enum class batch_building_type {
+    none,
+    rebuild,
+    overwrite,
+};
 
 struct tree_updates {
     node_updates_t node_updates;
@@ -115,19 +104,6 @@ struct renderable_node {
     [[nodiscard]] static std::shared_ptr<renderable_node> cast(std::shared_ptr<renderable_node> const &node) {
         return node;
     }
-};
-
-enum class background_update_reason : std::size_t {
-    color,
-    alpha,
-
-    count,
-};
-
-enum class batch_building_type {
-    none,
-    rebuild,
-    overwrite,
 };
 
 struct renderable_batch {
@@ -167,26 +143,6 @@ struct renderer_detector_interface : render_info_detector_interface {
     }
 };
 
-struct renderable_mesh_data {
-    virtual ~renderable_mesh_data() = default;
-
-    [[nodiscard]] virtual std::size_t vertex_buffer_byte_offset() = 0;
-    [[nodiscard]] virtual std::size_t index_buffer_byte_offset() = 0;
-    [[nodiscard]] virtual id<MTLBuffer> vertexBuffer() = 0;
-    [[nodiscard]] virtual id<MTLBuffer> indexBuffer() = 0;
-
-    [[nodiscard]] virtual mesh_data_updates_t const &updates() = 0;
-    virtual void update_render_buffer() = 0;
-    virtual void clear_updates() = 0;
-
-    [[nodiscard]] static std::shared_ptr<renderable_mesh_data> cast(
-        std::shared_ptr<renderable_mesh_data> const &mesh_data) {
-        return mesh_data;
-    }
-};
-
-class batch_render_mesh_info;
-
 struct renderable_mesh {
     virtual ~renderable_mesh() = default;
 
@@ -223,19 +179,10 @@ struct renderer_action_manager {
     virtual void update(time_point_t const &) = 0;
 };
 
-struct renderable_metal_system {
-    virtual ~renderable_metal_system() = default;
+struct renderer_view_look {
+    virtual ~renderer_view_look() = default;
 
-    virtual void view_render(yas_objc_view *const view, std::shared_ptr<ui::render_info_detector_interface> const &,
-                             simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
-    virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
-    virtual void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
-                             std::shared_ptr<metal_encode_info> const &) = 0;
-    virtual void push_render_target(std::shared_ptr<render_stackable> const &, ui::render_target const *) = 0;
-
-    static std::shared_ptr<renderable_metal_system> cast(std::shared_ptr<renderable_metal_system> const &system) {
-        return system;
-    }
+    [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
 };
 }  // namespace yas::ui
 

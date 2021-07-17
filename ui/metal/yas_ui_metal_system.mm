@@ -42,8 +42,8 @@ static size_t constexpr _uniforms2d_size = []() {
 
 #pragma mark - metal_system
 
-metal_system::metal_system(id<MTLDevice> const device, uint32_t const sample_count)
-    : _device(device), _sample_count(sample_count) {
+metal_system::metal_system(id<MTLDevice> const device, YASUIMetalView *const metalView, uint32_t const sample_count)
+    : _device(device), _metal_view(metalView), _sample_count(sample_count) {
     this->_command_queue.move_object([device newCommandQueue]);
     auto const bundle = objc_ptr<NSBundle *>([] { return [NSBundle bundleForClass:[YASUIMetalView class]]; });
     this->_default_library.move_object([device newDefaultLibraryWithBundle:bundle.object() error:nil]);
@@ -110,15 +110,13 @@ std::size_t metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
 }
 
-void metal_system::view_render(yas_objc_view *const objc_view,
-                               std::shared_ptr<ui::render_info_detector_interface> const &detector,
+void metal_system::view_render(std::shared_ptr<ui::render_info_detector_interface> const &detector,
                                simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node) {
-    if (![objc_view isKindOfClass:[YASUIMetalView class]]) {
+    if (!this->_metal_view) {
         return;
     }
 
-    auto view = (YASUIMetalView *const)objc_view;
-
+    auto const *view = this->_metal_view.object();
     auto renderPassDesc = view.currentRenderPassDescriptor;
     auto currentDrawable = view.currentDrawable;
 
@@ -277,12 +275,13 @@ void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interf
     this->_last_encoded_mesh_count = result.encoded_mesh_count;
 }
 
-std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device) {
-    return make_shared(device, 4);
+std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device, YASUIMetalView *const metalView) {
+    return make_shared(device, metalView, 4);
 }
 
-std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device, uint32_t const sample_count) {
-    auto shared = std::shared_ptr<metal_system>(new metal_system{device, sample_count});
+std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device, YASUIMetalView *const metalView,
+                                                        uint32_t const sample_count) {
+    auto shared = std::shared_ptr<metal_system>(new metal_system{device, metalView, sample_count});
     shared->_weak_metal_system = shared;
     return shared;
 }

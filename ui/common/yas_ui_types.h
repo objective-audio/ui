@@ -61,6 +61,8 @@ class color;
 class background;
 class angle;
 class view_look;
+class render_info;
+class batch_render_mesh_info;
 
 class renderable_render_target;
 class updatable_action;
@@ -74,7 +76,7 @@ class manageable_event;
 class renderable_mesh;
 class renderable_mesh_data;
 class metal_object;
-class renderable_metal_system;
+class renderer_metal_system;
 class makable_metal_system;
 class testable_metal_system;
 class renderable_node;
@@ -83,6 +85,9 @@ class render_effectable;
 class render_stackable;
 class view_renderer_interface;
 class renderer_background_interface;
+class view_metal_system_interface;
+
+enum class batch_building_type;
 
 enum class pixel_format { rgba8_unorm, bgra8_unorm };
 

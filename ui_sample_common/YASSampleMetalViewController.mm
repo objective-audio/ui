@@ -19,8 +19,8 @@ using namespace yas::ui;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    auto const metal_system =
-        ui::metal_system::make_shared(objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object());
+    auto const metal_system = ui::metal_system::make_shared(
+        objc_ptr_with_move_object(MTLCreateSystemDefaultDevice()).object(), self.metalView);
 
     self->_main = sample::main::make_shared([self view_look], metal_system);
 

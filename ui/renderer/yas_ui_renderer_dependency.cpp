@@ -1,11 +1,11 @@
 //
-//  yas_ui_node_protocol.mm
+//  yas_ui_renderer_dependency.cpp
 //
 
 #include "yas_ui_renderer_dependency.h"
+
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_stl_utils.h>
-#include <vector>
 
 using namespace yas;
 using namespace yas::ui;
