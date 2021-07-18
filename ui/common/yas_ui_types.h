@@ -76,7 +76,7 @@ class manageable_event;
 class renderable_mesh;
 class renderable_mesh_data;
 class metal_object;
-class renderer_system;
+class renderer_system_interface;
 class makable_metal_system;
 class testable_metal_system;
 class renderable_node;

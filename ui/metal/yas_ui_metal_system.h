@@ -9,7 +9,7 @@
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 
 namespace yas::ui {
-struct metal_system final : renderer_system,
+struct metal_system final : renderer_system_interface,
                             renderable_metal_system,
                             makable_metal_system,
                             testable_metal_system,

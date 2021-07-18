@@ -15,7 +15,7 @@ using namespace yas::ui;
 
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::renderer_system> const &system,
+renderer::renderer(std::shared_ptr<ui::renderer_system_interface> const &system,
                    std::shared_ptr<ui::renderer_view_look> const &view_look, std::shared_ptr<ui::node> const &root_node,
                    std::shared_ptr<ui::renderer_detector_interface> const &detector,
                    std::shared_ptr<ui::renderer_action_manager> const &action_manager)
@@ -68,7 +68,7 @@ void renderer::_post_render() {
     this->_updates.flags.reset();
 }
 
-std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderer_system> const &system,
+std::shared_ptr<renderer> renderer::make_shared(std::shared_ptr<ui::renderer_system_interface> const &system,
                                                 std::shared_ptr<ui::renderer_view_look> const &view_look,
                                                 std::shared_ptr<ui::node> const &root_node,
                                                 std::shared_ptr<ui::renderer_detector_interface> const &detector,
