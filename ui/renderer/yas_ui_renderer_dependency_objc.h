@@ -60,16 +60,4 @@ struct renderable_metal_system {
         return system;
     }
 };
-
-struct renderer_metal_system {
-    virtual ~renderer_metal_system() = default;
-
-    virtual void view_render(std::shared_ptr<ui::render_info_detector_interface> const &,
-                             simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
-
-    [[nodiscard]] static std::shared_ptr<renderer_metal_system> cast(
-        std::shared_ptr<renderer_metal_system> const &system) {
-        return system;
-    }
-};
 }  // namespace yas::ui
