@@ -32,7 +32,7 @@ void metal_encode_info::append_mesh(std::shared_ptr<mesh> const &mesh) {
     this->_meshes.emplace_back(mesh);
 }
 
-void metal_encode_info::append_effect(std::shared_ptr<effect> const &effect) {
+void metal_encode_info::append_effect(std::shared_ptr<metal_encoder_effect_interface> const &effect) {
     this->_effects.emplace_back(effect);
 }
 
@@ -52,7 +52,7 @@ std::vector<std::shared_ptr<mesh>> const &metal_encode_info::meshes() const {
     return this->_meshes;
 }
 
-std::vector<std::shared_ptr<effect>> const &metal_encode_info::effects() const {
+std::vector<std::shared_ptr<metal_encoder_effect_interface>> const &metal_encode_info::effects() const {
     return this->_effects;
 }
 

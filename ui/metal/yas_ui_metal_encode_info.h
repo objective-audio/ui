@@ -18,14 +18,14 @@ struct metal_encode_info final {
     virtual ~metal_encode_info();
 
     void append_mesh(std::shared_ptr<mesh> const &);
-    void append_effect(std::shared_ptr<effect> const &);
+    void append_effect(std::shared_ptr<metal_encoder_effect_interface> const &);
 
     [[nodiscard]] MTLRenderPassDescriptor *renderPassDescriptor() const;
     [[nodiscard]] id<MTLRenderPipelineState> pipelineStateWithTexture() const;
     [[nodiscard]] id<MTLRenderPipelineState> pipelineStateWithoutTexture() const;
 
     [[nodiscard]] std::vector<std::shared_ptr<mesh>> const &meshes() const;
-    [[nodiscard]] std::vector<std::shared_ptr<effect>> const &effects() const;
+    [[nodiscard]] std::vector<std::shared_ptr<metal_encoder_effect_interface>> const &effects() const;
     [[nodiscard]] std::unordered_map<uintptr_t, std::shared_ptr<texture>> const &textures() const;
 
     [[nodiscard]] static std::shared_ptr<metal_encode_info> make_shared(args);
@@ -35,7 +35,7 @@ struct metal_encode_info final {
     objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_with_texture;
     objc_ptr<id<MTLRenderPipelineState>> _pipe_line_state_without_texture;
     std::vector<std::shared_ptr<mesh>> _meshes;
-    std::vector<std::shared_ptr<effect>> _effects;
+    std::vector<std::shared_ptr<metal_encoder_effect_interface>> _effects;
     std::unordered_map<uintptr_t, std::shared_ptr<texture>> _textures;
 
     metal_encode_info(args &&);

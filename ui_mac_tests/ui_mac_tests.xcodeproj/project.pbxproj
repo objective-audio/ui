@@ -62,7 +62,7 @@
 		B6F4B96821E6D3C20038DC6D /* yas_ui_metal_texture_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351621E6347600E49BCB /* yas_ui_metal_texture_tests.mm */; };
 		B6F4B96921E6D3C20038DC6D /* yas_ui_renderer_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351721E6347600E49BCB /* yas_ui_renderer_tests.mm */; };
 		B6F4B96A21E6D3C20038DC6D /* yas_ui_layout_actions_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351821E6347600E49BCB /* yas_ui_layout_actions_tests.mm */; };
-		B6F4B96B21E6D3C20038DC6D /* yas_ui_metal_render_encoder_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351921E6347600E49BCB /* yas_ui_metal_render_encoder_tests.mm */; };
+		B6F4B96B21E6D3C20038DC6D /* yas_ui_metal_encoder_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351921E6347600E49BCB /* yas_ui_metal_encoder_tests.mm */; };
 		B6F4B96C21E6D3C20038DC6D /* yas_ui_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351A21E6347600E49BCB /* yas_ui_layout_tests.mm */; };
 		B6F4B96D21E6D3C20038DC6D /* yas_ui_metal_types_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351B21E6347600E49BCB /* yas_ui_metal_types_tests.mm */; };
 /* End PBXBuildFile section */
@@ -124,7 +124,7 @@
 		B6DE351621E6347600E49BCB /* yas_ui_metal_texture_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_texture_tests.mm; sourceTree = "<group>"; };
 		B6DE351721E6347600E49BCB /* yas_ui_renderer_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_renderer_tests.mm; sourceTree = "<group>"; };
 		B6DE351821E6347600E49BCB /* yas_ui_layout_actions_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_actions_tests.mm; sourceTree = "<group>"; };
-		B6DE351921E6347600E49BCB /* yas_ui_metal_render_encoder_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_render_encoder_tests.mm; sourceTree = "<group>"; };
+		B6DE351921E6347600E49BCB /* yas_ui_metal_encoder_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_encoder_tests.mm; sourceTree = "<group>"; };
 		B6DE351A21E6347600E49BCB /* yas_ui_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_tests.mm; sourceTree = "<group>"; };
 		B6DE351B21E6347600E49BCB /* yas_ui_metal_types_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_types_tests.mm; sourceTree = "<group>"; };
 		B6DE354721E634A700E49BCB /* chaining.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = chaining.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -255,7 +255,7 @@
 				B6DE351721E6347600E49BCB /* yas_ui_renderer_tests.mm */,
 				B6B0D2F22691FD3400F8E694 /* yas_ui_action_manager_tests.mm */,
 				B6DE351821E6347600E49BCB /* yas_ui_layout_actions_tests.mm */,
-				B6DE351921E6347600E49BCB /* yas_ui_metal_render_encoder_tests.mm */,
+				B6DE351921E6347600E49BCB /* yas_ui_metal_encoder_tests.mm */,
 				B6DE351A21E6347600E49BCB /* yas_ui_layout_tests.mm */,
 				B6DE351B21E6347600E49BCB /* yas_ui_metal_types_tests.mm */,
 				B608AB4924B4B75400B5A18F /* yas_ui_background_tests.mm */,
@@ -455,7 +455,7 @@
 				B6F4B95121E6D3C10038DC6D /* yas_ui_mesh_data_tests.mm in Sources */,
 				B6F4B96D21E6D3C20038DC6D /* yas_ui_metal_types_tests.mm in Sources */,
 				B6F4B95E21E6D3C20038DC6D /* yas_ui_node_tests.mm in Sources */,
-				B6F4B96B21E6D3C20038DC6D /* yas_ui_metal_render_encoder_tests.mm in Sources */,
+				B6F4B96B21E6D3C20038DC6D /* yas_ui_metal_encoder_tests.mm in Sources */,
 				B6F4B94C21E6D3C10038DC6D /* yas_ui_metal_system_tests.mm in Sources */,
 				B6F4B96921E6D3C20038DC6D /* yas_ui_renderer_tests.mm in Sources */,
 				B6420859269DBA690006C9AF /* yas_ui_view_look_tests.mm in Sources */,

@@ -17,7 +17,12 @@
 #include <vector>
 
 namespace yas::ui {
-struct node final : action_target, metal_object, renderable_node, layout_point_target, node_parent_interface {
+struct node final : action_target,
+                    metal_object,
+                    renderable_node,
+                    layout_point_target,
+                    node_parent_interface,
+                    renderer_node_interface {
     enum class method {
         added_to_super,
         removed_from_super,

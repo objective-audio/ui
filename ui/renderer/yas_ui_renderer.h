@@ -12,11 +12,11 @@ namespace yas::ui {
 struct renderer final : view_renderer_interface {
     [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::renderer_system> const &,
-                                                               std::shared_ptr<ui::renderer_view_look> const &,
-                                                               std::shared_ptr<ui::node> const &,
-                                                               std::shared_ptr<ui::renderer_detector_interface> const &,
-                                                               std::shared_ptr<ui::renderer_action_manager> const &);
+    [[nodiscard]] static std::shared_ptr<renderer> make_shared(
+        std::shared_ptr<ui::renderer_system_interface> const &,
+        std::shared_ptr<ui::renderer_view_look_interface> const &, std::shared_ptr<ui::node> const &,
+        std::shared_ptr<ui::renderer_detector_interface> const &,
+        std::shared_ptr<ui::renderer_action_manager_interface> const &);
 
    private:
     enum class update_result {
@@ -29,20 +29,21 @@ struct renderer final : view_renderer_interface {
         updated,
     };
 
-    std::shared_ptr<ui::renderer_system> _system;
-    std::shared_ptr<ui::renderer_view_look> _view_look;
+    std::shared_ptr<ui::renderer_system_interface> _system;
+    std::shared_ptr<ui::renderer_view_look_interface> _view_look;
 
     renderer_updates_t _updates;
 
     std::shared_ptr<node> const _root_node;
     std::shared_ptr<ui::renderer_detector_interface> const _detector;
-    std::shared_ptr<ui::renderer_action_manager> const _action_manager;
+    std::shared_ptr<ui::renderer_action_manager_interface> const _action_manager;
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
-    renderer(std::shared_ptr<ui::renderer_system> const &, std::shared_ptr<ui::renderer_view_look> const &,
-             std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::renderer_detector_interface> const &,
-             std::shared_ptr<ui::renderer_action_manager> const &);
+    renderer(std::shared_ptr<ui::renderer_system_interface> const &,
+             std::shared_ptr<ui::renderer_view_look_interface> const &, std::shared_ptr<ui::node> const &root_node,
+             std::shared_ptr<ui::renderer_detector_interface> const &,
+             std::shared_ptr<ui::renderer_action_manager_interface> const &);
 
     renderer(renderer const &) = delete;
     renderer(renderer &&) = delete;

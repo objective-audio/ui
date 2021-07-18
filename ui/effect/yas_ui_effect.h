@@ -6,13 +6,13 @@
 
 #include <Metal/Metal.h>
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_metal_render_encoder_dependency.h>
+#include <ui/yas_ui_metal_encoder_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
 #include <functional>
 
 namespace yas::ui {
-struct effect final : renderable_effect, encodable_effect, metal_object {
+struct effect final : renderable_effect, metal_encoder_effect_interface, metal_object {
     using metal_handler_f = std::function<void(std::shared_ptr<texture> const &src, std::shared_ptr<texture> const &dst,
                                                std::shared_ptr<ui::metal_system> const &, id<MTLCommandBuffer> const)>;
 
