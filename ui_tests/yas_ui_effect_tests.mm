@@ -28,7 +28,6 @@ using namespace yas::ui;
     XCTAssertTrue(effect);
     XCTAssertFalse(effect->metal_handler());
     XCTAssertTrue(renderable_effect::cast(effect));
-    XCTAssertTrue(encodable_effect::cast(effect));
     XCTAssertTrue(metal_object::cast(effect));
 }
 
