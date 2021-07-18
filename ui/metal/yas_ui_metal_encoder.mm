@@ -53,7 +53,7 @@ metal_encoder::encode_result_t metal_encoder::encode(
         [renderEncoder endEncoding];
 
         for (auto const &effect : metal_encode_info->effects()) {
-            encodable_effect::cast(effect)->encode(commandBuffer);
+            effect->encode(commandBuffer);
         }
     }
 

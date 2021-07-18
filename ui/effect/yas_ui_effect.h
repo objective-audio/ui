@@ -12,7 +12,7 @@
 #include <functional>
 
 namespace yas::ui {
-struct effect final : renderable_effect, encodable_effect, metal_object {
+struct effect final : renderable_effect, metal_encoder_effect_interface, metal_object {
     using metal_handler_f = std::function<void(std::shared_ptr<texture> const &src, std::shared_ptr<texture> const &dst,
                                                std::shared_ptr<ui::metal_system> const &, id<MTLCommandBuffer> const)>;
 
