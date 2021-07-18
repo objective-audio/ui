@@ -10,8 +10,6 @@
 
 namespace yas::ui {
 struct renderer final : view_renderer_interface {
-    virtual ~renderer();
-
     [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::renderer_metal_system> const &,

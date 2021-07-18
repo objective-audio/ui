@@ -27,8 +27,6 @@ renderer::renderer(std::shared_ptr<ui::renderer_metal_system> const &metal_syste
       _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
 }
 
-renderer::~renderer() = default;
-
 observing::endable renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
     return this->_will_render_notifier->observe(std::move(handler));
 }
