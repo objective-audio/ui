@@ -61,7 +61,7 @@ struct renderable_metal_system {
     }
 };
 
-struct renderer_metal_system : renderable_metal_system {
+struct renderer_metal_system {
     virtual ~renderer_metal_system() = default;
 
     virtual void view_render(std::shared_ptr<ui::render_info_detector_interface> const &,

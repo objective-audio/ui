@@ -10,6 +10,7 @@
 
 namespace yas::ui {
 struct metal_system final : renderer_metal_system,
+                            renderable_metal_system,
                             makable_metal_system,
                             testable_metal_system,
                             view_metal_system_interface {
