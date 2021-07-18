@@ -18,8 +18,6 @@ using namespace yas::ui;
 metal_encoder::metal_encoder() {
 }
 
-metal_encoder::~metal_encoder() = default;
-
 std::deque<std::shared_ptr<metal_encode_info>> const &metal_encoder::all_encode_infos() {
     return this->_all_encode_infos;
 }

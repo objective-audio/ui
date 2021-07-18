@@ -16,8 +16,6 @@ struct metal_encoder final : render_encodable, render_effectable, render_stackab
         std::size_t const encoded_mesh_count;
     };
 
-    virtual ~metal_encoder();
-
     [[nodiscard]] std::deque<std::shared_ptr<metal_encode_info>> const &all_encode_infos();
 
     encode_result_t encode(std::shared_ptr<ui::metal_encoder_system_interface> const &metal_system,
