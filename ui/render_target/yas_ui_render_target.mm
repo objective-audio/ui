@@ -169,7 +169,7 @@ bool render_target::push_encode_info(std::shared_ptr<render_stackable> const &st
     }
 
     if (auto const &metal_system = this->_metal_system) {
-        renderer_metal_system::cast(metal_system)->push_render_target(stackable, this);
+        renderable_metal_system::cast(metal_system)->push_render_target(stackable, this);
         return true;
     }
     return false;

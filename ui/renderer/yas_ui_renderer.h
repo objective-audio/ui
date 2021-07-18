@@ -10,11 +10,9 @@
 
 namespace yas::ui {
 struct renderer final : view_renderer_interface {
-    virtual ~renderer();
-
     [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::renderer_metal_system> const &,
+    [[nodiscard]] static std::shared_ptr<renderer> make_shared(std::shared_ptr<ui::renderer_system> const &,
                                                                std::shared_ptr<ui::renderer_view_look> const &,
                                                                std::shared_ptr<ui::node> const &,
                                                                std::shared_ptr<ui::renderer_detector_interface> const &,
@@ -31,7 +29,7 @@ struct renderer final : view_renderer_interface {
         updated,
     };
 
-    std::shared_ptr<ui::renderer_metal_system> _metal_system;
+    std::shared_ptr<ui::renderer_system> _system;
     std::shared_ptr<ui::renderer_view_look> _view_look;
 
     renderer_updates_t _updates;
@@ -42,7 +40,7 @@ struct renderer final : view_renderer_interface {
 
     observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
 
-    renderer(std::shared_ptr<ui::renderer_metal_system> const &, std::shared_ptr<ui::renderer_view_look> const &,
+    renderer(std::shared_ptr<ui::renderer_system> const &, std::shared_ptr<ui::renderer_view_look> const &,
              std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::renderer_detector_interface> const &,
              std::shared_ptr<ui::renderer_action_manager> const &);
 
