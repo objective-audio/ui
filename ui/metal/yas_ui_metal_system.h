@@ -36,7 +36,6 @@ struct metal_system final : renderer_metal_system,
     objc_ptr<id<MTLCommandQueue>> _command_queue;
     objc_ptr<id<MTLLibrary>> _default_library;
 
-#warning todo weakで保持したい
     objc_ptr<YASUIMetalView *> _metal_view;
 
     objc_ptr<dispatch_semaphore_t> _inflight_semaphore;

@@ -225,13 +225,6 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(parent_node2->children().size(), 1);
 }
 
-- (void)test_renderable_node {
-    auto node = node::make_shared();
-    auto const renderable = renderable_node::cast(node);
-
-#warning todo
-}
-
 - (void)test_observe_add_and_remove_node {
     auto parent_node = node::make_shared();
     auto sub_node = node::make_shared();
