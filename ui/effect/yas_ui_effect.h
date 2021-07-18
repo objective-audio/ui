@@ -6,7 +6,7 @@
 
 #include <Metal/Metal.h>
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_metal_render_encoder_dependency.h>
+#include <ui/yas_ui_metal_encoder_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
 #include <functional>

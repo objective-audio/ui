@@ -46,7 +46,7 @@ class mesh_data;
 class dynamic_mesh_data;
 class mesh;
 class metal_encode_info;
-class metal_render_encoder;
+class metal_encoder;
 class metal_system;
 class metal_texture;
 class node;

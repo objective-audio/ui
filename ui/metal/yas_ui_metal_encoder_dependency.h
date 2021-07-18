@@ -1,10 +1,11 @@
 //
-//  yas_ui_metal_render_encoder_dependency.h
+//  yas_ui_metal_encoder_dependency.h
 //
 
 #pragma once
 
 #include <Metal/Metal.h>
+#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 struct encodable_effect {

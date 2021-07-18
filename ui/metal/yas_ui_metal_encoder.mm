@@ -1,13 +1,13 @@
 //
-//  yas_ui_metal_render_encoder.mm
+//  yas_ui_metal_encoder.mm
 //
 
-#include "yas_ui_metal_render_encoder.h"
+#include "yas_ui_metal_encoder.h"
 #include <cpp_utils/yas_objc_ptr.h>
 #include <ui/yas_ui_effect.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_metal_encode_info.h>
-#include <ui/yas_ui_metal_render_encoder_dependency.h>
+#include <ui/yas_ui_metal_encoder_dependency.h>
 #include <ui/yas_ui_metal_texture.h>
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_texture.h>
@@ -15,16 +15,16 @@
 using namespace yas;
 using namespace yas::ui;
 
-metal_render_encoder::metal_render_encoder() {
+metal_encoder::metal_encoder() {
 }
 
-metal_render_encoder::~metal_render_encoder() = default;
+metal_encoder::~metal_encoder() = default;
 
-std::deque<std::shared_ptr<metal_encode_info>> const &metal_render_encoder::all_encode_infos() {
+std::deque<std::shared_ptr<metal_encode_info>> const &metal_encoder::all_encode_infos() {
     return this->_all_encode_infos;
 }
 
-metal_render_encoder::encode_result_t metal_render_encoder::encode(
+metal_encoder::encode_result_t metal_encoder::encode(
     std::shared_ptr<metal_encoder_system_interface> const &metal_system, id<MTLCommandBuffer> const commandBuffer) {
     metal_system->prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
 
@@ -60,28 +60,28 @@ metal_render_encoder::encode_result_t metal_render_encoder::encode(
     return encode_result_t{.encoded_mesh_count = encoded_count};
 }
 
-void metal_render_encoder::append_mesh(std::shared_ptr<mesh> const &mesh) {
+void metal_encoder::append_mesh(std::shared_ptr<mesh> const &mesh) {
     if (auto &info = this->current_encode_info()) {
         info->append_mesh(mesh);
     }
 }
 
-void metal_render_encoder::append_effect(std::shared_ptr<effect> const &effect) {
+void metal_encoder::append_effect(std::shared_ptr<effect> const &effect) {
     if (auto &info = this->current_encode_info()) {
         info->append_effect(std::move(effect));
     }
 }
 
-void metal_render_encoder::push_encode_info(std::shared_ptr<metal_encode_info> const &info) {
+void metal_encoder::push_encode_info(std::shared_ptr<metal_encode_info> const &info) {
     this->_all_encode_infos.push_front(info);
     this->_current_encode_infos.push_front(info);
 }
 
-void metal_render_encoder::pop_encode_info() {
+void metal_encoder::pop_encode_info() {
     this->_current_encode_infos.pop_front();
 }
 
-std::shared_ptr<metal_encode_info> const &metal_render_encoder::current_encode_info() {
+std::shared_ptr<metal_encode_info> const &metal_encoder::current_encode_info() {
     if (this->_current_encode_infos.size() > 0) {
         return this->_current_encode_infos.front();
     } else {
@@ -90,7 +90,7 @@ std::shared_ptr<metal_encode_info> const &metal_render_encoder::current_encode_i
     }
 }
 
-uint32_t metal_render_encoder::_mesh_count_in_all_encode_infos() const {
+uint32_t metal_encoder::_mesh_count_in_all_encode_infos() const {
     uint32_t count = 0;
     for (auto &metal_encode_info : this->_all_encode_infos) {
         count += metal_encode_info->meshes().size();
@@ -98,6 +98,6 @@ uint32_t metal_render_encoder::_mesh_count_in_all_encode_infos() const {
     return count;
 }
 
-std::shared_ptr<metal_render_encoder> metal_render_encoder::make_shared() {
-    return std::shared_ptr<metal_render_encoder>(new metal_render_encoder{});
+std::shared_ptr<metal_encoder> metal_encoder::make_shared() {
+    return std::shared_ptr<metal_encoder>(new metal_encoder{});
 }

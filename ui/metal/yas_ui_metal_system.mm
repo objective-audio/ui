@@ -7,7 +7,7 @@
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_metal_encode_info.h>
-#include <ui/yas_ui_metal_render_encoder.h>
+#include <ui/yas_ui_metal_encoder.h>
 #include <ui/yas_ui_metal_texture.h>
 #include <ui/yas_ui_metal_types.h>
 #include <ui/yas_ui_metal_view.h>
@@ -250,7 +250,7 @@ void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interf
                                  simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node,
                                  id<MTLCommandBuffer> const commandBuffer,
                                  MTLRenderPassDescriptor *const renderPassDesc) {
-    auto const metal_render_encoder = metal_render_encoder::make_shared();
+    auto const metal_render_encoder = metal_encoder::make_shared();
     render_stackable::cast(metal_render_encoder)
         ->push_encode_info(metal_encode_info::make_shared(
             {.renderPassDescriptor = renderPassDesc,

@@ -1,5 +1,5 @@
 //
-//  yas_ui_metal_render_encoder_tests.mm
+//  yas_ui_metal_encoder_tests.mm
 //
 
 #import <XCTest/XCTest.h>
@@ -11,11 +11,11 @@
 using namespace yas;
 using namespace yas::ui;
 
-@interface yas_ui_metal_render_encoder_tests : XCTestCase
+@interface yas_ui_metal_encoder_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_metal_render_encoder_tests
+@implementation yas_ui_metal_encoder_tests
 
 - (void)setUp {
     [super setUp];
@@ -27,13 +27,13 @@ using namespace yas::ui;
 }
 
 - (void)test_create {
-    auto encoder = metal_render_encoder::make_shared();
+    auto encoder = metal_encoder::make_shared();
 
     XCTAssertTrue(render_encodable::cast(encoder));
 }
 
 - (void)test_push_and_pop_encode_info {
-    auto encoder = metal_render_encoder::make_shared();
+    auto encoder = metal_encoder::make_shared();
     auto const stackable = render_stackable::cast(encoder);
 
     stackable->push_encode_info(metal_encode_info::make_shared({nil, nil, nil}));
@@ -62,7 +62,7 @@ using namespace yas::ui;
 }
 
 - (void)test_append_mesh {
-    auto encoder = metal_render_encoder::make_shared();
+    auto encoder = metal_encoder::make_shared();
     auto const stackable = render_stackable::cast(encoder);
 
     stackable->push_encode_info(metal_encode_info::make_shared({nil, nil, nil}));
@@ -104,7 +104,7 @@ using namespace yas::ui;
         auto const commandQueue = [mtlDevice newCommandQueue];
         auto const commandBuffer = [commandQueue commandBuffer];
 
-        auto encoder = metal_render_encoder::make_shared();
+        auto encoder = metal_encoder::make_shared();
         auto const stackable = render_stackable::cast(encoder);
 
         auto encode_info = metal_encode_info::make_shared(

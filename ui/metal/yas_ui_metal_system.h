@@ -5,7 +5,7 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <ui/yas_ui_metal_render_encoder_dependency.h>
+#include <ui/yas_ui_metal_encoder_dependency.h>
 #include <ui/yas_ui_metal_system_protocol.h>
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 
