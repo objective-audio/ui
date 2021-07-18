@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
+#include <ui/yas_ui_metal_render_encoder_dependency.h>
 #include <ui/yas_ui_render_info_dependency.h>
 
 #include <deque>
@@ -19,7 +20,7 @@ struct metal_render_encoder final : render_encodable, render_effectable, render_
 
     [[nodiscard]] std::deque<std::shared_ptr<metal_encode_info>> const &all_encode_infos();
 
-    encode_result_t encode(std::shared_ptr<ui::metal_system> const &metal_system,
+    encode_result_t encode(std::shared_ptr<ui::metal_encoder_system_interface> const &metal_system,
                            id<MTLCommandBuffer> const commandBuffer);
 
     [[nodiscard]] static std::shared_ptr<metal_render_encoder> make_shared();

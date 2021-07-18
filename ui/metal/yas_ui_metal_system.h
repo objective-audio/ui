@@ -5,6 +5,7 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <ui/yas_ui_metal_render_encoder_dependency.h>
 #include <ui/yas_ui_metal_system_protocol.h>
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 
@@ -13,7 +14,8 @@ struct metal_system final : renderer_system_interface,
                             renderable_metal_system,
                             makable_metal_system,
                             testable_metal_system,
-                            view_metal_system_interface {
+                            view_metal_system_interface,
+                            metal_encoder_system_interface {
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);

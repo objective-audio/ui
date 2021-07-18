@@ -24,9 +24,9 @@ std::deque<std::shared_ptr<metal_encode_info>> const &metal_render_encoder::all_
     return this->_all_encode_infos;
 }
 
-metal_render_encoder::encode_result_t metal_render_encoder::encode(std::shared_ptr<metal_system> const &metal_system,
-                                                                   id<MTLCommandBuffer> const commandBuffer) {
-    renderable_metal_system::cast(metal_system)->prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
+metal_render_encoder::encode_result_t metal_render_encoder::encode(
+    std::shared_ptr<metal_encoder_system_interface> const &metal_system, id<MTLCommandBuffer> const commandBuffer) {
+    metal_system->prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
 
     std::size_t encoded_count = 0;
 
@@ -40,7 +40,7 @@ metal_render_encoder::encode_result_t metal_render_encoder::encode(std::shared_p
         for (auto &mesh : metal_encode_info->meshes()) {
             auto renderable = renderable_mesh::cast(mesh);
             if (renderable->pre_render()) {
-                renderable_metal_system::cast(metal_system)->mesh_encode(mesh, renderEncoder, metal_encode_info);
+                metal_system->mesh_encode(mesh, renderEncoder, metal_encode_info);
 
                 ++encoded_count;
             }

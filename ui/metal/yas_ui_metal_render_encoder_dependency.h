@@ -16,4 +16,12 @@ struct encodable_effect {
         return encodable;
     }
 };
+
+struct metal_encoder_system_interface {
+    virtual ~metal_encoder_system_interface() = default;
+
+    virtual void prepare_uniforms_buffer(uint32_t const uniforms_count) = 0;
+    virtual void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
+                             std::shared_ptr<metal_encode_info> const &) = 0;
+};
 }  // namespace yas::ui
