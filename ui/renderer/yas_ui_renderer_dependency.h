@@ -179,8 +179,8 @@ struct renderer_action_manager {
     virtual void update(time_point_t const &) = 0;
 };
 
-struct renderer_view_look {
-    virtual ~renderer_view_look() = default;
+struct renderer_view_look_interface {
+    virtual ~renderer_view_look_interface() = default;
 
     [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
 };
