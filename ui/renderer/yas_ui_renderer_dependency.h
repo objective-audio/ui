@@ -173,8 +173,8 @@ struct renderable_effect {
     }
 };
 
-struct renderer_action_manager {
-    virtual ~renderer_action_manager() = default;
+struct renderer_action_manager_interface {
+    virtual ~renderer_action_manager_interface() = default;
 
     virtual void update(time_point_t const &) = 0;
 };
