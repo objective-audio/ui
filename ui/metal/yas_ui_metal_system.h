@@ -14,8 +14,6 @@ struct metal_system final : renderer_system,
                             makable_metal_system,
                             testable_metal_system,
                             view_metal_system_interface {
-    virtual ~metal_system();
-
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);

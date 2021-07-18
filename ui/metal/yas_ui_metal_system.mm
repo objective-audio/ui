@@ -104,8 +104,6 @@ metal_system::metal_system(id<MTLDevice> const device, YASUIMetalView *const met
                                                                                           error:nil]);
 }
 
-metal_system::~metal_system() = default;
-
 std::size_t metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
 }
