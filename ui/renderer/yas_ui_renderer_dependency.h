@@ -191,6 +191,13 @@ struct renderer_system_interface {
     virtual void view_render(std::shared_ptr<ui::render_info_detector_interface> const &,
                              simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
 };
+
+struct renderer_node_interface {
+    virtual ~renderer_node_interface() = default;
+
+    virtual void fetch_updates(ui::tree_updates &) = 0;
+    virtual void clear_updates() = 0;
+};
 }  // namespace yas::ui
 
 namespace yas {
