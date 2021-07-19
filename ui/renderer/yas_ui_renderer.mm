@@ -6,10 +6,6 @@
 #include <cpp_utils/yas_to_bool.h>
 #include <ui/yas_ui_node.h>
 
-#if TARGET_OS_IPHONE
-#include <UIKit/UIView.h>
-#endif
-
 using namespace yas;
 using namespace yas::ui;
 
