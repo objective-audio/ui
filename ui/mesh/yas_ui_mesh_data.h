@@ -24,8 +24,6 @@ struct mesh_data : renderable_mesh_data, metal_object {
 
     virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
 
-    [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system();
-
     [[nodiscard]] static std::shared_ptr<mesh_data> make_shared(mesh_data_args &&);
 
    protected:

@@ -46,10 +46,6 @@ void mesh_data::write(std::function<void(std::vector<vertex2d_t> &, std::vector<
     }
 }
 
-std::shared_ptr<metal_system> const &mesh_data::metal_system() {
-    return this->_metal_system;
-}
-
 std::size_t mesh_data::vertex_buffer_byte_offset() {
     return 0;
 }
