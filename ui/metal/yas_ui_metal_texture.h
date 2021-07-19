@@ -21,8 +21,6 @@ struct metal_texture : metal_object {
     [[nodiscard]] MTLPixelFormat pixel_format() const;
     [[nodiscard]] MTLTextureUsage texture_usage() const;
 
-    [[nodiscard]] std::shared_ptr<ui::metal_system> const &metal_system() const;
-
     [[nodiscard]] static std::shared_ptr<metal_texture> make_shared(ui::uint_size actual_size,
                                                                     ui::texture_usages_t const, ui::pixel_format const);
 

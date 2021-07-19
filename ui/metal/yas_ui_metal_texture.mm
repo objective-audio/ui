@@ -47,10 +47,6 @@ MTLTextureUsage metal_texture::texture_usage() const {
     return this->_texture_usage;
 }
 
-std::shared_ptr<metal_system> const &metal_texture::metal_system() const {
-    return this->_metal_system;
-}
-
 setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
     if (this->_metal_system != system) {
         this->_metal_system = system;

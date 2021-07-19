@@ -34,7 +34,6 @@ using namespace yas::ui;
     XCTAssertEqual(metal_texture->texture_type(), MTLTextureType2D);
     XCTAssertEqual(metal_texture->pixel_format(), MTLPixelFormatRGBA8Unorm);
     XCTAssertEqual(metal_texture->texture_usage(), MTLTextureUsageShaderRead);
-    XCTAssertFalse(metal_texture->metal_system());
 }
 
 - (void)test_create_for_render_target {
@@ -47,7 +46,6 @@ using namespace yas::ui;
     XCTAssertEqual(metal_texture->texture_type(), MTLTextureType2D);
     XCTAssertEqual(metal_texture->pixel_format(), MTLPixelFormatBGRA8Unorm);
     XCTAssertEqual(metal_texture->texture_usage(), MTLTextureUsageRenderTarget);
-    XCTAssertFalse(metal_texture->metal_system());
 }
 
 - (void)test_metal_setup {
@@ -63,7 +61,6 @@ using namespace yas::ui;
     auto metal_system = metal_system::make_shared(device.object(), nil);
     XCTAssertTrue(metal_object::cast(metal_texture)->metal_setup(metal_system));
 
-    XCTAssertTrue(metal_texture->metal_system());
     XCTAssertNotNil(metal_texture->samplerState());
     XCTAssertNotNil(metal_texture->texture());
 }

@@ -429,13 +429,7 @@ struct test_render_encoder : render_encodable {
     sub_node->set_mesh(sub_mesh);
     root_node->add_sub_node(sub_node);
 
-    XCTAssertFalse(root_mesh_data->metal_system());
-    XCTAssertFalse(sub_mesh_data->metal_system());
-
     XCTAssertTrue(metal_object::cast(root_node)->metal_setup(metal_system));
-
-    XCTAssertTrue(root_mesh_data->metal_system());
-    XCTAssertTrue(sub_mesh_data->metal_system());
 }
 
 - (void)test_build_render_info_smoke {
