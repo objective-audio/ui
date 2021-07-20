@@ -15,6 +15,7 @@
 namespace yas::ui {
 class action_target;
 class action;
+class action_manager;
 class parallel_action;
 class continuous_action;
 class batch;
