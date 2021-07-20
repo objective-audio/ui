@@ -24,8 +24,8 @@ using namespace yas::ui;
 
     self->_main = sample::main::make_shared([self view_look], metal_system);
 
-    [self configure_with_metal_system:metal_system renderer:self->_main->renderer];
-    [self.metalView set_event_manager:self->_main->event_manager];
+    [self configure_with_metal_system:metal_system renderer:self->_main->standard->renderer()];
+    [self.metalView set_event_manager:self->_main->standard->event_manager()];
 
     self->_main->setup();
 
