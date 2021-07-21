@@ -9,11 +9,11 @@ using namespace yas::ui;
 
 sample::main::main(std::shared_ptr<ui::view_look> const &view_look,
                    std::shared_ptr<ui::metal_system> const &metal_system)
-    : view_look(view_look), metal_system(metal_system) {
+    : view_look(view_look), metal_system(metal_system), standard(ui::standard::make_shared(view_look, metal_system)) {
 }
 
 void sample::main::setup() {
-    auto const &root_node = this->root_node;
+    auto const &root_node = this->standard->root_node();
 
     root_node->add_sub_node(this->_bg->rect_plane()->node());
 
@@ -64,7 +64,7 @@ void sample::main::setup() {
                      .loop_count = 0,
                      .value_transformer = [](float const value) { return sinf(M_PI * 2.0f * value); }});
 
-    this->action_manager->insert_action(button_pos_action);
+    this->standard->action_manager()->insert_action(button_pos_action);
 
     auto texture = texture::make_shared({.point_size = {1024, 1024}});
     texture->sync_scale_from_view_look(this->view_look);
@@ -87,7 +87,7 @@ void sample::main::setup() {
                                      }
                                  }});
 
-    this->action_manager->insert_action(blur_action);
+    this->standard->action_manager()->insert_action(blur_action);
 
     auto &view_guide = this->view_look->view_layout_guide();
 
@@ -109,7 +109,7 @@ void sample::main::setup() {
                                .end_angle = 360.0f,
                                .duration = 3.0,
                                .loop_count = 0});
-    this->action_manager->insert_action(action);
+    this->standard->action_manager()->insert_action(action);
 }
 
 std::shared_ptr<sample::main> sample::main::make_shared(std::shared_ptr<ui::view_look> const &view_look,

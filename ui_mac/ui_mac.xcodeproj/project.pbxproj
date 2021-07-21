@@ -114,6 +114,8 @@
 		B65AF95021E4DC5200C65DB5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF94F21E4DC5200C65DB5 /* AppKit.framework */; };
 		B65AF95221E4DC5800C65DB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */; };
 		B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */; };
+		B65F26AD26A703BD00F52EB6 /* yas_ui_standard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F26AB26A703BD00F52EB6 /* yas_ui_standard.mm */; };
+		B65F26AE26A703BD00F52EB6 /* yas_ui_standard.h in Headers */ = {isa = PBXBuildFile; fileRef = B65F26AC26A703BD00F52EB6 /* yas_ui_standard.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68474FA2668D4A6008B5202 /* yas_ui_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */; };
 		B68474FB2668D4A6008B5202 /* yas_ui_layout.h in Headers */ = {isa = PBXBuildFile; fileRef = B68474F92668D4A6008B5202 /* yas_ui_layout.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609E724B39FB200F9962D /* yas_ui_background.mm */; };
@@ -249,6 +251,8 @@
 		B65AF94F21E4DC5200C65DB5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B65AF95121E4DC5800C65DB5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		B65F26AB26A703BD00F52EB6 /* yas_ui_standard.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_standard.mm; sourceTree = "<group>"; };
+		B65F26AC26A703BD00F52EB6 /* yas_ui_standard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_standard.h; sourceTree = "<group>"; };
 		B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_layout.cpp; sourceTree = "<group>"; };
 		B68474F92668D4A6008B5202 /* yas_ui_layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout.h; sourceTree = "<group>"; };
 		B69609E724B39FB200F9962D /* yas_ui_background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background.mm; sourceTree = "<group>"; };
@@ -356,6 +360,7 @@
 				B69CD50425E4A4AE00E3C33A /* render_target */,
 				B69CD4F025E4A1BA00E3C33A /* renderer */,
 				B69CD4D325E4A05000E3C33A /* shader */,
+				B65F26AA26A703A200F52EB6 /* standard */,
 				B69CD4F425E4A1D900E3C33A /* string */,
 				B69CD4F625E4A1E000E3C33A /* texture */,
 				B69CD4DB25E4A0C700E3C33A /* utils */,
@@ -381,6 +386,15 @@
 				B65AF94521E4D84900C65DB5 /* cpp_utils.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B65F26AA26A703A200F52EB6 /* standard */ = {
+			isa = PBXGroup;
+			children = (
+				B65F26AC26A703BD00F52EB6 /* yas_ui_standard.h */,
+				B65F26AB26A703BD00F52EB6 /* yas_ui_standard.mm */,
+			);
+			path = standard;
 			sourceTree = "<group>";
 		};
 		B69CD4D225E4A03500E3C33A /* common */ = {
@@ -734,6 +748,7 @@
 				B65AF8E221E4D7E400C65DB5 /* yas_ui_batch_render_mesh_info.h in Headers */,
 				B60E4E3C25E693540064EF1E /* yas_ui_metal_encoder_dependency.h in Headers */,
 				B65AF92921E4D7E400C65DB5 /* yas_ui_detector.h in Headers */,
+				B65F26AE26A703BD00F52EB6 /* yas_ui_standard.h in Headers */,
 				B65AF90F21E4D7E400C65DB5 /* yas_ui_color.h in Headers */,
 				B65AF8D821E4D7E400C65DB5 /* yas_ui_effect.h in Headers */,
 				B65AF8DB21E4D7E400C65DB5 /* yas_ui_strings.h in Headers */,
@@ -848,6 +863,7 @@
 				B65AF8E321E4D7E400C65DB5 /* yas_ui_detector.mm in Sources */,
 				B65AF8E021E4D7E400C65DB5 /* yas_ui_batch.mm in Sources */,
 				B65AF91A21E4D7E400C65DB5 /* yas_ui_metal_encode_info.mm in Sources */,
+				B65F26AD26A703BD00F52EB6 /* yas_ui_standard.mm in Sources */,
 				B65AF92C21E4D7E400C65DB5 /* yas_ui_rect_plane.mm in Sources */,
 				B65AF8DD21E4D7E400C65DB5 /* yas_ui_strings.mm in Sources */,
 				B65AF92D21E4D7E400C65DB5 /* yas_ui_blur.mm in Sources */,

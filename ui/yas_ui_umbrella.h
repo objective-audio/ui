@@ -37,6 +37,7 @@
 #include <ui/yas_ui_render_target.h>
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_shared_types.h>
+#include <ui/yas_ui_standard.h>
 #include <ui/yas_ui_strings.h>
 #include <ui/yas_ui_texture.h>
 #include <ui/yas_ui_view_look.h>
