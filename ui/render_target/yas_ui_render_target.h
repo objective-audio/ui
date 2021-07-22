@@ -25,7 +25,7 @@ struct render_target : metal_object, renderable_render_target {
     [[nodiscard]] std::shared_ptr<ui::effect> const &effect() const override;
 
     [[nodiscard]] static std::shared_ptr<render_target> make_shared(
-        std::shared_ptr<ui::common_scale_factor_interface> const &);
+        std::shared_ptr<ui::view_look_scale_factor_interface> const &);
 
    private:
     std::shared_ptr<ui::layout_region_guide> _layout_guide;
@@ -45,7 +45,7 @@ struct render_target : metal_object, renderable_render_target {
 
     render_target_updates_t _updates;
 
-    render_target(std::shared_ptr<ui::common_scale_factor_interface> const &);
+    render_target(std::shared_ptr<ui::view_look_scale_factor_interface> const &);
 
     render_target(render_target const &) = delete;
     render_target(render_target &&) = delete;
