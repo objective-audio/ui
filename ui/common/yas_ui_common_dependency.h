@@ -20,4 +20,10 @@ struct event_observable_interface {
 
     [[nodiscard]] virtual observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&) = 0;
 };
+
+struct collider_detectable_interface {
+    virtual ~collider_detectable_interface() = default;
+
+    [[nodiscard]] virtual bool detect(ui::point const &, std::shared_ptr<collider> const &) const = 0;
+};
 }  // namespace yas::ui
