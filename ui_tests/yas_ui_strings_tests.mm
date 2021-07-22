@@ -62,12 +62,7 @@ using namespace yas::ui;
     auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    auto strings = strings::make_shared({.max_word_count = 1,
-                                         .text = "",
-                                         .font_atlas = font_atlas,
-                                         .line_height = std::nullopt,
-                                         .frame = region::zero(),
-                                         .alignment = layout_alignment::mid});
+    auto strings = strings::make_shared({.font_atlas = font_atlas});
 
     strings->set_text("test_text");
 
@@ -148,12 +143,7 @@ using namespace yas::ui;
     auto const font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    return strings::make_shared({.max_word_count = 1,
-                                 .text = "",
-                                 .font_atlas = font_atlas,
-                                 .line_height = std::nullopt,
-                                 .frame = region::zero(),
-                                 .alignment = layout_alignment::min});
+    return strings::make_shared({.font_atlas = font_atlas});
 }
 
 @end
