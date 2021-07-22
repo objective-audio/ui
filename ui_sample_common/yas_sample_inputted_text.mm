@@ -10,8 +10,7 @@ using namespace yas::ui;
 sample::inputted_text::inputted_text(std::shared_ptr<font_atlas> const &font_atlas,
                                      std::shared_ptr<ui::event_manager> const &event_manager,
                                      std::shared_ptr<ui::layout_region_source> const &safe_area_guide)
-    : _strings(
-          strings::make_shared({.font_atlas = font_atlas, .max_word_count = 512, .alignment = layout_alignment::min})) {
+    : _strings(strings::make_shared({.max_word_count = 512, .alignment = layout_alignment::min}, font_atlas)) {
     event_manager
         ->observe([this](std::shared_ptr<event> const &event) {
             if (event->type() == event_type::key) {

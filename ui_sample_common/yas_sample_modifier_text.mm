@@ -12,8 +12,7 @@ sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atl
                                      std::shared_ptr<ui::event_manager> const &event_manager,
                                      std::shared_ptr<ui::layout_region_source> const &safe_area_guide,
                                      std::shared_ptr<layout_value_guide> const &bottom_guide)
-    : _strings(
-          strings::make_shared({.font_atlas = font_atlas, .max_word_count = 64, .alignment = layout_alignment::max})),
+    : _strings(strings::make_shared({.max_word_count = 64, .alignment = layout_alignment::max}, font_atlas)),
       _bottom_guide(bottom_guide) {
     event_manager
         ->observe([this, flags = std::unordered_set<modifier_flags>{}](auto const &event) mutable {

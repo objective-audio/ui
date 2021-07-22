@@ -8,8 +8,8 @@ using namespace yas;
 using namespace yas::ui;
 
 sample::big_button_text::big_button_text(std::shared_ptr<font_atlas> const &font_atlas)
-    : _strings(strings::make_shared(
-          {.text = "-----", .alignment = layout_alignment::mid, .font_atlas = font_atlas, .max_word_count = 32})) {
+    : _strings(strings::make_shared({.text = "-----", .alignment = layout_alignment::mid, .max_word_count = 32},
+                                    font_atlas)) {
     this->_strings->rect_plane()->node()->set_alpha(0.5f);
 
     float const offset_y = (font_atlas->ascent() + font_atlas->descent()) * 0.5f;

@@ -10,8 +10,8 @@ using namespace yas::ui;
 sample::draw_call_text::draw_call_text(std::shared_ptr<font_atlas> const &font_atlas,
                                        std::shared_ptr<ui::metal_system> const &metal_system,
                                        std::shared_ptr<layout_region_source> const &safe_area_guide)
-    : _strings(strings::make_shared(
-          {.text = "---", .alignment = layout_alignment::max, .font_atlas = font_atlas, .max_word_count = 32})),
+    : _strings(
+          strings::make_shared({.text = "---", .alignment = layout_alignment::max, .max_word_count = 32}, font_atlas)),
       _weak_metal_system(metal_system) {
     auto const &strings = this->strings();
     auto &strings_preferred_guide = strings->preferred_layout_guide();
