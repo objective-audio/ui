@@ -33,7 +33,7 @@ struct strings final {
     [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<strings> make_shared(strings_args &&);
+    [[nodiscard]] static std::shared_ptr<strings> make_shared(strings_args &&, std::shared_ptr<ui::font_atlas> const &);
 
    private:
     std::shared_ptr<ui::collection_layout> const _collection_layout;
@@ -47,7 +47,7 @@ struct strings final {
     observing::canceller_pool _property_pool;
     observing::canceller_pool _cell_region_pool;
 
-    explicit strings(strings_args &&);
+    explicit strings(strings_args &&, std::shared_ptr<ui::font_atlas> const &);
 
     strings(strings const &) = delete;
     strings(strings &&) = delete;

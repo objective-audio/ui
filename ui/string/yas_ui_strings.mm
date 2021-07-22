@@ -16,12 +16,12 @@
 using namespace yas;
 using namespace yas::ui;
 
-strings::strings(strings_args &&args)
+strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atlas)
     : _collection_layout(collection_layout::make_shared(
           {.frame = args.frame, .alignment = args.alignment, .row_order = layout_order::descending})),
       _rect_plane(rect_plane::make_shared(args.max_word_count)),
       _text(observing::value::holder<std::string>::make_shared(std::move(args.text))),
-      _font_atlas(std::move(args.font_atlas)),
+      _font_atlas(atlas),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
     this->_update_texture_observing();
@@ -201,6 +201,6 @@ float strings::_cell_height() {
     }
 }
 
-std::shared_ptr<strings> strings::make_shared(strings_args &&args) {
-    return std::shared_ptr<strings>(new strings{std::move(args)});
+std::shared_ptr<strings> strings::make_shared(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atlas) {
+    return std::shared_ptr<strings>(new strings{std::move(args), atlas});
 }

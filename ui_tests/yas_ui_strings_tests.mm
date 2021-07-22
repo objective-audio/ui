@@ -35,10 +35,10 @@ using namespace yas::ui;
 
     auto strings = strings::make_shared({.max_word_count = 1,
                                          .text = "test_text",
-                                         .font_atlas = font_atlas,
                                          .line_height = 10.0f,
                                          .frame = frame,
-                                         .alignment = layout_alignment::mid});
+                                         .alignment = layout_alignment::mid},
+                                        font_atlas);
 
     XCTAssertTrue(strings);
     XCTAssertEqual(strings->rect_plane()->data()->dynamic_mesh_data()->max_vertex_count(), 4);
@@ -62,7 +62,7 @@ using namespace yas::ui;
     auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    auto strings = strings::make_shared({.font_atlas = font_atlas});
+    auto strings = strings::make_shared({}, font_atlas);
 
     strings->set_text("test_text");
 
@@ -143,7 +143,7 @@ using namespace yas::ui;
     auto const font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    return strings::make_shared({.font_atlas = font_atlas});
+    return strings::make_shared({}, font_atlas);
 }
 
 @end
