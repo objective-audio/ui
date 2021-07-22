@@ -139,6 +139,8 @@
 		B6DEECAD2661CC9600C4168B /* yas_ui_action_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DEECAC2661CC9600C4168B /* yas_ui_action_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6E2F72C2666872C0008067E /* yas_ui_metal_view_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F72B2666872C0008067E /* yas_ui_metal_view_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6E2F7322667BCB20008067E /* yas_ui_layout_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6FC1ACC26A9B4E50032F8D6 /* yas_ui_event_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FC1ACA26A9B4E50032F8D6 /* yas_ui_event_manager.cpp */; };
+		B6FC1ACD26A9B4E50032F8D6 /* yas_ui_event_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC1ACB26A9B4E50032F8D6 /* yas_ui_event_manager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -277,6 +279,8 @@
 		B6DEECAC2661CC9600C4168B /* yas_ui_action_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_action_dependency.h; sourceTree = "<group>"; };
 		B6E2F72B2666872C0008067E /* yas_ui_metal_view_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_view_dependency.h; sourceTree = "<group>"; };
 		B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_dependency.h; sourceTree = "<group>"; };
+		B6FC1ACA26A9B4E50032F8D6 /* yas_ui_event_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_event_manager.cpp; sourceTree = "<group>"; };
+		B6FC1ACB26A9B4E50032F8D6 /* yas_ui_event_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_event_manager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -548,6 +552,8 @@
 				B65AF86121E4D7E300C65DB5 /* yas_ui_event_types.h */,
 				B65AF88321E4D7E400C65DB5 /* yas_ui_event.cpp */,
 				B65AF8BE21E4D7E400C65DB5 /* yas_ui_event.h */,
+				B6FC1ACA26A9B4E50032F8D6 /* yas_ui_event_manager.cpp */,
+				B6FC1ACB26A9B4E50032F8D6 /* yas_ui_event_manager.h */,
 			);
 			path = event;
 			sourceTree = "<group>";
@@ -720,6 +726,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6FC1ACD26A9B4E50032F8D6 /* yas_ui_event_manager.h in Headers */,
 				B61F0293269007BE0012A7CA /* yas_ui_node_dependency.h in Headers */,
 				B65AF93D21E4D7E400C65DB5 /* yas_ui_observing_utils.h in Headers */,
 				B65AF91821E4D7E400C65DB5 /* yas_ui_metal_types.h in Headers */,
@@ -874,6 +881,7 @@
 				B65AF8ED21E4D7E400C65DB5 /* yas_ui_collection_layout.cpp in Sources */,
 				B65AF8FF21E4D7E400C65DB5 /* yas_ui_angle.cpp in Sources */,
 				B65AF90C21E4D7E400C65DB5 /* yas_ui_event_types.cpp in Sources */,
+				B6FC1ACC26A9B4E50032F8D6 /* yas_ui_event_manager.cpp in Sources */,
 				B6B0D2EC2691EA7D00F8E694 /* yas_ui_action_manager.mm in Sources */,
 				B65AF90621E4D7E400C65DB5 /* yas_ui_renderer.mm in Sources */,
 				B65AF8E521E4D7E400C65DB5 /* yas_ui_layout_types.cpp in Sources */,

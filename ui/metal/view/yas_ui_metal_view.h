@@ -5,8 +5,8 @@
 #pragma once
 
 #include <MetalKit/MetalKit.h>
+#include <ui/yas_ui_metal_view_dependency.h>
 #include <ui/yas_ui_objc.h>
-#include <ui/yas_ui_types.h>
 
 @protocol YASUIMetalViewDelegate;
 
