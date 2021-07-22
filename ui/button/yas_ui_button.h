@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_flagset.h>
 #include <observing/yas_observing_umbrella.h>
+#include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_event_types.h>
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_rect_plane.h>
@@ -45,10 +46,10 @@ struct button final {
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &layout_guide();
 
     [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &,
-                                                             std::shared_ptr<ui::event_manager> const &,
+                                                             std::shared_ptr<ui::event_observable_interface> const &,
                                                              std::shared_ptr<ui::detector> const &);
     [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count,
-                                                             std::shared_ptr<ui::event_manager> const &,
+                                                             std::shared_ptr<ui::event_observable_interface> const &,
                                                              std::shared_ptr<ui::detector> const &);
 
    private:
@@ -61,8 +62,8 @@ struct button final {
     std::shared_ptr<event> _tracking_event = nullptr;
     observing::canceller_pool _pool;
 
-    button(ui::region const &region, std::size_t const state_count, std::shared_ptr<ui::event_manager> const &,
-           std::shared_ptr<ui::detector> const &);
+    button(ui::region const &region, std::size_t const state_count,
+           std::shared_ptr<ui::event_observable_interface> const &, std::shared_ptr<ui::detector> const &);
 
     button(button const &) = delete;
     button(button &&) = delete;
