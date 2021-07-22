@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_result.h>
 #include <observing/yas_observing_umbrella.h>
+#include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_texture_types.h>
@@ -35,9 +36,8 @@ struct texture : metal_object {
     [[nodiscard]] observing::endable observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
-    void sync_scale_from_view_look(std::shared_ptr<view_look> const &);
-
-    [[nodiscard]] static std::shared_ptr<texture> make_shared(texture_args &&);
+    [[nodiscard]] static std::shared_ptr<texture> make_shared(
+        texture_args &&, std::shared_ptr<view_look_scale_factor_interface> const &);
 
    private:
     ui::uint_size _point_size;
@@ -54,12 +54,12 @@ struct texture : metal_object {
     uint32_t const _draw_actual_padding;
     uint_point _draw_actual_pos;
     std::vector<std::shared_ptr<texture_element>> _texture_elements;
-    observing::cancellable_ptr _scale_canceller = nullptr;
+    observing::canceller_pool _pool;
     observing::notifier_ptr<std::nullptr_t> const _texture_notifier =
         observing::notifier<std::nullptr_t>::make_shared();
     observing::notifier_ptr<std::nullptr_t> const _size_notifier = observing::notifier<std::nullptr_t>::make_shared();
 
-    explicit texture(texture_args &&);
+    texture(texture_args &&, std::shared_ptr<view_look_scale_factor_interface> const &);
 
     texture(texture const &) = delete;
     texture(texture &&) = delete;

@@ -17,21 +17,21 @@
 using namespace yas;
 using namespace yas::ui;
 
-render_target::render_target()
+render_target::render_target(std::shared_ptr<ui::view_look_scale_factor_interface> const &view_look)
     : _layout_guide(layout_region_guide::make_shared()),
       _effect(effect::make_through_effect()),
-      _scale_factor(1.0),
+      _scale_factor(0.0),
       _data(rect_plane_data::make_shared(1)),
       _src_texture(texture::make_shared({.point_size = uint_size::zero(),
-                                         .scale_factor = 0.0,
                                          .draw_padding = 0,
                                          .usages = {texture_usage::render_target, texture_usage::shader_read},
-                                         .pixel_format = pixel_format::bgra8_unorm})),
+                                         .pixel_format = pixel_format::bgra8_unorm},
+                                        view_look)),
       _dst_texture(texture::make_shared({.point_size = uint_size::zero(),
-                                         .scale_factor = 0.0,
                                          .draw_padding = 0,
                                          .usages = {texture_usage::shader_write},
-                                         .pixel_format = pixel_format::bgra8_unorm})) {
+                                         .pixel_format = pixel_format::bgra8_unorm},
+                                        view_look)) {
     this->_updates.flags.set();
     this->_render_pass_descriptor = objc_ptr_with_move_object([MTLRenderPassDescriptor new]);
     this->_mesh->set_mesh_data(this->_data->dynamic_mesh_data());
@@ -85,13 +85,17 @@ render_target::render_target()
         })
         .end()
         ->add_to(this->_pool);
+
+    view_look->observe_scale_factor([this](double const &scale) { this->_set_scale_factor(scale); })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 std::shared_ptr<layout_region_guide> &render_target::layout_guide() {
     return this->_layout_guide;
 }
 
-void render_target::set_scale_factor(double const scale_factor) {
+void render_target::_set_scale_factor(double const scale_factor) {
     if (this->_scale_factor != scale_factor) {
         this->_scale_factor = scale_factor;
 
@@ -116,11 +120,6 @@ void render_target::set_effect(std::shared_ptr<ui::effect> effect) {
 
 std::shared_ptr<effect> const &render_target::effect() const {
     return this->_effect;
-}
-
-void render_target::sync_scale_from_view_look(std::shared_ptr<view_look> const &view_look) {
-    this->_scale_canceller =
-        view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 setup_metal_result render_target::metal_setup(std::shared_ptr<metal_system> const &metal_system) {
@@ -201,6 +200,7 @@ bool render_target::_is_size_enough() {
     return false;
 }
 
-std::shared_ptr<render_target> render_target::make_shared() {
-    return std::shared_ptr<render_target>(new render_target{});
+std::shared_ptr<render_target> render_target::make_shared(
+    std::shared_ptr<ui::view_look_scale_factor_interface> const &view_look) {
+    return std::shared_ptr<render_target>(new render_target{view_look});
 }

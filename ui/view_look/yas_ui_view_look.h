@@ -5,12 +5,13 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
+#include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_node_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct view_look final : node_parent_interface, renderer_view_look_interface {
+struct view_look final : node_parent_interface, renderer_view_look_interface, view_look_scale_factor_interface {
     void set_view_sizes(ui::uint_size const view_size, ui::uint_size const drawable_size,
                         region_insets const safe_area_insets);
     void set_safe_area_insets(region_insets const);
@@ -18,7 +19,7 @@ struct view_look final : node_parent_interface, renderer_view_look_interface {
 
     [[nodiscard]] ui::uint_size const &view_size() const;
     [[nodiscard]] ui::uint_size const &drawable_size() const;
-    [[nodiscard]] double scale_factor() const;
+    [[nodiscard]] double scale_factor() const override;
     [[nodiscard]] simd::float4x4 const &projection_matrix() const override;
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_guide() const;
@@ -27,7 +28,7 @@ struct view_look final : node_parent_interface, renderer_view_look_interface {
     [[nodiscard]] ui::appearance appearance() const;
     [[nodiscard]] std::shared_ptr<ui::background> background() const;
 
-    [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&) override;
     [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<view_look> make_shared();

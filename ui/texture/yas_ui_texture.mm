@@ -32,13 +32,16 @@ std::string to_string(draw_image_error const &);
 
 std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
-texture::texture(texture_args &&args)
-    : _draw_actual_padding(args.draw_padding * args.scale_factor),
+texture::texture(texture_args &&args, std::shared_ptr<view_look_scale_factor_interface> const &view_look)
+    : _draw_actual_padding(args.draw_padding * view_look->scale_factor()),
       _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
       _point_size(std::move(args.point_size)),
-      _scale_factor(std::move(args.scale_factor)),
+      _scale_factor(view_look->scale_factor()),
       _usages(args.usages),
       _pixel_format(args.pixel_format) {
+    view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 uintptr_t texture::identifier() const {
@@ -108,11 +111,6 @@ observing::endable texture::observe_metal_texture_changed(observing::caller<std:
 
 observing::endable texture::observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&handler) {
     return this->_size_notifier->observe(std::move(handler));
-}
-
-void texture::sync_scale_from_view_look(std::shared_ptr<view_look> const &view_look) {
-    this->_scale_canceller =
-        view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &metal_system) {
@@ -240,8 +238,9 @@ void texture::_size_updated() {
     this->_size_notifier->notify(nullptr);
 }
 
-std::shared_ptr<texture> texture::make_shared(texture_args &&args) {
-    return std::shared_ptr<texture>(new texture{std::move(args)});
+std::shared_ptr<texture> texture::make_shared(texture_args &&args,
+                                              std::shared_ptr<view_look_scale_factor_interface> const &view_look) {
+    return std::shared_ptr<texture>(new texture{std::move(args), view_look});
 }
 
 #pragma mark -

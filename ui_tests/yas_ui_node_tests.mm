@@ -7,6 +7,7 @@
 #import <ui/ui.h>
 #import <iostream>
 #import <sstream>
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -80,7 +81,8 @@ struct test_render_encoder : render_encodable {
     auto mesh = mesh::make_shared();
     auto collider = collider::make_shared();
     std::shared_ptr<batch> batch = batch::make_shared();
-    auto render_target = render_target::make_shared();
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
+    auto render_target = render_target::make_shared(view_look);
 
     node->set_position({1.0f, 2.0f});
     node->set_angle({3.0f});
@@ -618,7 +620,8 @@ struct test_render_encoder : render_encodable {
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto parent_batch_node = node::make_shared();
     auto child_batch_node1 = node::make_shared();
@@ -672,7 +675,7 @@ struct test_render_encoder : render_encodable {
     });
     mesh1b->set_mesh_data(mesh_data1b);
 
-    auto texture1b = texture::make_shared({.point_size = {.width = 1024, .height = 1024}});
+    auto texture1b = texture::make_shared({.point_size = {.width = 1024, .height = 1024}}, view_look);
     mesh1b->set_texture(texture1b);
 
     mesh_node1b->set_mesh(mesh1b);
@@ -696,7 +699,7 @@ struct test_render_encoder : render_encodable {
     });
     mesh2->set_mesh_data(mesh_data2);
 
-    auto texture2 = texture::make_shared({.point_size = {.width = 1024, .height = 1024}});
+    auto texture2 = texture::make_shared({.point_size = {.width = 1024, .height = 1024}}, view_look);
     mesh2->set_texture(texture2);
 
     mesh_node2->set_mesh(mesh2);

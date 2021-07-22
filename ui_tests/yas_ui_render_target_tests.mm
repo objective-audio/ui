@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <ui/ui.h>
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -23,7 +24,8 @@ using namespace yas::ui;
 }
 
 - (void)test_create_render_target {
-    auto render_target = render_target::make_shared();
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
+    auto const render_target = render_target::make_shared(view_look);
 
     XCTAssertEqual(render_target->scale_factor(), 1.0);
 
@@ -34,16 +36,18 @@ using namespace yas::ui;
     XCTAssertTrue(metal_object::cast(render_target));
 }
 
-- (void)test_set_scale_factor {
-    auto render_target = render_target::make_shared();
+- (void)test_observe_scale_factor {
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
+    auto const render_target = render_target::make_shared(view_look);
 
-    render_target->set_scale_factor(2.0);
+    view_look->scale_factor_holder->set_value(2.0);
 
     XCTAssertEqual(render_target->scale_factor(), 2.0);
 }
 
 - (void)test_set_effect {
-    auto render_target = render_target::make_shared();
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
+    auto const render_target = render_target::make_shared(view_look);
 
     auto effect = effect::make_shared();
 

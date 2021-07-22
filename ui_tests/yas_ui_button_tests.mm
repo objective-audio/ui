@@ -7,6 +7,7 @@
 #import <iostream>
 #import <sstream>
 #import "yas_test_metal_view_controller.h"
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -127,12 +128,13 @@ using namespace yas::ui;
 }
 
 - (void)test_set_texture {
-    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, ui::event_manager::make_shared(),
-                                      ui::detector::make_shared());
+    auto const button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}},
+                                            ui::event_manager::make_shared(), ui::detector::make_shared());
 
     XCTAssertFalse(button->rect_plane()->node()->mesh()->texture());
 
-    auto texture = texture::make_shared({.point_size = {8, 8}});
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
+    auto const texture = texture::make_shared({.point_size = {8, 8}}, view_look);
 
     button->set_texture(texture);
 

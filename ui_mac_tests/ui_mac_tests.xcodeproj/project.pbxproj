@@ -84,6 +84,7 @@
 		B6420858269DBA690006C9AF /* yas_ui_view_look_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_view_look_tests.mm; sourceTree = "<group>"; };
 		B657FB7D25EBD2A600495411 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6B0D2F22691FD3400F8E694 /* yas_ui_action_manager_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_action_manager_tests.mm; sourceTree = "<group>"; };
+		B6D6C2B926A9412C007BD4CE /* yas_ui_view_look_stubs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_view_look_stubs.h; sourceTree = "<group>"; };
 		B6DE34E921E633CF00E49BCB /* ui_mac_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ui_mac_tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DE34EE21E633CF00E49BCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6DE34F321E6347600E49BCB /* yas_ui_effect_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_effect_tests.mm; sourceTree = "<group>"; };
@@ -260,6 +261,7 @@
 				B6DE351B21E6347600E49BCB /* yas_ui_metal_types_tests.mm */,
 				B608AB4924B4B75400B5A18F /* yas_ui_background_tests.mm */,
 				B6420858269DBA690006C9AF /* yas_ui_view_look_tests.mm */,
+				B6D6C2B926A9412C007BD4CE /* yas_ui_view_look_stubs.h */,
 			);
 			name = ui_tests;
 			path = ../../ui_tests;
