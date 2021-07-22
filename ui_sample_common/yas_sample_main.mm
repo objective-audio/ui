@@ -66,8 +66,7 @@ void sample::main::setup() {
 
     this->standard->action_manager()->insert_action(button_pos_action);
 
-    auto texture = texture::make_shared({.point_size = {1024, 1024}});
-    texture->sync_scale_from_view_look(this->view_look);
+    auto const texture = texture::make_shared({.point_size = {1024, 1024}}, this->view_look);
 
     this->_font_atlas->set_texture(texture);
     this->_big_button->set_texture(texture);

@@ -26,12 +26,14 @@ render_target::render_target(std::shared_ptr<ui::view_look_scale_factor_interfac
                                          .scale_factor = 0.0,
                                          .draw_padding = 0,
                                          .usages = {texture_usage::render_target, texture_usage::shader_read},
-                                         .pixel_format = pixel_format::bgra8_unorm})),
+                                         .pixel_format = pixel_format::bgra8_unorm},
+                                        view_look)),
       _dst_texture(texture::make_shared({.point_size = uint_size::zero(),
                                          .scale_factor = 0.0,
                                          .draw_padding = 0,
                                          .usages = {texture_usage::shader_write},
-                                         .pixel_format = pixel_format::bgra8_unorm})) {
+                                         .pixel_format = pixel_format::bgra8_unorm},
+                                        view_look)) {
     this->_updates.flags.set();
     this->_render_pass_descriptor = objc_ptr_with_move_object([MTLRenderPassDescriptor new]);
     this->_mesh->set_mesh_data(this->_data->dynamic_mesh_data());
