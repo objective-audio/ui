@@ -24,29 +24,11 @@ using namespace yas::ui;
     [super tearDown];
 }
 
-- (void)test_create_without_args {
-    auto strings = strings::make_shared();
-
-    XCTAssertTrue(strings);
-    XCTAssertEqual(strings->text(), "");
-    XCTAssertFalse(strings->font_atlas());
-    XCTAssertTrue(strings->rect_plane());
-    XCTAssertFalse(strings->line_height());
-    XCTAssertEqual(strings->alignment(), layout_alignment::min);
-}
-
 - (void)test_create_with_args {
-    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {256, 256}}, view_look);
-    auto font_atlas = font_atlas::make_shared(
+    auto const texture = texture::make_shared({.point_size = {256, 256}}, view_look);
+    auto const font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
     region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
@@ -80,16 +62,16 @@ using namespace yas::ui;
     auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    auto strings = strings::make_shared();
+    auto strings = strings::make_shared({.max_word_count = 1,
+                                         .text = "",
+                                         .font_atlas = font_atlas,
+                                         .line_height = std::nullopt,
+                                         .frame = region::zero(),
+                                         .alignment = layout_alignment::mid});
 
     strings->set_text("test_text");
 
     XCTAssertEqual(strings->text(), "test_text");
-    XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 0);
-
-    strings->set_font_atlas(font_atlas);
-
-    XCTAssertEqual(strings->font_atlas(), font_atlas);
     XCTAssertEqual(strings->rect_plane()->data()->rect_count(), 0);
 
     XCTAssertFalse(strings->line_height());
@@ -113,7 +95,7 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_text {
-    auto strings = strings::make_shared();
+    auto const strings = [self make_strings];
 
     strings->set_text("a");
 
@@ -128,28 +110,8 @@ using namespace yas::ui;
     XCTAssertEqual(notified, "b");
 }
 
-- (void)test_observe_font_atlas {
-    auto strings = strings::make_shared();
-
-    std::shared_ptr<font_atlas> notified = nullptr;
-
-    auto canceller =
-        strings
-            ->observe_font_atlas([&notified](std::shared_ptr<font_atlas> const &font_atlas) { notified = font_atlas; })
-            .sync();
-
-    XCTAssertFalse(notified);
-
-    auto font_atlas = font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
-
-    strings->set_font_atlas(font_atlas);
-
-    XCTAssertTrue(notified);
-    XCTAssertEqual(notified->font_name(), "HelveticaNeue");
-}
-
 - (void)test_observe_line_height {
-    auto strings = strings::make_shared();
+    auto const strings = [self make_strings];
 
     std::optional<float> notified = std::nullopt;
 
@@ -166,7 +128,7 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_alignment {
-    auto strings = strings::make_shared();
+    auto const strings = [self make_strings];
 
     layout_alignment notified;
 
@@ -180,17 +142,18 @@ using namespace yas::ui;
     XCTAssertEqual(notified, layout_alignment::max);
 }
 
-- (void)test_no_throw_without_atlas_or_texture {
-    auto strings = strings::make_shared();
+- (std::shared_ptr<ui::strings>)make_strings {
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
+    auto const texture = texture::make_shared({.point_size = {256, 256}}, view_look);
+    auto const font_atlas = font_atlas::make_shared(
+        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
-    XCTAssertNoThrow(strings->set_text("123"));
-
-    XCTAssertNoThrow(strings->preferred_layout_guide()->set_region({.origin = {0.0f, 0.0f}, .size = {64.0f, 0.0f}}));
-
-    auto font_atlas = font_atlas::make_shared(
-        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = nullptr});
-
-    XCTAssertNoThrow(strings->set_font_atlas(font_atlas));
+    return strings::make_shared({.max_word_count = 1,
+                                 .text = "",
+                                 .font_atlas = font_atlas,
+                                 .line_height = std::nullopt,
+                                 .frame = region::zero(),
+                                 .alignment = layout_alignment::min});
 }
 
 @end

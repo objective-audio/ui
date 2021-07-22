@@ -44,22 +44,12 @@ sample::modifier_text::modifier_text(std::shared_ptr<font_atlas> const &font_atl
         .sync()
         ->add_to(this->_pool);
 
-    this->_strings
-        ->observe_font_atlas([this, top_layout = observing::cancellable_ptr{nullptr}](
-                                 std::shared_ptr<ui::font_atlas> const &value) mutable {
-            float distance = 0.0f;
+    float const distance = font_atlas->ascent() + font_atlas->descent();
 
-            if (auto const &font_atlas = this->_strings->font_atlas()) {
-                distance += font_atlas->ascent() + font_atlas->descent();
-            }
-
-            this->_strings->preferred_layout_guide()
-                ->bottom()
-                ->observe([this, distance](float const &value) {
-                    this->_strings->preferred_layout_guide()->top()->set_value(value + distance);
-                })
-                .sync()
-                ->set_to(top_layout);
+    this->_strings->preferred_layout_guide()
+        ->bottom()
+        ->observe([this, distance](float const &value) {
+            this->_strings->preferred_layout_guide()->top()->set_value(value + distance);
         })
         .sync()
         ->add_to(this->_pool);

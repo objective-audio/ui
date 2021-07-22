@@ -15,7 +15,6 @@ struct strings final {
     virtual ~strings();
 
     void set_text(std::string);
-    void set_font_atlas(std::shared_ptr<ui::font_atlas>);
     void set_line_height(std::optional<float>);
     void set_alignment(ui::layout_alignment const);
 
@@ -31,12 +30,9 @@ struct strings final {
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
     [[nodiscard]] observing::syncable observe_text(observing::caller<std::string>::handler_f &&);
-    [[nodiscard]] observing::syncable observe_font_atlas(
-        observing::caller<std::shared_ptr<ui::font_atlas>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<strings> make_shared();
     [[nodiscard]] static std::shared_ptr<strings> make_shared(strings_args &&);
 
    private:
@@ -44,11 +40,10 @@ struct strings final {
     std::shared_ptr<ui::rect_plane> const _rect_plane;
 
     observing::value::holder_ptr<std::string> const _text;
-    observing::value::holder_ptr<std::shared_ptr<ui::font_atlas>> const _font_atlas;
+    std::shared_ptr<ui::font_atlas> const _font_atlas;
     observing::value::holder_ptr<std::optional<float>> const _line_height;
 
     std::size_t const _max_word_count = 0;
-    observing::canceller_pool _texture_pool;
     observing::canceller_pool _property_pool;
     observing::canceller_pool _cell_region_pool;
 

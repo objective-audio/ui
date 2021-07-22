@@ -22,7 +22,5 @@ struct big_button_text {
     observing::cancellable_ptr _strings_canceller = nullptr;
 
     explicit big_button_text(std::shared_ptr<ui::font_atlas> const &atlas);
-
-    void _update_strings_position();
 };
 }  // namespace yas::sample
