@@ -16,14 +16,15 @@
 using namespace yas;
 using namespace yas::ui;
 
-strings::strings(strings_args &&args)
+strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atlas)
     : _collection_layout(collection_layout::make_shared(
           {.frame = args.frame, .alignment = args.alignment, .row_order = layout_order::descending})),
       _rect_plane(rect_plane::make_shared(args.max_word_count)),
       _text(observing::value::holder<std::string>::make_shared(std::move(args.text))),
-      _font_atlas(observing::value::holder<std::shared_ptr<ui::font_atlas>>::make_shared(std::move(args.font_atlas))),
+      _font_atlas(atlas),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
+    this->_update_texture_observing();
     this->_prepare_observings();
     this->_update_layout();
 }
@@ -32,10 +33,6 @@ strings::~strings() = default;
 
 void strings::set_text(std::string text) {
     this->_text->set_value(std::move(text));
-}
-
-void strings::set_font_atlas(std::shared_ptr<ui::font_atlas> atlas) {
-    this->_font_atlas->set_value(std::move(atlas));
 }
 
 void strings::set_line_height(std::optional<float> line_height) {
@@ -51,7 +48,7 @@ std::string const &strings::text() const {
 }
 
 std::shared_ptr<font_atlas> const &strings::font_atlas() const {
-    return this->_font_atlas->value();
+    return this->_font_atlas;
 }
 
 std::optional<float> const &strings::line_height() const {
@@ -82,11 +79,6 @@ observing::syncable strings::observe_text(observing::caller<std::string>::handle
     return this->_text->observe(std::move(handler));
 }
 
-observing::syncable strings::observe_font_atlas(
-    observing::caller<std::shared_ptr<ui::font_atlas>>::handler_f &&handler) {
-    return this->_font_atlas->observe(std::move(handler));
-}
-
 observing::syncable strings::observe_line_height(observing::caller<std::optional<float>>::handler_f &&handler) {
     return this->_line_height->observe(std::move(handler));
 }
@@ -97,11 +89,15 @@ observing::syncable strings::observe_alignment(observing::caller<layout_alignmen
 
 void strings::_prepare_observings() {
     this->_font_atlas
-        ->observe([this](std::shared_ptr<ui::font_atlas> const &font_atras) {
-            this->_update_texture_observing();
+        ->observe_texture([this](auto const &texture) {
+            this->rect_plane()->node()->mesh()->set_texture(texture);
             this->_update_layout();
         })
         .sync()
+        ->add_to(this->_property_pool);
+
+    this->_font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
+        .end()
         ->add_to(this->_property_pool);
 
     this->_text->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
@@ -118,30 +114,12 @@ void strings::_prepare_observings() {
 }
 
 void strings::_update_texture_observing() {
-    if (auto &font_atlas = this->_font_atlas->value()) {
-        if (!this->_texture_pool.has_cancellable()) {
-            font_atlas
-                ->observe_texture([this](auto const &texture) {
-                    this->rect_plane()->node()->mesh()->set_texture(texture);
-                    this->_update_layout();
-                })
-                .sync()
-                ->add_to(this->_texture_pool);
-
-            font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
-                .end()
-                ->add_to(this->_texture_pool);
-        }
-    } else {
-        this->_rect_plane->node()->mesh()->set_texture(nullptr);
-        this->_texture_pool.cancel();
-    }
 }
 
 void strings::_update_layout() {
     this->_cell_region_pool.cancel();
 
-    auto const &font_atlas = this->_font_atlas->value();
+    auto const &font_atlas = this->_font_atlas;
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
         this->_collection_layout->set_preferred_cell_count(0);
         this->_rect_plane->data()->set_rect_count(0);
@@ -218,18 +196,11 @@ float strings::_cell_height() {
     if (line_height) {
         return *line_height;
     } else {
-        if (auto const &font_atlas = this->_font_atlas->value()) {
-            return font_atlas->ascent() + font_atlas->descent() + font_atlas->leading();
-        } else {
-            return 0.0f;
-        }
+        auto const &font_atlas = this->_font_atlas;
+        return font_atlas->ascent() + font_atlas->descent() + font_atlas->leading();
     }
 }
 
-std::shared_ptr<strings> strings::make_shared() {
-    return make_shared({});
-}
-
-std::shared_ptr<strings> strings::make_shared(strings_args &&args) {
-    return std::shared_ptr<strings>(new strings{std::move(args)});
+std::shared_ptr<strings> strings::make_shared(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atlas) {
+    return std::shared_ptr<strings>(new strings{std::move(args), atlas});
 }

@@ -61,7 +61,7 @@ struct soft_key {
              std::shared_ptr<ui::event_manager> const &event_manager,
              std::shared_ptr<ui::action_manager> const &action_manager, std::shared_ptr<ui::detector> const &detector)
         : _button(button::make_shared({.size = {width, width}}, event_manager, detector)),
-          _strings(strings::make_shared({.font_atlas = atlas, .max_word_count = 1})),
+          _strings(strings::make_shared({.max_word_count = 1}, atlas)),
           _weak_action_manager(action_manager) {
         this->_button->rect_plane()->node()->mesh()->set_use_mesh_color(true);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
