@@ -17,7 +17,7 @@
 using namespace yas;
 using namespace yas::ui;
 
-render_target::render_target()
+render_target::render_target(std::shared_ptr<ui::common_scale_factor_interface> const &view_look)
     : _layout_guide(layout_region_guide::make_shared()),
       _effect(effect::make_through_effect()),
       _scale_factor(1.0),
@@ -85,6 +85,10 @@ render_target::render_target()
         })
         .end()
         ->add_to(this->_pool);
+
+    view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 std::shared_ptr<layout_region_guide> &render_target::layout_guide() {
@@ -116,11 +120,6 @@ void render_target::set_effect(std::shared_ptr<ui::effect> effect) {
 
 std::shared_ptr<effect> const &render_target::effect() const {
     return this->_effect;
-}
-
-void render_target::sync_scale_from_view_look(std::shared_ptr<view_look> const &view_look) {
-    this->_scale_canceller =
-        view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); }).sync();
 }
 
 setup_metal_result render_target::metal_setup(std::shared_ptr<metal_system> const &metal_system) {
@@ -201,6 +200,7 @@ bool render_target::_is_size_enough() {
     return false;
 }
 
-std::shared_ptr<render_target> render_target::make_shared() {
-    return std::shared_ptr<render_target>(new render_target{});
+std::shared_ptr<render_target> render_target::make_shared(
+    std::shared_ptr<ui::common_scale_factor_interface> const &view_look) {
+    return std::shared_ptr<render_target>(new render_target{view_look});
 }

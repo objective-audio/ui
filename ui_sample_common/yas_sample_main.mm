@@ -73,8 +73,7 @@ void sample::main::setup() {
     this->_big_button->set_texture(texture);
     this->_touch_holder->set_texture(texture);
 
-    auto render_target = render_target::make_shared();
-    render_target->sync_scale_from_view_look(this->view_look);
+    auto render_target = render_target::make_shared(this->view_look);
     render_target->set_effect(this->_blur->effect());
 
     auto blur_action =

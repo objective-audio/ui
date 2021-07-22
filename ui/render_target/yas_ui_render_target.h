@@ -5,6 +5,7 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
+#include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_effect.h>
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_metal_dependency.h>
@@ -23,9 +24,8 @@ struct render_target : metal_object, renderable_render_target {
     void set_effect(std::shared_ptr<ui::effect>);
     [[nodiscard]] std::shared_ptr<ui::effect> const &effect() const override;
 
-    void sync_scale_from_view_look(std::shared_ptr<view_look> const &);
-
-    [[nodiscard]] static std::shared_ptr<render_target> make_shared();
+    [[nodiscard]] static std::shared_ptr<render_target> make_shared(
+        std::shared_ptr<ui::common_scale_factor_interface> const &);
 
    private:
     std::shared_ptr<ui::layout_region_guide> _layout_guide;
@@ -45,7 +45,7 @@ struct render_target : metal_object, renderable_render_target {
 
     render_target_updates_t _updates;
 
-    render_target();
+    render_target(std::shared_ptr<ui::common_scale_factor_interface> const &);
 
     render_target(render_target const &) = delete;
     render_target(render_target &&) = delete;
