@@ -8,6 +8,7 @@
 #import <ui/ui.h>
 #import <iostream>
 #import <sstream>
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -60,9 +61,10 @@ using namespace yas::ui;
     auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {16, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {16, 8}}, view_look);
 
     mesh->set_mesh_data(mesh_data);
     mesh->set_texture(texture);
@@ -90,9 +92,10 @@ using namespace yas::ui;
     auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {16, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {16, 8}}, view_look);
 
     mesh->set_mesh_data(mesh_data);
     mesh->set_texture(texture);

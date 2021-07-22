@@ -8,6 +8,7 @@
 #import <ui/ui.h>
 #import <iostream>
 #import <sstream>
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -33,9 +34,10 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(2.0);
 
-    auto texture = texture::make_shared({.point_size = {2, 1}, .scale_factor = 2.0});
+    auto texture = texture::make_shared({.point_size = {2, 1}}, view_look);
 
     XCTAssertTrue(texture->point_size() == (uint_size{2, 1}));
     XCTAssertTrue(texture->actual_size() == (uint_size{4, 2}));
@@ -53,9 +55,10 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}}, view_look);
     metal_object::cast(texture)->metal_setup(metal_system);
 
     auto draw_handler = [](CGContextRef const context) {
@@ -94,9 +97,10 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}}, view_look);
 
     bool called = false;
 
@@ -118,9 +122,10 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}}, view_look);
 
     auto draw_handler = [](CGContextRef const) {};
 
@@ -141,6 +146,7 @@ using namespace yas::ui;
 
     called = false;
 
+#warning todo
     texture->set_scale_factor(2.0);
     metal_object::cast(texture)->metal_setup(metal_system);
 
@@ -155,11 +161,12 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture1a = texture::make_shared(texture_args{});
+    auto texture1a = texture::make_shared(texture_args{}, view_look);
     auto texture1b = texture1a;
-    auto texture2 = texture::make_shared(texture_args{});
+    auto texture2 = texture::make_shared(texture_args{}, view_look);
 
     XCTAssertTrue(texture1a == texture1a);
     XCTAssertTrue(texture1a == texture1b);
@@ -173,11 +180,12 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture1a = texture::make_shared(texture_args{});
+    auto texture1a = texture::make_shared(texture_args{}, view_look);
     auto texture1b = texture1a;
-    auto texture2 = texture::make_shared(texture_args{});
+    auto texture2 = texture::make_shared(texture_args{}, view_look);
 
     XCTAssertFalse(texture1a != texture1a);
     XCTAssertFalse(texture1a != texture1b);
@@ -191,11 +199,12 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {8, 8}}, view_look);
 
-    std::size_t received;
+    std::size_t received = 0;
 
     auto canceller = texture->observe_metal_texture_changed([&received](auto const &) { received += 1; });
 
@@ -205,9 +214,11 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_size_updated {
-    auto texture = texture::make_shared({.point_size = {8, 8}, .scale_factor = 1.0});
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    std::size_t received;
+    auto texture = texture::make_shared({.point_size = {8, 8}}, view_look);
+
+    std::size_t received = 0;
 
     auto canceller = texture->observe_size_updated([&received](auto const &) { received += 1; });
 

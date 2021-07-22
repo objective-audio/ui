@@ -33,10 +33,10 @@ std::string to_string(draw_image_error const &);
 std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
 texture::texture(texture_args &&args, std::shared_ptr<view_look_scale_factor_interface> const &view_look)
-    : _draw_actual_padding(args.draw_padding * args.scale_factor),
+    : _draw_actual_padding(args.draw_padding * view_look->scale_factor()),
       _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
       _point_size(std::move(args.point_size)),
-      _scale_factor(std::move(args.scale_factor)),
+      _scale_factor(view_look->scale_factor()),
       _usages(args.usages),
       _pixel_format(args.pixel_format) {
     view_look->observe_scale_factor([this](double const &scale) { this->set_scale_factor(scale); })

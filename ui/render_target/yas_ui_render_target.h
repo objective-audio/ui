@@ -18,7 +18,6 @@ namespace yas::ui {
 struct render_target : metal_object, renderable_render_target {
     std::shared_ptr<layout_region_guide> &layout_guide();
 
-    void set_scale_factor(double const);
     [[nodiscard]] double scale_factor() const;
 
     void set_effect(std::shared_ptr<ui::effect>);
@@ -60,6 +59,7 @@ struct render_target : metal_object, renderable_render_target {
     simd::float4x4 const &projection_matrix() const override;
     bool push_encode_info(std::shared_ptr<render_stackable> const &) override;
 
+    void _set_scale_factor(double const);
     void _set_updated(ui::render_target_update_reason const reason);
     bool _is_size_updated();
     void _set_textures_to_effect();

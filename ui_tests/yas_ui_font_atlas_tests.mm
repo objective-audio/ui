@@ -10,6 +10,7 @@
 #import <cpp_utils/yas_objc_ptr.h>
 #import <ui/ui.h>
 #import <iostream>
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -35,9 +36,10 @@ using namespace yas::ui;
         return;
     }
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {256, 256}, .scale_factor = 1.0});
+    auto texture = texture::make_shared({.point_size = {256, 256}}, view_look);
     auto font_atlas = font_atlas::make_shared(
         {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
 
@@ -71,9 +73,10 @@ using namespace yas::ui;
                          })
                          .sync();
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto texture = texture::make_shared({.point_size = {256, 256}});
+    auto texture = texture::make_shared({.point_size = {256, 256}}, view_look);
     font_atlas->set_texture(texture);
 
     XCTAssertEqual(font_atlas->texture(), texture);

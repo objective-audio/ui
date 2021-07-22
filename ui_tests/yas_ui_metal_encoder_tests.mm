@@ -7,6 +7,7 @@
 #import <ui/ui.h>
 #import <iostream>
 #import "yas_test_metal_view_controller.h"
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -88,13 +89,14 @@ using namespace yas::ui;
     XCTestExpectation *expectation = [self expectationWithDescription:@"encode"];
 
     auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
     auto const root_node = ui::node::make_shared();
     auto const detector = ui::detector::make_shared();
     auto const action_manager = ui::action_manager::make_shared();
     auto const renderer =
         renderer::make_shared(metal_system, ui::view_look::make_shared(), root_node, detector, action_manager);
 
-    auto time_updater = [&metal_system, expectation, &self](auto const &, auto const &) {
+    auto time_updater = [&metal_system, &view_look, expectation, &self](auto const &, auto const &) {
         std::shared_ptr<view_metal_system_interface> const view_metal_system = metal_system;
         auto mtlDevice = view_metal_system->mtlDevice();
 
@@ -121,7 +123,7 @@ using namespace yas::ui;
 
         auto mesh2 = mesh::make_shared();
         mesh2->set_mesh_data(mesh_data::make_shared({.vertex_count = 1, .index_count = 1}));
-        auto texture = texture::make_shared({.point_size = {1, 1}});
+        auto texture = texture::make_shared({.point_size = {1, 1}}, view_look);
         mesh2->set_texture(texture);
         metal_object::cast(mesh2)->metal_setup(metal_system);
         encode_info->append_mesh(mesh2);

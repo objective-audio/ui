@@ -8,6 +8,7 @@
 #import <ui/ui.h>
 #import <iostream>
 #import <sstream>
+#import "yas_ui_view_look_stubs.h"
 
 using namespace yas;
 using namespace yas::ui;
@@ -58,12 +59,13 @@ using namespace yas::ui;
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
 
-    auto metal_system = metal_system::make_shared(device.object(), nil);
+    auto const metal_system = metal_system::make_shared(device.object(), nil);
+    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto mesh3 = mesh::make_shared();
     auto mesh_data3 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh3->set_mesh_data(mesh_data3);
-    auto texture3 = texture::make_shared(texture_args{});
+    auto texture3 = texture::make_shared(texture_args{}, view_look);
     mesh3->set_texture(texture3);
     batch_encodable->append_mesh(mesh3);
 
