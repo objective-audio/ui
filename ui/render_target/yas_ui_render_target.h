@@ -38,7 +38,6 @@ struct render_target : metal_object, renderable_render_target {
     std::shared_ptr<texture> _dst_texture;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
-    observing::cancellable_ptr _scale_canceller = nullptr;
     observing::canceller_pool _pool;
 
     std::shared_ptr<metal_system> _metal_system = nullptr;
