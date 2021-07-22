@@ -37,7 +37,7 @@ struct texture : metal_object {
     [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
     [[nodiscard]] static std::shared_ptr<texture> make_shared(
-        texture_args &&, std::shared_ptr<view_look_scale_factor_interface> const &);
+        texture_args &&, std::shared_ptr<scale_factor_observable_interface> const &);
 
    private:
     ui::uint_size _point_size;
@@ -59,7 +59,7 @@ struct texture : metal_object {
         observing::notifier<std::nullptr_t>::make_shared();
     observing::notifier_ptr<std::nullptr_t> const _size_notifier = observing::notifier<std::nullptr_t>::make_shared();
 
-    texture(texture_args &&, std::shared_ptr<view_look_scale_factor_interface> const &);
+    texture(texture_args &&, std::shared_ptr<scale_factor_observable_interface> const &);
 
     texture(texture const &) = delete;
     texture(texture &&) = delete;

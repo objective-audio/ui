@@ -11,7 +11,7 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct view_look final : node_parent_interface, renderer_view_look_interface, view_look_scale_factor_interface {
+struct view_look final : node_parent_interface, renderer_view_look_interface, scale_factor_observable_interface {
     void set_view_sizes(ui::uint_size const view_size, ui::uint_size const drawable_size,
                         region_insets const safe_area_insets);
     void set_safe_area_insets(region_insets const);

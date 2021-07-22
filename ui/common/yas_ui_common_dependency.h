@@ -8,8 +8,8 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct view_look_scale_factor_interface {
-    virtual ~view_look_scale_factor_interface() = default;
+struct scale_factor_observable_interface {
+    virtual ~scale_factor_observable_interface() = default;
 
     [[nodiscard]] virtual double scale_factor() const = 0;
     [[nodiscard]] virtual observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&) = 0;
