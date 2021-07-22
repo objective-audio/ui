@@ -5,6 +5,7 @@
 #pragma once
 
 #include <ui/yas_ui_collider.h>
+#include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_render_info_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_types.h>
@@ -12,11 +13,11 @@
 #include <deque>
 
 namespace yas::ui {
-struct detector final : renderer_detector_interface {
+struct detector final : renderer_detector_interface, collider_detectable_interface {
     virtual ~detector();
 
     [[nodiscard]] std::optional<std::shared_ptr<collider>> detect(ui::point const &) const;
-    [[nodiscard]] bool detect(ui::point const &, std::shared_ptr<collider> const &) const;
+    [[nodiscard]] bool detect(ui::point const &, std::shared_ptr<collider> const &) const override;
 
     [[nodiscard]] static std::shared_ptr<detector> make_shared();
 

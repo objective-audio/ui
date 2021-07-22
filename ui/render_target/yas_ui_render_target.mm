@@ -17,7 +17,7 @@
 using namespace yas;
 using namespace yas::ui;
 
-render_target::render_target(std::shared_ptr<ui::view_look_scale_factor_interface> const &view_look)
+render_target::render_target(std::shared_ptr<ui::scale_factor_observable_interface> const &view_look)
     : _layout_guide(layout_region_guide::make_shared()),
       _effect(effect::make_through_effect()),
       _scale_factor(0.0),
@@ -201,6 +201,6 @@ bool render_target::_is_size_enough() {
 }
 
 std::shared_ptr<render_target> render_target::make_shared(
-    std::shared_ptr<ui::view_look_scale_factor_interface> const &view_look) {
+    std::shared_ptr<ui::scale_factor_observable_interface> const &view_look) {
     return std::shared_ptr<render_target>(new render_target{view_look});
 }
