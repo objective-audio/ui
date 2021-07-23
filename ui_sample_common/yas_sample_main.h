@@ -22,8 +22,6 @@
 
 namespace yas::sample {
 struct main {
-    std::shared_ptr<ui::view_look> const view_look;
-    std::shared_ptr<ui::metal_system> const metal_system;
     std::shared_ptr<ui::standard> const standard;
 
     void setup();
@@ -32,7 +30,8 @@ struct main {
                                                            std::shared_ptr<ui::metal_system> const &);
 
    private:
-    std::shared_ptr<ui::texture> const _texture = ui::texture::make_shared({.point_size = {1024, 1024}}, view_look);
+    std::shared_ptr<ui::texture> const _texture =
+        ui::texture::make_shared({.point_size = {1024, 1024}}, standard->view_look());
     std::shared_ptr<ui::font_atlas> const _font_atlas =
         ui::font_atlas::make_shared({.font_name = "TrebuchetMS-Bold",
                                      .font_size = 26.0f,
@@ -43,14 +42,14 @@ struct main {
         sample::touch_holder::make_shared(standard->event_manager(), standard->action_manager());
     sample::cursor_ptr const _cursor =
         sample::cursor::make_shared(standard->event_manager(), standard->action_manager());
-    sample::inputted_text_ptr const _inputted_text =
-        sample::inputted_text::make_shared(_font_atlas, standard->event_manager(), view_look->safe_area_layout_guide());
-    sample::draw_call_text_ptr const _draw_call_text =
-        sample::draw_call_text::make_shared(_font_atlas, metal_system, view_look->safe_area_layout_guide());
-    sample::modifier_text_ptr const _modifier_text =
-        sample::modifier_text::make_shared(_font_atlas, standard->event_manager(), view_look->safe_area_layout_guide(),
-                                           _draw_call_text->strings()->preferred_layout_guide()->top());
-    sample::bg_ptr const _bg = sample::bg::make_shared(view_look->safe_area_layout_guide());
+    sample::inputted_text_ptr const _inputted_text = sample::inputted_text::make_shared(
+        _font_atlas, standard->event_manager(), standard->view_look()->safe_area_layout_guide());
+    sample::draw_call_text_ptr const _draw_call_text = sample::draw_call_text::make_shared(
+        _font_atlas, standard->metal_system(), standard->view_look()->safe_area_layout_guide());
+    sample::modifier_text_ptr const _modifier_text = sample::modifier_text::make_shared(
+        _font_atlas, standard->event_manager(), standard->view_look()->safe_area_layout_guide(),
+        _draw_call_text->strings()->preferred_layout_guide()->top());
+    sample::bg_ptr const _bg = sample::bg::make_shared(standard->view_look()->safe_area_layout_guide());
     sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
         standard->event_manager(), standard->action_manager(), standard->detector());
     sample::big_button_ptr const _big_button =
@@ -58,9 +57,9 @@ struct main {
     sample::big_button_text_ptr const _big_button_text = sample::big_button_text::make_shared(_font_atlas);
     sample::soft_keyboard_ptr const _soft_keyboard =
         sample::soft_keyboard::make_shared(_font_atlas, standard->event_manager(), standard->action_manager(),
-                                           standard->detector(), view_look->safe_area_layout_guide());
+                                           standard->detector(), standard->view_look()->safe_area_layout_guide());
     sample::justified_points_ptr const _justified_points =
-        sample::justified_points::make_shared(view_look->view_layout_guide());
+        sample::justified_points::make_shared(standard->view_look()->view_layout_guide());
 
     std::shared_ptr<ui::batch> const _batch = ui::batch::make_shared();
 
