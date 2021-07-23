@@ -28,8 +28,8 @@ using namespace yas::ui;
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto const texture = texture::make_shared({.point_size = {256, 256}}, view_look);
-    auto const font_atlas = font_atlas::make_shared(
-        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
+    auto const font_atlas =
+        font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}, texture);
 
     region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
 
@@ -59,8 +59,8 @@ using namespace yas::ui;
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto texture = texture::make_shared({.point_size = {256, 256}}, view_look);
-    auto font_atlas = font_atlas::make_shared(
-        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
+    auto font_atlas =
+        font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}, texture);
 
     auto strings = strings::make_shared({}, font_atlas);
 
@@ -140,8 +140,8 @@ using namespace yas::ui;
 - (std::shared_ptr<ui::strings>)make_strings {
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
     auto const texture = texture::make_shared({.point_size = {256, 256}}, view_look);
-    auto const font_atlas = font_atlas::make_shared(
-        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
+    auto const font_atlas =
+        font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}, texture);
 
     return strings::make_shared({}, font_atlas);
 }

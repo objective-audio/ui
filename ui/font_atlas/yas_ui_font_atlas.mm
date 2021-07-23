@@ -34,7 +34,7 @@ struct font_atlas::impl {
     }
 };
 
-font_atlas::font_atlas(font_atlas_args &&args)
+font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> const &texture)
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
       _font_size(args.font_size),
@@ -42,28 +42,16 @@ font_atlas::font_atlas(font_atlas_args &&args)
       _descent(CTFontGetDescent(this->_impl->_ct_font_ref.object())),
       _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
       _words(std::move(args.words)),
-      _texture(observing::value::holder<std::shared_ptr<ui::texture>>::make_shared(args.texture)) {
+      _texture(texture) {
     this->_texture_changed_fetcher = observing::fetcher<std::shared_ptr<ui::texture>>::make_shared(
         [this]() { return std::optional<std::shared_ptr<ui::texture>>{this->texture()}; });
 
-    this->_texture
-        ->observe([this](std::shared_ptr<ui::texture> const &texture) {
-            this->_update_word_infos();
-
-            if (texture) {
-                this->_texture_canceller = texture
-                                               ->observe_metal_texture_changed([this](auto const &) {
-                                                   this->_texture_updated_notifier->notify(this->_texture->value());
-                                               })
-                                               .end();
-            } else {
-                this->_texture_canceller = std::nullopt;
-            }
-
-            this->_texture_changed_fetcher->push();
-        })
-        .sync()
-        ->set_to(this->_texture_changed_canceller);
+    this->_update_word_infos();
+    this->_texture_canceller = texture
+                                   ->observe_metal_texture_changed([this](auto const &) {
+                                       this->_texture_updated_notifier->notify(this->_texture);
+                                   })
+                                   .end();
 }
 
 font_atlas::~font_atlas() = default;
@@ -93,7 +81,7 @@ std::string const &font_atlas::words() const {
 }
 
 std::shared_ptr<texture> const &font_atlas::texture() const {
-    return this->_texture->value();
+    return this->_texture;
 }
 
 vertex2d_rect_t const &font_atlas::rect(std::string const &word) const {
@@ -130,16 +118,6 @@ size font_atlas::advance(std::string const &word) const {
     CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, 1);
 
     return {.width = static_cast<float>(advances[0].width), .height = static_cast<float>(advances[0].height)};
-}
-
-void font_atlas::set_texture(std::shared_ptr<ui::texture> const &texture) {
-    if (this->texture() != texture) {
-        this->_texture->set_value(texture);
-    }
-}
-
-observing::syncable font_atlas::observe_texture(observing::caller<std::shared_ptr<ui::texture>>::handler_f &&handler) {
-    return this->_texture_changed_fetcher->observe(std::move(handler));
 }
 
 observing::endable font_atlas::observe_texture_updated(
@@ -218,6 +196,7 @@ void font_atlas::_update_word_infos() {
     }
 }
 
-std::shared_ptr<font_atlas> font_atlas::make_shared(font_atlas_args &&args) {
-    return std::shared_ptr<font_atlas>(new font_atlas{std::move(args)});
+std::shared_ptr<font_atlas> font_atlas::make_shared(font_atlas_args &&args,
+                                                    std::shared_ptr<ui::texture> const &texture) {
+    return std::shared_ptr<font_atlas>(new font_atlas{std::move(args), texture});
 }
