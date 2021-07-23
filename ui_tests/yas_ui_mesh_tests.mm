@@ -58,8 +58,8 @@ using namespace yas::ui;
         return;
     }
 
-    auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
@@ -89,16 +89,13 @@ using namespace yas::ui;
         return;
     }
 
-    auto mesh = mesh::make_shared();
-    auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
-
     auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto texture = texture::make_shared({.point_size = {16, 8}}, view_look);
 
-    mesh->set_mesh_data(mesh_data);
-    mesh->set_texture(texture);
+    auto mesh_data = mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
+    auto mesh = mesh::make_shared({}, mesh_data, texture);
 
     std::shared_ptr<ui::mesh const> const_mesh = mesh;
 
@@ -297,9 +294,8 @@ using namespace yas::ui;
 }
 
 - (void)test_clear_updates {
-    auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh->set_mesh_data(mesh_data);
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     XCTAssertTrue(renderable_mesh::cast(mesh)->updates().flags.any());
     XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().flags.any());
@@ -311,9 +307,8 @@ using namespace yas::ui;
 }
 
 - (void)test_updates {
-    auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh->set_mesh_data(mesh_data);
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     renderable_mesh::cast(mesh)->clear_updates();
     mesh->set_use_mesh_color(true);
@@ -323,10 +318,7 @@ using namespace yas::ui;
 }
 
 - (void)test_is_rendering_color_exists {
-    auto mesh = mesh::make_shared();
-
-    mesh->set_use_mesh_color(false);
-    mesh->set_color(1.0f);
+    auto mesh = mesh::make_shared({.use_mesh_color = false, .color = 1.0f}, nullptr, nullptr);
 
     XCTAssertFalse(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 
@@ -360,9 +352,8 @@ using namespace yas::ui;
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh->set_mesh_data(mesh_data);
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     XCTAssertTrue(metal_object::cast(mesh)->metal_setup(metal_system));
 }
