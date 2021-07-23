@@ -19,7 +19,13 @@ using namespace yas::ui;
 
 #pragma mark - mesh
 
-mesh::mesh() {
+mesh::mesh(mesh_args &&args, std::shared_ptr<ui::mesh_data> const &mesh_data,
+           std::shared_ptr<ui::texture> const &texture)
+    : _mesh_data(mesh_data),
+      _texture(texture),
+      _primitive_type(args.primitive_type),
+      _color(args.color),
+      _use_mesh_color(args.use_mesh_color) {
     this->_updates.flags.set();
 }
 
@@ -232,5 +238,10 @@ bool mesh::_needs_write(batch_building_type const &building_type) {
 }
 
 std::shared_ptr<mesh> mesh::make_shared() {
-    return std::shared_ptr<mesh>(new mesh{});
+    return make_shared({}, nullptr, nullptr);
+}
+
+std::shared_ptr<mesh> mesh::make_shared(mesh_args &&args, std::shared_ptr<ui::mesh_data> const &mesh_data,
+                                        std::shared_ptr<ui::texture> const &texture) {
+    return std::shared_ptr<mesh>(new mesh{std::move(args), mesh_data, texture});
 }

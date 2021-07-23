@@ -5,6 +5,7 @@
 #pragma once
 
 #include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_mesh_types.h>
 #include <ui/yas_ui_metal_dependency.h>
 
 namespace yas::ui {
@@ -24,6 +25,8 @@ struct mesh final : renderable_mesh, metal_object {
     void set_primitive_type(ui::primitive_type const);
 
     [[nodiscard]] static std::shared_ptr<mesh> make_shared();
+    [[nodiscard]] static std::shared_ptr<mesh> make_shared(mesh_args &&, std::shared_ptr<ui::mesh_data> const &,
+                                                           std::shared_ptr<ui::texture> const &);
 
    private:
     std::shared_ptr<ui::mesh_data> _mesh_data = nullptr;
@@ -36,7 +39,7 @@ struct mesh final : renderable_mesh, metal_object {
 
     mesh_updates_t _updates;
 
-    mesh();
+    mesh(mesh_args &&, std::shared_ptr<ui::mesh_data> const &, std::shared_ptr<ui::texture> const &);
 
     mesh(mesh const &) = delete;
     mesh(mesh &&) = delete;

@@ -50,21 +50,16 @@ using namespace yas::ui;
 
     batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
-    auto mesh1 = mesh::make_shared();
-    auto mesh2 = mesh::make_shared();
-    auto mesh_data1 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    auto mesh_data2 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh1->set_mesh_data(mesh_data1);
-    mesh2->set_mesh_data(mesh_data2);
+    auto mesh1 = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
+    auto mesh2 = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
 
     auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto mesh3 = mesh::make_shared();
     auto mesh_data3 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh3->set_mesh_data(mesh_data3);
+    auto mesh3 = mesh::make_shared({}, mesh_data3, nullptr);
     auto texture3 = texture::make_shared(texture_args{}, view_look);
     mesh3->set_texture(texture3);
     batch_encodable->append_mesh(mesh3);
@@ -99,8 +94,6 @@ using namespace yas::ui;
     auto batch_renderable = renderable_batch::cast(batch);
     auto batch_encodable = render_encodable::cast(batch);
 
-    auto mesh1 = mesh::make_shared();
-    mesh1->set_color({0.5f, 0.5f, 0.5f, 0.5f});
     auto mesh_data1 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh_data1->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
@@ -112,10 +105,8 @@ using namespace yas::ui;
         auto &index = indices.at(0);
         index = 1;
     });
-    mesh1->set_mesh_data(mesh_data1);
+    auto mesh1 = mesh::make_shared({.color = {0.5f, 0.5f, 0.5f, 0.5f}}, mesh_data1, nullptr);
 
-    auto mesh2 = mesh::make_shared();
-    mesh2->set_use_mesh_color(true);
     auto mesh_data2 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh_data2->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
@@ -131,7 +122,7 @@ using namespace yas::ui;
         auto &index = indices.at(0);
         index = 1;
     });
-    mesh2->set_mesh_data(mesh_data2);
+    auto mesh2 = mesh::make_shared({.use_mesh_color = true}, mesh_data2, nullptr);
 
     metal_object::cast(mesh1)->metal_setup(metal_system);
     metal_object::cast(mesh2)->metal_setup(metal_system);
@@ -191,9 +182,8 @@ using namespace yas::ui;
     auto batch_renderable = renderable_batch::cast(batch);
     auto batch_encodable = render_encodable::cast(batch);
 
-    auto mesh = mesh::make_shared();
     auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh->set_mesh_data(mesh_data);
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     metal_object::cast(mesh)->metal_setup(metal_system);
 
@@ -242,9 +232,8 @@ using namespace yas::ui;
     auto batch_renderable = renderable_batch::cast(batch);
     auto batch_encodable = render_encodable::cast(batch);
 
-    auto mesh = mesh::make_shared();
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    mesh->set_mesh_data(mesh_data);
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     metal_object::cast(mesh)->metal_setup(metal_system);
 

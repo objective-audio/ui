@@ -199,9 +199,7 @@ std::shared_ptr<rect_plane_data> rect_plane_data::make_shared(std::size_t const 
 #pragma mark - rect_plane
 
 rect_plane::rect_plane(std::shared_ptr<rect_plane_data> &&plane_data) : _rect_plane_data(std::move(plane_data)) {
-    auto mesh = mesh::make_shared();
-    mesh->set_mesh_data(this->data()->dynamic_mesh_data());
-    this->node()->set_mesh(std::move(mesh));
+    this->node()->set_mesh(mesh::make_shared({}, this->data()->dynamic_mesh_data(), nullptr));
 }
 
 std::shared_ptr<node> const &rect_plane::node() {

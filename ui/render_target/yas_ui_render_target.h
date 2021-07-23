@@ -31,10 +31,10 @@ struct render_target : metal_object, renderable_render_target {
     std::shared_ptr<ui::effect> _effect;
     double _scale_factor;
 
-    std::shared_ptr<rect_plane_data> _data;
-    std::shared_ptr<ui::mesh> _mesh = ui::mesh::make_shared();
-    std::shared_ptr<texture> _src_texture;
-    std::shared_ptr<texture> _dst_texture;
+    std::shared_ptr<rect_plane_data> const _data;
+    std::shared_ptr<texture> const _src_texture;
+    std::shared_ptr<texture> const _dst_texture;
+    std::shared_ptr<ui::mesh> const _mesh;
     objc_ptr<MTLRenderPassDescriptor *> _render_pass_descriptor;
     simd::float4x4 _projection_matrix;
     observing::canceller_pool _pool;

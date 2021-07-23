@@ -268,11 +268,9 @@ struct test_render_encoder : render_encodable {
 - (void)test_fetch_updates {
     auto node = node::make_shared();
 
-    auto mesh = mesh::make_shared();
-    node->set_mesh(mesh);
-
     auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 2, .index_count = 2});
-    mesh->set_mesh_data(mesh_data);
+    auto mesh = mesh::make_shared({}, mesh_data, nullptr);
+    node->set_mesh(mesh);
 
     auto sub_node = node::make_shared();
     node->add_sub_node(sub_node);
@@ -344,10 +342,9 @@ struct test_render_encoder : render_encodable {
     renderable_node::cast(node)->clear_updates();
 
     // nodeのパラメータを変更する
-    node->set_mesh(mesh::make_shared());
     auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 2, .index_count = 2});
     mesh_data->set_vertex_count(1);
-    node->mesh()->set_mesh_data(mesh_data);
+    node->set_mesh(mesh::make_shared({}, mesh_data, nullptr));
 
     node->set_angle({1.0f});
     node->set_is_enabled(false);
@@ -389,8 +386,7 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertFalse(renderable_node::cast(node)->is_rendering_color_exists());
 
-    auto mesh = mesh::make_shared();
-    mesh->set_mesh_data(mesh_data::make_shared({.vertex_count = 1, .index_count = 1}));
+    auto mesh = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
     node->set_mesh(mesh);
 
     XCTAssertTrue(renderable_node::cast(node)->is_rendering_color_exists());
@@ -416,13 +412,11 @@ struct test_render_encoder : render_encodable {
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto root_mesh = mesh::make_shared();
     auto root_mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    root_mesh->set_mesh_data(root_mesh_data);
+    auto root_mesh = mesh::make_shared({}, root_mesh_data, nullptr);
 
-    auto sub_mesh = mesh::make_shared();
     auto sub_mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
-    sub_mesh->set_mesh_data(sub_mesh_data);
+    auto sub_mesh = mesh::make_shared({}, sub_mesh_data, nullptr);
 
     auto root_node = node::make_shared();
     root_node->set_mesh(root_mesh);
@@ -453,20 +447,17 @@ struct test_render_encoder : render_encodable {
     auto const batch_sub_mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
     node->set_collider(collider::make_shared(shape::make_shared(circle_shape{})));
-    auto const mesh = mesh::make_shared();
+    auto const mesh = mesh::make_shared({}, mesh_data, nullptr);
     node->set_mesh(mesh);
-    mesh->set_mesh_data(mesh_data);
 
-    auto const sub_mesh = mesh::make_shared();
+    auto const sub_mesh = mesh::make_shared({}, sub_mesh_data, nullptr);
     sub_node->set_mesh(sub_mesh);
-    sub_mesh->set_mesh_data(sub_mesh_data);
 
     batch_node->set_batch(batch::make_shared());
     batch_node->add_sub_node(batch_sub_node);
 
-    auto const batch_sub_mesh = mesh::make_shared();
+    auto const batch_sub_mesh = mesh::make_shared({}, batch_sub_mesh_data, nullptr);
     batch_sub_node->set_mesh(batch_sub_mesh);
-    batch_sub_mesh->set_mesh_data(batch_sub_mesh_data);
 
     node->add_sub_node(sub_node);
     node->add_sub_node(batch_node);
@@ -638,8 +629,6 @@ struct test_render_encoder : render_encodable {
     auto child_batch2 = batch::make_shared();
     child_batch_node2->set_batch(child_batch2);
 
-    auto mesh1a = mesh::make_shared();
-    mesh1a->set_color({0.5f, 0.5f, 0.5f, 0.5f});
     auto mesh_data1a = dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh_data1a->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
@@ -651,13 +640,11 @@ struct test_render_encoder : render_encodable {
         auto &index = indices.at(0);
         index = 0;
     });
-    mesh1a->set_mesh_data(mesh_data1a);
+    auto mesh1a = mesh::make_shared({.color = {0.5f, 0.5f, 0.5f, 0.5f}}, mesh_data1a, nullptr);
     mesh_node1a->set_mesh(mesh1a);
     mesh_node1a->set_color(color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
     mesh_node1a->set_alpha(0.8f);
 
-    auto mesh1b = mesh::make_shared();
-    mesh1b->set_use_mesh_color(true);
     auto mesh_data1b = dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh_data1b->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
@@ -673,15 +660,13 @@ struct test_render_encoder : render_encodable {
         auto &index = indices.at(0);
         index = 0;
     });
-    mesh1b->set_mesh_data(mesh_data1b);
+    auto mesh1b = mesh::make_shared({.use_mesh_color = true}, mesh_data1b, nullptr);
 
     auto texture1b = texture::make_shared({.point_size = {.width = 1024, .height = 1024}}, view_look);
     mesh1b->set_texture(texture1b);
 
     mesh_node1b->set_mesh(mesh1b);
 
-    auto mesh2 = mesh::make_shared();
-    mesh2->set_use_mesh_color(true);
     auto mesh_data2 = dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh_data2->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
@@ -697,7 +682,7 @@ struct test_render_encoder : render_encodable {
         auto &index = indices.at(0);
         index = 0;
     });
-    mesh2->set_mesh_data(mesh_data2);
+    auto mesh2 = mesh::make_shared({.use_mesh_color = true}, mesh_data2, nullptr);
 
     auto texture2 = texture::make_shared({.point_size = {.width = 1024, .height = 1024}}, view_look);
     mesh2->set_texture(texture2);
@@ -1133,8 +1118,6 @@ struct test_render_encoder : render_encodable {
     auto mesh_node1 = node::make_shared();
     batch_node->add_sub_node(mesh_node1);
 
-    auto mesh1 = mesh::make_shared();
-    mesh1->set_use_mesh_color(false);
     auto mesh_data1 = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     mesh_data1->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         auto &vertex = vertices.at(0);
@@ -1144,7 +1127,7 @@ struct test_render_encoder : render_encodable {
         auto &index = indices.at(0);
         index = 0;
     });
-    mesh1->set_mesh_data(mesh_data1);
+    auto mesh1 = mesh::make_shared({.use_mesh_color = false}, mesh_data1, nullptr);
     mesh_node1->set_mesh(mesh1);
     mesh_node1->set_color(color{.red = 0.1f, .green = 0.2f, .blue = 0.3f});
     mesh_node1->set_alpha(0.0f);

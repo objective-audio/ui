@@ -31,11 +31,10 @@ render_target::render_target(std::shared_ptr<ui::scale_factor_observable_interfa
                                          .draw_padding = 0,
                                          .usages = {texture_usage::shader_write},
                                          .pixel_format = pixel_format::bgra8_unorm},
-                                        view_look)) {
+                                        view_look)),
+      _mesh(ui::mesh::make_shared({}, _data->dynamic_mesh_data(), _dst_texture)) {
     this->_updates.flags.set();
     this->_render_pass_descriptor = objc_ptr_with_move_object([MTLRenderPassDescriptor new]);
-    this->_mesh->set_mesh_data(this->_data->dynamic_mesh_data());
-    this->_mesh->set_texture(this->_dst_texture);
 
     this->_set_textures_to_effect();
 
