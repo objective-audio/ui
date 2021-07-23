@@ -141,6 +141,7 @@
 		B6E2F7322667BCB20008067E /* yas_ui_layout_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC1ACC26A9B4E50032F8D6 /* yas_ui_event_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FC1ACA26A9B4E50032F8D6 /* yas_ui_event_manager.cpp */; };
 		B6FC1ACD26A9B4E50032F8D6 /* yas_ui_event_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC1ACB26A9B4E50032F8D6 /* yas_ui_event_manager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6FC1AD326AA630A0032F8D6 /* yas_ui_mesh_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC1AD226AA630A0032F8D6 /* yas_ui_mesh_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -281,6 +282,7 @@
 		B6E2F7302667BCB20008067E /* yas_ui_layout_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_dependency.h; sourceTree = "<group>"; };
 		B6FC1ACA26A9B4E50032F8D6 /* yas_ui_event_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_event_manager.cpp; sourceTree = "<group>"; };
 		B6FC1ACB26A9B4E50032F8D6 /* yas_ui_event_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_event_manager.h; sourceTree = "<group>"; };
+		B6FC1AD226AA630A0032F8D6 /* yas_ui_mesh_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_mesh_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -600,6 +602,7 @@
 				B6DEECA2266138F600C4168B /* yas_ui_mesh_data_types.h */,
 				B65AF8A421E4D7E400C65DB5 /* yas_ui_mesh_data.h */,
 				B65AF86821E4D7E400C65DB5 /* yas_ui_mesh_data.mm */,
+				B6FC1AD226AA630A0032F8D6 /* yas_ui_mesh_types.h */,
 				B65AF89821E4D7E400C65DB5 /* yas_ui_mesh.h */,
 				B65AF87421E4D7E400C65DB5 /* yas_ui_mesh.mm */,
 			);
@@ -757,6 +760,7 @@
 				B65AF92E21E4D7E400C65DB5 /* yas_ui_event.h in Headers */,
 				B65AF85B21E4D7B600C65DB5 /* ui.h in Headers */,
 				B65AF8E221E4D7E400C65DB5 /* yas_ui_batch_render_mesh_info.h in Headers */,
+				B6FC1AD326AA630A0032F8D6 /* yas_ui_mesh_types.h in Headers */,
 				B60E4E3C25E693540064EF1E /* yas_ui_metal_encoder_dependency.h in Headers */,
 				B65AF92921E4D7E400C65DB5 /* yas_ui_detector.h in Headers */,
 				B65F26AE26A703BD00F52EB6 /* yas_ui_standard.h in Headers */,

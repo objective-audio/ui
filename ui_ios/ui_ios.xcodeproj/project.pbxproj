@@ -141,6 +141,7 @@
 		B6E2F7362667BF340008067E /* yas_ui_layout_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E2F7342667BF340008067E /* yas_ui_layout_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC1AD026A9B6A00032F8D6 /* yas_ui_event_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC1ACE26A9B6A00032F8D6 /* yas_ui_event_manager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FC1AD126A9B6A00032F8D6 /* yas_ui_event_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FC1ACF26A9B6A00032F8D6 /* yas_ui_event_manager.cpp */; };
+		B6FC1AD526AA640B0032F8D6 /* yas_ui_mesh_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC1AD426AA640B0032F8D6 /* yas_ui_mesh_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -284,6 +285,7 @@
 		B6E2F7342667BF340008067E /* yas_ui_layout_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout_dependency.h; sourceTree = "<group>"; };
 		B6FC1ACE26A9B6A00032F8D6 /* yas_ui_event_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_event_manager.h; sourceTree = "<group>"; };
 		B6FC1ACF26A9B6A00032F8D6 /* yas_ui_event_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_event_manager.cpp; sourceTree = "<group>"; };
+		B6FC1AD426AA640B0032F8D6 /* yas_ui_mesh_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_mesh_types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -404,6 +406,7 @@
 				B6DEECA42661395900C4168B /* yas_ui_mesh_data_types.h */,
 				B6629A0C25E69D1F00443098 /* yas_ui_mesh_data.mm */,
 				B6629A0D25E69D1F00443098 /* yas_ui_mesh.mm */,
+				B6FC1AD426AA640B0032F8D6 /* yas_ui_mesh_types.h */,
 				B6629A0E25E69D1F00443098 /* yas_ui_mesh.h */,
 				B6629A0F25E69D1F00443098 /* yas_ui_mesh_data.h */,
 			);
@@ -763,6 +766,7 @@
 				B6DEECAB2661CC1800C4168B /* yas_ui_action_dependency.h in Headers */,
 				B62DF8E926996F04005C68CC /* yas_ui_view_look.h in Headers */,
 				B6629AA725E69D1F00443098 /* yas_ui_metal_dependency.h in Headers */,
+				B6FC1AD526AA640B0032F8D6 /* yas_ui_mesh_types.h in Headers */,
 				B6629A9825E69D1F00443098 /* yas_ui_metal_texture.h in Headers */,
 				B6629ACD25E69D1F00443098 /* yas_ui_rect_plane.h in Headers */,
 				B6629AD925E69D1F00443098 /* yas_ui_texture.h in Headers */,
