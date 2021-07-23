@@ -32,10 +32,12 @@ struct main {
                                                            std::shared_ptr<ui::metal_system> const &);
 
    private:
+    std::shared_ptr<ui::texture> const _texture = ui::texture::make_shared({.point_size = {1024, 1024}}, view_look);
     std::shared_ptr<ui::font_atlas> const _font_atlas =
         ui::font_atlas::make_shared({.font_name = "TrebuchetMS-Bold",
                                      .font_size = 26.0f,
-                                     .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"});
+                                     .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"},
+                                    _texture);
 
     sample::touch_holder_ptr const _touch_holder =
         sample::touch_holder::make_shared(standard->event_manager(), standard->action_manager());
