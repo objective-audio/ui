@@ -16,11 +16,21 @@ using namespace yas::ui;
 
 standard::standard(std::shared_ptr<ui::view_look> const &view_look,
                    std::shared_ptr<ui::metal_system> const &metal_system)
-    : _root_node(ui::node::make_shared(view_look)),
+    : _view_look(view_look),
+      _metal_system(metal_system),
+      _root_node(ui::node::make_shared(view_look)),
       _detector(ui::detector::make_shared()),
       _event_manager(ui::event_manager::make_shared()),
       _action_manager(ui::action_manager::make_shared()),
       _renderer(ui::renderer::make_shared(metal_system, view_look, _root_node, _detector, _action_manager)) {
+}
+
+std::shared_ptr<ui::view_look> const &standard::view_look() const {
+    return this->_view_look;
+}
+
+std::shared_ptr<ui::metal_system> const &standard::metal_system() const {
+    return this->_metal_system;
 }
 
 std::shared_ptr<ui::node> const &standard::root_node() const {
