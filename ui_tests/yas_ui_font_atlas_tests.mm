@@ -40,8 +40,8 @@ using namespace yas::ui;
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto texture = texture::make_shared({.point_size = {256, 256}}, view_look);
-    auto font_atlas = font_atlas::make_shared(
-        {.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345", .texture = texture});
+    auto font_atlas =
+        font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"}, texture);
 
     XCTAssertEqual(font_atlas->font_name(), "HelveticaNeue");
     XCTAssertEqual(font_atlas->font_size(), 14.0);
@@ -54,38 +54,6 @@ using namespace yas::ui;
     XCTAssertEqual(font_atlas->ascent(), CTFontGetAscent(ct_font_obj));
     XCTAssertEqual(font_atlas->descent(), CTFontGetDescent(ct_font_obj));
     XCTAssertEqual(font_atlas->leading(), CTFontGetLeading(ct_font_obj));
-}
-
-- (void)test_observe_texture {
-    auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
-    if (!device) {
-        std::cout << "skip : " << __PRETTY_FUNCTION__ << std::endl;
-        return;
-    }
-
-    auto font_atlas = font_atlas::make_shared({.font_name = "HelveticaNeue", .font_size = 14.0, .words = "abcde12345"});
-
-    std::shared_ptr<texture> observed_texture = nullptr;
-
-    auto canceller = font_atlas
-                         ->observe_texture([&observed_texture](std::shared_ptr<texture> const &texture) {
-                             observed_texture = texture;
-                         })
-                         .sync();
-
-    auto const metal_system = metal_system::make_shared(device.object(), nil);
-    auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
-
-    auto texture = texture::make_shared({.point_size = {256, 256}}, view_look);
-    font_atlas->set_texture(texture);
-
-    XCTAssertEqual(font_atlas->texture(), texture);
-    XCTAssertEqual(observed_texture, font_atlas->texture());
-
-    font_atlas->set_texture(nullptr);
-
-    XCTAssertFalse(font_atlas->texture());
-    XCTAssertFalse(observed_texture);
 }
 
 @end

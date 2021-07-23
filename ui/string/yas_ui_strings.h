@@ -55,7 +55,6 @@ struct strings final {
     strings &operator=(strings &&) = delete;
 
     void _prepare_observings();
-    void _update_texture_observing();
     void _update_layout();
     float _cell_height();
 };

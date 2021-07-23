@@ -24,7 +24,9 @@ strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atl
       _font_atlas(atlas),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
-    this->_update_texture_observing();
+    this->rect_plane()->node()->mesh()->set_texture(atlas->texture());
+    this->_update_layout();
+
     this->_prepare_observings();
     this->_update_layout();
 }
@@ -88,14 +90,6 @@ observing::syncable strings::observe_alignment(observing::caller<layout_alignmen
 }
 
 void strings::_prepare_observings() {
-    this->_font_atlas
-        ->observe_texture([this](auto const &texture) {
-            this->rect_plane()->node()->mesh()->set_texture(texture);
-            this->_update_layout();
-        })
-        .sync()
-        ->add_to(this->_property_pool);
-
     this->_font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
         .end()
         ->add_to(this->_property_pool);
@@ -111,9 +105,6 @@ void strings::_prepare_observings() {
     this->_collection_layout->observe_alignment([this](auto const &) { this->_update_layout(); })
         .end()
         ->add_to(this->_property_pool);
-}
-
-void strings::_update_texture_observing() {
 }
 
 void strings::_update_layout() {
