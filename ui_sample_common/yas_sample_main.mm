@@ -9,7 +9,7 @@ using namespace yas::ui;
 
 sample::main::main(std::shared_ptr<ui::view_look> const &view_look,
                    std::shared_ptr<ui::metal_system> const &metal_system)
-    : view_look(view_look), metal_system(metal_system), standard(ui::standard::make_shared(view_look, metal_system)) {
+    : standard(ui::standard::make_shared(view_look, metal_system)) {
 }
 
 void sample::main::setup() {
@@ -69,7 +69,7 @@ void sample::main::setup() {
     this->_big_button->set_texture(this->_texture);
     this->_touch_holder->set_texture(this->_texture);
 
-    auto render_target = render_target::make_shared(this->view_look);
+    auto render_target = render_target::make_shared(this->standard->view_look());
     render_target->set_effect(this->_blur->effect());
 
     auto blur_action =
@@ -84,7 +84,7 @@ void sample::main::setup() {
 
     this->standard->action_manager()->insert_action(blur_action);
 
-    auto &view_guide = this->view_look->view_layout_guide();
+    auto &view_guide = this->standard->view_look()->view_layout_guide();
 
     view_guide->observe([render_target](region const &region) { render_target->layout_guide()->set_region(region); })
         .sync()
