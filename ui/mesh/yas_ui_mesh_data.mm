@@ -93,7 +93,7 @@ setup_metal_result mesh_data::metal_setup(std::shared_ptr<ui::metal_system> cons
     if (!this->_vertex_buffer) {
         auto const vertex_length = this->_vertices.size() * sizeof(vertex2d_t) * this->dynamic_buffer_count();
 
-        this->_vertex_buffer = this->_metal_system->make_metal_buffer(vertex_length);
+        this->_vertex_buffer = system->make_metal_buffer(vertex_length);
 
         if (!this->_vertex_buffer) {
             return setup_metal_result{setup_metal_error::create_vertex_buffer_failed};
@@ -103,7 +103,7 @@ setup_metal_result mesh_data::metal_setup(std::shared_ptr<ui::metal_system> cons
     if (!this->_index_buffer) {
         auto const index_length = this->_indices.size() * sizeof(index2d_t) * dynamic_buffer_count();
 
-        this->_index_buffer = this->_metal_system->make_metal_buffer(index_length);
+        this->_index_buffer = system->make_metal_buffer(index_length);
 
         if (!this->_index_buffer) {
             return setup_metal_result{setup_metal_error::create_index_buffer_failed};
