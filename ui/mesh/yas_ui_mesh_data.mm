@@ -94,6 +94,7 @@ setup_metal_result mesh_data::metal_setup(std::shared_ptr<ui::metal_system> cons
     if (!this->_vertex_buffer) {
         auto const vertex_length = this->_vertices.size() * sizeof(vertex2d_t) * this->dynamic_buffer_count();
 
+        // make_gl_bufferにしたい
         this->_vertex_buffer = system->make_metal_buffer(vertex_length);
 
         if (!this->_vertex_buffer) {
@@ -104,6 +105,7 @@ setup_metal_result mesh_data::metal_setup(std::shared_ptr<ui::metal_system> cons
     if (!this->_index_buffer) {
         auto const index_length = this->_indices.size() * sizeof(index2d_t) * dynamic_buffer_count();
 
+        // make_gl_bufferにしたい
         this->_index_buffer = system->make_metal_buffer(index_length);
 
         if (!this->_index_buffer) {
