@@ -70,14 +70,9 @@ void mesh_data::update_render_buffer() {
     if (this->_updates.test(mesh_data_update_reason::render_buffer)) {
         this->_dynamic_buffer_index = (this->_dynamic_buffer_index + 1) % this->dynamic_buffer_count();
 
-        auto vertex_ptr = static_cast<vertex2d_t *>([this->_vertex_buffer->rawBuffer() contents]);
-        auto index_ptr = static_cast<index2d_t *>([this->_index_buffer->rawBuffer() contents]);
-
-        if (vertex_ptr && index_ptr) {
-            memcpy(&vertex_ptr[this->_vertices.size() * this->_dynamic_buffer_index], this->_vertices.data(),
-                   this->_vertices.size() * sizeof(vertex2d_t));
-            memcpy(&index_ptr[this->_indices.size() * this->_dynamic_buffer_index], this->_indices.data(),
-                   this->_indices.size() * sizeof(index2d_t));
+        if (this->_vertex_buffer && this->_index_buffer) {
+            this->_vertex_buffer->write_from_vertices(this->_vertices, this->_dynamic_buffer_index);
+            this->_index_buffer->write_from_indices(this->_indices, this->_dynamic_buffer_index);
         }
 
         this->_updates.reset(mesh_data_update_reason::render_buffer);
