@@ -42,8 +42,8 @@ struct mesh_data : renderable_mesh_data, metal_object {
    private:
     std::shared_ptr<ui::metal_system> _metal_system = nullptr;
 
-    objc_ptr<id<MTLBuffer>> _vertex_buffer;
-    objc_ptr<id<MTLBuffer>> _index_buffer;
+    std::shared_ptr<ui::metal_buffer> _vertex_buffer;
+    std::shared_ptr<ui::metal_buffer> _index_buffer;
 
     mesh_data(mesh_data const &) = delete;
     mesh_data(mesh_data &&) = delete;
