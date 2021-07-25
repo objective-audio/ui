@@ -163,14 +163,9 @@ draw_image_result texture::_replace_image(std::shared_ptr<image> const &image, u
         return draw_image_result{draw_image_error::no_setup};
     }
 
-    auto region = uint_region{origin, image->actual_size()};
+    auto const region = uint_region{origin, image->actual_size()};
 
-    if (id<MTLTexture> texture = this->_metal_texture->texture()) {
-        [texture replaceRegion:to_mtl_region(region)
-                   mipmapLevel:0
-                     withBytes:image->data()
-                   bytesPerRow:region.size.width * 4];
-    }
+    this->_metal_texture->replace_data(region, image->data());
 
     return draw_image_result{std::move(region)};
 }
