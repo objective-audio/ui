@@ -214,6 +214,11 @@ std::shared_ptr<rect_plane> rect_plane::make_shared(std::shared_ptr<rect_plane_d
     return std::shared_ptr<rect_plane>(new rect_plane{std::move(rect_plane_data)});
 }
 
+std::shared_ptr<rect_plane> rect_plane::make_shared(std::shared_ptr<rect_plane_data> const &rect_plane_data) {
+    auto copied_data = rect_plane_data;
+    return std::shared_ptr<rect_plane>(new rect_plane{std::move(copied_data)});
+}
+
 std::shared_ptr<rect_plane> rect_plane::make_shared(std::size_t const rect_count) {
     return make_shared(rect_count, rect_count);
 }
