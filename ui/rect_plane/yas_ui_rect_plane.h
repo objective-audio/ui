@@ -68,6 +68,7 @@ struct rect_plane final {
     std::shared_ptr<rect_plane_data> const &data();
 
     [[nodiscard]] static std::shared_ptr<rect_plane> make_shared(std::shared_ptr<rect_plane_data> &&);
+    [[nodiscard]] static std::shared_ptr<rect_plane> make_shared(std::shared_ptr<rect_plane_data> const &);
     [[nodiscard]] static std::shared_ptr<rect_plane> make_shared(std::size_t const max_rect_count);
     [[nodiscard]] static std::shared_ptr<rect_plane> make_shared(std::size_t const max_rect_count,
                                                                  std::size_t const max_index_count);
@@ -77,6 +78,7 @@ struct rect_plane final {
     std::shared_ptr<rect_plane_data> const _rect_plane_data;
 
     explicit rect_plane(std::shared_ptr<rect_plane_data> &&);
+    explicit rect_plane(std::shared_ptr<rect_plane_data> const &);
 
     rect_plane(rect_plane const &) = delete;
     rect_plane(rect_plane &&) = delete;
