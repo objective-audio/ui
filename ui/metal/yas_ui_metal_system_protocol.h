@@ -18,7 +18,6 @@ struct makable_metal_system {
 
     [[nodiscard]] virtual objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) = 0;
     [[nodiscard]] virtual objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) = 0;
-    [[nodiscard]] virtual objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) = 0;
     [[nodiscard]] virtual objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() = 0;
     [[nodiscard]] virtual objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) = 0;
 

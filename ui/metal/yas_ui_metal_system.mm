@@ -222,11 +222,6 @@ objc_ptr<id<MTLSamplerState>> metal_system::make_mtl_sampler_state(MTLSamplerDes
     return objc_ptr_with_move_object([mtlDevice() newSamplerStateWithDescriptor:descriptor]);
 }
 
-objc_ptr<id<MTLBuffer>> metal_system::make_mtl_buffer(std::size_t const length) {
-    return objc_ptr_with_move_object([mtlDevice() newBufferWithLength:length
-                                                              options:MTLResourceOptionCPUCacheModeDefault]);
-}
-
 objc_ptr<id<MTLArgumentEncoder>> metal_system::make_mtl_argument_encoder() {
     return objc_ptr_with_move_object([*this->_fragment_function_with_texture newArgumentEncoderWithBufferIndex:0]);
 }
