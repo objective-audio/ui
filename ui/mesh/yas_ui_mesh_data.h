@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_objc_ptr.h>
 #include <ui/yas_ui_mesh_data_types.h>
+#include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_renderer_dependency_objc.h>

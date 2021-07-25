@@ -10,7 +10,7 @@ using namespace yas::ui;
 metal_buffer::metal_buffer(objc_ptr<id<MTLBuffer>> &&raw_buffer) : _raw_buffer(std::move(raw_buffer)) {
 }
 
-id<MTLBuffer> metal_buffer::raw_buffer() const {
+id<MTLBuffer> metal_buffer::rawBuffer() const {
     return this->_raw_buffer.object();
 }
 
