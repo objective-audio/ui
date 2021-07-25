@@ -10,6 +10,8 @@
 
 namespace yas::ui {
 struct metal_buffer final : gl_buffer_interface {
+    id<MTLBuffer> raw_buffer() const;
+
     [[nodiscard]] static std::shared_ptr<metal_buffer> make_shared(id<MTLDevice> const, std::size_t const length);
 
    private:
