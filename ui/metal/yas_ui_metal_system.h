@@ -10,6 +10,8 @@
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 
 namespace yas::ui {
+class metal_buffer;
+
 struct metal_system final : renderer_system_interface,
                             renderable_metal_system,
                             makable_metal_system,
@@ -17,6 +19,8 @@ struct metal_system final : renderer_system_interface,
                             view_metal_system_interface,
                             metal_encoder_system_interface {
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
+
+    [[nodiscard]] std::shared_ptr<metal_buffer> make_metal_buffer(std::size_t const length);
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const,
