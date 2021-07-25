@@ -18,6 +18,8 @@ struct metal_system final : renderer_system_interface,
                             metal_encoder_system_interface {
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
+    [[nodiscard]] std::shared_ptr<metal_buffer> make_metal_buffer(std::size_t const length);
+
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const,
                                                                    uint32_t const sample_count);
@@ -70,7 +72,6 @@ struct metal_system final : renderer_system_interface,
 
     objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) override;
     objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) override;
-    objc_ptr<id<MTLBuffer>> make_mtl_buffer(std::size_t const length) override;
     objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override;
     objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) override;
 

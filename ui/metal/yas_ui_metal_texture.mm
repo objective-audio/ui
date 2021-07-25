@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_metal_texture.h"
+#include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_types.h>
 
@@ -32,7 +33,7 @@ id<MTLTexture> metal_texture::texture() const {
 }
 
 id<MTLBuffer> metal_texture::argumentBuffer() const {
-    return *this->_argument_buffer_object;
+    return this->_argument_buffer->rawBuffer();
 }
 
 MTLTextureType metal_texture::texture_type() const {
@@ -119,14 +120,13 @@ setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> 
 
         auto encoder = *this->_argument_encoder_object;
 
-        this->_argument_buffer_object =
-            makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(encoder.encodedLength);
+        this->_argument_buffer = this->_metal_system->make_metal_buffer(encoder.encodedLength);
 
-        if (!this->_argument_buffer_object) {
+        if (!this->_argument_buffer) {
             return setup_metal_result{setup_metal_error::create_argument_buffer_failed};
         }
 
-        [encoder setArgumentBuffer:*this->_argument_buffer_object offset:0];
+        [encoder setArgumentBuffer:this->_argument_buffer->rawBuffer() offset:0];
         [encoder setTexture:*this->_texture_object atIndex:0];
         [encoder setSamplerState:*this->_sampler_object atIndex:1];
     }

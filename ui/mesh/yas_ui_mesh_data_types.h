@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace yas::ui {
 struct mesh_data_args final {
     std::size_t vertex_count = 0;

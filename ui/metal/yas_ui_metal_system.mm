@@ -6,6 +6,7 @@
 #include <cpp_utils/yas_each_index.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_metal_encode_info.h>
 #include <ui/yas_ui_metal_encoder.h>
 #include <ui/yas_ui_metal_texture.h>
@@ -106,6 +107,10 @@ metal_system::metal_system(id<MTLDevice> const device, YASUIMetalView *const met
 
 std::size_t metal_system::last_encoded_mesh_count() const {
     return this->_last_encoded_mesh_count;
+}
+
+std::shared_ptr<metal_buffer> metal_system::make_metal_buffer(std::size_t const length) {
+    return metal_buffer::make_shared(this->mtlDevice(), length);
 }
 
 void metal_system::view_render(std::shared_ptr<ui::render_info_detector_interface> const &detector,
@@ -215,11 +220,6 @@ objc_ptr<id<MTLTexture>> metal_system::make_mtl_texture(MTLTextureDescriptor *co
 
 objc_ptr<id<MTLSamplerState>> metal_system::make_mtl_sampler_state(MTLSamplerDescriptor *const descriptor) {
     return objc_ptr_with_move_object([mtlDevice() newSamplerStateWithDescriptor:descriptor]);
-}
-
-objc_ptr<id<MTLBuffer>> metal_system::make_mtl_buffer(std::size_t const length) {
-    return objc_ptr_with_move_object([mtlDevice() newBufferWithLength:length
-                                                              options:MTLResourceOptionCPUCacheModeDefault]);
 }
 
 objc_ptr<id<MTLArgumentEncoder>> metal_system::make_mtl_argument_encoder() {

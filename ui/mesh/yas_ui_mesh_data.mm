@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_mesh_data.h"
+#include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_metal_system.h>
 
 using namespace yas;
@@ -55,11 +56,11 @@ std::size_t mesh_data::index_buffer_byte_offset() {
 }
 
 id<MTLBuffer> mesh_data::vertexBuffer() {
-    return this->_vertex_buffer.object();
+    return this->_vertex_buffer->rawBuffer();
 }
 
 id<MTLBuffer> mesh_data::indexBuffer() {
-    return this->_index_buffer.object();
+    return this->_index_buffer->rawBuffer();
 }
 
 mesh_data_updates_t const &mesh_data::updates() {
@@ -70,14 +71,9 @@ void mesh_data::update_render_buffer() {
     if (this->_updates.test(mesh_data_update_reason::render_buffer)) {
         this->_dynamic_buffer_index = (this->_dynamic_buffer_index + 1) % this->dynamic_buffer_count();
 
-        auto vertex_ptr = static_cast<vertex2d_t *>([this->_vertex_buffer.object() contents]);
-        auto index_ptr = static_cast<index2d_t *>([this->_index_buffer.object() contents]);
-
-        if (vertex_ptr && index_ptr) {
-            memcpy(&vertex_ptr[this->_vertices.size() * this->_dynamic_buffer_index], this->_vertices.data(),
-                   this->_vertices.size() * sizeof(vertex2d_t));
-            memcpy(&index_ptr[this->_indices.size() * this->_dynamic_buffer_index], this->_indices.data(),
-                   this->_indices.size() * sizeof(index2d_t));
+        if (this->_vertex_buffer && this->_index_buffer) {
+            this->_vertex_buffer->write_from_vertices(this->_vertices, this->_dynamic_buffer_index);
+            this->_index_buffer->write_from_indices(this->_indices, this->_dynamic_buffer_index);
         }
 
         this->_updates.reset(mesh_data_update_reason::render_buffer);
@@ -91,14 +87,15 @@ void mesh_data::clear_updates() {
 setup_metal_result mesh_data::metal_setup(std::shared_ptr<ui::metal_system> const &system) {
     if (this->_metal_system != system) {
         this->_metal_system = system;
-        this->_vertex_buffer.set_object(nil);
-        this->_index_buffer.set_object(nil);
+        this->_vertex_buffer = nullptr;
+        this->_index_buffer = nullptr;
     }
 
     if (!this->_vertex_buffer) {
         auto const vertex_length = this->_vertices.size() * sizeof(vertex2d_t) * this->dynamic_buffer_count();
 
-        this->_vertex_buffer = makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(vertex_length);
+        // make_gl_bufferにしたい
+        this->_vertex_buffer = system->make_metal_buffer(vertex_length);
 
         if (!this->_vertex_buffer) {
             return setup_metal_result{setup_metal_error::create_vertex_buffer_failed};
@@ -108,7 +105,8 @@ setup_metal_result mesh_data::metal_setup(std::shared_ptr<ui::metal_system> cons
     if (!this->_index_buffer) {
         auto const index_length = this->_indices.size() * sizeof(index2d_t) * dynamic_buffer_count();
 
-        this->_index_buffer = makable_metal_system::cast(this->_metal_system)->make_mtl_buffer(index_length);
+        // make_gl_bufferにしたい
+        this->_index_buffer = system->make_metal_buffer(index_length);
 
         if (!this->_index_buffer) {
             return setup_metal_result{setup_metal_error::create_index_buffer_failed};

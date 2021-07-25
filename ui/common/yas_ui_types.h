@@ -50,6 +50,7 @@ class metal_encode_info;
 class metal_encoder;
 class metal_system;
 class metal_texture;
+class metal_buffer;
 class node;
 class rect_plane_data;
 class rect_plane;

@@ -31,7 +31,7 @@ struct metal_texture : metal_object {
     objc_ptr<id<MTLSamplerState>> _sampler_object;
     objc_ptr<id<MTLTexture>> _texture_object;
     objc_ptr<id<MTLArgumentEncoder>> _argument_encoder_object;
-    objc_ptr<id<MTLBuffer>> _argument_buffer_object;
+    std::shared_ptr<ui::metal_buffer> _argument_buffer = nullptr;
     MTLPixelFormat const _pixel_format = MTLPixelFormatBGRA8Unorm;
     MTLTextureType _target = MTLTextureType2D;
 

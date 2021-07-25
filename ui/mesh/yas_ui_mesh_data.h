@@ -4,14 +4,10 @@
 
 #pragma once
 
-#include <cpp_utils/yas_objc_ptr.h>
 #include <ui/yas_ui_mesh_data_types.h>
 #include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_renderer_dependency_objc.h>
-#include <ui/yas_ui_types.h>
-
-#include <vector>
 
 namespace yas::ui {
 struct mesh_data : renderable_mesh_data, metal_object {
@@ -41,8 +37,8 @@ struct mesh_data : renderable_mesh_data, metal_object {
    private:
     std::shared_ptr<ui::metal_system> _metal_system = nullptr;
 
-    objc_ptr<id<MTLBuffer>> _vertex_buffer;
-    objc_ptr<id<MTLBuffer>> _index_buffer;
+    std::shared_ptr<ui::metal_buffer> _vertex_buffer;
+    std::shared_ptr<ui::metal_buffer> _index_buffer;
 
     mesh_data(mesh_data const &) = delete;
     mesh_data(mesh_data &&) = delete;
