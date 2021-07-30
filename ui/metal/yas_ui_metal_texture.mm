@@ -3,8 +3,8 @@
 //
 
 #include "yas_ui_metal_texture.h"
-#include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_image.h>
+#include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_types.h>
 
