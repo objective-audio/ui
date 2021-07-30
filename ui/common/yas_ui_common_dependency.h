@@ -15,6 +15,13 @@ struct scale_factor_observable_interface {
     [[nodiscard]] virtual observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&) = 0;
 };
 
+struct appearance_observable_interface {
+    virtual ~appearance_observable_interface() = default;
+
+    [[nodiscard]] virtual ui::appearance appearance() const = 0;
+    [[nodiscard]] virtual observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&) = 0;
+};
+
 struct event_observable_interface {
     virtual ~event_observable_interface() = default;
 

@@ -11,7 +11,10 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct view_look final : node_parent_interface, renderer_view_look_interface, scale_factor_observable_interface {
+struct view_look final : node_parent_interface,
+                         renderer_view_look_interface,
+                         scale_factor_observable_interface,
+                         appearance_observable_interface {
     void set_view_sizes(ui::uint_size const view_size, ui::uint_size const drawable_size,
                         region_insets const safe_area_insets);
     void set_safe_area_insets(region_insets const);
@@ -25,11 +28,11 @@ struct view_look final : node_parent_interface, renderer_view_look_interface, sc
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &view_layout_guide() const;
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_guide() const;
 
-    [[nodiscard]] ui::appearance appearance() const;
+    [[nodiscard]] ui::appearance appearance() const override;
     [[nodiscard]] std::shared_ptr<ui::background> background() const;
 
     [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&) override;
-    [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&) override;
 
     [[nodiscard]] static std::shared_ptr<view_look> make_shared();
 
