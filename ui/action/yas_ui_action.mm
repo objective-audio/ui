@@ -14,11 +14,16 @@ using namespace std::chrono_literals;
 #pragma mark - action
 
 action::action(action_args &&args)
-    : _target(std::move(args.target)),
+    : _group(std::move(args.group)),
+      _target(std::move(args.target)),
       _begin_time(std::move(args.begin_time)),
       _delay(args.delay),
       _time_updater(std::move(args.time_updater)),
       _completion(std::move(args.completion)) {
+}
+
+std::shared_ptr<action_group> action::group() const {
+    return this->_group;
 }
 
 std::shared_ptr<action_target> action::target() const {

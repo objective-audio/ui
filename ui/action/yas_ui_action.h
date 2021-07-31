@@ -9,6 +9,7 @@
 
 namespace yas::ui {
 struct action final {
+    [[nodiscard]] std::shared_ptr<action_group> group() const;
     [[nodiscard]] std::shared_ptr<action_target> target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
@@ -23,10 +24,11 @@ struct action final {
     [[nodiscard]] static std::shared_ptr<action> make_sequence(sequence_action_args &&);
 
    private:
-    std::weak_ptr<action_target> _target;
-    time_point_t _begin_time = std::chrono::system_clock::now();
-    duration_t _delay{0.0};
-    action_time_update_f _time_updater;
+    std::shared_ptr<action_group> const _group;
+    std::weak_ptr<action_target> const _target;
+    time_point_t const _begin_time = std::chrono::system_clock::now();
+    duration_t const _delay{0.0};
+    action_time_update_f const _time_updater;
     action_completion_f _completion;
 
     explicit action(action_args &&);

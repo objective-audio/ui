@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <ui/yas_ui_action_group.h>
 #include <ui/yas_ui_transformer.h>
 #include <ui/yas_ui_types.h>
 
@@ -18,6 +19,7 @@ using action_time_update_f = std::function<bool(time_point_t const &, action con
 using continuous_value_update_f = std::function<void(double const)>;
 
 struct action_args final {
+    std::shared_ptr<action_group> group = nullptr;
     std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
