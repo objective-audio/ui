@@ -159,7 +159,7 @@ draw_image_result texture::_replace_image(std::shared_ptr<image> const &image, u
         return draw_image_result{draw_image_error::image_is_null};
     }
 
-    if (!this->_metal_texture->texture() || !this->_metal_texture->samplerState()) {
+    if (!this->_metal_texture->is_ready()) {
         return draw_image_result{draw_image_error::no_setup};
     }
 
