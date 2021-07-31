@@ -13,14 +13,14 @@ std::shared_ptr<action> ui::make_action(layout_action_args &&args) {
     auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
                                                   .loop_count = std::move(args.loop_count),
                                                   .value_transformer = std::move(args.value_transformer),
-                                                  .target = args.target,
+                                                  .group = args.group,
                                                   .begin_time = std::move(args.begin_time),
                                                   .delay = std::move(args.delay),
                                                   .completion = std::move(args.completion)};
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
-            target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
+            target->set_layout_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
         }
     };
 
@@ -28,24 +28,28 @@ std::shared_ptr<action> ui::make_action(layout_action_args &&args) {
 }
 
 layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(args)) {
-    for (auto &guide_pair : this->_args.layout_guide_pairs) {
-        auto &src_guide = guide_pair.source;
-        auto &dst_guide = guide_pair.destination;
+    for (auto const &guide_pair : this->_args.layout_guide_pairs) {
+        auto const group = action_group::make_shared();
+        this->_groups.push_back(group);
+
+        auto const &src_guide = guide_pair.source;
+        auto const &dst_guide = guide_pair.destination;
 
         dst_guide->set_value(src_guide->value());
 
         auto weak_dst_guide = to_weak(dst_guide);
 
         src_guide
-            ->observe([this, weak_dst_guide](float const &value) {
+            ->observe([this, weak_dst_guide, group](float const &value) {
                 auto const &args = this->_args;
                 std::shared_ptr<ui::action_manager> const action_manager = args.action_manager.lock();
                 std::shared_ptr<ui::layout_value_guide> const dst_guide = weak_dst_guide.lock();
 
                 if (action_manager && dst_guide) {
-                    action_manager->erase_action(dst_guide);
+                    action_manager->erase_action(group);
 
                     auto action = make_action({.target = dst_guide,
+                                               .group = group,
                                                .begin_value = dst_guide->value(),
                                                .end_value = value,
                                                .duration = args.duration,
@@ -60,8 +64,8 @@ layout_animator::layout_animator(layout_animator_args &&args) : _args(std::move(
 
 layout_animator::~layout_animator() {
     if (auto const action_manager = this->_args.action_manager.lock()) {
-        for (auto const &guide_pair : this->_args.layout_guide_pairs) {
-            action_manager->erase_action(guide_pair.destination);
+        for (auto const &group : this->_groups) {
+            action_manager->erase_action(group);
         }
     }
 }

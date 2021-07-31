@@ -118,8 +118,7 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier,
     auto alpha_action = make_action({.target = node, .begin_alpha = 0.0f, .end_alpha = 1.0f, .duration = 0.3});
 
     auto action =
-        parallel_action::make_shared({.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
-            ->raw_action();
+        parallel_action::make_shared({.actions = {std::move(scale_action), std::move(alpha_action)}})->raw_action();
 
     if (action_manager) {
         action_manager->insert_action(action);
@@ -165,9 +164,8 @@ void sample::touch_holder::_erase_touch_node(uintptr_t const identifier,
                          .duration = 0.3,
                          .value_transformer = ui::connect({ease_out_sine_transformer(), ease_out_sine_transformer()})});
 
-        auto action = parallel_action::make_shared(
-                          {.target = node, .actions = {std::move(scale_action), std::move(alpha_action)}})
-                          ->raw_action();
+        auto action =
+            parallel_action::make_shared({.actions = {std::move(scale_action), std::move(alpha_action)}})->raw_action();
 
         if (action_manager) {
             action_manager->insert_action(action);

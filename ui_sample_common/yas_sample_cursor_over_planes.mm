@@ -17,8 +17,10 @@ static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<no
     auto pool = observing::canceller_pool::make_shared();
 
     for (auto &node : nodes) {
+        auto const group = action_group::make_shared();
+
         event_manager
-            ->observe([weak_node = to_weak(node), weak_action_manager = to_weak(action_manager),
+            ->observe([group, weak_node = to_weak(node), weak_action_manager = to_weak(action_manager),
                        weak_detector = to_weak(detector),
                        prev_detected = std::make_shared<bool>(false)](std::shared_ptr<event> const &event) {
                 if (event->type() == event_type::cursor) {
@@ -30,15 +32,16 @@ static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<no
                     if (node && action_manager && detector) {
                         auto is_detected = detector->detect(cursor_event.position(), node->collider());
 
-                        auto make_color_action = [](std::shared_ptr<ui::node> const &node, color const &color) {
-                            return make_action({.target = node, .begin_color = node->color(), .end_color = color});
+                        auto make_color_action = [&group](std::shared_ptr<ui::node> const &node, color const &color) {
+                            return make_action(
+                                {.group = group, .target = node, .begin_color = node->color(), .end_color = color});
                         };
 
                         if (is_detected && !*prev_detected) {
-                            action_manager->erase_action(node);
+                            action_manager->erase_action(group);
                             action_manager->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
                         } else if (!is_detected && *prev_detected) {
-                            action_manager->erase_action(node);
+                            action_manager->erase_action(group);
                             action_manager->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
                         }
 

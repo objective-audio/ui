@@ -27,7 +27,7 @@ using namespace yas::ui;
 - (void)test_create_action {
     auto action = action::make_shared();
 
-    XCTAssertFalse(action->target());
+    XCTAssertFalse(action->group());
     XCTAssertEqual(action->delay(), 0.0);
     XCTAssertFalse(action->time_updater());
     XCTAssertFalse(action->completion());
@@ -50,15 +50,15 @@ using namespace yas::ui;
 }
 
 - (void)test_set_variables_to_action {
-    auto target = node::make_shared();
+    auto const group = action_group::make_shared();
     auto const time = std::chrono::system_clock::now();
-    auto action = action::make_shared({.target = target,
-                                       .begin_time = time,
-                                       .delay = 1.0,
-                                       .time_updater = [](auto const &, auto const &) { return false; },
-                                       .completion = [] {}});
+    auto const action = action::make_shared({.group = group,
+                                             .begin_time = time,
+                                             .delay = 1.0,
+                                             .time_updater = [](auto const &, auto const &) { return false; },
+                                             .completion = [] {}});
 
-    XCTAssertEqual(action->target(), target);
+    XCTAssertEqual(action->group(), group);
     XCTAssertEqual(action->begin_time(), time);
     XCTAssertEqual(action->delay(), 1.0);
     XCTAssertTrue(action->time_updater());

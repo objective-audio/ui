@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B608AB4A24B4B75400B5A18F /* yas_ui_background_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B608AB4924B4B75400B5A18F /* yas_ui_background_tests.mm */; };
+		B61B0AC926B57ADF0015778C /* yas_ui_mesh_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE350F21E6347600E49BCB /* yas_ui_mesh_tests.mm */; };
 		B629886924C9208F00719420 /* yas_ui_hsb_color_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B629886824C9208F00719420 /* yas_ui_hsb_color_tests.mm */; };
 		B629886B24C94F4C00719420 /* yas_ui_hsl_color_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B629886A24C94F4C00719420 /* yas_ui_hsl_color_tests.mm */; };
 		B6420859269DBA690006C9AF /* yas_ui_view_look_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6420858269DBA690006C9AF /* yas_ui_view_look_tests.mm */; };
@@ -52,7 +53,6 @@
 		B6F4B95E21E6D3C20038DC6D /* yas_ui_node_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE350C21E6347600E49BCB /* yas_ui_node_tests.mm */; };
 		B6F4B95F21E6D3C20038DC6D /* yas_ui_justified_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE350D21E6347600E49BCB /* yas_ui_justified_layout_tests.mm */; };
 		B6F4B96021E6D3C20038DC6D /* yas_ui_tree_updates_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE350E21E6347600E49BCB /* yas_ui_tree_updates_tests.mm */; };
-		B6F4B96121E6D3C20038DC6D /* yas_ui_mesh_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE350F21E6347600E49BCB /* yas_ui_mesh_tests.mm */; };
 		B6F4B96221E6D3C20038DC6D /* yas_ui_strings_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351021E6347600E49BCB /* yas_ui_strings_tests.mm */; };
 		B6F4B96321E6D3C20038DC6D /* yas_ui_matrix_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351121E6347600E49BCB /* yas_ui_matrix_tests.mm */; };
 		B6F4B96421E6D3C20038DC6D /* yas_ui_texture_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351221E6347600E49BCB /* yas_ui_texture_tests.mm */; };
@@ -443,6 +443,7 @@
 				B6F4B96521E6D3C20038DC6D /* yas_ui_layout_guide_tests.mm in Sources */,
 				B6F4B95321E6D3C10038DC6D /* yas_ui_metal_encode_info_tests.mm in Sources */,
 				B6F4B96421E6D3C20038DC6D /* yas_ui_texture_tests.mm in Sources */,
+				B61B0AC926B57ADF0015778C /* yas_ui_mesh_tests.mm in Sources */,
 				B6F4B94B21E6D3C10038DC6D /* yas_ui_event_tests.mm in Sources */,
 				B6F4B95521E6D3C10038DC6D /* yas_ui_math_tests.mm in Sources */,
 				B6F4B95D21E6D3C20038DC6D /* yas_ui_types_tests.mm in Sources */,
@@ -453,7 +454,6 @@
 				B6F4B96721E6D3C20038DC6D /* yas_ui_color_tests.mm in Sources */,
 				B6F4B96321E6D3C20038DC6D /* yas_ui_matrix_tests.mm in Sources */,
 				B6F4B96621E6D3C20038DC6D /* yas_ui_collection_layout_tests.mm in Sources */,
-				B6F4B96121E6D3C20038DC6D /* yas_ui_mesh_tests.mm in Sources */,
 				B6F4B95121E6D3C10038DC6D /* yas_ui_mesh_data_tests.mm in Sources */,
 				B6F4B96D21E6D3C20038DC6D /* yas_ui_metal_types_tests.mm in Sources */,
 				B6F4B95E21E6D3C20038DC6D /* yas_ui_node_tests.mm in Sources */,

@@ -4,8 +4,4 @@
 
 #pragma once
 
-namespace yas::ui {
-struct action_target {
-    virtual ~action_target() = default;
-};
-}  // namespace yas::ui
+namespace yas::ui {}  // namespace yas::ui

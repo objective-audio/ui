@@ -29,14 +29,17 @@ struct soft_key {
         float const alpha = enabled ? 1.0f : 0.0f;
 
         if (auto const action_manager = this->_weak_action_manager.lock()) {
-            action_manager->erase_action(button_node);
-            action_manager->erase_action(strings_node);
+            action_manager->erase_action(this->_action_group);
 
             if (animated) {
-                action_manager->insert_action(
-                    make_action({.target = button_node, .begin_alpha = button_node->alpha(), .end_alpha = alpha}));
-                action_manager->insert_action(
-                    make_action({.target = strings_node, .begin_alpha = strings_node->alpha(), .end_alpha = alpha}));
+                action_manager->insert_action(make_action({.group = this->_action_group,
+                                                           .target = button_node,
+                                                           .begin_alpha = button_node->alpha(),
+                                                           .end_alpha = alpha}));
+                action_manager->insert_action(make_action({.group = this->_action_group,
+                                                           .target = strings_node,
+                                                           .begin_alpha = strings_node->alpha(),
+                                                           .end_alpha = alpha}));
             } else {
                 button_node->set_alpha(alpha);
                 strings_node->set_alpha(alpha);
@@ -56,6 +59,7 @@ struct soft_key {
     std::shared_ptr<ui::button> const _button;
     std::shared_ptr<ui::strings> const _strings;
     std::weak_ptr<ui::action_manager> const _weak_action_manager;
+    std::shared_ptr<ui::action_group> const _action_group = ui::action_group::make_shared();
 
     soft_key(std::string &&key, float const width, std::shared_ptr<font_atlas> const &atlas,
              std::shared_ptr<ui::event_manager> const &event_manager,

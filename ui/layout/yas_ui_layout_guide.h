@@ -10,7 +10,7 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct layout_value_guide final : action_target, layout_value_target, layout_value_source {
+struct layout_value_guide final : layout_value_target, layout_value_source {
     virtual ~layout_value_guide();
 
     void set_value(float const);
