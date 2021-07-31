@@ -11,6 +11,7 @@ namespace yas::ui {
 class action_manager;
 
 struct layout_action_args final {
+    std::shared_ptr<action_group> group = nullptr;
     std::weak_ptr<layout_value_guide> target;
     float begin_value;
     float end_value;
@@ -30,6 +31,7 @@ struct layout_animator_args final {
     std::weak_ptr<action_manager> action_manager;
     std::vector<ui::layout_value_guide_pair> layout_guide_pairs;
     double duration = 0.3;
+    std::shared_ptr<action_group> group = nullptr;
 };
 
 struct layout_animator final {

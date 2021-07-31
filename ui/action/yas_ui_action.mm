@@ -15,7 +15,6 @@ using namespace std::chrono_literals;
 
 action::action(action_args &&args)
     : _group(std::move(args.group)),
-      _target(std::move(args.target)),
       _begin_time(std::move(args.begin_time)),
       _delay(args.delay),
       _time_updater(std::move(args.time_updater)),
@@ -24,10 +23,6 @@ action::action(action_args &&args)
 
 std::shared_ptr<action_group> action::group() const {
     return this->_group;
-}
-
-std::shared_ptr<action_target> action::target() const {
-    return this->_target.lock();
 }
 
 time_point<system_clock> const &action::begin_time() const {
@@ -74,7 +69,7 @@ std::shared_ptr<action> action::make_shared(action_args &&args) {
 }
 
 std::shared_ptr<action> action::make_continuous(continuous_action_args &&continuous_args) {
-    auto args = action_args{.target = std::move(continuous_args.target),
+    auto args = action_args{.group = std::move(continuous_args.group),
                             .begin_time = std::move(continuous_args.begin_time),
                             .delay = std::move(continuous_args.delay),
                             .completion = std::move(continuous_args.completion)};
@@ -107,7 +102,7 @@ std::shared_ptr<action> action::make_continuous(continuous_action_args &&continu
 }
 
 std::shared_ptr<action> ui::action::make_sequence(sequence_action_args &&args) {
-    auto sequence = parallel_action::make_shared({.target = std::move(args.target),
+    auto sequence = parallel_action::make_shared({.group = std::move(args.group),
                                                   .begin_time = args.begin_time,
                                                   .delay = args.delay,
                                                   .completion = std::move(args.completion)});
@@ -124,7 +119,7 @@ std::shared_ptr<action> ui::action::make_sequence(sequence_action_args &&args) {
 }
 
 std::shared_ptr<action> action::make_delayed(time_point_t const &begin_time, double const delay) const {
-    return make_shared({.target = this->_target,
+    return make_shared({.group = this->_group,
                         .begin_time = begin_time,
                         .delay = delay,
                         .time_updater = this->_time_updater,
@@ -136,7 +131,7 @@ std::shared_ptr<action> action::make_delayed(time_point_t const &begin_time, dou
 namespace yas::ui::parallel_action_utils {
 action_args time_updater_replaced_args(parallel_action_args &&parallel_args,
                                        std::shared_ptr<std::unordered_set<std::shared_ptr<action>>> const &actions) {
-    action_args args{.target = std::move(parallel_args.target),
+    action_args args{.group = std::move(parallel_args.group),
                      .begin_time = std::move(parallel_args.begin_time),
                      .delay = std::move(parallel_args.delay),
                      .completion = std::move(parallel_args.completion)};

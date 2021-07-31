@@ -20,7 +20,6 @@ using continuous_value_update_f = std::function<void(double const)>;
 
 struct action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<action_target> target;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_time_update_f time_updater;
@@ -33,7 +32,7 @@ struct continuous_action_args final {
     continuous_value_update_f value_updater;
     transform_f value_transformer;
 
-    std::weak_ptr<action_target> target;
+    std::shared_ptr<action_group> group = nullptr;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;
@@ -47,7 +46,7 @@ struct sequence_action_args final {
 
     std::vector<element> elements;
 
-    std::weak_ptr<action_target> target;
+    std::shared_ptr<action_group> group = nullptr;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;
@@ -56,7 +55,7 @@ struct sequence_action_args final {
 struct parallel_action_args final {
     std::unordered_set<std::shared_ptr<action>> actions;
 
-    std::weak_ptr<action_target> target;
+    std::shared_ptr<action_group> group = nullptr;
     time_point_t begin_time = std::chrono::system_clock::now();
     double delay = 0.0;
     action_completion_f completion;

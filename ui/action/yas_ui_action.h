@@ -10,7 +10,6 @@
 namespace yas::ui {
 struct action final {
     [[nodiscard]] std::shared_ptr<action_group> group() const;
-    [[nodiscard]] std::shared_ptr<action_target> target() const;
     [[nodiscard]] time_point_t const &begin_time() const;
     [[nodiscard]] double delay() const;
     [[nodiscard]] action_time_update_f const &time_updater() const;
@@ -25,7 +24,6 @@ struct action final {
 
    private:
     std::shared_ptr<action_group> const _group;
-    std::weak_ptr<action_target> const _target;
     time_point_t const _begin_time = std::chrono::system_clock::now();
     duration_t const _delay{0.0};
     action_time_update_f const _time_updater;

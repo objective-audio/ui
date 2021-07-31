@@ -13,7 +13,7 @@ std::shared_ptr<action> ui::make_action(layout_action_args &&args) {
     auto continuous_args = continuous_action_args{.duration = std::move(args.duration),
                                                   .loop_count = std::move(args.loop_count),
                                                   .value_transformer = std::move(args.value_transformer),
-                                                  .target = args.target,
+                                                  .group = args.group,
                                                   .begin_time = std::move(args.begin_time),
                                                   .delay = std::move(args.delay),
                                                   .completion = std::move(args.completion)};
