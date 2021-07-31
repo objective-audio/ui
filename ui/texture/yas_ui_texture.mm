@@ -117,11 +117,13 @@ setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &met
     if (this->_metal_system != metal_system) {
         this->_metal_system = metal_system;
         this->_metal_texture = nullptr;
+        this->_gl_texture = nullptr;
     }
 
     if (!this->_metal_texture) {
         if (auto result = metal_system->make_texture(this->actual_size(), this->_usages, this->_pixel_format)) {
             this->_metal_texture = result.value();
+            this->_gl_texture = this->_metal_texture;
         } else {
             return setup_metal_result{result.error()};
         }
@@ -159,13 +161,13 @@ draw_image_result texture::_replace_image(std::shared_ptr<image> const &image, u
         return draw_image_result{draw_image_error::image_is_null};
     }
 
-    if (!this->_metal_texture->is_ready()) {
+    if (!this->_gl_texture->is_ready()) {
         return draw_image_result{draw_image_error::no_setup};
     }
 
     auto const region = uint_region{origin, image->actual_size()};
 
-    this->_metal_texture->replace_data(region, image->data());
+    this->_gl_texture->replace_data(region, image->data());
 
     return draw_image_result{std::move(region)};
 }
