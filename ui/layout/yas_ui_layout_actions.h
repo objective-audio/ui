@@ -44,6 +44,7 @@ struct layout_animator final {
 
    private:
     layout_animator_args _args;
+    std::vector<std::shared_ptr<action_group>> _groups;
     ui::transform_f _value_transformer;
     observing::canceller_pool _pool;
 
