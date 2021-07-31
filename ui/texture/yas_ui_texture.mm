@@ -120,10 +120,10 @@ setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &met
     }
 
     if (!this->_metal_texture) {
-        this->_metal_texture = metal_texture::make_shared(this->actual_size(), this->_usages, this->_pixel_format);
-
-        if (auto ul = unless(metal_object::cast(this->_metal_texture)->metal_setup(metal_system))) {
-            return ul.value;
+        if (auto result = metal_system->make_texture(this->actual_size(), this->_usages, this->_pixel_format)) {
+            this->_metal_texture = result.value();
+        } else {
+            return setup_metal_result{result.error()};
         }
 
         this->_add_images_to_metal_texture();

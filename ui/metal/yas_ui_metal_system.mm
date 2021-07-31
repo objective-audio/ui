@@ -4,6 +4,7 @@
 
 #include "yas_ui_metal_system.h"
 #include <cpp_utils/yas_each_index.h>
+#include <cpp_utils/yas_unless.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_metal_buffer.h>
@@ -111,6 +112,18 @@ std::size_t metal_system::last_encoded_mesh_count() const {
 
 std::shared_ptr<metal_buffer> metal_system::make_metal_buffer(std::size_t const length) {
     return metal_buffer::make_shared(this->mtlDevice(), length);
+}
+
+metal_system::make_texture_result metal_system::make_texture(ui::uint_size const actual_size,
+                                                             ui::texture_usages_t const usages,
+                                                             ui::pixel_format const pixel_format) {
+    auto texture = metal_texture::make_shared(actual_size, usages, pixel_format);
+
+    if (auto result = metal_object::cast(texture)->metal_setup(this->_weak_metal_system.lock())) {
+        return make_texture_result{std::move(texture)};
+    } else {
+        return make_texture_result{result.error()};
+    }
 }
 
 void metal_system::view_render(std::shared_ptr<ui::render_info_detector_interface> const &detector,
