@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_metal_texture.h"
+#include <ui/yas_ui_image.h>
 #include <ui/yas_ui_metal_buffer.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_types.h>
@@ -132,6 +133,16 @@ setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> 
     }
 
     return setup_metal_result{nullptr};
+}
+
+bool metal_texture::is_ready() const {
+    return this->texture() && this->samplerState();
+}
+
+void metal_texture::replace_data(uint_region const region, void const *data) {
+    if (id<MTLTexture> texture = this->texture()) {
+        [texture replaceRegion:to_mtl_region(region) mipmapLevel:0 withBytes:data bytesPerRow:region.size.width * 4];
+    }
 }
 
 std::shared_ptr<metal_texture> metal_texture::make_shared(uint_size size, texture_usages_t const usages,

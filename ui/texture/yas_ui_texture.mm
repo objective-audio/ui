@@ -117,13 +117,15 @@ setup_metal_result texture::metal_setup(std::shared_ptr<metal_system> const &met
     if (this->_metal_system != metal_system) {
         this->_metal_system = metal_system;
         this->_metal_texture = nullptr;
+        this->_gl_texture = nullptr;
     }
 
     if (!this->_metal_texture) {
-        this->_metal_texture = metal_texture::make_shared(this->actual_size(), this->_usages, this->_pixel_format);
-
-        if (auto ul = unless(metal_object::cast(this->_metal_texture)->metal_setup(metal_system))) {
-            return ul.value;
+        if (auto result = metal_system->make_texture(this->actual_size(), this->_usages, this->_pixel_format)) {
+            this->_metal_texture = result.value();
+            this->_gl_texture = this->_metal_texture;
+        } else {
+            return setup_metal_result{result.error()};
         }
 
         this->_add_images_to_metal_texture();
@@ -159,18 +161,13 @@ draw_image_result texture::_replace_image(std::shared_ptr<image> const &image, u
         return draw_image_result{draw_image_error::image_is_null};
     }
 
-    if (!this->_metal_texture->texture() || !this->_metal_texture->samplerState()) {
+    if (!this->_gl_texture->is_ready()) {
         return draw_image_result{draw_image_error::no_setup};
     }
 
-    auto region = uint_region{origin, image->actual_size()};
+    auto const region = uint_region{origin, image->actual_size()};
 
-    if (id<MTLTexture> texture = this->_metal_texture->texture()) {
-        [texture replaceRegion:to_mtl_region(region)
-                   mipmapLevel:0
-                     withBytes:image->data()
-                   bytesPerRow:region.size.width * 4];
-    }
+    this->_gl_texture->replace_data(region, image->data());
 
     return draw_image_result{std::move(region)};
 }

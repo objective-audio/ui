@@ -5,6 +5,7 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <ui/yas_ui_gl_texture.h>
 #include <ui/yas_ui_metal_encoder_dependency.h>
 #include <ui/yas_ui_metal_system_protocol.h>
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
@@ -19,6 +20,10 @@ struct metal_system final : renderer_system_interface,
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
     [[nodiscard]] std::shared_ptr<metal_buffer> make_metal_buffer(std::size_t const length);
+
+    using make_texture_result = result<std::shared_ptr<ui::metal_texture>, setup_metal_error>;
+    [[nodiscard]] make_texture_result make_texture(ui::uint_size const actual_size, ui::texture_usages_t const,
+                                                   ui::pixel_format const);
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const,

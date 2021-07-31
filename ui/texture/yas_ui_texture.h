@@ -48,6 +48,7 @@ struct texture : metal_object {
     ui::pixel_format const _pixel_format;
 
     std::shared_ptr<ui::metal_texture> _metal_texture = nullptr;
+    std::shared_ptr<ui::gl_texture_interface> _gl_texture = nullptr;
 
     std::shared_ptr<metal_system> _metal_system = nullptr;
     uint32_t _max_line_height = 0;
