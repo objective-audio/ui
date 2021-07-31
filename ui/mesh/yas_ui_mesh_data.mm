@@ -56,11 +56,19 @@ std::size_t mesh_data::index_buffer_byte_offset() {
 }
 
 id<MTLBuffer> mesh_data::vertexBuffer() {
-    return this->_vertex_buffer->rawBuffer();
+    if (this->_vertex_buffer) {
+        return this->_vertex_buffer->rawBuffer();
+    } else {
+        return nil;
+    }
 }
 
 id<MTLBuffer> mesh_data::indexBuffer() {
-    return this->_index_buffer->rawBuffer();
+    if (this->_index_buffer) {
+        return this->_index_buffer->rawBuffer();
+    } else {
+        return nil;
+    }
 }
 
 mesh_data_updates_t const &mesh_data::updates() {
