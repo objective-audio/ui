@@ -30,6 +30,18 @@ void action_manager::erase_action(std::shared_ptr<action_target> const &target) 
     }
 }
 
+void action_manager::erase_action(std::shared_ptr<ui::action_group> const &group) {
+    if (group == nullptr) {
+        return;
+    }
+
+    for (auto const &action : this->_parallel_action->actions()) {
+        if (action->group() == group) {
+            this->_parallel_action->erase_action(action);
+        }
+    }
+}
+
 void action_manager::update(time_point_t const &time) {
     this->_parallel_action->raw_action()->update(time);
 }
