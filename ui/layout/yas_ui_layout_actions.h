@@ -12,7 +12,7 @@ class action_manager;
 
 struct layout_action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<layout_value_guide> target;
+    std::weak_ptr<layout_value_target> target;
     float begin_value;
     float end_value;
 

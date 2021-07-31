@@ -20,7 +20,7 @@ std::shared_ptr<action> ui::make_action(layout_action_args &&args) {
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
-            target->set_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
+            target->set_layout_value((args.end_value - args.begin_value) * (float)value + args.begin_value);
         }
     };
 
