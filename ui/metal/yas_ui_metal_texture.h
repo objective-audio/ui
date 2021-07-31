@@ -6,11 +6,11 @@
 
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_objc_ptr.h>
+#include <ui/yas_ui_gl_texture.h>
 #include <ui/yas_ui_metal_dependency.h>
-#include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct metal_texture : metal_object {
+struct metal_texture : metal_object, gl_texture_interface {
     virtual ~metal_texture() final;
 
     [[nodiscard]] ui::uint_size size() const;
@@ -21,7 +21,7 @@ struct metal_texture : metal_object {
     [[nodiscard]] MTLPixelFormat pixel_format() const;
     [[nodiscard]] MTLTextureUsage texture_usage() const;
 
-    void replace_data(uint_region const region, void const *data);
+    void replace_data(uint_region const region, void const *data) override;
 
     [[nodiscard]] static std::shared_ptr<metal_texture> make_shared(ui::uint_size actual_size,
                                                                     ui::texture_usages_t const, ui::pixel_format const);
