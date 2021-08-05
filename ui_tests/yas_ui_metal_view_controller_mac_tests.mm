@@ -23,7 +23,9 @@ using namespace yas::ui;
 }
 
 - (void)tearDown {
-    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr renderer:nullptr];
+    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr
+                                                                          renderer:nullptr
+                                                                     event_manager:nullptr];
     [super tearDown];
 }
 
@@ -68,7 +70,9 @@ using namespace yas::ui;
 
     XCTAssertFalse(viewController.renderer);
 
-    [viewController configure_with_metal_system:nullptr renderer:renderer];
+    [[YASTestMetalViewController sharedViewController] configure_with_metal_system:nullptr
+                                                                          renderer:renderer
+                                                                     event_manager:nullptr];
 
     XCTAssertTrue(viewController.renderer);
 }

@@ -131,7 +131,9 @@ struct metal_view_cpp {
 }
 
 - (void)configure_with_metal_system:(std::shared_ptr<yas::ui::view_metal_system_interface> const &)metal_system
-                           renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
+                           renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer
+                      event_manager:
+                          (std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager {
     if (metal_system) {
         self.metalView.device = metal_system->mtlDevice();
         self.metalView.sampleCount = metal_system->sample_count();
@@ -141,6 +143,8 @@ struct metal_view_cpp {
     }
 
     self->_cpp.renderer = renderer;
+
+    [self.metalView set_event_manager:event_manager];
 }
 
 - (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
