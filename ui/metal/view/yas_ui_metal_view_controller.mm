@@ -21,7 +21,7 @@ using namespace yas::ui;
 namespace yas::ui {
 struct metal_view_cpp {
     std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
-    std::shared_ptr<view_renderer_interface> renderer{nullptr};
+    std::shared_ptr<renderer_for_view> renderer{nullptr};
     observing::canceller_pool bg_pool;
 };
 }
@@ -130,10 +130,9 @@ struct metal_view_cpp {
     return self->_cpp.view_look;
 }
 
-- (void)configure_with_metal_system:(std::shared_ptr<yas::ui::view_metal_system_interface> const &)metal_system
-                           renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer
-                      event_manager:
-                          (std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager {
+- (void)configure_with_metal_system:(std::shared_ptr<yas::ui::metal_system_for_view> const &)metal_system
+                           renderer:(std::shared_ptr<yas::ui::renderer_for_view> const &)renderer
+                      event_manager:(std::shared_ptr<yas::ui::event_manager_for_view> const &)event_manager {
     if (metal_system) {
         self.metalView.device = metal_system->mtlDevice();
         self.metalView.sampleCount = metal_system->sample_count();
@@ -147,7 +146,7 @@ struct metal_view_cpp {
     [self.metalView set_event_manager:event_manager];
 }
 
-- (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer {
+- (std::shared_ptr<yas::ui::renderer_for_view> const &)renderer {
     return self->_cpp.renderer;
 }
 

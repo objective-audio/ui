@@ -10,9 +10,7 @@
 #include <ui/yas_ui_metal_view_dependency.h>
 
 namespace yas::ui {
-struct event_manager : metal_view_event_manager_interface, event_observable_interface {
-    virtual ~event_manager() final;
-
+struct event_manager final : event_manager_for_view, event_observable {
     [[nodiscard]] observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&) override;
 
     [[nodiscard]] static std::shared_ptr<event_manager> make_shared();

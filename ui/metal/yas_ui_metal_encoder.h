@@ -18,7 +18,7 @@ struct metal_encoder final : render_encodable, render_effectable, render_stackab
 
     [[nodiscard]] std::deque<std::shared_ptr<metal_encode_info>> const &all_encode_infos();
 
-    encode_result_t encode(std::shared_ptr<ui::metal_encoder_system_interface> const &metal_system,
+    encode_result_t encode(std::shared_ptr<ui::system_for_metal_encoder> const &metal_system,
                            id<MTLCommandBuffer> const commandBuffer);
 
     [[nodiscard]] static std::shared_ptr<metal_encoder> make_shared();

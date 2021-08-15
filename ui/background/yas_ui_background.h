@@ -9,8 +9,6 @@
 
 namespace yas::ui {
 struct background final {
-    virtual ~background();
-
     void set_color(ui::color const &);
     void set_color(ui::color &&);
     [[nodiscard]] ui::color const &color() const;

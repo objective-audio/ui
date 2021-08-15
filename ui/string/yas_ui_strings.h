@@ -12,8 +12,6 @@
 
 namespace yas::ui {
 struct strings final {
-    virtual ~strings();
-
     void set_text(std::string);
     void set_line_height(std::optional<float>);
     void set_alignment(ui::layout_alignment const);

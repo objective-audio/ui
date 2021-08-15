@@ -23,8 +23,8 @@
 #include <ui/yas_ui_matrix.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
-#include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_metal_encoder.h>
+#include <ui/yas_ui_metal_setup_types.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_texture.h>
 #include <ui/yas_ui_metal_types.h>

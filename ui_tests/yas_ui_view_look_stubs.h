@@ -7,7 +7,7 @@
 #include <ui/yas_ui_umbrella.h>
 
 namespace yas::ui {
-struct view_look_scale_factor_stub final : scale_factor_observable_interface {
+struct view_look_scale_factor_stub final : scale_factor_observable {
     observing::value::holder_ptr<double> const scale_factor_holder;
 
     [[nodiscard]] virtual double scale_factor() const {

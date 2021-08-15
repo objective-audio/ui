@@ -32,7 +32,7 @@ std::string to_string(draw_image_error const &);
 
 std::ostream &operator<<(std::ostream &, yas::ui::draw_image_error const &);
 
-texture::texture(texture_args &&args, std::shared_ptr<scale_factor_observable_interface> const &view_look)
+texture::texture(texture_args &&args, std::shared_ptr<scale_factor_observable> const &view_look)
     : _draw_actual_padding(args.draw_padding * view_look->scale_factor()),
       _draw_actual_pos({_draw_actual_padding, _draw_actual_padding}),
       _point_size(std::move(args.point_size)),
@@ -236,7 +236,7 @@ void texture::_size_updated() {
 }
 
 std::shared_ptr<texture> texture::make_shared(texture_args &&args,
-                                              std::shared_ptr<scale_factor_observable_interface> const &view_look) {
+                                              std::shared_ptr<scale_factor_observable> const &view_look) {
     return std::shared_ptr<texture>(new texture{std::move(args), view_look});
 }
 

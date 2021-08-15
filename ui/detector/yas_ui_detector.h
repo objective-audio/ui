@@ -13,9 +13,7 @@
 #include <deque>
 
 namespace yas::ui {
-struct detector final : renderer_detector_interface, collider_detectable_interface {
-    virtual ~detector();
-
+struct detector final : detector_for_renderer, collider_detectable {
     [[nodiscard]] std::optional<std::shared_ptr<collider>> detect(ui::point const &) const;
     [[nodiscard]] bool detect(ui::point const &, std::shared_ptr<collider> const &) const override;
 

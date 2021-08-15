@@ -25,11 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (std::shared_ptr<yas::ui::view_look> const &)view_look;
 
-- (void)configure_with_metal_system:(std::shared_ptr<yas::ui::view_metal_system_interface> const &)metal_system
-                           renderer:(std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer
-                      event_manager:(std::shared_ptr<yas::ui::metal_view_event_manager_interface> const &)event_manager;
+- (void)configure_with_metal_system:(std::shared_ptr<yas::ui::metal_system_for_view> const &)metal_system
+                           renderer:(std::shared_ptr<yas::ui::renderer_for_view> const &)renderer
+                      event_manager:(std::shared_ptr<yas::ui::event_manager_for_view> const &)event_manager;
 
-- (std::shared_ptr<yas::ui::view_renderer_interface> const &)renderer;
+- (std::shared_ptr<yas::ui::renderer_for_view> const &)renderer;
 
 @end
 

@@ -31,8 +31,6 @@ strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atl
     this->_update_layout();
 }
 
-strings::~strings() = default;
-
 void strings::set_text(std::string text) {
     this->_text->set_value(std::move(text));
 }

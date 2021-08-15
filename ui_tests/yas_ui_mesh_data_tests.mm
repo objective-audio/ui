@@ -31,11 +31,8 @@ using namespace yas::ui;
     XCTAssertEqual(mesh_data->vertex_count(), 4);
     XCTAssertEqual(mesh_data->index_count(), 6);
 
-    XCTAssertTrue(metal_object::cast(mesh_data));
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data));
-
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->vertex_buffer_byte_offset(), 0);
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->index_buffer_byte_offset(), 0);
+    XCTAssertEqual(mesh_data->vertex_buffer_byte_offset(), 0);
+    XCTAssertEqual(mesh_data->index_buffer_byte_offset(), 0);
 }
 
 - (void)test_create_dynamic_mesh_data {
@@ -46,8 +43,7 @@ using namespace yas::ui;
     XCTAssertEqual(mesh_data->max_vertex_count(), 4);
     XCTAssertEqual(mesh_data->max_index_count(), 6);
 
-    XCTAssertTrue(metal_object::cast(mesh_data));
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data));
+    XCTAssertTrue(mesh_data);
 }
 
 - (void)test_write_mesh_data {
@@ -129,34 +125,34 @@ using namespace yas::ui;
 - (void)test_clear_updates {
     auto const mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().flags.any());
+    XCTAssertTrue(mesh_data->updates().flags.any());
 
-    renderable_mesh_data::cast(mesh_data)->clear_updates();
+    mesh_data->clear_updates();
 
-    XCTAssertFalse(renderable_mesh_data::cast(mesh_data)->updates().flags.any());
+    XCTAssertFalse(mesh_data->updates().flags.any());
 }
 
 - (void)test_updates {
     auto const mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 4, .index_count = 6});
 
-    renderable_mesh_data::cast(mesh_data)->clear_updates();
+    mesh_data->clear_updates();
     mesh_data->set_index_count(1);
 
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->updates().flags.count(), 1);
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().test(mesh_data_update_reason::index_count));
+    XCTAssertEqual(mesh_data->updates().flags.count(), 1);
+    XCTAssertTrue(mesh_data->updates().test(mesh_data_update_reason::index_count));
 
-    renderable_mesh_data::cast(mesh_data)->clear_updates();
+    mesh_data->clear_updates();
     mesh_data->set_vertex_count(2);
 
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->updates().flags.count(), 1);
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().test(mesh_data_update_reason::vertex_count));
+    XCTAssertEqual(mesh_data->updates().flags.count(), 1);
+    XCTAssertTrue(mesh_data->updates().test(mesh_data_update_reason::vertex_count));
 
-    renderable_mesh_data::cast(mesh_data)->clear_updates();
+    mesh_data->clear_updates();
     mesh_data->write([](auto &, auto &) {});
 
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->updates().flags.count(), 2);
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().test(mesh_data_update_reason::data));
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().test(mesh_data_update_reason::render_buffer));
+    XCTAssertEqual(mesh_data->updates().flags.count(), 2);
+    XCTAssertTrue(mesh_data->updates().test(mesh_data_update_reason::data));
+    XCTAssertTrue(mesh_data->updates().test(mesh_data_update_reason::render_buffer));
 }
 
 - (void)test_metal_setup {
@@ -170,7 +166,7 @@ using namespace yas::ui;
 
     auto const mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
 
-    XCTAssertTrue(metal_object::cast(mesh_data)->metal_setup(metal_system));
+    XCTAssertTrue(mesh_data->metal_setup(metal_system));
 }
 
 - (void)test_mesh_data_update_reason_to_string {

@@ -12,8 +12,6 @@ background::background()
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
 }
 
-background::~background() = default;
-
 void background::set_color(ui::color const &color) {
     this->_color->set_value(color);
 }

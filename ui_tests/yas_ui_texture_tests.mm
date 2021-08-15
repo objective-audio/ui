@@ -59,7 +59,7 @@ using namespace yas::ui;
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
     auto texture = texture::make_shared({.point_size = {8, 8}}, view_look);
-    metal_object::cast(texture)->metal_setup(metal_system);
+    texture->metal_setup(metal_system);
 
     auto draw_handler = [](CGContextRef const context) {
         auto const width = CGBitmapContextGetWidth(context);
@@ -110,7 +110,7 @@ using namespace yas::ui;
 
     texture->remove_draw_handler(element);
 
-    metal_object::cast(texture)->metal_setup(metal_system);
+    texture->metal_setup(metal_system);
 
     XCTAssertFalse(called);
 }
@@ -139,7 +139,7 @@ using namespace yas::ui;
 
     XCTAssertFalse(called);
 
-    metal_object::cast(texture)->metal_setup(metal_system);
+    texture->metal_setup(metal_system);
 
     XCTAssertTrue(called);
     XCTAssertFalse(element->tex_coords() == uint_region::zero());
@@ -148,7 +148,7 @@ using namespace yas::ui;
 
 #warning todo
     texture->set_scale_factor(2.0);
-    metal_object::cast(texture)->metal_setup(metal_system);
+    texture->metal_setup(metal_system);
 
     XCTAssertTrue(called);
     XCTAssertFalse(element->tex_coords() == uint_region::zero());
@@ -208,7 +208,7 @@ using namespace yas::ui;
 
     auto canceller = texture->observe_metal_texture_changed([&received](auto const &) { received += 1; });
 
-    metal_object::cast(texture)->metal_setup(metal_system);
+    texture->metal_setup(metal_system);
 
     XCTAssertEqual(received, 1);
 }

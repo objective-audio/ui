@@ -10,13 +10,13 @@
 #include <ui/yas_ui_metal_system_protocol.h>
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 
+@class YASUIMetalView;
+
 namespace yas::ui {
-struct metal_system final : renderer_system_interface,
-                            renderable_metal_system,
-                            makable_metal_system,
+struct metal_system final : system_for_renderer,
                             testable_metal_system,
-                            view_metal_system_interface,
-                            metal_encoder_system_interface {
+                            metal_system_for_view,
+                            system_for_metal_encoder {
     [[nodiscard]] std::size_t last_encoded_mesh_count() const;
 
     [[nodiscard]] std::shared_ptr<metal_buffer> make_metal_buffer(std::size_t const length);
@@ -24,6 +24,13 @@ struct metal_system final : renderer_system_interface,
     using make_texture_result = result<std::shared_ptr<ui::metal_texture>, setup_metal_error>;
     [[nodiscard]] make_texture_result make_texture(ui::uint_size const actual_size, ui::texture_usages_t const,
                                                    ui::pixel_format const);
+
+    objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const);
+    objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const);
+    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder();
+    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const);
+
+    void push_render_target(std::shared_ptr<render_stackable> const &, ui::render_target const *);
 
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const);
     [[nodiscard]] static std::shared_ptr<metal_system> make_shared(id<MTLDevice> const, YASUIMetalView *const,
@@ -68,17 +75,11 @@ struct metal_system final : renderer_system_interface,
     metal_system &operator=(metal_system const &) = delete;
     metal_system &operator=(metal_system &&) = delete;
 
-    void view_render(std::shared_ptr<ui::render_info_detector_interface> const &,
-                     simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) override;
+    void view_render(std::shared_ptr<ui::detector_for_render_info> const &, simd::float4x4 const &projection_matrix,
+                     std::shared_ptr<ui::node> const &) override;
     void prepare_uniforms_buffer(uint32_t const uniforms_count) override;
     void mesh_encode(std::shared_ptr<mesh> const &, id<MTLRenderCommandEncoder> const,
                      std::shared_ptr<metal_encode_info> const &) override;
-    void push_render_target(std::shared_ptr<render_stackable> const &, ui::render_target const *) override;
-
-    objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) override;
-    objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) override;
-    objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() override;
-    objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) override;
 
     [[nodiscard]] id<MTLDevice> mtlDevice() override;
     [[nodiscard]] uint32_t sample_count() override;
@@ -86,8 +87,7 @@ struct metal_system final : renderer_system_interface,
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithTexture() override;
     id<MTLRenderPipelineState> mtlRenderPipelineStateWithoutTexture() override;
 
-    void _render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &,
-                       simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &,
-                       id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
+    void _render_nodes(std::shared_ptr<ui::detector_for_render_info> const &, simd::float4x4 const &projection_matrix,
+                       std::shared_ptr<ui::node> const &, id<MTLCommandBuffer> const, MTLRenderPassDescriptor *consts);
 };
 }  // namespace yas::ui

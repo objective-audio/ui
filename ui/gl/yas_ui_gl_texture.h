@@ -7,8 +7,8 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct gl_texture_interface {
-    virtual ~gl_texture_interface() = default;
+struct gl_texture {
+    virtual ~gl_texture() = default;
 
     [[nodiscard]] virtual bool is_ready() const = 0;
     virtual void replace_data(uint_region const region, void const *data) = 0;

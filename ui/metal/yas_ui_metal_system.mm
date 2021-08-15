@@ -119,14 +119,14 @@ metal_system::make_texture_result metal_system::make_texture(ui::uint_size const
                                                              ui::pixel_format const pixel_format) {
     auto texture = metal_texture::make_shared(actual_size, usages, pixel_format);
 
-    if (auto result = metal_object::cast(texture)->metal_setup(this->_weak_metal_system.lock())) {
+    if (auto result = texture->metal_setup(this->_weak_metal_system.lock())) {
         return make_texture_result{std::move(texture)};
     } else {
         return make_texture_result{result.error()};
     }
 }
 
-void metal_system::view_render(std::shared_ptr<ui::render_info_detector_interface> const &detector,
+void metal_system::view_render(std::shared_ptr<ui::detector_for_render_info> const &detector,
                                simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node) {
     if (!this->_metal_view) {
         return;
@@ -200,18 +200,15 @@ void metal_system::mesh_encode(std::shared_ptr<mesh> const &mesh, id<MTLRenderCo
     }
 
     auto &mesh_data = mesh->mesh_data();
-    auto const renderable_mesh_data = renderable_mesh_data::cast(mesh_data);
 
-    [encoder setVertexBuffer:renderable_mesh_data->vertexBuffer()
-                      offset:renderable_mesh_data->vertex_buffer_byte_offset()
-                     atIndex:0];
+    [encoder setVertexBuffer:mesh_data->vertexBuffer() offset:mesh_data->vertex_buffer_byte_offset() atIndex:0];
     [encoder setVertexBuffer:currentUniformsBuffer offset:this->_uniforms_buffer_offset atIndex:1];
 
     [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh->primitive_type())
                         indexCount:mesh_data->index_count()
                          indexType:MTLIndexTypeUInt32
-                       indexBuffer:renderable_mesh_data->indexBuffer()
-                 indexBufferOffset:renderable_mesh_data->index_buffer_byte_offset()];
+                       indexBuffer:mesh_data->indexBuffer()
+                 indexBufferOffset:mesh_data->index_buffer_byte_offset()];
 
     this->_uniforms_buffer_offset += _uniforms2d_size;
     assert(this->_uniforms_buffer_offset + _uniforms2d_size < currentUniformsBuffer.length);
@@ -219,10 +216,8 @@ void metal_system::mesh_encode(std::shared_ptr<mesh> const &mesh, id<MTLRenderCo
 
 void metal_system::push_render_target(std::shared_ptr<render_stackable> const &stackable,
                                       render_target const *render_target) {
-    renderable_render_target const *renderable = render_target;
-
     stackable->push_encode_info(
-        metal_encode_info::make_shared({.renderPassDescriptor = renderable->renderPassDescriptor(),
+        metal_encode_info::make_shared({.renderPassDescriptor = render_target->renderPassDescriptor(),
                                         .pipelineStateWithTexture = *this->_pipeline_state_with_texture,
                                         .pipelineStateWithoutTexture = *this->_pipeline_state_without_texture}));
 }
@@ -259,7 +254,7 @@ id<MTLRenderPipelineState> metal_system::mtlRenderPipelineStateWithoutTexture() 
     return this->_pipeline_state_without_texture.object();
 }
 
-void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interface> const &detector,
+void metal_system::_render_nodes(std::shared_ptr<ui::detector_for_render_info> const &detector,
                                  simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &node,
                                  id<MTLCommandBuffer> const commandBuffer,
                                  MTLRenderPassDescriptor *const renderPassDesc) {
@@ -279,7 +274,7 @@ void metal_system::_render_nodes(std::shared_ptr<ui::render_info_detector_interf
                             .matrix = projection_matrix,
                             .mesh_matrix = projection_matrix};
 
-    metal_object::cast(node)->metal_setup(metal_system);
+    node->metal_setup(metal_system);
     renderable_node::cast(node)->build_render_info(render_info);
 
     auto const result = metal_render_encoder->encode(metal_system, commandBuffer);

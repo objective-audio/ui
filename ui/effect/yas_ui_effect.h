@@ -5,14 +5,14 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <ui/yas_ui_metal_dependency.h>
 #include <ui/yas_ui_metal_encoder_dependency.h>
+#include <ui/yas_ui_metal_setup_types.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
 #include <functional>
 
 namespace yas::ui {
-struct effect final : renderable_effect, metal_encoder_effect_interface, metal_object {
+struct effect final : renderable_effect, effect_for_metal_encoder {
     using metal_handler_f = std::function<void(std::shared_ptr<texture> const &src, std::shared_ptr<texture> const &dst,
                                                std::shared_ptr<ui::metal_system> const &, id<MTLCommandBuffer> const)>;
 
@@ -21,6 +21,8 @@ struct effect final : renderable_effect, metal_encoder_effect_interface, metal_o
 
     [[nodiscard]] static effect::metal_handler_f const &through_metal_handler();
     [[nodiscard]] static std::shared_ptr<effect> make_through_effect();
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
 
     [[nodiscard]] static std::shared_ptr<effect> make_shared();
 
@@ -42,7 +44,5 @@ struct effect final : renderable_effect, metal_encoder_effect_interface, metal_o
     ui::effect_updates_t &updates() override;
     void clear_updates() override;
     void encode(id<MTLCommandBuffer> const) override;
-
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 }  // namespace yas::ui

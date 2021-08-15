@@ -47,7 +47,6 @@ using namespace yas::ui;
         }
     }
 
-    XCTAssertTrue(metal_object::cast(mesh));
     XCTAssertTrue(renderable_mesh::cast(mesh));
 }
 
@@ -148,20 +147,20 @@ using namespace yas::ui;
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    XCTAssertNil(renderable_mesh_data::cast(mesh_data)->vertexBuffer());
-    XCTAssertNil(renderable_mesh_data::cast(mesh_data)->indexBuffer());
+    XCTAssertNil(mesh_data->vertexBuffer());
+    XCTAssertNil(mesh_data->indexBuffer());
 
-    auto setup_result = metal_object::cast(mesh_data)->metal_setup(metal_system);
+    auto setup_result = mesh_data->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(renderable_mesh_data::cast(mesh_data)->vertexBuffer());
-    XCTAssertNotNil(renderable_mesh_data::cast(mesh_data)->indexBuffer());
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->vertexBuffer().length, 4 * sizeof(vertex2d_t));
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->indexBuffer().length, 6 * sizeof(index2d_t));
+    XCTAssertNotNil(mesh_data->vertexBuffer());
+    XCTAssertNotNil(mesh_data->indexBuffer());
+    XCTAssertEqual(mesh_data->vertexBuffer().length, 4 * sizeof(vertex2d_t));
+    XCTAssertEqual(mesh_data->indexBuffer().length, 6 * sizeof(index2d_t));
 }
 
 - (void)test_mesh_setup_metal_buffer_dynamic {
@@ -175,20 +174,20 @@ using namespace yas::ui;
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    XCTAssertNil(renderable_mesh_data::cast(mesh_data)->vertexBuffer());
-    XCTAssertNil(renderable_mesh_data::cast(mesh_data)->indexBuffer());
+    XCTAssertNil(mesh_data->vertexBuffer());
+    XCTAssertNil(mesh_data->indexBuffer());
 
-    auto setup_result = metal_object::cast(mesh_data)->metal_setup(metal_system);
+    auto setup_result = mesh_data->metal_setup(metal_system);
     XCTAssertTrue(setup_result);
 
     if (!setup_result) {
         std::cout << "setup_error::" << to_string(setup_result.error()) << std::endl;
     }
 
-    XCTAssertNotNil(renderable_mesh_data::cast(mesh_data)->vertexBuffer());
-    XCTAssertNotNil(renderable_mesh_data::cast(mesh_data)->indexBuffer());
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->vertexBuffer().length, 4 * sizeof(vertex2d_t) * 2);
-    XCTAssertEqual(renderable_mesh_data::cast(mesh_data)->indexBuffer().length, 6 * sizeof(index2d_t) * 2);
+    XCTAssertNotNil(mesh_data->vertexBuffer());
+    XCTAssertNotNil(mesh_data->indexBuffer());
+    XCTAssertEqual(mesh_data->vertexBuffer().length, 4 * sizeof(vertex2d_t) * 2);
+    XCTAssertEqual(mesh_data->indexBuffer().length, 6 * sizeof(index2d_t) * 2);
 }
 
 - (void)test_write_to_buffer_dynamic {
@@ -202,9 +201,9 @@ using namespace yas::ui;
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto const renderable = renderable_mesh_data::cast(mesh_data);
+    auto const renderable = mesh_data;
 
-    XCTAssertTrue(metal_object::cast(mesh_data)->metal_setup(metal_system));
+    XCTAssertTrue(mesh_data->metal_setup(metal_system));
 
     vertex2d_t *vertex_top_ptr = static_cast<vertex2d_t *>([renderable->vertexBuffer() contents]);
     index2d_t *index_top_ptr = static_cast<index2d_t *>([renderable->indexBuffer() contents]);
@@ -298,12 +297,12 @@ using namespace yas::ui;
     auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
     XCTAssertTrue(renderable_mesh::cast(mesh)->updates().flags.any());
-    XCTAssertTrue(renderable_mesh_data::cast(mesh_data)->updates().flags.any());
+    XCTAssertTrue(mesh_data->updates().flags.any());
 
     renderable_mesh::cast(mesh)->clear_updates();
 
     XCTAssertFalse(renderable_mesh::cast(mesh)->updates().flags.any());
-    XCTAssertFalse(renderable_mesh_data::cast(mesh_data)->updates().flags.any());
+    XCTAssertFalse(mesh_data->updates().flags.any());
 }
 
 - (void)test_updates {
@@ -355,7 +354,7 @@ using namespace yas::ui;
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
-    XCTAssertTrue(metal_object::cast(mesh)->metal_setup(metal_system));
+    XCTAssertTrue(mesh->metal_setup(metal_system));
 }
 
 - (void)test_mesh_update_reason_to_string {

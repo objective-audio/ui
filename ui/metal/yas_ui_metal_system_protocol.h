@@ -13,19 +13,6 @@
 #include <ui/yas_ui_render_info_dependency.h>
 
 namespace yas::ui {
-struct makable_metal_system {
-    virtual ~makable_metal_system() = default;
-
-    [[nodiscard]] virtual objc_ptr<id<MTLTexture>> make_mtl_texture(MTLTextureDescriptor *const) = 0;
-    [[nodiscard]] virtual objc_ptr<id<MTLSamplerState>> make_mtl_sampler_state(MTLSamplerDescriptor *const) = 0;
-    [[nodiscard]] virtual objc_ptr<id<MTLArgumentEncoder>> make_mtl_argument_encoder() = 0;
-    [[nodiscard]] virtual objc_ptr<MPSImageGaussianBlur *> make_mtl_blur(double const) = 0;
-
-    static std::shared_ptr<makable_metal_system> cast(std::shared_ptr<makable_metal_system> const &system) {
-        return system;
-    }
-};
-
 struct testable_metal_system {
     virtual ~testable_metal_system() = default;
 

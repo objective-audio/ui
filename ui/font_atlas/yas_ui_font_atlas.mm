@@ -54,8 +54,6 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
                                    .end();
 }
 
-font_atlas::~font_atlas() = default;
-
 std::string const &font_atlas::font_name() const {
     return this->_font_name;
 }

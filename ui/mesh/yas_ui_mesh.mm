@@ -29,8 +29,6 @@ mesh::mesh(mesh_args &&args, std::shared_ptr<ui::mesh_data> const &mesh_data,
     this->_updates.flags.set();
 }
 
-mesh::~mesh() = default;
-
 std::shared_ptr<mesh_data> const &mesh::mesh_data() const {
     return this->_mesh_data;
 }
@@ -133,7 +131,7 @@ mesh_updates_t const &mesh::updates() {
 
 bool mesh::pre_render() {
     if (this->_mesh_data) {
-        renderable_mesh_data::cast(this->_mesh_data)->update_render_buffer();
+        this->_mesh_data->update_render_buffer();
         return this->is_rendering_color_exists();
     }
 
@@ -190,18 +188,18 @@ void mesh::clear_updates() {
     this->_updates.flags.reset();
 
     if (this->_mesh_data) {
-        renderable_mesh_data::cast(this->_mesh_data)->clear_updates();
+        this->_mesh_data->clear_updates();
     }
 }
 
 setup_metal_result mesh::metal_setup(std::shared_ptr<metal_system> const &system) {
     if (this->_mesh_data) {
-        if (auto ul = unless(metal_object::cast(this->_mesh_data)->metal_setup(system))) {
+        if (auto ul = unless(this->_mesh_data->metal_setup(system))) {
             return ul.value;
         }
     }
     if (this->_texture) {
-        if (auto ul = unless(metal_object::cast(this->_texture)->metal_setup(system))) {
+        if (auto ul = unless(this->_texture->metal_setup(system))) {
             return ul.value;
         }
     }
@@ -228,7 +226,7 @@ bool mesh::_needs_write(batch_building_type const &building_type) {
         if (this->_mesh_data) {
             static mesh_data_updates_t const _mesh_data_overwrite_updates = {mesh_data_update_reason::data};
 
-            if (renderable_mesh_data::cast(this->_mesh_data)->updates().and_test(_mesh_data_overwrite_updates)) {
+            if (this->_mesh_data->updates().and_test(_mesh_data_overwrite_updates)) {
                 return true;
             }
         }

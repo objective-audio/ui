@@ -11,11 +11,11 @@ using namespace yas::ui;
 
 #pragma mark - renderer
 
-renderer::renderer(std::shared_ptr<ui::renderer_system_interface> const &system,
-                   std::shared_ptr<ui::renderer_view_look_interface> const &view_look,
+renderer::renderer(std::shared_ptr<ui::system_for_renderer> const &system,
+                   std::shared_ptr<ui::view_look_for_renderer> const &view_look,
                    std::shared_ptr<ui::node> const &root_node,
-                   std::shared_ptr<ui::renderer_detector_interface> const &detector,
-                   std::shared_ptr<ui::renderer_action_manager_interface> const &action_manager)
+                   std::shared_ptr<ui::detector_for_renderer> const &detector,
+                   std::shared_ptr<ui::action_manager_for_renderer> const &action_manager)
     : _system(system),
       _view_look(view_look),
       _root_node(root_node),
@@ -66,10 +66,10 @@ void renderer::_post_render() {
 }
 
 std::shared_ptr<renderer> renderer::make_shared(
-    std::shared_ptr<ui::renderer_system_interface> const &system,
-    std::shared_ptr<ui::renderer_view_look_interface> const &view_look, std::shared_ptr<ui::node> const &root_node,
-    std::shared_ptr<ui::renderer_detector_interface> const &detector,
-    std::shared_ptr<ui::renderer_action_manager_interface> const &action_manager) {
+    std::shared_ptr<ui::system_for_renderer> const &system,
+    std::shared_ptr<ui::view_look_for_renderer> const &view_look, std::shared_ptr<ui::node> const &root_node,
+    std::shared_ptr<ui::detector_for_renderer> const &detector,
+    std::shared_ptr<ui::action_manager_for_renderer> const &action_manager) {
     return std::shared_ptr<renderer>(new renderer{system, view_look, root_node, detector, action_manager});
 }
 

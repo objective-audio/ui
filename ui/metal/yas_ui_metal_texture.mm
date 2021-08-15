@@ -19,8 +19,6 @@ metal_texture::metal_texture(uint_size &&actual_size, texture_usages_t const usa
       _pixel_format(to_mtl_pixel_format(format)) {
 }
 
-metal_texture::~metal_texture() = default;
-
 uint_size metal_texture::size() const {
     return this->_size;
 }
@@ -78,7 +76,7 @@ setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> 
 
         textureDesc.usage = this->_texture_usage;
 
-        this->_texture_object = makable_metal_system::cast(this->_metal_system)->make_mtl_texture(textureDesc);
+        this->_texture_object = this->_metal_system->make_mtl_texture(textureDesc);
 
         if (!this->_texture_object) {
             return setup_metal_result{setup_metal_error::create_texture_failed};
@@ -105,7 +103,7 @@ setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> 
         samplerDesc.lodMaxClamp = FLT_MAX;
         samplerDesc.supportArgumentBuffers = true;
 
-        this->_sampler_object = makable_metal_system::cast(this->_metal_system)->make_mtl_sampler_state(samplerDesc);
+        this->_sampler_object = this->_metal_system->make_mtl_sampler_state(samplerDesc);
 
         if (!this->_sampler_object.object()) {
             return setup_metal_result{setup_metal_error::create_sampler_failed};
@@ -113,7 +111,7 @@ setup_metal_result metal_texture::metal_setup(std::shared_ptr<ui::metal_system> 
     }
 
     if (!this->_argument_encoder_object) {
-        this->_argument_encoder_object = makable_metal_system::cast(this->_metal_system)->make_mtl_argument_encoder();
+        this->_argument_encoder_object = this->_metal_system->make_mtl_argument_encoder();
 
         if (!this->_argument_encoder_object) {
             return setup_metal_result{setup_metal_error::create_argument_encoder_failed};

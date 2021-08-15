@@ -18,8 +18,8 @@ using namespace yas;
 using namespace yas::ui;
 
 button::button(region const &region, std::size_t const state_count,
-               std::shared_ptr<ui::event_observable_interface> const &event_manager,
-               std::shared_ptr<ui::collider_detectable_interface> const &detector)
+               std::shared_ptr<ui::event_observable> const &event_manager,
+               std::shared_ptr<ui::collider_detectable> const &detector)
     : _rect_plane(rect_plane::make_shared(state_count * 2, 1)),
       _layout_guide(layout_region_guide::make_shared(region)),
       _state_count(state_count),
@@ -48,8 +48,6 @@ button::button(region const &region, std::size_t const state_count,
         .end()
         ->add_to(this->_pool);
 }
-
-button::~button() = default;
 
 void button::set_texture(std::shared_ptr<ui::texture> const &texture) {
     this->rect_plane()->node()->mesh()->set_texture(texture);
@@ -274,14 +272,14 @@ void button::_send_notify(method const method, std::shared_ptr<event> const &eve
 }
 
 std::shared_ptr<button> button::make_shared(region const &region,
-                                            std::shared_ptr<ui::event_observable_interface> const &event_manager,
-                                            std::shared_ptr<ui::collider_detectable_interface> const &detector) {
+                                            std::shared_ptr<ui::event_observable> const &event_manager,
+                                            std::shared_ptr<ui::collider_detectable> const &detector) {
     return make_shared(region, 1, event_manager, detector);
 }
 
 std::shared_ptr<button> button::make_shared(region const &region, std::size_t const state_count,
-                                            std::shared_ptr<ui::event_observable_interface> const &event_manager,
-                                            std::shared_ptr<ui::collider_detectable_interface> const &detector) {
+                                            std::shared_ptr<ui::event_observable> const &event_manager,
+                                            std::shared_ptr<ui::collider_detectable> const &detector) {
     return std::shared_ptr<button>(new button{region, state_count, event_manager, detector});
 }
 

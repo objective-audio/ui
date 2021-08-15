@@ -35,7 +35,7 @@ using namespace yas::ui;
 
     XCTAssertTrue(system);
 
-    std::shared_ptr<view_metal_system_interface> const view_metal_system = system;
+    std::shared_ptr<metal_system_for_view> const view_metal_system = system;
 
     XCTAssertNotNil(view_metal_system->mtlDevice());
     XCTAssertEqual(view_metal_system->sample_count(), 4);
@@ -52,7 +52,7 @@ using namespace yas::ui;
 
     XCTAssertTrue(system);
 
-    std::shared_ptr<view_metal_system_interface> const view_metal_system = system;
+    std::shared_ptr<metal_system_for_view> const view_metal_system = system;
 
     XCTAssertNotNil(view_metal_system->mtlDevice());
     XCTAssertEqual(view_metal_system->sample_count(), 1);

@@ -22,8 +22,8 @@ std::deque<std::shared_ptr<metal_encode_info>> const &metal_encoder::all_encode_
     return this->_all_encode_infos;
 }
 
-metal_encoder::encode_result_t metal_encoder::encode(
-    std::shared_ptr<metal_encoder_system_interface> const &metal_system, id<MTLCommandBuffer> const commandBuffer) {
+metal_encoder::encode_result_t metal_encoder::encode(std::shared_ptr<system_for_metal_encoder> const &metal_system,
+                                                     id<MTLCommandBuffer> const commandBuffer) {
     metal_system->prepare_uniforms_buffer(_mesh_count_in_all_encode_infos());
 
     std::size_t encoded_count = 0;

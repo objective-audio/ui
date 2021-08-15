@@ -99,7 +99,7 @@ using namespace yas::ui;
         renderer::make_shared(metal_system, ui::view_look::make_shared(), root_node, detector, action_manager);
 
     auto time_updater = [&metal_system, &view_look, expectation, &self](auto const &, auto const &) {
-        std::shared_ptr<view_metal_system_interface> const view_metal_system = metal_system;
+        std::shared_ptr<metal_system_for_view> const view_metal_system = metal_system;
         auto mtlDevice = view_metal_system->mtlDevice();
 
         auto view = [YASTestMetalViewController sharedViewController].metalView;
@@ -119,13 +119,13 @@ using namespace yas::ui;
         stackable->push_encode_info(encode_info);
 
         auto mesh1 = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
-        metal_object::cast(mesh1)->metal_setup(metal_system);
+        mesh1->metal_setup(metal_system);
         encode_info->append_mesh(mesh1);
 
         auto mesh2 = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
         auto texture = texture::make_shared({.point_size = {1, 1}}, view_look);
         mesh2->set_texture(texture);
-        metal_object::cast(mesh2)->metal_setup(metal_system);
+        mesh2->metal_setup(metal_system);
         encode_info->append_mesh(mesh2);
 
         encoder->encode(metal_system, commandBuffer);

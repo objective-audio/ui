@@ -5,8 +5,8 @@
 #pragma once
 
 namespace yas::ui {
-struct view_renderer_interface {
-    virtual ~view_renderer_interface() = default;
+struct renderer_for_view {
+    virtual ~renderer_for_view() = default;
 
     virtual void view_render() = 0;
 };

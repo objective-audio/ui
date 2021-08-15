@@ -8,28 +8,28 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
-struct scale_factor_observable_interface {
-    virtual ~scale_factor_observable_interface() = default;
+struct scale_factor_observable {
+    virtual ~scale_factor_observable() = default;
 
     [[nodiscard]] virtual double scale_factor() const = 0;
     [[nodiscard]] virtual observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&) = 0;
 };
 
-struct appearance_observable_interface {
-    virtual ~appearance_observable_interface() = default;
+struct appearance_observable {
+    virtual ~appearance_observable() = default;
 
     [[nodiscard]] virtual ui::appearance appearance() const = 0;
     [[nodiscard]] virtual observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&) = 0;
 };
 
-struct event_observable_interface {
-    virtual ~event_observable_interface() = default;
+struct event_observable {
+    virtual ~event_observable() = default;
 
     [[nodiscard]] virtual observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&) = 0;
 };
 
-struct collider_detectable_interface {
-    virtual ~collider_detectable_interface() = default;
+struct collider_detectable {
+    virtual ~collider_detectable() = default;
 
     [[nodiscard]] virtual bool detect(ui::point const &, std::shared_ptr<collider> const &) const = 0;
 };

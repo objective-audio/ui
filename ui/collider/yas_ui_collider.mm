@@ -80,8 +80,6 @@ collider::collider(std::shared_ptr<ui::shape> &&shape)
     : _shape(observing::value::holder<std::shared_ptr<ui::shape>>::make_shared(std::move(shape))) {
 }
 
-collider::~collider() = default;
-
 void collider::set_shape(std::shared_ptr<ui::shape> shape) {
     this->_shape->set_value(std::move(shape));
 }

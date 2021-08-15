@@ -29,7 +29,7 @@ using namespace yas::ui;
 - (void)test_create {
     auto const view_look = ui::view_look::make_shared();
     auto const renderer = ui::renderer::make_shared(nullptr, nullptr, nullptr, nullptr, nullptr);
-    std::shared_ptr<view_renderer_interface> const view_renderer = renderer;
+    std::shared_ptr<renderer_for_view> const view_renderer = renderer;
 
     XCTAssertTrue(view_renderer);
 }

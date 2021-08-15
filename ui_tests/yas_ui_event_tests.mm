@@ -8,7 +8,7 @@
 
 using namespace yas;
 using namespace yas::ui;
-using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface>;
+using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
 @interface yas_ui_event_tests : XCTestCase
 
@@ -299,13 +299,12 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
     auto const manager = event_manager::make_shared();
 
     XCTAssertTrue(manager);
-    XCTAssertTrue(static_cast<std::shared_ptr<metal_view_event_manager_interface>>(manager));
+    XCTAssertTrue(static_cast<std::shared_ptr<event_manager_for_view>>(manager));
 }
 
 - (void)test_input_cursor_event_began {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool called = false;
 
@@ -320,15 +319,14 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         called = true;
     });
 
-    manager_interface->input_cursor_event(cursor_event{{0.25f, 0.125f}, 101.0});
+    manager_for_view->input_cursor_event(cursor_event{{0.25f, 0.125f}, 101.0});
 
     XCTAssertTrue(called);
 }
 
 - (void)test_input_touch_event_began {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool called = false;
 
@@ -344,15 +342,14 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         called = true;
     });
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{100, {256.0f, 512.0f}, 201.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{100, {256.0f, 512.0f}, 201.0});
 
     XCTAssertTrue(called);
 }
 
 - (void)test_input_key_event_began {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool called = false;
 
@@ -368,15 +365,14 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         called = true;
     });
 
-    manager_interface->input_key_event(event_phase::began, key_event{200, "xyz", "uvw", 301.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{200, "xyz", "uvw", 301.0});
 
     XCTAssertTrue(called);
 }
 
 - (void)test_input_modifier_event_began {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool alt_called = false;
     bool func_called = false;
@@ -395,7 +391,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_modifier_event(modifier_flags(modifier_flags::alternate | modifier_flags::function), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(modifier_flags::alternate | modifier_flags::function), 0.0);
 
     XCTAssertTrue(alt_called);
     XCTAssertTrue(func_called);
@@ -403,8 +399,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_input_cursor_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -419,29 +414,29 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -449,8 +444,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_input_touch_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -467,39 +461,39 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -507,8 +501,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_input_key_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -525,39 +518,39 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -565,8 +558,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_input_modifier_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -583,50 +575,50 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::command, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags(modifier_flags::alpha_shift | modifier_flags::command), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(modifier_flags::alpha_shift | modifier_flags::command), 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::command, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
@@ -635,8 +627,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_observe_input_cursor_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -651,29 +642,29 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -681,8 +672,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_observe_input_touch_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -699,39 +689,39 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -739,8 +729,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_observe_input_key_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -757,39 +746,39 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{2, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -797,8 +786,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_observe_input_modifier_events {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
     bool ended_called = false;
@@ -815,50 +803,50 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
         }
     });
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::command, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_interface->input_modifier_event(modifier_flags(0), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags(modifier_flags::alpha_shift | modifier_flags::command), 0.0);
+    manager_for_view->input_modifier_event(modifier_flags(modifier_flags::alpha_shift | modifier_flags::command), 0.0);
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_interface->input_modifier_event(modifier_flags::command, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::command, 0.0);
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
@@ -867,8 +855,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
 - (void)test_observe {
     auto manager = event_manager::make_shared();
-    manager_interface_ptr const manager_interface = manager;
-    ;
+    manager_for_view_ptr const manager_for_view = manager;
 
     std::vector<std::shared_ptr<event>> called_events;
 
@@ -877,7 +864,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
     auto canceller =
         manager->observe([&called_events](std::shared_ptr<event> const &event) { called_events.push_back(event); });
 
-    manager_interface->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});
+    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::cursor);
@@ -885,7 +872,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
     clear();
 
-    manager_interface->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::touch);
@@ -893,7 +880,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
     clear();
 
-    manager_interface->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
+    manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::key);
@@ -901,7 +888,7 @@ using manager_interface_ptr = std::shared_ptr<metal_view_event_manager_interface
 
     clear();
 
-    manager_interface->input_modifier_event(modifier_flags::alpha_shift, 0.0);
+    manager_for_view->input_modifier_event(modifier_flags::alpha_shift, 0.0);
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::modifier);
