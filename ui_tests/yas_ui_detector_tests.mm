@@ -27,7 +27,7 @@ using namespace yas::ui;
 
     XCTAssertTrue(detector);
 
-    XCTAssertTrue(renderer_detector_interface::cast(detector));
+    XCTAssertTrue(detector_for_renderer::cast(detector));
 }
 
 - (void)test_detect {
@@ -40,7 +40,7 @@ using namespace yas::ui;
     auto collider2 =
         collider::make_shared(shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    auto const renderer_detector = renderer_detector_interface::cast(detector);
+    auto const renderer_detector = detector_for_renderer::cast(detector);
     renderer_detector->begin_update();
     renderer_detector->push_front_collider(collider1);
     renderer_detector->push_front_collider(collider2);
@@ -62,7 +62,7 @@ using namespace yas::ui;
     auto collider2 =
         collider::make_shared(shape::make_shared({.rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    auto const updatable = renderer_detector_interface::cast(detector);
+    auto const updatable = detector_for_renderer::cast(detector);
     updatable->push_front_collider(collider1);
     updatable->push_front_collider(collider2);
 
@@ -72,7 +72,7 @@ using namespace yas::ui;
 
 - (void)test_is_updating {
     auto detector = detector::make_shared();
-    auto const updatable = renderer_detector_interface::cast(detector);
+    auto const updatable = detector_for_renderer::cast(detector);
 
     XCTAssertTrue(updatable->is_updating());
 

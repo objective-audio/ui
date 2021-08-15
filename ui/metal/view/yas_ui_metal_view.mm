@@ -11,7 +11,7 @@ using namespace yas::ui;
 
 namespace yas::ui::metal_view {
 struct cpp {
-    std::weak_ptr<metal_view_event_manager_interface> event_manager;
+    std::weak_ptr<event_manager_for_view> event_manager;
 };
 }
 
@@ -44,7 +44,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
-- (void)set_event_manager:(std::shared_ptr<ui::metal_view_event_manager_interface> const &)manager {
+- (void)set_event_manager:(std::shared_ptr<ui::event_manager_for_view> const &)manager {
     self->_cpp.event_manager = manager;
 }
 

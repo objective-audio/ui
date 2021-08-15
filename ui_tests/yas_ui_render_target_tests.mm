@@ -31,9 +31,6 @@ using namespace yas::ui;
 
     // effectをセットしない場合はデフォルトでthrough_effectが入っている
     XCTAssertTrue(render_target->effect());
-
-    XCTAssertTrue(renderable_render_target::cast(render_target));
-    XCTAssertTrue(metal_object::cast(render_target));
 }
 
 - (void)test_observe_scale_factor {

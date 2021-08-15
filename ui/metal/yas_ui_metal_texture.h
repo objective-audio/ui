@@ -7,12 +7,10 @@
 #include <Metal/Metal.h>
 #include <cpp_utils/yas_objc_ptr.h>
 #include <ui/yas_ui_gl_texture.h>
-#include <ui/yas_ui_metal_dependency.h>
+#include <ui/yas_ui_metal_setup_types.h>
 
 namespace yas::ui {
-struct metal_texture : metal_object, gl_texture_interface {
-    virtual ~metal_texture() final;
-
+struct metal_texture final : gl_texture {
     [[nodiscard]] ui::uint_size size() const;
     [[nodiscard]] id<MTLSamplerState> samplerState() const;
     [[nodiscard]] id<MTLTexture> texture() const;
@@ -23,6 +21,8 @@ struct metal_texture : metal_object, gl_texture_interface {
 
     [[nodiscard]] bool is_ready() const override;
     void replace_data(uint_region const region, void const *data) override;
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
 
     [[nodiscard]] static std::shared_ptr<metal_texture> make_shared(ui::uint_size actual_size,
                                                                     ui::texture_usages_t const, ui::pixel_format const);
@@ -44,7 +44,5 @@ struct metal_texture : metal_object, gl_texture_interface {
     metal_texture(metal_texture &&) = delete;
     metal_texture &operator=(metal_texture const &) = delete;
     metal_texture &operator=(metal_texture &&) = delete;
-
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 };
 }  // namespace yas::ui

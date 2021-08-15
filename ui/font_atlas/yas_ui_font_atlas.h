@@ -12,8 +12,6 @@ namespace yas::ui {
 class word_info;
 
 struct font_atlas final {
-    virtual ~font_atlas();
-
     [[nodiscard]] std::string const &font_name() const;
     [[nodiscard]] double const &font_size() const;
     [[nodiscard]] double const &ascent() const;

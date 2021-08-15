@@ -321,36 +321,35 @@ void node::attach_position_layout_guides(layout_point_guide &guide_point) {
 
 setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_system) {
     if (auto const &mesh = this->_mesh->value()) {
-        if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
+        if (auto ul = unless(mesh->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
 
     if (auto &render_target = this->_render_target->value()) {
-        if (auto ul = unless(metal_object::cast(render_target)->metal_setup(metal_system))) {
+        if (auto ul = unless(render_target->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
 
-        if (auto ul = unless(
-                metal_object::cast(renderable_render_target::cast(render_target)->mesh())->metal_setup(metal_system))) {
+        if (auto ul = unless(render_target->mesh()->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
 
-        if (auto &effect = renderable_render_target::cast(render_target)->effect()) {
-            if (auto ul = unless(metal_object::cast(effect)->metal_setup(metal_system))) {
+        if (auto &effect = render_target->effect()) {
+            if (auto ul = unless(effect->metal_setup(metal_system))) {
                 return std::move(ul.value);
             }
         }
     }
 
     if (auto &batch = this->_batch->value()) {
-        if (auto ul = unless(metal_object::cast(batch)->metal_setup(metal_system))) {
+        if (auto ul = unless(batch->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
 
     for (auto &sub_node : this->_children) {
-        if (auto ul = unless(metal_object::cast(sub_node)->metal_setup(metal_system))) {
+        if (auto ul = unless(sub_node->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
     }
@@ -370,12 +369,12 @@ void node::fetch_updates(tree_updates &tree_updates) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
             if (auto const &mesh_data = mesh->mesh_data()) {
-                tree_updates.mesh_data_updates.flags |= renderable_mesh_data::cast(mesh_data)->updates().flags;
+                tree_updates.mesh_data_updates.flags |= mesh_data->updates().flags;
             }
         }
 
         if (auto &render_target = this->_render_target->value()) {
-            auto const renderable = renderable_render_target::cast(render_target);
+            auto const renderable = render_target;
 
             tree_updates.render_target_updates.flags |= renderable->updates().flags;
 
@@ -384,7 +383,7 @@ void node::fetch_updates(tree_updates &tree_updates) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
             if (auto &mesh_data = mesh->mesh_data()) {
-                tree_updates.mesh_data_updates.flags |= renderable_mesh_data::cast(mesh_data)->updates().flags;
+                tree_updates.mesh_data_updates.flags |= mesh_data->updates().flags;
             }
 
             if (auto &effect = renderable->effect()) {
@@ -424,7 +423,7 @@ void node::build_render_info(render_info &render_info) {
             }
 
             if (auto &render_target = this->_render_target->value()) {
-                auto const &mesh = renderable_render_target::cast(render_target)->mesh();
+                auto const &mesh = render_target->mesh();
                 renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                 render_encodable->append_mesh(mesh);
             }
@@ -434,10 +433,10 @@ void node::build_render_info(render_info &render_info) {
             bool needs_render = this->_updates.test(node_update_reason::render_target);
 
             if (!needs_render) {
-                needs_render = renderable_render_target::cast(render_target)->updates().flags.any();
+                needs_render = render_target->updates().flags.any();
             }
 
-            auto const renderable = renderable_render_target::cast(render_target);
+            auto const renderable = render_target;
             auto const &effect = renderable->effect();
             if (!needs_render && effect) {
                 needs_render = renderable_effect::cast(effect)->updates().flags.any();
@@ -456,7 +455,7 @@ void node::build_render_info(render_info &render_info) {
             if (needs_render) {
                 auto const &stackable = render_info.render_stackable;
 
-                if (renderable_render_target::cast(render_target)->push_encode_info(stackable)) {
+                if (render_target->push_encode_info(stackable)) {
                     ui::render_info target_render_info{.render_encodable = render_info.render_encodable,
                                                        .render_effectable = render_info.render_effectable,
                                                        .render_stackable = render_info.render_stackable,
@@ -546,7 +545,7 @@ void node::clear_updates() {
         }
 
         if (auto &render_target = this->_render_target->value()) {
-            renderable_render_target::cast(render_target)->clear_updates();
+            render_target->clear_updates();
         }
 
         for (auto &sub_node : this->_children) {
@@ -629,7 +628,7 @@ std::shared_ptr<node> node::make_shared() {
     return make_shared(nullptr);
 }
 
-std::shared_ptr<node> node::make_shared(std::shared_ptr<node_parent_interface> const &parent) {
+std::shared_ptr<node> node::make_shared(std::shared_ptr<parent_for_node> const &parent) {
     auto shared = std::shared_ptr<node>(new node{});
     shared->_weak_node = shared;
     shared->_weak_parent = parent;

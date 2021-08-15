@@ -4,16 +4,15 @@
 
 #pragma once
 
-#include <ui/yas_ui_objc.h>
-#include <ui/yas_ui_types.h>
+#include <cstdint>
 
-@class YASUIMetalView;
+@protocol MTLDevice;
 
 namespace yas::ui {
-struct view_metal_system_interface {
-    virtual ~view_metal_system_interface() = default;
+struct metal_system_for_view {
+    virtual ~metal_system_for_view() = default;
 
     [[nodiscard]] virtual id<MTLDevice> mtlDevice() = 0;
     [[nodiscard]] virtual uint32_t sample_count() = 0;
 };
-}
+}  // namespace yas::ui

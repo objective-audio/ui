@@ -9,7 +9,7 @@
 #include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_layout_dependency.h>
 #include <ui/yas_ui_mesh.h>
-#include <ui/yas_ui_metal_dependency.h>
+#include <ui/yas_ui_metal_setup_types.h>
 #include <ui/yas_ui_node_dependency.h>
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_renderer_dependency.h>
@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct node final : metal_object, renderable_node, layout_point_target, node_parent_interface, renderer_node_interface {
+struct node final : renderable_node, layout_point_target, parent_for_node {
     enum class method {
         added_to_super,
         removed_from_super,
@@ -91,12 +91,14 @@ struct node final : metal_object, renderable_node, layout_point_target, node_par
     void attach_y_layout_guide(ui::layout_value_guide &);
     void attach_position_layout_guides(ui::layout_point_guide &);
 
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
+
     [[nodiscard]] static std::shared_ptr<node> make_shared();
-    [[nodiscard]] static std::shared_ptr<node> make_shared(std::shared_ptr<node_parent_interface> const &);
+    [[nodiscard]] static std::shared_ptr<node> make_shared(std::shared_ptr<parent_for_node> const &);
 
    private:
     std::weak_ptr<node> _weak_node;
-    std::weak_ptr<node_parent_interface> _weak_parent;
+    std::weak_ptr<parent_for_node> _weak_parent;
 
     observing::value::holder_ptr<std::weak_ptr<node>> const _parent;
 
@@ -131,8 +133,6 @@ struct node final : metal_object, renderable_node, layout_point_target, node_par
     node(node &&) = delete;
     node &operator=(node const &) = delete;
     node &operator=(node &&) = delete;
-
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     simd::float4x4 const &matrix_as_parent() const override;
 

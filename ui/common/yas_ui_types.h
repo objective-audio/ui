@@ -66,28 +66,23 @@ class view_look;
 class render_info;
 class batch_render_mesh_info;
 
-class renderable_render_target;
 class updatable_action;
 class renderable_batch;
 class renderable_collider;
-class renderer_detector_interface;
+class detector_for_renderer;
 class renderable_effect;
 class encodable_effect;
-class metal_view_event_manager_interface;
+class event_manager_for_view;
 class manageable_event;
 class renderable_mesh;
-class renderable_mesh_data;
-class metal_object;
-class renderer_system_interface;
-class makable_metal_system;
+class system_for_renderer;
 class testable_metal_system;
 class renderable_node;
 class render_encodable;
 class render_effectable;
 class render_stackable;
-class view_renderer_interface;
-class renderer_background_interface;
-class view_metal_system_interface;
+class renderer_for_view;
+class metal_system_for_view;
 
 enum class batch_building_type;
 

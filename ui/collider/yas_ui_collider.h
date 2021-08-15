@@ -69,8 +69,6 @@ struct shape final {
 };
 
 struct collider final : renderable_collider {
-    virtual ~collider();
-
     void set_shape(std::shared_ptr<shape>);
     [[nodiscard]] std::shared_ptr<shape> const &shape() const;
 

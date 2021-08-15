@@ -131,14 +131,14 @@ struct renderable_collider {
     }
 };
 
-struct renderer_detector_interface : render_info_detector_interface {
-    virtual ~renderer_detector_interface() = default;
+struct detector_for_renderer : detector_for_render_info {
+    virtual ~detector_for_renderer() = default;
 
     virtual void begin_update() = 0;
     virtual void end_update() = 0;
 
-    [[nodiscard]] static std::shared_ptr<renderer_detector_interface> cast(
-        std::shared_ptr<renderer_detector_interface> const &detector) {
+    [[nodiscard]] static std::shared_ptr<detector_for_renderer> cast(
+        std::shared_ptr<detector_for_renderer> const &detector) {
         return detector;
     }
 };
@@ -173,30 +173,23 @@ struct renderable_effect {
     }
 };
 
-struct renderer_action_manager_interface {
-    virtual ~renderer_action_manager_interface() = default;
+struct action_manager_for_renderer {
+    virtual ~action_manager_for_renderer() = default;
 
     virtual void update(time_point_t const &) = 0;
 };
 
-struct renderer_view_look_interface {
-    virtual ~renderer_view_look_interface() = default;
+struct view_look_for_renderer {
+    virtual ~view_look_for_renderer() = default;
 
     [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
 };
 
-struct renderer_system_interface {
-    virtual ~renderer_system_interface() = default;
+struct system_for_renderer {
+    virtual ~system_for_renderer() = default;
 
-    virtual void view_render(std::shared_ptr<ui::render_info_detector_interface> const &,
+    virtual void view_render(std::shared_ptr<ui::detector_for_render_info> const &,
                              simd::float4x4 const &projection_matrix, std::shared_ptr<ui::node> const &) = 0;
-};
-
-struct renderer_node_interface {
-    virtual ~renderer_node_interface() = default;
-
-    virtual void fetch_updates(ui::tree_updates &) = 0;
-    virtual void clear_updates() = 0;
 };
 }  // namespace yas::ui
 

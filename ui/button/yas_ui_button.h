@@ -28,8 +28,6 @@ struct button final {
         ui::touch_event const &touch;
     };
 
-    virtual ~button();
-
     void set_texture(std::shared_ptr<texture> const &);
     [[nodiscard]] std::shared_ptr<texture> const &texture() const;
 
@@ -45,12 +43,12 @@ struct button final {
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &layout_guide();
 
-    [[nodiscard]] static std::shared_ptr<button> make_shared(
-        ui::region const &, std::shared_ptr<ui::event_observable_interface> const &,
-        std::shared_ptr<ui::collider_detectable_interface> const &);
-    [[nodiscard]] static std::shared_ptr<button> make_shared(
-        ui::region const &, std::size_t const state_count, std::shared_ptr<ui::event_observable_interface> const &,
-        std::shared_ptr<ui::collider_detectable_interface> const &);
+    [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &,
+                                                             std::shared_ptr<ui::event_observable> const &,
+                                                             std::shared_ptr<ui::collider_detectable> const &);
+    [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count,
+                                                             std::shared_ptr<ui::event_observable> const &,
+                                                             std::shared_ptr<ui::collider_detectable> const &);
 
    private:
     std::shared_ptr<ui::rect_plane> _rect_plane;
@@ -58,13 +56,12 @@ struct button final {
     observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
     std::size_t _state_idx = 0;
     std::size_t _state_count;
-    std::weak_ptr<ui::collider_detectable_interface> _weak_detector;
+    std::weak_ptr<ui::collider_detectable> _weak_detector;
     std::shared_ptr<event> _tracking_event = nullptr;
     observing::canceller_pool _pool;
 
-    button(ui::region const &region, std::size_t const state_count,
-           std::shared_ptr<ui::event_observable_interface> const &,
-           std::shared_ptr<ui::collider_detectable_interface> const &);
+    button(ui::region const &region, std::size_t const state_count, std::shared_ptr<ui::event_observable> const &,
+           std::shared_ptr<ui::collider_detectable> const &);
 
     button(button const &) = delete;
     button(button &&) = delete;

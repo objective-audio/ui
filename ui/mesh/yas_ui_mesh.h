@@ -6,12 +6,10 @@
 
 #include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_mesh_types.h>
-#include <ui/yas_ui_metal_dependency.h>
+#include <ui/yas_ui_metal_setup_types.h>
 
 namespace yas::ui {
-struct mesh final : renderable_mesh, metal_object {
-    virtual ~mesh();
-
+struct mesh final : renderable_mesh {
     [[nodiscard]] std::shared_ptr<mesh_data> const &mesh_data() const;
     [[nodiscard]] std::shared_ptr<texture> const &texture() const;
     [[nodiscard]] simd::float4 const &color() const;
@@ -23,6 +21,8 @@ struct mesh final : renderable_mesh, metal_object {
     void set_color(simd::float4 const &);
     void set_use_mesh_color(bool const);
     void set_primitive_type(ui::primitive_type const);
+
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
 
     [[nodiscard]] static std::shared_ptr<mesh> make_shared();
     [[nodiscard]] static std::shared_ptr<mesh> make_shared(mesh_args &&, std::shared_ptr<ui::mesh_data> const &,
@@ -55,8 +55,6 @@ struct mesh final : renderable_mesh, metal_object {
     void batch_render(batch_render_mesh_info &, ui::batch_building_type const) override;
     bool is_rendering_color_exists() override;
     void clear_updates() override;
-
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     bool _is_mesh_data_exists();
     bool _needs_write(ui::batch_building_type const &);

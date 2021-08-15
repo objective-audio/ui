@@ -138,8 +138,6 @@ dynamic_mesh_data::dynamic_mesh_data(mesh_data_args &&args) : mesh_data(std::mov
     this->_updates.flags.reset();
 }
 
-dynamic_mesh_data::~dynamic_mesh_data() = default;
-
 std::size_t dynamic_mesh_data::vertex_buffer_byte_offset() {
     return this->_vertices.size() * this->_dynamic_buffer_index * sizeof(vertex2d_t);
 }

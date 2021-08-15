@@ -7,8 +7,8 @@
 #include <ui/yas_ui_event_types.h>
 
 namespace yas::ui {
-struct metal_view_event_manager_interface {
-    virtual ~metal_view_event_manager_interface() = default;
+struct event_manager_for_view {
+    virtual ~event_manager_for_view() = default;
 
     virtual void input_cursor_event(cursor_event const &) = 0;
     virtual void input_touch_event(event_phase const, touch_event const &) = 0;

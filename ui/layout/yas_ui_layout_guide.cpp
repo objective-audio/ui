@@ -15,8 +15,6 @@ layout_value_guide::layout_value_guide(float const value)
     : _value(observing::value::holder<float>::make_shared(value)) {
 }
 
-layout_value_guide::~layout_value_guide() = default;
-
 void layout_value_guide::set_value(float const value) {
     this->_value->set_value(value);
 }
@@ -83,8 +81,6 @@ std::shared_ptr<layout_value_guide> layout_value_guide::make_shared(float const 
 layout_point_guide::layout_point_guide(ui::point &&origin)
     : _x_guide(layout_value_guide::make_shared(origin.x)), _y_guide(layout_value_guide::make_shared(origin.y)) {
 }
-
-layout_point_guide::~layout_point_guide() = default;
 
 std::shared_ptr<layout_value_guide> const &layout_point_guide::x() const {
     return this->_x_guide;
@@ -173,8 +169,6 @@ layout_range_guide::layout_range_guide(ui::range &&range)
             .end();
 }
 
-layout_range_guide::~layout_range_guide() = default;
-
 std::shared_ptr<layout_value_guide> const &layout_range_guide::min() const {
     return this->_min_guide;
 }
@@ -261,8 +255,6 @@ layout_region_guide::layout_region_guide(region_ranges_args args)
 layout_region_guide::layout_region_guide(ui::region region)
     : layout_region_guide({.horizontal = region.horizontal_range(), .vertical = region.vertical_range()}) {
 }
-
-layout_region_guide::~layout_region_guide() = default;
 
 std::shared_ptr<layout_range_guide> const &layout_region_guide::horizontal_range() const {
     return this->_horizontal_range;

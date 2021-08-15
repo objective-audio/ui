@@ -82,8 +82,6 @@ sample::justified_points::justified_points(std::shared_ptr<ui::layout_region_sou
         ->add_to(this->_pool);
 }
 
-sample::justified_points::~justified_points() = default;
-
 std::shared_ptr<rect_plane> const &sample::justified_points::rect_plane() {
     return this->_rect_plane;
 }

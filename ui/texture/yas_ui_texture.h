@@ -7,7 +7,7 @@
 #include <cpp_utils/yas_result.h>
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_common_dependency.h>
-#include <ui/yas_ui_metal_dependency.h>
+#include <ui/yas_ui_metal_setup_types.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_texture_types.h>
 #include <ui/yas_ui_types.h>
@@ -16,7 +16,7 @@ namespace yas::ui {
 enum class draw_image_error;
 using draw_image_result = result<uint_region, draw_image_error>;
 
-struct texture : metal_object {
+struct texture {
     [[nodiscard]] uintptr_t identifier() const;
 
     [[nodiscard]] uint_size point_size() const;
@@ -36,8 +36,10 @@ struct texture : metal_object {
     [[nodiscard]] observing::endable observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&);
     [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
 
-    [[nodiscard]] static std::shared_ptr<texture> make_shared(
-        texture_args &&, std::shared_ptr<scale_factor_observable_interface> const &);
+    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
+
+    [[nodiscard]] static std::shared_ptr<texture> make_shared(texture_args &&,
+                                                              std::shared_ptr<scale_factor_observable> const &);
 
    private:
     ui::uint_size _point_size;
@@ -48,7 +50,7 @@ struct texture : metal_object {
     ui::pixel_format const _pixel_format;
 
     std::shared_ptr<ui::metal_texture> _metal_texture = nullptr;
-    std::shared_ptr<ui::gl_texture_interface> _gl_texture = nullptr;
+    std::shared_ptr<ui::gl_texture> _gl_texture = nullptr;
 
     std::shared_ptr<metal_system> _metal_system = nullptr;
     uint32_t _max_line_height = 0;
@@ -60,14 +62,12 @@ struct texture : metal_object {
         observing::notifier<std::nullptr_t>::make_shared();
     observing::notifier_ptr<std::nullptr_t> const _size_notifier = observing::notifier<std::nullptr_t>::make_shared();
 
-    texture(texture_args &&, std::shared_ptr<scale_factor_observable_interface> const &);
+    texture(texture_args &&, std::shared_ptr<scale_factor_observable> const &);
 
     texture(texture const &) = delete;
     texture(texture &&) = delete;
     texture &operator=(texture const &) = delete;
     texture &operator=(texture &&) = delete;
-
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &) override;
 
     draw_image_result _reserve_image_size(std::shared_ptr<image> const &image);
     draw_image_result _replace_image(std::shared_ptr<image> const &image, uint_point const origin);

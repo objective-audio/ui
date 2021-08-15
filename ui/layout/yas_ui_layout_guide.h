@@ -11,8 +11,6 @@
 
 namespace yas::ui {
 struct layout_value_guide final : layout_value_target, layout_value_source {
-    virtual ~layout_value_guide();
-
     void set_value(float const);
     float const &value() const;
 
@@ -41,8 +39,6 @@ struct layout_value_guide final : layout_value_target, layout_value_source {
 };
 
 struct layout_point_guide final : layout_point_target, layout_point_source {
-    virtual ~layout_point_guide();
-
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &x() const;
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &y() const;
 
@@ -76,8 +72,6 @@ struct layout_point_guide final : layout_point_target, layout_point_source {
 };
 
 struct layout_range_guide final : layout_range_target, layout_range_source {
-    virtual ~layout_range_guide();
-
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &min() const;
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &max() const;
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &length() const;
@@ -115,8 +109,6 @@ struct layout_range_guide final : layout_range_target, layout_range_source {
 };
 
 struct layout_region_guide final : layout_region_target, layout_region_source {
-    virtual ~layout_region_guide();
-
     [[nodiscard]] std::shared_ptr<layout_range_guide> const &horizontal_range() const;
     [[nodiscard]] std::shared_ptr<layout_range_guide> const &vertical_range() const;
 
@@ -163,22 +155,22 @@ struct layout_region_guide final : layout_region_target, layout_region_source {
     std::shared_ptr<layout_range_source> layout_vertical_range_source() override;
 };
 
-struct layout_value_guide_pair {
+struct layout_value_guide_pair final {
     std::shared_ptr<layout_value_guide> source;
     std::shared_ptr<layout_value_guide> destination;
 };
 
-struct layout_point_guide_pair {
+struct layout_point_guide_pair final {
     std::shared_ptr<layout_point_guide> source;
     std::shared_ptr<layout_point_guide> destination;
 };
 
-struct layout_range_guide_pair {
+struct layout_range_guide_pair final {
     std::shared_ptr<layout_range_guide> source;
     std::shared_ptr<layout_range_guide> destination;
 };
 
-struct layout_region_guide_pair {
+struct layout_region_guide_pair final {
     std::shared_ptr<layout_region_guide> source;
     std::shared_ptr<layout_region_guide> destination;
 };

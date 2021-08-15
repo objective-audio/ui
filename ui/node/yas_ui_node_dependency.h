@@ -12,8 +12,8 @@
 namespace yas::ui {
 class renderer;
 
-struct node_parent_interface {
-    virtual ~node_parent_interface() = default;
+struct parent_for_node {
+    virtual ~parent_for_node() = default;
 
     virtual simd::float4x4 const &matrix_as_parent() const = 0;
 
@@ -22,8 +22,7 @@ struct node_parent_interface {
         return {loc4.x, loc4.y};
     }
 
-    [[nodiscard]] static std::shared_ptr<node_parent_interface> cast(
-        std::shared_ptr<node_parent_interface> const &parent) {
+    [[nodiscard]] static std::shared_ptr<parent_for_node> cast(std::shared_ptr<parent_for_node> const &parent) {
         return parent;
     }
 };

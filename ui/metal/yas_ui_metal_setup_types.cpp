@@ -1,8 +1,8 @@
 //
-//  yas_ui_metal_dependency.mm
+//  yas_ui_metal_dependency.cpp
 //
 
-#include "yas_ui_metal_dependency.h"
+#include "yas_ui_metal_setup_types.h"
 
 using namespace yas;
 

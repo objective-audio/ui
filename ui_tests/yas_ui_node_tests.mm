@@ -72,8 +72,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertTrue(node->is_enabled());
 
     XCTAssertTrue(renderable_node::cast(node));
-    XCTAssertTrue(metal_object::cast(node));
-    XCTAssertTrue(node_parent_interface::cast(node));
+    XCTAssertTrue(parent_for_node::cast(node));
 }
 
 - (void)test_set_variables {
@@ -425,7 +424,7 @@ struct test_render_encoder : render_encodable {
     sub_node->set_mesh(sub_mesh);
     root_node->add_sub_node(sub_node);
 
-    XCTAssertTrue(metal_object::cast(root_node)->metal_setup(metal_system));
+    XCTAssertTrue(root_node->metal_setup(metal_system));
 }
 
 - (void)test_build_render_info_smoke {
@@ -462,7 +461,7 @@ struct test_render_encoder : render_encodable {
     node->add_sub_node(sub_node);
     node->add_sub_node(batch_node);
 
-    metal_object::cast(node)->metal_setup(metal_system);
+    node->metal_setup(metal_system);
 
     auto detector = detector::make_shared();
     auto render_encoder = test::test_render_encoder::make_shared();
@@ -704,7 +703,7 @@ struct test_render_encoder : render_encodable {
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 
-        XCTAssertTrue(metal_object::cast(parent_batch_node)->metal_setup(metal_system));
+        XCTAssertTrue(parent_batch_node->metal_setup(metal_system));
 
         tree_updates parent_updates;
         renderable_node::cast(parent_batch_node)->fetch_updates(parent_updates);
@@ -1160,7 +1159,7 @@ struct test_render_encoder : render_encodable {
                                 .matrix = matrix_identity_float4x4,
                                 .mesh_matrix = matrix_identity_float4x4};
 
-        XCTAssertTrue(metal_object::cast(batch_node)->metal_setup(metal_system));
+        XCTAssertTrue(batch_node->metal_setup(metal_system));
 
         tree_updates parent_updates;
         renderable_node::cast(batch_node)->fetch_updates(parent_updates);

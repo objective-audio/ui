@@ -10,8 +10,6 @@
 
 namespace yas::sample {
 struct justified_points final {
-    virtual ~justified_points();
-
     std::shared_ptr<ui::rect_plane> const &rect_plane();
 
     static justified_points_ptr make_shared(std::shared_ptr<ui::layout_region_source> const &view_layout_guide);

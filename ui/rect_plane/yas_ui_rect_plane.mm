@@ -18,8 +18,6 @@ rect_plane_data::rect_plane_data(std::shared_ptr<ui::dynamic_mesh_data> &&mesh_d
     : _dynamic_mesh_data(std::move(mesh_data)) {
 }
 
-rect_plane_data::~rect_plane_data() = default;
-
 std::size_t rect_plane_data::max_rect_count() const {
     auto const max_index_count = this->_dynamic_mesh_data->max_index_count();
     if (max_index_count > 0) {

@@ -15,8 +15,6 @@ namespace yas::ui {
 struct rect_plane_data final {
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 
-    virtual ~rect_plane_data();
-
     void write(std::function<void(ui::vertex2d_rect_t *, ui::index2d_rect_t *)> const &);
     void write_vertex(std::size_t const rect_idx, std::function<void(ui::vertex2d_rect_t &)> const &);
     void write_index(std::size_t const rect_idx, std::function<void(ui::index2d_rect_t &)> const &);

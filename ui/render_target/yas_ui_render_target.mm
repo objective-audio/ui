@@ -17,7 +17,7 @@
 using namespace yas;
 using namespace yas::ui;
 
-render_target::render_target(std::shared_ptr<ui::scale_factor_observable_interface> const &view_look)
+render_target::render_target(std::shared_ptr<ui::scale_factor_observable> const &view_look)
     : _layout_guide(layout_region_guide::make_shared()),
       _effect(effect::make_through_effect()),
       _scale_factor(0.0),
@@ -126,11 +126,11 @@ setup_metal_result render_target::metal_setup(std::shared_ptr<metal_system> cons
         this->_metal_system = metal_system;
     }
 
-    if (auto ul = unless(metal_object::cast(this->_src_texture)->metal_setup(metal_system))) {
+    if (auto ul = unless(this->_src_texture->metal_setup(metal_system))) {
         return ul.value;
     }
 
-    if (auto ul = unless(metal_object::cast(this->_dst_texture)->metal_setup(metal_system))) {
+    if (auto ul = unless(this->_dst_texture->metal_setup(metal_system))) {
         return ul.value;
     }
 
@@ -167,7 +167,7 @@ bool render_target::push_encode_info(std::shared_ptr<render_stackable> const &st
     }
 
     if (auto const &metal_system = this->_metal_system) {
-        renderable_metal_system::cast(metal_system)->push_render_target(stackable, this);
+        metal_system->push_render_target(stackable, this);
         return true;
     }
     return false;
@@ -200,6 +200,6 @@ bool render_target::_is_size_enough() {
 }
 
 std::shared_ptr<render_target> render_target::make_shared(
-    std::shared_ptr<ui::scale_factor_observable_interface> const &view_look) {
+    std::shared_ptr<ui::scale_factor_observable> const &view_look) {
     return std::shared_ptr<render_target>(new render_target{view_look});
 }

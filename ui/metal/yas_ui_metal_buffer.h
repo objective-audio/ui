@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct metal_buffer final : gl_buffer_interface {
+struct metal_buffer final : gl_buffer {
     id<MTLBuffer> rawBuffer() const;
 
     void write_from_vertices(std::vector<ui::vertex2d_t> const &, std::size_t const dynamic_buffer_index) override;

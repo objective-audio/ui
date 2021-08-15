@@ -69,7 +69,7 @@ using namespace yas::ui;
     auto const root_node = ui::node::make_shared();
     auto const detector = ui::detector::make_shared();
     auto const event_manager = ui::event_manager::make_shared();
-    std::shared_ptr<metal_view_event_manager_interface> const view_event_manager = event_manager;
+    std::shared_ptr<event_manager_for_view> const view_event_manager = event_manager;
     auto const action_manager = ui::action_manager::make_shared();
     auto const renderer = renderer::make_shared(metal_system, view_look, root_node, detector, action_manager);
     [[YASTestMetalViewController sharedViewController].view.window setFrame:CGRectMake(0, 0, 2, 2) display:YES];

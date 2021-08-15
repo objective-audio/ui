@@ -31,7 +31,8 @@ struct event::impl : event_impl_base {
     impl &operator=(impl const &) = delete;
     impl &operator=(impl &&) = delete;
 
-    ~impl() = default;
+    ~impl() {
+    }
 
     bool is_equal(std::shared_ptr<impl> const &rhs) const {
         return this->value == rhs->value;

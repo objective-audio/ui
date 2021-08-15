@@ -34,7 +34,6 @@ using namespace yas::ui;
 
     XCTAssertTrue(renderable_batch::cast(batch));
     XCTAssertTrue(render_encodable::cast(batch));
-    XCTAssertTrue(metal_object::cast(batch));
 }
 
 - (void)test_render_mesh_building {
@@ -64,9 +63,9 @@ using namespace yas::ui;
     mesh3->set_texture(texture3);
     batch_encodable->append_mesh(mesh3);
 
-    metal_object::cast(mesh1)->metal_setup(metal_system);
-    metal_object::cast(mesh2)->metal_setup(metal_system);
-    metal_object::cast(mesh3)->metal_setup(metal_system);
+    mesh1->metal_setup(metal_system);
+    mesh2->metal_setup(metal_system);
+    mesh3->metal_setup(metal_system);
 
     batch_renderable->commit_render_meshes_building();
 
@@ -124,8 +123,8 @@ using namespace yas::ui;
     });
     auto mesh2 = mesh::make_shared({.use_mesh_color = true}, mesh_data2, nullptr);
 
-    metal_object::cast(mesh1)->metal_setup(metal_system);
-    metal_object::cast(mesh2)->metal_setup(metal_system);
+    mesh1->metal_setup(metal_system);
+    mesh2->metal_setup(metal_system);
 
     batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
@@ -185,7 +184,7 @@ using namespace yas::ui;
     auto mesh_data = dynamic_mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
-    metal_object::cast(mesh)->metal_setup(metal_system);
+    mesh->metal_setup(metal_system);
 
     mesh_data->write([](std::vector<vertex2d_t> &vertices, std::vector<index2d_t> &indices) {
         vertices.at(0).position.x = 1.0f;
@@ -235,7 +234,7 @@ using namespace yas::ui;
     auto mesh_data = mesh_data::make_shared({.vertex_count = 1, .index_count = 1});
     auto mesh = mesh::make_shared({}, mesh_data, nullptr);
 
-    metal_object::cast(mesh)->metal_setup(metal_system);
+    mesh->metal_setup(metal_system);
 
     batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
@@ -243,7 +242,7 @@ using namespace yas::ui;
 
     batch_renderable->commit_render_meshes_building();
 
-    XCTAssertTrue(metal_object::cast(batch)->metal_setup(metal_system));
+    XCTAssertTrue(batch->metal_setup(metal_system));
 }
 
 - (void)test_batch_building_type_to_string {

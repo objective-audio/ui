@@ -18,8 +18,6 @@ using namespace yas::ui;
 batch::batch() {
 }
 
-batch::~batch() = default;
-
 std::vector<std::shared_ptr<mesh>> const &batch::meshes() {
     return this->_render_meshes;
 }
@@ -71,7 +69,7 @@ void batch::commit_render_meshes_building() {
 
     if (auto &metal_system = this->_metal_system) {
         for (auto const &mesh : this->_render_meshes) {
-            if (auto ul = unless(metal_object::cast(mesh)->metal_setup(metal_system))) {
+            if (auto ul = unless(mesh->metal_setup(metal_system))) {
                 throw std::runtime_error("render_meshes setup failed.");
             };
         }

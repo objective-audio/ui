@@ -19,8 +19,6 @@ metal_encode_info::metal_encode_info(args &&args) {
     this->_pipe_line_state_without_texture = args.pipelineStateWithoutTexture;
 }
 
-metal_encode_info::~metal_encode_info() = default;
-
 void metal_encode_info::append_mesh(std::shared_ptr<mesh> const &mesh) {
     if (auto const &texture = mesh->texture()) {
         uintptr_t const identifier = texture->identifier();
@@ -32,7 +30,7 @@ void metal_encode_info::append_mesh(std::shared_ptr<mesh> const &mesh) {
     this->_meshes.emplace_back(mesh);
 }
 
-void metal_encode_info::append_effect(std::shared_ptr<metal_encoder_effect_interface> const &effect) {
+void metal_encode_info::append_effect(std::shared_ptr<effect_for_metal_encoder> const &effect) {
     this->_effects.emplace_back(effect);
 }
 
@@ -52,7 +50,7 @@ std::vector<std::shared_ptr<mesh>> const &metal_encode_info::meshes() const {
     return this->_meshes;
 }
 
-std::vector<std::shared_ptr<metal_encoder_effect_interface>> const &metal_encode_info::effects() const {
+std::vector<std::shared_ptr<effect_for_metal_encoder>> const &metal_encode_info::effects() const {
     return this->_effects;
 }
 

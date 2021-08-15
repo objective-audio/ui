@@ -12,8 +12,6 @@ using namespace yas::ui;
 detector::detector() {
 }
 
-detector::~detector() = default;
-
 std::optional<std::shared_ptr<collider>> detector::detect(point const &location) const {
     for (auto const &collider : this->_colliders) {
         if (collider->hit_test(location)) {
