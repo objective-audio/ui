@@ -282,7 +282,7 @@ void metal_system::_render_nodes(std::shared_ptr<ui::detector_for_render_info> c
 }
 
 std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device, YASUIMetalView *const metalView) {
-    return make_shared(device, metalView, 4);
+    return make_shared(device, metalView, 1);
 }
 
 std::shared_ptr<metal_system> metal_system::make_shared(id<MTLDevice> const device, YASUIMetalView *const metalView,
