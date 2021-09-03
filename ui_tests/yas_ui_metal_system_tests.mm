@@ -38,7 +38,7 @@ using namespace yas::ui;
     std::shared_ptr<metal_system_for_view> const view_metal_system = system;
 
     XCTAssertNotNil(view_metal_system->mtlDevice());
-    XCTAssertEqual(view_metal_system->sample_count(), 4);
+    XCTAssertEqual(view_metal_system->sample_count(), 1);
 }
 
 - (void)test_create_with_sample_count {
