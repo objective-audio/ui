@@ -25,10 +25,10 @@ strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atl
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
     this->rect_plane()->node()->mesh()->set_texture(atlas->texture());
-    this->_update_layout();
 
     this->_prepare_observings();
-    this->_update_layout();
+    this->_update_collection_layout();
+    this->_update_vertices();
 }
 
 void strings::set_text(std::string text) {
@@ -88,28 +88,23 @@ observing::syncable strings::observe_alignment(observing::caller<layout_alignmen
 }
 
 void strings::_prepare_observings() {
-    this->_font_atlas->observe_texture_updated([this](auto const &) { this->_update_layout(); })
+    this->_font_atlas->observe_texture_updated([this](auto const &) { this->_update_collection_layout(); })
         .end()
-        ->add_to(this->_property_pool);
+        ->add_to(this->_pool);
 
-    this->_text->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
+    this->_text->observe([this](auto const &) { this->_update_collection_layout(); }).end()->add_to(this->_pool);
 
-    this->_line_height->observe([this](auto const &) { this->_update_layout(); }).end()->add_to(this->_property_pool);
+    this->_line_height->observe([this](auto const &) { this->_update_collection_layout(); }).end()->add_to(this->_pool);
 
-    this->_collection_layout->observe_actual_cell_layout_guides([this](auto const &) { this->_update_layout(); })
+    this->_collection_layout->observe_actual_cell_regions([this](auto const &) { this->_update_vertices(); })
         .end()
-        ->add_to(this->_property_pool);
-
-    this->_collection_layout->observe_alignment([this](auto const &) { this->_update_layout(); })
-        .end()
-        ->add_to(this->_property_pool);
+        ->add_to(this->_pool);
 }
 
-void strings::_update_layout() {
-    this->_cell_region_pool.cancel();
-
+void strings::_update_collection_layout() {
     auto const &font_atlas = this->_font_atlas;
     if (!font_atlas || !font_atlas->texture() || !font_atlas->texture()->metal_texture()) {
+        this->_collection_text = "";
         this->_collection_layout->set_preferred_cell_count(0);
         this->_rect_plane->data()->set_rect_count(0);
         return;
@@ -117,8 +112,8 @@ void strings::_update_layout() {
 
     auto const &src_text = this->_text->value();
     auto const word_count = font_atlas ? std::min(src_text.size(), this->_max_word_count) : 0;
-    std::string eliminated_text;
-    eliminated_text.reserve(word_count);
+    std::string collection_text;
+    collection_text.reserve(word_count);
     auto const cell_height = this->_cell_height();
 
     std::vector<collection_layout::line> lines;
@@ -133,7 +128,7 @@ void strings::_update_layout() {
         } else {
             auto const advance = font_atlas->advance(word);
             cell_sizes.emplace_back(size{.width = advance.width, .height = cell_height});
-            eliminated_text += word;
+            collection_text += word;
         }
     }
 
@@ -142,41 +137,38 @@ void strings::_update_layout() {
             collection_layout::line{.cell_sizes = std::move(cell_sizes), .new_line_min_offset = cell_height});
     }
 
+    this->_collection_text = collection_text;
     this->_collection_layout->set_lines(std::move(lines));
-    this->_collection_layout->set_preferred_cell_count(eliminated_text.size());
+    this->_collection_layout->set_preferred_cell_count(collection_text.size());
+}
 
-    auto const actual_cell_count = this->_collection_layout->actual_cell_count();
+void strings::_update_vertices() {
+    auto const cell_count = std::min(this->_collection_layout->actual_cell_count(), this->_collection_text.size());
 
-    this->_rect_plane->data()->set_rect_count(actual_cell_count);
+    if (cell_count == 0) {
+        return;
+    }
 
-    auto handler = [this](std::size_t const idx, std::string const &word, region const &region) {
-        auto const &rect_plane_data = this->_rect_plane->data();
+    this->_rect_plane->data()->set_rect_count(cell_count);
 
-        if (idx < rect_plane_data->rect_count()) {
-            auto const &font_atlas = this->font_atlas();
-            auto str_rect = font_atlas->rect(word);
-            float const ascent = font_atlas->ascent();
-            simd::float2 offset{region.left(), region.top() - ascent};
+    auto const &rect_plane_data = this->_rect_plane->data();
+    auto const &font_atlas = this->font_atlas();
+    float const ascent = font_atlas->ascent();
 
-            for (auto &vertex : str_rect.v) {
-                vertex.position += offset;
-            }
-
-            rect_plane_data->set_rect_vertex(str_rect.v, idx);
-        }
-    };
-
-    each = make_fast_each(actual_cell_count);
+    auto each = make_fast_each(cell_count);
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
-        auto const word = eliminated_text.substr(idx, 1);
-        auto const &cell_region = this->_collection_layout->actual_cell_layout_guides().at(idx);
+        auto const word = this->_collection_text.substr(idx, 1);
+        auto const &region = this->_collection_layout->actual_cell_regions().at(idx);
 
-        cell_region->observe([idx, word, handler](region const &value) { handler(idx, word, value); })
-            .end()
-            ->add_to(this->_cell_region_pool);
+        auto str_rect = font_atlas->rect(word);
+        simd::float2 offset{region.left(), region.top() - ascent};
 
-        handler(idx, word, cell_region->region());
+        for (auto &vertex : str_rect.v) {
+            vertex.position += offset;
+        }
+
+        rect_plane_data->set_rect_vertex(str_rect.v, idx);
     }
 }
 

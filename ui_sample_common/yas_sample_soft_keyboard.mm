@@ -154,7 +154,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed(
     }
 
     this->_collection_layout
-        ->observe_actual_cell_layout_guides([this](auto const &) {
+        ->observe_actual_cell_regions([this](auto const &) {
             this->_update_soft_keys_enabled(true);
             this->_update_soft_key_count();
         })
@@ -176,8 +176,6 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed(
             this->_dst_cell_layout_guides.emplace_back(layout_region_guide::make_shared());
         }
     }
-
-    this->_fixed_cell_layouts.reserve(key_count);
 
     ui::layout(safe_area_guide->layout_horizontal_range_source()->layout_min_value_source(),
                this->_collection_layout->preferred_layout_guide()->left(), [](float const &value) { return value; })
@@ -262,52 +260,9 @@ void sample::soft_keyboard::_update_soft_key_count() {
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         if (idx < layout_count) {
-            if (idx >= this->_fixed_cell_layouts.size()) {
-                auto const &src_guide_rect = this->_collection_layout->actual_cell_layout_guides().at(idx);
-                auto weak_dst_guide = to_weak(this->_src_cell_layout_guides.at(idx));
-
-                auto pool = observing::canceller_pool::make_shared();
-
-                src_guide_rect->left()
-                    ->observe([weak_dst_guide](float const &value) {
-                        if (auto const guide = weak_dst_guide.lock()) {
-                            guide->left()->set_value(value);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-                src_guide_rect->bottom()
-                    ->observe([weak_dst_guide](float const &value) {
-                        if (auto const guide = weak_dst_guide.lock()) {
-                            guide->bottom()->set_value(value);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-                src_guide_rect->right()
-                    ->observe([weak_dst_guide](float const &value) {
-                        if (auto const guide = weak_dst_guide.lock()) {
-                            guide->right()->set_value(value);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-                src_guide_rect->top()
-                    ->observe([weak_dst_guide](float const &value) {
-                        if (auto const guide = weak_dst_guide.lock()) {
-                            guide->top()->set_value(value);
-                        }
-                    })
-                    .sync()
-                    ->add_to(*pool);
-
-                this->_fixed_cell_layouts.emplace_back(std::move(pool));
-            }
-        } else {
-            if (layout_count < this->_fixed_cell_layouts.size()) {
-                this->_fixed_cell_layouts.resize(layout_count);
-            }
-            break;
+            auto const &region = this->_collection_layout->actual_cell_regions().at(idx);
+            auto const &guide = this->_src_cell_layout_guides.at(idx);
+            guide->set_region(region);
         }
     }
 }
