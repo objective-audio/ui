@@ -35,6 +35,7 @@ struct strings final {
 
    private:
     std::shared_ptr<ui::collection_layout> const _collection_layout;
+    std::string _collection_text;
     std::shared_ptr<ui::rect_plane> const _rect_plane;
 
     observing::value::holder_ptr<std::string> const _text;
@@ -42,8 +43,7 @@ struct strings final {
     observing::value::holder_ptr<std::optional<float>> const _line_height;
 
     std::size_t const _max_word_count = 0;
-    observing::canceller_pool _property_pool;
-    observing::canceller_pool _cell_region_pool;
+    observing::canceller_pool _pool;
 
     explicit strings(strings_args &&, std::shared_ptr<ui::font_atlas> const &);
 
@@ -53,7 +53,8 @@ struct strings final {
     strings &operator=(strings &&) = delete;
 
     void _prepare_observings();
-    void _update_layout();
+    void _update_collection_layout();
+    void _update_vertices();
     float _cell_height();
 };
 }  // namespace yas::ui

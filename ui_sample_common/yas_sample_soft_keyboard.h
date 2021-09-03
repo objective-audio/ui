@@ -39,7 +39,6 @@ struct soft_keyboard {
     std::shared_ptr<ui::layout_animator> _cell_interporator = nullptr;
     std::vector<std::shared_ptr<ui::layout_region_guide>> _src_cell_layout_guides;
     std::vector<std::shared_ptr<ui::layout_region_guide>> _dst_cell_layout_guides;
-    std::vector<observing::cancellable_ptr> _fixed_cell_layouts;
     observing::canceller_pool _dst_rect_pool;
 
     explicit soft_keyboard(std::shared_ptr<ui::font_atlas> const &, std::shared_ptr<ui::event_manager> const &,

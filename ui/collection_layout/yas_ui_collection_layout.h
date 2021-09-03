@@ -67,9 +67,8 @@ struct collection_layout {
     [[nodiscard]] ui::layout_order const &col_order() const;
     [[nodiscard]] observing::syncable observe_col_order(observing::caller<ui::layout_order>::handler_f &&);
 
-    [[nodiscard]] std::vector<std::shared_ptr<layout_region_guide>> const &actual_cell_layout_guides() const;
-    [[nodiscard]] observing::syncable observe_actual_cell_layout_guides(
-        std::function<void(std::vector<std::shared_ptr<layout_region_guide>> const &)> &&);
+    [[nodiscard]] std::vector<region> const &actual_cell_regions() const;
+    [[nodiscard]] observing::syncable observe_actual_cell_regions(std::function<void(std::vector<region> const &)> &&);
     [[nodiscard]] ui::region actual_frame() const;
     [[nodiscard]] std::shared_ptr<layout_region_source> actual_frame_layout_source() const;
 
@@ -94,7 +93,7 @@ struct collection_layout {
     observing::value::holder_ptr<ui::layout_order> const _row_order;
     observing::value::holder_ptr<ui::layout_order> const _col_order;
 
-    observing::value::holder_ptr<std::vector<std::shared_ptr<layout_region_guide>>> const _actual_cell_layout_guides;
+    observing::value::holder_ptr<std::vector<region>> const _actual_cell_regions;
     std::shared_ptr<layout_region_guide> const _actual_frame_layout_guide;
 
     std::shared_ptr<layout_region_guide> const _border_layout_guide;
@@ -107,8 +106,6 @@ struct collection_layout {
     collection_layout &operator=(collection_layout const &) = delete;
     collection_layout &operator=(collection_layout &&) = delete;
 
-    void _push_notify_waiting();
-    void _pop_notify_waiting();
     void _update_layout();
     std::optional<cell_location> _cell_location(std::size_t const cell_idx);
     ui::size _cell_size(std::size_t const idx);
