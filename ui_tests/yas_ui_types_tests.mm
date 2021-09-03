@@ -766,6 +766,14 @@ using namespace yas::ui;
     XCTAssertTrue(region == expected);
 }
 
+- (void)test_region_normalized {
+    region const region1{.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}};
+    region const region2{.origin = {4.0f, 6.0f}, .size = {-3.0f, -4.0f}};
+
+    XCTAssertTrue(region1.normalized() == region1);
+    XCTAssertTrue(region2.normalized() == region1);
+}
+
 - (void)test_uint_point_to_point {
     XCTAssertTrue(to_point(uint_point{.x = 1, .y = 2}) == (point{.x = 1.0f, .y = 2.0f}));
 }

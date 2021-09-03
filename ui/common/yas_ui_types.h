@@ -275,6 +275,8 @@ struct region {
 
     [[nodiscard]] static region const &zero();
     [[nodiscard]] static region zero_centered(ui::size const &);
+
+    [[nodiscard]] region normalized() const;
 };
 
 struct region_ranges_args final {

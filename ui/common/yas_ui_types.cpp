@@ -359,6 +359,13 @@ region region::zero_centered(ui::size const &size) {
     return region{.origin = {.x = -size.width * 0.5f, .y = -size.height * 0.5f}, .size = size};
 }
 
+region region::normalized() const {
+    auto const left = this->left();
+    auto const bottom = this->bottom();
+    return region{.origin = {.x = left, .y = bottom},
+                  .size = {.width = this->right() - left, .height = this->top() - bottom}};
+}
+
 region ui::make_region(region_ranges_args &&ranges) {
     return region{.origin = {std::move(ranges.horizontal.location), std::move(ranges.vertical.location)},
                   .size = {std::move(ranges.horizontal.length), std::move(ranges.vertical.length)}};
