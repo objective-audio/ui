@@ -140,6 +140,7 @@ void strings::_update_collection_layout() {
     this->_collection_text = collection_text;
     this->_collection_layout->set_lines(std::move(lines));
     this->_collection_layout->set_preferred_cell_count(collection_text.size());
+    this->_update_vertices();
 }
 
 void strings::_update_vertices() {
