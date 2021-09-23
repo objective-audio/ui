@@ -28,6 +28,10 @@ observing::endable renderer::observe_will_render(observing::caller<std::nullptr_
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
+observing::endable renderer::observe_did_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+    return this->_did_render_notifier->observe(std::move(handler));
+}
+
 void renderer::view_render() {
     if (!this->_system) {
         throw std::runtime_error("metal_system not found.");
@@ -40,6 +44,8 @@ void renderer::view_render() {
     }
 
     this->_post_render();
+
+    this->_did_render_notifier->notify(nullptr);
 }
 
 renderer::pre_render_result renderer::_pre_render() {
