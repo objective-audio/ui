@@ -20,15 +20,20 @@ renderer::renderer(std::shared_ptr<ui::system_for_renderer> const &system,
       _view_look(view_look),
       _root_node(root_node),
       _detector(detector),
-      _action_manager(action_manager),
-      _will_render_notifier(observing::notifier<std::nullptr_t>::make_shared()) {
+      _action_manager(action_manager) {
 }
 
 observing::endable renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+    if (!this->_will_render_notifier) {
+        this->_will_render_notifier = observing::notifier<std::nullptr_t>::make_shared();
+    }
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
 observing::endable renderer::observe_did_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+    if (!this->_did_render_notifier) {
+        this->_did_render_notifier = observing::notifier<std::nullptr_t>::make_shared();
+    }
     return this->_did_render_notifier->observe(std::move(handler));
 }
 
@@ -37,7 +42,9 @@ void renderer::view_render() {
         throw std::runtime_error("metal_system not found.");
     }
 
-    this->_will_render_notifier->notify(nullptr);
+    if (this->_will_render_notifier) {
+        this->_will_render_notifier->notify(nullptr);
+    }
 
     if (to_bool(this->_pre_render())) {
         this->_system->view_render(this->_detector, this->_view_look->projection_matrix(), this->_root_node);
@@ -45,7 +52,9 @@ void renderer::view_render() {
 
     this->_post_render();
 
-    this->_did_render_notifier->notify(nullptr);
+    if (this->_did_render_notifier) {
+        this->_did_render_notifier->notify(nullptr);
+    }
 }
 
 renderer::pre_render_result renderer::_pre_render() {
