@@ -38,8 +38,8 @@ struct renderer final : renderer_for_view {
     std::shared_ptr<ui::detector_for_renderer> const _detector;
     std::shared_ptr<ui::action_manager_for_renderer> const _action_manager;
 
-    observing::notifier_ptr<std::nullptr_t> const _will_render_notifier;
-    observing::notifier_ptr<std::nullptr_t> const _did_render_notifier;
+    observing::notifier_ptr<std::nullptr_t> _will_render_notifier;
+    observing::notifier_ptr<std::nullptr_t> _did_render_notifier;
 
     renderer(std::shared_ptr<ui::system_for_renderer> const &, std::shared_ptr<ui::view_look_for_renderer> const &,
              std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::detector_for_renderer> const &,
