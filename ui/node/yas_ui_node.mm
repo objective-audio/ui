@@ -574,7 +574,7 @@ void node::_remove_sub_node(node *sub_node) {
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_weak_parent.reset();
 
-    erase_if(this->_children, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
+    std::erase_if(this->_children, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
 
     sub_node->_notifier->notify(method::removed_from_super);
 

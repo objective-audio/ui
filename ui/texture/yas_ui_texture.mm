@@ -97,8 +97,9 @@ std::shared_ptr<texture_element> const &texture::add_draw_handler(uint_size size
 }
 
 void texture::remove_draw_handler(std::shared_ptr<texture_element> const &erase_element) {
-    erase_if(this->_texture_elements,
-             [&erase_element](std::shared_ptr<texture_element> const &element) { return element == erase_element; });
+    std::erase_if(this->_texture_elements, [&erase_element](std::shared_ptr<texture_element> const &element) {
+        return element == erase_element;
+    });
 }
 
 std::shared_ptr<metal_texture> const &texture::metal_texture() const {
