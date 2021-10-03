@@ -8,6 +8,7 @@
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_matrix.h>
 #include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_metal_texture.h>
 #include <ui/yas_ui_rect_plane.h>
 #include <ui/yas_ui_renderer.h>
@@ -32,7 +33,8 @@ render_target::render_target(std::shared_ptr<ui::scale_factor_observable> const 
                                          .usages = {texture_usage::shader_write},
                                          .pixel_format = pixel_format::bgra8_unorm},
                                         view_look)),
-      _mesh(ui::mesh::make_shared({}, _data->dynamic_mesh_data(), _dst_texture)) {
+      _mesh(ui::mesh::make_shared({}, this->_data->dynamic_vertex_data(), this->_data->dynamic_index_data(),
+                                  _dst_texture)) {
     this->_updates.flags.set();
     this->_render_pass_descriptor = objc_ptr_with_move_object([MTLRenderPassDescriptor new]);
 

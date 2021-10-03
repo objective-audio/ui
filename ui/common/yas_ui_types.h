@@ -43,8 +43,6 @@ class layout_value_target;
 class layout_point_target;
 class layout_range_target;
 class layout_region_target;
-class mesh_data;
-class dynamic_mesh_data;
 class mesh;
 class metal_encode_info;
 class metal_encoder;
@@ -325,6 +323,16 @@ enum class appearance {
 
 using draw_handler_f = std::function<void(CGContextRef const)>;
 using draw_pair_t = std::pair<uint_size, draw_handler_f>;
+
+template <typename T>
+struct mesh_data;
+template <typename T>
+struct dynamic_mesh_data;
+
+using mesh_vertex_data = mesh_data<vertex2d_t>;
+using mesh_index_data = mesh_data<index2d_t>;
+using dynamic_mesh_vertex_data = dynamic_mesh_data<vertex2d_t>;
+using dynamic_mesh_index_data = dynamic_mesh_data<index2d_t>;
 }  // namespace yas::ui
 
 namespace yas {

@@ -37,10 +37,12 @@ void batch::commit_render_meshes_building() {
 
     for (auto &mesh_info : this->_render_mesh_infos) {
         if (this->_building_type == batch_building_type::rebuild) {
-            auto render_mesh_data = dynamic_mesh_data::make_shared(
-                {.vertex_count = mesh_info.vertex_count, .index_count = mesh_info.index_count});
-            mesh_info.render_mesh->set_mesh_data(render_mesh_data);
-            mesh_info.mesh_data = std::move(render_mesh_data);
+            auto render_vertex_data = dynamic_mesh_vertex_data::make_shared(mesh_info.vertex_count);
+            auto render_index_data = dynamic_mesh_index_data::make_shared(mesh_info.index_count);
+            mesh_info.render_mesh->set_vertex_data(render_vertex_data);
+            mesh_info.render_mesh->set_index_data(render_index_data);
+            mesh_info.vertex_data = std::move(render_vertex_data);
+            mesh_info.index_data = std::move(render_index_data);
         } else if (this->_building_type == batch_building_type::overwrite) {
             mesh_info.vertex_idx = 0;
             mesh_info.index_idx = 0;
@@ -59,8 +61,9 @@ void batch::commit_render_meshes_building() {
         render_meshes.reserve(this->_render_mesh_infos.size());
         for (batch_render_mesh_info const &mesh_info : this->_render_mesh_infos) {
             auto const &render_mesh = mesh_info.render_mesh;
-            auto const &mesh_data = render_mesh->mesh_data();
-            if (mesh_data && mesh_data->data_exists()) {
+            auto const &vertex_data = render_mesh->vertex_data();
+            auto const &index_data = render_mesh->index_data();
+            if (vertex_data && vertex_data->data_exists() && index_data && index_data->data_exists()) {
                 render_meshes.push_back(render_mesh);
             }
         }

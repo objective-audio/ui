@@ -199,16 +199,17 @@ void metal_system::mesh_encode(std::shared_ptr<mesh> const &mesh, id<MTLRenderCo
         [encoder setRenderPipelineState:encode_info->pipelineStateWithoutTexture()];
     }
 
-    auto &mesh_data = mesh->mesh_data();
+    auto const &vertex_data = mesh->vertex_data();
+    auto const &index_data = mesh->index_data();
 
-    [encoder setVertexBuffer:mesh_data->vertexBuffer() offset:mesh_data->vertex_buffer_byte_offset() atIndex:0];
+    [encoder setVertexBuffer:vertex_data->mtlBuffer() offset:vertex_data->byte_offset() atIndex:0];
     [encoder setVertexBuffer:currentUniformsBuffer offset:this->_uniforms_buffer_offset atIndex:1];
 
     [encoder drawIndexedPrimitives:to_mtl_primitive_type(mesh->primitive_type())
-                        indexCount:mesh_data->index_count()
+                        indexCount:index_data->count()
                          indexType:MTLIndexTypeUInt32
-                       indexBuffer:mesh_data->indexBuffer()
-                 indexBufferOffset:mesh_data->index_buffer_byte_offset()];
+                       indexBuffer:index_data->mtlBuffer()
+                 indexBufferOffset:index_data->byte_offset()];
 
     this->_uniforms_buffer_offset += _uniforms2d_size;
     assert(this->_uniforms_buffer_offset + _uniforms2d_size < currentUniformsBuffer.length);

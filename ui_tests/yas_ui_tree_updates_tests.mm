@@ -32,11 +32,11 @@ using namespace yas::ui;
     XCTAssertTrue(updates.is_any_updated());
 
     updates = tree_updates{};
-    updates.mesh_updates.set(mesh_update_reason::mesh_data);
+    updates.vertex_data_updates.set(mesh_data_update_reason::data_content);
     XCTAssertTrue(updates.is_any_updated());
 
     updates = tree_updates{};
-    updates.mesh_data_updates.set(mesh_data_update_reason::data);
+    updates.index_data_updates.set(mesh_data_update_reason::data_content);
     XCTAssertTrue(updates.is_any_updated());
 }
 
@@ -62,11 +62,11 @@ using namespace yas::ui;
     XCTAssertFalse(updates.is_collider_updated());
 
     updates = tree_updates{};
-    updates.mesh_updates.set(mesh_update_reason::mesh_data);
+    updates.vertex_data_updates.set(mesh_data_update_reason::data_content);
     XCTAssertFalse(updates.is_collider_updated());
 
     updates = tree_updates{};
-    updates.mesh_data_updates.set(mesh_data_update_reason::data);
+    updates.index_data_updates.set(mesh_data_update_reason::data_content);
     XCTAssertFalse(updates.is_collider_updated());
 }
 
@@ -104,15 +104,11 @@ using namespace yas::ui;
     XCTAssertEqual(updates.batch_building_type(), batch_building_type::rebuild);
 
     updates = tree_updates{};
-    updates.mesh_updates.set(mesh_update_reason::mesh_data);
+    updates.vertex_data_updates.set(mesh_data_update_reason::data_count);
     XCTAssertEqual(updates.batch_building_type(), batch_building_type::rebuild);
 
     updates = tree_updates{};
-    updates.mesh_data_updates.set(mesh_data_update_reason::index_count);
-    XCTAssertEqual(updates.batch_building_type(), batch_building_type::rebuild);
-
-    updates = tree_updates{};
-    updates.mesh_data_updates.set(mesh_data_update_reason::vertex_count);
+    updates.index_data_updates.set(mesh_data_update_reason::data_count);
     XCTAssertEqual(updates.batch_building_type(), batch_building_type::rebuild);
 }
 
@@ -121,7 +117,8 @@ using namespace yas::ui;
     updates.node_updates.set({node_update_reason::collider, node_update_reason::geometry});
     updates.mesh_updates.set(
         {mesh_update_reason::primitive_type, mesh_update_reason::use_mesh_color, mesh_update_reason::color});
-    updates.mesh_data_updates.set({mesh_data_update_reason::data, mesh_data_update_reason::render_buffer});
+    updates.vertex_data_updates.set({mesh_data_update_reason::data_content, mesh_data_update_reason::render_buffer});
+    updates.index_data_updates.set({mesh_data_update_reason::data_content, mesh_data_update_reason::render_buffer});
 
     XCTAssertEqual(updates.batch_building_type(), batch_building_type::overwrite);
 }

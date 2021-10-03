@@ -41,7 +41,7 @@ using namespace yas::ui;
                                         font_atlas);
 
     XCTAssertTrue(strings);
-    XCTAssertEqual(strings->rect_plane()->data()->dynamic_mesh_data()->max_vertex_count(), 4);
+    XCTAssertEqual(strings->rect_plane()->data()->dynamic_vertex_data()->max_count(), 4);
     XCTAssertEqual(strings->text(), "test_text");
     XCTAssertEqual(strings->font_atlas(), font_atlas);
     XCTAssertEqual(strings->line_height(), 10.0f);

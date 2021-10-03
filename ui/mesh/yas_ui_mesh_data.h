@@ -1,87 +1,67 @@
 //
-//  yas_ui_mesh_data.h
+//  yas_ui_vertex_data.h
 //
 
 #pragma once
 
-#include <ui/yas_ui_mesh_data_types.h>
+#import <Metal/Metal.h>
 #include <ui/yas_ui_metal_setup_types.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
-@protocol MTLBuffer;
-
 namespace yas::ui {
+template <typename T>
 struct mesh_data {
     virtual ~mesh_data() = default;
 
-    [[nodiscard]] ui::vertex2d_t const *vertices() const;
-    [[nodiscard]] std::size_t vertex_count() const;
-    [[nodiscard]] ui::index2d_t const *indices() const;
-    [[nodiscard]] std::size_t index_count() const;
+    [[nodiscard]] T const *raw_data() const;
+    [[nodiscard]] std::size_t count() const;
 
     [[nodiscard]] bool data_exists() const;
 
-    virtual void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &);
+    virtual void write(std::function<void(std::vector<T> &)> const &);
 
-    virtual std::size_t vertex_buffer_byte_offset();
-    virtual std::size_t index_buffer_byte_offset();
-    id<MTLBuffer> vertexBuffer();
-    id<MTLBuffer> indexBuffer();
+    [[nodiscard]] virtual std::size_t byte_offset();
+    [[nodiscard]] id<MTLBuffer> mtlBuffer();
 
-    mesh_data_updates_t const &updates();
+    [[nodiscard]] mesh_data_updates_t const &updates();
     void update_render_buffer();
     void clear_updates();
 
-    ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
+    [[nodiscard]] ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
 
-    [[nodiscard]] static std::shared_ptr<mesh_data> make_shared(mesh_data_args &&);
+    [[nodiscard]] static std::shared_ptr<mesh_data> make_shared(std::size_t const);
 
    protected:
-    std::size_t _vertex_count;
-    std::size_t _index_count;
-    std::vector<ui::vertex2d_t> _vertices;
-    std::vector<ui::index2d_t> _indices;
+    std::size_t _count;
+    std::vector<T> _raw;
     std::size_t _dynamic_buffer_index = 0;
     mesh_data_updates_t _updates;
 
-    mesh_data(mesh_data_args &&);
+    mesh_data(std::size_t const);
 
     virtual std::size_t dynamic_buffer_count();
 
    private:
     std::shared_ptr<ui::metal_system> _metal_system = nullptr;
 
-    std::shared_ptr<ui::metal_buffer> _vertex_buffer;
-    std::shared_ptr<ui::metal_buffer> _index_buffer;
-
-    mesh_data(mesh_data const &) = delete;
-    mesh_data(mesh_data &&) = delete;
-    mesh_data &operator=(mesh_data const &) = delete;
-    mesh_data &operator=(mesh_data &&) = delete;
+    std::shared_ptr<ui::metal_buffer> _mtl_buffer;
 };
 
-struct dynamic_mesh_data final : mesh_data {
-    [[nodiscard]] std::size_t max_vertex_count() const;
-    [[nodiscard]] std::size_t max_index_count() const;
+template <typename T>
+struct dynamic_mesh_data final : mesh_data<T> {
+    [[nodiscard]] std::size_t max_count() const;
 
-    void set_vertex_count(std::size_t const);
-    void set_index_count(std::size_t const);
+    void set_count(std::size_t const);
 
-    void write(std::function<void(std::vector<ui::vertex2d_t> &, std::vector<ui::index2d_t> &)> const &func) override;
+    void write(std::function<void(std::vector<T> &)> const &) override;
 
-    std::size_t vertex_buffer_byte_offset() override;
-    std::size_t index_buffer_byte_offset() override;
+    [[nodiscard]] std::size_t byte_offset() override;
 
-    std::size_t dynamic_buffer_count() override;
+    [[nodiscard]] std::size_t dynamic_buffer_count() override;
 
-    [[nodiscard]] static std::shared_ptr<dynamic_mesh_data> make_shared(mesh_data_args &&);
+    [[nodiscard]] static std::shared_ptr<dynamic_mesh_data> make_shared(std::size_t const);
 
    private:
-    dynamic_mesh_data(mesh_data_args &&);
-
-    dynamic_mesh_data(dynamic_mesh_data const &) = delete;
-    dynamic_mesh_data(dynamic_mesh_data &&) = delete;
-    dynamic_mesh_data &operator=(dynamic_mesh_data const &) = delete;
-    dynamic_mesh_data &operator=(dynamic_mesh_data &&) = delete;
+    dynamic_mesh_data(std::size_t const);
 };
 }  // namespace yas::ui

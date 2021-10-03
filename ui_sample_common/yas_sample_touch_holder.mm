@@ -93,7 +93,8 @@ void sample::touch_holder::_insert_touch_node(uintptr_t const identifier,
     }
 
     auto const node = node::make_shared();
-    auto const mesh = mesh::make_shared({}, this->_rect_plane_data->dynamic_mesh_data(), this->_texture);
+    auto const mesh = mesh::make_shared({}, this->_rect_plane_data->dynamic_vertex_data(),
+                                        this->_rect_plane_data->dynamic_index_data(), this->_texture);
     node->set_mesh(mesh);
     node->set_scale({.v = 0.0f});
     node->set_alpha(0.0f);

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_texture_element.h>
 #include <ui/yas_ui_types.h>
@@ -15,7 +14,8 @@ namespace yas::ui {
 struct rect_plane_data final {
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 
-    void write(std::function<void(ui::vertex2d_rect_t *, ui::index2d_rect_t *)> const &);
+    void write_vertices(std::function<void(ui::vertex2d_rect_t *)> const &);
+    void write_indices(std::function<void(ui::index2d_rect_t *)> const &);
     void write_vertex(std::size_t const rect_idx, std::function<void(ui::vertex2d_rect_t &)> const &);
     void write_index(std::size_t const rect_idx, std::function<void(ui::index2d_rect_t &)> const &);
 
@@ -38,19 +38,22 @@ struct rect_plane_data final {
                                  tex_coords_transform_f);
     void clear_observers();
 
-    [[nodiscard]] std::shared_ptr<dynamic_mesh_data> const &dynamic_mesh_data();
+    [[nodiscard]] std::shared_ptr<dynamic_mesh_vertex_data> const &dynamic_vertex_data();
+    [[nodiscard]] std::shared_ptr<dynamic_mesh_index_data> const &dynamic_index_data();
 
-    [[nodiscard]] static std::shared_ptr<rect_plane_data> make_shared(
-        std::shared_ptr<ui::dynamic_mesh_data> &&mesh_data);
+    [[nodiscard]] static std::shared_ptr<rect_plane_data> make_shared(std::shared_ptr<ui::dynamic_mesh_vertex_data> &&,
+                                                                      std::shared_ptr<ui::dynamic_mesh_index_data> &&);
     [[nodiscard]] static std::shared_ptr<rect_plane_data> make_shared(std::size_t const max_rect_count);
     [[nodiscard]] static std::shared_ptr<rect_plane_data> make_shared(std::size_t const max_rect_count,
                                                                       std::size_t const max_index_count);
 
    private:
-    std::shared_ptr<ui::dynamic_mesh_data> _dynamic_mesh_data;
+    std::shared_ptr<dynamic_mesh_vertex_data> _dynamic_vertex_data;
+    std::shared_ptr<dynamic_mesh_index_data> _dynamic_index_data;
     std::vector<observing::cancellable_ptr> _element_cancellers;
 
-    explicit rect_plane_data(std::shared_ptr<ui::dynamic_mesh_data> &&mesh_data);
+    explicit rect_plane_data(std::shared_ptr<ui::dynamic_mesh_vertex_data> &&,
+                             std::shared_ptr<ui::dynamic_mesh_index_data> &&);
 
     rect_plane_data(rect_plane_data const &) = delete;
     rect_plane_data(rect_plane_data &&) = delete;

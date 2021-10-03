@@ -10,6 +10,7 @@
 #include <ui/yas_ui_color.h>
 #include <ui/yas_ui_matrix.h>
 #include <ui/yas_ui_mesh.h>
+#include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_render_info.h>
 #include <ui/yas_ui_render_target.h>
 
@@ -368,8 +369,12 @@ void node::fetch_updates(tree_updates &tree_updates) {
         if (auto const &mesh = this->_mesh->value()) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
-            if (auto const &mesh_data = mesh->mesh_data()) {
-                tree_updates.mesh_data_updates.flags |= mesh_data->updates().flags;
+            if (auto const &vertex_data = mesh->vertex_data()) {
+                tree_updates.vertex_data_updates.flags |= vertex_data->updates().flags;
+            }
+
+            if (auto const &index_data = mesh->index_data()) {
+                tree_updates.index_data_updates.flags |= index_data->updates().flags;
             }
         }
 
@@ -382,8 +387,12 @@ void node::fetch_updates(tree_updates &tree_updates) {
 
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
-            if (auto &mesh_data = mesh->mesh_data()) {
-                tree_updates.mesh_data_updates.flags |= mesh_data->updates().flags;
+            if (auto const &vertex_data = mesh->vertex_data()) {
+                tree_updates.vertex_data_updates.flags |= vertex_data->updates().flags;
+            }
+
+            if (auto const &index_data = mesh->index_data()) {
+                tree_updates.index_data_updates.flags |= index_data->updates().flags;
             }
 
             if (auto &effect = renderable->effect()) {
