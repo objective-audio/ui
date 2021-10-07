@@ -19,9 +19,10 @@ using namespace yas::ui;
 
 #pragma mark - mesh
 
-mesh::mesh(mesh_args &&args, std::shared_ptr<ui::mesh_data> const &mesh_data,
-           std::shared_ptr<ui::texture> const &texture)
-    : _mesh_data(mesh_data),
+mesh::mesh(mesh_args &&args, std::shared_ptr<mesh_vertex_data> const &vertex_data,
+           std::shared_ptr<mesh_index_data> const &index_data, std::shared_ptr<ui::texture> const &texture)
+    : _vertex_data(vertex_data),
+      _index_data(index_data),
       _texture(texture),
       _primitive_type(args.primitive_type),
       _color(args.color),
@@ -29,8 +30,12 @@ mesh::mesh(mesh_args &&args, std::shared_ptr<ui::mesh_data> const &mesh_data,
     this->_updates.flags.set();
 }
 
-std::shared_ptr<mesh_data> const &mesh::mesh_data() const {
-    return this->_mesh_data;
+std::shared_ptr<mesh_vertex_data> const &mesh::vertex_data() const {
+    return this->_vertex_data;
+}
+
+std::shared_ptr<mesh_index_data> const &mesh::index_data() const {
+    return this->_index_data;
 }
 
 std::shared_ptr<texture> const &mesh::texture() const {
@@ -49,11 +54,19 @@ primitive_type const &mesh::primitive_type() const {
     return this->_primitive_type;
 }
 
-void mesh::set_mesh_data(std::shared_ptr<ui::mesh_data> const &mesh_data) {
-    if (this->_mesh_data != mesh_data) {
-        this->_mesh_data = std::move(mesh_data);
+void mesh::set_vertex_data(std::shared_ptr<mesh_vertex_data> const &data) {
+    if (this->_vertex_data != data) {
+        this->_vertex_data = data;
 
-        this->_updates.set(mesh_update_reason::mesh_data);
+        this->_updates.set(mesh_update_reason::vertex_data);
+    }
+}
+
+void mesh::set_index_data(std::shared_ptr<mesh_index_data> const &data) {
+    if (this->_index_data != data) {
+        this->_index_data = data;
+
+        this->_updates.set(mesh_update_reason::index_data);
     }
 }
 
@@ -113,14 +126,18 @@ void mesh::set_matrix(simd::float4x4 const &matrix) {
 
 std::size_t mesh::render_vertex_count() {
     if (this->is_rendering_color_exists()) {
-        return this->_mesh_data->vertex_count();
+        if (this->_vertex_data && this->_index_data) {
+            return this->_vertex_data->count();
+        }
     }
     return 0;
 }
 
 std::size_t mesh::render_index_count() {
     if (this->is_rendering_color_exists()) {
-        return this->_mesh_data->index_count();
+        if (this->_vertex_data && this->_index_data) {
+            return this->_index_data->count();
+        }
     }
     return 0;
 }
@@ -130,8 +147,9 @@ mesh_updates_t const &mesh::updates() {
 }
 
 bool mesh::pre_render() {
-    if (this->_mesh_data) {
-        this->_mesh_data->update_render_buffer();
+    if (this->_vertex_data && this->_index_data) {
+        this->_vertex_data->update_render_buffer();
+        this->_index_data->update_render_buffer();
         return this->is_rendering_color_exists();
     }
 
@@ -139,32 +157,22 @@ bool mesh::pre_render() {
 }
 
 void mesh::batch_render(batch_render_mesh_info &mesh_info, batch_building_type const building_type) {
-    auto const next_vertex_idx = mesh_info.vertex_idx + this->_mesh_data->vertex_count();
-    auto const next_index_idx = mesh_info.index_idx + this->_mesh_data->index_count();
+    auto const next_vertex_idx = mesh_info.vertex_idx + this->_vertex_data->count();
+    auto const next_index_idx = mesh_info.index_idx + this->_index_data->count();
 
     assert(next_vertex_idx <= mesh_info.vertex_count);
     assert(next_index_idx <= mesh_info.index_count);
 
     if (this->_needs_write(building_type)) {
-        mesh_info.mesh_data->write([&src_mesh_data = this->_mesh_data, &matrix = this->_matrix, &color = this->_color,
-                                    is_use_mesh_color = this->_use_mesh_color,
-                                    &mesh_info](auto &vertices, auto &indices) {
-            auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
+        mesh_info.vertex_data->write([&src_vertex_data = this->_vertex_data, &matrix = this->_matrix,
+                                      &color = this->_color, is_use_mesh_color = this->_use_mesh_color,
+                                      &mesh_info](auto &vertices) {
             auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
 
-            auto *dst_indices = &indices[dst_index_offset];
-            auto const *src_indices = src_mesh_data->indices();
-
-            auto each = make_fast_each(src_mesh_data->index_count());
-            while (yas_each_next(each)) {
-                auto const &idx = yas_each_index(each);
-                dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
-            }
-
             auto *dst_vertices = &vertices[dst_vertex_offset];
-            auto const *src_vertices = src_mesh_data->vertices();
+            auto const *src_vertices = src_vertex_data->raw_data();
 
-            each = make_fast_each(src_mesh_data->vertex_count());
+            auto each = make_fast_each(src_vertex_data->count());
             while (yas_each_next(each)) {
                 auto &idx = yas_each_index(each);
                 auto &dst_vertex = dst_vertices[idx];
@@ -172,6 +180,20 @@ void mesh::batch_render(batch_render_mesh_info &mesh_info, batch_building_type c
                 dst_vertex.position = to_float2(matrix * to_float4(src_vertex.position));
                 dst_vertex.tex_coord = src_vertex.tex_coord;
                 dst_vertex.color = is_use_mesh_color ? src_vertex.color * color : color;
+            }
+        });
+
+        mesh_info.index_data->write([&src_index_data = this->_index_data, &mesh_info](auto &indices) {
+            auto const dst_index_offset = static_cast<index2d_t>(mesh_info.index_idx);
+            auto const dst_vertex_offset = static_cast<index2d_t>(mesh_info.vertex_idx);
+
+            auto *dst_indices = &indices[dst_index_offset];
+            auto const *src_indices = src_index_data->raw_data();
+
+            auto each = make_fast_each(src_index_data->count());
+            while (yas_each_next(each)) {
+                auto const &idx = yas_each_index(each);
+                dst_indices[idx] = src_indices[idx] + dst_vertex_offset;
             }
         });
     }
@@ -187,14 +209,23 @@ bool mesh::is_rendering_color_exists() {
 void mesh::clear_updates() {
     this->_updates.flags.reset();
 
-    if (this->_mesh_data) {
-        this->_mesh_data->clear_updates();
+    if (this->_vertex_data) {
+        this->_vertex_data->clear_updates();
+    }
+
+    if (this->_index_data) {
+        this->_index_data->clear_updates();
     }
 }
 
 setup_metal_result mesh::metal_setup(std::shared_ptr<metal_system> const &system) {
-    if (this->_mesh_data) {
-        if (auto ul = unless(this->_mesh_data->metal_setup(system))) {
+    if (this->_vertex_data) {
+        if (auto ul = unless(this->_vertex_data->metal_setup(system))) {
+            return ul.value;
+        }
+    }
+    if (this->_index_data) {
+        if (auto ul = unless(this->_index_data->metal_setup(system))) {
             return ul.value;
         }
     }
@@ -207,7 +238,11 @@ setup_metal_result mesh::metal_setup(std::shared_ptr<metal_system> const &system
 }
 
 bool mesh::_is_mesh_data_exists() {
-    return this->_mesh_data && this->_mesh_data->index_count() > 0 && this->_mesh_data->vertex_count() > 0;
+    if (this->_vertex_data && this->_vertex_data->count() > 0 && this->_index_data && this->_index_data->count()) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool mesh::_needs_write(batch_building_type const &building_type) {
@@ -223,10 +258,18 @@ bool mesh::_needs_write(batch_building_type const &building_type) {
             return true;
         }
 
-        if (this->_mesh_data) {
-            static mesh_data_updates_t const _mesh_data_overwrite_updates = {mesh_data_update_reason::data};
+        if (this->_vertex_data) {
+            static mesh_data_updates_t const _overwrite_updates = {mesh_data_update_reason::data_content};
 
-            if (this->_mesh_data->updates().and_test(_mesh_data_overwrite_updates)) {
+            if (this->_vertex_data->updates().and_test(_overwrite_updates)) {
+                return true;
+            }
+        }
+
+        if (this->_index_data) {
+            static mesh_data_updates_t const _overwrite_updates = {mesh_data_update_reason::data_content};
+
+            if (this->_index_data->updates().and_test(_overwrite_updates)) {
                 return true;
             }
         }
@@ -236,10 +279,11 @@ bool mesh::_needs_write(batch_building_type const &building_type) {
 }
 
 std::shared_ptr<mesh> mesh::make_shared() {
-    return make_shared({}, nullptr, nullptr);
+    return make_shared({}, nullptr, nullptr, nullptr);
 }
 
-std::shared_ptr<mesh> mesh::make_shared(mesh_args &&args, std::shared_ptr<ui::mesh_data> const &mesh_data,
+std::shared_ptr<mesh> mesh::make_shared(mesh_args &&args, std::shared_ptr<mesh_vertex_data> const &vertex_data,
+                                        std::shared_ptr<mesh_index_data> const &index_data,
                                         std::shared_ptr<ui::texture> const &texture) {
-    return std::shared_ptr<mesh>(new mesh{std::move(args), mesh_data, texture});
+    return std::shared_ptr<mesh>(new mesh{std::move(args), vertex_data, index_data, texture});
 }

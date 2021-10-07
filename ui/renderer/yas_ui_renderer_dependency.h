@@ -12,7 +12,8 @@
 
 namespace yas::ui {
 enum class mesh_update_reason : std::size_t {
-    mesh_data,
+    vertex_data,
+    index_data,
     texture,
     primitive_type,
     color,
@@ -25,9 +26,8 @@ enum class mesh_update_reason : std::size_t {
 using mesh_updates_t = flagset<mesh_update_reason>;
 
 enum class mesh_data_update_reason : std::size_t {
-    data,
-    vertex_count,
-    index_count,
+    data_content,
+    data_count,
     render_buffer,
 
     count,
@@ -83,7 +83,8 @@ enum class batch_building_type {
 struct tree_updates {
     node_updates_t node_updates;
     mesh_updates_t mesh_updates;
-    mesh_data_updates_t mesh_data_updates;
+    mesh_data_updates_t vertex_data_updates;
+    mesh_data_updates_t index_data_updates;
     render_target_updates_t render_target_updates;
     effect_updates_t effect_updates;
 

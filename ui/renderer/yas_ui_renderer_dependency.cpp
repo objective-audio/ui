@@ -11,8 +11,9 @@ using namespace yas;
 using namespace yas::ui;
 
 bool tree_updates::is_any_updated() const {
-    return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any() ||
-           this->render_target_updates.flags.any() || this->effect_updates.flags.any();
+    return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->vertex_data_updates.flags.any() ||
+           this->index_data_updates.flags.any() || this->render_target_updates.flags.any() ||
+           this->effect_updates.flags.any();
 }
 
 bool tree_updates::is_collider_updated() const {
@@ -30,17 +31,18 @@ batch_building_type tree_updates::batch_building_type() const {
     static node_updates_t const _node_rebuild_updates = {ui::node_update_reason::mesh, ui::node_update_reason::enabled,
                                                          ui::node_update_reason::children,
                                                          ui::node_update_reason::batch};
-    static mesh_updates_t const _mesh_rebuild_updates = {ui::mesh_update_reason::texture,
-                                                         ui::mesh_update_reason::mesh_data};
-    static mesh_data_updates_t const _mesh_data_rebuild_updates = {ui::mesh_data_update_reason::index_count,
-                                                                   ui::mesh_data_update_reason::vertex_count};
+    static mesh_updates_t const _mesh_rebuild_updates = {
+        ui::mesh_update_reason::texture, ui::mesh_update_reason::vertex_data, ui::mesh_update_reason::index_data};
+    static mesh_data_updates_t const _vertex_data_rebuild_updates = {ui::mesh_data_update_reason::data_count};
 
     if (this->node_updates.and_test(_node_rebuild_updates) || this->mesh_updates.and_test(_mesh_rebuild_updates) ||
-        this->mesh_data_updates.and_test(_mesh_data_rebuild_updates)) {
+        this->vertex_data_updates.and_test(_vertex_data_rebuild_updates) ||
+        this->index_data_updates.and_test(_vertex_data_rebuild_updates)) {
         return ui::batch_building_type::rebuild;
     }
 
-    if (this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->mesh_data_updates.flags.any()) {
+    if (this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->vertex_data_updates.flags.any() ||
+        this->index_data_updates.flags.any()) {
         return ui::batch_building_type::overwrite;
     }
 
@@ -81,12 +83,10 @@ std::string yas::to_string(ui::batch_building_type const &type) {
 
 std::string yas::to_string(ui::mesh_data_update_reason const &reason) {
     switch (reason) {
-        case ui::mesh_data_update_reason::data:
-            return "data";
-        case ui::mesh_data_update_reason::vertex_count:
-            return "vertex_count";
-        case ui::mesh_data_update_reason::index_count:
-            return "index_count";
+        case ui::mesh_data_update_reason::data_content:
+            return "data_content";
+        case ui::mesh_data_update_reason::data_count:
+            return "data_count";
         case ui::mesh_data_update_reason::render_buffer:
             return "render_buffer";
         case ui::mesh_data_update_reason::count:
@@ -96,8 +96,10 @@ std::string yas::to_string(ui::mesh_data_update_reason const &reason) {
 
 std::string yas::to_string(ui::mesh_update_reason const &reason) {
     switch (reason) {
-        case ui::mesh_update_reason::mesh_data:
-            return "mesh_data";
+        case ui::mesh_update_reason::vertex_data:
+            return "vertex_data";
+        case ui::mesh_update_reason::index_data:
+            return "index_data";
         case ui::mesh_update_reason::texture:
             return "texture";
         case ui::mesh_update_reason::primitive_type:

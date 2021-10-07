@@ -27,13 +27,14 @@ using namespace yas::ui;
     auto plane = rect_plane::make_shared(2);
 
     XCTAssertTrue(plane);
-    XCTAssertTrue(plane->data()->dynamic_mesh_data());
+    XCTAssertTrue(plane->data()->dynamic_vertex_data());
+    XCTAssertTrue(plane->data()->dynamic_index_data());
     XCTAssertTrue(plane->node()->mesh());
 
-    XCTAssertEqual(plane->data()->dynamic_mesh_data()->vertex_count(), 2 * 4);
-    XCTAssertEqual(plane->data()->dynamic_mesh_data()->index_count(), 2 * 6);
+    XCTAssertEqual(plane->data()->dynamic_vertex_data()->count(), 2 * 4);
+    XCTAssertEqual(plane->data()->dynamic_index_data()->count(), 2 * 6);
 
-    auto const indices = plane->data()->dynamic_mesh_data()->indices();
+    auto const indices = plane->data()->dynamic_index_data()->raw_data();
 
     XCTAssertEqual(indices[0], 0);
     XCTAssertEqual(indices[1], 2);
@@ -53,7 +54,7 @@ using namespace yas::ui;
 - (void)test_set_index {
     auto plane = rect_plane::make_shared(2);
 
-    auto const indices = plane->data()->dynamic_mesh_data()->indices();
+    auto const indices = plane->data()->dynamic_index_data()->raw_data();
 
     plane->data()->set_rect_index(0, 1);
 
@@ -76,7 +77,7 @@ using namespace yas::ui;
 
 - (void)test_set_indices {
     auto plane = rect_plane::make_shared(2);
-    auto const indices = plane->data()->dynamic_mesh_data()->indices();
+    auto const indices = plane->data()->dynamic_index_data()->raw_data();
 
     plane->data()->set_rect_indices({{0, 1}, {1, 0}});
 
@@ -97,7 +98,7 @@ using namespace yas::ui;
 
 - (void)test_set_vertex_by_region {
     auto plane = rect_plane::make_shared(2);
-    auto vertices = plane->data()->dynamic_mesh_data()->vertices();
+    auto vertices = plane->data()->dynamic_vertex_data()->raw_data();
 
     plane->data()->set_rect_position({.origin = {1.0f, 2.0f}, .size = {3.0f, 4.0f}}, 0);
 
@@ -124,7 +125,7 @@ using namespace yas::ui;
 
 - (void)test_set_tex_coords {
     auto plane = rect_plane::make_shared(2);
-    auto vertices = plane->data()->dynamic_mesh_data()->vertices();
+    auto vertices = plane->data()->dynamic_vertex_data()->raw_data();
 
     plane->data()->set_rect_tex_coords(uint_region{10, 20, 30, 40}, 0);
 
@@ -151,7 +152,7 @@ using namespace yas::ui;
 
 - (void)test_set_rect_color_with_float4 {
     auto plane_data = rect_plane_data::make_shared(1);
-    auto vertices = plane_data->dynamic_mesh_data()->vertices();
+    auto vertices = plane_data->dynamic_vertex_data()->raw_data();
 
     plane_data->set_rect_color(simd::float4{0.1f, 0.2f, 0.3f, 0.4f}, 0);
 
@@ -176,7 +177,7 @@ using namespace yas::ui;
 
 - (void)test_set_rect_color_with_ui_color {
     auto plane_data = rect_plane_data::make_shared(1);
-    auto vertices = plane_data->dynamic_mesh_data()->vertices();
+    auto vertices = plane_data->dynamic_vertex_data()->raw_data();
 
     plane_data->set_rect_color(color{0.1f, 0.2f, 0.3f}, 0.4f, 0);
 
@@ -201,7 +202,7 @@ using namespace yas::ui;
 
 - (void)test_set_vertex_by_data {
     auto plane = rect_plane::make_shared(2);
-    auto vertices = plane->data()->dynamic_mesh_data()->vertices();
+    auto vertices = plane->data()->dynamic_vertex_data()->raw_data();
 
     vertex2d_t in_data[4];
 
@@ -353,11 +354,11 @@ using namespace yas::ui;
 - (void)test_set_rect_count {
     auto plane_data = rect_plane_data::make_shared(4);
 
-    XCTAssertEqual(plane_data->dynamic_mesh_data()->index_count(), 4 * 6);
+    XCTAssertEqual(plane_data->dynamic_index_data()->count(), 4 * 6);
 
     plane_data->set_rect_count(2);
 
-    XCTAssertEqual(plane_data->dynamic_mesh_data()->index_count(), 2 * 6);
+    XCTAssertEqual(plane_data->dynamic_index_data()->count(), 2 * 6);
 }
 
 - (void)test_max_rect_count {
@@ -372,7 +373,7 @@ using namespace yas::ui;
 
 - (void)test_write_vertex {
     auto plane_data = rect_plane_data::make_shared(1);
-    auto vertices = plane_data->dynamic_mesh_data()->vertices();
+    auto vertices = plane_data->dynamic_vertex_data()->raw_data();
 
     plane_data->write_vertex(0, [](vertex2d_rect_t &rects) {
         rects.v[0].position.x = 0.1f;
@@ -449,7 +450,7 @@ using namespace yas::ui;
 
 - (void)test_observe_tex_coords {
     auto plane_data = rect_plane_data::make_shared(1);
-    auto vertices = plane_data->dynamic_mesh_data()->vertices();
+    auto vertices = plane_data->dynamic_vertex_data()->raw_data();
     auto element = texture_element::make_shared(std::make_pair(uint_size::zero(), [](CGContextRef const) {}));
 
     element->set_tex_coords(uint_region{.origin = {1, 2}, .size = {3, 4}});
@@ -492,7 +493,7 @@ using namespace yas::ui;
 
 - (void)test_observe_tex_coords_with_transformer {
     auto plane_data = rect_plane_data::make_shared(1);
-    auto vertices = plane_data->dynamic_mesh_data()->vertices();
+    auto vertices = plane_data->dynamic_vertex_data()->raw_data();
     auto element = texture_element::make_shared(std::make_pair(uint_size::zero(), [](CGContextRef const) {}));
 
     element->set_tex_coords(uint_region{.origin = {1, 2}, .size = {3, 4}});

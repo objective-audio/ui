@@ -118,11 +118,11 @@ using namespace yas::ui;
 
         stackable->push_encode_info(encode_info);
 
-        auto mesh1 = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
+        auto mesh1 = mesh::make_shared({}, mesh_vertex_data::make_shared(1), mesh_index_data::make_shared(1), nullptr);
         mesh1->metal_setup(metal_system);
         encode_info->append_mesh(mesh1);
 
-        auto mesh2 = mesh::make_shared({}, mesh_data::make_shared({.vertex_count = 1, .index_count = 1}), nullptr);
+        auto mesh2 = mesh::make_shared({}, mesh_vertex_data::make_shared(1), mesh_index_data::make_shared(1), nullptr);
         auto texture = texture::make_shared({.point_size = {1, 1}}, view_look);
         mesh2->set_texture(texture);
         mesh2->metal_setup(metal_system);
