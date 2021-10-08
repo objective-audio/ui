@@ -49,16 +49,18 @@ using namespace yas::ui;
 
     batch_renderable->begin_render_meshes_building(batch_building_type::rebuild);
 
-    auto mesh1 = mesh::make_shared({}, mesh_vertex_data::make_shared(1), mesh_index_data::make_shared(1), nullptr);
-    auto mesh2 = mesh::make_shared({}, mesh_vertex_data::make_shared(1), mesh_index_data::make_shared(1), nullptr);
+    auto mesh1 =
+        mesh::make_shared({}, static_mesh_vertex_data::make_shared(1), static_mesh_index_data::make_shared(1), nullptr);
+    auto mesh2 =
+        mesh::make_shared({}, static_mesh_vertex_data::make_shared(1), static_mesh_index_data::make_shared(1), nullptr);
     batch_encodable->append_mesh(mesh1);
     batch_encodable->append_mesh(mesh2);
 
     auto const metal_system = metal_system::make_shared(device.object(), nil);
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
 
-    auto const vertex_data3 = mesh_vertex_data::make_shared(1);
-    auto const index_data3 = mesh_index_data::make_shared(1);
+    auto const vertex_data3 = static_mesh_vertex_data::make_shared(1);
+    auto const index_data3 = static_mesh_index_data::make_shared(1);
 
     auto const mesh3 = mesh::make_shared({}, vertex_data3, index_data3, nullptr);
     auto texture3 = texture::make_shared(texture_args{}, view_look);
@@ -95,24 +97,24 @@ using namespace yas::ui;
     auto batch_renderable = renderable_batch::cast(batch);
     auto batch_encodable = render_encodable::cast(batch);
 
-    auto vertex_data1 = mesh_vertex_data::make_shared(1);
-    auto index_data1 = mesh_index_data::make_shared(1);
-    vertex_data1->write([](std::vector<vertex2d_t> &vertices) {
+    auto vertex_data1 = static_mesh_vertex_data::make_shared(1);
+    auto index_data1 = static_mesh_index_data::make_shared(1);
+    vertex_data1->write_once([](std::vector<vertex2d_t> &vertices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 1.0f;
         vertex.position.y = 1.0f;
         vertex.tex_coord.x = 1.0f;
         vertex.tex_coord.y = 1.0f;
     });
-    index_data1->write([](std::vector<index2d_t> &indices) {
+    index_data1->write_once([](std::vector<index2d_t> &indices) {
         auto &index = indices.at(0);
         index = 1;
     });
     auto mesh1 = mesh::make_shared({.color = {0.5f, 0.5f, 0.5f, 0.5f}}, vertex_data1, index_data1, nullptr);
 
-    auto vertex_data2 = mesh_vertex_data::make_shared(1);
-    auto index_data2 = mesh_index_data::make_shared(1);
-    vertex_data2->write([](std::vector<vertex2d_t> &vertices) {
+    auto vertex_data2 = static_mesh_vertex_data::make_shared(1);
+    auto index_data2 = static_mesh_index_data::make_shared(1);
+    vertex_data2->write_once([](std::vector<vertex2d_t> &vertices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 2.0f;
         vertex.position.y = 2.0f;
@@ -123,7 +125,7 @@ using namespace yas::ui;
         vertex.color[2] = 2.0f;
         vertex.color[3] = 2.0f;
     });
-    index_data2->write([](std::vector<index2d_t> &indices) {
+    index_data2->write_once([](std::vector<index2d_t> &indices) {
         auto &index = indices.at(0);
         index = 1;
     });
@@ -236,8 +238,8 @@ using namespace yas::ui;
     auto batch_renderable = renderable_batch::cast(batch);
     auto batch_encodable = render_encodable::cast(batch);
 
-    auto const vertex_data = mesh_vertex_data::make_shared(1);
-    auto const index_data = mesh_index_data::make_shared(1);
+    auto const vertex_data = static_mesh_vertex_data::make_shared(1);
+    auto const index_data = static_mesh_index_data::make_shared(1);
     auto mesh = mesh::make_shared({}, vertex_data, index_data, nullptr);
 
     mesh->metal_setup(metal_system);

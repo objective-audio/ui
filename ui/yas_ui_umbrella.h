@@ -13,6 +13,7 @@
 #include <ui/yas_ui_collection_layout.h>
 #include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_detector.h>
+#include <ui/yas_ui_dynamic_mesh_data.h>
 #include <ui/yas_ui_effect.h>
 #include <ui/yas_ui_event_manager.h>
 #include <ui/yas_ui_font_atlas.h>
@@ -38,6 +39,7 @@
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_shared_types.h>
 #include <ui/yas_ui_standard.h>
+#include <ui/yas_ui_static_mesh_data.h>
 #include <ui/yas_ui_strings.h>
 #include <ui/yas_ui_texture.h>
 #include <ui/yas_ui_view_look.h>

@@ -327,10 +327,14 @@ using draw_pair_t = std::pair<uint_size, draw_handler_f>;
 template <typename T>
 struct mesh_data;
 template <typename T>
+struct static_mesh_data;
+template <typename T>
 struct dynamic_mesh_data;
 
 using mesh_vertex_data = mesh_data<vertex2d_t>;
 using mesh_index_data = mesh_data<index2d_t>;
+using static_mesh_vertex_data = static_mesh_data<vertex2d_t>;
+using static_mesh_index_data = static_mesh_data<index2d_t>;
 using dynamic_mesh_vertex_data = dynamic_mesh_data<vertex2d_t>;
 using dynamic_mesh_index_data = dynamic_mesh_data<index2d_t>;
 }  // namespace yas::ui

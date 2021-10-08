@@ -406,7 +406,8 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertFalse(renderable_node::cast(node)->is_rendering_color_exists());
 
-    auto mesh = mesh::make_shared({}, mesh_vertex_data::make_shared(1), mesh_index_data::make_shared(1), nullptr);
+    auto mesh =
+        mesh::make_shared({}, static_mesh_vertex_data::make_shared(1), static_mesh_index_data::make_shared(1), nullptr);
     node->set_mesh(mesh);
 
     XCTAssertTrue(renderable_node::cast(node)->is_rendering_color_exists());
@@ -432,12 +433,12 @@ struct test_render_encoder : render_encodable {
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto const root_vetex_data = mesh_vertex_data::make_shared(1);
-    auto const root_index_data = mesh_index_data::make_shared(1);
+    auto const root_vetex_data = static_mesh_vertex_data::make_shared(1);
+    auto const root_index_data = static_mesh_index_data::make_shared(1);
     auto const root_mesh = mesh::make_shared({}, root_vetex_data, root_index_data, nullptr);
 
-    auto const sub_vertex_data = mesh_vertex_data::make_shared(1);
-    auto const sub_index_data = mesh_index_data::make_shared(1);
+    auto const sub_vertex_data = static_mesh_vertex_data::make_shared(1);
+    auto const sub_index_data = static_mesh_index_data::make_shared(1);
     auto const sub_mesh = mesh::make_shared({}, sub_vertex_data, sub_index_data, nullptr);
 
     auto root_node = node::make_shared();
@@ -464,12 +465,12 @@ struct test_render_encoder : render_encodable {
     auto batch_node = node::make_shared();
     auto batch_sub_node = node::make_shared();
 
-    auto const vetex_data = mesh_vertex_data::make_shared(1);
-    auto const index_data = mesh_index_data::make_shared(1);
-    auto const sub_vetex_data = mesh_vertex_data::make_shared(1);
-    auto const sub_index_data = mesh_index_data::make_shared(1);
-    auto const batch_sub_vetex_data = mesh_vertex_data::make_shared(1);
-    auto const batch_sub_index_data = mesh_index_data::make_shared(1);
+    auto const vetex_data = static_mesh_vertex_data::make_shared(1);
+    auto const index_data = static_mesh_index_data::make_shared(1);
+    auto const sub_vetex_data = static_mesh_vertex_data::make_shared(1);
+    auto const sub_index_data = static_mesh_index_data::make_shared(1);
+    auto const batch_sub_vetex_data = static_mesh_vertex_data::make_shared(1);
+    auto const batch_sub_index_data = static_mesh_index_data::make_shared(1);
 
     node->set_collider(collider::make_shared(shape::make_shared(circle_shape{})));
     auto const mesh = mesh::make_shared({}, vetex_data, index_data, nullptr);
@@ -1167,14 +1168,14 @@ struct test_render_encoder : render_encodable {
     auto mesh_node1 = node::make_shared();
     batch_node->add_sub_node(mesh_node1);
 
-    auto const mesh_vertex_data1 = mesh_vertex_data::make_shared(1);
-    mesh_vertex_data1->write([](std::vector<vertex2d_t> &vertices) {
+    auto const mesh_vertex_data1 = static_mesh_vertex_data::make_shared(1);
+    mesh_vertex_data1->write_once([](std::vector<vertex2d_t> &vertices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 1.0f;
         vertex.position.y = 2.0f;
     });
-    auto const mesh_index_data1 = mesh_index_data::make_shared(1);
-    mesh_index_data1->write([](std::vector<index2d_t> &indices) {
+    auto const mesh_index_data1 = static_mesh_index_data::make_shared(1);
+    mesh_index_data1->write_once([](std::vector<index2d_t> &indices) {
         auto &index = indices.at(0);
         index = 0;
     });
@@ -1190,16 +1191,16 @@ struct test_render_encoder : render_encodable {
     auto mesh2 = mesh::make_shared();
     mesh2->set_use_mesh_color(false);
 
-    auto const mesh_vertex_data2 = mesh_vertex_data::make_shared(1);
-    mesh_vertex_data2->write([](std::vector<vertex2d_t> &vertices) {
+    auto const mesh_vertex_data2 = static_mesh_vertex_data::make_shared(1);
+    mesh_vertex_data2->write_once([](std::vector<vertex2d_t> &vertices) {
         auto &vertex = vertices.at(0);
         vertex.position.x = 3.0f;
         vertex.position.y = 4.0f;
     });
     mesh2->set_vertex_data(mesh_vertex_data2);
 
-    auto const mesh_index_data2 = mesh_index_data::make_shared(1);
-    mesh_index_data2->write([](std::vector<index2d_t> &indices) {
+    auto const mesh_index_data2 = static_mesh_index_data::make_shared(1);
+    mesh_index_data2->write_once([](std::vector<index2d_t> &indices) {
         auto &index = indices.at(0);
         index = 0;
     });

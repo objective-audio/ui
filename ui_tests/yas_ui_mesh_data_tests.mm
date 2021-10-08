@@ -17,14 +17,14 @@ using namespace yas::ui;
 @implementation yas_ui_mesh_data_tests
 
 - (void)test_create_vertex_data {
-    auto const data = mesh_vertex_data::make_shared(4);
+    auto const data = static_mesh_vertex_data::make_shared(4);
 
     XCTAssertEqual(data->count(), 4);
     XCTAssertEqual(data->byte_offset(), 0);
 }
 
 - (void)test_create_index_data {
-    auto const data = mesh_index_data::make_shared(6);
+    auto const data = static_mesh_index_data::make_shared(6);
 
     XCTAssertEqual(data->count(), 6);
     XCTAssertEqual(data->byte_offset(), 0);
@@ -49,9 +49,9 @@ using namespace yas::ui;
 }
 
 - (void)test_write_vertex_data {
-    auto const data = mesh_vertex_data::make_shared(4);
+    auto const data = static_mesh_vertex_data::make_shared(4);
 
-    data->write([self](auto &vertices) {
+    data->write_once([self](auto &vertices) {
         XCTAssertEqual(vertices.size(), 4);
 
         vertices[0].position.x = 0.0f;
@@ -84,9 +84,9 @@ using namespace yas::ui;
 }
 
 - (void)test_write_index_data {
-    auto const data = mesh_index_data::make_shared(6);
+    auto const data = static_mesh_index_data::make_shared(6);
 
-    data->write([self](auto &indices) {
+    data->write_once([self](auto &indices) {
         XCTAssertEqual(indices.size(), 6);
 
         indices[0] = 20.0f;
@@ -142,7 +142,7 @@ using namespace yas::ui;
 }
 
 - (void)test_clear_updates {
-    auto const data = mesh_vertex_data::make_shared(1);
+    auto const data = static_mesh_vertex_data::make_shared(1);
 
     XCTAssertTrue(data->updates().flags.any());
 
@@ -177,7 +177,7 @@ using namespace yas::ui;
 
     auto const metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto const data = mesh_vertex_data::make_shared(1);
+    auto const data = static_mesh_vertex_data::make_shared(1);
 
     XCTAssertTrue(data->metal_setup(metal_system));
 }

@@ -5,8 +5,8 @@
 #include "yas_ui_rect_plane.h"
 #include <cpp_utils/yas_fast_each.h>
 #include <ui/yas_ui_color.h>
+#include <ui/yas_ui_dynamic_mesh_data.h>
 #include <ui/yas_ui_mesh.h>
-#include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_node.h>
 
 using namespace yas;
@@ -202,9 +202,8 @@ std::shared_ptr<rect_plane_data> rect_plane_data::make_shared(std::size_t const 
 #pragma mark - rect_plane
 
 rect_plane::rect_plane(std::shared_ptr<rect_plane_data> &&plane_data) : _rect_plane_data(std::move(plane_data)) {
-    auto const mesh = mesh::make_shared({}, nullptr, nullptr, nullptr);
-    mesh->set_vertex_data(this->data()->dynamic_vertex_data());
-    mesh->set_index_data(this->data()->dynamic_index_data());
+    auto const mesh = mesh::make_shared({}, this->_rect_plane_data->dynamic_vertex_data(),
+                                        this->_rect_plane_data->dynamic_index_data(), nullptr);
     this->node()->set_mesh(mesh);
 }
 

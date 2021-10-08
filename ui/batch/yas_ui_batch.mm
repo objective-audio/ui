@@ -7,8 +7,8 @@
 #include <cpp_utils/yas_to_bool.h>
 #include <cpp_utils/yas_unless.h>
 #include <ui/yas_ui_batch_render_mesh_info.h>
+#include <ui/yas_ui_dynamic_mesh_data.h>
 #include <ui/yas_ui_mesh.h>
-#include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_texture.h>
 
@@ -37,12 +37,10 @@ void batch::commit_render_meshes_building() {
 
     for (auto &mesh_info : this->_render_mesh_infos) {
         if (this->_building_type == batch_building_type::rebuild) {
-            auto render_vertex_data = dynamic_mesh_vertex_data::make_shared(mesh_info.vertex_count);
-            auto render_index_data = dynamic_mesh_index_data::make_shared(mesh_info.index_count);
-            mesh_info.render_mesh->set_vertex_data(render_vertex_data);
-            mesh_info.render_mesh->set_index_data(render_index_data);
-            mesh_info.vertex_data = std::move(render_vertex_data);
-            mesh_info.index_data = std::move(render_index_data);
+            mesh_info.vertex_data = dynamic_mesh_vertex_data::make_shared(mesh_info.vertex_count);
+            mesh_info.index_data = dynamic_mesh_index_data::make_shared(mesh_info.index_count);
+            mesh_info.render_mesh->set_vertex_data(mesh_info.vertex_data);
+            mesh_info.render_mesh->set_index_data(mesh_info.index_data);
         } else if (this->_building_type == batch_building_type::overwrite) {
             mesh_info.vertex_idx = 0;
             mesh_info.index_idx = 0;
@@ -63,7 +61,7 @@ void batch::commit_render_meshes_building() {
             auto const &render_mesh = mesh_info.render_mesh;
             auto const &vertex_data = render_mesh->vertex_data();
             auto const &index_data = render_mesh->index_data();
-            if (vertex_data && vertex_data->data_exists() && index_data && index_data->data_exists()) {
+            if (vertex_data && vertex_data->count() > 0 && index_data && index_data->count() > 0) {
                 render_meshes.push_back(render_mesh);
             }
         }
