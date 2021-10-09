@@ -114,9 +114,9 @@ std::size_t static_mesh_data<index2d_t>::count() const {
 }
 
 template <>
-void static_mesh_data<index2d_t>::write_once(std::function<void(std::vector<index2d_t> &)> const &func) {
+void static_mesh_data<index2d_t>::write_once(std::function<void(std::vector<index2d_t> &)> const &handler) {
     if (this->_updates.flags.any()) {
-        func(_raw);
+        handler(_raw);
     } else {
         throw std::runtime_error("write failed.");
     }
