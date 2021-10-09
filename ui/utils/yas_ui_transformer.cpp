@@ -15,13 +15,13 @@ using namespace yas::ui;
 namespace yas::ui {
 static std::size_t constexpr _curve_frames = 256;
 
-static std::vector<float> _make_curve_vector(std::function<float(float const)> const &func) {
+static std::vector<float> _make_curve_vector(std::function<float(float const)> const &handler) {
     static std::size_t constexpr _vector_size = _curve_frames + 2;
     std::vector<float> curve_vector;
     curve_vector.reserve(_vector_size);
     for (auto const &i : each_index<std::size_t>(_vector_size)) {
         float const pos = float(i) / _curve_frames;
-        float val = (pos < 1.0f) ? func(pos) : func(1.0f);
+        float val = (pos < 1.0f) ? handler(pos) : handler(1.0f);
         curve_vector.push_back(val);
     }
     return curve_vector;

@@ -39,25 +39,25 @@ void rect_plane_data::set_rect_count(std::size_t const count) {
     this->_dynamic_index_data->set_count(count * 6);
 }
 
-void rect_plane_data::write_vertices(std::function<void(vertex2d_rect_t *)> const &func) {
-    this->_dynamic_vertex_data->write([&func](auto &vertices) { func((vertex2d_rect_t *)vertices.data()); });
+void rect_plane_data::write_vertices(std::function<void(vertex2d_rect_t *)> const &handler) {
+    this->_dynamic_vertex_data->write([&handler](auto &vertices) { handler((vertex2d_rect_t *)vertices.data()); });
 }
 
-void rect_plane_data::write_indices(std::function<void(ui::index2d_rect_t *)> const &func) {
-    this->_dynamic_index_data->write([&func](auto &indices) { func((index2d_rect_t *)indices.data()); });
+void rect_plane_data::write_indices(std::function<void(ui::index2d_rect_t *)> const &handler) {
+    this->_dynamic_index_data->write([&handler](auto &indices) { handler((index2d_rect_t *)indices.data()); });
 }
 
-void rect_plane_data::write_vertex(std::size_t const rect_idx, std::function<void(vertex2d_rect_t &)> const &func) {
-    this->_dynamic_vertex_data->write([&rect_idx, &func](auto &vertices) {
+void rect_plane_data::write_vertex(std::size_t const rect_idx, std::function<void(vertex2d_rect_t &)> const &handler) {
+    this->_dynamic_vertex_data->write([&rect_idx, &handler](auto &vertices) {
         auto rect_vertex_ptr = (vertex2d_rect_t *)vertices.data();
-        func(rect_vertex_ptr[rect_idx]);
+        handler(rect_vertex_ptr[rect_idx]);
     });
 }
 
-void rect_plane_data::write_index(std::size_t const rect_idx, std::function<void(index2d_rect_t &)> const &func) {
-    this->_dynamic_index_data->write([&rect_idx, &func](auto &indices) {
+void rect_plane_data::write_index(std::size_t const rect_idx, std::function<void(index2d_rect_t &)> const &handler) {
+    this->_dynamic_index_data->write([&rect_idx, &handler](auto &indices) {
         auto rect_index_ptr = (index2d_rect_t *)indices.data();
-        func(rect_index_ptr[rect_idx]);
+        handler(rect_index_ptr[rect_idx]);
     });
 }
 
