@@ -58,8 +58,8 @@ using namespace yas::ui;
         return;
     }
 
-    auto vertex_data = mesh_vertex_data::make_shared(4);
-    auto index_data = mesh_index_data::make_shared(6);
+    auto vertex_data = static_mesh_vertex_data::make_shared(4);
+    auto index_data = static_mesh_index_data::make_shared(6);
     auto mesh = mesh::make_shared({}, nullptr, nullptr, nullptr);
 
     auto const metal_system = metal_system::make_shared(device.object(), nil);
@@ -97,8 +97,8 @@ using namespace yas::ui;
 
     auto texture = texture::make_shared({.point_size = {16, 8}}, view_look);
 
-    auto vertex_data = mesh_vertex_data::make_shared(4);
-    auto index_data = mesh_index_data::make_shared(6);
+    auto vertex_data = static_mesh_vertex_data::make_shared(4);
+    auto index_data = static_mesh_index_data::make_shared(6);
     auto mesh = mesh::make_shared({}, vertex_data, index_data, texture);
 
     std::shared_ptr<ui::mesh const> const_mesh = mesh;
@@ -143,8 +143,8 @@ using namespace yas::ui;
 }
 
 - (void)test_mesh_setup_metal_buffer_constant {
-    auto const vertex_data = mesh_vertex_data::make_shared(4);
-    auto const index_data = mesh_index_data::make_shared(6);
+    auto const vertex_data = static_mesh_vertex_data::make_shared(4);
+    auto const index_data = static_mesh_index_data::make_shared(6);
 
     auto device = objc_ptr_with_move_object(MTLCreateSystemDefaultDevice());
     if (!device) {
@@ -327,8 +327,8 @@ using namespace yas::ui;
 }
 
 - (void)test_clear_updates {
-    auto const mesh_vertex_data = mesh_vertex_data::make_shared(1);
-    auto const mesh_index_data = mesh_index_data::make_shared(1);
+    auto const mesh_vertex_data = static_mesh_vertex_data::make_shared(1);
+    auto const mesh_index_data = static_mesh_index_data::make_shared(1);
     auto const mesh = mesh::make_shared({}, mesh_vertex_data, mesh_index_data, nullptr);
 
     XCTAssertTrue(renderable_mesh::cast(mesh)->updates().flags.any());
@@ -343,8 +343,8 @@ using namespace yas::ui;
 }
 
 - (void)test_updates {
-    auto const mesh_vertex_data = mesh_vertex_data::make_shared(1);
-    auto const mesh_index_data = mesh_index_data::make_shared(1);
+    auto const mesh_vertex_data = static_mesh_vertex_data::make_shared(1);
+    auto const mesh_index_data = static_mesh_index_data::make_shared(1);
     auto const mesh = mesh::make_shared({}, mesh_vertex_data, mesh_index_data, nullptr);
 
     renderable_mesh::cast(mesh)->clear_updates();
@@ -359,8 +359,8 @@ using namespace yas::ui;
 
     XCTAssertFalse(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 
-    auto const mesh_vertex_data = mesh_vertex_data::make_shared(1);
-    auto const mesh_index_data = mesh_index_data::make_shared(1);
+    auto const mesh_vertex_data = static_mesh_vertex_data::make_shared(1);
+    auto const mesh_index_data = static_mesh_index_data::make_shared(1);
     mesh->set_vertex_data(mesh_vertex_data);
     mesh->set_index_data(mesh_index_data);
 
@@ -376,8 +376,8 @@ using namespace yas::ui;
 
     XCTAssertTrue(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 
-    auto const empty_mesh_vertex_data = mesh_vertex_data::make_shared(0);
-    auto const empty_mesh_index_data = mesh_index_data::make_shared(0);
+    auto const empty_mesh_vertex_data = static_mesh_vertex_data::make_shared(0);
+    auto const empty_mesh_index_data = static_mesh_index_data::make_shared(0);
     mesh->set_vertex_data(empty_mesh_vertex_data);
     mesh->set_index_data(empty_mesh_index_data);
 
@@ -393,8 +393,8 @@ using namespace yas::ui;
 
     auto metal_system = metal_system::make_shared(device.object(), nil);
 
-    auto const mesh_vertex_data = mesh_vertex_data::make_shared(1);
-    auto const mesh_index_data = mesh_index_data::make_shared(1);
+    auto const mesh_vertex_data = static_mesh_vertex_data::make_shared(1);
+    auto const mesh_index_data = static_mesh_index_data::make_shared(1);
     auto mesh = mesh::make_shared({}, mesh_vertex_data, mesh_index_data, nullptr);
 
     XCTAssertTrue(mesh->metal_setup(metal_system));

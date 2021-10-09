@@ -7,7 +7,7 @@
 #include <cpp_utils/yas_objc_ptr.h>
 #include <cpp_utils/yas_unless.h>
 #include <ui/yas_ui_batch_render_mesh_info.h>
-#include <ui/yas_ui_mesh_data.h>
+#include <ui/yas_ui_dynamic_mesh_data.h>
 #include <ui/yas_ui_metal_encode_info.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_types.h>
