@@ -371,45 +371,46 @@ using namespace yas::ui;
     XCTAssertEqual(plane_data->max_rect_count(), 4);
 }
 
-- (void)test_write_vertex {
+- (void)test_write_vertices {
     auto plane_data = rect_plane_data::make_shared(1);
     auto vertices = plane_data->dynamic_vertex_data()->raw_data();
 
-    plane_data->write_vertex(0, [](vertex2d_rect_t &rects) {
-        rects.v[0].position.x = 0.1f;
-        rects.v[0].position.y = 0.2f;
-        rects.v[1].position.x = 0.3f;
-        rects.v[1].position.y = 0.4f;
-        rects.v[2].position.x = 0.5f;
-        rects.v[2].position.y = 0.6f;
-        rects.v[3].position.x = 0.7f;
-        rects.v[3].position.y = 0.8f;
+    plane_data->write_vertices([](vertex2d_rect *rects) {
+        auto &rect = rects[0];
+        rect.v[0].position.x = 0.1f;
+        rect.v[0].position.y = 0.2f;
+        rect.v[1].position.x = 0.3f;
+        rect.v[1].position.y = 0.4f;
+        rect.v[2].position.x = 0.5f;
+        rect.v[2].position.y = 0.6f;
+        rect.v[3].position.x = 0.7f;
+        rect.v[3].position.y = 0.8f;
 
-        rects.v[0].tex_coord.x = 1.1f;
-        rects.v[0].tex_coord.y = 1.2f;
-        rects.v[1].tex_coord.x = 1.3f;
-        rects.v[1].tex_coord.y = 1.4f;
-        rects.v[2].tex_coord.x = 1.5f;
-        rects.v[2].tex_coord.y = 1.6f;
-        rects.v[3].tex_coord.x = 1.7f;
-        rects.v[3].tex_coord.y = 1.8f;
+        rect.v[0].tex_coord.x = 1.1f;
+        rect.v[0].tex_coord.y = 1.2f;
+        rect.v[1].tex_coord.x = 1.3f;
+        rect.v[1].tex_coord.y = 1.4f;
+        rect.v[2].tex_coord.x = 1.5f;
+        rect.v[2].tex_coord.y = 1.6f;
+        rect.v[3].tex_coord.x = 1.7f;
+        rect.v[3].tex_coord.y = 1.8f;
 
-        rects.v[0].color[0] = 2.1f;
-        rects.v[0].color[1] = 2.2f;
-        rects.v[0].color[2] = 2.3f;
-        rects.v[0].color[3] = 2.4f;
-        rects.v[1].color[0] = 2.5f;
-        rects.v[1].color[1] = 2.6f;
-        rects.v[1].color[2] = 2.7f;
-        rects.v[1].color[3] = 2.8f;
-        rects.v[2].color[0] = 2.9f;
-        rects.v[2].color[1] = 3.0f;
-        rects.v[2].color[2] = 3.1f;
-        rects.v[2].color[3] = 3.2f;
-        rects.v[3].color[0] = 3.3f;
-        rects.v[3].color[1] = 3.4f;
-        rects.v[3].color[2] = 3.5f;
-        rects.v[3].color[3] = 3.6f;
+        rect.v[0].color[0] = 2.1f;
+        rect.v[0].color[1] = 2.2f;
+        rect.v[0].color[2] = 2.3f;
+        rect.v[0].color[3] = 2.4f;
+        rect.v[1].color[0] = 2.5f;
+        rect.v[1].color[1] = 2.6f;
+        rect.v[1].color[2] = 2.7f;
+        rect.v[1].color[3] = 2.8f;
+        rect.v[2].color[0] = 2.9f;
+        rect.v[2].color[1] = 3.0f;
+        rect.v[2].color[2] = 3.1f;
+        rect.v[2].color[3] = 3.2f;
+        rect.v[3].color[0] = 3.3f;
+        rect.v[3].color[1] = 3.4f;
+        rect.v[3].color[2] = 3.5f;
+        rect.v[3].color[3] = 3.6f;
     });
 
     XCTAssertEqual(vertices[0].position.x, 0.1f);

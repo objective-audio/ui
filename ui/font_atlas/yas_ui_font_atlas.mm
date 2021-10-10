@@ -18,10 +18,10 @@ using namespace yas::ui;
 #pragma mark - font_atlas::impl
 
 namespace yas::ui {
-static vertex2d_rect_t constexpr _empty_rect{0.0f};
+static vertex2d_rect constexpr _empty_rect{0.0f};
 
 struct word_info {
-    vertex2d_rect_t rect;
+    vertex2d_rect rect;
     size advance;
 };
 }
@@ -82,7 +82,7 @@ std::shared_ptr<texture> const &font_atlas::texture() const {
     return this->_texture;
 }
 
-vertex2d_rect_t const &font_atlas::rect(std::string const &word) const {
+vertex2d_rect const &font_atlas::rect(std::string const &word) const {
     auto idx = this->_words.find_first_of(word);
     if (idx == std::string::npos) {
         return _empty_rect;

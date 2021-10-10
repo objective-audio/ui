@@ -52,6 +52,7 @@ class metal_buffer;
 class node;
 class rect_plane_data;
 class rect_plane;
+class region_positions;
 class render_target;
 class renderer;
 class strings;
@@ -129,6 +130,9 @@ struct uint_region {
     [[nodiscard]] uint32_t top() const;
 
     [[nodiscard]] static uint_region const &zero();
+
+    [[nodiscard]] region_positions positions() const;
+    [[nodiscard]] region_positions positions(simd::float4x4 const &matrix) const;
 };
 
 struct uint_range {
@@ -275,6 +279,16 @@ struct region {
     [[nodiscard]] static region zero_centered(ui::size const &);
 
     [[nodiscard]] region normalized() const;
+
+    [[nodiscard]] region_positions positions() const;
+    [[nodiscard]] region_positions positions(simd::float4x4 const &matrix) const;
+};
+
+struct region_positions {
+    simd::float2 v[4];
+
+    explicit region_positions(region const &);
+    explicit region_positions(uint_region const &);
 };
 
 struct region_ranges_args final {
@@ -298,7 +312,7 @@ enum class primitive_type {
     triangle_strip,
 };
 
-struct vertex2d_rect_t {
+struct vertex2d_rect {
     vertex2d_t v[4];
 
     void set_position(ui::region const &);
@@ -307,8 +321,10 @@ struct vertex2d_rect_t {
 
 using index2d_t = uint32_t;
 
-struct index2d_rect_t {
+struct index2d_rect {
     index2d_t v[6];
+
+    void set_all(uint32_t const first);
 };
 
 ui::point to_point(ui::uint_point const &);
