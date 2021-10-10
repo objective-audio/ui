@@ -372,14 +372,14 @@ void collection_layout::_update_layout() {
 }
 
 std::optional<collection_layout::cell_location> collection_layout::_cell_location(std::size_t const cell_idx) {
-    std::size_t top_idx = 0;
+    std::size_t first_idx = 0;
     std::size_t line_idx = 0;
 
     for (auto const &line : this->_lines->value()) {
-        if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
-            return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
+        if (first_idx <= cell_idx && cell_idx < (first_idx + line.cell_sizes.size())) {
+            return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - first_idx};
         }
-        top_idx += line.cell_sizes.size();
+        first_idx += line.cell_sizes.size();
         ++line_idx;
     }
 
