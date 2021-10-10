@@ -230,8 +230,8 @@ using namespace yas::ui;
     XCTAssertTrue(vertex_data->metal_setup(metal_system));
     XCTAssertTrue(index_data->metal_setup(metal_system));
 
-    vertex2d_t *vertex_top_ptr = static_cast<vertex2d_t *>([renderable_vertex->mtlBuffer() contents]);
-    index2d_t *index_top_ptr = static_cast<index2d_t *>([renderable_index->mtlBuffer() contents]);
+    vertex2d_t *vertex_head_ptr = static_cast<vertex2d_t *>([renderable_vertex->mtlBuffer() contents]);
+    index2d_t *index_head_ptr = static_cast<index2d_t *>([renderable_index->mtlBuffer() contents]);
 
     vertex_data->write([](std::vector<vertex2d_t> &vertices) {
         for (auto const &idx : make_each_index(4)) {
@@ -258,8 +258,8 @@ using namespace yas::ui;
     XCTAssertEqual(renderable_vertex->byte_offset(), sizeof(vertex2d_t) * 4);
     XCTAssertEqual(renderable_index->byte_offset(), sizeof(index2d_t) * 6);
 
-    auto vertex_ptr = &vertex_top_ptr[renderable_vertex->byte_offset() / sizeof(vertex2d_t)];
-    auto index_ptr = &index_top_ptr[renderable_index->byte_offset() / sizeof(index2d_t)];
+    auto vertex_ptr = &vertex_head_ptr[renderable_vertex->byte_offset() / sizeof(vertex2d_t)];
+    auto index_ptr = &index_head_ptr[renderable_index->byte_offset() / sizeof(index2d_t)];
 
     for (auto const &idx : make_each_index(4)) {
         float const value = idx;
@@ -295,8 +295,8 @@ using namespace yas::ui;
     XCTAssertEqual(renderable_vertex->byte_offset(), 0);
     XCTAssertEqual(renderable_index->byte_offset(), 0);
 
-    vertex_ptr = vertex_top_ptr;
-    index_ptr = index_top_ptr;
+    vertex_ptr = vertex_head_ptr;
+    index_ptr = index_head_ptr;
 
     for (auto const &idx : make_each_index(4)) {
         float const value = idx;
