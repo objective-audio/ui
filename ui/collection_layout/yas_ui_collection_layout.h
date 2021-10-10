@@ -109,7 +109,7 @@ struct collection_layout {
     void _update_layout();
     std::optional<cell_location> _cell_location(std::size_t const cell_idx);
     ui::size _cell_size(std::size_t const idx);
-    bool _is_top_of_new_line(std::size_t const idx);
+    bool _is_head_of_new_line(std::size_t const idx);
     ui::size _transformed_cell_size(std::size_t const idx);
     float _transformed_col_diff(std::size_t const idx);
     float _transformed_row_cell_diff(std::size_t const idx);

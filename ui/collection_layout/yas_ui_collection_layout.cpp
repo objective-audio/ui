@@ -270,7 +270,7 @@ void collection_layout::_update_layout() {
             auto const cell_size = this->_transformed_cell_size(idx);
 
             if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
-                this->_is_top_of_new_line(idx)) {
+                this->_is_head_of_new_line(idx)) {
                 regions.emplace_back(std::move(row_regions));
 
                 auto const row_new_line_diff = this->_transformed_row_new_line_diff(idx);
@@ -372,14 +372,14 @@ void collection_layout::_update_layout() {
 }
 
 std::optional<collection_layout::cell_location> collection_layout::_cell_location(std::size_t const cell_idx) {
-    std::size_t top_idx = 0;
+    std::size_t first_idx = 0;
     std::size_t line_idx = 0;
 
     for (auto const &line : this->_lines->value()) {
-        if (top_idx <= cell_idx && cell_idx < (top_idx + line.cell_sizes.size())) {
-            return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - top_idx};
+        if (first_idx <= cell_idx && cell_idx < (first_idx + line.cell_sizes.size())) {
+            return cell_location{.line_idx = line_idx, .cell_idx = cell_idx - first_idx};
         }
-        top_idx += line.cell_sizes.size();
+        first_idx += line.cell_sizes.size();
         ++line_idx;
     }
 
@@ -403,7 +403,7 @@ size collection_layout::_cell_size(std::size_t const idx) {
     return this->_default_cell_size->value();
 }
 
-bool collection_layout::_is_top_of_new_line(std::size_t const idx) {
+bool collection_layout::_is_head_of_new_line(std::size_t const idx) {
     if (auto cell_location = this->_cell_location(idx)) {
         if (cell_location->line_idx > 0 && cell_location->cell_idx == 0) {
             return true;

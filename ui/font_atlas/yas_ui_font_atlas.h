@@ -20,7 +20,7 @@ struct font_atlas final {
     [[nodiscard]] std::string const &words() const;
     [[nodiscard]] std::shared_ptr<texture> const &texture() const;
 
-    [[nodiscard]] ui::vertex2d_rect_t const &rect(std::string const &word) const;
+    [[nodiscard]] ui::vertex2d_rect const &rect(std::string const &word) const;
     [[nodiscard]] ui::size advance(std::string const &word) const;
 
     [[nodiscard]] observing::endable observe_texture_updated(

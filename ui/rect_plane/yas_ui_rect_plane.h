@@ -14,10 +14,8 @@ namespace yas::ui {
 struct rect_plane_data final {
     using tex_coords_transform_f = std::function<ui::uint_region(ui::uint_region const &)>;
 
-    void write_vertices(std::function<void(ui::vertex2d_rect_t *)> const &);
-    void write_indices(std::function<void(ui::index2d_rect_t *)> const &);
-    void write_vertex(std::size_t const rect_idx, std::function<void(ui::vertex2d_rect_t &)> const &);
-    void write_index(std::size_t const rect_idx, std::function<void(ui::index2d_rect_t &)> const &);
+    void write_vertices(std::function<void(ui::vertex2d_rect *)> const &);
+    void write_indices(std::function<void(ui::index2d_rect *)> const &);
 
     [[nodiscard]] std::size_t max_rect_count() const;
     [[nodiscard]] std::size_t rect_count() const;
@@ -48,8 +46,8 @@ struct rect_plane_data final {
                                                                       std::size_t const max_index_count);
 
    private:
-    std::shared_ptr<dynamic_mesh_vertex_data> _dynamic_vertex_data;
-    std::shared_ptr<dynamic_mesh_index_data> _dynamic_index_data;
+    std::shared_ptr<dynamic_mesh_vertex_data> _vertex_data;
+    std::shared_ptr<dynamic_mesh_index_data> _index_data;
     std::vector<observing::cancellable_ptr> _element_cancellers;
 
     explicit rect_plane_data(std::shared_ptr<ui::dynamic_mesh_vertex_data> &&,

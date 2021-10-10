@@ -16,11 +16,11 @@ using namespace yas::ui;
 
 rect_plane_data::rect_plane_data(std::shared_ptr<ui::dynamic_mesh_vertex_data> &&vertex_data,
                                  std::shared_ptr<ui::dynamic_mesh_index_data> &&index_data)
-    : _dynamic_vertex_data(std::move(vertex_data)), _dynamic_index_data(std::move(index_data)) {
+    : _vertex_data(std::move(vertex_data)), _index_data(std::move(index_data)) {
 }
 
 std::size_t rect_plane_data::max_rect_count() const {
-    auto const max_index_count = this->_dynamic_index_data->max_count();
+    auto const max_index_count = this->_index_data->max_count();
     if (max_index_count > 0) {
         return max_index_count / 6;
     }
@@ -28,7 +28,7 @@ std::size_t rect_plane_data::max_rect_count() const {
 }
 
 std::size_t rect_plane_data::rect_count() const {
-    auto const index_count = this->_dynamic_index_data->count();
+    auto const index_count = this->_index_data->count();
     if (index_count > 0) {
         return index_count / 6;
     }
@@ -36,39 +36,22 @@ std::size_t rect_plane_data::rect_count() const {
 }
 
 void rect_plane_data::set_rect_count(std::size_t const count) {
-    this->_dynamic_index_data->set_count(count * 6);
+    this->_index_data->set_count(count * 6);
 }
 
-void rect_plane_data::write_vertices(std::function<void(vertex2d_rect_t *)> const &handler) {
-    this->_dynamic_vertex_data->write([&handler](auto &vertices) { handler((vertex2d_rect_t *)vertices.data()); });
+void rect_plane_data::write_vertices(std::function<void(vertex2d_rect *)> const &handler) {
+    this->_vertex_data->write(
+        [&handler](std::vector<vertex2d_t> &vertices) { handler((vertex2d_rect *)vertices.data()); });
 }
 
-void rect_plane_data::write_indices(std::function<void(ui::index2d_rect_t *)> const &handler) {
-    this->_dynamic_index_data->write([&handler](auto &indices) { handler((index2d_rect_t *)indices.data()); });
-}
-
-void rect_plane_data::write_vertex(std::size_t const rect_idx, std::function<void(vertex2d_rect_t &)> const &handler) {
-    this->_dynamic_vertex_data->write([&rect_idx, &handler](auto &vertices) {
-        auto rect_vertex_ptr = (vertex2d_rect_t *)vertices.data();
-        handler(rect_vertex_ptr[rect_idx]);
-    });
-}
-
-void rect_plane_data::write_index(std::size_t const rect_idx, std::function<void(index2d_rect_t &)> const &handler) {
-    this->_dynamic_index_data->write([&rect_idx, &handler](auto &indices) {
-        auto rect_index_ptr = (index2d_rect_t *)indices.data();
-        handler(rect_index_ptr[rect_idx]);
-    });
+void rect_plane_data::write_indices(std::function<void(ui::index2d_rect *)> const &handler) {
+    this->_index_data->write([&handler](std::vector<index2d_t> &indices) { handler((index2d_rect *)indices.data()); });
 }
 
 void rect_plane_data::set_rect_index(std::size_t const index_idx, std::size_t const vertex_idx) {
-    this->write_index(index_idx, [&vertex_idx](auto &rect_idx) {
-        auto const rect_top_raw_idx = static_cast<index2d_t>(vertex_idx * 4);
-
-        rect_idx.v[0] = rect_top_raw_idx;
-        rect_idx.v[1] = rect_idx.v[4] = rect_top_raw_idx + 2;
-        rect_idx.v[2] = rect_idx.v[3] = rect_top_raw_idx + 1;
-        rect_idx.v[5] = rect_top_raw_idx + 3;
+    this->write_indices([&index_idx, &vertex_idx](ui::index2d_rect *index_rects) {
+        auto const rect_head_vertex_raw_idx = static_cast<index2d_t>(vertex_idx * 4);
+        index_rects[index_idx].set_all(rect_head_vertex_raw_idx);
     });
 }
 
@@ -80,26 +63,23 @@ void rect_plane_data::set_rect_indices(std::vector<std::pair<std::size_t, std::s
 
 void rect_plane_data::set_rect_position(region const &region, std::size_t const rect_idx,
                                         simd::float4x4 const &matrix) {
-    this->write_vertex(rect_idx, [&region, &matrix](auto &rect_vertex) {
-        simd::float2 positions[4];
-        positions[0].x = positions[2].x = region.origin.x;
-        positions[0].y = positions[1].y = region.origin.y;
-        positions[1].x = positions[3].x = region.origin.x + region.size.width;
-        positions[2].y = positions[3].y = region.origin.y + region.size.height;
+    this->write_vertices([&rect_idx, &region, &matrix](vertex2d_rect *vertex_rects) {
+        auto const positions = region.positions(matrix);
 
         auto each = make_fast_each(4);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            rect_vertex.v[idx].position = to_float2(matrix * to_float4(positions[idx]));
+            vertex_rects[rect_idx].v[idx].position = positions.v[idx];
         }
     });
 }
 
 void rect_plane_data::set_rect_color(simd::float4 const &color, std::size_t const rect_idx) {
-    this->write_vertex(rect_idx, [&color](auto &rect_vertex) {
+    this->write_vertices([&rect_idx, &color](vertex2d_rect *vertex_rects) {
+        auto &vertex_rect = vertex_rects[rect_idx];
         auto each = make_fast_each(4);
         while (yas_each_next(each)) {
-            rect_vertex.v[yas_each_index(each)].color = color;
+            vertex_rect.v[yas_each_index(each)].color = color;
         }
     });
 }
@@ -109,28 +89,27 @@ void rect_plane_data::set_rect_color(color const &color, float const alpha, std:
 }
 
 void rect_plane_data::set_rect_tex_coords(uint_region const &pixel_region, std::size_t const rect_idx) {
-    this->write_vertex(rect_idx, [&pixel_region](auto &rect_vertex) {
-        float const min_x = pixel_region.origin.x;
-        float const min_y = pixel_region.origin.y;
-        float const max_x = min_x + pixel_region.size.width;
-        float const max_y = min_y + pixel_region.size.height;
-
-        rect_vertex.v[0].tex_coord.x = rect_vertex.v[2].tex_coord.x = min_x;
-        rect_vertex.v[0].tex_coord.y = rect_vertex.v[1].tex_coord.y = max_y;
-        rect_vertex.v[1].tex_coord.x = rect_vertex.v[3].tex_coord.x = max_x;
-        rect_vertex.v[2].tex_coord.y = rect_vertex.v[3].tex_coord.y = min_y;
+    this->write_vertices([&rect_idx, &pixel_region](vertex2d_rect *vertex_rects) {
+        auto const positions = pixel_region.positions();
+        auto each = make_fast_each(4);
+        while (yas_each_next(each)) {
+            auto const &idx = yas_each_index(each);
+            vertex_rects[rect_idx].v[idx].tex_coord = positions.v[idx];
+        }
     });
 }
 
 void rect_plane_data::set_rect_vertex(const vertex2d_t *const in_ptr, std::size_t const rect_idx,
                                       simd::float4x4 const &matrix) {
-    this->write_vertex(rect_idx, [&in_ptr, &matrix](auto &rect_vertex) {
+    this->write_vertices([&rect_idx, &in_ptr, &matrix](vertex2d_rect *vertex_rects) {
+        auto &vertex_rect = vertex_rects[rect_idx];
         auto each = make_fast_each(4);
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            rect_vertex.v[idx].position = to_float2(matrix * to_float4(in_ptr[idx].position));
-            rect_vertex.v[idx].tex_coord = in_ptr[idx].tex_coord;
-            rect_vertex.v[idx].color = in_ptr[idx].color;
+            auto &array = vertex_rect.v[idx];
+            array.position = to_float2(matrix * to_float4(in_ptr[idx].position));
+            array.tex_coord = in_ptr[idx].tex_coord;
+            array.color = in_ptr[idx].color;
         }
     });
 }
@@ -150,11 +129,11 @@ void rect_plane_data::clear_observers() {
 }
 
 std::shared_ptr<dynamic_mesh_vertex_data> const &rect_plane_data::dynamic_vertex_data() {
-    return this->_dynamic_vertex_data;
+    return this->_vertex_data;
 }
 
 std::shared_ptr<dynamic_mesh_index_data> const &rect_plane_data::dynamic_index_data() {
-    return this->_dynamic_index_data;
+    return this->_index_data;
 }
 
 void rect_plane_data::_observe_rect_tex_coords(rect_plane_data &data, std::shared_ptr<texture_element> const &element,
@@ -183,16 +162,13 @@ std::shared_ptr<rect_plane_data> rect_plane_data::make_shared(std::size_t const 
     auto shared = make_shared(dynamic_mesh_vertex_data::make_shared(rect_count * 4),
                               dynamic_mesh_index_data::make_shared(rect_count * 6));
 
-    shared->write_indices([&rect_count, &index_count](auto *rect_indices) {
+    shared->write_indices([&rect_count, &index_count](index2d_rect *index_rects) {
         auto each = make_fast_each(std::min(rect_count, index_count));
         while (yas_each_next(each)) {
             auto const &idx = yas_each_index(each);
-            auto &rect_idx = rect_indices[idx];
-            auto const rect_top_raw_idx = static_cast<index2d_t>(idx * 4);
-            rect_idx.v[0] = rect_top_raw_idx;
-            rect_idx.v[1] = rect_idx.v[4] = rect_top_raw_idx + 2;
-            rect_idx.v[2] = rect_idx.v[3] = rect_top_raw_idx + 1;
-            rect_idx.v[5] = rect_top_raw_idx + 3;
+            auto &index_rect = index_rects[idx];
+            auto const rect_head_vertex_raw_idx = static_cast<index2d_t>(idx * 4);
+            index_rect.set_all(rect_head_vertex_raw_idx);
         }
     });
 

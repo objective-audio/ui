@@ -4,6 +4,8 @@
 
 #include "yas_ui_types.h"
 
+#include <cpp_utils/yas_fast_each.h>
+
 using namespace yas;
 using namespace yas::ui;
 
@@ -66,6 +68,20 @@ uint32_t uint_region::top() const {
 uint_region const &uint_region::zero() {
     static uint_region const _zero{.origin = uint_point::zero(), .size = uint_size::zero()};
     return _zero;
+}
+
+region_positions uint_region::positions() const {
+    return region_positions{*this};
+}
+
+region_positions uint_region::positions(simd::float4x4 const &matrix) const {
+    region_positions positions{*this};
+    auto each = make_fast_each(4);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        positions.v[idx] = to_float2(matrix * to_float4(positions.v[idx]));
+    }
+    return positions;
 }
 
 #pragma mark - ui:uint_range
@@ -366,25 +382,64 @@ region region::normalized() const {
                   .size = {.width = this->right() - left, .height = this->top() - bottom}};
 }
 
+region_positions region::positions() const {
+    return region_positions{*this};
+}
+
+region_positions region::positions(simd::float4x4 const &matrix) const {
+    region_positions positions{*this};
+    auto each = make_fast_each(4);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        positions.v[idx] = to_float2(matrix * to_float4(positions.v[idx]));
+    }
+    return positions;
+}
+
 region ui::make_region(region_ranges_args &&ranges) {
     return region{.origin = {std::move(ranges.horizontal.location), std::move(ranges.vertical.location)},
                   .size = {std::move(ranges.horizontal.length), std::move(ranges.vertical.length)}};
 }
 
-#pragma mark - vertex2d_rect_t
+#pragma mark - region_positions
 
-void vertex2d_rect_t::set_position(region const &region) {
+region_positions::region_positions(ui::region const &region) {
+    this->v[0].x = this->v[2].x = region.origin.x;
+    this->v[0].y = this->v[1].y = region.origin.y;
+    this->v[1].x = this->v[3].x = region.origin.x + region.size.width;
+    this->v[2].y = this->v[3].y = region.origin.y + region.size.height;
+}
+
+region_positions::region_positions(uint_region const &region) {
+    this->v[0].x = this->v[2].x = region.origin.x;
+    this->v[0].y = this->v[1].y = region.origin.y + region.size.height;
+    this->v[1].x = this->v[3].x = region.origin.x + region.size.width;
+    this->v[2].y = this->v[3].y = region.origin.y;
+}
+
+#pragma mark - vertex2d_rect
+
+void vertex2d_rect::set_position(region const &region) {
     this->v[0].position.x = this->v[2].position.x = region.left();
     this->v[0].position.y = this->v[1].position.y = region.bottom();
     this->v[1].position.x = this->v[3].position.x = region.right();
     this->v[2].position.y = this->v[3].position.y = region.top();
 }
 
-void vertex2d_rect_t::set_tex_coord(uint_region const &region) {
+void vertex2d_rect::set_tex_coord(uint_region const &region) {
     this->v[0].tex_coord.x = this->v[2].tex_coord.x = region.left();
     this->v[0].tex_coord.y = this->v[1].tex_coord.y = region.top();
     this->v[1].tex_coord.x = this->v[3].tex_coord.x = region.right();
     this->v[2].tex_coord.y = this->v[3].tex_coord.y = region.bottom();
+}
+
+#pragma mark - index2d_rect
+
+void index2d_rect::set_all(uint32_t const first) {
+    this->v[0] = first;
+    this->v[1] = this->v[4] = first + 2;
+    this->v[2] = this->v[3] = first + 1;
+    this->v[5] = first + 3;
 }
 
 #pragma mark -
