@@ -285,7 +285,9 @@ struct region {
 };
 
 struct region_positions {
-    simd::float2 v[4];
+    static std::size_t constexpr vector_count = 4;
+
+    simd::float2 v[vector_count];
 
     explicit region_positions(region const &);
     explicit region_positions(uint_region const &);
@@ -313,7 +315,9 @@ enum class primitive_type {
 };
 
 struct vertex2d_rect {
-    vertex2d_t v[4];
+    static std::size_t constexpr vector_count = 4;
+
+    vertex2d_t v[vector_count];
 
     void set_position(ui::region const &);
     void set_tex_coord(ui::uint_region const &);
@@ -322,7 +326,9 @@ struct vertex2d_rect {
 using index2d_t = uint32_t;
 
 struct index2d_rect {
-    index2d_t v[6];
+    static std::size_t constexpr vector_count = 6;
+
+    index2d_t v[vector_count];
 
     void set_all(uint32_t const first);
 };
