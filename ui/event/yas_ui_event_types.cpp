@@ -50,7 +50,7 @@ bool touch_event::operator==(touch_event const &rhs) const {
 }
 
 bool touch_event::operator!=(touch_event const &rhs) const {
-    return this->_identifier != rhs._identifier;
+    return !(*this == rhs);
 }
 
 uintptr_t touch_event::identifier() const {
@@ -79,7 +79,7 @@ bool key_event::operator==(key_event const &rhs) const {
 }
 
 bool key_event::operator!=(key_event const &rhs) const {
-    return this->_key_code != rhs._key_code;
+    return !(*this == rhs);
 }
 
 uint16_t key_event::key_code() const {
@@ -111,7 +111,7 @@ bool modifier_event::operator==(modifier_event const &rhs) const {
 }
 
 bool modifier_event::operator!=(modifier_event const &rhs) const {
-    return this->_flag != rhs._flag;
+    return !(*this == rhs);
 }
 
 modifier_flags modifier_event::flag() const {
@@ -119,6 +119,60 @@ modifier_flags modifier_event::flag() const {
 }
 
 double modifier_event::timestamp() const {
+    return this->_timestamp;
+}
+
+#pragma mark - pinch_event
+
+pinch_event::pinch_event() {
+}
+
+pinch_event::pinch_event(double const magnification, double const timestamp)
+    : _magnification(magnification), _timestamp(timestamp) {
+}
+
+bool pinch_event::operator==(pinch_event const &rhs) const {
+    return this->_magnification == rhs._magnification;
+}
+
+bool pinch_event::operator!=(pinch_event const &rhs) const {
+    return !(*this == rhs);
+}
+
+double pinch_event::magnification() const {
+    return this->_magnification;
+}
+
+double pinch_event::timestamp() const {
+    return this->_timestamp;
+}
+
+#pragma mark - scroll_event
+
+scroll_event::scroll_event() {
+}
+
+scroll_event::scroll_event(double const x, double const y, double const timestamp)
+    : _delta_x(x), _delta_y(y), _timestamp(timestamp) {
+}
+
+bool scroll_event::operator==(scroll_event const &rhs) const {
+    return this->_delta_x == rhs._delta_x && this->_delta_y == rhs._delta_y;
+}
+
+bool scroll_event::operator!=(scroll_event const &rhs) const {
+    return !(*this == rhs);
+}
+
+double scroll_event::deltaX() const {
+    return this->_delta_x;
+}
+
+double scroll_event::deltaY() const {
+    return this->_delta_y;
+}
+
+double scroll_event::timestamp() const {
     return this->_timestamp;
 }
 
@@ -139,6 +193,14 @@ std::string yas::to_string(key_event const &event) {
 
 std::string yas::to_string(modifier_event const &event) {
     return "{flag:" + to_string(event.flag()) + "}";
+}
+
+std::string yas::to_string(ui::pinch_event const &event) {
+    return "{magnification:" + std::to_string(event.magnification()) + "}";
+}
+
+std::string yas::to_string(ui::scroll_event const &event) {
+    return "{x:" + std::to_string(event.deltaX()) + ", y:" + std::to_string(event.deltaY()) + "}";
 }
 
 std::string yas::to_string(event_phase const &phase) {
@@ -193,6 +255,10 @@ std::string yas::to_string(ui::event_type const &type) {
             return "key";
         case event_type::modifier:
             return "modifier";
+        case event_type::pinch:
+            return "pinch";
+        case event_type::scroll:
+            return "scroll";
     }
 }
 

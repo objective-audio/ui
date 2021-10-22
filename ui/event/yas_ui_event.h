@@ -35,17 +35,23 @@ struct event final {
     [[nodiscard]] static std::shared_ptr<event> make_shared(touch const &);
     [[nodiscard]] static std::shared_ptr<event> make_shared(key const &);
     [[nodiscard]] static std::shared_ptr<event> make_shared(modifier const &);
+    [[nodiscard]] static std::shared_ptr<event> make_shared(pinch const &);
+    [[nodiscard]] static std::shared_ptr<event> make_shared(scroll const &);
 
    private:
     std::shared_ptr<impl<cursor>> _cursor_impl = nullptr;
     std::shared_ptr<impl<touch>> _touch_impl = nullptr;
     std::shared_ptr<impl<key>> _key_impl = nullptr;
     std::shared_ptr<impl<modifier>> _modifier_impl = nullptr;
+    std::shared_ptr<impl<pinch>> _pinch_impl = nullptr;
+    std::shared_ptr<impl<scroll>> _scroll_impl = nullptr;
 
     explicit event(cursor const &);
     explicit event(touch const &);
     explicit event(key const &);
     explicit event(modifier const &);
+    explicit event(pinch const &);
+    explicit event(scroll const &);
 
     event(event const &) = delete;
     event(event &&) = delete;

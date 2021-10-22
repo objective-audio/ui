@@ -96,7 +96,7 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
     for (auto const &flag : all_flags) {
         if (flags & flag) {
             if (this->_modifier_events.count(flag) == 0) {
-                std::shared_ptr<event> const event = event::make_shared(modifier_tag);
+                std::shared_ptr<event> event = event::make_shared(modifier_tag);
                 event->set<modifier>(modifier_event{flag, timestamp});
                 event->set_phase(event_phase::began);
                 this->_modifier_events.emplace(std::make_pair(flag, std::move(event)));
@@ -112,6 +112,69 @@ void event_manager::input_modifier_event(modifier_flags const &flags, double con
 
                 this->_modifier_events.erase(flag);
             }
+        }
+    }
+}
+
+void event_manager::input_pinch_event(event_phase const phase, pinch_event const &value) {
+    if (phase == event_phase::began) {
+        if (this->_pinch_event) {
+            auto const &event = this->_pinch_event;
+            event->set_phase(event_phase::canceled);
+            this->_notifier->notify(event);
+            this->_pinch_event = nullptr;
+        }
+
+        this->_pinch_event = event::make_shared(pinch_tag);
+    }
+
+    if (this->_pinch_event) {
+        auto const &event = this->_pinch_event;
+        event->set<pinch>(value);
+        event->set_phase(phase);
+
+        this->_notifier->notify(event);
+
+        if (phase == event_phase::canceled || phase == event_phase::ended) {
+            this->_pinch_event = nullptr;
+        }
+    }
+}
+
+void event_manager::input_scroll_event(event_phase const phase, scroll_event const &value) {
+    if (phase == event_phase::began) {
+        if (this->_scroll_event) {
+            auto const &event = this->_scroll_event;
+            event->set_phase(event_phase::canceled);
+            this->_notifier->notify(event);
+            this->_scroll_event = nullptr;
+        }
+
+        this->_scroll_event = event::make_shared(scroll_tag);
+    }
+
+    if (this->_scroll_event) {
+        auto const &event = this->_scroll_event;
+        event->set<scroll>(value);
+
+        event_phase const out_phase = [&phase] {
+            if (phase == event_phase::began) {
+                return event_phase::began;
+            } else if (phase == event_phase::ended) {
+                return event_phase::ended;
+            } else if (phase == event_phase::canceled) {
+                return event_phase::canceled;
+            } else {
+                return event_phase::changed;
+            }
+        }();
+
+        event->set_phase(out_phase);
+
+        this->_notifier->notify(event);
+
+        if (out_phase == event_phase::ended || out_phase == event_phase::canceled) {
+            this->_scroll_event = nullptr;
         }
     }
 }
