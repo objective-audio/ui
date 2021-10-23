@@ -9,7 +9,7 @@
 #include <string>
 
 namespace yas::ui {
-enum class event_type { cursor, touch, key, modifier };
+enum class event_type { cursor, touch, key, modifier, pinch, scroll };
 
 enum class event_phase {
     none,
@@ -34,7 +34,7 @@ enum modifier_flags : uint32_t {
 
 struct cursor_event {
     cursor_event();
-    explicit cursor_event(ui::point, double const timestamp);
+    cursor_event(ui::point, double const timestamp);
 
     bool operator==(cursor_event const &) const;
     bool operator!=(cursor_event const &) const;
@@ -50,7 +50,7 @@ struct cursor_event {
 
 struct touch_event {
     touch_event();
-    explicit touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
+    touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
 
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
@@ -67,8 +67,7 @@ struct touch_event {
 
 struct key_event {
     key_event();
-    explicit key_event(uint16_t const key_code, std::string characters, std::string raw_characters,
-                       double const timestamp);
+    key_event(uint16_t const key_code, std::string characters, std::string raw_characters, double const timestamp);
 
     bool operator==(key_event const &) const;
     bool operator!=(key_event const &) const;
@@ -87,7 +86,7 @@ struct key_event {
 
 struct modifier_event {
     modifier_event();
-    explicit modifier_event(modifier_flags const, double const timestamp);
+    modifier_event(modifier_flags const, double const timestamp);
 
     bool operator==(modifier_event const &) const;
     bool operator!=(modifier_event const &) const;
@@ -97,6 +96,38 @@ struct modifier_event {
 
    private:
     modifier_flags _flag;
+    double _timestamp;
+};
+
+struct pinch_event {
+    pinch_event();
+    pinch_event(double const magnification, double const timestamp);
+
+    bool operator==(pinch_event const &) const;
+    bool operator!=(pinch_event const &) const;
+
+    double magnification() const;
+    double timestamp() const;
+
+   private:
+    double _magnification = 0.0f;
+    double _timestamp;
+};
+
+struct scroll_event {
+    scroll_event();
+    scroll_event(double const x, double const y, double const timestamp);
+
+    bool operator==(scroll_event const &) const;
+    bool operator!=(scroll_event const &) const;
+
+    double deltaX() const;
+    double deltaY() const;
+    double timestamp() const;
+
+   private:
+    double _delta_x = 0.0;
+    double _delta_y = 0.0;
     double _timestamp;
 };
 
@@ -116,10 +147,20 @@ struct modifier {
     using type = modifier_event;
 };
 
+struct pinch {
+    using type = pinch_event;
+};
+
+struct scroll {
+    using type = scroll_event;
+};
+
 static cursor constexpr cursor_tag{};
 static touch constexpr touch_tag{};
 static key constexpr key_tag{};
 static modifier constexpr modifier_tag{};
+static pinch constexpr pinch_tag{};
+static scroll constexpr scroll_tag{};
 }  // namespace yas::ui
 
 namespace yas {
@@ -127,6 +168,8 @@ std::string to_string(ui::cursor_event const &);
 std::string to_string(ui::touch_event const &);
 std::string to_string(ui::key_event const &);
 std::string to_string(ui::modifier_event const &);
+std::string to_string(ui::pinch_event const &);
+std::string to_string(ui::scroll_event const &);
 std::string to_string(ui::event_phase const &);
 std::string to_string(ui::modifier_flags const &);
 std::string to_string(ui::event_type const &type);

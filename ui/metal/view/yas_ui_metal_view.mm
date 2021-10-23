@@ -163,6 +163,25 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     }
 }
 
+- (void)_sendPinchEvent:(NSEvent *)event {
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_pinch_event(to_phase(event.phase), ui::pinch_event{event.magnification, event.timestamp});
+    }
+}
+
+- (void)_sendScrollEvent:(NSEvent *)event {
+    if (event.hasPreciseScrollingDeltas) {
+        if (auto const event_manager = self->_cpp.event_manager.lock()) {
+            auto const phase = to_phase(event.phase);
+            auto const momentum_phase = to_phase(event.momentumPhase);
+
+            event_manager->input_scroll_event(
+                (phase == event_phase::none) ? momentum_phase : phase,
+                ui::scroll_event{event.scrollingDeltaX, event.scrollingDeltaY, event.timestamp});
+        }
+    }
+}
+
 - (ui::point)_position:(NSEvent *)event {
     auto locInView = [self convertPoint:event.locationInWindow fromView:nil];
     auto viewSize = self.bounds.size;
@@ -251,6 +270,11 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (void)scrollWheel:(NSEvent *)event {
+    [self _sendScrollEvent:event];
+}
+
+- (void)magnifyWithEvent:(NSEvent *)event {
+    [self _sendPinchEvent:event];
 }
 
 - (void)keyDown:(NSEvent *)event {

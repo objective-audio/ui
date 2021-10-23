@@ -57,6 +57,12 @@ event::event(key const &) : _key_impl(std::make_shared<impl<key>>()) {
 event::event(modifier const &) : _modifier_impl(std::make_shared<impl<modifier>>()) {
 }
 
+event::event(pinch const &) : _pinch_impl(std::make_shared<impl<pinch>>()) {
+}
+
+event::event(scroll const &) : _scroll_impl(std::make_shared<impl<scroll>>()) {
+}
+
 event_phase event::phase() const {
     return this->_impl()->phase;
 }
@@ -72,6 +78,10 @@ event_type event::type() const {
         return event_type::key;
     } else if (type_info == typeid(ui::modifier)) {
         return event_type::modifier;
+    } else if (type_info == typeid(ui::pinch)) {
+        return event_type::pinch;
+    } else if (type_info == typeid(ui::scroll)) {
+        return event_type::scroll;
     } else {
         throw std::runtime_error("invalid type_info.");
     }
@@ -85,17 +95,30 @@ template <>
 void event::set<cursor>(cursor::type value) {
     this->_cursor_impl->value = value;
 }
+
 template <>
 void event::set<touch>(touch::type value) {
     this->_touch_impl->value = value;
 }
+
 template <>
 void event::set<key>(key::type value) {
     this->_key_impl->value = value;
 }
+
 template <>
 void event::set<modifier>(modifier::type value) {
     this->_modifier_impl->value = value;
+}
+
+template <>
+void event::set<pinch>(pinch::type value) {
+    this->_pinch_impl->value = value;
+}
+
+template <>
+void event::set<scroll>(scroll::type value) {
+    this->_scroll_impl->value = value;
 }
 
 template <>
@@ -118,6 +141,16 @@ modifier::type const &event::get<modifier>() const {
     return this->_modifier_impl->value;
 }
 
+template <>
+pinch::type const &event::get<pinch>() const {
+    return this->_pinch_impl->value;
+}
+
+template <>
+scroll::type const &event::get<scroll>() const {
+    return this->_scroll_impl->value;
+}
+
 uintptr_t event::identifier() const {
     return reinterpret_cast<uintptr_t>(this);
 }
@@ -131,6 +164,10 @@ bool event::operator==(event const &rhs) const {
         return this->_key_impl->is_equal(rhs._key_impl);
     } else if (this->_modifier_impl && rhs._modifier_impl) {
         return this->_modifier_impl->is_equal(rhs._modifier_impl);
+    } else if (this->_pinch_impl && rhs._pinch_impl) {
+        return this->_pinch_impl->is_equal(rhs._pinch_impl);
+    } else if (this->_scroll_impl && rhs._scroll_impl) {
+        return this->_scroll_impl->is_equal(rhs._scroll_impl);
     } else {
         return false;
     }
@@ -153,6 +190,10 @@ std::shared_ptr<event_impl_base> event::_impl() const {
         return this->_key_impl;
     } else if (this->_modifier_impl) {
         return this->_modifier_impl;
+    } else if (this->_pinch_impl) {
+        return this->_pinch_impl;
+    } else if (this->_scroll_impl) {
+        return this->_scroll_impl;
     } else {
         return nullptr;
     }
@@ -174,6 +215,14 @@ std::shared_ptr<event> event::make_shared(modifier const &modifier) {
     return std::shared_ptr<event>(new event{modifier});
 }
 
+std::shared_ptr<event> event::make_shared(pinch const &pinch) {
+    return std::shared_ptr<event>(new event{pinch});
+}
+
+std::shared_ptr<event> event::make_shared(scroll const &scroll) {
+    return std::shared_ptr<event>(new event{scroll});
+}
+
 #pragma mark -
 
 std::string yas::to_string(event const &event) {
@@ -192,6 +241,12 @@ std::string yas::to_string(event const &event) {
     } else if (event.type_info() == typeid(modifier)) {
         type = "modifier";
         values = to_string(event.get<modifier>());
+    } else if (event.type_info() == typeid(pinch)) {
+        type = "pinch";
+        values = to_string(event.get<pinch>());
+    } else if (event.type_info() == typeid(scroll)) {
+        type = "scroll";
+        values = to_string(event.get<scroll>());
     }
 
     return "{phase:" + to_string(event.phase()) + ", type:" + type + ", values:" + values + "}";
