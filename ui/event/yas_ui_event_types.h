@@ -175,6 +175,12 @@ std::string to_string(ui::modifier_flags const &);
 std::string to_string(ui::event_type const &type);
 }  // namespace yas
 
+std::ostream &operator<<(std::ostream &, yas::ui::cursor_event const &);
+std::ostream &operator<<(std::ostream &, yas::ui::touch_event const &);
+std::ostream &operator<<(std::ostream &, yas::ui::key_event const &);
+std::ostream &operator<<(std::ostream &, yas::ui::modifier_event const &);
+std::ostream &operator<<(std::ostream &, yas::ui::pinch_event const &);
+std::ostream &operator<<(std::ostream &, yas::ui::scroll_event const &);
 std::ostream &operator<<(std::ostream &, yas::ui::event_phase const &);
 std::ostream &operator<<(std::ostream &, yas::ui::modifier_flags const &);
 std::ostream &operator<<(std::ostream &, yas::ui::event_type const &event_type);

@@ -207,3 +207,5 @@ std::ostream &operator<<(std::ostream &os, yas::ui::node_update_reason const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::batch_building_type const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::mesh_data_update_reason const &);
 std::ostream &operator<<(std::ostream &os, yas::ui::mesh_update_reason const &);
+std::ostream &operator<<(std::ostream &os, yas::ui::effect_update_reason const &);
+std::ostream &operator<<(std::ostream &os, yas::ui::effect_updates_t const &);

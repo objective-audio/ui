@@ -262,6 +262,36 @@ std::string yas::to_string(ui::event_type const &type) {
     }
 }
 
+std::ostream &operator<<(std::ostream &os, yas::ui::cursor_event const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::touch_event const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::key_event const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::modifier_event const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::pinch_event const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::scroll_event const &value) {
+    os << to_string(value);
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, yas::ui::event_phase const &phase) {
     os << to_string(phase);
     return os;

@@ -135,6 +135,16 @@ std::ostream &operator<<(std::ostream &os, yas::ui::mesh_update_reason const &re
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, yas::ui::effect_update_reason const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::ui::effect_updates_t const &value) {
+    os << to_string(value);
+    return os;
+}
+
 #pragma mark -
 
 std::string yas::to_string(ui::effect_update_reason const &reason) {
