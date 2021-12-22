@@ -256,13 +256,13 @@ observing::syncable node::observe_render_target(
 
 void node::add_sub_node(std::shared_ptr<node> const &sub_node) {
     sub_node->remove_from_super_node();
-    this->_children.emplace_back(sub_node);
-    this->_add_sub_node(this->_children.back());
+    this->_sub_nodes.emplace_back(sub_node);
+    this->_add_sub_node(this->_sub_nodes.back());
 }
 
 void node::add_sub_node(std::shared_ptr<node> const &sub_node, std::size_t const idx) {
     sub_node->remove_from_super_node();
-    auto iterator = this->_children.emplace(this->_children.begin() + idx, sub_node);
+    auto iterator = this->_sub_nodes.emplace(this->_sub_nodes.begin() + idx, sub_node);
     this->_add_sub_node(*iterator);
 }
 
@@ -273,11 +273,11 @@ void node::remove_from_super_node() {
 }
 
 std::vector<std::shared_ptr<node>> const &node::children() const {
-    return this->_children;
+    return this->_sub_nodes;
 }
 
 std::vector<std::shared_ptr<node>> const &node::sub_nodes() const {
-    return this->_children;
+    return this->_sub_nodes;
 }
 
 std::shared_ptr<node> node::parent() const {
@@ -349,7 +349,7 @@ setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_
         }
     }
 
-    for (auto &sub_node : this->_children) {
+    for (auto &sub_node : this->_sub_nodes) {
         if (auto ul = unless(sub_node->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
@@ -400,7 +400,7 @@ void node::fetch_updates(tree_updates &tree_updates) {
             }
         }
 
-        for (auto &sub_node : this->_children) {
+        for (auto &sub_node : this->_sub_nodes) {
             renderable_node::cast(sub_node)->fetch_updates(tree_updates);
         }
     } else if (this->_updates.test(node_update_reason::enabled)) {
@@ -454,7 +454,7 @@ void node::build_render_info(render_info &render_info) {
             if (!needs_render) {
                 tree_updates tree_updates;
 
-                for (auto &sub_node : this->_children) {
+                for (auto &sub_node : this->_sub_nodes) {
                     renderable_node::cast(sub_node)->fetch_updates(tree_updates);
                 }
 
@@ -473,7 +473,7 @@ void node::build_render_info(render_info &render_info) {
                     auto &projection_matrix = renderable->projection_matrix();
                     simd::float4x4 const matrix = projection_matrix * this->_matrix;
                     simd::float4x4 const mesh_matrix = projection_matrix;
-                    for (auto &sub_node : this->_children) {
+                    for (auto &sub_node : this->_sub_nodes) {
                         target_render_info.matrix = matrix;
                         target_render_info.mesh_matrix = mesh_matrix;
                         sub_node->build_render_info(target_render_info);
@@ -489,7 +489,7 @@ void node::build_render_info(render_info &render_info) {
         } else if (auto const &batch = _batch->value()) {
             tree_updates tree_updates;
 
-            for (auto const &sub_node : this->_children) {
+            for (auto const &sub_node : this->_sub_nodes) {
                 renderable_node::cast(sub_node)->fetch_updates(tree_updates);
             }
 
@@ -503,7 +503,7 @@ void node::build_render_info(render_info &render_info) {
                 batch_renderable->begin_render_meshes_building(building_type);
             }
 
-            for (auto &sub_node : this->_children) {
+            for (auto &sub_node : this->_sub_nodes) {
                 batch_render_info.matrix = this->_matrix;
                 batch_render_info.mesh_matrix = matrix_identity_float4x4;
                 sub_node->build_render_info(batch_render_info);
@@ -518,7 +518,7 @@ void node::build_render_info(render_info &render_info) {
                 render_info.render_encodable->append_mesh(mesh);
             }
         } else {
-            for (auto const &sub_node : this->_children) {
+            for (auto const &sub_node : this->_sub_nodes) {
                 render_info.matrix = this->_matrix;
                 render_info.mesh_matrix = mesh_matrix;
                 sub_node->build_render_info(render_info);
@@ -532,7 +532,7 @@ bool node::is_rendering_color_exists() {
         return false;
     }
 
-    for (auto &sub_node : this->_children) {
+    for (auto &sub_node : this->_sub_nodes) {
         if (renderable_node::cast(sub_node)->is_rendering_color_exists()) {
             return true;
         }
@@ -557,7 +557,7 @@ void node::clear_updates() {
             render_target->clear_updates();
         }
 
-        for (auto &sub_node : this->_children) {
+        for (auto &sub_node : this->_sub_nodes) {
             renderable_node::cast(sub_node)->clear_updates();
         }
     } else {
@@ -583,7 +583,7 @@ void node::_remove_sub_node(node *sub_node) {
     sub_node->_parent->set_value(std::move(weak_node));
     sub_node->_weak_parent.reset();
 
-    std::erase_if(this->_children, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
+    std::erase_if(this->_sub_nodes, [&sub_node](std::shared_ptr<node> const &node) { return node.get() == sub_node; });
 
     sub_node->_notifier->notify(method::removed_from_super);
 
@@ -591,7 +591,7 @@ void node::_remove_sub_node(node *sub_node) {
 }
 
 void node::_remove_sub_nodes_on_destructor() {
-    for (auto const &sub_node : this->_children) {
+    for (auto const &sub_node : this->_sub_nodes) {
         std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
         sub_node->_parent->set_value(std::move(weak_node));
         sub_node->_weak_parent.reset();
