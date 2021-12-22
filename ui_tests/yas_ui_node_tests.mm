@@ -191,6 +191,48 @@ struct test_render_encoder : render_encodable {
     XCTAssertFalse(sub_node2->parent());
 }
 
+- (void)test_remove_sub_node {
+    auto parent_node = node::make_shared();
+
+    auto sub_node1 = node::make_shared();
+    auto sub_node2 = node::make_shared();
+
+    parent_node->add_sub_node(sub_node1);
+    parent_node->add_sub_node(sub_node2);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 2);
+
+    parent_node->remove_sub_node(0);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 1);
+    XCTAssertEqual(parent_node->sub_nodes().at(0), sub_node2);
+    XCTAssertFalse(sub_node1->parent());
+    XCTAssertTrue(sub_node2->parent());
+
+    parent_node->remove_sub_node(0);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 0);
+    XCTAssertFalse(sub_node2->parent());
+}
+
+- (void)test_remove_all_sub_nodes {
+    auto parent_node = node::make_shared();
+
+    auto sub_node1 = node::make_shared();
+    auto sub_node2 = node::make_shared();
+
+    parent_node->add_sub_node(sub_node1);
+    parent_node->add_sub_node(sub_node2);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 2);
+
+    parent_node->remove_all_sub_nodes();
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 0);
+    XCTAssertFalse(sub_node1->parent());
+    XCTAssertFalse(sub_node2->parent());
+}
+
 - (void)test_add_sub_node_with_index {
     auto parent_node = node::make_shared();
 
