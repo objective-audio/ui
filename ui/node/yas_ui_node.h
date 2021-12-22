@@ -80,7 +80,6 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     void remove_from_super_node();
 
     [[nodiscard]] std::vector<std::shared_ptr<node>> const &children() const;
-    [[nodiscard]] std::vector<std::shared_ptr<node>> &children();
     [[nodiscard]] std::shared_ptr<node> parent() const;
 
     [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
