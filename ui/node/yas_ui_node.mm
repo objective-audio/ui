@@ -276,6 +276,10 @@ std::vector<std::shared_ptr<node>> const &node::children() const {
     return this->_children;
 }
 
+std::vector<std::shared_ptr<node>> const &node::sub_nodes() const {
+    return this->_children;
+}
+
 std::shared_ptr<node> node::parent() const {
     return this->_parent->value().lock();
 }
