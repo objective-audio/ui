@@ -66,7 +66,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertFalse(node->collider());
     XCTAssertFalse(node->render_target());
 
-    XCTAssertEqual(node->children().size(), 0);
+    XCTAssertEqual(node->sub_nodes().size(), 0);
     XCTAssertFalse(node->parent());
 
     XCTAssertTrue(node->is_enabled());
@@ -159,37 +159,77 @@ struct test_render_encoder : render_encodable {
     auto sub_node1 = node::make_shared();
     auto sub_node2 = node::make_shared();
 
-    XCTAssertEqual(parent_node->children().size(), 0);
+    XCTAssertEqual(parent_node->sub_nodes().size(), 0);
     XCTAssertFalse(sub_node1->parent());
     XCTAssertFalse(sub_node2->parent());
 
     parent_node->add_sub_node(sub_node1);
 
-    XCTAssertEqual(parent_node->children().size(), 1);
+    XCTAssertEqual(parent_node->sub_nodes().size(), 1);
     XCTAssertTrue(sub_node1->parent());
 
     parent_node->add_sub_node(sub_node2);
 
-    XCTAssertEqual(parent_node->children().size(), 2);
+    XCTAssertEqual(parent_node->sub_nodes().size(), 2);
     XCTAssertTrue(sub_node1->parent());
     XCTAssertTrue(sub_node2->parent());
 
-    XCTAssertEqual(parent_node->children().at(0), sub_node1);
-    XCTAssertEqual(parent_node->children().at(1), sub_node2);
     XCTAssertEqual(sub_node1->parent(), parent_node);
     XCTAssertEqual(sub_node2->parent(), parent_node);
 
     sub_node1->remove_from_super_node();
 
-    XCTAssertEqual(parent_node->children().size(), 1);
+    XCTAssertEqual(parent_node->sub_nodes().size(), 1);
     XCTAssertFalse(sub_node1->parent());
     XCTAssertTrue(sub_node2->parent());
 
-    XCTAssertEqual(parent_node->children().at(0), sub_node2);
+    XCTAssertEqual(parent_node->sub_nodes().at(0), sub_node2);
 
     sub_node2->remove_from_super_node();
 
-    XCTAssertEqual(parent_node->children().size(), 0);
+    XCTAssertEqual(parent_node->sub_nodes().size(), 0);
+    XCTAssertFalse(sub_node2->parent());
+}
+
+- (void)test_remove_sub_node {
+    auto parent_node = node::make_shared();
+
+    auto sub_node1 = node::make_shared();
+    auto sub_node2 = node::make_shared();
+
+    parent_node->add_sub_node(sub_node1);
+    parent_node->add_sub_node(sub_node2);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 2);
+
+    parent_node->remove_sub_node(0);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 1);
+    XCTAssertEqual(parent_node->sub_nodes().at(0), sub_node2);
+    XCTAssertFalse(sub_node1->parent());
+    XCTAssertTrue(sub_node2->parent());
+
+    parent_node->remove_sub_node(0);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 0);
+    XCTAssertFalse(sub_node2->parent());
+}
+
+- (void)test_remove_all_sub_nodes {
+    auto parent_node = node::make_shared();
+
+    auto sub_node1 = node::make_shared();
+    auto sub_node2 = node::make_shared();
+
+    parent_node->add_sub_node(sub_node1);
+    parent_node->add_sub_node(sub_node2);
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 2);
+
+    parent_node->remove_all_sub_nodes();
+
+    XCTAssertEqual(parent_node->sub_nodes().size(), 0);
+    XCTAssertFalse(sub_node1->parent());
     XCTAssertFalse(sub_node2->parent());
 }
 
@@ -204,9 +244,9 @@ struct test_render_encoder : render_encodable {
     parent_node->add_sub_node(sub_node3);
     parent_node->add_sub_node(sub_node2, 1);
 
-    XCTAssertEqual(parent_node->children().at(0), sub_node1);
-    XCTAssertEqual(parent_node->children().at(1), sub_node2);
-    XCTAssertEqual(parent_node->children().at(2), sub_node3);
+    XCTAssertEqual(parent_node->sub_nodes().at(0), sub_node1);
+    XCTAssertEqual(parent_node->sub_nodes().at(1), sub_node2);
+    XCTAssertEqual(parent_node->sub_nodes().at(2), sub_node3);
 }
 
 - (void)test_parent_changed_when_add_sub_node {
@@ -217,13 +257,13 @@ struct test_render_encoder : render_encodable {
 
     parent_node1->add_sub_node(sub_node);
 
-    XCTAssertEqual(parent_node1->children().size(), 1);
-    XCTAssertEqual(parent_node2->children().size(), 0);
+    XCTAssertEqual(parent_node1->sub_nodes().size(), 1);
+    XCTAssertEqual(parent_node2->sub_nodes().size(), 0);
 
     parent_node2->add_sub_node(sub_node);
 
-    XCTAssertEqual(parent_node1->children().size(), 0);
-    XCTAssertEqual(parent_node2->children().size(), 1);
+    XCTAssertEqual(parent_node1->sub_nodes().size(), 0);
+    XCTAssertEqual(parent_node2->sub_nodes().size(), 1);
 }
 
 - (void)test_observe_add_and_remove_node {

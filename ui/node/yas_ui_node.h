@@ -77,10 +77,12 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
 
     void add_sub_node(std::shared_ptr<node> const &);
     void add_sub_node(std::shared_ptr<node> const &, std::size_t const);
+    void remove_sub_node(std::size_t const);
+    void remove_all_sub_nodes();
     void remove_from_super_node();
 
-    [[nodiscard]] std::vector<std::shared_ptr<node>> const &children() const;
-    [[nodiscard]] std::vector<std::shared_ptr<node>> &children();
+    [[nodiscard]] [[deprecated]] std::vector<std::shared_ptr<node>> const &children() const;
+    [[nodiscard]] std::vector<std::shared_ptr<node>> const &sub_nodes() const;
     [[nodiscard]] std::shared_ptr<node> parent() const;
 
     [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
@@ -118,7 +120,7 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     observing::cancellable_ptr _y_canceller = nullptr;
     observing::cancellable_ptr _position_canceller = nullptr;
 
-    std::vector<std::shared_ptr<node>> _children;
+    std::vector<std::shared_ptr<node>> _sub_nodes;
 
     mutable simd::float4x4 _matrix = matrix_identity_float4x4;
     mutable simd::float4x4 _local_matrix = matrix_identity_float4x4;

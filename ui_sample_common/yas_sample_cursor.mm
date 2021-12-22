@@ -37,7 +37,7 @@ static observing::endable _observe_event(std::shared_ptr<node> const &node,
                 node->set_position(node->parent()->convert_position(value.position()));
 
                 if (auto const action_manager = weak_action_manager.lock()) {
-                    for (auto child_node : node->children()) {
+                    for (auto child_node : node->sub_nodes()) {
                         auto make_fade_action = [](std::shared_ptr<ui::node> const &node, float const alpha) {
                             return make_action(
                                 {.target = node, .begin_alpha = node->alpha(), .end_alpha = alpha, .duration = 0.5});
