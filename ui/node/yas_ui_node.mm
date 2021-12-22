@@ -266,6 +266,34 @@ void node::add_sub_node(std::shared_ptr<node> const &sub_node, std::size_t const
     this->_add_sub_node(*iterator);
 }
 
+void node::remove_sub_node(std::size_t const idx) {
+    if (idx < this->_sub_nodes.size()) {
+        this->_sub_nodes.at(idx)->remove_from_super_node();
+    }
+}
+
+void node::remove_all_sub_nodes() {
+    if (this->_sub_nodes.size() == 0) {
+        return;
+    }
+
+    std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
+
+    for (auto const &sub_node : this->_sub_nodes) {
+        sub_node->_parent->set_value(std::move(weak_node));
+        sub_node->_weak_parent.reset();
+    }
+
+    auto const sub_nodes = std::move(this->_sub_nodes);
+    this->_sub_nodes.clear();
+
+    for (auto const &sub_node : sub_nodes) {
+        sub_node->_notifier->notify(method::removed_from_super);
+    }
+
+    this->_set_updated(node_update_reason::children);
+}
+
 void node::remove_from_super_node() {
     if (auto parent = this->_parent->value().lock()) {
         parent->_remove_sub_node(this);

@@ -77,6 +77,8 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
 
     void add_sub_node(std::shared_ptr<node> const &);
     void add_sub_node(std::shared_ptr<node> const &, std::size_t const);
+    void remove_sub_node(std::size_t const);
+    void remove_all_sub_nodes();
     void remove_from_super_node();
 
     [[nodiscard]] [[deprecated]] std::vector<std::shared_ptr<node>> const &children() const;
