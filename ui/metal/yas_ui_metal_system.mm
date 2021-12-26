@@ -212,7 +212,7 @@ void metal_system::mesh_encode(std::shared_ptr<mesh> const &mesh, id<MTLRenderCo
                  indexBufferOffset:index_data->byte_offset()];
 
     this->_uniforms_buffer_offset += _uniforms2d_size;
-    assert(this->_uniforms_buffer_offset + _uniforms2d_size < currentUniformsBuffer.length);
+    assert(this->_uniforms_buffer_offset + _uniforms2d_size <= currentUniformsBuffer.length);
 }
 
 void metal_system::push_render_target(std::shared_ptr<render_stackable> const &stackable,
