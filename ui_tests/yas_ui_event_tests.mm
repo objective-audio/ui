@@ -541,8 +541,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
-    XCTAssertFalse(began_called);
-    XCTAssertFalse(ended_called);
+    XCTAssertTrue(ended_called);
+    XCTAssertTrue(began_called);
+    began_called = false;
+    ended_called = false;
 
     manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
@@ -769,8 +771,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     manager_for_view->input_key_event(event_phase::began, key_event{1, "", "", 0.0});
 
-    XCTAssertFalse(began_called);
-    XCTAssertFalse(ended_called);
+    XCTAssertTrue(began_called);
+    XCTAssertTrue(ended_called);
+    began_called = false;
+    ended_called = false;
 
     manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
