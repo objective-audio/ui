@@ -69,8 +69,14 @@ void event_manager::input_key_event(event_phase const phase, key_event const &va
 
     if (phase == event_phase::began) {
         if (this->_key_events.count(key_code) > 0) {
-            return;
+            auto const &event = this->_key_events.at(key_code);
+            event->set_phase(event_phase::ended);
+
+            this->_notifier->notify(event);
+
+            this->_key_events.erase(key_code);
         }
+
         std::shared_ptr<event> event = event::make_shared(key_tag);
         this->_key_events.emplace(std::make_pair(key_code, std::move(event)));
     }
