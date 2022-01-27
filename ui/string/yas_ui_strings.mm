@@ -63,6 +63,10 @@ region strings::actual_frame() const {
     return this->_collection_layout->actual_frame();
 }
 
+std::vector<region> const &strings::actual_cell_regions() const {
+    return this->_collection_layout->actual_cell_regions();
+}
+
 std::shared_ptr<layout_region_guide> const &strings::preferred_layout_guide() const {
     return this->_collection_layout->preferred_layout_guide();
 }
@@ -85,6 +89,10 @@ observing::syncable strings::observe_line_height(observing::caller<std::optional
 
 observing::syncable strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
     return this->_collection_layout->observe_alignment(std::move(handler));
+}
+
+observing::syncable strings::observe_actual_cell_regions(std::function<void(std::vector<region> const &)> &&handler) {
+    return this->_collection_layout->observe_actual_cell_regions(std::move(handler));
 }
 
 void strings::_prepare_observings() {
