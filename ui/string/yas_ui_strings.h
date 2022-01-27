@@ -21,6 +21,7 @@ struct strings final {
     [[nodiscard]] std::optional<float> const &line_height() const;
     [[nodiscard]] ui::layout_alignment const &alignment() const;
     [[nodiscard]] region actual_frame() const;
+    [[nodiscard]] std::vector<region> const &actual_cell_regions() const;
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &preferred_layout_guide() const;
     [[nodiscard]] std::shared_ptr<layout_region_source> actual_layout_source() const;
