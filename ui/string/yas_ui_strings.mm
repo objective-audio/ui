@@ -91,6 +91,10 @@ observing::syncable strings::observe_alignment(observing::caller<layout_alignmen
     return this->_collection_layout->observe_alignment(std::move(handler));
 }
 
+observing::syncable strings::observe_actual_cell_regions(std::function<void(std::vector<region> const &)> &&handler) {
+    return this->_collection_layout->observe_actual_cell_regions(std::move(handler));
+}
+
 void strings::_prepare_observings() {
     this->_font_atlas->observe_texture_updated([this](auto const &) { this->_update_collection_layout(); })
         .end()
