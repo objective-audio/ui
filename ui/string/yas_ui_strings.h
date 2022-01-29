@@ -13,10 +13,12 @@
 namespace yas::ui {
 struct strings final {
     void set_text(std::string);
+    void set_attributes(std::vector<strings_attribute> &&);
     void set_line_height(std::optional<float>);
     void set_alignment(ui::layout_alignment const);
 
     [[nodiscard]] std::string const &text() const;
+    [[nodiscard]] std::vector<strings_attribute> const &attributes() const;
     [[nodiscard]] std::shared_ptr<ui::font_atlas> const &font_atlas() const;
     [[nodiscard]] std::optional<float> const &line_height() const;
     [[nodiscard]] ui::layout_alignment const &alignment() const;
@@ -29,6 +31,8 @@ struct strings final {
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
     [[nodiscard]] observing::syncable observe_text(observing::caller<std::string>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_attributes(
+        std::function<void(std::vector<strings_attribute> const &)> &&);
     [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
     [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
     [[nodiscard]] observing::syncable observe_actual_cell_regions(std::function<void(std::vector<region> const &)> &&);
@@ -41,6 +45,7 @@ struct strings final {
     std::shared_ptr<ui::rect_plane> const _rect_plane;
 
     observing::value::holder_ptr<std::string> const _text;
+    observing::value::holder_ptr<std::vector<strings_attribute>> const _attributes;
     std::shared_ptr<ui::font_atlas> const _font_atlas;
     observing::value::holder_ptr<std::optional<float>> const _line_height;
 
@@ -56,7 +61,9 @@ struct strings final {
 
     void _prepare_observings();
     void _update_collection_layout();
-    void _update_vertices();
+    void _update_data_rects();
+    void _update_data_rect_colors();
+    simd::float4 _rect_color_at(std::size_t const) const;
     float _cell_height();
 };
 }  // namespace yas::ui
