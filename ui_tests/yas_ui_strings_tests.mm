@@ -33,8 +33,13 @@ using namespace yas::ui;
 
     region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
 
+    std::vector<strings_attribute> const attributes{
+        {.range = std::nullopt, .color = ui::white_color(), .alpha = 1.0f},
+        {.range = index_range{.index = 1, .length = 2}, .color = ui::red_color(), .alpha = 0.5f}};
+
     auto strings = strings::make_shared({.max_word_count = 1,
                                          .text = "test_text",
+                                         .attributes = attributes,
                                          .line_height = 10.0f,
                                          .frame = frame,
                                          .alignment = layout_alignment::mid},
@@ -43,6 +48,8 @@ using namespace yas::ui;
     XCTAssertTrue(strings);
     XCTAssertEqual(strings->rect_plane()->data()->dynamic_vertex_data()->max_count(), 4);
     XCTAssertEqual(strings->text(), "test_text");
+    XCTAssertEqual(strings->attributes().size(), 2);
+    XCTAssertEqual(strings->attributes(), attributes);
     XCTAssertEqual(strings->font_atlas(), font_atlas);
     XCTAssertEqual(strings->line_height(), 10.0f);
     XCTAssertEqual(strings->alignment(), layout_alignment::mid);
@@ -135,6 +142,37 @@ using namespace yas::ui;
     strings->set_alignment(layout_alignment::max);
 
     XCTAssertEqual(notified, layout_alignment::max);
+}
+
+- (void)test_observe_actual_cell_regions {
+    auto const strings = [self make_strings];
+
+    std::vector<region> notified;
+
+    auto canceller =
+        strings->observe_actual_cell_regions([&notified](auto const &regions) { notified = regions; }).sync();
+
+    XCTAssertEqual(notified.size(), 0);
+
+    // metal_textureをセットしないと更新されない
+}
+
+- (void)test_observe_attributes {
+    auto const strings = [self make_strings];
+
+    std::vector<strings_attribute> notified;
+
+    auto canceller = strings->observe_attributes([&notified](auto const &attributes) { notified = attributes; }).sync();
+
+    XCTAssertEqual(notified.size(), 0);
+
+    strings->set_attributes({{.range = index_range{.index = 1, .length = 2}, .color = ui::blue_color(), .alpha = 0.5}});
+
+    XCTAssertEqual(notified.size(), 1);
+
+    XCTAssertEqual(notified,
+                   (std::vector<strings_attribute>{
+                       {.range = index_range{.index = 1, .length = 2}, .color = ui::blue_color(), .alpha = 0.5}}));
 }
 
 - (std::shared_ptr<ui::strings>)make_strings {
