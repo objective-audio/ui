@@ -21,6 +21,7 @@ strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atl
           {.frame = args.frame, .alignment = args.alignment, .row_order = layout_order::descending})),
       _rect_plane(rect_plane::make_shared(args.max_word_count)),
       _text(observing::value::holder<std::string>::make_shared(std::move(args.text))),
+      _attributes(observing::value::holder<std::vector<strings_attribute>>::make_shared(std::move(args.attributes))),
       _font_atlas(atlas),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
@@ -28,11 +29,15 @@ strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atl
 
     this->_prepare_observings();
     this->_update_collection_layout();
-    this->_update_vertices();
+    this->_update_data_rects();
 }
 
 void strings::set_text(std::string text) {
     this->_text->set_value(std::move(text));
+}
+
+void strings::set_attributes(std::vector<strings_attribute> &&attributes) {
+    this->_attributes->set_value(std::move(attributes));
 }
 
 void strings::set_line_height(std::optional<float> line_height) {
@@ -45,6 +50,10 @@ void strings::set_alignment(layout_alignment const alignment) {
 
 std::string const &strings::text() const {
     return this->_text->value();
+}
+
+std::vector<strings_attribute> const &strings::attributes() const {
+    return this->_attributes->value();
 }
 
 std::shared_ptr<font_atlas> const &strings::font_atlas() const {
@@ -83,6 +92,10 @@ observing::syncable strings::observe_text(observing::caller<std::string>::handle
     return this->_text->observe(std::move(handler));
 }
 
+observing::syncable strings::observe_attributes(std::function<void(std::vector<strings_attribute> const &)> &&handler) {
+    return this->_attributes->observe(std::move(handler));
+}
+
 observing::syncable strings::observe_line_height(observing::caller<std::optional<float>>::handler_f &&handler) {
     return this->_line_height->observe(std::move(handler));
 }
@@ -101,10 +114,11 @@ void strings::_prepare_observings() {
         ->add_to(this->_pool);
 
     this->_text->observe([this](auto const &) { this->_update_collection_layout(); }).end()->add_to(this->_pool);
+    this->_attributes->observe([this](auto const &) { this->_update_data_rect_colors(); }).end()->add_to(this->_pool);
 
     this->_line_height->observe([this](auto const &) { this->_update_collection_layout(); }).end()->add_to(this->_pool);
 
-    this->_collection_layout->observe_actual_cell_regions([this](auto const &) { this->_update_vertices(); })
+    this->_collection_layout->observe_actual_cell_regions([this](auto const &) { this->_update_data_rects(); })
         .end()
         ->add_to(this->_pool);
 }
@@ -148,10 +162,10 @@ void strings::_update_collection_layout() {
     this->_collection_text = collection_text;
     this->_collection_layout->set_lines(std::move(lines));
     this->_collection_layout->set_preferred_cell_count(collection_text.size());
-    this->_update_vertices();
+    this->_update_data_rects();
 }
 
-void strings::_update_vertices() {
+void strings::_update_data_rects() {
     auto const cell_count = std::min(this->_collection_layout->actual_cell_count(), this->_collection_text.size());
 
     if (cell_count == 0) {
@@ -178,7 +192,35 @@ void strings::_update_vertices() {
         }
 
         rect_plane_data->set_rect_vertex(str_rect.v, idx);
+        rect_plane_data->set_rect_color(this->_rect_color_at(idx), idx);
     }
+}
+
+void strings::_update_data_rect_colors() {
+    auto const &rect_plane_data = this->_rect_plane->data();
+
+    auto each = make_fast_each(rect_plane_data->rect_count());
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        auto const &color = this->_rect_color_at(idx);
+
+        rect_plane_data->set_rect_color(color, idx);
+    }
+}
+
+simd::float4 strings::_rect_color_at(std::size_t const idx) const {
+    auto const &attributes = this->_attributes->value();
+
+    for (auto it = attributes.rbegin(), end = attributes.rend(); it != end; ++it) {
+        auto const &range = it->range;
+        if (range.has_value() && !range.value().contains(idx)) {
+            continue;
+        }
+
+        return to_float4(it->color, it->alpha);
+    }
+
+    return to_float4(ui::white_color(), 1.0f);
 }
 
 float strings::_cell_height() {
