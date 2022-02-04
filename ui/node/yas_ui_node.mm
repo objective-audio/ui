@@ -521,6 +521,10 @@ void node::build_render_info(render_info &render_info) {
                 renderable_node::cast(sub_node)->fetch_updates(tree_updates);
             }
 
+            if (this->_updates.test(node_update_reason::children)) {
+                tree_updates.node_updates.set(node_update_reason::children);
+            }
+
             auto const building_type = tree_updates.batch_building_type();
 
             ui::render_info batch_render_info{.detector = render_info.detector};
