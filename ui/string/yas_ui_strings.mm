@@ -208,7 +208,7 @@ void strings::_update_data_rect_colors() {
     }
 }
 
-simd::float4 strings::_rect_color_at(std::size_t const idx) const {
+ui::color strings::_rect_color_at(std::size_t const idx) const {
     auto const &attributes = this->_attributes->value();
 
     for (auto it = attributes.rbegin(), end = attributes.rend(); it != end; ++it) {
@@ -217,10 +217,10 @@ simd::float4 strings::_rect_color_at(std::size_t const idx) const {
             continue;
         }
 
-        return to_float4(it->color, it->alpha);
+        return it->color;
     }
 
-    return to_float4(ui::white_color(), 1.0f);
+    return to_color(ui::white_color(), 1.0f);
 }
 
 float strings::_cell_height() {
