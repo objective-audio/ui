@@ -42,7 +42,7 @@ std::shared_ptr<texture> const &mesh::texture() const {
     return this->_texture;
 }
 
-simd::float4 const &mesh::color() const {
+ui::color const &mesh::color() const {
     return this->_color;
 }
 
@@ -80,18 +80,14 @@ void mesh::set_texture(std::shared_ptr<ui::texture> const &texture) {
     }
 }
 
-void mesh::set_color(simd::float4 const &color) {
-    if (!yas::is_equal(this->_color, color)) {
+void mesh::set_color(ui::color const &color) {
+    if (this->_color != color) {
         this->_color = color;
 
         if (this->_is_mesh_data_exists() && !this->_use_mesh_color) {
             this->_updates.set(mesh_update_reason::color);
         }
     }
-}
-
-void mesh::set_color(ui::color const &color) {
-    this->set_color(color.v);
 }
 
 void mesh::set_use_mesh_color(bool const use) {
@@ -183,7 +179,7 @@ void mesh::batch_render(batch_render_mesh_info &mesh_info, batch_building_type c
                 auto &src_vertex = src_vertices[idx];
                 dst_vertex.position = to_float2(matrix * to_float4(src_vertex.position));
                 dst_vertex.tex_coord = src_vertex.tex_coord;
-                dst_vertex.color = is_use_mesh_color ? src_vertex.color * color : color;
+                dst_vertex.color = is_use_mesh_color ? src_vertex.color * color.v : color.v;
             }
         });
 

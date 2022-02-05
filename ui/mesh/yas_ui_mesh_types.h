@@ -8,7 +8,7 @@
 
 namespace yas::ui {
 struct mesh_args final {
-    simd::float4 color = 1.0f;
+    ui::color color = {.v = 1.0f};
     bool use_mesh_color = false;
     ui::primitive_type primitive_type = ui::primitive_type::triangle;
 };
