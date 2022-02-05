@@ -23,3 +23,7 @@ std::ostream &operator<<(std::ostream &os, yas::ui::color const &color) {
     os << to_string(color);
     return os;
 }
+
+ui::color yas::to_color(ui::rgb_color const &rgb, float const alpha) {
+    return {rgb.red, rgb.green, rgb.blue, alpha};
+}
