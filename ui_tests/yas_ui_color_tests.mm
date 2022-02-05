@@ -90,4 +90,14 @@ using namespace yas::ui;
     XCTAssertFalse(cz1 != cz2);
 }
 
+- (void)test_rgb_to_color {
+    rgb_color const rgb{1.0f, 2.0f, 3.0f};
+    auto const color = to_color(rgb, 4.0f);
+
+    XCTAssertEqual(color.red, 1.0f);
+    XCTAssertEqual(color.green, 2.0f);
+    XCTAssertEqual(color.blue, 3.0f);
+    XCTAssertEqual(color.alpha, 4.0f);
+}
+
 @end
