@@ -10,7 +10,7 @@
 #include <string>
 
 namespace yas::ui {
-struct rgb_color {
+struct rgb_color final {
     union {
         struct {
             float red;

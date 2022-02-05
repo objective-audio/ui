@@ -14,7 +14,7 @@ using namespace yas::ui;
 
 @implementation yas_ui_background_tests
 
-- (void)test_color {
+- (void)test_rgb_color {
     auto const background = background::make_shared();
 
     XCTAssertTrue(background->rgb_color() == (rgb_color{.v = 1.0f}));

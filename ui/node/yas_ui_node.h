@@ -50,6 +50,10 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     [[nodiscard]] float const &alpha() const;
     [[nodiscard]] observing::syncable observe_alpha(observing::caller<float>::handler_f &&);
 
+    void set_color(ui::color &&);
+    void set_color(ui::color const &);
+    [[nodiscard]] ui::color color() const;
+
     void set_is_enabled(bool &&);
     void set_is_enabled(bool const &);
     [[nodiscard]] bool const &is_enabled() const;

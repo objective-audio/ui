@@ -5,7 +5,7 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
-#include <ui/yas_ui_rgb_color.h>
+#include <ui/yas_ui_color.h>
 
 namespace yas::ui {
 struct background final {
@@ -17,6 +17,10 @@ struct background final {
     void set_alpha(float const &);
     [[nodiscard]] float const &alpha() const;
     [[nodiscard]] observing::syncable observe_alpha(observing::caller<float>::handler_f &&);
+
+    void set_color(ui::color const &);
+    void set_color(ui::color &&);
+    [[nodiscard]] ui::color color() const;
 
     [[nodiscard]] static std::shared_ptr<background> make_shared();
 

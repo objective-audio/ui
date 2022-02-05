@@ -181,6 +181,21 @@ observing::syncable node::observe_alpha(observing::caller<float>::handler_f &&ha
     return this->_alpha->observe(std::move(handler));
 }
 
+void node::set_color(ui::color &&color) {
+    this->set_rgb_color(std::move(color.rgb));
+    this->set_alpha(std::move(color.alpha));
+}
+
+void node::set_color(ui::color const &color) {
+    this->set_rgb_color(color.rgb);
+    this->set_alpha(color.alpha);
+}
+
+ui::color node::color() const {
+    auto const &rgb = this->rgb_color();
+    return {rgb.red, rgb.green, rgb.blue, this->alpha()};
+}
+
 void node::set_is_enabled(bool &&is_enabled) {
     this->_enabled->set_value(std::move(is_enabled));
 }
@@ -635,9 +650,7 @@ void node::_remove_sub_nodes_on_destructor() {
 
 void node::_update_mesh_color() {
     if (auto const &mesh = this->_mesh->value()) {
-        auto const &color = this->_rgb_color->value();
-        auto const &alpha = this->_alpha->value();
-        mesh->set_color({color.red, color.green, color.blue, alpha});
+        mesh->set_color(this->color());
     }
 }
 

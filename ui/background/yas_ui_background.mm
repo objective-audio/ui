@@ -40,6 +40,21 @@ observing::syncable background::observe_alpha(observing::caller<float>::handler_
     return this->_alpha->observe(std::move(handler));
 }
 
+void background::set_color(ui::color const &color) {
+    this->set_rgb_color(color.rgb);
+    this->set_alpha(color.alpha);
+}
+
+void background::set_color(ui::color &&color) {
+    this->set_rgb_color(std::move(color.rgb));
+    this->set_alpha(std::move(color.alpha));
+}
+
+ui::color background::color() const {
+    auto const &rgb = this->rgb_color();
+    return {rgb.red, rgb.green, rgb.blue, this->alpha()};
+}
+
 std::shared_ptr<background> background::make_shared() {
     return std::shared_ptr<background>(new background{});
 }
