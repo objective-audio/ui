@@ -39,8 +39,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_color_with_floats {
-    simd::float4 const v{1.0f, 2.0f, 3.0f, 4.0f};
-    color const c{.v = v};
+    color const c{.v = {1.0f, 2.0f, 3.0f, 4.0f}};
 
     XCTAssertEqual(c.red, 1.0f);
     XCTAssertEqual(c.green, 2.0f);
@@ -50,6 +49,15 @@ using namespace yas::ui;
     XCTAssertEqual(c.rgb.red, 1.0f);
     XCTAssertEqual(c.rgb.green, 2.0f);
     XCTAssertEqual(c.rgb.blue, 3.0f);
+}
+
+- (void)test_v {
+    color const c{1.0f, 2.0f, 3.0f, 4.0f};
+
+    XCTAssertEqual(c.v[0], 1.0f);
+    XCTAssertEqual(c.v[1], 2.0f);
+    XCTAssertEqual(c.v[2], 3.0f);
+    XCTAssertEqual(c.v[3], 4.0f);
 }
 
 - (void)test_is_equal_colors {

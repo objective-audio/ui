@@ -144,8 +144,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(mesh->color()[2], 0.75f);
     XCTAssertEqual(mesh->color()[3], 0.125f);
 
-    node->set_rgb_color({0.1f, 0.2f, 0.3f});
-    node->set_alpha(0.4f);
+    node->set_color({0.1f, 0.2f, 0.3f, 0.4f});
 
     XCTAssertEqual(mesh->color()[0], 0.1f);
     XCTAssertEqual(mesh->color()[1], 0.2f);
