@@ -121,6 +121,8 @@
 		B65AF95621E4DC6800C65DB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */; };
 		B65F26AD26A703BD00F52EB6 /* yas_ui_standard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B65F26AB26A703BD00F52EB6 /* yas_ui_standard.mm */; };
 		B65F26AE26A703BD00F52EB6 /* yas_ui_standard.h in Headers */ = {isa = PBXBuildFile; fileRef = B65F26AC26A703BD00F52EB6 /* yas_ui_standard.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B66F5D7127AE7FF400441616 /* yas_ui_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66F5D6F27AE7FF400441616 /* yas_ui_color.cpp */; };
+		B66F5D7227AE7FF400441616 /* yas_ui_color.h in Headers */ = {isa = PBXBuildFile; fileRef = B66F5D7027AE7FF400441616 /* yas_ui_color.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68474FA2668D4A6008B5202 /* yas_ui_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */; };
 		B68474FB2668D4A6008B5202 /* yas_ui_layout.h in Headers */ = {isa = PBXBuildFile; fileRef = B68474F92668D4A6008B5202 /* yas_ui_layout.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B69609E924B39FB200F9962D /* yas_ui_background.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69609E724B39FB200F9962D /* yas_ui_background.mm */; };
@@ -270,6 +272,8 @@
 		B65AF95521E4DC6800C65DB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B65F26AB26A703BD00F52EB6 /* yas_ui_standard.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_standard.mm; sourceTree = "<group>"; };
 		B65F26AC26A703BD00F52EB6 /* yas_ui_standard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_standard.h; sourceTree = "<group>"; };
+		B66F5D6F27AE7FF400441616 /* yas_ui_color.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_color.cpp; sourceTree = "<group>"; };
+		B66F5D7027AE7FF400441616 /* yas_ui_color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_color.h; sourceTree = "<group>"; };
 		B68474F82668D4A6008B5202 /* yas_ui_layout.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_layout.cpp; sourceTree = "<group>"; };
 		B68474F92668D4A6008B5202 /* yas_ui_layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_layout.h; sourceTree = "<group>"; };
 		B69609E724B39FB200F9962D /* yas_ui_background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_background.mm; sourceTree = "<group>"; };
@@ -551,6 +555,8 @@
 		B69CD4DE25E4A0E100E3C33A /* color */ = {
 			isa = PBXGroup;
 			children = (
+				B66F5D6F27AE7FF400441616 /* yas_ui_color.cpp */,
+				B66F5D7027AE7FF400441616 /* yas_ui_color.h */,
 				B65AF8C721E4D7E400C65DB5 /* yas_ui_rgb_color.cpp */,
 				B65AF89E21E4D7E400C65DB5 /* yas_ui_rgb_color.h */,
 			);
@@ -795,6 +801,7 @@
 				B65AF93021E4D7E400C65DB5 /* yas_ui_types.h in Headers */,
 				B65AF93221E4D7E400C65DB5 /* yas_ui_umbrella.h in Headers */,
 				B65AF8F221E4D7E400C65DB5 /* yas_ui_collider.h in Headers */,
+				B66F5D7227AE7FF400441616 /* yas_ui_color.h in Headers */,
 				B65AF93A21E4D7E400C65DB5 /* yas_ui_metal_setup_types.h in Headers */,
 				B659576625E7A32A00DF4ED9 /* yas_ui_objc.h in Headers */,
 				B6DEECAD2661CC9600C4168B /* yas_ui_action_dependency.h in Headers */,
@@ -937,6 +944,7 @@
 				B65AF8E521E4D7E400C65DB5 /* yas_ui_layout_types.cpp in Sources */,
 				B6F7C31727A4E1B0003BA908 /* yas_ui_strings_types.cpp in Sources */,
 				B65AF8D621E4D7E400C65DB5 /* yas_ui_metal_system.mm in Sources */,
+				B66F5D7127AE7FF400441616 /* yas_ui_color.cpp in Sources */,
 				B62DF8F7269A2EF4005C68CC /* yas_ui_view_look.cpp in Sources */,
 				B6C3A5902711249700514B94 /* yas_ui_dynamic_mesh_data.mm in Sources */,
 				B65AF91221E4D7E400C65DB5 /* yas_ui_metal_types.mm in Sources */,
