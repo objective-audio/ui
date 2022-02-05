@@ -84,6 +84,10 @@ void rect_plane_data::set_rect_color(simd::float4 const &color, std::size_t cons
     });
 }
 
+void rect_plane_data::set_rect_color(ui::color const &color, std::size_t const rect_idx) {
+    this->set_rect_color(color.v, rect_idx);
+}
+
 void rect_plane_data::set_rect_color(rgb_color const &color, float const alpha, std::size_t const rect_idx) {
     this->set_rect_color(to_float4(color, alpha), rect_idx);
 }
