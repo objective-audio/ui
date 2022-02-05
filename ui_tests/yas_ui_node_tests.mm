@@ -129,27 +129,27 @@ struct test_render_encoder : render_encodable {
     auto node = node::make_shared();
     auto mesh = mesh::make_shared();
 
-    XCTAssertEqual(mesh->color()[0], 1.0f);
-    XCTAssertEqual(mesh->color()[1], 1.0f);
-    XCTAssertEqual(mesh->color()[2], 1.0f);
-    XCTAssertEqual(mesh->color()[3], 1.0f);
+    XCTAssertEqual(mesh->color().v[0], 1.0f);
+    XCTAssertEqual(mesh->color().v[1], 1.0f);
+    XCTAssertEqual(mesh->color().v[2], 1.0f);
+    XCTAssertEqual(mesh->color().v[3], 1.0f);
 
     node->set_rgb_color({0.25f, 0.5f, 0.75f});
     node->set_alpha(0.125f);
 
     node->set_mesh(mesh);
 
-    XCTAssertEqual(mesh->color()[0], 0.25f);
-    XCTAssertEqual(mesh->color()[1], 0.5f);
-    XCTAssertEqual(mesh->color()[2], 0.75f);
-    XCTAssertEqual(mesh->color()[3], 0.125f);
+    XCTAssertEqual(mesh->color().v[0], 0.25f);
+    XCTAssertEqual(mesh->color().v[1], 0.5f);
+    XCTAssertEqual(mesh->color().v[2], 0.75f);
+    XCTAssertEqual(mesh->color().v[3], 0.125f);
 
     node->set_color({0.1f, 0.2f, 0.3f, 0.4f});
 
-    XCTAssertEqual(mesh->color()[0], 0.1f);
-    XCTAssertEqual(mesh->color()[1], 0.2f);
-    XCTAssertEqual(mesh->color()[2], 0.3f);
-    XCTAssertEqual(mesh->color()[3], 0.4f);
+    XCTAssertEqual(mesh->color().v[0], 0.1f);
+    XCTAssertEqual(mesh->color().v[1], 0.2f);
+    XCTAssertEqual(mesh->color().v[2], 0.3f);
+    XCTAssertEqual(mesh->color().v[3], 0.4f);
 }
 
 - (void)test_hierarchie {

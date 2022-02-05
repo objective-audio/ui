@@ -188,7 +188,7 @@ void metal_system::mesh_encode(std::shared_ptr<mesh> const &mesh, id<MTLRenderCo
     if (auto uniforms_ptr =
             (uniforms2d_t *)(&((uint8_t *)[currentUniformsBuffer contents])[this->_uniforms_buffer_offset])) {
         uniforms_ptr->matrix = renderable_mesh::cast(mesh)->matrix();
-        uniforms_ptr->color = mesh->color();
+        uniforms_ptr->color = mesh->color().v;
         uniforms_ptr->use_mesh_color = mesh->is_use_mesh_color();
     }
 

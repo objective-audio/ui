@@ -34,8 +34,8 @@ using namespace yas::ui;
     region frame{.origin = {10.0f, 20.0f}, .size = {30.0f, 40.0f}};
 
     std::vector<strings_attribute> const attributes{
-        {.range = std::nullopt, .color = ui::white_color(), .alpha = 1.0f},
-        {.range = index_range{.index = 1, .length = 2}, .color = ui::red_color(), .alpha = 0.5f}};
+        {.range = std::nullopt, .color = to_color(ui::white_color(), 1.0f)},
+        {.range = index_range{.index = 1, .length = 2}, .color = to_color(ui::red_color(), 0.5f)}};
 
     auto strings = strings::make_shared({.max_word_count = 1,
                                          .text = "test_text",
@@ -166,13 +166,13 @@ using namespace yas::ui;
 
     XCTAssertEqual(notified.size(), 0);
 
-    strings->set_attributes({{.range = index_range{.index = 1, .length = 2}, .color = ui::blue_color(), .alpha = 0.5}});
+    strings->set_attributes(
+        {{.range = index_range{.index = 1, .length = 2}, .color = to_color(ui::blue_color(), 0.5f)}});
 
     XCTAssertEqual(notified.size(), 1);
 
-    XCTAssertEqual(notified,
-                   (std::vector<strings_attribute>{
-                       {.range = index_range{.index = 1, .length = 2}, .color = ui::blue_color(), .alpha = 0.5}}));
+    XCTAssertEqual(notified, (std::vector<strings_attribute>{{.range = index_range{.index = 1, .length = 2},
+                                                              .color = to_color(ui::blue_color(), 0.5f)}}));
 }
 
 - (std::shared_ptr<ui::strings>)make_strings {

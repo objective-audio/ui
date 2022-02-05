@@ -63,7 +63,7 @@ struct strings final {
     void _update_collection_layout();
     void _update_data_rects();
     void _update_data_rect_colors();
-    simd::float4 _rect_color_at(std::size_t const) const;
+    ui::color _rect_color_at(std::size_t const) const;
     float _cell_height();
 };
 }  // namespace yas::ui

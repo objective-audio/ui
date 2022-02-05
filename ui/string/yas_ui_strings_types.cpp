@@ -8,7 +8,7 @@ using namespace yas;
 using namespace yas::ui;
 
 bool strings_attribute::operator==(strings_attribute const &rhs) const {
-    return this->range == rhs.range && this->color == rhs.color && this->alpha == rhs.alpha;
+    return this->range == rhs.range && this->color == rhs.color;
 }
 
 bool strings_attribute::operator!=(strings_attribute const &rhs) const {

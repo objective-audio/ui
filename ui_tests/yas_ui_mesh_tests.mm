@@ -33,10 +33,10 @@ using namespace yas::ui;
     XCTAssertFalse(mesh->vertex_data());
     XCTAssertFalse(mesh->index_data());
     XCTAssertFalse(mesh->texture());
-    XCTAssertEqual(mesh->color()[0], 1.0f);
-    XCTAssertEqual(mesh->color()[1], 1.0f);
-    XCTAssertEqual(mesh->color()[2], 1.0f);
-    XCTAssertEqual(mesh->color()[3], 1.0f);
+    XCTAssertEqual(mesh->color().v[0], 1.0f);
+    XCTAssertEqual(mesh->color().v[1], 1.0f);
+    XCTAssertEqual(mesh->color().v[2], 1.0f);
+    XCTAssertEqual(mesh->color().v[3], 1.0f);
     XCTAssertEqual(mesh->primitive_type(), primitive_type::triangle);
     XCTAssertFalse(mesh->is_use_mesh_color());
 
@@ -75,10 +75,10 @@ using namespace yas::ui;
     mesh->set_use_mesh_color(true);
 
     XCTAssertEqual(mesh->texture(), texture);
-    XCTAssertEqual(mesh->color()[0], 0.1f);
-    XCTAssertEqual(mesh->color()[1], 0.2f);
-    XCTAssertEqual(mesh->color()[2], 0.3f);
-    XCTAssertEqual(mesh->color()[3], 0.4f);
+    XCTAssertEqual(mesh->color().v[0], 0.1f);
+    XCTAssertEqual(mesh->color().v[1], 0.2f);
+    XCTAssertEqual(mesh->color().v[2], 0.3f);
+    XCTAssertEqual(mesh->color().v[3], 0.4f);
     XCTAssertEqual(mesh->vertex_data(), vertex_data);
     XCTAssertEqual(mesh->index_data(), index_data);
     XCTAssertEqual(mesh->primitive_type(), primitive_type::point);
@@ -367,12 +367,12 @@ using namespace yas::ui;
     XCTAssertTrue(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 
     mesh->set_use_mesh_color(false);
-    mesh->set_color(0.0f);
+    mesh->set_color({.v = 0.0f});
 
     XCTAssertTrue(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 
     mesh->set_use_mesh_color(true);
-    mesh->set_color(0.0f);
+    mesh->set_color({.v = 0.0f});
 
     XCTAssertTrue(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 

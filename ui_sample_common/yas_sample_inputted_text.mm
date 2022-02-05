@@ -11,8 +11,8 @@ sample::inputted_text::inputted_text(std::shared_ptr<font_atlas> const &font_atl
                                      std::shared_ptr<ui::event_manager> const &event_manager,
                                      std::shared_ptr<ui::layout_region_source> const &safe_area_guide)
     : _strings(strings::make_shared(
-          {.attributes = {{.color = ui::white_color()},
-                          {.range = index_range{.index = 1, .length = 2}, .color = ui::blue_color()}},
+          {.attributes = {{.color = {.v = 1.0f}},
+                          {.range = index_range{.index = 1, .length = 2}, .color = to_color(ui::blue_color(), 1.0f)}},
            .max_word_count = 512,
            .alignment = layout_alignment::min},
           font_atlas)) {
