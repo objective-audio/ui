@@ -58,7 +58,7 @@
 		B6F4B96421E6D3C20038DC6D /* yas_ui_texture_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351221E6347600E49BCB /* yas_ui_texture_tests.mm */; };
 		B6F4B96521E6D3C20038DC6D /* yas_ui_layout_guide_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351321E6347600E49BCB /* yas_ui_layout_guide_tests.mm */; };
 		B6F4B96621E6D3C20038DC6D /* yas_ui_collection_layout_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351421E6347600E49BCB /* yas_ui_collection_layout_tests.mm */; };
-		B6F4B96721E6D3C20038DC6D /* yas_ui_color_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351521E6347600E49BCB /* yas_ui_color_tests.mm */; };
+		B6F4B96721E6D3C20038DC6D /* yas_ui_rgb_color_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351521E6347600E49BCB /* yas_ui_rgb_color_tests.mm */; };
 		B6F4B96821E6D3C20038DC6D /* yas_ui_metal_texture_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351621E6347600E49BCB /* yas_ui_metal_texture_tests.mm */; };
 		B6F4B96921E6D3C20038DC6D /* yas_ui_renderer_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351721E6347600E49BCB /* yas_ui_renderer_tests.mm */; };
 		B6F4B96A21E6D3C20038DC6D /* yas_ui_layout_actions_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DE351821E6347600E49BCB /* yas_ui_layout_actions_tests.mm */; };
@@ -121,7 +121,7 @@
 		B6DE351221E6347600E49BCB /* yas_ui_texture_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_texture_tests.mm; sourceTree = "<group>"; };
 		B6DE351321E6347600E49BCB /* yas_ui_layout_guide_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_guide_tests.mm; sourceTree = "<group>"; };
 		B6DE351421E6347600E49BCB /* yas_ui_collection_layout_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_collection_layout_tests.mm; sourceTree = "<group>"; };
-		B6DE351521E6347600E49BCB /* yas_ui_color_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_color_tests.mm; sourceTree = "<group>"; };
+		B6DE351521E6347600E49BCB /* yas_ui_rgb_color_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_rgb_color_tests.mm; sourceTree = "<group>"; };
 		B6DE351621E6347600E49BCB /* yas_ui_metal_texture_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_texture_tests.mm; sourceTree = "<group>"; };
 		B6DE351721E6347600E49BCB /* yas_ui_renderer_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_renderer_tests.mm; sourceTree = "<group>"; };
 		B6DE351821E6347600E49BCB /* yas_ui_layout_actions_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_layout_actions_tests.mm; sourceTree = "<group>"; };
@@ -223,7 +223,7 @@
 				B6DE34F421E6347600E49BCB /* yas_ui_button_tests.mm */,
 				B6DE351421E6347600E49BCB /* yas_ui_collection_layout_tests.mm */,
 				B6DE350721E6347600E49BCB /* yas_ui_collider_tests.mm */,
-				B6DE351521E6347600E49BCB /* yas_ui_color_tests.mm */,
+				B6DE351521E6347600E49BCB /* yas_ui_rgb_color_tests.mm */,
 				B6DE34FC21E6347600E49BCB /* yas_ui_detector_tests.mm */,
 				B6DE34F321E6347600E49BCB /* yas_ui_effect_tests.mm */,
 				B6DE34FB21E6347600E49BCB /* yas_ui_encode_info_tests.mm */,
@@ -452,7 +452,7 @@
 				B6F4B95C21E6D3C20038DC6D /* yas_ui_metal_dependency_tests.mm in Sources */,
 				B6F4B95821E6D3C10038DC6D /* yas_ui_action_tests.mm in Sources */,
 				B629886924C9208F00719420 /* yas_ui_hsb_color_tests.mm in Sources */,
-				B6F4B96721E6D3C20038DC6D /* yas_ui_color_tests.mm in Sources */,
+				B6F4B96721E6D3C20038DC6D /* yas_ui_rgb_color_tests.mm in Sources */,
 				B6F4B96321E6D3C20038DC6D /* yas_ui_matrix_tests.mm in Sources */,
 				B6F4B96621E6D3C20038DC6D /* yas_ui_collection_layout_tests.mm in Sources */,
 				B6F4B96D21E6D3C20038DC6D /* yas_ui_metal_types_tests.mm in Sources */,
