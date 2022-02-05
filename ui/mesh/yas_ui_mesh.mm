@@ -90,6 +90,10 @@ void mesh::set_color(simd::float4 const &color) {
     }
 }
 
+void mesh::set_color(ui::color const &color) {
+    this->set_color(color.v);
+}
+
 void mesh::set_use_mesh_color(bool const use) {
     if (this->_use_mesh_color != use) {
         this->_use_mesh_color = use;

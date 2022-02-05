@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <ui/yas_ui_color.h>
 #include <ui/yas_ui_mesh_types.h>
 #include <ui/yas_ui_metal_setup_types.h>
 #include <ui/yas_ui_renderer_dependency.h>
@@ -21,6 +22,7 @@ struct mesh final : renderable_mesh {
     void set_index_data(std::shared_ptr<mesh_index_data> const &);
     void set_texture(std::shared_ptr<ui::texture> const &);
     void set_color(simd::float4 const &);
+    void set_color(ui::color const &);
     void set_use_mesh_color(bool const);
     void set_primitive_type(ui::primitive_type const);
 
