@@ -17,20 +17,21 @@ using namespace yas::ui;
 - (void)test_color {
     auto const background = background::make_shared();
 
-    XCTAssertTrue(background->color() == (color{.v = 1.0f}));
+    XCTAssertTrue(background->rgb_color() == (rgb_color{.v = 1.0f}));
 
-    std::vector<color> called;
+    std::vector<rgb_color> called;
 
-    auto canceller = background->observe_color([&called](color const &color) { called.emplace_back(color); }).sync();
+    auto canceller =
+        background->observe_rgb_color([&called](rgb_color const &color) { called.emplace_back(color); }).sync();
 
     XCTAssertEqual(called.size(), 1);
-    XCTAssertTrue(called.at(0) == (color{.v = 1.0f}));
+    XCTAssertTrue(called.at(0) == (rgb_color{.v = 1.0f}));
 
-    background->set_color({.red = 1.0f, .green = 0.5f, .blue = 0.25f});
+    background->set_rgb_color({.red = 1.0f, .green = 0.5f, .blue = 0.25f});
 
-    XCTAssertTrue(background->color() == (color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
+    XCTAssertTrue(background->rgb_color() == (rgb_color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
     XCTAssertEqual(called.size(), 2);
-    XCTAssertTrue(called.at(1) == (color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
+    XCTAssertTrue(called.at(1) == (rgb_color{.red = 1.0f, .green = 0.5f, .blue = 0.25f}));
 }
 
 - (void)test_alpha {

@@ -32,9 +32,10 @@ static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<no
                     if (node && action_manager && detector) {
                         auto is_detected = detector->detect(cursor_event.position(), node->collider());
 
-                        auto make_color_action = [&group](std::shared_ptr<ui::node> const &node, color const &color) {
+                        auto make_color_action = [&group](std::shared_ptr<ui::node> const &node,
+                                                          rgb_color const &color) {
                             return make_action(
-                                {.group = group, .target = node, .begin_color = node->color(), .end_color = color});
+                                {.group = group, .target = node, .begin_color = node->rgb_color(), .end_color = color});
                         };
 
                         if (is_detected && !*prev_detected) {
@@ -83,7 +84,7 @@ void sample::cursor_over_planes::_setup_nodes() {
         auto const &node = plane->node();
         node->set_position({100.0f, 0.0f});
         node->set_scale({10.0f, 30.0f});
-        node->set_color({.v = 0.3f});
+        node->set_rgb_color({.v = 0.3f});
         node->set_collider(collider::make_shared(shape::make_shared(rect_shape{})));
 
         auto handle_node = node::make_shared();

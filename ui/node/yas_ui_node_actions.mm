@@ -91,7 +91,7 @@ std::shared_ptr<action> ui::make_action(color_action_args args) {
 
     continuous_args.value_updater = [args = std::move(args)](double const value) {
         if (auto target = args.target.lock()) {
-            target->set_color({.v = (args.end_color.v - args.begin_color.v) * (float)value + args.begin_color.v});
+            target->set_rgb_color({.v = (args.end_color.v - args.begin_color.v) * (float)value + args.begin_color.v});
         }
     };
 

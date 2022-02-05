@@ -24,17 +24,17 @@ using namespace yas::ui;
 }
 
 - (void)test_color_to_string {
-    XCTAssertEqual(to_string(color{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
+    XCTAssertEqual(to_string(rgb_color{1.0f, 2.0f, 3.0f}), "{1.000000, 2.000000, 3.000000}");
 }
 
 - (void)test_color_ostream {
     std::ostringstream stream;
-    stream << color{13.0f, 14.0f, 15.0f};
+    stream << rgb_color{13.0f, 14.0f, 15.0f};
     XCTAssertEqual(stream.str(), "{13.000000, 14.000000, 15.000000}");
 }
 
 - (void)test_create_color {
-    color c = {.v = 1.0f};
+    rgb_color c = {.v = 1.0f};
 
     XCTAssertEqual(c.red, 1.0f);
     XCTAssertEqual(c.green, 1.0f);
@@ -42,7 +42,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_color_with_params {
-    color c{1.0f, 2.0f, 3.0f};
+    rgb_color c{1.0f, 2.0f, 3.0f};
 
     XCTAssertEqual(c.red, 1.0f);
     XCTAssertEqual(c.green, 2.0f);
@@ -50,14 +50,14 @@ using namespace yas::ui;
 }
 
 - (void)test_is_equal_colors {
-    color c1{1.0f, 2.0f, 3.0f};
-    color c2{1.0f, 2.0f, 3.0f};
-    color c3{1.1f, 2.0f, 3.0f};
-    color c4{1.0f, 2.1f, 3.0f};
-    color c5{1.0f, 2.0f, 3.1f};
-    color c6{1.1f, 2.1f, 3.1f};
-    color cz1{0.0f, 0.0f, 0.0f};
-    color cz2{0.0f, 0.0f, 0.0f};
+    rgb_color c1{1.0f, 2.0f, 3.0f};
+    rgb_color c2{1.0f, 2.0f, 3.0f};
+    rgb_color c3{1.1f, 2.0f, 3.0f};
+    rgb_color c4{1.0f, 2.1f, 3.0f};
+    rgb_color c5{1.0f, 2.0f, 3.1f};
+    rgb_color c6{1.1f, 2.1f, 3.1f};
+    rgb_color cz1{0.0f, 0.0f, 0.0f};
+    rgb_color cz2{0.0f, 0.0f, 0.0f};
 
     XCTAssertTrue(c1 == c2);
     XCTAssertFalse(c1 == c3);
@@ -75,11 +75,11 @@ using namespace yas::ui;
 }
 
 - (void)test_multiply_colors {
-    color c1{0.1f, 0.5f, 1.0f};
-    color c2{0.5f, 0.5f, 0.5f};
+    rgb_color c1{0.1f, 0.5f, 1.0f};
+    rgb_color c2{0.5f, 0.5f, 0.5f};
 
-    XCTAssertTrue((c1 * c2) == (color{0.05f, 0.25f, 0.5f}));
-    XCTAssertTrue((c1 * 0.5f) == (color{0.05f, 0.25f, 0.5f}));
+    XCTAssertTrue((c1 * c2) == (rgb_color{0.05f, 0.25f, 0.5f}));
+    XCTAssertTrue((c1 * 0.5f) == (rgb_color{0.05f, 0.25f, 0.5f}));
 }
 
 - (void)test_static_colors {

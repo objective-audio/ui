@@ -7,12 +7,12 @@
 #include <cpp_utils/yas_unless.h>
 #include <ui/yas_ui_angle.h>
 #include <ui/yas_ui_batch.h>
-#include <ui/yas_ui_color.h>
 #include <ui/yas_ui_matrix.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_mesh_data.h>
 #include <ui/yas_ui_render_info.h>
 #include <ui/yas_ui_render_target.h>
+#include <ui/yas_ui_rgb_color.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -24,7 +24,7 @@ node::node()
       _position(observing::value::holder<point>::make_shared({.v = 0.0f})),
       _scale(observing::value::holder<size>::make_shared({.v = 1.0f})),
       _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
-      _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
+      _rgb_color(observing::value::holder<ui::rgb_color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(observing::value::holder<std::shared_ptr<ui::mesh>>::make_shared(nullptr)),
       _collider(observing::value::holder<std::shared_ptr<ui::collider>>::make_shared(nullptr)),
@@ -59,7 +59,9 @@ node::node()
         .sync()
         ->add_to(this->_pool);
 
-    this->_color->observe([this](ui::color const &color) { this->_update_mesh_color(); }).end()->add_to(this->_pool);
+    this->_rgb_color->observe([this](ui::rgb_color const &color) { this->_update_mesh_color(); })
+        .end()
+        ->add_to(this->_pool);
     this->_alpha->observe([this](float const &alpha) { this->_update_mesh_color(); }).end()->add_to(this->_pool);
 
     // collider
@@ -147,20 +149,20 @@ observing::syncable node::observe_scale(observing::caller<size>::handler_f &&han
     return this->_scale->observe(std::move(handler));
 }
 
-void node::set_color(ui::color &&color) {
-    this->_color->set_value(std::move(color));
+void node::set_rgb_color(ui::rgb_color &&color) {
+    this->_rgb_color->set_value(std::move(color));
 }
 
-void node::set_color(ui::color const &color) {
-    this->_color->set_value(color);
+void node::set_rgb_color(ui::rgb_color const &color) {
+    this->_rgb_color->set_value(color);
 }
 
-color const &node::color() const {
-    return this->_color->value();
+rgb_color const &node::rgb_color() const {
+    return this->_rgb_color->value();
 }
 
-observing::syncable node::observe_color(observing::caller<ui::color>::handler_f &&handler) {
-    return this->_color->observe(std::move(handler));
+observing::syncable node::observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&handler) {
+    return this->_rgb_color->observe(std::move(handler));
 }
 
 void node::set_alpha(float &&alpha) {
@@ -633,7 +635,7 @@ void node::_remove_sub_nodes_on_destructor() {
 
 void node::_update_mesh_color() {
     if (auto const &mesh = this->_mesh->value()) {
-        auto const &color = this->_color->value();
+        auto const &color = this->_rgb_color->value();
         auto const &alpha = this->_alpha->value();
         mesh->set_color({color.red, color.green, color.blue, alpha});
     }
