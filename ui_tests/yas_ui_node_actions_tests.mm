@@ -157,21 +157,21 @@ using namespace yas::ui;
 
     action->update(time);
 
-    XCTAssertEqual(target->color().red, 0.0f);
-    XCTAssertEqual(target->color().green, 0.25f);
-    XCTAssertEqual(target->color().blue, 0.5f);
+    XCTAssertEqual(target->rgb_color().red, 0.0f);
+    XCTAssertEqual(target->rgb_color().green, 0.25f);
+    XCTAssertEqual(target->rgb_color().blue, 0.5f);
 
     action->update(time + 500ms);
 
-    XCTAssertEqual(target->color().red, 0.5f);
-    XCTAssertEqual(target->color().green, 0.5f);
-    XCTAssertEqual(target->color().blue, 0.5f);
+    XCTAssertEqual(target->rgb_color().red, 0.5f);
+    XCTAssertEqual(target->rgb_color().green, 0.5f);
+    XCTAssertEqual(target->rgb_color().blue, 0.5f);
 
     action->update(time + 1s);
 
-    XCTAssertEqual(target->color().red, 1.0f);
-    XCTAssertEqual(target->color().green, 0.75f);
-    XCTAssertEqual(target->color().blue, 0.5f);
+    XCTAssertEqual(target->rgb_color().red, 1.0f);
+    XCTAssertEqual(target->rgb_color().green, 0.75f);
+    XCTAssertEqual(target->rgb_color().blue, 0.5f);
 }
 
 - (void)test_update_alpha_action {

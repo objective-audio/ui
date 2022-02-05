@@ -4,10 +4,10 @@
 
 #include "yas_ui_rect_plane.h"
 #include <cpp_utils/yas_fast_each.h>
-#include <ui/yas_ui_color.h>
 #include <ui/yas_ui_dynamic_mesh_data.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_node.h>
+#include <ui/yas_ui_rgb_color.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -84,7 +84,7 @@ void rect_plane_data::set_rect_color(simd::float4 const &color, std::size_t cons
     });
 }
 
-void rect_plane_data::set_rect_color(color const &color, float const alpha, std::size_t const rect_idx) {
+void rect_plane_data::set_rect_color(rgb_color const &color, float const alpha, std::size_t const rect_idx) {
     this->set_rect_color(to_float4(color, alpha), rect_idx);
 }
 

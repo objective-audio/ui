@@ -179,7 +179,7 @@ using namespace yas::ui;
     auto plane_data = rect_plane_data::make_shared(1);
     auto vertices = plane_data->dynamic_vertex_data()->raw_data();
 
-    plane_data->set_rect_color(color{0.1f, 0.2f, 0.3f}, 0.4f, 0);
+    plane_data->set_rect_color(rgb_color{0.1f, 0.2f, 0.3f}, 0.4f, 0);
 
     for (auto const &idx : make_each_index(4)) {
         auto &color = vertices[idx].color;
@@ -189,7 +189,7 @@ using namespace yas::ui;
         XCTAssertEqual(color[3], 0.4f);
     }
 
-    plane_data->set_rect_color(color{0.5f, 0.6f, 0.7f}, 0.8f, 0);
+    plane_data->set_rect_color(rgb_color{0.5f, 0.6f, 0.7f}, 0.8f, 0);
 
     for (auto const &idx : make_each_index(4)) {
         auto &color = vertices[idx].color;

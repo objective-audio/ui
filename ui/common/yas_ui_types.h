@@ -58,7 +58,7 @@ class renderer;
 class strings;
 class texture_element;
 class texture;
-class color;
+class rgb_color;
 class background;
 class angle;
 class view_look;

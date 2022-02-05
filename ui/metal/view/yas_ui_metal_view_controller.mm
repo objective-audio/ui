@@ -6,11 +6,11 @@
 #include <objc_utils/yas_objc_unowned.h>
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_background.h>
-#include <ui/yas_ui_color.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
 #include <ui/yas_ui_metal_view_controller_dependency_objc.h>
 #include <ui/yas_ui_metal_view_utils.h>
+#include <ui/yas_ui_rgb_color.h>
 #include <ui/yas_ui_view_look.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -83,7 +83,7 @@ struct metal_view_cpp {
     self->_cpp.view_look->set_appearance(self.metalView.uiAppearance);
 
     self->_cpp.view_look->background()
-        ->observe_color([self](ui::color const &) { [self updateBackgroundColor]; })
+        ->observe_rgb_color([self](ui::rgb_color const &) { [self updateBackgroundColor]; })
         .end()
         ->add_to(self->_cpp.bg_pool);
 
@@ -188,7 +188,7 @@ struct metal_view_cpp {
 
 - (void)updateBackgroundColor {
     auto const &background = self->_cpp.view_look->background();
-    auto const &color = background->color();
+    auto const &color = background->rgb_color();
     auto const &alpha = background->alpha();
     self.metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
 }

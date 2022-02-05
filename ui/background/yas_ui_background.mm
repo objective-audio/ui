@@ -8,24 +8,24 @@ using namespace yas;
 using namespace yas::ui;
 
 background::background()
-    : _color(observing::value::holder<ui::color>::make_shared({.v = 1.0f})),
+    : _rgb_color(observing::value::holder<ui::rgb_color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
 }
 
-void background::set_color(ui::color const &color) {
-    this->_color->set_value(color);
+void background::set_rgb_color(ui::rgb_color const &color) {
+    this->_rgb_color->set_value(color);
 }
 
-void background::set_color(ui::color &&color) {
-    this->_color->set_value(std::move(color));
+void background::set_rgb_color(ui::rgb_color &&color) {
+    this->_rgb_color->set_value(std::move(color));
 }
 
-ui::color const &background::color() const {
-    return this->_color->value();
+ui::rgb_color const &background::rgb_color() const {
+    return this->_rgb_color->value();
 }
 
-observing::syncable background::observe_color(observing::caller<ui::color>::handler_f &&handler) {
-    return this->_color->observe(std::move(handler));
+observing::syncable background::observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&handler) {
+    return this->_rgb_color->observe(std::move(handler));
 }
 
 void background::set_alpha(float const &alpha) {

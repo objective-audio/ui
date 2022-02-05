@@ -40,10 +40,10 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     [[nodiscard]] ui::size const &scale() const;
     [[nodiscard]] observing::syncable observe_scale(observing::caller<ui::size>::handler_f &&);
 
-    void set_color(ui::color &&);
-    void set_color(ui::color const &);
-    [[nodiscard]] ui::color const &color() const;
-    [[nodiscard]] observing::syncable observe_color(observing::caller<ui::color>::handler_f &&);
+    void set_rgb_color(ui::rgb_color &&);
+    void set_rgb_color(ui::rgb_color const &);
+    [[nodiscard]] ui::rgb_color const &rgb_color() const;
+    [[nodiscard]] observing::syncable observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&);
 
     void set_alpha(float &&);
     void set_alpha(float const &);
@@ -107,7 +107,7 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     observing::value::holder_ptr<ui::point> const _position;
     observing::value::holder_ptr<ui::angle> const _angle;
     observing::value::holder_ptr<ui::size> const _scale;
-    observing::value::holder_ptr<ui::color> const _color;
+    observing::value::holder_ptr<ui::rgb_color> const _rgb_color;
     observing::value::holder_ptr<float> const _alpha;
     observing::value::holder_ptr<std::shared_ptr<ui::mesh>> const _mesh;
     observing::value::holder_ptr<std::shared_ptr<ui::collider>> const _collider;

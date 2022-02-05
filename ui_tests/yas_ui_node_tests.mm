@@ -57,9 +57,9 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(node->scale().width, 1.0f);
     XCTAssertEqual(node->scale().height, 1.0f);
 
-    XCTAssertEqual(node->color().red, 1.0f);
-    XCTAssertEqual(node->color().green, 1.0f);
-    XCTAssertEqual(node->color().blue, 1.0f);
+    XCTAssertEqual(node->rgb_color().red, 1.0f);
+    XCTAssertEqual(node->rgb_color().green, 1.0f);
+    XCTAssertEqual(node->rgb_color().blue, 1.0f);
     XCTAssertEqual(node->alpha(), 1.0f);
 
     XCTAssertFalse(node->mesh());
@@ -86,7 +86,7 @@ struct test_render_encoder : render_encodable {
     node->set_position({1.0f, 2.0f});
     node->set_angle({3.0f});
     node->set_scale({4.0f, 5.0f});
-    node->set_color({0.1f, 0.2f, 0.3f});
+    node->set_rgb_color({0.1f, 0.2f, 0.3f});
     node->set_alpha(0.4f);
 
     node->set_is_enabled(true);
@@ -96,9 +96,9 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(node->angle().degrees, 3.0f);
     XCTAssertEqual(node->scale().width, 4.0f);
     XCTAssertEqual(node->scale().height, 5.0f);
-    XCTAssertEqual(node->color().red, 0.1f);
-    XCTAssertEqual(node->color().green, 0.2f);
-    XCTAssertEqual(node->color().blue, 0.3f);
+    XCTAssertEqual(node->rgb_color().red, 0.1f);
+    XCTAssertEqual(node->rgb_color().green, 0.2f);
+    XCTAssertEqual(node->rgb_color().blue, 0.3f);
     XCTAssertEqual(node->alpha(), 0.4f);
 
     node->set_mesh(mesh);
@@ -134,7 +134,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(mesh->color()[2], 1.0f);
     XCTAssertEqual(mesh->color()[3], 1.0f);
 
-    node->set_color({0.25f, 0.5f, 0.75f});
+    node->set_rgb_color({0.25f, 0.5f, 0.75f});
     node->set_alpha(0.125f);
 
     node->set_mesh(mesh);
@@ -144,7 +144,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(mesh->color()[2], 0.75f);
     XCTAssertEqual(mesh->color()[3], 0.125f);
 
-    node->set_color({0.1f, 0.2f, 0.3f});
+    node->set_rgb_color({0.1f, 0.2f, 0.3f});
     node->set_alpha(0.4f);
 
     XCTAssertEqual(mesh->color()[0], 0.1f);
@@ -710,7 +710,7 @@ struct test_render_encoder : render_encodable {
     });
     auto mesh1a = mesh::make_shared({.color = {0.5f, 0.5f, 0.5f, 0.5f}}, vertex_data1a, index_data1a, nullptr);
     mesh_node1a->set_mesh(mesh1a);
-    mesh_node1a->set_color(color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
+    mesh_node1a->set_rgb_color(rgb_color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
     mesh_node1a->set_alpha(0.8f);
 
     auto const vertex_data1b = dynamic_mesh_vertex_data::make_shared(1);
@@ -872,7 +872,7 @@ struct test_render_encoder : render_encodable {
         auto &index = indices.at(0);
         index = 2;
     });
-    mesh_node1a->set_color(color{.red = 0.51f, .green = 0.61f, .blue = 0.71f});
+    mesh_node1a->set_rgb_color(rgb_color{.red = 0.51f, .green = 0.61f, .blue = 0.71f});
 
     {
         auto render_encoder = render();
@@ -1222,7 +1222,7 @@ struct test_render_encoder : render_encodable {
 
     auto mesh1 = mesh::make_shared({.use_mesh_color = false}, mesh_vertex_data1, mesh_index_data1, nullptr);
     mesh_node1->set_mesh(mesh1);
-    mesh_node1->set_color(color{.red = 0.1f, .green = 0.2f, .blue = 0.3f});
+    mesh_node1->set_rgb_color(rgb_color{.red = 0.1f, .green = 0.2f, .blue = 0.3f});
     mesh_node1->set_alpha(0.0f);
 
     auto mesh_node2 = node::make_shared();
@@ -1248,7 +1248,7 @@ struct test_render_encoder : render_encodable {
     mesh2->set_vertex_data(mesh_vertex_data2);
     mesh2->set_index_data(mesh_index_data2);
     mesh_node2->set_mesh(mesh2);
-    mesh_node2->set_color(color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
+    mesh_node2->set_rgb_color(rgb_color{.red = 0.5f, .green = 0.6f, .blue = 0.7f});
     mesh_node2->set_alpha(1.0f);
 
     auto render = [&batch_node, &metal_system, self]() {

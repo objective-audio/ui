@@ -6,8 +6,8 @@
 
 #include <ui/yas_ui_action.h>
 #include <ui/yas_ui_angle.h>
-#include <ui/yas_ui_color.h>
 #include <ui/yas_ui_node.h>
+#include <ui/yas_ui_rgb_color.h>
 
 namespace yas::ui {
 struct translate_action_args final {
@@ -59,8 +59,8 @@ struct scale_action_args final {
 struct color_action_args final {
     std::shared_ptr<action_group> group = nullptr;
     std::weak_ptr<node> target;
-    ui::color begin_color = {.v = 1.0f};
-    ui::color end_color = {.v = 1.0f};
+    ui::rgb_color begin_color = {.v = 1.0f};
+    ui::rgb_color end_color = {.v = 1.0f};
 
     double duration = 0.3;
     std::size_t loop_count = 1;

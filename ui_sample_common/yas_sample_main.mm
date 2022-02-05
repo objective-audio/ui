@@ -96,7 +96,7 @@ void sample::main::setup() {
 
     this->_plane_on_target->data()->set_rect_position(
         {.origin = {.x = -100.0f, .y = -100.0f}, .size = {.width = 50.0f, .height = 50.0f}}, 0);
-    this->_plane_on_target->node()->set_color(cyan_color());
+    this->_plane_on_target->node()->set_rgb_color(cyan_color());
     this->_render_target_node->add_sub_node(this->_plane_on_target->node());
 
     auto action = make_action({.target = this->_plane_on_target->node(),
