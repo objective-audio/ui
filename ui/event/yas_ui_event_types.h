@@ -33,7 +33,6 @@ enum modifier_flags : uint32_t {
 };
 
 struct cursor_event {
-    cursor_event();
     cursor_event(ui::point, double const timestamp);
 
     bool operator==(cursor_event const &) const;
@@ -49,7 +48,6 @@ struct cursor_event {
 };
 
 struct touch_event {
-    touch_event();
     touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
 
     bool operator==(touch_event const &) const;
@@ -66,7 +64,6 @@ struct touch_event {
 };
 
 struct key_event {
-    key_event();
     key_event(uint16_t const key_code, std::string characters, std::string raw_characters, double const timestamp);
 
     bool operator==(key_event const &) const;
@@ -85,7 +82,6 @@ struct key_event {
 };
 
 struct modifier_event {
-    modifier_event();
     modifier_event(modifier_flags const, double const timestamp);
 
     bool operator==(modifier_event const &) const;
@@ -100,7 +96,6 @@ struct modifier_event {
 };
 
 struct pinch_event {
-    pinch_event();
     pinch_event(double const magnification, double const timestamp);
 
     bool operator==(pinch_event const &) const;
@@ -115,7 +110,6 @@ struct pinch_event {
 };
 
 struct scroll_event {
-    scroll_event();
     scroll_event(double const x, double const y, double const timestamp);
 
     bool operator==(scroll_event const &) const;
