@@ -6,6 +6,8 @@
 #include <cpp_utils/yas_each_index.h>
 #include <ui/yas_ui_collider.h>
 
+#include <iostream>
+
 using namespace yas;
 using namespace yas::ui;
 
@@ -18,6 +20,16 @@ sample::big_button::big_button(std::shared_ptr<ui::event_manager> const &event_m
           event_manager, detector)) {
     this->_button->rect_plane()->node()->set_collider(
         collider::make_shared(shape::make_shared(circle_shape{.radius = this->_radius})));
+
+    this->_button->set_can_begin_tracking([](std::shared_ptr<ui::event> const &event) {
+        auto const &touch_event = event->get<ui::touch>();
+        return touch_event.identifier() == 0 || touch_event.identifier() == 1;
+    });
+
+    this->_button->set_can_indicate_tracking([](std::shared_ptr<ui::event> const &event) {
+        auto const &touch_event = event->get<ui::touch>();
+        return touch_event.identifier() == 0;
+    });
 }
 
 std::shared_ptr<button> &sample::big_button::button() {

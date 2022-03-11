@@ -75,6 +75,14 @@ std::size_t button::state_index() const {
     return this->_state_idx;
 }
 
+void button::set_can_begin_tracking(std::function<bool(std::shared_ptr<event> const &)> &&handler) {
+    this->_can_begin_tracking = std::move(handler);
+}
+
+void button::set_can_indicate_tracking(std::function<bool(std::shared_ptr<event> const &)> &&handler) {
+    this->_can_indicate_tracking = std::move(handler);
+}
+
 void button::cancel_tracking() {
     if (this->_tracking_event) {
         this->_cancel_tracking(this->_tracking_event);
@@ -124,7 +132,9 @@ void button::_update_rect_positions(region const &region, std::size_t const stat
 }
 
 void button::_update_rect_index() {
-    std::size_t const idx = to_rect_index(this->_state_idx, this->_is_tracking());
+    bool const can_indicate =
+        !this->_can_indicate_tracking || (this->_tracking_event && this->_can_indicate_tracking(this->_tracking_event));
+    std::size_t const idx = to_rect_index(this->_state_idx, this->_is_tracking() && can_indicate);
     this->_rect_plane->data()->set_rect_index(0, idx);
 }
 
@@ -214,7 +224,8 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
         switch (event->phase()) {
             case event_phase::began:
                 if (!this->_is_tracking()) {
-                    if (detector->detect(touch_event.position(), node->collider())) {
+                    if (this->_can_begin_tracking_value(event) &&
+                        detector->detect(touch_event.position(), node->collider())) {
                         this->_set_tracking_event(event);
                         this->_send_notify(method::began, event);
                     }
@@ -245,8 +256,8 @@ void button::_leave_or_enter_or_move_tracking(std::shared_ptr<event> const &even
     if (auto const detector = this->_weak_detector.lock()) {
         auto const &touch_event = event->get<touch>();
         bool const is_event_tracking = this->_is_tracking(event);
-        bool is_detected = detector->detect(touch_event.position(), node->collider());
-        if (!is_event_tracking && is_detected) {
+        bool const is_detected = detector->detect(touch_event.position(), node->collider());
+        if (!is_event_tracking && is_detected && this->_can_begin_tracking_value(event)) {
             this->_set_tracking_event(event);
             this->_send_notify(method::entered, event);
         } else if (is_event_tracking && !is_detected) {
@@ -281,6 +292,14 @@ std::shared_ptr<button> button::make_shared(region const &region, std::size_t co
                                             std::shared_ptr<ui::event_observable> const &event_manager,
                                             std::shared_ptr<ui::collider_detectable> const &detector) {
     return std::shared_ptr<button>(new button{region, state_count, event_manager, detector});
+}
+
+bool button::_can_begin_tracking_value(std::shared_ptr<event> const &event) const {
+    return !this->_can_begin_tracking || (this->_can_begin_tracking && this->_can_begin_tracking(event));
+}
+
+bool button::_can_indicate_tracking_value(std::shared_ptr<event> const &event) const {
+    return !this->_can_indicate_tracking || (this->_can_indicate_tracking && this->_can_indicate_tracking(event));
 }
 
 #pragma mark -

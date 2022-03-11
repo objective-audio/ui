@@ -35,6 +35,9 @@ struct button final {
     void set_state_index(std::size_t const);
     [[nodiscard]] std::size_t state_index() const;
 
+    void set_can_begin_tracking(std::function<bool(std::shared_ptr<event> const &)> &&);
+    void set_can_indicate_tracking(std::function<bool(std::shared_ptr<event> const &)> &&);
+
     void cancel_tracking();
 
     [[nodiscard]] observing::endable observe(observing::caller<context>::handler_f &&);
@@ -56,6 +59,8 @@ struct button final {
     observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
     std::size_t _state_idx = 0;
     std::size_t _state_count;
+    std::function<bool(std::shared_ptr<event> const &)> _can_begin_tracking = nullptr;
+    std::function<bool(std::shared_ptr<event> const &)> _can_indicate_tracking = nullptr;
     std::weak_ptr<ui::collider_detectable> _weak_detector;
     std::shared_ptr<event> _tracking_event = nullptr;
     observing::canceller_pool _pool;
@@ -76,9 +81,11 @@ struct button final {
     observing::cancellable_ptr _make_leave_observings();
     observing::cancellable_ptr _make_collider_observings();
     void _update_tracking(std::shared_ptr<event> const &event);
-    void _leave_or_enter_or_move_tracking(std::shared_ptr<event> const &event);
+    void _leave_or_enter_or_move_tracking(std::shared_ptr<event> const &);
     void _cancel_tracking(std::shared_ptr<event> const &event);
-    void _send_notify(method const method, std::shared_ptr<event> const &event);
+    void _send_notify(method const method, std::shared_ptr<event> const &);
+    bool _can_begin_tracking_value(std::shared_ptr<event> const &) const;
+    bool _can_indicate_tracking_value(std::shared_ptr<event> const &) const;
 };
 }  // namespace yas::ui
 
