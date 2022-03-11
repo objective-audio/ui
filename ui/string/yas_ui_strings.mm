@@ -169,6 +169,7 @@ void strings::_update_data_rects() {
     auto const cell_count = std::min(this->_collection_layout->actual_cell_count(), this->_collection_text.size());
 
     if (cell_count == 0) {
+        this->_rect_plane->data()->set_rect_count(0);
         return;
     }
 
