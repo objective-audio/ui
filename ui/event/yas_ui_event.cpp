@@ -21,9 +21,9 @@ struct ui::event_impl_base {
 
 template <typename T>
 struct event::impl : event_impl_base {
-    typename T::type value;
+    std::optional<typename T::type> value;
 
-    impl() {
+    impl() : value(std::nullopt) {
     }
 
     impl(impl const &) = delete;
@@ -123,32 +123,32 @@ void event::set<scroll>(scroll::type value) {
 
 template <>
 cursor::type const &event::get<cursor>() const {
-    return this->_cursor_impl->value;
+    return this->_cursor_impl->value.value();
 }
 
 template <>
 touch::type const &event::get<touch>() const {
-    return this->_touch_impl->value;
+    return this->_touch_impl->value.value();
 }
 
 template <>
 key::type const &event::get<key>() const {
-    return this->_key_impl->value;
+    return this->_key_impl->value.value();
 }
 
 template <>
 modifier::type const &event::get<modifier>() const {
-    return this->_modifier_impl->value;
+    return this->_modifier_impl->value.value();
 }
 
 template <>
 pinch::type const &event::get<pinch>() const {
-    return this->_pinch_impl->value;
+    return this->_pinch_impl->value.value();
 }
 
 template <>
 scroll::type const &event::get<scroll>() const {
-    return this->_scroll_impl->value;
+    return this->_scroll_impl->value.value();
 }
 
 uintptr_t event::identifier() const {

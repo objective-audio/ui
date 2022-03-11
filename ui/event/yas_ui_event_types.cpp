@@ -9,9 +9,6 @@ using namespace yas::ui;
 
 #pragma mark - cursor_event
 
-cursor_event::cursor_event() : _position({.v = 0.0f}), _timestamp(0.0) {
-}
-
 cursor_event::cursor_event(point pos, double const timestamp) : _position(std::move(pos)), _timestamp(timestamp) {
 }
 
@@ -38,9 +35,6 @@ bool cursor_event::contains_in_window() const {
 
 #pragma mark - touch_event
 
-touch_event::touch_event() : _identifier(-1), _position({.v = {0.0f}}) {
-}
-
 touch_event::touch_event(uintptr_t const identifier, point pos, double const timestamp)
     : _identifier(identifier), _position(std::move(pos)), _timestamp(timestamp) {
 }
@@ -66,9 +60,6 @@ double touch_event::timestamp() const {
 }
 
 #pragma mark - key_event
-
-key_event::key_event() {
-}
 
 key_event::key_event(uint16_t const key_code, std::string charas, std::string charas2, double const timestamp)
     : _key_code(key_code), _characters(std::move(charas)), _raw_characters(std::move(charas2)), _timestamp(timestamp) {
@@ -100,9 +91,6 @@ double key_event::timestamp() const {
 
 #pragma mark - modifier_event
 
-modifier_event::modifier_event() {
-}
-
 modifier_event::modifier_event(modifier_flags const flag, double const timestamp) : _flag(flag), _timestamp(timestamp) {
 }
 
@@ -123,9 +111,6 @@ double modifier_event::timestamp() const {
 }
 
 #pragma mark - pinch_event
-
-pinch_event::pinch_event() {
-}
 
 pinch_event::pinch_event(double const magnification, double const timestamp)
     : _magnification(magnification), _timestamp(timestamp) {
@@ -148,9 +133,6 @@ double pinch_event::timestamp() const {
 }
 
 #pragma mark - scroll_event
-
-scroll_event::scroll_event() {
-}
 
 scroll_event::scroll_event(double const x, double const y, double const timestamp)
     : _delta_x(x), _delta_y(y), _timestamp(timestamp) {
