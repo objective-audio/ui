@@ -43,6 +43,16 @@ bool touch_id::operator!=(touch_id const &rhs) const {
     return !(*this == rhs);
 }
 
+touch_id const &touch_id::mouse_left() {
+    static touch_id const _mouse_left{.kind = touch_kind::mouse, .identifier = 0};
+    return _mouse_left;
+}
+
+touch_id const &touch_id::mouse_right() {
+    static touch_id const _mouse_right{.kind = touch_kind::mouse, .identifier = 1};
+    return _mouse_right;
+}
+
 #pragma mark - touch_event
 
 touch_event::touch_event(touch_id const identifier, point pos, double const timestamp)
