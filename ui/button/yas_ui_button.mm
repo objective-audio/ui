@@ -226,9 +226,9 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
             } break;
             case event_phase::ended:
                 if (this->_is_tracking(event)) {
-                    auto const send_evnet = event;
+                    auto const send_event = event;
                     this->_set_tracking_event(nullptr);
-                    this->_send_notify(method::ended, send_evnet);
+                    this->_send_notify(method::ended, send_event);
                 }
                 break;
             case event_phase::canceled:
