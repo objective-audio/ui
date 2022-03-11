@@ -61,17 +61,17 @@ struct touch_id final {
 };
 
 struct touch_event final {
-    touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
+    touch_event(touch_id const identifier, ui::point position, double const timestamp);
 
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
 
-    uintptr_t identifier() const;
+    touch_id identifier() const;
     ui::point const &position() const;
     double timestamp() const;
 
    private:
-    uintptr_t _identifier;
+    touch_id _identifier;
     ui::point _position;
     double _timestamp;
 };
