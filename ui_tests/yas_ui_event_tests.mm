@@ -94,9 +94,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_create_touch_event {
-    touch_event const value{10, {4.0f, 8.0f}, 16.0};
+    touch_event const value{{.kind = touch_kind::touch, .identifier = 10}, {4.0f, 8.0f}, 16.0};
 
-    XCTAssertEqual(value.identifier(), 10);
+    XCTAssertEqual(value.identifier(), (touch_id{.kind = touch_kind::touch, .identifier = 10}));
     XCTAssertEqual(value.position().x, 4.0f);
     XCTAssertEqual(value.position().y, 8.0f);
     XCTAssertEqual(value.timestamp(), 16.0);
@@ -129,9 +129,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_is_equal_touch_event {
-    touch_event const value1{5, {4.0f, 8.0f}, 16.0};
-    touch_event const value2{5, {16.0f, 32.0f}, 32.0};
-    touch_event const value3{6, {4.0f, 8.0f}, 16.0};
+    touch_event const value1{{.kind = touch_kind::mouse, .identifier = 5}, {4.0f, 8.0f}, 16.0};
+    touch_event const value2{{.kind = touch_kind::mouse, .identifier = 5}, {16.0f, 32.0f}, 32.0};
+    touch_event const value3{{.kind = touch_kind::mouse, .identifier = 6}, {4.0f, 8.0f}, 16.0};
 
     // compare identifier
 
@@ -215,9 +215,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto const touch_event3 = event::make_shared(touch_tag);
 
     cursor_event->set<cursor>(ui::cursor_event{{.v = 0.0f}, 10.0});
-    touch_event1->set<touch>(touch_event{1, {.v = 0.0f}, 10.0});
-    touch_event2->set<touch>(touch_event{1, {.v = 0.0f}, 11.0});
-    touch_event3->set<touch>(touch_event{2, {.v = 0.0f}, 12.0});
+    touch_event1->set<touch>(touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 10.0});
+    touch_event2->set<touch>(touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 11.0});
+    touch_event3->set<touch>(touch_event{{.kind = touch_kind::touch, .identifier = 2}, {.v = 0.0f}, 12.0});
 
     XCTAssertTrue(*touch_event1 == *touch_event1);
     XCTAssertTrue(*touch_event1 == *touch_event2);
@@ -249,11 +249,11 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertTrue(typeid(event->get<touch>()) == typeid(touch_event));
 
-    event->set<touch>(touch_event{11, {2.5f, 3.5f}, 200.0});
+    event->set<touch>(touch_event{{.kind = touch_kind::touch, .identifier = 11}, {2.5f, 3.5f}, 200.0});
 
     auto const &value = event->get<touch>();
     auto const &pos = value.position();
-    XCTAssertEqual(value.identifier(), 11);
+    XCTAssertEqual(value.identifier(), (touch_id{.kind = touch_kind::touch, .identifier = 11}));
     XCTAssertEqual(pos.x, 2.5f);
     XCTAssertEqual(pos.y, 3.5f);
     auto const timestamp = event->get<touch>().timestamp();
@@ -327,7 +327,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         XCTAssertEqual(event->type(), event_type::touch);
 
         auto const &value = event->get<touch>();
-        XCTAssertEqual(value.identifier(), 100);
+        XCTAssertEqual(value.identifier(), (touch_id{.kind = touch_kind::touch, .identifier = 100}));
         XCTAssertEqual(value.position().x, 256.0f);
         XCTAssertEqual(value.position().y, 512.0f);
         XCTAssertEqual(value.timestamp(), 201.0);
@@ -335,7 +335,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         called = true;
     });
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{100, {256.0f, 512.0f}, 201.0});
+    manager_for_view->input_touch_event(
+        event_phase::began, touch_event{{.kind = touch_kind::touch, .identifier = 100}, {256.0f, 512.0f}, 201.0});
 
     XCTAssertTrue(called);
 }
@@ -445,7 +446,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         XCTAssertEqual(event->type(), event_type::touch);
 
-        if (event->get<touch>().identifier() == 1) {
+        if (event->get<touch>().identifier() == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
             if (event->phase() == event_phase::began) {
                 began_called = true;
             } else if (event->phase() == event_phase::ended) {
@@ -454,39 +455,46 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         }
     });
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 2}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -674,7 +682,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         if (event->type() == event_type::touch) {
-            if (event->get<touch>().identifier() == 1) {
+            if (event->get<touch>().identifier() == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
                 if (event->phase() == event_phase::began) {
                     began_called = true;
                 } else if (event->phase() == event_phase::ended) {
@@ -684,39 +692,46 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         }
     });
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{2, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 2}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_for_view->input_touch_event(event_phase::ended, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::ended,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -869,7 +884,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     clear();
 
-    manager_for_view->input_touch_event(event_phase::began, touch_event{1, {.v = 0.0f}, 0.0});
+    manager_for_view->input_touch_event(event_phase::began,
+                                        touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::touch);
