@@ -33,6 +33,15 @@ bool cursor_event::contains_in_window() const {
            this->_position.y <= 1.0f;
 }
 
+#pragma mark - touch_id
+
+bool touch_id::operator==(touch_id const &rhs) const {
+    return this->kind == rhs.kind && this->identifier == rhs.identifier;
+}
+bool touch_id::operator!=(touch_id const &rhs) const {
+    return !(*this == rhs);
+}
+
 #pragma mark - touch_event
 
 touch_event::touch_event(uintptr_t const identifier, point pos, double const timestamp)

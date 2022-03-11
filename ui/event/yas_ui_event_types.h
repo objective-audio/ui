@@ -47,6 +47,19 @@ struct cursor_event final {
     double _timestamp;
 };
 
+enum class touch_kind {
+    touch,
+    mouse,
+};
+
+struct touch_id final {
+    touch_kind kind;
+    uintptr_t identifier;
+
+    bool operator==(touch_id const &) const;
+    bool operator!=(touch_id const &) const;
+};
+
 struct touch_event final {
     touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
 
