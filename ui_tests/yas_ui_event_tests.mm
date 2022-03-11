@@ -86,7 +86,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_create_cursor_event {
-    cursor_event value{{1.0f, 2.0f}, 3.0};
+    cursor_event const value{{1.0f, 2.0f}, 3.0};
 
     XCTAssertEqual(value.position().x, 1.0f);
     XCTAssertEqual(value.position().y, 2.0f);
@@ -94,7 +94,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_create_touch_event {
-    touch_event value{10, {4.0f, 8.0f}, 16.0};
+    touch_event const value{10, {4.0f, 8.0f}, 16.0};
 
     XCTAssertEqual(value.identifier(), 10);
     XCTAssertEqual(value.position().x, 4.0f);
@@ -103,7 +103,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_create_key_event {
-    key_event value{5, "a", "B", 6.0};
+    key_event const value{5, "a", "B", 6.0};
 
     XCTAssertEqual(value.key_code(), 5);
     XCTAssertEqual(value.characters(), "a");
@@ -112,22 +112,15 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_create_modifier_event {
-    modifier_event value{modifier_flags::alpha_shift, 7.0};
+    modifier_event const value{modifier_flags::alpha_shift, 7.0};
 
     XCTAssertEqual(value.flag(), modifier_flags::alpha_shift);
     XCTAssertEqual(value.timestamp(), 7.0);
 }
 
-- (void)test_create_default {
-    cursor_event cursor_event;
-    touch_event touch_event;
-    key_event key_event;
-    modifier_event modifier_event;
-}
-
 - (void)test_is_equal_cursor_event {
-    cursor_event value1{{1.0f, 2.0f}, 5.0};
-    cursor_event value2{{3.0f, 4.0f}, 6.0};
+    cursor_event const value1{{1.0f, 2.0f}, 5.0};
+    cursor_event const value2{{3.0f, 4.0f}, 6.0};
 
     // always equal
 
@@ -136,9 +129,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_is_equal_touch_event {
-    touch_event value1{5, {4.0f, 8.0f}, 16.0};
-    touch_event value2{5, {16.0f, 32.0f}, 32.0};
-    touch_event value3{6, {4.0f, 8.0f}, 16.0};
+    touch_event const value1{5, {4.0f, 8.0f}, 16.0};
+    touch_event const value2{5, {16.0f, 32.0f}, 32.0};
+    touch_event const value3{6, {4.0f, 8.0f}, 16.0};
 
     // compare identifier
 
@@ -150,9 +143,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_is_equal_key_event {
-    key_event value1{7, "a", "B", 9.0};
-    key_event value2{7, "c", "D", 10.0};
-    key_event value3{8, "a", "B", 9.0};
+    key_event const value1{7, "a", "B", 9.0};
+    key_event const value2{7, "c", "D", 10.0};
+    key_event const value3{8, "a", "B", 9.0};
 
     // compare key_code
 
@@ -164,9 +157,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_is_equal_modifier_event {
-    modifier_event value1{modifier_flags::shift, 20.0};
-    modifier_event value2{modifier_flags::shift, 30.0};
-    modifier_event value3{modifier_flags::control, 20.0};
+    modifier_event const value1{modifier_flags::shift, 20.0};
+    modifier_event const value2{modifier_flags::shift, 30.0};
+    modifier_event const value3{modifier_flags::control, 20.0};
 
     // compare flag
 
@@ -178,35 +171,35 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_create_event_of_cursor {
-    auto event = event::make_shared(cursor_tag);
+    auto const event = event::make_shared(cursor_tag);
 
     XCTAssertTrue(event);
     XCTAssertTrue(event->type_info() == typeid(cursor));
 }
 
 - (void)test_create_event_of_touch {
-    auto event = event::make_shared(touch_tag);
+    auto const event = event::make_shared(touch_tag);
 
     XCTAssertTrue(event);
     XCTAssertTrue(event->type_info() == typeid(touch));
 }
 
 - (void)test_create_event_of_key {
-    auto event = event::make_shared(key_tag);
+    auto const event = event::make_shared(key_tag);
 
     XCTAssertTrue(event);
     XCTAssertTrue(event->type_info() == typeid(key));
 }
 
 - (void)test_create_event_of_modifier {
-    auto event = event::make_shared(modifier_tag);
+    auto const event = event::make_shared(modifier_tag);
 
     XCTAssertTrue(event);
     XCTAssertTrue(event->type_info() == typeid(modifier));
 }
 
 - (void)test_phase {
-    auto event = event::make_shared(cursor_tag);
+    auto const event = event::make_shared(cursor_tag);
 
     XCTAssertEqual(event->phase(), event_phase::none);
 
@@ -216,10 +209,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_is_equal_event {
-    auto cursor_event = event::make_shared(cursor_tag);
-    auto touch_event1 = event::make_shared(touch_tag);
-    auto touch_event2 = event::make_shared(touch_tag);
-    auto touch_event3 = event::make_shared(touch_tag);
+    auto const cursor_event = event::make_shared(cursor_tag);
+    auto const touch_event1 = event::make_shared(touch_tag);
+    auto const touch_event2 = event::make_shared(touch_tag);
+    auto const touch_event3 = event::make_shared(touch_tag);
 
     cursor_event->set<cursor>(ui::cursor_event{{.v = 0.0f}, 10.0});
     touch_event1->set<touch>(touch_event{1, {.v = 0.0f}, 10.0});
@@ -238,7 +231,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_cursor_event_accessor {
-    auto event = event::make_shared(cursor_tag);
+    auto const event = event::make_shared(cursor_tag);
 
     XCTAssertTrue(typeid(event->get<cursor>()) == typeid(cursor_event));
 
@@ -252,7 +245,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_touch_event_accessor {
-    auto event = event::make_shared(touch_tag);
+    auto const event = event::make_shared(touch_tag);
 
     XCTAssertTrue(typeid(event->get<touch>()) == typeid(touch_event));
 
@@ -268,7 +261,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_key_event_accessor {
-    auto event = event::make_shared(key_tag);
+    auto const event = event::make_shared(key_tag);
 
     XCTAssertTrue(typeid(event->get<key>()) == typeid(key_event));
 
@@ -283,7 +276,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_modifier_event_accessor {
-    auto event = event::make_shared(modifier_tag);
+    auto const event = event::make_shared(modifier_tag);
 
     XCTAssertTrue(typeid(event->get<modifier>()) == typeid(modifier_event));
 
@@ -325,7 +318,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_touch_event_began {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool called = false;
@@ -348,7 +341,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_key_event_began {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool called = false;
@@ -371,7 +364,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_modifier_event_began {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool alt_called = false;
@@ -398,7 +391,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_cursor_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -443,7 +436,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_touch_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -500,7 +493,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_key_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -559,7 +552,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_input_modifier_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -628,7 +621,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_observe_input_cursor_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -673,7 +666,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_observe_input_touch_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -730,7 +723,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_observe_input_key_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -789,7 +782,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_observe_input_modifier_events {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     bool began_called = false;
@@ -858,7 +851,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 }
 
 - (void)test_observe {
-    auto manager = event_manager::make_shared();
+    auto const manager = event_manager::make_shared();
     manager_for_view_ptr const manager_for_view = manager;
 
     std::vector<std::shared_ptr<event>> called_events;
