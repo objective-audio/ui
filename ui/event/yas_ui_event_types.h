@@ -111,14 +111,9 @@ struct scroll_event final {
     bool operator==(scroll_event const &) const;
     bool operator!=(scroll_event const &) const;
 
-    double deltaX() const;
-    double deltaY() const;
-    double timestamp() const;
-
-   private:
-    double _delta_x = 0.0;
-    double _delta_y = 0.0;
-    double _timestamp;
+    double delta_x;
+    double delta_y;
+    double timestamp;
 };
 
 struct cursor {

@@ -103,27 +103,15 @@ bool pinch_event::operator!=(pinch_event const &rhs) const {
 #pragma mark - scroll_event
 
 scroll_event::scroll_event(double const x, double const y, double const timestamp)
-    : _delta_x(x), _delta_y(y), _timestamp(timestamp) {
+    : delta_x(x), delta_y(y), timestamp(timestamp) {
 }
 
 bool scroll_event::operator==(scroll_event const &rhs) const {
-    return this->_delta_x == rhs._delta_x && this->_delta_y == rhs._delta_y;
+    return this->delta_x == rhs.delta_x && this->delta_y == rhs.delta_y;
 }
 
 bool scroll_event::operator!=(scroll_event const &rhs) const {
     return !(*this == rhs);
-}
-
-double scroll_event::deltaX() const {
-    return this->_delta_x;
-}
-
-double scroll_event::deltaY() const {
-    return this->_delta_y;
-}
-
-double scroll_event::timestamp() const {
-    return this->_timestamp;
 }
 
 #pragma mark -
@@ -165,8 +153,8 @@ std::string yas::to_string(ui::pinch_event const &event) {
 }
 
 std::string yas::to_string(ui::scroll_event const &event) {
-    return "{x:" + std::to_string(event.deltaX()) + ", y:" + std::to_string(event.deltaY()) + ", timestamp" +
-           std::to_string(event.timestamp()) + "}";
+    return "{x:" + std::to_string(event.delta_x) + ", y:" + std::to_string(event.delta_y) + ", timestamp" +
+           std::to_string(event.timestamp) + "}";
 }
 
 std::string yas::to_string(event_phase const &phase) {
