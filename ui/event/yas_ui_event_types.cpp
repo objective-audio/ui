@@ -140,8 +140,22 @@ std::string yas::to_string(cursor_event const &event) {
     return "{position:" + to_string(event.position) + ", timestamp:" + std::to_string(event.timestamp) + "}";
 }
 
+std::string yas::to_string(ui::touch_kind const &kind) {
+    switch (kind) {
+        case touch_kind::mouse:
+            return "mouse";
+        case touch_kind::touch:
+            return "touch";
+    }
+}
+
+std::string yas::to_string(ui::touch_id const &touch_id) {
+    return "{kind:" + to_string(touch_id.kind) + ", identifier:" + std::to_string(touch_id.identifier) + "}";
+}
+
 std::string yas::to_string(touch_event const &event) {
-    return "{position:" + to_string(event.position) + "}";
+    return "{position:" + to_string(event.position) + ", touch_id:" + to_string(event.identifier) +
+           ", timestamp:" + std::to_string(event.timestamp) + "}";
 }
 
 std::string yas::to_string(key_event const &event) {

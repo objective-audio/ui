@@ -159,6 +159,8 @@ static scroll constexpr scroll_tag{};
 
 namespace yas {
 std::string to_string(ui::cursor_event const &);
+std::string to_string(ui::touch_kind const &);
+std::string to_string(ui::touch_id const &);
 std::string to_string(ui::touch_event const &);
 std::string to_string(ui::key_event const &);
 std::string to_string(ui::modifier_event const &);
