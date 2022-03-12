@@ -160,7 +160,7 @@ std::string yas::to_string(touch_event const &event) {
 
 std::string yas::to_string(key_event const &event) {
     return "{key_code:" + std::to_string(event.key_code) + ", characters:" + event.characters +
-           ", raw_characters:" + event.raw_characters + "}";
+           ", raw_characters:" + event.raw_characters + ", timestamp:" + std::to_string(event.timestamp) + "}";
 }
 
 std::string yas::to_string(modifier_event const &event) {
