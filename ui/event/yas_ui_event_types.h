@@ -32,7 +32,7 @@ enum modifier_flags : uint32_t {
     function = 1 << 23,
 };
 
-struct cursor_event {
+struct cursor_event final {
     cursor_event(ui::point, double const timestamp);
 
     bool operator==(cursor_event const &) const;
@@ -47,23 +47,39 @@ struct cursor_event {
     double _timestamp;
 };
 
-struct touch_event {
-    touch_event(uintptr_t const identifier, ui::point position, double const timestamp);
+enum class touch_kind {
+    touch,
+    mouse,
+};
+
+struct touch_id final {
+    touch_kind kind;
+    uintptr_t identifier;
+
+    bool operator==(touch_id const &) const;
+    bool operator!=(touch_id const &) const;
+
+    [[nodiscard]] static touch_id const &mouse_left();
+    [[nodiscard]] static touch_id const &mouse_right();
+};
+
+struct touch_event final {
+    touch_event(touch_id const identifier, ui::point position, double const timestamp);
 
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
 
-    uintptr_t identifier() const;
+    touch_id identifier() const;
     ui::point const &position() const;
     double timestamp() const;
 
    private:
-    uintptr_t _identifier;
+    touch_id _identifier;
     ui::point _position;
     double _timestamp;
 };
 
-struct key_event {
+struct key_event final {
     key_event(uint16_t const key_code, std::string characters, std::string raw_characters, double const timestamp);
 
     bool operator==(key_event const &) const;
@@ -81,7 +97,7 @@ struct key_event {
     double _timestamp;
 };
 
-struct modifier_event {
+struct modifier_event final {
     modifier_event(modifier_flags const, double const timestamp);
 
     bool operator==(modifier_event const &) const;
@@ -95,7 +111,7 @@ struct modifier_event {
     double _timestamp;
 };
 
-struct pinch_event {
+struct pinch_event final {
     pinch_event(double const magnification, double const timestamp);
 
     bool operator==(pinch_event const &) const;
@@ -109,7 +125,7 @@ struct pinch_event {
     double _timestamp;
 };
 
-struct scroll_event {
+struct scroll_event final {
     scroll_event(double const x, double const y, double const timestamp);
 
     bool operator==(scroll_event const &) const;

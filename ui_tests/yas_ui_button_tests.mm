@@ -97,33 +97,40 @@ using namespace yas::ui;
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
-    view_event_manager->input_touch_event(event_phase::began, touch_event{1, {0.0f, 0.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::began,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 1}, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
     XCTAssertEqual(observed_methods.back(), button::method::began);
 
-    view_event_manager->input_touch_event(event_phase::changed, touch_event{1, {0.1f, 0.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::changed,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 1}, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 2);
     XCTAssertEqual(observed_methods.back(), button::method::moved);
 
-    view_event_manager->input_touch_event(event_phase::canceled, touch_event{1, {0.1f, 0.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::canceled,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 1}, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 3);
     XCTAssertEqual(observed_methods.back(), button::method::canceled);
 
-    view_event_manager->input_touch_event(event_phase::began, touch_event{2, {0.0f, 0.0f}, 0});
-    view_event_manager->input_touch_event(event_phase::changed, touch_event{2, {1.0f, 1.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::began,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 2}, {0.0f, 0.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::changed,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 2}, {1.0f, 1.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 5);
     XCTAssertEqual(observed_methods.back(), button::method::leaved);
 
-    view_event_manager->input_touch_event(event_phase::changed, touch_event{2, {0.0f, 0.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::changed,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 2}, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 6);
     XCTAssertEqual(observed_methods.back(), button::method::entered);
 
-    view_event_manager->input_touch_event(event_phase::ended, touch_event{2, {0.0f, 0.0f}, 0});
+    view_event_manager->input_touch_event(event_phase::ended,
+                                          touch_event{{.kind = touch_kind::touch, .identifier = 2}, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 7);
     XCTAssertEqual(observed_methods.back(), button::method::ended);

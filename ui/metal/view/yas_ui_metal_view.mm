@@ -90,8 +90,10 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
     if (auto const event_manager = self->_cpp.event_manager.lock()) {
-        event_manager->input_touch_event(std::move(phase),
-                                         ui::touch_event{uintptr_t(touch), [self _position:touch], touch.timestamp});
+        event_manager->input_touch_event(
+            std::move(phase),
+            ui::touch_event{
+                {.kind = touch_kind::touch, .identifier = uintptr_t(touch)}, [self _position:touch], touch.timestamp});
     }
 }
 
@@ -144,7 +146,9 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 - (void)_sendTouchEvent:(NSEvent *)event phase:(ui::event_phase &&)phase {
     if (auto const event_manager = self->_cpp.event_manager.lock()) {
         event_manager->input_touch_event(
-            std::move(phase), ui::touch_event{uintptr_t(event.buttonNumber), [self _position:event], event.timestamp});
+            std::move(phase), ui::touch_event{{.kind = touch_kind::mouse, .identifier = uintptr_t(event.buttonNumber)},
+                                              [self _position:event],
+                                              event.timestamp});
     }
 }
 

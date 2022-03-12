@@ -33,9 +33,29 @@ bool cursor_event::contains_in_window() const {
            this->_position.y <= 1.0f;
 }
 
+#pragma mark - touch_id
+
+bool touch_id::operator==(touch_id const &rhs) const {
+    return this->kind == rhs.kind && this->identifier == rhs.identifier;
+}
+
+bool touch_id::operator!=(touch_id const &rhs) const {
+    return !(*this == rhs);
+}
+
+touch_id const &touch_id::mouse_left() {
+    static touch_id const _mouse_left{.kind = touch_kind::mouse, .identifier = 0};
+    return _mouse_left;
+}
+
+touch_id const &touch_id::mouse_right() {
+    static touch_id const _mouse_right{.kind = touch_kind::mouse, .identifier = 1};
+    return _mouse_right;
+}
+
 #pragma mark - touch_event
 
-touch_event::touch_event(uintptr_t const identifier, point pos, double const timestamp)
+touch_event::touch_event(touch_id const identifier, point pos, double const timestamp)
     : _identifier(identifier), _position(std::move(pos)), _timestamp(timestamp) {
 }
 
@@ -47,7 +67,7 @@ bool touch_event::operator!=(touch_event const &rhs) const {
     return !(*this == rhs);
 }
 
-uintptr_t touch_event::identifier() const {
+touch_id touch_event::identifier() const {
     return this->_identifier;
 }
 
