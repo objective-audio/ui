@@ -173,7 +173,8 @@ std::string yas::to_string(ui::pinch_event const &event) {
 }
 
 std::string yas::to_string(ui::scroll_event const &event) {
-    return "{x:" + std::to_string(event.deltaX()) + ", y:" + std::to_string(event.deltaY()) + "}";
+    return "{x:" + std::to_string(event.deltaX()) + ", y:" + std::to_string(event.deltaY()) + ", timestamp" +
+           std::to_string(event.timestamp()) + "}";
 }
 
 std::string yas::to_string(event_phase const &phase) {
