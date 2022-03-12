@@ -96,10 +96,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 - (void)test_create_touch_event {
     touch_event const value{{.kind = touch_kind::touch, .identifier = 10}, {4.0f, 8.0f}, 16.0};
 
-    XCTAssertEqual(value.identifier(), (touch_id{.kind = touch_kind::touch, .identifier = 10}));
-    XCTAssertEqual(value.position().x, 4.0f);
-    XCTAssertEqual(value.position().y, 8.0f);
-    XCTAssertEqual(value.timestamp(), 16.0);
+    XCTAssertEqual(value.identifier, (touch_id{.kind = touch_kind::touch, .identifier = 10}));
+    XCTAssertEqual(value.position.x, 4.0f);
+    XCTAssertEqual(value.position.y, 8.0f);
+    XCTAssertEqual(value.timestamp, 16.0);
 }
 
 - (void)test_create_key_event {
@@ -252,11 +252,11 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     event->set<touch>(touch_event{{.kind = touch_kind::touch, .identifier = 11}, {2.5f, 3.5f}, 200.0});
 
     auto const &value = event->get<touch>();
-    auto const &pos = value.position();
-    XCTAssertEqual(value.identifier(), (touch_id{.kind = touch_kind::touch, .identifier = 11}));
+    auto const &pos = value.position;
+    XCTAssertEqual(value.identifier, (touch_id{.kind = touch_kind::touch, .identifier = 11}));
     XCTAssertEqual(pos.x, 2.5f);
     XCTAssertEqual(pos.y, 3.5f);
-    auto const timestamp = event->get<touch>().timestamp();
+    auto const timestamp = event->get<touch>().timestamp;
     XCTAssertEqual(timestamp, 200.0);
 }
 
@@ -327,10 +327,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         XCTAssertEqual(event->type(), event_type::touch);
 
         auto const &value = event->get<touch>();
-        XCTAssertEqual(value.identifier(), (touch_id{.kind = touch_kind::touch, .identifier = 100}));
-        XCTAssertEqual(value.position().x, 256.0f);
-        XCTAssertEqual(value.position().y, 512.0f);
-        XCTAssertEqual(value.timestamp(), 201.0);
+        XCTAssertEqual(value.identifier, (touch_id{.kind = touch_kind::touch, .identifier = 100}));
+        XCTAssertEqual(value.position.x, 256.0f);
+        XCTAssertEqual(value.position.y, 512.0f);
+        XCTAssertEqual(value.timestamp, 201.0);
 
         called = true;
     });
@@ -446,7 +446,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         XCTAssertEqual(event->type(), event_type::touch);
 
-        if (event->get<touch>().identifier() == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
+        if (event->get<touch>().identifier == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
             if (event->phase() == event_phase::began) {
                 began_called = true;
             } else if (event->phase() == event_phase::ended) {
@@ -682,7 +682,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         if (event->type() == event_type::touch) {
-            if (event->get<touch>().identifier() == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
+            if (event->get<touch>().identifier == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
                 if (event->phase() == event_phase::began) {
                     began_called = true;
                 } else if (event->phase() == event_phase::ended) {

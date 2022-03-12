@@ -48,27 +48,15 @@ touch_id const &touch_id::mouse_right() {
 #pragma mark - touch_event
 
 touch_event::touch_event(touch_id const identifier, point pos, double const timestamp)
-    : _identifier(identifier), _position(std::move(pos)), _timestamp(timestamp) {
+    : identifier(identifier), position(std::move(pos)), timestamp(timestamp) {
 }
 
 bool touch_event::operator==(touch_event const &rhs) const {
-    return this->_identifier == rhs._identifier;
+    return this->identifier == rhs.identifier;
 }
 
 bool touch_event::operator!=(touch_event const &rhs) const {
     return !(*this == rhs);
-}
-
-touch_id touch_event::identifier() const {
-    return this->_identifier;
-}
-
-point const &touch_event::position() const {
-    return this->_position;
-}
-
-double touch_event::timestamp() const {
-    return this->_timestamp;
 }
 
 #pragma mark - key_event
@@ -177,7 +165,7 @@ std::string yas::to_string(cursor_event const &event) {
 }
 
 std::string yas::to_string(touch_event const &event) {
-    return "{position:" + to_string(event.position()) + "}";
+    return "{position:" + to_string(event.position) + "}";
 }
 
 std::string yas::to_string(key_event const &event) {

@@ -68,14 +68,9 @@ struct touch_event final {
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
 
-    touch_id identifier() const;
-    ui::point const &position() const;
-    double timestamp() const;
-
-   private:
-    touch_id _identifier;
-    ui::point _position;
-    double _timestamp;
+    touch_id identifier;
+    ui::point position;
+    double timestamp;
 };
 
 struct key_event final {

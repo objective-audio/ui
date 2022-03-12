@@ -58,16 +58,16 @@ void sample::touch_holder::_update_touch_node(std::shared_ptr<event> const &even
     switch (event->phase()) {
         case event_phase::began: {
             this->_insert_touch_node(identifier, action_manager);
-            this->_move_touch_node(identifier, value.position());
+            this->_move_touch_node(identifier, value.position);
         } break;
 
         case event_phase::changed: {
-            this->_move_touch_node(identifier, value.position());
+            this->_move_touch_node(identifier, value.position);
         } break;
 
         case event_phase::ended:
         case event_phase::canceled: {
-            this->_move_touch_node(identifier, value.position());
+            this->_move_touch_node(identifier, value.position);
             this->_erase_touch_node(identifier, action_manager);
         } break;
 
