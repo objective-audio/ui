@@ -68,7 +68,7 @@ struct touch_event final {
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
 
-    touch_id identifier;
+    touch_id touch_id;
     ui::point position;
     double timestamp;
 };
@@ -101,12 +101,8 @@ struct pinch_event final {
     bool operator==(pinch_event const &) const;
     bool operator!=(pinch_event const &) const;
 
-    double magnification() const;
-    double timestamp() const;
-
-   private:
-    double _magnification = 0.0f;
-    double _timestamp;
+    double magnification;
+    double timestamp;
 };
 
 struct scroll_event final {
@@ -115,14 +111,9 @@ struct scroll_event final {
     bool operator==(scroll_event const &) const;
     bool operator!=(scroll_event const &) const;
 
-    double deltaX() const;
-    double deltaY() const;
-    double timestamp() const;
-
-   private:
-    double _delta_x = 0.0;
-    double _delta_y = 0.0;
-    double _timestamp;
+    double delta_x;
+    double delta_y;
+    double timestamp;
 };
 
 struct cursor {
@@ -159,6 +150,8 @@ static scroll constexpr scroll_tag{};
 
 namespace yas {
 std::string to_string(ui::cursor_event const &);
+std::string to_string(ui::touch_kind const &);
+std::string to_string(ui::touch_id const &);
 std::string to_string(ui::touch_event const &);
 std::string to_string(ui::key_event const &);
 std::string to_string(ui::modifier_event const &);
