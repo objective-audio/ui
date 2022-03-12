@@ -105,10 +105,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 - (void)test_create_key_event {
     key_event const value{5, "a", "B", 6.0};
 
-    XCTAssertEqual(value.key_code(), 5);
-    XCTAssertEqual(value.characters(), "a");
-    XCTAssertEqual(value.raw_characters(), "B");
-    XCTAssertEqual(value.timestamp(), 6.0);
+    XCTAssertEqual(value.key_code, 5);
+    XCTAssertEqual(value.characters, "a");
+    XCTAssertEqual(value.raw_characters, "B");
+    XCTAssertEqual(value.timestamp, 6.0);
 }
 
 - (void)test_create_modifier_event {
@@ -268,11 +268,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     event->set<key>(key_event{23, "4", "5", 300.0});
 
     auto const &value = event->get<key>();
-    XCTAssertEqual(value.key_code(), 23);
-    XCTAssertEqual(value.characters(), "4");
-    XCTAssertEqual(value.raw_characters(), "5");
-    auto const timestamp = event->get<key>().timestamp();
-    XCTAssertEqual(timestamp, 300.0);
+    XCTAssertEqual(value.key_code, 23);
+    XCTAssertEqual(value.characters, "4");
+    XCTAssertEqual(value.raw_characters, "5");
+    XCTAssertEqual(value.timestamp, 300.0);
 }
 
 - (void)test_modifier_event_accessor {
@@ -351,10 +350,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         XCTAssertEqual(event->type(), event_type::key);
 
         auto const &value = event->get<key>();
-        XCTAssertEqual(value.key_code(), 200);
-        XCTAssertEqual(value.characters(), "xyz");
-        XCTAssertEqual(value.raw_characters(), "uvw");
-        XCTAssertEqual(value.timestamp(), 301.0);
+        XCTAssertEqual(value.key_code, 200);
+        XCTAssertEqual(value.characters, "xyz");
+        XCTAssertEqual(value.raw_characters, "uvw");
+        XCTAssertEqual(value.timestamp, 301.0);
 
         called = true;
     });
@@ -510,7 +509,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         XCTAssertEqual(event->type(), event_type::key);
 
-        if (event->get<key>().key_code() == 1) {
+        if (event->get<key>().key_code == 1) {
             if (event->phase() == event_phase::began) {
                 began_called = true;
             } else if (event->phase() == event_phase::ended) {
@@ -746,7 +745,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         if (event->type() == event_type::key) {
-            if (event->get<key>().key_code() == 1) {
+            if (event->get<key>().key_code == 1) {
                 if (event->phase() == event_phase::began) {
                     began_called = true;
                 } else if (event->phase() == event_phase::ended) {

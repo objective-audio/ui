@@ -65,7 +65,7 @@ void event_manager::input_touch_event(event_phase const phase, touch_event const
 }
 
 void event_manager::input_key_event(event_phase const phase, key_event const &value) {
-    auto const key_code = value.key_code();
+    auto const key_code = value.key_code;
 
     if (phase == event_phase::began) {
         if (this->_key_events.count(key_code) > 0) {

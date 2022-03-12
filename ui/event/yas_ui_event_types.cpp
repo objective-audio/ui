@@ -62,31 +62,15 @@ bool touch_event::operator!=(touch_event const &rhs) const {
 #pragma mark - key_event
 
 key_event::key_event(uint16_t const key_code, std::string charas, std::string charas2, double const timestamp)
-    : _key_code(key_code), _characters(std::move(charas)), _raw_characters(std::move(charas2)), _timestamp(timestamp) {
+    : key_code(key_code), characters(std::move(charas)), raw_characters(std::move(charas2)), timestamp(timestamp) {
 }
 
 bool key_event::operator==(key_event const &rhs) const {
-    return this->_key_code == rhs._key_code;
+    return this->key_code == rhs.key_code;
 }
 
 bool key_event::operator!=(key_event const &rhs) const {
     return !(*this == rhs);
-}
-
-uint16_t key_event::key_code() const {
-    return this->_key_code;
-}
-
-std::string const &key_event::characters() const {
-    return this->_characters;
-}
-
-std::string const &key_event::raw_characters() const {
-    return this->_raw_characters;
-}
-
-double key_event::timestamp() const {
-    return this->_timestamp;
 }
 
 #pragma mark - modifier_event
@@ -169,8 +153,8 @@ std::string yas::to_string(touch_event const &event) {
 }
 
 std::string yas::to_string(key_event const &event) {
-    return "{key_code:" + std::to_string(event.key_code()) + ", characters:" + event.characters() +
-           ", raw_characters:" + event.raw_characters() + "}";
+    return "{key_code:" + std::to_string(event.key_code) + ", characters:" + event.characters +
+           ", raw_characters:" + event.raw_characters + "}";
 }
 
 std::string yas::to_string(modifier_event const &event) {

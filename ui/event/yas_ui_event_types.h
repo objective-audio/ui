@@ -79,16 +79,10 @@ struct key_event final {
     bool operator==(key_event const &) const;
     bool operator!=(key_event const &) const;
 
-    uint16_t key_code() const;
-    std::string const &characters() const;
-    std::string const &raw_characters() const;
-    double timestamp() const;
-
-   private:
-    uint16_t _key_code;
-    std::string _characters;
-    std::string _raw_characters;
-    double _timestamp;
+    uint16_t key_code;
+    std::string characters;
+    std::string raw_characters;
+    double timestamp;
 };
 
 struct modifier_event final {

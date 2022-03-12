@@ -234,9 +234,9 @@ using namespace yas::ui;
         }
 
         auto const &key_event = event->get<key>();
-        values.key_code = key_event.key_code();
-        values.characters = key_event.characters();
-        values.raw_characters = key_event.raw_characters();
+        values.key_code = key_event.key_code;
+        values.characters = key_event.characters;
+        values.raw_characters = key_event.raw_characters;
     });
 
     [view keyDown:[self _keyEventWithType:NSEventTypeKeyDown

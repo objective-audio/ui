@@ -45,7 +45,7 @@ std::shared_ptr<strings> const &sample::inputted_text::strings() {
 
 void sample::inputted_text::_update_text(std::shared_ptr<event> const &event) {
     if (event->phase() == event_phase::began || event->phase() == event_phase::changed) {
-        auto const key_code = event->get<key>().key_code();
+        auto const key_code = event->get<key>().key_code;
 
         switch (key_code) {
             case 51: {  // delete key
@@ -56,7 +56,7 @@ void sample::inputted_text::_update_text(std::shared_ptr<event> const &event) {
             } break;
 
             default: {
-                append_text(event->get<key>().characters());
+                append_text(event->get<key>().characters);
             } break;
         }
     }
