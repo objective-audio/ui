@@ -9,7 +9,7 @@ using namespace yas::ui;
 
 #pragma mark - cursor_event
 
-cursor_event::cursor_event(point pos, double const timestamp) : _position(std::move(pos)), _timestamp(timestamp) {
+cursor_event::cursor_event(point pos, double const timestamp) : position(std::move(pos)), timestamp(timestamp) {
 }
 
 bool cursor_event::operator==(cursor_event const &rhs) const {
@@ -20,17 +20,9 @@ bool cursor_event::operator!=(cursor_event const &rhs) const {
     return false;
 }
 
-point const &cursor_event::position() const {
-    return this->_position;
-}
-
-double cursor_event::timestamp() const {
-    return this->_timestamp;
-}
-
 bool cursor_event::contains_in_window() const {
-    return -1.0f <= this->_position.x && this->_position.x <= 1.0f && -1.0f <= this->_position.y &&
-           this->_position.y <= 1.0f;
+    return -1.0f <= this->position.x && this->position.x <= 1.0f && -1.0f <= this->position.y &&
+           this->position.y <= 1.0f;
 }
 
 #pragma mark - touch_id
@@ -56,78 +48,42 @@ touch_id const &touch_id::mouse_right() {
 #pragma mark - touch_event
 
 touch_event::touch_event(touch_id const identifier, point pos, double const timestamp)
-    : _identifier(identifier), _position(std::move(pos)), _timestamp(timestamp) {
+    : identifier(identifier), position(std::move(pos)), timestamp(timestamp) {
 }
 
 bool touch_event::operator==(touch_event const &rhs) const {
-    return this->_identifier == rhs._identifier;
+    return this->identifier == rhs.identifier;
 }
 
 bool touch_event::operator!=(touch_event const &rhs) const {
     return !(*this == rhs);
 }
 
-touch_id touch_event::identifier() const {
-    return this->_identifier;
-}
-
-point const &touch_event::position() const {
-    return this->_position;
-}
-
-double touch_event::timestamp() const {
-    return this->_timestamp;
-}
-
 #pragma mark - key_event
 
 key_event::key_event(uint16_t const key_code, std::string charas, std::string charas2, double const timestamp)
-    : _key_code(key_code), _characters(std::move(charas)), _raw_characters(std::move(charas2)), _timestamp(timestamp) {
+    : key_code(key_code), characters(std::move(charas)), raw_characters(std::move(charas2)), timestamp(timestamp) {
 }
 
 bool key_event::operator==(key_event const &rhs) const {
-    return this->_key_code == rhs._key_code;
+    return this->key_code == rhs.key_code;
 }
 
 bool key_event::operator!=(key_event const &rhs) const {
     return !(*this == rhs);
 }
 
-uint16_t key_event::key_code() const {
-    return this->_key_code;
-}
-
-std::string const &key_event::characters() const {
-    return this->_characters;
-}
-
-std::string const &key_event::raw_characters() const {
-    return this->_raw_characters;
-}
-
-double key_event::timestamp() const {
-    return this->_timestamp;
-}
-
 #pragma mark - modifier_event
 
-modifier_event::modifier_event(modifier_flags const flag, double const timestamp) : _flag(flag), _timestamp(timestamp) {
+modifier_event::modifier_event(modifier_flags const flag, double const timestamp) : flag(flag), timestamp(timestamp) {
 }
 
 bool modifier_event::operator==(modifier_event const &rhs) const {
-    return this->_flag == rhs._flag;
+    return this->flag == rhs.flag;
 }
 
 bool modifier_event::operator!=(modifier_event const &rhs) const {
     return !(*this == rhs);
-}
-
-modifier_flags modifier_event::flag() const {
-    return this->_flag;
-}
-
-double modifier_event::timestamp() const {
-    return this->_timestamp;
 }
 
 #pragma mark - pinch_event
@@ -181,20 +137,20 @@ double scroll_event::timestamp() const {
 #pragma mark -
 
 std::string yas::to_string(cursor_event const &event) {
-    return "{position:" + to_string(event.position()) + "}";
+    return "{position:" + to_string(event.position) + "}";
 }
 
 std::string yas::to_string(touch_event const &event) {
-    return "{position:" + to_string(event.position()) + "}";
+    return "{position:" + to_string(event.position) + "}";
 }
 
 std::string yas::to_string(key_event const &event) {
-    return "{key_code:" + std::to_string(event.key_code()) + ", characters:" + event.characters() +
-           ", raw_characters:" + event.raw_characters() + "}";
+    return "{key_code:" + std::to_string(event.key_code) + ", characters:" + event.characters +
+           ", raw_characters:" + event.raw_characters + "}";
 }
 
 std::string yas::to_string(modifier_event const &event) {
-    return "{flag:" + to_string(event.flag()) + "}";
+    return "{flag:" + to_string(event.flag) + "}";
 }
 
 std::string yas::to_string(ui::pinch_event const &event) {

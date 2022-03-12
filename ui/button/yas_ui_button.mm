@@ -225,7 +225,7 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
             case event_phase::began:
                 if (!this->_is_tracking()) {
                     if (this->_can_begin_tracking_value(event) &&
-                        detector->detect(touch_event.position(), node->collider())) {
+                        detector->detect(touch_event.position, node->collider())) {
                         this->_set_tracking_event(event);
                         this->_send_notify(method::began, event);
                     }
@@ -256,7 +256,7 @@ void button::_leave_or_enter_or_move_tracking(std::shared_ptr<event> const &even
     if (auto const detector = this->_weak_detector.lock()) {
         auto const &touch_event = event->get<touch>();
         bool const is_event_tracking = this->_is_tracking(event);
-        bool const is_detected = detector->detect(touch_event.position(), node->collider());
+        bool const is_detected = detector->detect(touch_event.position, node->collider());
         if (!is_event_tracking && is_detected && this->_can_begin_tracking_value(event)) {
             this->_set_tracking_event(event);
             this->_send_notify(method::entered, event);

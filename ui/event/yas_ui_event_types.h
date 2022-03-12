@@ -38,13 +38,12 @@ struct cursor_event final {
     bool operator==(cursor_event const &) const;
     bool operator!=(cursor_event const &) const;
 
-    ui::point const &position() const;
-    double timestamp() const;
+    ui::point position;
+    double timestamp;
+
     bool contains_in_window() const;
 
    private:
-    ui::point _position;
-    double _timestamp;
 };
 
 enum class touch_kind {
@@ -69,14 +68,9 @@ struct touch_event final {
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
 
-    touch_id identifier() const;
-    ui::point const &position() const;
-    double timestamp() const;
-
-   private:
-    touch_id _identifier;
-    ui::point _position;
-    double _timestamp;
+    touch_id identifier;
+    ui::point position;
+    double timestamp;
 };
 
 struct key_event final {
@@ -85,16 +79,10 @@ struct key_event final {
     bool operator==(key_event const &) const;
     bool operator!=(key_event const &) const;
 
-    uint16_t key_code() const;
-    std::string const &characters() const;
-    std::string const &raw_characters() const;
-    double timestamp() const;
-
-   private:
-    uint16_t _key_code;
-    std::string _characters;
-    std::string _raw_characters;
-    double _timestamp;
+    uint16_t key_code;
+    std::string characters;
+    std::string raw_characters;
+    double timestamp;
 };
 
 struct modifier_event final {
@@ -103,12 +91,8 @@ struct modifier_event final {
     bool operator==(modifier_event const &) const;
     bool operator!=(modifier_event const &) const;
 
-    modifier_flags flag() const;
-    double timestamp() const;
-
-   private:
-    modifier_flags _flag;
-    double _timestamp;
+    modifier_flags flag;
+    double timestamp;
 };
 
 struct pinch_event final {
