@@ -164,7 +164,7 @@ std::string yas::to_string(key_event const &event) {
 }
 
 std::string yas::to_string(modifier_event const &event) {
-    return "{flag:" + to_string(event.flag) + "}";
+    return "{flag:" + to_string(event.flag) + ", timestamp:" + std::to_string(event.timestamp) + "}";
 }
 
 std::string yas::to_string(ui::pinch_event const &event) {
