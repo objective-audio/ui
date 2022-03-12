@@ -88,9 +88,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 - (void)test_create_cursor_event {
     cursor_event const value{{1.0f, 2.0f}, 3.0};
 
-    XCTAssertEqual(value.position().x, 1.0f);
-    XCTAssertEqual(value.position().y, 2.0f);
-    XCTAssertEqual(value.timestamp(), 3.0);
+    XCTAssertEqual(value.position.x, 1.0f);
+    XCTAssertEqual(value.position.y, 2.0f);
+    XCTAssertEqual(value.timestamp, 3.0);
 }
 
 - (void)test_create_touch_event {
@@ -237,10 +237,10 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     event->set<cursor>(cursor_event{{0.5f, 1.5f}, 100.0});
 
-    auto const &pos = event->get<cursor>().position();
+    auto const &pos = event->get<cursor>().position;
     XCTAssertEqual(pos.x, 0.5f);
     XCTAssertEqual(pos.y, 1.5f);
-    auto const timestamp = event->get<cursor>().timestamp();
+    auto const timestamp = event->get<cursor>().timestamp;
     XCTAssertEqual(timestamp, 100.0);
 }
 
@@ -305,9 +305,9 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         XCTAssertEqual(event->type(), event_type::cursor);
 
         auto const &value = event->get<cursor>();
-        XCTAssertEqual(value.position().x, 0.25f);
-        XCTAssertEqual(value.position().y, 0.125f);
-        XCTAssertEqual(value.timestamp(), 101.0);
+        XCTAssertEqual(value.position.x, 0.25f);
+        XCTAssertEqual(value.position.y, 0.125f);
+        XCTAssertEqual(value.timestamp, 101.0);
 
         called = true;
     });

@@ -34,7 +34,7 @@ static observing::endable _observe_event(std::shared_ptr<node> const &node,
             if (auto node = weak_node.lock()) {
                 auto const &value = event->get<ui::cursor>();
 
-                node->set_position(node->parent()->convert_position(value.position()));
+                node->set_position(node->parent()->convert_position(value.position));
 
                 if (auto const action_manager = weak_action_manager.lock()) {
                     for (auto child_node : node->sub_nodes()) {

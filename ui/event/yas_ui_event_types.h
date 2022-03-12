@@ -38,13 +38,12 @@ struct cursor_event final {
     bool operator==(cursor_event const &) const;
     bool operator!=(cursor_event const &) const;
 
-    ui::point const &position() const;
-    double timestamp() const;
+    ui::point position;
+    double timestamp;
+
     bool contains_in_window() const;
 
    private:
-    ui::point _position;
-    double _timestamp;
 };
 
 enum class touch_kind {

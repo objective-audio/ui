@@ -9,7 +9,7 @@ using namespace yas::ui;
 
 #pragma mark - cursor_event
 
-cursor_event::cursor_event(point pos, double const timestamp) : _position(std::move(pos)), _timestamp(timestamp) {
+cursor_event::cursor_event(point pos, double const timestamp) : position(std::move(pos)), timestamp(timestamp) {
 }
 
 bool cursor_event::operator==(cursor_event const &rhs) const {
@@ -20,17 +20,9 @@ bool cursor_event::operator!=(cursor_event const &rhs) const {
     return false;
 }
 
-point const &cursor_event::position() const {
-    return this->_position;
-}
-
-double cursor_event::timestamp() const {
-    return this->_timestamp;
-}
-
 bool cursor_event::contains_in_window() const {
-    return -1.0f <= this->_position.x && this->_position.x <= 1.0f && -1.0f <= this->_position.y &&
-           this->_position.y <= 1.0f;
+    return -1.0f <= this->position.x && this->position.x <= 1.0f && -1.0f <= this->position.y &&
+           this->position.y <= 1.0f;
 }
 
 #pragma mark - touch_id
@@ -181,7 +173,7 @@ double scroll_event::timestamp() const {
 #pragma mark -
 
 std::string yas::to_string(cursor_event const &event) {
-    return "{position:" + to_string(event.position()) + "}";
+    return "{position:" + to_string(event.position) + "}";
 }
 
 std::string yas::to_string(touch_event const &event) {

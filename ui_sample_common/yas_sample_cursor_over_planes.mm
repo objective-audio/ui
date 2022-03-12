@@ -30,7 +30,7 @@ static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<no
                     auto const action_manager = weak_action_manager.lock();
                     auto const detector = weak_detector.lock();
                     if (node && action_manager && detector) {
-                        auto is_detected = detector->detect(cursor_event.position(), node->collider());
+                        auto is_detected = detector->detect(cursor_event.position, node->collider());
 
                         auto make_color_action = [&group](std::shared_ptr<ui::node> const &node,
                                                           rgb_color const &color) {
