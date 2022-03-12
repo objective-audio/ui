@@ -41,7 +41,7 @@ void event_manager::input_cursor_event(cursor_event const &value) {
 }
 
 void event_manager::input_touch_event(event_phase const phase, touch_event const &value) {
-    auto const identifer = value.identifier.identifier;
+    auto const identifer = value.touch_id.identifier;
 
     if (phase == event_phase::began) {
         if (this->_touch_events.count(identifer) > 0) {

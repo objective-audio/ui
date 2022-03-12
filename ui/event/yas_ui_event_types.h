@@ -68,7 +68,7 @@ struct touch_event final {
     bool operator==(touch_event const &) const;
     bool operator!=(touch_event const &) const;
 
-    touch_id identifier;
+    touch_id touch_id;
     ui::point position;
     double timestamp;
 };

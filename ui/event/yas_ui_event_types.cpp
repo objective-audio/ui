@@ -47,12 +47,12 @@ touch_id const &touch_id::mouse_right() {
 
 #pragma mark - touch_event
 
-touch_event::touch_event(touch_id const identifier, point pos, double const timestamp)
-    : identifier(identifier), position(std::move(pos)), timestamp(timestamp) {
+touch_event::touch_event(ui::touch_id const identifier, point pos, double const timestamp)
+    : touch_id(identifier), position(std::move(pos)), timestamp(timestamp) {
 }
 
 bool touch_event::operator==(touch_event const &rhs) const {
-    return this->identifier == rhs.identifier;
+    return this->touch_id == rhs.touch_id;
 }
 
 bool touch_event::operator!=(touch_event const &rhs) const {
@@ -154,7 +154,7 @@ std::string yas::to_string(ui::touch_id const &touch_id) {
 }
 
 std::string yas::to_string(touch_event const &event) {
-    return "{position:" + to_string(event.position) + ", touch_id:" + to_string(event.identifier) +
+    return "{position:" + to_string(event.position) + ", touch_id:" + to_string(event.touch_id) +
            ", timestamp:" + std::to_string(event.timestamp) + "}";
 }
 
