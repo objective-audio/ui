@@ -908,4 +908,21 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(modifier));
 }
 
+- (void)test_touch_id_equal {
+    touch_id const id_mouse_1a{touch_kind::mouse, 1};
+    touch_id const id_mouse_1b{touch_kind::mouse, 1};
+    touch_id const id_mouse_2{touch_kind::mouse, 2};
+    touch_id const id_touch_1{touch_kind::touch, 1};
+
+    XCTAssertTrue(id_mouse_1a == id_mouse_1a);
+    XCTAssertTrue(id_mouse_1a == id_mouse_1b);
+    XCTAssertFalse(id_mouse_1a == id_mouse_2);
+    XCTAssertFalse(id_mouse_1a == id_touch_1);
+
+    XCTAssertFalse(id_mouse_1a != id_mouse_1a);
+    XCTAssertFalse(id_mouse_1a != id_mouse_1b);
+    XCTAssertTrue(id_mouse_1a != id_mouse_2);
+    XCTAssertTrue(id_mouse_1a != id_touch_1);
+}
+
 @end
