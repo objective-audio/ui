@@ -114,8 +114,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 - (void)test_create_modifier_event {
     modifier_event const value{modifier_flags::alpha_shift, 7.0};
 
-    XCTAssertEqual(value.flag(), modifier_flags::alpha_shift);
-    XCTAssertEqual(value.timestamp(), 7.0);
+    XCTAssertEqual(value.flag, modifier_flags::alpha_shift);
+    XCTAssertEqual(value.timestamp, 7.0);
 }
 
 - (void)test_is_equal_cursor_event {
@@ -282,9 +282,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     event->set<modifier>(modifier_event{modifier_flags::command, 400.0});
 
     auto const &value = event->get<modifier>();
-    XCTAssertEqual(value.flag(), modifier_flags::command);
-    auto const timestamp = event->get<modifier>().timestamp();
-    XCTAssertEqual(timestamp, 400.0);
+    XCTAssertEqual(value.flag, modifier_flags::command);
+    XCTAssertEqual(value.timestamp, 400.0);
 }
 
 - (void)test_create_manager {
@@ -375,11 +374,11 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
         auto const &value = event->get<modifier>();
 
-        if (value.flag() == modifier_flags::alternate) {
+        if (value.flag == modifier_flags::alternate) {
             alt_called = true;
         }
 
-        if (value.flag() == modifier_flags::function) {
+        if (value.flag == modifier_flags::function) {
             func_called = true;
         }
     });
@@ -568,7 +567,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         XCTAssertEqual(event->type(), event_type::modifier);
 
-        if (event->get<modifier>().flag() == modifier_flags::alpha_shift) {
+        if (event->get<modifier>().flag == modifier_flags::alpha_shift) {
             if (event->phase() == event_phase::began) {
                 began_called = true;
             } else if (event->phase() == event_phase::ended) {
@@ -804,7 +803,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
         if (event->type() == event_type::modifier) {
-            if (event->get<modifier>().flag() == modifier_flags::alpha_shift) {
+            if (event->get<modifier>().flag == modifier_flags::alpha_shift) {
                 if (event->phase() == event_phase::began) {
                     began_called = true;
                 } else if (event->phase() == event_phase::ended) {

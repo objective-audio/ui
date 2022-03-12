@@ -91,12 +91,8 @@ struct modifier_event final {
     bool operator==(modifier_event const &) const;
     bool operator!=(modifier_event const &) const;
 
-    modifier_flags flag() const;
-    double timestamp() const;
-
-   private:
-    modifier_flags _flag;
-    double _timestamp;
+    modifier_flags flag;
+    double timestamp;
 };
 
 struct pinch_event final {

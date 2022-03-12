@@ -75,23 +75,15 @@ bool key_event::operator!=(key_event const &rhs) const {
 
 #pragma mark - modifier_event
 
-modifier_event::modifier_event(modifier_flags const flag, double const timestamp) : _flag(flag), _timestamp(timestamp) {
+modifier_event::modifier_event(modifier_flags const flag, double const timestamp) : flag(flag), timestamp(timestamp) {
 }
 
 bool modifier_event::operator==(modifier_event const &rhs) const {
-    return this->_flag == rhs._flag;
+    return this->flag == rhs.flag;
 }
 
 bool modifier_event::operator!=(modifier_event const &rhs) const {
     return !(*this == rhs);
-}
-
-modifier_flags modifier_event::flag() const {
-    return this->_flag;
-}
-
-double modifier_event::timestamp() const {
-    return this->_timestamp;
 }
 
 #pragma mark - pinch_event
@@ -158,7 +150,7 @@ std::string yas::to_string(key_event const &event) {
 }
 
 std::string yas::to_string(modifier_event const &event) {
-    return "{flag:" + to_string(event.flag()) + "}";
+    return "{flag:" + to_string(event.flag) + "}";
 }
 
 std::string yas::to_string(ui::pinch_event const &event) {

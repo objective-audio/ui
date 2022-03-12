@@ -60,7 +60,7 @@ std::shared_ptr<strings> const &sample::modifier_text::strings() {
 
 void sample::modifier_text::_update_text(std::shared_ptr<event> const &event,
                                          std::unordered_set<modifier_flags> &flags) {
-    auto flag = event->get<modifier>().flag();
+    auto flag = event->get<modifier>().flag;
 
     if (event->phase() == event_phase::began) {
         flags.insert(flag);
