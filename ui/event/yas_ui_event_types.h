@@ -101,12 +101,8 @@ struct pinch_event final {
     bool operator==(pinch_event const &) const;
     bool operator!=(pinch_event const &) const;
 
-    double magnification() const;
-    double timestamp() const;
-
-   private:
-    double _magnification = 0.0f;
-    double _timestamp;
+    double magnification;
+    double timestamp;
 };
 
 struct scroll_event final {

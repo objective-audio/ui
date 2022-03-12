@@ -89,23 +89,15 @@ bool modifier_event::operator!=(modifier_event const &rhs) const {
 #pragma mark - pinch_event
 
 pinch_event::pinch_event(double const magnification, double const timestamp)
-    : _magnification(magnification), _timestamp(timestamp) {
+    : magnification(magnification), timestamp(timestamp) {
 }
 
 bool pinch_event::operator==(pinch_event const &rhs) const {
-    return this->_magnification == rhs._magnification;
+    return this->magnification == rhs.magnification;
 }
 
 bool pinch_event::operator!=(pinch_event const &rhs) const {
     return !(*this == rhs);
-}
-
-double pinch_event::magnification() const {
-    return this->_magnification;
-}
-
-double pinch_event::timestamp() const {
-    return this->_timestamp;
 }
 
 #pragma mark - scroll_event
@@ -168,8 +160,8 @@ std::string yas::to_string(modifier_event const &event) {
 }
 
 std::string yas::to_string(ui::pinch_event const &event) {
-    return "{magnification:" + std::to_string(event.magnification()) +
-           ", timestamp:" + std::to_string(event.timestamp()) + "}";
+    return "{magnification:" + std::to_string(event.magnification) + ", timestamp:" + std::to_string(event.timestamp) +
+           "}";
 }
 
 std::string yas::to_string(ui::scroll_event const &event) {
