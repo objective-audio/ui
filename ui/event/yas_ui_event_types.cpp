@@ -137,7 +137,7 @@ double scroll_event::timestamp() const {
 #pragma mark -
 
 std::string yas::to_string(cursor_event const &event) {
-    return "{position:" + to_string(event.position) + "}";
+    return "{position:" + to_string(event.position) + ", timestamp:" + std::to_string(event.timestamp) + "}";
 }
 
 std::string yas::to_string(touch_event const &event) {
