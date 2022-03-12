@@ -168,7 +168,8 @@ std::string yas::to_string(modifier_event const &event) {
 }
 
 std::string yas::to_string(ui::pinch_event const &event) {
-    return "{magnification:" + std::to_string(event.magnification()) + "}";
+    return "{magnification:" + std::to_string(event.magnification()) +
+           ", timestamp:" + std::to_string(event.timestamp()) + "}";
 }
 
 std::string yas::to_string(ui::scroll_event const &event) {
