@@ -57,6 +57,7 @@ struct touch_id final {
 
     bool operator==(touch_id const &) const;
     bool operator!=(touch_id const &) const;
+    bool operator<(touch_id const &) const;
 
     [[nodiscard]] static touch_id const &mouse_left();
     [[nodiscard]] static touch_id const &mouse_right();
