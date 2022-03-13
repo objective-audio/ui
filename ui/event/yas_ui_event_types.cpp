@@ -35,6 +35,14 @@ bool touch_id::operator!=(touch_id const &rhs) const {
     return !(*this == rhs);
 }
 
+bool touch_id::operator<(touch_id const &rhs) const {
+    if (this->kind == rhs.kind) {
+        return this->identifier < rhs.identifier;
+    } else {
+        return this->kind < rhs.kind;
+    }
+}
+
 touch_id const &touch_id::mouse_left() {
     static touch_id const _mouse_left{.kind = touch_kind::mouse, .identifier = 0};
     return _mouse_left;

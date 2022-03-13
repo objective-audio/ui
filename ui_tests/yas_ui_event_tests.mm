@@ -906,7 +906,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(modifier));
 }
 
-- (void)test_touch_id_equal {
+- (void)test_is_equal_touch_id {
     touch_id const id_mouse_1a{touch_kind::mouse, 1};
     touch_id const id_mouse_1b{touch_kind::mouse, 1};
     touch_id const id_mouse_2{touch_kind::mouse, 2};
@@ -921,6 +921,24 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     XCTAssertFalse(id_mouse_1a != id_mouse_1b);
     XCTAssertTrue(id_mouse_1a != id_mouse_2);
     XCTAssertTrue(id_mouse_1a != id_touch_1);
+}
+
+- (void)test_is_less_than_touch_id {
+    touch_id const id_mouse_1a{touch_kind::mouse, 1};
+    touch_id const id_mouse_1b{touch_kind::mouse, 1};
+    touch_id const id_mouse_2{touch_kind::mouse, 2};
+    touch_id const id_touch_1{touch_kind::touch, 1};
+    touch_id const id_touch_2{touch_kind::touch, 2};
+
+    XCTAssertFalse(id_mouse_1a < id_mouse_1b);
+    XCTAssertTrue(id_mouse_1a < id_mouse_2);
+    XCTAssertFalse(id_mouse_2 < id_mouse_1a);
+    XCTAssertFalse(id_mouse_1a < id_touch_1);
+    XCTAssertFalse(id_mouse_1a < id_touch_2);
+    XCTAssertTrue(id_touch_1 < id_mouse_1a);
+    XCTAssertTrue(id_touch_1 < id_mouse_2);
+    XCTAssertTrue(id_touch_1 < id_touch_2);
+    XCTAssertFalse(id_touch_2 < id_touch_1);
 }
 
 @end
