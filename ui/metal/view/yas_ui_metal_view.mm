@@ -50,6 +50,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (yas::ui::point)view_location_from_ui_position:(yas::ui::point)position {
     auto const view_size = self.bounds.size;
+    auto const location_x = (1.0f + position.x) * view_size.width * 0.5f;
     auto const y = (1.0f + position.y) * view_size.height * 0.5f;
 
 #if TARGET_OS_IPHONE
@@ -58,7 +59,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     float const location_y = y;
 #endif
 
-    return {static_cast<float>((1.0f + position.x) * view_size.width * 0.5f), static_cast<float>(location_y)};
+    return {static_cast<float>(location_x), static_cast<float>(location_y)};
 }
 
 - (yas::ui::point)ui_position_from_view_location:(yas::ui::point)location {
@@ -109,9 +110,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (ui::point)_position:(UITouch *)touch {
     auto const locInView = [touch locationInView:self];
-    auto const viewSize = self.bounds.size;
-    return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),
-            static_cast<float>((viewSize.height - locInView.y) / viewSize.height * 2.0f - 1.0f)};
+    ui::point const location{static_cast<float>(locInView.x), static_cast<float>(locInView.y)};
+    return [self ui_position_from_view_location:location];
 }
 
 - (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
@@ -213,10 +213,9 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 
 - (ui::point)_position:(NSEvent *)event {
-    auto locInView = [self convertPoint:event.locationInWindow fromView:nil];
-    auto viewSize = self.bounds.size;
-    return {static_cast<float>(locInView.x / viewSize.width * 2.0f - 1.0f),
-            static_cast<float>(locInView.y / viewSize.height * 2.0f - 1.0f)};
+    auto const locInView = [self convertPoint:event.locationInWindow fromView:nil];
+    ui::point const location{static_cast<float>(locInView.x), static_cast<float>(locInView.y)};
+    return [self ui_position_from_view_location:location];
 }
 
 - (void)updateTrackingAreas {
