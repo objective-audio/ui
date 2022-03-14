@@ -48,6 +48,32 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     self->_cpp.event_manager = manager;
 }
 
+- (yas::ui::point)view_location_from_ui_position:(yas::ui::point)position {
+    auto const view_size = self.bounds.size;
+    auto const y = (1.0f + position.y) * view_size.height * 0.5f;
+
+#if TARGET_OS_IPHONE
+    float const location_y = view_size.height - y;
+#elif TARGET_OS_MAC
+    float const location_y = y;
+#endif
+
+    return {static_cast<float>((1.0f + position.x) * view_size.width * 0.5f), static_cast<float>(location_y)};
+}
+
+- (yas::ui::point)ui_position_from_view_location:(yas::ui::point)location {
+    auto const view_size = self.bounds.size;
+
+#if TARGET_OS_IPHONE
+    float const location_y = view_size.height - location.y;
+#elif TARGET_OS_MAC
+    float const location_y = location.y;
+#endif
+
+    return {static_cast<float>(location.x / view_size.width * 2.0f - 1.0f),
+            static_cast<float>(location_y / view_size.height * 2.0f - 1.0f)};
+}
+
 - (BOOL)acceptsFirstResponder {
     return YES;
 }

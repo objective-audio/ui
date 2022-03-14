@@ -19,6 +19,9 @@
 
 - (void)set_event_manager:(std::shared_ptr<yas::ui::event_manager_for_view> const &)manager;
 
+- (yas::ui::point)view_location_from_ui_position:(yas::ui::point)position;
+- (yas::ui::point)ui_position_from_view_location:(yas::ui::point)location;
+
 @end
 
 @protocol YASUIMetalViewDelegate <NSObject>
