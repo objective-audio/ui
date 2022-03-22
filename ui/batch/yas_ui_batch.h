@@ -35,7 +35,7 @@ struct batch final : renderable_batch, render_encodable {
     void clear_render_meshes() override;
     void append_mesh(std::shared_ptr<mesh> const &) override;
 
-    ui::batch_render_mesh_info &_find_or_make_mesh_info(std::shared_ptr<texture> const &);
-    ui::batch_render_mesh_info &_add_mesh_info(std::shared_ptr<texture> const &);
+    ui::batch_render_mesh_info &_find_or_make_mesh_info(primitive_type const, std::shared_ptr<texture> const &);
+    ui::batch_render_mesh_info &_add_mesh_info(primitive_type const, std::shared_ptr<texture> const &);
 };
 }  // namespace yas::ui
