@@ -32,7 +32,8 @@ batch_building_type tree_updates::batch_building_type() const {
                                                          ui::node_update_reason::children,
                                                          ui::node_update_reason::batch};
     static mesh_updates_t const _mesh_rebuild_updates = {
-        ui::mesh_update_reason::texture, ui::mesh_update_reason::vertex_data, ui::mesh_update_reason::index_data};
+        ui::mesh_update_reason::texture, ui::mesh_update_reason::vertex_data, ui::mesh_update_reason::index_data,
+        ui::mesh_update_reason::primitive_type};
     static mesh_data_updates_t const _vertex_data_rebuild_updates = {ui::mesh_data_update_reason::data_count};
 
     if (this->node_updates.and_test(_node_rebuild_updates) || this->mesh_updates.and_test(_mesh_rebuild_updates) ||
