@@ -17,18 +17,19 @@ void sample::main::setup() {
 
     root_node->add_sub_node(this->_bg->rect_plane()->node());
 
-    auto batch_node = node::make_shared();
-    batch_node->set_batch(batch::make_shared());
-    batch_node->add_sub_node(this->_cursor_over_planes->node());
-    root_node->add_sub_node(std::move(batch_node));
-
     root_node->add_sub_node(this->_soft_keyboard->node());
     root_node->add_sub_node(this->_big_button->button()->rect_plane()->node());
     root_node->add_sub_node(this->_cursor->node());
     root_node->add_sub_node(this->_touch_holder->node());
     root_node->add_sub_node(this->_inputted_text->strings()->rect_plane()->node());
     root_node->add_sub_node(this->_modifier_text->strings()->rect_plane()->node());
-    root_node->add_sub_node(this->_justified_points->rect_plane()->node());
+
+    auto batch_node = node::make_shared();
+    batch_node->set_batch(batch::make_shared());
+    batch_node->add_sub_node(this->_cursor_over_planes->node());
+    batch_node->add_sub_node(this->_justified_points->rect_plane()->node());
+    root_node->add_sub_node(std::move(batch_node));
+
     root_node->add_sub_node(this->_draw_call_text->strings()->rect_plane()->node());
 
     this->_big_button->button()->rect_plane()->node()->add_sub_node(
