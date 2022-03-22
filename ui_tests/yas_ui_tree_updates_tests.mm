@@ -115,8 +115,7 @@ using namespace yas::ui;
 - (void)test_batch_building_type_overwrite {
     tree_updates updates;
     updates.node_updates.set({node_update_reason::collider, node_update_reason::geometry});
-    updates.mesh_updates.set(
-        {mesh_update_reason::primitive_type, mesh_update_reason::use_mesh_color, mesh_update_reason::color});
+    updates.mesh_updates.set({mesh_update_reason::use_mesh_color, mesh_update_reason::color});
     updates.vertex_data_updates.set({mesh_data_update_reason::data_content, mesh_data_update_reason::render_buffer});
     updates.index_data_updates.set({mesh_data_update_reason::data_content, mesh_data_update_reason::render_buffer});
 

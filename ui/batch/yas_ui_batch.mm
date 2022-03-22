@@ -86,7 +86,7 @@ void batch::clear_render_meshes() {
 
 void batch::append_mesh(std::shared_ptr<mesh> const &mesh) {
     if (this->_building_type == batch_building_type::rebuild) {
-        batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->texture());
+        batch_render_mesh_info &mesh_info = this->_find_or_make_mesh_info(mesh->primitive_type(), mesh->texture());
 
         auto const renderable_mesh = renderable_mesh::cast(mesh);
         mesh_info.vertex_count += renderable_mesh->render_vertex_count();
@@ -104,19 +104,22 @@ setup_metal_result batch::metal_setup(std::shared_ptr<metal_system> const &syste
     return setup_metal_result{nullptr};
 }
 
-batch_render_mesh_info &batch::_find_or_make_mesh_info(std::shared_ptr<texture> const &texture) {
+batch_render_mesh_info &batch::_find_or_make_mesh_info(primitive_type const primitive_type,
+                                                       std::shared_ptr<texture> const &texture) {
     for (auto &info : this->_render_mesh_infos) {
-        if (info.render_mesh->texture() == texture) {
+        if (info.render_mesh->primitive_type() == primitive_type && info.render_mesh->texture() == texture) {
             return info;
         }
     }
 
-    return this->_add_mesh_info(texture);
+    return this->_add_mesh_info(primitive_type, texture);
 }
 
-batch_render_mesh_info &batch::_add_mesh_info(std::shared_ptr<texture> const &texture) {
+batch_render_mesh_info &batch::_add_mesh_info(primitive_type const primitive_type,
+                                              std::shared_ptr<texture> const &texture) {
     this->_render_mesh_infos.emplace_back(batch_render_mesh_info{});
     auto &info = this->_render_mesh_infos.back();
+    info.render_mesh->set_primitive_type(primitive_type);
     info.render_mesh->set_texture(texture);
     info.render_mesh->set_use_mesh_color(true);
     return info;
