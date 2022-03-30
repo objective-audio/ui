@@ -18,8 +18,8 @@ sample::big_button::big_button(std::shared_ptr<ui::event_manager> const &event_m
     : _button(ui::button::make_shared(
           {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}},
           event_manager, detector)) {
-    this->_button->rect_plane()->node()->set_collider(
-        collider::make_shared(shape::make_shared(circle_shape{.radius = this->_radius})));
+    this->_button->rect_plane()->node()->set_colliders(
+        {collider::make_shared(shape::make_shared(circle_shape{.radius = this->_radius}))});
 
     this->_button->set_can_begin_tracking([](std::shared_ptr<ui::event> const &event) {
         auto const &touch_event = event->get<ui::touch>();
