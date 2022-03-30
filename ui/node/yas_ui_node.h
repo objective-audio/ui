@@ -28,27 +28,27 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     void set_position(ui::point &&);
     void set_position(ui::point const &);
     [[nodiscard]] ui::point const &position() const;
-    [[nodiscard]] observing::syncable observe_position(observing::caller<ui::point>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_position(std::function<void(ui::point const &)> &&);
 
     void set_angle(ui::angle &&);
     void set_angle(ui::angle const &);
     [[nodiscard]] ui::angle const &angle() const;
-    [[nodiscard]] observing::syncable observe_angle(observing::caller<ui::angle>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_angle(std::function<void(ui::angle const &)> &&);
 
     void set_scale(ui::size &&);
     void set_scale(ui::size const &);
     [[nodiscard]] ui::size const &scale() const;
-    [[nodiscard]] observing::syncable observe_scale(observing::caller<ui::size>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_scale(std::function<void(ui::size const &)> &&);
 
     void set_rgb_color(ui::rgb_color &&);
     void set_rgb_color(ui::rgb_color const &);
     [[nodiscard]] ui::rgb_color const &rgb_color() const;
-    [[nodiscard]] observing::syncable observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_rgb_color(std::function<void(ui::rgb_color const &)> &&);
 
     void set_alpha(float &&);
     void set_alpha(float const &);
     [[nodiscard]] float const &alpha() const;
-    [[nodiscard]] observing::syncable observe_alpha(observing::caller<float>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_alpha(std::function<void(float const &)> &&);
 
     void set_color(ui::color &&);
     void set_color(ui::color const &);
@@ -57,27 +57,32 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     void set_is_enabled(bool &&);
     void set_is_enabled(bool const &);
     [[nodiscard]] bool const &is_enabled() const;
-    [[nodiscard]] observing::syncable observe_is_enabled(observing::caller<bool>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_is_enabled(std::function<void(bool const &)> &&);
 
     [[nodiscard]] simd::float4x4 const &matrix() const;
     [[nodiscard]] simd::float4x4 const &local_matrix() const;
 
     void set_mesh(std::shared_ptr<mesh> const &);
     [[nodiscard]] std::shared_ptr<mesh> const &mesh() const;
-    [[nodiscard]] observing::syncable observe_mesh(observing::caller<std::shared_ptr<ui::mesh>>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_mesh(std::function<void(std::shared_ptr<ui::mesh> const &)> &&);
 
-    void set_collider(std::shared_ptr<collider> const &);
-    [[nodiscard]] std::shared_ptr<collider> const &collider() const;
-    [[nodiscard]] observing::syncable observe_collider(observing::caller<std::shared_ptr<ui::collider>>::handler_f &&);
+    void set_colliders(std::vector<std::shared_ptr<ui::collider>> const &);
+    void push_back_collider(std::shared_ptr<ui::collider> const &);
+    void insert_collider_at(std::shared_ptr<ui::collider> const &, std::size_t const);
+    void erase_collider_at(std::size_t const);
+    [[nodiscard]] std::vector<std::shared_ptr<ui::collider>> const &colliders() const;
+
+    using colliders_event = observing::vector::holder<std::shared_ptr<ui::collider>>::event;
+    [[nodiscard]] observing::syncable observe_colliders(std::function<void(colliders_event const &)> &&);
 
     void set_batch(std::shared_ptr<batch> const &);
     [[nodiscard]] std::shared_ptr<batch> const &batch() const;
-    [[nodiscard]] observing::syncable observe_batch(observing::caller<std::shared_ptr<ui::batch>>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_batch(std::function<void(std::shared_ptr<ui::batch> const &)> &&);
 
     void set_render_target(std::shared_ptr<render_target> const &);
     [[nodiscard]] std::shared_ptr<render_target> const &render_target() const;
     [[nodiscard]] observing::syncable observe_render_target(
-        observing::caller<std::shared_ptr<ui::render_target>>::handler_f &&);
+        std::function<void(std::shared_ptr<ui::render_target> const &)> &&);
 
     void add_sub_node(std::shared_ptr<node> const &);
     void add_sub_node(std::shared_ptr<node> const &, std::size_t const);
@@ -89,7 +94,7 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     [[nodiscard]] std::vector<std::shared_ptr<node>> const &sub_nodes() const;
     [[nodiscard]] std::shared_ptr<node> parent() const;
 
-    [[nodiscard]] observing::endable observe(observing::caller<method>::handler_f &&);
+    [[nodiscard]] observing::endable observe(std::function<void(method const &)> &&);
 
     [[nodiscard]] ui::point convert_position(ui::point const &) const;
 
@@ -114,7 +119,7 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     observing::value::holder_ptr<ui::rgb_color> const _rgb_color;
     observing::value::holder_ptr<float> const _alpha;
     observing::value::holder_ptr<std::shared_ptr<ui::mesh>> const _mesh;
-    observing::value::holder_ptr<std::shared_ptr<ui::collider>> const _collider;
+    observing::vector::holder_ptr<std::shared_ptr<ui::collider>> const _colliders;
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> const _batch;
     observing::value::holder_ptr<std::shared_ptr<ui::render_target>> const _render_target;
     observing::value::holder_ptr<bool> const _enabled;

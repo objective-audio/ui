@@ -12,11 +12,11 @@ struct background final {
     void set_rgb_color(ui::rgb_color const &);
     void set_rgb_color(ui::rgb_color &&);
     [[nodiscard]] ui::rgb_color const &rgb_color() const;
-    [[nodiscard]] observing::syncable observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_rgb_color(std::function<void(ui::rgb_color const &)> &&);
 
     void set_alpha(float const &);
     [[nodiscard]] float const &alpha() const;
-    [[nodiscard]] observing::syncable observe_alpha(observing::caller<float>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_alpha(std::function<void(float const &)> &&);
 
     void set_color(ui::color const &);
     void set_color(ui::color &&);

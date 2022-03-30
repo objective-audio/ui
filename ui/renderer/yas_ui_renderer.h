@@ -10,8 +10,8 @@
 
 namespace yas::ui {
 struct renderer final : renderer_for_view {
-    [[nodiscard]] observing::endable observe_will_render(observing::caller<std::nullptr_t>::handler_f &&);
-    [[nodiscard]] observing::endable observe_did_render(observing::caller<std::nullptr_t>::handler_f &&);
+    [[nodiscard]] observing::endable observe_will_render(std::function<void(std::nullptr_t const &)> &&);
+    [[nodiscard]] observing::endable observe_did_render(std::function<void(std::nullptr_t const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<renderer> make_shared(
         std::shared_ptr<ui::system_for_renderer> const &, std::shared_ptr<ui::view_look_for_renderer> const &,

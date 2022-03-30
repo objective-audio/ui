@@ -23,14 +23,14 @@ renderer::renderer(std::shared_ptr<ui::system_for_renderer> const &system,
       _action_manager(action_manager) {
 }
 
-observing::endable renderer::observe_will_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable renderer::observe_will_render(std::function<void(std::nullptr_t const &)> &&handler) {
     if (!this->_will_render_notifier) {
         this->_will_render_notifier = observing::notifier<std::nullptr_t>::make_shared();
     }
     return this->_will_render_notifier->observe(std::move(handler));
 }
 
-observing::endable renderer::observe_did_render(observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable renderer::observe_did_render(std::function<void(std::nullptr_t const &)> &&handler) {
     if (!this->_did_render_notifier) {
         this->_did_render_notifier = observing::notifier<std::nullptr_t>::make_shared();
     }

@@ -28,8 +28,8 @@ struct view_look final : parent_for_node, view_look_for_renderer, scale_factor_o
     [[nodiscard]] ui::appearance appearance() const override;
     [[nodiscard]] std::shared_ptr<ui::background> background() const;
 
-    [[nodiscard]] observing::syncable observe_scale_factor(observing::caller<double>::handler_f &&) override;
-    [[nodiscard]] observing::syncable observe_appearance(observing::caller<ui::appearance>::handler_f &&) override;
+    [[nodiscard]] observing::syncable observe_scale_factor(std::function<void(double const &)> &&) override;
+    [[nodiscard]] observing::syncable observe_appearance(std::function<void(ui::appearance const &)> &&) override;
 
     [[nodiscard]] static std::shared_ptr<view_look> make_shared();
 

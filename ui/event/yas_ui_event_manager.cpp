@@ -10,7 +10,7 @@ using namespace yas::ui;
 event_manager::event_manager() {
 }
 
-observing::endable event_manager::observe(observing::caller<std::shared_ptr<event>>::handler_f &&handler) {
+observing::endable event_manager::observe(std::function<void(std::shared_ptr<event> const &)> &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 

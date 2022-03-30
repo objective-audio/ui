@@ -11,7 +11,7 @@
 
 namespace yas::ui {
 struct event_manager final : event_manager_for_view, event_observable {
-    [[nodiscard]] observing::endable observe(observing::caller<std::shared_ptr<event>>::handler_f &&) override;
+    [[nodiscard]] observing::endable observe(std::function<void(std::shared_ptr<event> const &)> &&) override;
 
     [[nodiscard]] static std::shared_ptr<event_manager> make_shared();
 

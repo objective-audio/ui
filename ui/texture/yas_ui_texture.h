@@ -33,8 +33,8 @@ struct texture {
 
     [[nodiscard]] std::shared_ptr<ui::metal_texture> const &metal_texture() const;
 
-    [[nodiscard]] observing::endable observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&);
-    [[nodiscard]] observing::endable observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&);
+    [[nodiscard]] observing::endable observe_metal_texture_changed(std::function<void(std::nullptr_t const &)> &&);
+    [[nodiscard]] observing::endable observe_size_updated(std::function<void(std::nullptr_t const &)> &&);
 
     ui::setup_metal_result metal_setup(std::shared_ptr<ui::metal_system> const &);
 

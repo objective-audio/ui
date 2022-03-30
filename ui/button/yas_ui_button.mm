@@ -24,7 +24,7 @@ button::button(region const &region, std::size_t const state_count,
       _layout_guide(layout_region_guide::make_shared(region)),
       _state_count(state_count),
       _weak_detector(detector) {
-    this->_rect_plane->node()->set_collider(collider::make_shared());
+    this->_rect_plane->node()->set_colliders({collider::make_shared()});
 
     this->_update_rect_positions(this->_layout_guide->region(), state_count);
     this->_update_rect_index();
@@ -89,7 +89,7 @@ void button::cancel_tracking() {
     }
 }
 
-observing::endable button::observe(observing::caller<context>::handler_f &&handler) {
+observing::endable button::observe(std::function<void(context const &)> &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 
@@ -125,7 +125,7 @@ void button::_update_rect_positions(region const &region, std::size_t const stat
         this->_rect_plane->data()->set_rect_position(region, yas_each_index(each));
     }
 
-    std::shared_ptr<collider> const &collider = this->_rect_plane->node()->collider();
+    std::shared_ptr<collider> const &collider = this->_rect_plane->node()->colliders().at(0);
     if (!collider->shape() || (collider->shape()->type_info() == typeid(shape::rect))) {
         collider->set_shape(shape::make_shared({.rect = region}));
     }
@@ -165,11 +165,9 @@ observing::cancellable_ptr button::_make_leave_observings() {
         .end()
         ->add_to(*pool);
 
-    node->observe_collider([this](std::shared_ptr<collider> const &value) {
-            if (!value) {
-                if (auto tracking_event = this->_tracking_event) {
-                    this->_cancel_tracking(tracking_event);
-                }
+    node->observe_colliders([this](auto const &) {
+            if (auto tracking_event = this->_tracking_event) {
+                this->_cancel_tracking(tracking_event);
             }
         })
         .end()
@@ -188,11 +186,12 @@ observing::cancellable_ptr button::_make_leave_observings() {
 }
 
 observing::cancellable_ptr button::_make_collider_observings() {
-    auto &node = this->_rect_plane->node();
+    auto const &node = this->_rect_plane->node();
+    auto const &collider = node->colliders().at(0);
 
     auto pool = observing::canceller_pool::make_shared();
 
-    node->collider()
+    collider
         ->observe_shape([this](std::shared_ptr<shape> const &shape) {
             if (!shape) {
                 if (auto tracking_event = this->_tracking_event) {
@@ -203,7 +202,7 @@ observing::cancellable_ptr button::_make_collider_observings() {
         .end()
         ->add_to(*pool);
 
-    node->collider()
+    collider
         ->observe_enabled([this](bool const &enabled) {
             if (!enabled) {
                 if (auto tracking_event = this->_tracking_event) {
@@ -225,7 +224,7 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
             case event_phase::began:
                 if (!this->_is_tracking()) {
                     if (this->_can_begin_tracking_value(event) &&
-                        detector->detect(touch_event.position, node->collider())) {
+                        detector->detect(touch_event.position, node->colliders().at(0))) {
                         this->_set_tracking_event(event);
                         this->_send_notify(method::began, event);
                     }
@@ -256,7 +255,7 @@ void button::_leave_or_enter_or_move_tracking(std::shared_ptr<event> const &even
     if (auto const detector = this->_weak_detector.lock()) {
         auto const &touch_event = event->get<touch>();
         bool const is_event_tracking = this->_is_tracking(event);
-        bool const is_detected = detector->detect(touch_event.position, node->collider());
+        bool const is_detected = detector->detect(touch_event.position, node->colliders().at(0));
         if (!is_event_tracking && is_detected && this->_can_begin_tracking_value(event)) {
             this->_set_tracking_event(event);
             this->_send_notify(method::entered, event);

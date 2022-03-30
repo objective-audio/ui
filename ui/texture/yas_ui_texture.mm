@@ -106,11 +106,11 @@ std::shared_ptr<metal_texture> const &texture::metal_texture() const {
     return this->_metal_texture;
 }
 
-observing::endable texture::observe_metal_texture_changed(observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable texture::observe_metal_texture_changed(std::function<void(std::nullptr_t const &)> &&handler) {
     return this->_texture_notifier->observe(std::move(handler));
 }
 
-observing::endable texture::observe_size_updated(observing::caller<std::nullptr_t>::handler_f &&handler) {
+observing::endable texture::observe_size_updated(std::function<void(std::nullptr_t const &)> &&handler) {
     return this->_size_notifier->observe(std::move(handler));
 }
 

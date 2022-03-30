@@ -119,7 +119,7 @@ size font_atlas::advance(std::string const &word) const {
 }
 
 observing::endable font_atlas::observe_texture_updated(
-    observing::caller<std::shared_ptr<ui::texture>>::handler_f &&handler) {
+    std::function<void(std::shared_ptr<ui::texture> const &)> &&handler) {
     return this->_texture_updated_notifier->observe(std::move(handler));
 }
 

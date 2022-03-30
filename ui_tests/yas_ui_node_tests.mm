@@ -49,7 +49,7 @@ struct test_render_encoder : render_encodable {
 }
 
 - (void)test_create {
-    auto node = node::make_shared();
+    auto const node = node::make_shared();
 
     XCTAssertEqual(node->position().x, 0.0f);
     XCTAssertEqual(node->position().y, 0.0f);
@@ -63,7 +63,7 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(node->alpha(), 1.0f);
 
     XCTAssertFalse(node->mesh());
-    XCTAssertFalse(node->collider());
+    XCTAssertTrue(node->colliders().empty());
     XCTAssertFalse(node->render_target());
 
     XCTAssertEqual(node->sub_nodes().size(), 0);
@@ -76,12 +76,12 @@ struct test_render_encoder : render_encodable {
 }
 
 - (void)test_set_variables {
-    auto node = node::make_shared();
-    auto mesh = mesh::make_shared();
-    auto collider = collider::make_shared();
-    std::shared_ptr<batch> batch = batch::make_shared();
+    auto const node = node::make_shared();
+    auto const mesh = mesh::make_shared();
+    auto const collider = collider::make_shared();
+    auto const batch = batch::make_shared();
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
-    auto render_target = render_target::make_shared(view_look);
+    auto const render_target = render_target::make_shared(view_look);
 
     node->set_position({1.0f, 2.0f});
     node->set_angle({3.0f});
@@ -105,10 +105,6 @@ struct test_render_encoder : render_encodable {
     XCTAssertTrue(node->mesh());
     XCTAssertEqual(node->mesh(), mesh);
 
-    node->set_collider(collider);
-    XCTAssertTrue(node->collider());
-    XCTAssertEqual(node->collider(), collider);
-
     node->set_batch(batch);
     XCTAssertTrue(node->batch());
     XCTAssertEqual(node->batch(), batch);
@@ -125,7 +121,43 @@ struct test_render_encoder : render_encodable {
     node->set_render_target(nullptr);
 }
 
-- (void)set_color_to_mesh {
+- (void)test_set_colliders {
+    auto const node = node::make_shared();
+    auto const collider1 = collider::make_shared();
+    auto const collider2 = collider::make_shared();
+    auto const collider3 = collider::make_shared();
+    auto const collider4 = collider::make_shared();
+
+    node->set_colliders({collider1, collider2});
+
+    XCTAssertEqual(node->colliders().size(), 2);
+    XCTAssertEqual(node->colliders().at(0), collider1);
+    XCTAssertEqual(node->colliders().at(1), collider2);
+
+    node->push_back_collider(collider3);
+
+    XCTAssertEqual(node->colliders().size(), 3);
+    XCTAssertEqual(node->colliders().at(0), collider1);
+    XCTAssertEqual(node->colliders().at(1), collider2);
+    XCTAssertEqual(node->colliders().at(2), collider3);
+
+    node->insert_collider_at(collider4, 1);
+
+    XCTAssertEqual(node->colliders().size(), 4);
+    XCTAssertEqual(node->colliders().at(0), collider1);
+    XCTAssertEqual(node->colliders().at(1), collider4);
+    XCTAssertEqual(node->colliders().at(2), collider2);
+    XCTAssertEqual(node->colliders().at(3), collider3);
+
+    node->erase_collider_at(2);
+
+    XCTAssertEqual(node->colliders().size(), 3);
+    XCTAssertEqual(node->colliders().at(0), collider1);
+    XCTAssertEqual(node->colliders().at(1), collider4);
+    XCTAssertEqual(node->colliders().at(2), collider3);
+}
+
+- (void)test_set_color_to_mesh {
     auto node = node::make_shared();
     auto mesh = mesh::make_shared();
 
@@ -405,7 +437,7 @@ struct test_render_encoder : render_encodable {
 
     node->set_angle({1.0f});
     node->set_is_enabled(false);
-    node->set_collider(collider::make_shared());
+    node->set_colliders({collider::make_shared()});
     node->set_batch(batch::make_shared());
 
     auto sub_node = node::make_shared();
@@ -511,7 +543,7 @@ struct test_render_encoder : render_encodable {
     auto const batch_sub_vetex_data = static_mesh_vertex_data::make_shared(1);
     auto const batch_sub_index_data = static_mesh_index_data::make_shared(1);
 
-    node->set_collider(collider::make_shared(shape::make_shared(circle_shape{})));
+    node->set_colliders({collider::make_shared(shape::make_shared(circle_shape{}))});
     auto const mesh = mesh::make_shared({}, vetex_data, index_data, nullptr);
     node->set_mesh(mesh);
 

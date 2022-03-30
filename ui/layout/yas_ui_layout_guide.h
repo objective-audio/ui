@@ -17,7 +17,7 @@ struct layout_value_guide final : layout_value_target, layout_value_source {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::syncable observe(observing::caller<float>::handler_f &&);
+    [[nodiscard]] observing::syncable observe(std::function<void(float const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<layout_value_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_value_guide> make_shared(float const);
@@ -49,7 +49,7 @@ struct layout_point_guide final : layout_point_target, layout_point_source {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::syncable observe(observing::caller<ui::point>::handler_f &&);
+    [[nodiscard]] observing::syncable observe(std::function<void(ui::point const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<layout_point_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_point_guide> make_shared(ui::point);
@@ -82,7 +82,7 @@ struct layout_range_guide final : layout_range_target, layout_range_source {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::syncable observe(observing::caller<ui::range>::handler_f &&);
+    [[nodiscard]] observing::syncable observe(std::function<void(ui::range const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<layout_range_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_range_guide> make_shared(ui::range);
@@ -131,7 +131,7 @@ struct layout_region_guide final : layout_region_target, layout_region_source {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::syncable observe(observing::caller<ui::region>::handler_f &&);
+    [[nodiscard]] observing::syncable observe(std::function<void(ui::region const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<layout_region_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_region_guide> make_shared(region_ranges_args);

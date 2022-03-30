@@ -84,11 +84,11 @@ std::shared_ptr<ui::background> view_look::background() const {
     return this->_background;
 }
 
-observing::syncable view_look::observe_scale_factor(observing::caller<double>::handler_f &&handler) {
+observing::syncable view_look::observe_scale_factor(std::function<void(double const &)> &&handler) {
     return this->_scale_factor_notify->observe(std::move(handler));
 }
 
-observing::syncable view_look::observe_appearance(observing::caller<ui::appearance>::handler_f &&handler) {
+observing::syncable view_look::observe_appearance(std::function<void(ui::appearance const &)> &&handler) {
     return this->_appearance->observe(std::move(handler));
 }
 
