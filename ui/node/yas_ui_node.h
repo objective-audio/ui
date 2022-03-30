@@ -66,10 +66,6 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     [[nodiscard]] std::shared_ptr<mesh> const &mesh() const;
     [[nodiscard]] observing::syncable observe_mesh(std::function<void(std::shared_ptr<ui::mesh> const &)> &&);
 
-    void set_collider(std::shared_ptr<collider> const &);
-    [[nodiscard]] std::shared_ptr<collider> const &collider() const;
-    [[nodiscard]] observing::syncable observe_collider(std::function<void(std::shared_ptr<ui::collider> const &)> &&);
-
     void set_colliders(std::vector<std::shared_ptr<ui::collider>> const &);
     void push_back_collider(std::shared_ptr<ui::collider> const &);
     void insert_collider_at(std::shared_ptr<ui::collider> const &, std::size_t const);
@@ -123,7 +119,6 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     observing::value::holder_ptr<ui::rgb_color> const _rgb_color;
     observing::value::holder_ptr<float> const _alpha;
     observing::value::holder_ptr<std::shared_ptr<ui::mesh>> const _mesh;
-    observing::value::holder_ptr<std::shared_ptr<ui::collider>> const _collider;
     observing::vector::holder_ptr<std::shared_ptr<ui::collider>> const _colliders;
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> const _batch;
     observing::value::holder_ptr<std::shared_ptr<ui::render_target>> const _render_target;

@@ -27,7 +27,6 @@ node::node()
       _rgb_color(observing::value::holder<ui::rgb_color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(observing::value::holder<std::shared_ptr<ui::mesh>>::make_shared(nullptr)),
-      _collider(observing::value::holder<std::shared_ptr<ui::collider>>::make_shared(nullptr)),
       _colliders(observing::vector::holder<std::shared_ptr<ui::collider>>::make_shared()),
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(observing::value::holder<std::shared_ptr<ui::render_target>>::make_shared(nullptr)),
@@ -67,9 +66,6 @@ node::node()
 
     // collider
 
-    this->_collider->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); })
-        .end()
-        ->add_to(this->_pool);
     this->_colliders->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); })
         .end()
         ->add_to(this->_pool);
@@ -238,18 +234,6 @@ observing::syncable node::observe_mesh(std::function<void(std::shared_ptr<ui::me
     return this->_mesh->observe(std::move(handler));
 }
 
-void node::set_collider(std::shared_ptr<ui::collider> const &collider) {
-    this->_collider->set_value(collider);
-}
-
-std::shared_ptr<collider> const &node::collider() const {
-    return this->_collider->value();
-}
-
-observing::syncable node::observe_collider(std::function<void(std::shared_ptr<ui::collider> const &)> &&handler) {
-    return this->_collider->observe(std::move(handler));
-}
-
 void node::set_colliders(std::vector<std::shared_ptr<ui::collider>> const &colliders) {
     this->_colliders->replace(colliders);
 }
@@ -268,6 +252,10 @@ void node::erase_collider_at(std::size_t const idx) {
 
 std::vector<std::shared_ptr<ui::collider>> const &node::colliders() const {
     return this->_colliders->value();
+}
+
+observing::syncable node::observe_colliders(std::function<void(colliders_event const &)> &&handler) {
+    return this->_colliders->observe(std::move(handler));
 }
 
 void node::set_batch(std::shared_ptr<ui::batch> const &batch) {
@@ -484,17 +472,13 @@ void node::build_render_info(render_info &render_info) {
         this->_matrix = render_info.matrix * this->_local_matrix;
         auto const mesh_matrix = render_info.mesh_matrix * this->_local_matrix;
 
-        if (auto const &collider = this->_collider->value()) {
-            renderable_collider::cast(collider)->set_matrix(this->_matrix);
-
+        if (this->_colliders->size() > 0) {
             for (auto const &collider : this->_colliders->value()) {
                 renderable_collider::cast(collider)->set_matrix(this->_matrix);
             }
 
             if (auto const &detector = render_info.detector) {
                 if (detector->is_updating()) {
-                    detector->push_front_collider(collider);
-
                     for (auto const &collider : this->_colliders->value()) {
                         detector->push_front_collider(collider);
                     }

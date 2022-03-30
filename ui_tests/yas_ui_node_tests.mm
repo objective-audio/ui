@@ -63,7 +63,6 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(node->alpha(), 1.0f);
 
     XCTAssertFalse(node->mesh());
-    XCTAssertFalse(node->collider());
     XCTAssertTrue(node->colliders().empty());
     XCTAssertFalse(node->render_target());
 
@@ -105,10 +104,6 @@ struct test_render_encoder : render_encodable {
     node->set_mesh(mesh);
     XCTAssertTrue(node->mesh());
     XCTAssertEqual(node->mesh(), mesh);
-
-    node->set_collider(collider);
-    XCTAssertTrue(node->collider());
-    XCTAssertEqual(node->collider(), collider);
 
     node->set_batch(batch);
     XCTAssertTrue(node->batch());
