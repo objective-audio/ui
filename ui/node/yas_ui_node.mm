@@ -28,6 +28,7 @@ node::node()
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
       _mesh(observing::value::holder<std::shared_ptr<ui::mesh>>::make_shared(nullptr)),
       _collider(observing::value::holder<std::shared_ptr<ui::collider>>::make_shared(nullptr)),
+      _colliders(observing::vector::holder<std::shared_ptr<ui::collider>>::make_shared()),
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(observing::value::holder<std::shared_ptr<ui::render_target>>::make_shared(nullptr)),
       _enabled(observing::value::holder<bool>::make_shared(true)) {
@@ -67,6 +68,9 @@ node::node()
     // collider
 
     this->_collider->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); })
+        .end()
+        ->add_to(this->_pool);
+    this->_colliders->observe([this](auto const &) { this->_set_updated(node_update_reason::collider); })
         .end()
         ->add_to(this->_pool);
 
@@ -244,6 +248,26 @@ std::shared_ptr<collider> const &node::collider() const {
 
 observing::syncable node::observe_collider(std::function<void(std::shared_ptr<ui::collider> const &)> &&handler) {
     return this->_collider->observe(std::move(handler));
+}
+
+void node::set_colliders(std::vector<std::shared_ptr<ui::collider>> const &colliders) {
+    this->_colliders->replace(colliders);
+}
+
+void node::push_back_collider(std::shared_ptr<ui::collider> const &collider) {
+    this->_colliders->push_back(collider);
+}
+
+void node::insert_collider_at(std::shared_ptr<ui::collider> const &collider, std::size_t const idx) {
+    this->_colliders->insert(collider, idx);
+}
+
+void node::erase_collider_at(std::size_t const idx) {
+    this->_colliders->erase(idx);
+}
+
+std::vector<std::shared_ptr<ui::collider>> const &node::colliders() const {
+    return this->_colliders->value();
 }
 
 void node::set_batch(std::shared_ptr<ui::batch> const &batch) {
@@ -463,9 +487,17 @@ void node::build_render_info(render_info &render_info) {
         if (auto const &collider = this->_collider->value()) {
             renderable_collider::cast(collider)->set_matrix(this->_matrix);
 
+            for (auto const &collider : this->_colliders->value()) {
+                renderable_collider::cast(collider)->set_matrix(this->_matrix);
+            }
+
             if (auto const &detector = render_info.detector) {
                 if (detector->is_updating()) {
                     detector->push_front_collider(collider);
+
+                    for (auto const &collider : this->_colliders->value()) {
+                        detector->push_front_collider(collider);
+                    }
                 }
             }
         }
