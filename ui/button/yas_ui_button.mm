@@ -89,7 +89,7 @@ void button::cancel_tracking() {
     }
 }
 
-observing::endable button::observe(observing::caller<context>::handler_f &&handler) {
+observing::endable button::observe(std::function<void(context const &)> &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 

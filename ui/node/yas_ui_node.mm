@@ -113,7 +113,7 @@ point const &node::position() const {
     return this->_position->value();
 }
 
-observing::syncable node::observe_position(observing::caller<point>::handler_f &&handler) {
+observing::syncable node::observe_position(std::function<void(point const &)> &&handler) {
     return this->_position->observe(std::move(handler));
 }
 
@@ -129,7 +129,7 @@ angle const &node::angle() const {
     return this->_angle->value();
 }
 
-observing::syncable node::observe_angle(observing::caller<ui::angle>::handler_f &&handler) {
+observing::syncable node::observe_angle(std::function<void(ui::angle const &)> &&handler) {
     return this->_angle->observe(std::move(handler));
 }
 
@@ -145,7 +145,7 @@ size const &node::scale() const {
     return this->_scale->value();
 }
 
-observing::syncable node::observe_scale(observing::caller<size>::handler_f &&handler) {
+observing::syncable node::observe_scale(std::function<void(size const &)> &&handler) {
     return this->_scale->observe(std::move(handler));
 }
 
@@ -161,7 +161,7 @@ rgb_color const &node::rgb_color() const {
     return this->_rgb_color->value();
 }
 
-observing::syncable node::observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&handler) {
+observing::syncable node::observe_rgb_color(std::function<void(ui::rgb_color const &)> &&handler) {
     return this->_rgb_color->observe(std::move(handler));
 }
 
@@ -177,7 +177,7 @@ float const &node::alpha() const {
     return this->_alpha->value();
 }
 
-observing::syncable node::observe_alpha(observing::caller<float>::handler_f &&handler) {
+observing::syncable node::observe_alpha(std::function<void(float const &)> &&handler) {
     return this->_alpha->observe(std::move(handler));
 }
 
@@ -208,7 +208,7 @@ bool const &node::is_enabled() const {
     return this->_enabled->value();
 }
 
-observing::syncable node::observe_is_enabled(observing::caller<bool>::handler_f &&handler) {
+observing::syncable node::observe_is_enabled(std::function<void(bool const &)> &&handler) {
     return this->_enabled->observe(std::move(handler));
 }
 
@@ -230,7 +230,7 @@ std::shared_ptr<mesh> const &node::mesh() const {
     return this->_mesh->value();
 }
 
-observing::syncable node::observe_mesh(observing::caller<std::shared_ptr<ui::mesh>>::handler_f &&handler) {
+observing::syncable node::observe_mesh(std::function<void(std::shared_ptr<ui::mesh> const &)> &&handler) {
     return this->_mesh->observe(std::move(handler));
 }
 
@@ -242,7 +242,7 @@ std::shared_ptr<collider> const &node::collider() const {
     return this->_collider->value();
 }
 
-observing::syncable node::observe_collider(observing::caller<std::shared_ptr<ui::collider>>::handler_f &&handler) {
+observing::syncable node::observe_collider(std::function<void(std::shared_ptr<ui::collider> const &)> &&handler) {
     return this->_collider->observe(std::move(handler));
 }
 
@@ -254,7 +254,7 @@ std::shared_ptr<batch> const &node::batch() const {
     return this->_batch->value();
 }
 
-observing::syncable node::observe_batch(observing::caller<std::shared_ptr<ui::batch>>::handler_f &&handler) {
+observing::syncable node::observe_batch(std::function<void(std::shared_ptr<ui::batch> const &)> &&handler) {
     return this->_batch->observe(std::move(handler));
 }
 
@@ -267,7 +267,7 @@ std::shared_ptr<render_target> const &node::render_target() const {
 }
 
 observing::syncable node::observe_render_target(
-    observing::caller<std::shared_ptr<ui::render_target>>::handler_f &&handler) {
+    std::function<void(std::shared_ptr<ui::render_target> const &)> &&handler) {
     return this->_render_target->observe(std::move(handler));
 }
 
@@ -329,7 +329,7 @@ std::shared_ptr<node> node::parent() const {
     return this->_parent->value().lock();
 }
 
-observing::endable node::observe(observing::caller<method>::handler_f &&handler) {
+observing::endable node::observe(std::function<void(method const &)> &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
 

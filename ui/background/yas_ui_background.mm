@@ -24,7 +24,7 @@ ui::rgb_color const &background::rgb_color() const {
     return this->_rgb_color->value();
 }
 
-observing::syncable background::observe_rgb_color(observing::caller<ui::rgb_color>::handler_f &&handler) {
+observing::syncable background::observe_rgb_color(std::function<void(ui::rgb_color const &)> &&handler) {
     return this->_rgb_color->observe(std::move(handler));
 }
 
@@ -36,7 +36,7 @@ float const &background::alpha() const {
     return this->_alpha->value();
 }
 
-observing::syncable background::observe_alpha(observing::caller<float>::handler_f &&handler) {
+observing::syncable background::observe_alpha(std::function<void(float const &)> &&handler) {
     return this->_alpha->observe(std::move(handler));
 }
 

@@ -39,7 +39,7 @@ void layout_value_guide::pop_notify_waiting() {
     }
 }
 
-observing::syncable layout_value_guide::observe(observing::caller<float>::handler_f &&handler) {
+observing::syncable layout_value_guide::observe(std::function<void(float const &)> &&handler) {
     auto value_syncable = this->_value->observe([handler, this](float const &value) {
         if (this->_wait_count->value() == 0) {
             handler(value);
@@ -122,7 +122,7 @@ void layout_point_guide::pop_notify_waiting() {
     this->_y_guide->pop_notify_waiting();
 }
 
-observing::syncable layout_point_guide::observe(observing::caller<ui::point>::handler_f &&handler) {
+observing::syncable layout_point_guide::observe(std::function<void(ui::point const &)> &&handler) {
     auto x_endable = this->_x_guide->observe([this, handler](float const &) { handler(this->point()); }).to_endable();
     auto y_syncable = this->_y_guide->observe([this, handler](float const &) { handler(this->point()); });
     y_syncable.merge(std::move(x_endable));
@@ -209,7 +209,7 @@ void layout_range_guide::pop_notify_waiting() {
     this->_length_guide->pop_notify_waiting();
 }
 
-observing::syncable layout_range_guide::observe(observing::caller<ui::range>::handler_f &&handler) {
+observing::syncable layout_range_guide::observe(std::function<void(ui::range const &)> &&handler) {
     auto min_endable =
         this->_min_guide->observe([this, handler](float const &) { handler(this->range()); }).to_endable();
     auto max_syncable = this->_max_guide->observe([this, handler](float const &) { handler(this->range()); });
@@ -334,7 +334,7 @@ void layout_region_guide::pop_notify_waiting() {
     this->_horizontal_range->pop_notify_waiting();
 }
 
-observing::syncable layout_region_guide::observe(observing::caller<ui::region>::handler_f &&handler) {
+observing::syncable layout_region_guide::observe(std::function<void(ui::region const &)> &&handler) {
     auto v_endable =
         this->_vertical_range->observe([this, handler](range const &) { handler(this->region()); }).to_endable();
     auto h_syncable = this->_horizontal_range->observe([this, handler](range const &) { handler(this->region()); });

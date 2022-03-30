@@ -40,7 +40,7 @@ struct button final {
 
     void cancel_tracking();
 
-    [[nodiscard]] observing::endable observe(observing::caller<context>::handler_f &&);
+    [[nodiscard]] observing::endable observe(std::function<void(context const &)> &&);
 
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 

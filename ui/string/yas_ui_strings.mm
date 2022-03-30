@@ -88,7 +88,7 @@ std::shared_ptr<rect_plane> const &strings::rect_plane() {
     return this->_rect_plane;
 }
 
-observing::syncable strings::observe_text(observing::caller<std::string>::handler_f &&handler) {
+observing::syncable strings::observe_text(std::function<void(std::string const &)> &&handler) {
     return this->_text->observe(std::move(handler));
 }
 
@@ -96,11 +96,11 @@ observing::syncable strings::observe_attributes(std::function<void(std::vector<s
     return this->_attributes->observe(std::move(handler));
 }
 
-observing::syncable strings::observe_line_height(observing::caller<std::optional<float>>::handler_f &&handler) {
+observing::syncable strings::observe_line_height(std::function<void(std::optional<float> const &)> &&handler) {
     return this->_line_height->observe(std::move(handler));
 }
 
-observing::syncable strings::observe_alignment(observing::caller<layout_alignment>::handler_f &&handler) {
+observing::syncable strings::observe_alignment(std::function<void(layout_alignment const &)> &&handler) {
     return this->_collection_layout->observe_alignment(std::move(handler));
 }
 

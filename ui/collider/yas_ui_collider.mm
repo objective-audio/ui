@@ -105,11 +105,11 @@ bool collider::hit_test(point const &loc) const {
     return false;
 }
 
-observing::syncable collider::observe_shape(observing::caller<std::shared_ptr<ui::shape>>::handler_f &&handler) {
+observing::syncable collider::observe_shape(std::function<void(std::shared_ptr<ui::shape> const &)> &&handler) {
     return this->_shape->observe(std::move(handler));
 }
 
-observing::syncable collider::observe_enabled(observing::caller<bool>::handler_f &&handler) {
+observing::syncable collider::observe_enabled(std::function<void(bool const &)> &&handler) {
     return this->_enabled->observe(std::move(handler));
 }
 

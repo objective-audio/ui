@@ -24,7 +24,7 @@ struct font_atlas final {
     [[nodiscard]] ui::size advance(std::string const &word) const;
 
     [[nodiscard]] observing::endable observe_texture_updated(
-        observing::caller<std::shared_ptr<ui::texture>>::handler_f &&);
+        std::function<void(std::shared_ptr<ui::texture> const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<font_atlas> make_shared(font_atlas_args &&,
                                                                  std::shared_ptr<ui::texture> const &);

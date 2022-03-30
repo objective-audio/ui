@@ -30,11 +30,11 @@ struct strings final {
 
     [[nodiscard]] std::shared_ptr<rect_plane> const &rect_plane();
 
-    [[nodiscard]] observing::syncable observe_text(observing::caller<std::string>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_text(std::function<void(std::string const &)> &&);
     [[nodiscard]] observing::syncable observe_attributes(
         std::function<void(std::vector<strings_attribute> const &)> &&);
-    [[nodiscard]] observing::syncable observe_line_height(observing::caller<std::optional<float>>::handler_f &&);
-    [[nodiscard]] observing::syncable observe_alignment(observing::caller<ui::layout_alignment>::handler_f &&);
+    [[nodiscard]] observing::syncable observe_line_height(std::function<void(std::optional<float> const &)> &&);
+    [[nodiscard]] observing::syncable observe_alignment(std::function<void(ui::layout_alignment const &)> &&);
     [[nodiscard]] observing::syncable observe_actual_cell_regions(std::function<void(std::vector<region> const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<strings> make_shared(strings_args &&, std::shared_ptr<ui::font_atlas> const &);

@@ -22,7 +22,7 @@ uint_region const &texture_element::tex_coords() const {
     return this->_tex_coords->value();
 }
 
-observing::syncable texture_element::observe_tex_coords(observing::caller<uint_region>::handler_f &&handler) {
+observing::syncable texture_element::observe_tex_coords(std::function<void(uint_region const &)> &&handler) {
     return this->_tex_coords->observe(std::move(handler));
 }
 
