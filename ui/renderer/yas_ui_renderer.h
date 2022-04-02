@@ -7,11 +7,12 @@
 #include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
+#include <ui/yas_ui_common_dependency.h>
 
 namespace yas::ui {
-struct renderer final : renderer_for_view {
-    [[nodiscard]] observing::endable observe_will_render(std::function<void(std::nullptr_t const &)> &&);
-    [[nodiscard]] observing::endable observe_did_render(std::function<void(std::nullptr_t const &)> &&);
+struct renderer final : renderer_for_view, renderer_observable {
+    [[nodiscard]] observing::endable observe_will_render(std::function<void(std::nullptr_t const &)> &&) override;
+    [[nodiscard]] observing::endable observe_did_render(std::function<void(std::nullptr_t const &)> &&) override;
 
     [[nodiscard]] static std::shared_ptr<renderer> make_shared(
         std::shared_ptr<ui::system_for_renderer> const &, std::shared_ptr<ui::view_look_for_renderer> const &,

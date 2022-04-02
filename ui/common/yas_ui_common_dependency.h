@@ -33,4 +33,11 @@ struct collider_detectable {
 
     [[nodiscard]] virtual bool detect(ui::point const &, std::shared_ptr<collider> const &) const = 0;
 };
+
+struct renderer_observable {
+    virtual ~renderer_observable() = default;
+
+    [[nodiscard]] virtual observing::endable observe_will_render(std::function<void(std::nullptr_t const &)> &&) = 0;
+    [[nodiscard]] virtual observing::endable observe_did_render(std::function<void(std::nullptr_t const &)> &&) = 0;
+};
 }  // namespace yas::ui
