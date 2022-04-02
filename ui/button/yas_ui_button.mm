@@ -226,7 +226,7 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
                     if (this->_can_begin_tracking_value(event) &&
                         detector->detect(touch_event.position, node->colliders().at(0))) {
                         this->_set_tracking_event(event);
-                        this->_send_notify(method::began, event);
+                        this->_send_notify(phase::began, event);
                     }
                 }
                 break;
@@ -238,7 +238,7 @@ void button::_update_tracking(std::shared_ptr<event> const &event) {
                 if (this->_is_tracking(event)) {
                     auto const send_event = event;
                     this->_set_tracking_event(nullptr);
-                    this->_send_notify(method::ended, send_event);
+                    this->_send_notify(phase::ended, send_event);
                 }
                 break;
             case event_phase::canceled:
@@ -258,12 +258,12 @@ void button::_leave_or_enter_or_move_tracking(std::shared_ptr<event> const &even
         bool const is_detected = detector->detect(touch_event.position, node->colliders().at(0));
         if (!is_event_tracking && is_detected && this->_can_begin_tracking_value(event)) {
             this->_set_tracking_event(event);
-            this->_send_notify(method::entered, event);
+            this->_send_notify(phase::entered, event);
         } else if (is_event_tracking && !is_detected) {
             this->_set_tracking_event(nullptr);
-            this->_send_notify(method::leaved, event);
+            this->_send_notify(phase::leaved, event);
         } else if (is_event_tracking) {
-            this->_send_notify(method::moved, event);
+            this->_send_notify(phase::moved, event);
         }
     }
 }
@@ -272,12 +272,12 @@ void button::_cancel_tracking(std::shared_ptr<event> const &event) {
     if (this->_is_tracking(event)) {
         auto const send_event = event;
         this->_set_tracking_event(nullptr);
-        this->_send_notify(method::canceled, send_event);
+        this->_send_notify(phase::canceled, send_event);
     }
 }
 
-void button::_send_notify(method const method, std::shared_ptr<event> const &event) {
-    context const context{.method = method, .touch = event->get<touch>()};
+void button::_send_notify(phase const method, std::shared_ptr<event> const &event) {
+    context const context{.phase = method, .touch = event->get<touch>()};
     this->_notifier->notify(context);
 }
 
@@ -307,24 +307,24 @@ std::size_t yas::to_rect_index(std::size_t const state_idx, bool is_tracking) {
     return state_idx * 2 + (is_tracking ? 1 : 0);
 }
 
-std::string yas::to_string(button::method const &method) {
+std::string yas::to_string(button::phase const &method) {
     switch (method) {
-        case button::method::began:
+        case button::phase::began:
             return "began";
-        case button::method::entered:
+        case button::phase::entered:
             return "entered";
-        case button::method::moved:
+        case button::phase::moved:
             return "moved";
-        case button::method::leaved:
+        case button::phase::leaved:
             return "leaved";
-        case button::method::ended:
+        case button::phase::ended:
             return "ended";
-        case button::method::canceled:
+        case button::phase::canceled:
             return "canceled";
     }
 }
 
-std::ostream &operator<<(std::ostream &os, yas::ui::button::method const &method) {
+std::ostream &operator<<(std::ostream &os, yas::ui::button::phase const &method) {
     os << to_string(method);
     return os;
 }

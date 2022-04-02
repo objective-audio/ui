@@ -139,7 +139,7 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed(
 
         observing::cancellable_ptr canceller = soft_key->button()
                                                    ->observe([this, key](auto const &context) {
-                                                       if (context.method == button::method::ended) {
+                                                       if (context.phase == button::phase::ended) {
                                                            this->_key_notifier->notify(key);
                                                        }
                                                    })

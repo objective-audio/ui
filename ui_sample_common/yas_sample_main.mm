@@ -42,7 +42,7 @@ void sample::main::setup() {
     this->_big_button->button()
         ->observe([weak_text = to_weak(this->_big_button_text)](auto const &context) {
             if (auto text = weak_text.lock()) {
-                text->set_status(context.method);
+                text->set_status(context.phase);
             }
         })
         .end()

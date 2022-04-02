@@ -90,10 +90,10 @@ using namespace yas::ui;
     auto button = button::make_shared({.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}, event_manager, detector);
     root_node->add_sub_node(button->rect_plane()->node());
 
-    std::vector<button::method> observed_methods;
+    std::vector<button::phase> observed_methods;
 
     auto canceller =
-        button->observe([&observed_methods](auto const &context) { observed_methods.push_back(context.method); });
+        button->observe([&observed_methods](auto const &context) { observed_methods.push_back(context.phase); });
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
@@ -101,19 +101,19 @@ using namespace yas::ui;
                                           touch_event{{.kind = touch_kind::touch, .identifier = 1}, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 1);
-    XCTAssertEqual(observed_methods.back(), button::method::began);
+    XCTAssertEqual(observed_methods.back(), button::phase::began);
 
     view_event_manager->input_touch_event(event_phase::changed,
                                           touch_event{{.kind = touch_kind::touch, .identifier = 1}, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 2);
-    XCTAssertEqual(observed_methods.back(), button::method::moved);
+    XCTAssertEqual(observed_methods.back(), button::phase::moved);
 
     view_event_manager->input_touch_event(event_phase::canceled,
                                           touch_event{{.kind = touch_kind::touch, .identifier = 1}, {0.1f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 3);
-    XCTAssertEqual(observed_methods.back(), button::method::canceled);
+    XCTAssertEqual(observed_methods.back(), button::phase::canceled);
 
     view_event_manager->input_touch_event(event_phase::began,
                                           touch_event{{.kind = touch_kind::touch, .identifier = 2}, {0.0f, 0.0f}, 0});
@@ -121,19 +121,19 @@ using namespace yas::ui;
                                           touch_event{{.kind = touch_kind::touch, .identifier = 2}, {1.0f, 1.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 5);
-    XCTAssertEqual(observed_methods.back(), button::method::leaved);
+    XCTAssertEqual(observed_methods.back(), button::phase::leaved);
 
     view_event_manager->input_touch_event(event_phase::changed,
                                           touch_event{{.kind = touch_kind::touch, .identifier = 2}, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 6);
-    XCTAssertEqual(observed_methods.back(), button::method::entered);
+    XCTAssertEqual(observed_methods.back(), button::phase::entered);
 
     view_event_manager->input_touch_event(event_phase::ended,
                                           touch_event{{.kind = touch_kind::touch, .identifier = 2}, {0.0f, 0.0f}, 0});
 
     XCTAssertEqual(observed_methods.size(), 7);
-    XCTAssertEqual(observed_methods.back(), button::method::ended);
+    XCTAssertEqual(observed_methods.back(), button::phase::ended);
 }
 
 - (void)test_set_texture {
@@ -159,17 +159,17 @@ using namespace yas::ui;
 }
 
 - (void)test_method_to_string {
-    XCTAssertEqual(to_string(button::method::began), "began");
-    XCTAssertEqual(to_string(button::method::entered), "entered");
-    XCTAssertEqual(to_string(button::method::moved), "moved");
-    XCTAssertEqual(to_string(button::method::leaved), "leaved");
-    XCTAssertEqual(to_string(button::method::ended), "ended");
-    XCTAssertEqual(to_string(button::method::canceled), "canceled");
+    XCTAssertEqual(to_string(button::phase::began), "began");
+    XCTAssertEqual(to_string(button::phase::entered), "entered");
+    XCTAssertEqual(to_string(button::phase::moved), "moved");
+    XCTAssertEqual(to_string(button::phase::leaved), "leaved");
+    XCTAssertEqual(to_string(button::phase::ended), "ended");
+    XCTAssertEqual(to_string(button::phase::canceled), "canceled");
 }
 
 - (void)test_method_ostream {
-    auto const methods = {button::method::began, button::method::entered, button::method::leaved, button::method::ended,
-                          button::method::canceled};
+    auto const methods = {button::phase::began, button::phase::entered, button::phase::leaved, button::phase::ended,
+                          button::phase::canceled};
 
     for (auto const &method : methods) {
         std::ostringstream stream;

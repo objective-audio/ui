@@ -14,7 +14,7 @@
 
 namespace yas::ui {
 struct button final {
-    enum class method {
+    enum class phase {
         began,
         entered,
         moved,
@@ -24,7 +24,7 @@ struct button final {
     };
 
     struct context {
-        method const method;
+        phase const phase;
         ui::touch_event const &touch;
     };
 
@@ -83,7 +83,7 @@ struct button final {
     void _update_tracking(std::shared_ptr<event> const &event);
     void _leave_or_enter_or_move_tracking(std::shared_ptr<event> const &);
     void _cancel_tracking(std::shared_ptr<event> const &event);
-    void _send_notify(method const method, std::shared_ptr<event> const &);
+    void _send_notify(phase const method, std::shared_ptr<event> const &);
     bool _can_begin_tracking_value(std::shared_ptr<event> const &) const;
     bool _can_indicate_tracking_value(std::shared_ptr<event> const &) const;
 };
@@ -91,7 +91,7 @@ struct button final {
 
 namespace yas {
 std::size_t to_rect_index(std::size_t const state_idx, bool is_tracking);
-std::string to_string(ui::button::method const &);
+std::string to_string(ui::button::phase const &);
 }  // namespace yas
 
-std::ostream &operator<<(std::ostream &, yas::ui::button::method const &);
+std::ostream &operator<<(std::ostream &, yas::ui::button::phase const &);

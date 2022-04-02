@@ -10,7 +10,7 @@
 
 namespace yas::sample {
 struct big_button_text {
-    void set_status(ui::button::method const);
+    void set_status(ui::button::phase const);
 
     std::shared_ptr<ui::strings> const &strings();
 
@@ -18,7 +18,7 @@ struct big_button_text {
 
    private:
     std::shared_ptr<ui::strings> _strings;
-    ui::button::method _status;
+    ui::button::phase _status;
     observing::cancellable_ptr _strings_canceller = nullptr;
 
     explicit big_button_text(std::shared_ptr<ui::font_atlas> const &atlas);
