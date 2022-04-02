@@ -5,6 +5,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 namespace yas::ui {
 class event;
@@ -28,3 +29,9 @@ struct touch_tracker_context final {
     std::shared_ptr<ui::collider> const &collider;
 };
 }  // namespace yas::ui
+
+namespace yas {
+std::string to_string(ui::touch_tracker_phase const &);
+}  // namespace yas
+
+std::ostream &operator<<(std::ostream &, yas::ui::touch_tracker_phase const &);

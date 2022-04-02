@@ -309,25 +309,3 @@ bool button::_can_indicate_tracking_value(std::shared_ptr<event> const &event) c
 std::size_t yas::to_rect_index(std::size_t const state_idx, bool is_tracking) {
     return state_idx * 2 + (is_tracking ? 1 : 0);
 }
-
-std::string yas::to_string(button::phase const &method) {
-    switch (method) {
-        case button::phase::began:
-            return "began";
-        case button::phase::entered:
-            return "entered";
-        case button::phase::moved:
-            return "moved";
-        case button::phase::leaved:
-            return "leaved";
-        case button::phase::ended:
-            return "ended";
-        case button::phase::canceled:
-            return "canceled";
-    }
-}
-
-std::ostream &operator<<(std::ostream &os, yas::ui::button::phase const &method) {
-    os << to_string(method);
-    return os;
-}

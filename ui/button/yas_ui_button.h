@@ -87,7 +87,4 @@ struct button final {
 
 namespace yas {
 std::size_t to_rect_index(std::size_t const state_idx, bool is_tracking);
-std::string to_string(ui::button::phase const &);
 }  // namespace yas
-
-std::ostream &operator<<(std::ostream &, yas::ui::button::phase const &);
