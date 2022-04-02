@@ -60,6 +60,10 @@ void touch_tracker::cancel_tracking() {
     }
 }
 
+bool touch_tracker::has_tracking() const {
+    return this->_tracking.has_value();
+}
+
 observing::endable touch_tracker::observe(std::function<void(context const &)> &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
@@ -78,7 +82,7 @@ void touch_tracker::_update_tracking(std::shared_ptr<ui::event> const &event) {
         auto const &touch_event = event->get<ui::touch>();
         switch (event->phase()) {
             case ui::event_phase::began:
-                if (!this->_has_tracking()) {
+                if (!this->has_tracking()) {
                     auto each = make_fast_each(this->_colliders().size());
                     while (yas_each_next(each)) {
                         auto const &idx = yas_each_index(each);
@@ -158,10 +162,6 @@ void touch_tracker::_notify(phase const phase, std::shared_ptr<ui::event> const 
                                                    .touch_event = touch_event,
                                                    .collider_idx = collider_idx,
                                                    .collider = collider});
-}
-
-bool touch_tracker::_has_tracking() const {
-    return this->_tracking.has_value();
 }
 
 bool touch_tracker::_is_tracking(std::shared_ptr<ui::event> const &event,

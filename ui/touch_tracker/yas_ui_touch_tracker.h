@@ -25,6 +25,8 @@ struct touch_tracker final {
     void set_can_begin_tracking(std::function<bool(std::shared_ptr<ui::event> const &)> &&);
 
     void cancel_tracking();
+    
+    bool has_tracking() const;
 
     observing::endable observe(std::function<void(context const &)> &&);
 
@@ -52,7 +54,6 @@ struct touch_tracker final {
     void _leave_or_enter_or_move_tracking(std::shared_ptr<ui::event> const &event);
     void _cancel_tracking(std::shared_ptr<ui::event> const &);
     void _notify(phase const, std::shared_ptr<ui::event> const &, std::size_t const collider_idx);
-    bool _has_tracking() const;
     bool _is_tracking(std::shared_ptr<ui::event> const &, std::optional<std::size_t> const collider_idx) const;
     void _set_tracking(std::shared_ptr<ui::event> const &, std::size_t const collider_idx);
     void _reset_tracking();
