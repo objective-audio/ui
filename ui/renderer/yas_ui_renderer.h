@@ -5,9 +5,9 @@
 #pragma once
 
 #include <observing/yas_observing_umbrella.h>
+#include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
 #include <ui/yas_ui_renderer_dependency.h>
-#include <ui/yas_ui_common_dependency.h>
 
 namespace yas::ui {
 struct renderer final : renderer_for_view, renderer_observable {
