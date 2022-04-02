@@ -14,6 +14,8 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
+class touch_tracker;
+
 struct button final {
     using phase = touch_tracker_phase;
 
@@ -59,6 +61,7 @@ struct button final {
     std::function<bool(std::shared_ptr<event> const &)> _can_indicate_tracking = nullptr;
     std::weak_ptr<ui::collider_detectable> _weak_detector;
     std::shared_ptr<event> _tracking_event = nullptr;
+    std::shared_ptr<touch_tracker> const _touch_tracker;
     observing::canceller_pool _pool;
 
     button(ui::region const &region, std::size_t const state_count, std::shared_ptr<ui::event_observable> const &,

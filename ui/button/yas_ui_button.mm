@@ -13,6 +13,7 @@
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_rect_plane.h>
 #include <ui/yas_ui_texture.h>
+#include <ui/yas_ui_touch_tracker.h>
 
 using namespace yas;
 using namespace yas::ui;
@@ -24,7 +25,8 @@ button::button(region const &region, std::size_t const state_count,
     : _rect_plane(rect_plane::make_shared(state_count * 2, 1)),
       _layout_guide(layout_region_guide::make_shared(region)),
       _state_count(state_count),
-      _weak_detector(detector) {
+      _weak_detector(detector),
+      _touch_tracker(touch_tracker::make_shared(detector, event_manager, renderer, this->_rect_plane->node())) {
     this->_rect_plane->node()->set_colliders({collider::make_shared()});
 
     this->_update_rect_positions(this->_layout_guide->region(), state_count);
