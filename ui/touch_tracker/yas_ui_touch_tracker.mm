@@ -64,6 +64,10 @@ bool touch_tracker::has_tracking() const {
     return this->_tracking.has_value();
 }
 
+std::optional<struct touch_tracker::tracking> const &touch_tracker::tracking() const {
+    return this->_tracking;
+}
+
 observing::endable touch_tracker::observe(std::function<void(context const &)> &&handler) {
     return this->_notifier->observe(std::move(handler));
 }
@@ -179,7 +183,7 @@ bool touch_tracker::_is_tracking(std::shared_ptr<ui::event> const &event,
 }
 
 void touch_tracker::_set_tracking(std::shared_ptr<ui::event> const &event, std::size_t const collider_idx) {
-    this->_tracking = tracking{.event = event, .collider_idx = collider_idx};
+    this->_tracking = {.event = event, .collider_idx = collider_idx};
 }
 
 void touch_tracker::_reset_tracking() {

@@ -15,6 +15,11 @@ struct touch_tracker final {
     using phase = touch_tracker_phase;
     using context = touch_tracker_context;
 
+    struct tracking {
+        std::shared_ptr<ui::event> event;
+        std::size_t collider_idx;
+    };
+
     [[nodiscard]] static std::shared_ptr<touch_tracker> make_shared(std::shared_ptr<ui::standard> const &,
                                                                     std::shared_ptr<ui::node> const &);
     [[nodiscard]] static std::shared_ptr<touch_tracker> make_shared(std::shared_ptr<ui::collider_detectable> const &,
@@ -25,8 +30,9 @@ struct touch_tracker final {
     void set_can_begin_tracking(std::function<bool(std::shared_ptr<ui::event> const &)> &&);
 
     void cancel_tracking();
-    
+
     bool has_tracking() const;
+    std::optional<tracking> const &tracking() const;
 
     observing::endable observe(std::function<void(context const &)> &&);
 
@@ -34,13 +40,8 @@ struct touch_tracker final {
     std::weak_ptr<ui::collider_detectable> const _weak_detector;
     std::weak_ptr<ui::node> const _weak_node;
 
-    struct tracking {
-        std::shared_ptr<ui::event> event;
-        std::size_t collider_idx;
-    };
-
     std::function<bool(std::shared_ptr<ui::event> const &)> _can_begin_tracking = nullptr;
-    std::optional<tracking> _tracking = std::nullopt;
+    std::optional<struct tracking> _tracking = std::nullopt;
 
     observing::notifier_ptr<context> const _notifier;
     observing::canceller_pool _pool;
