@@ -10,18 +10,12 @@
 #include <ui/yas_ui_event_types.h>
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_touch_tracker_types.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
 struct button final {
-    enum class phase {
-        began,
-        entered,
-        moved,
-        leaved,
-        ended,
-        canceled,
-    };
+    using phase = touch_tracker_phase;
 
     struct context {
         phase const phase;
