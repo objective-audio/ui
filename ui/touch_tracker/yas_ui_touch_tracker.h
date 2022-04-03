@@ -50,8 +50,7 @@ struct touch_tracker final {
 
     std::vector<std::shared_ptr<ui::collider>> const &_colliders() const;
     void _update_tracking(std::shared_ptr<ui::event> const &);
-    void _leave_or_enter_or_move_tracking();
-    void _leave_or_enter_or_move_tracking(std::shared_ptr<ui::event> const &event);
+    void _leave_or_enter_or_move_tracking(std::shared_ptr<ui::event> const &event, bool needs_move);
     void _cancel_tracking(std::shared_ptr<ui::event> const &);
     void _notify(phase const, std::shared_ptr<ui::event> const &, std::size_t const collider_idx);
     bool _is_tracking(std::shared_ptr<ui::event> const &, std::optional<std::size_t> const collider_idx) const;

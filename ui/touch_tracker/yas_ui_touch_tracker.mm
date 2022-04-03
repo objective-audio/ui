@@ -36,7 +36,12 @@ touch_tracker::touch_tracker(std::shared_ptr<ui::collider_detectable> const &det
         .end()
         ->add_to(this->_pool);
 
-    renderer->observe_will_render([this](auto const &) { this->_leave_or_enter_or_move_tracking(); })
+    renderer
+        ->observe_will_render([this](auto const &) {
+            if (this->_tracking.has_value()) {
+                this->_leave_or_enter_or_move_tracking(this->_tracking.value().event, false);
+            }
+        })
         .end()
         ->add_to(this->_pool);
 
@@ -96,7 +101,7 @@ void touch_tracker::_update_tracking(std::shared_ptr<ui::event> const &event) {
                 break;
             case ui::event_phase::stationary:
             case ui::event_phase::changed: {
-                this->_leave_or_enter_or_move_tracking(event);
+                this->_leave_or_enter_or_move_tracking(event, true);
             } break;
             case ui::event_phase::ended:
                 if (this->_is_tracking(event, std::nullopt)) {
@@ -114,13 +119,7 @@ void touch_tracker::_update_tracking(std::shared_ptr<ui::event> const &event) {
     }
 }
 
-void touch_tracker::_leave_or_enter_or_move_tracking() {
-    if (this->_tracking.has_value()) {
-        this->_leave_or_enter_or_move_tracking(this->_tracking.value().event);
-    }
-}
-
-void touch_tracker::_leave_or_enter_or_move_tracking(std::shared_ptr<ui::event> const &event) {
+void touch_tracker::_leave_or_enter_or_move_tracking(std::shared_ptr<ui::event> const &event, bool needs_move) {
     if (auto const detector = this->_weak_detector.lock()) {
         auto const &touch_event = event->get<ui::touch>();
 
@@ -137,7 +136,7 @@ void touch_tracker::_leave_or_enter_or_move_tracking(std::shared_ptr<ui::event> 
             } else if (is_event_tracking && !is_detected) {
                 this->_reset_tracking();
                 this->_notify(phase::leaved, event, idx);
-            } else if (is_event_tracking) {
+            } else if (is_event_tracking && needs_move) {
                 this->_notify(phase::moved, event, idx);
             }
         }
