@@ -42,4 +42,5 @@
 #include <ui/yas_ui_static_mesh_data.h>
 #include <ui/yas_ui_strings.h>
 #include <ui/yas_ui_texture.h>
+#include <ui/yas_ui_touch_tracker.h>
 #include <ui/yas_ui_view_look.h>
