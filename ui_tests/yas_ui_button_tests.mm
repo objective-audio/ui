@@ -55,17 +55,15 @@ struct renderer_observer_stub final : renderer_observable, renderer_for_view {
 }
 
 - (void)test_initial_with_state_count {
-    auto button =
-        button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 3, ui::event_manager::make_shared(),
-                            ui::detector::make_shared(), std::make_shared<test::renderer_observer_stub>());
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, ui::event_manager::make_shared(),
+                                      ui::detector::make_shared(), std::make_shared<test::renderer_observer_stub>(), 3);
 
     XCTAssertEqual(button->state_count(), 3);
 }
 
 - (void)test_state_index {
-    auto button =
-        button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, 2, ui::event_manager::make_shared(),
-                            ui::detector::make_shared(), std::make_shared<test::renderer_observer_stub>());
+    auto button = button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, ui::event_manager::make_shared(),
+                                      ui::detector::make_shared(), std::make_shared<test::renderer_observer_stub>(), 2);
 
     XCTAssertNoThrow(button->set_state_index(1));
     XCTAssertEqual(button->state_index(), 1);
