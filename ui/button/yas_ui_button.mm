@@ -8,15 +8,30 @@
 #include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_detector.h>
 #include <ui/yas_ui_event.h>
+#include <ui/yas_ui_event_manager.h>
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_mesh.h>
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_standard.h>
 #include <ui/yas_ui_texture.h>
 #include <ui/yas_ui_touch_tracker.h>
 
 using namespace yas;
 using namespace yas::ui;
+
+std::shared_ptr<button> button::make_shared(ui::region const &region, std::shared_ptr<ui::standard> const &standard,
+                                            std::size_t const state_count) {
+    return make_shared(region, standard->event_manager(), standard->detector(), standard->renderer(), state_count);
+}
+
+std::shared_ptr<button> button::make_shared(region const &region,
+                                            std::shared_ptr<ui::event_observable> const &event_manager,
+                                            std::shared_ptr<ui::collider_detectable> const &detector,
+                                            std::shared_ptr<ui::renderer_observable> const &renderer,
+                                            std::size_t const state_count) {
+    return std::shared_ptr<button>(new button{region, event_manager, detector, renderer, state_count});
+}
 
 button::button(region const &region, std::shared_ptr<ui::event_observable> const &event_manager,
                std::shared_ptr<ui::collider_detectable> const &detector,
@@ -114,14 +129,6 @@ void button::_update_rect_index() {
         !this->_can_indicate_tracking || (tracking.has_value() && this->_can_indicate_tracking(tracking.value().event));
     std::size_t const idx = to_rect_index(this->_state_idx, this->_is_tracking() && can_indicate);
     this->_rect_plane->data()->set_rect_index(0, idx);
-}
-
-std::shared_ptr<button> button::make_shared(region const &region,
-                                            std::shared_ptr<ui::event_observable> const &event_manager,
-                                            std::shared_ptr<ui::collider_detectable> const &detector,
-                                            std::shared_ptr<ui::renderer_observable> const &renderer,
-                                            std::size_t const state_count) {
-    return std::shared_ptr<button>(new button{region, event_manager, detector, renderer, state_count});
 }
 
 bool button::_can_indicate_tracking_value(std::shared_ptr<event> const &event) const {
