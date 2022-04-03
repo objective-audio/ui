@@ -94,7 +94,7 @@ std::shared_ptr<layout_region_guide> const &button::layout_guide() {
 }
 
 bool button::_is_tracking() {
-    return this->_touch_tracker->has_tracking();
+    return this->_touch_tracker->tracking().has_value();
 }
 
 void button::_update_rect_positions(region const &region, std::size_t const state_count) {

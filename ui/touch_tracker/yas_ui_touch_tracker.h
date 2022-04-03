@@ -31,7 +31,6 @@ struct touch_tracker final {
 
     void cancel_tracking();
 
-    bool has_tracking() const;
     std::optional<tracking> const &tracking() const;
 
     observing::endable observe(std::function<void(context const &)> &&);

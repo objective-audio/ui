@@ -60,10 +60,6 @@ void touch_tracker::cancel_tracking() {
     }
 }
 
-bool touch_tracker::has_tracking() const {
-    return this->_tracking.has_value();
-}
-
 std::optional<struct touch_tracker::tracking> const &touch_tracker::tracking() const {
     return this->_tracking;
 }
@@ -86,7 +82,7 @@ void touch_tracker::_update_tracking(std::shared_ptr<ui::event> const &event) {
         auto const &touch_event = event->get<ui::touch>();
         switch (event->phase()) {
             case ui::event_phase::began:
-                if (!this->has_tracking()) {
+                if (!this->_tracking.has_value()) {
                     auto each = make_fast_each(this->_colliders().size());
                     while (yas_each_next(each)) {
                         auto const &idx = yas_each_index(each);
