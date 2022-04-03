@@ -20,7 +20,7 @@ struct soft_keyboard {
     static soft_keyboard_ptr make_shared(std::shared_ptr<ui::font_atlas> const &,
                                          std::shared_ptr<ui::event_manager> const &,
                                          std::shared_ptr<ui::action_manager> const &,
-                                         std::shared_ptr<ui::detector> const &,
+                                         std::shared_ptr<ui::detector> const &, std::shared_ptr<ui::renderer> const &,
                                          std::shared_ptr<ui::layout_region_source> const &safe_area_guide);
 
    private:
@@ -43,10 +43,11 @@ struct soft_keyboard {
 
     explicit soft_keyboard(std::shared_ptr<ui::font_atlas> const &, std::shared_ptr<ui::event_manager> const &,
                            std::shared_ptr<ui::action_manager> const &, std::shared_ptr<ui::detector> const &,
-                           std::shared_ptr<ui::layout_region_source> const &);
+                           std::shared_ptr<ui::renderer> const &, std::shared_ptr<ui::layout_region_source> const &);
 
     void _setup_soft_keys_if_needed(std::shared_ptr<ui::event_manager> const &,
                                     std::shared_ptr<ui::action_manager> const &, std::shared_ptr<ui::detector> const &,
+                                    std::shared_ptr<ui::renderer> const &,
                                     std::shared_ptr<ui::layout_region_source> const &safe_area_guide);
     void _setup_soft_keys_layout(std::shared_ptr<ui::action_manager> const &);
     void _update_soft_key_count();

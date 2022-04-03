@@ -50,9 +50,10 @@ struct soft_key {
     static soft_key_ptr make_shared(std::string key, float const width, std::shared_ptr<font_atlas> const &atlas,
                                     std::shared_ptr<ui::event_manager> const &event_manager,
                                     std::shared_ptr<ui::action_manager> const &action_manager,
-                                    std::shared_ptr<ui::detector> const &detector) {
+                                    std::shared_ptr<ui::detector> const &detector,
+                                    std::shared_ptr<ui::renderer> const &renderer) {
         return std::shared_ptr<soft_key>(
-            new soft_key(std::move(key), width, atlas, event_manager, action_manager, detector));
+            new soft_key(std::move(key), width, atlas, event_manager, action_manager, detector, renderer));
     }
 
    private:
@@ -63,8 +64,9 @@ struct soft_key {
 
     soft_key(std::string &&key, float const width, std::shared_ptr<font_atlas> const &atlas,
              std::shared_ptr<ui::event_manager> const &event_manager,
-             std::shared_ptr<ui::action_manager> const &action_manager, std::shared_ptr<ui::detector> const &detector)
-        : _button(button::make_shared({.size = {width, width}}, event_manager, detector)),
+             std::shared_ptr<ui::action_manager> const &action_manager, std::shared_ptr<ui::detector> const &detector,
+             std::shared_ptr<ui::renderer> const &renderer)
+        : _button(button::make_shared({.size = {width, width}}, event_manager, detector, renderer)),
           _strings(strings::make_shared({.max_word_count = 1}, atlas)),
           _weak_action_manager(action_manager) {
         this->_button->rect_plane()->node()->mesh()->set_use_mesh_color(true);
@@ -89,9 +91,10 @@ sample::soft_keyboard::soft_keyboard(std::shared_ptr<font_atlas> const &atlas,
                                      std::shared_ptr<ui::event_manager> const &event_manager,
                                      std::shared_ptr<action_manager> const &action_manager,
                                      std::shared_ptr<ui::detector> const &detector,
+                                     std::shared_ptr<ui::renderer> const &renderer,
                                      std::shared_ptr<layout_region_source> const &safe_area_guide)
     : _font_atlas(atlas) {
-    this->_setup_soft_keys_if_needed(event_manager, action_manager, detector, safe_area_guide);
+    this->_setup_soft_keys_if_needed(event_manager, action_manager, detector, renderer, safe_area_guide);
 }
 
 std::shared_ptr<node> const &sample::soft_keyboard::node() {
@@ -104,7 +107,8 @@ observing::endable sample::soft_keyboard::observe(observing::caller<std::string>
 
 void sample::soft_keyboard::_setup_soft_keys_if_needed(
     std::shared_ptr<event_manager> const &event_manager, std::shared_ptr<action_manager> const &action_manager,
-    std::shared_ptr<ui::detector> const &detector, std::shared_ptr<ui::layout_region_source> const &safe_area_guide) {
+    std::shared_ptr<ui::detector> const &detector, std::shared_ptr<ui::renderer> const &renderer,
+    std::shared_ptr<ui::layout_region_source> const &safe_area_guide) {
     auto const keys = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     auto const key_count = keys.size();
     auto const key_width = 36.0f;
@@ -134,8 +138,8 @@ void sample::soft_keyboard::_setup_soft_keys_if_needed(
          .borders = {.left = spacing, .right = spacing, .bottom = spacing, .top = spacing}});
 
     for (auto const &key : keys) {
-        sample::soft_key_ptr soft_key =
-            sample::soft_key::make_shared(key, key_width, this->_font_atlas, event_manager, action_manager, detector);
+        sample::soft_key_ptr soft_key = sample::soft_key::make_shared(key, key_width, this->_font_atlas, event_manager,
+                                                                      action_manager, detector, renderer);
 
         observing::cancellable_ptr canceller = soft_key->button()
                                                    ->observe([this, key](auto const &context) {
@@ -286,7 +290,7 @@ void sample::soft_keyboard::_update_soft_keys_enabled(bool animated) {
 sample::soft_keyboard_ptr sample::soft_keyboard::make_shared(
     std::shared_ptr<font_atlas> const &atlas, std::shared_ptr<ui::event_manager> const &event_manager,
     std::shared_ptr<ui::action_manager> const &action_manager, std::shared_ptr<ui::detector> const &detector,
-    std::shared_ptr<layout_region_source> const &safe_area_guide) {
+    std::shared_ptr<ui::renderer> const &renderer, std::shared_ptr<layout_region_source> const &safe_area_guide) {
     return std::shared_ptr<soft_keyboard>(
-        new soft_keyboard{atlas, event_manager, action_manager, detector, safe_area_guide});
+        new soft_keyboard{atlas, event_manager, action_manager, detector, renderer, safe_area_guide});
 }
