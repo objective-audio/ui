@@ -10,21 +10,17 @@
 #include <ui/yas_ui_event_types.h>
 #include <ui/yas_ui_layout_guide.h>
 #include <ui/yas_ui_rect_plane.h>
+#include <ui/yas_ui_touch_tracker_types.h>
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
+class touch_tracker;
+
 struct button final {
-    enum class method {
-        began,
-        entered,
-        moved,
-        leaved,
-        ended,
-        canceled,
-    };
+    using phase = touch_tracker_phase;
 
     struct context {
-        method const method;
+        phase const phase;
         ui::touch_event const &touch;
     };
 
@@ -48,25 +44,23 @@ struct button final {
 
     [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &,
                                                              std::shared_ptr<ui::event_observable> const &,
-                                                             std::shared_ptr<ui::collider_detectable> const &);
-    [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &, std::size_t const state_count,
-                                                             std::shared_ptr<ui::event_observable> const &,
-                                                             std::shared_ptr<ui::collider_detectable> const &);
+                                                             std::shared_ptr<ui::collider_detectable> const &,
+                                                             std::shared_ptr<ui::renderer_observable> const &,
+                                                             std::size_t const state_count = 1);
 
    private:
     std::shared_ptr<ui::rect_plane> _rect_plane;
     std::shared_ptr<ui::layout_region_guide> _layout_guide;
-    observing::notifier_ptr<context> _notifier = observing::notifier<context>::make_shared();
     std::size_t _state_idx = 0;
     std::size_t _state_count;
     std::function<bool(std::shared_ptr<event> const &)> _can_begin_tracking = nullptr;
     std::function<bool(std::shared_ptr<event> const &)> _can_indicate_tracking = nullptr;
-    std::weak_ptr<ui::collider_detectable> _weak_detector;
-    std::shared_ptr<event> _tracking_event = nullptr;
+    std::shared_ptr<touch_tracker> const _touch_tracker;
     observing::canceller_pool _pool;
 
-    button(ui::region const &region, std::size_t const state_count, std::shared_ptr<ui::event_observable> const &,
-           std::shared_ptr<ui::collider_detectable> const &);
+    button(ui::region const &region, std::shared_ptr<ui::event_observable> const &,
+           std::shared_ptr<ui::collider_detectable> const &, std::shared_ptr<ui::renderer_observable> const &,
+           std::size_t const state_count);
 
     button(button const &) = delete;
     button(button &&) = delete;
@@ -75,23 +69,12 @@ struct button final {
 
     bool _is_tracking();
     bool _is_tracking(std::shared_ptr<event> const &);
-    void _set_tracking_event(std::shared_ptr<event> const &);
     void _update_rect_positions(ui::region const &region, std::size_t const state_count);
     void _update_rect_index();
-    observing::cancellable_ptr _make_leave_observings();
-    observing::cancellable_ptr _make_collider_observings();
-    void _update_tracking(std::shared_ptr<event> const &event);
-    void _leave_or_enter_or_move_tracking(std::shared_ptr<event> const &);
-    void _cancel_tracking(std::shared_ptr<event> const &event);
-    void _send_notify(method const method, std::shared_ptr<event> const &);
-    bool _can_begin_tracking_value(std::shared_ptr<event> const &) const;
     bool _can_indicate_tracking_value(std::shared_ptr<event> const &) const;
 };
 }  // namespace yas::ui
 
 namespace yas {
 std::size_t to_rect_index(std::size_t const state_idx, bool is_tracking);
-std::string to_string(ui::button::method const &);
 }  // namespace yas
-
-std::ostream &operator<<(std::ostream &, yas::ui::button::method const &);

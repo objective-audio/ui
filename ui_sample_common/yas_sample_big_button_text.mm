@@ -16,7 +16,7 @@ sample::big_button_text::big_button_text(std::shared_ptr<font_atlas> const &font
     this->_strings->rect_plane()->node()->set_position(point{0.0f, offset_y});
 }
 
-void sample::big_button_text::set_status(button::method const status) {
+void sample::big_button_text::set_status(button::phase const status) {
     this->_strings->set_text(to_string(status));
 }
 

@@ -18,6 +18,7 @@
 		B62F3CD526AD2CF100A41B3B /* yas_ui_gl_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = B62F3CD426AD2CF100A41B3B /* yas_ui_gl_buffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B62F3CDC26AD2DB900A41B3B /* yas_ui_metal_buffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B62F3CDA26AD2DB900A41B3B /* yas_ui_metal_buffer.mm */; };
 		B62F3CDD26AD2DB900A41B3B /* yas_ui_metal_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = B62F3CDB26AD2DB900A41B3B /* yas_ui_metal_buffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B63D46E127F94BFE002B2F6E /* yas_ui_touch_tracker_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B63D46E027F94BFE002B2F6E /* yas_ui_touch_tracker_types.cpp */; };
 		B657FB9825EBD4DA00495411 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B657FB9725EBD4DA00495411 /* observing.framework */; };
 		B659576225E7A24C00DF4ED9 /* yas_ui_objc.h in Headers */ = {isa = PBXBuildFile; fileRef = B659576025E7A20D00DF4ED9 /* yas_ui_objc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B65E5BB326958C990026DA54 /* yas_ui_node_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B65E5BB226958C990026DA54 /* yas_ui_node_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -126,6 +127,9 @@
 		B6C3A59C2711251100514B94 /* yas_ui_static_mesh_data.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C3A5962711251100514B94 /* yas_ui_static_mesh_data.mm */; };
 		B6C3A59D2711251100514B94 /* yas_ui_static_mesh_data.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C3A5972711251100514B94 /* yas_ui_static_mesh_data.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6C3A59E2711251100514B94 /* yas_ui_dynamic_mesh_data.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C3A5982711251100514B94 /* yas_ui_dynamic_mesh_data.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6C9C9B427F824DA00171DE5 /* yas_ui_touch_tracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6C9C9B227F824DA00171DE5 /* yas_ui_touch_tracker.mm */; };
+		B6C9C9B527F824DA00171DE5 /* yas_ui_touch_tracker.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C9C9B327F824DA00171DE5 /* yas_ui_touch_tracker.h */; };
+		B6C9C9B727F8259000171DE5 /* yas_ui_touch_tracker_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C9C9B627F8258E00171DE5 /* yas_ui_touch_tracker_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3EEC1265CFD4400151540 /* yas_ui_strings_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3EEC0265CFD4400151540 /* yas_ui_strings_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D3EECB265CFF1A00151540 /* yas_ui_texture_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3EECA265CFF1A00151540 /* yas_ui_texture_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6D6C2B826A90D70007BD4CE /* yas_ui_common_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D6C2B726A90D70007BD4CE /* yas_ui_common_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -168,6 +172,7 @@
 		B62F3CD426AD2CF100A41B3B /* yas_ui_gl_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_gl_buffer.h; sourceTree = "<group>"; };
 		B62F3CDA26AD2DB900A41B3B /* yas_ui_metal_buffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_metal_buffer.mm; sourceTree = "<group>"; };
 		B62F3CDB26AD2DB900A41B3B /* yas_ui_metal_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_metal_buffer.h; sourceTree = "<group>"; };
+		B63D46E027F94BFE002B2F6E /* yas_ui_touch_tracker_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_ui_touch_tracker_types.cpp; sourceTree = "<group>"; };
 		B657FB9725EBD4DA00495411 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B659576025E7A20D00DF4ED9 /* yas_ui_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_objc.h; sourceTree = "<group>"; };
 		B65E5BB226958C990026DA54 /* yas_ui_node_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_node_dependency.h; sourceTree = "<group>"; };
@@ -276,6 +281,9 @@
 		B6C3A5962711251100514B94 /* yas_ui_static_mesh_data.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_static_mesh_data.mm; sourceTree = "<group>"; };
 		B6C3A5972711251100514B94 /* yas_ui_static_mesh_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_static_mesh_data.h; sourceTree = "<group>"; };
 		B6C3A5982711251100514B94 /* yas_ui_dynamic_mesh_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_dynamic_mesh_data.h; sourceTree = "<group>"; };
+		B6C9C9B227F824DA00171DE5 /* yas_ui_touch_tracker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_ui_touch_tracker.mm; sourceTree = "<group>"; };
+		B6C9C9B327F824DA00171DE5 /* yas_ui_touch_tracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_touch_tracker.h; sourceTree = "<group>"; };
+		B6C9C9B627F8258E00171DE5 /* yas_ui_touch_tracker_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_ui_touch_tracker_types.h; sourceTree = "<group>"; };
 		B6D3EEC0265CFD4400151540 /* yas_ui_strings_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_strings_types.h; sourceTree = "<group>"; };
 		B6D3EECA265CFF1A00151540 /* yas_ui_texture_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_texture_types.h; sourceTree = "<group>"; };
 		B6D6C2B726A90D70007BD4CE /* yas_ui_common_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_ui_common_dependency.h; sourceTree = "<group>"; };
@@ -414,6 +422,7 @@
 				B6629A7925E69D1F00443098 /* string */,
 				B6629A7225E69D1F00443098 /* texture */,
 				B6629A4725E69D1F00443098 /* utils */,
+				B6C9C9B127F824DA00171DE5 /* touch_tracker */,
 				B62DF8E626996F04005C68CC /* view_look */,
 				B6629A4325E69D1F00443098 /* yas_ui_umbrella.h */,
 			);
@@ -754,6 +763,17 @@
 			path = mesh_data;
 			sourceTree = "<group>";
 		};
+		B6C9C9B127F824DA00171DE5 /* touch_tracker */ = {
+			isa = PBXGroup;
+			children = (
+				B63D46E027F94BFE002B2F6E /* yas_ui_touch_tracker_types.cpp */,
+				B6C9C9B627F8258E00171DE5 /* yas_ui_touch_tracker_types.h */,
+				B6C9C9B327F824DA00171DE5 /* yas_ui_touch_tracker.h */,
+				B6C9C9B227F824DA00171DE5 /* yas_ui_touch_tracker.mm */,
+			);
+			path = touch_tracker;
+			sourceTree = "<group>";
+		};
 		B6DE34BD21E6313800E49BCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -827,6 +847,7 @@
 				B6C3A59B2711251100514B94 /* yas_ui_mesh_data.h in Headers */,
 				B6629A9125E69D1F00443098 /* yas_ui_renderer.h in Headers */,
 				B6629AD125E69D1F00443098 /* yas_ui_button.h in Headers */,
+				B6C9C9B727F8259000171DE5 /* yas_ui_touch_tracker_types.h in Headers */,
 				B6629AC525E69D1F00443098 /* yas_ui_matrix.h in Headers */,
 				B6629AD425E69D1F00443098 /* yas_ui_batch_render_mesh_info.h in Headers */,
 				B6629ABF25E69D1F00443098 /* yas_ui_image.h in Headers */,
@@ -856,6 +877,7 @@
 				B69C9278265D48530083EFD7 /* yas_ui_collection_layout_types.h in Headers */,
 				B6FE72B527DB4B37005B278B /* yas_ui_color.h in Headers */,
 				B61E354D21E6303700DF35C3 /* ui.h in Headers */,
+				B6C9C9B527F824DA00171DE5 /* yas_ui_touch_tracker.h in Headers */,
 				B6FC1AD026A9B6A00032F8D6 /* yas_ui_event_manager.h in Headers */,
 				B6629AA925E69D1F00443098 /* yas_ui_angle.h in Headers */,
 				B6629AE325E69D1F00443098 /* yas_ui_event_types.h in Headers */,
@@ -946,6 +968,7 @@
 				B621C88526B52A8700860E47 /* yas_ui_action_group.cpp in Sources */,
 				B6629AD325E69D1F00443098 /* yas_ui_batch.mm in Sources */,
 				B6629AAD25E69D1F00443098 /* yas_ui_layout_types.cpp in Sources */,
+				B6C9C9B427F824DA00171DE5 /* yas_ui_touch_tracker.mm in Sources */,
 				B6C3A59C2711251100514B94 /* yas_ui_static_mesh_data.mm in Sources */,
 				B6AC62FF26A2C99B0053F180 /* yas_ui_renderer_dependency.cpp in Sources */,
 				B6F7C31927A4E2D5003BA908 /* yas_ui_strings_types.cpp in Sources */,
@@ -956,6 +979,7 @@
 				B6629AC025E69D1F00443098 /* yas_ui_image.cpp in Sources */,
 				B6629ADA25E69D1F00443098 /* yas_ui_texture.mm in Sources */,
 				B6629AE525E69D1F00443098 /* yas_ui_event_types.cpp in Sources */,
+				B63D46E127F94BFE002B2F6E /* yas_ui_touch_tracker_types.cpp in Sources */,
 				B6629A8D25E69D1F00443098 /* yas_ui_render_target.mm in Sources */,
 				B6629AE225E69D1F00443098 /* yas_ui_node_actions.mm in Sources */,
 				B6629AB825E69D1F00443098 /* yas_ui_observing_utils.cpp in Sources */,

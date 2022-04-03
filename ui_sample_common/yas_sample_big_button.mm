@@ -14,10 +14,11 @@ using namespace yas::ui;
 #pragma mark - big_button
 
 sample::big_button::big_button(std::shared_ptr<ui::event_manager> const &event_manager,
-                               std::shared_ptr<ui::detector> const &detector)
+                               std::shared_ptr<ui::detector> const &detector,
+                               std::shared_ptr<ui::renderer> const &renderer)
     : _button(ui::button::make_shared(
           {.origin = {-this->_radius, -this->_radius}, .size = {this->_radius * 2.0f, this->_radius * 2.0f}},
-          event_manager, detector)) {
+          event_manager, detector, renderer)) {
     this->_button->rect_plane()->node()->set_colliders(
         {collider::make_shared(shape::make_shared(circle_shape{.radius = this->_radius}))});
 
@@ -70,6 +71,7 @@ void sample::big_button::set_texture(std::shared_ptr<texture> const &texture) {
 }
 
 sample::big_button_ptr sample::big_button::make_shared(std::shared_ptr<ui::event_manager> const &event_manager,
-                                                       std::shared_ptr<ui::detector> const &detector) {
-    return std::shared_ptr<big_button>(new big_button{event_manager, detector});
+                                                       std::shared_ptr<ui::detector> const &detector,
+                                                       std::shared_ptr<ui::renderer> const &renderer) {
+    return std::shared_ptr<big_button>(new big_button{event_manager, detector, renderer});
 }

@@ -53,11 +53,11 @@ struct main {
     sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
         standard->event_manager(), standard->action_manager(), standard->detector());
     sample::big_button_ptr const _big_button =
-        sample::big_button::make_shared(standard->event_manager(), standard->detector());
+        sample::big_button::make_shared(standard->event_manager(), standard->detector(), standard->renderer());
     sample::big_button_text_ptr const _big_button_text = sample::big_button_text::make_shared(_font_atlas);
-    sample::soft_keyboard_ptr const _soft_keyboard =
-        sample::soft_keyboard::make_shared(_font_atlas, standard->event_manager(), standard->action_manager(),
-                                           standard->detector(), standard->view_look()->safe_area_layout_guide());
+    sample::soft_keyboard_ptr const _soft_keyboard = sample::soft_keyboard::make_shared(
+        _font_atlas, standard->event_manager(), standard->action_manager(), standard->detector(), standard->renderer(),
+        standard->view_look()->safe_area_layout_guide());
     sample::justified_points_ptr const _justified_points =
         sample::justified_points::make_shared(standard->view_look()->view_layout_guide());
 
