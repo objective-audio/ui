@@ -14,6 +14,7 @@
 #include <ui/yas_ui_types.h>
 
 namespace yas::ui {
+class standard;
 class touch_tracker;
 
 struct button final {
@@ -42,6 +43,8 @@ struct button final {
 
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &layout_guide();
 
+    [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &, std::shared_ptr<ui::standard> const &,
+                                                             std::size_t const state_count = 1);
     [[nodiscard]] static std::shared_ptr<button> make_shared(ui::region const &,
                                                              std::shared_ptr<ui::event_observable> const &,
                                                              std::shared_ptr<ui::collider_detectable> const &,
