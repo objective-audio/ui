@@ -60,7 +60,7 @@ void touch_tracker::cancel_tracking() {
     }
 }
 
-std::optional<struct touch_tracker::tracking> const &touch_tracker::tracking() const {
+std::optional<struct touch_tracker::tracking_value> const &touch_tracker::tracking() const {
     return this->_tracking;
 }
 
