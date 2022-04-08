@@ -30,6 +30,7 @@
 #include <ui/yas_ui_metal_texture.h>
 #include <ui/yas_ui_metal_types.h>
 #include <ui/yas_ui_metal_view_controller.h>
+#include <ui/yas_ui_multiple_touch.h>
 #include <ui/yas_ui_node.h>
 #include <ui/yas_ui_node_actions.h>
 #include <ui/yas_ui_observing_utils.h>
