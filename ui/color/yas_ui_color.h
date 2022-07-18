@@ -27,7 +27,7 @@ static_assert(sizeof(color) == (sizeof(float) * 4));
 }  // namespace yas::ui
 
 namespace yas {
-ui::color to_color(ui::rgb_color const &, float const alpha);
+ui::color to_color(ui::rgb_color const &, float const alpha = 1.0f);
 
 std::string to_string(ui::color const &color);
 }  // namespace yas
