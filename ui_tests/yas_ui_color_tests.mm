@@ -100,4 +100,14 @@ using namespace yas::ui;
     XCTAssertEqual(color.alpha, 4.0f);
 }
 
+- (void)test_rbg_to_color_without_alpha {
+    rgb_color const rgb{1.1f, 2.2f, 3.3f};
+    auto const color = to_color(rgb);
+
+    XCTAssertEqual(color.red, 1.1f);
+    XCTAssertEqual(color.green, 2.2f);
+    XCTAssertEqual(color.blue, 3.3f);
+    XCTAssertEqual(color.alpha, 1.0f);
+}
+
 @end
