@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -269,6 +269,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		B6302A0720A86F1E009A5C2A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -441,7 +442,10 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				DEVELOPMENT_TEAM = WVVR5YE53F;
 				INFOPLIST_FILE = ui_ios_sample/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.ui-ios-sample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -455,7 +459,10 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				DEVELOPMENT_TEAM = WVVR5YE53F;
 				INFOPLIST_FILE = ui_ios_sample/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.ui-ios-sample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

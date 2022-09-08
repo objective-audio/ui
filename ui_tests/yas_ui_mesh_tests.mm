@@ -355,7 +355,7 @@ using namespace yas::ui;
 }
 
 - (void)test_is_rendering_color_exists {
-    auto mesh = mesh::make_shared({.use_mesh_color = false, .color = 1.0f}, nullptr, nullptr, nullptr);
+    auto mesh = mesh::make_shared({.use_mesh_color = false, .color = {.v = 1.0f}}, nullptr, nullptr, nullptr);
 
     XCTAssertFalse(renderable_mesh::cast(mesh)->is_rendering_color_exists());
 

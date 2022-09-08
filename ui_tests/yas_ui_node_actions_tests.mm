@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <ui/ui.h>
+#import <ui/yas_ui_node_actions.h>
 #import <unordered_set>
 
 using namespace std::chrono_literals;
@@ -53,8 +54,8 @@ using namespace yas::ui;
     auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
     auto action = make_action({.target = target,
-                               .begin_angle = 0.0f,
-                               .end_angle = 360.0f,
+                               .begin_angle = {0.0f},
+                               .end_angle = {360.0f},
                                .is_shortest = false,
                                .duration = 1.0,
                                .begin_time = time});
@@ -76,8 +77,8 @@ using namespace yas::ui;
     auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
     auto action = make_action({.target = target,
-                               .begin_angle = 0.0f,
-                               .end_angle = 270.0f,
+                               .begin_angle = {0.0f},
+                               .end_angle = {270.0f},
                                .is_shortest = true,
                                .duration = 1.0,
                                .begin_time = time});
@@ -99,8 +100,8 @@ using namespace yas::ui;
     auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
     auto action = make_action({.target = target,
-                               .begin_angle = -180.0f,
-                               .end_angle = 90.0f,
+                               .begin_angle = {-180.0f},
+                               .end_angle = {90.0f},
                                .is_shortest = true,
                                .duration = 1.0,
                                .begin_time = time});

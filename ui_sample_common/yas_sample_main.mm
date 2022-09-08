@@ -101,8 +101,8 @@ void sample::main::setup() {
     this->_render_target_node->add_sub_node(this->_plane_on_target->node());
 
     auto action = make_action({.target = this->_plane_on_target->node(),
-                               .begin_angle = 0.0f,
-                               .end_angle = 360.0f,
+                               .begin_angle = {0.0f},
+                               .end_angle = {360.0f},
                                .duration = 3.0,
                                .loop_count = 0});
     this->standard->action_manager()->insert_action(action);
