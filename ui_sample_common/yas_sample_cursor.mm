@@ -12,7 +12,7 @@ using namespace yas::ui;
 
 namespace yas::sample::cursor_utils {
 static std::shared_ptr<action> _make_rotate_action(std::shared_ptr<node> const &target) {
-    auto rotate_action = make_action({.target = target, .end_angle = -360.0f, .duration = 2.0f, .loop_count = 0});
+    auto rotate_action = make_action({.target = target, .end_angle = {-360.0f}, .duration = 2.0f, .loop_count = 0});
 
     auto scale_action =
         make_action({.target = target,
