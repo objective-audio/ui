@@ -83,7 +83,7 @@ using namespace yas::ui;
 }
 
 - (void)test_hit_test_circle {
-    auto collider = collider::make_shared(shape::make_shared({.center = 0.0f, .radius = 0.5f}));
+    auto collider = collider::make_shared(shape::make_shared({.center = {.v = 0.0f}, .radius = 0.5f}));
 
     XCTAssertTrue(collider->hit_test({.v = 0.0f}));
     XCTAssertTrue(collider->hit_test({-0.49f, 0.0f}));
