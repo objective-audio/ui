@@ -433,6 +433,17 @@ void vertex2d_rect::set_tex_coord(uint_region const &region) {
     this->v[2].tex_coord.y = this->v[3].tex_coord.y = region.bottom();
 }
 
+void vertex2d_rect::set_color(simd::float4 const &color) {
+    this->v[0].color = color;
+    this->v[1].color = color;
+    this->v[2].color = color;
+    this->v[3].color = color;
+}
+
+void vertex2d_rect::set_color(ui::color const &color) {
+    this->set_color(color.v);
+}
+
 #pragma mark - index2d_rect
 
 void index2d_rect::set_all(uint32_t const first) {
