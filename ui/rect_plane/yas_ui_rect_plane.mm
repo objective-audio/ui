@@ -76,11 +76,7 @@ void rect_plane_data::set_rect_position(region const &region, std::size_t const 
 
 void rect_plane_data::set_rect_color(simd::float4 const &color, std::size_t const rect_idx) {
     this->write_vertices([&rect_idx, &color](vertex2d_rect *vertex_rects) {
-        auto &vertex_rect = vertex_rects[rect_idx];
-        auto each = make_fast_each(4);
-        while (yas_each_next(each)) {
-            vertex_rect.v[yas_each_index(each)].color = color;
-        }
+        vertex_rects[rect_idx].set_color(color);
     });
 }
 
