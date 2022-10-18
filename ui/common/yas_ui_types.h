@@ -7,6 +7,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <cpp_utils/yas_flagset.h>
 #include <simd/simd.h>
+#include <ui/yas_ui_color.h>
 #include <ui/yas_ui_shared_types.h>
 #include <optional>
 #include <ostream>
@@ -321,6 +322,8 @@ struct vertex2d_rect {
 
     void set_position(ui::region const &);
     void set_tex_coord(ui::uint_region const &);
+    void set_color(simd::float4 const &);
+    void set_color(ui::color const &);
 };
 
 using index2d_t = uint32_t;
