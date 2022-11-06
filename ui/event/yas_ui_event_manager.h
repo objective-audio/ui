@@ -33,7 +33,7 @@ struct event_manager final : event_manager_for_view, event_observable {
     event_manager &operator=(event_manager const &) = delete;
     event_manager &operator=(event_manager &&) = delete;
 
-    void input_cursor_event(cursor_event const &value) override;
+    void input_cursor_event(cursor_phase const, cursor_event const &) override;
     void input_touch_event(event_phase const, touch_event const &) override;
     void input_key_event(event_phase const, key_event const &) override;
     void input_modifier_event(modifier_flags const &, double const) override;

@@ -143,6 +143,7 @@ struct metal_view_cpp {
 
     self->_cpp.renderer = renderer;
 
+    [self.metalView configure];
     [self.metalView set_event_manager:event_manager];
 }
 

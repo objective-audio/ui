@@ -17,6 +17,7 @@
 - (yas::ui::region_insets)uiSafeAreaInsets;
 - (yas::ui::appearance)uiAppearance;
 
+- (void)configure;
 - (void)set_event_manager:(std::shared_ptr<yas::ui::event_manager_for_view> const &)manager;
 
 - (yas::ui::point)view_location_from_ui_position:(yas::ui::point)position;

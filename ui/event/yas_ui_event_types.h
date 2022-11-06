@@ -21,6 +21,12 @@ enum class event_phase {
     may_begin,
 };
 
+enum class cursor_phase {
+    began,
+    changed,
+    ended,
+};
+
 enum modifier_flags : uint32_t {
     alpha_shift = 1 << 16,
     shift = 1 << 17,
