@@ -26,14 +26,15 @@ sample::big_button::big_button(std::shared_ptr<ui::event_manager> const &event_m
         auto const &touch_event = event->get<ui::touch>();
         auto const &touch_id = touch_event.touch_id;
 
-        return touch_id == touch_id::mouse_left() || touch_id == touch_id::mouse_right();
+        return touch_id == touch_id::mouse_left() || touch_id == touch_id::mouse_right() ||
+               touch_id.kind == touch_kind::touch;
     });
 
     this->_button->set_can_indicate_tracking([](std::shared_ptr<ui::event> const &event) {
         auto const &touch_event = event->get<ui::touch>();
         auto const &touch_id = touch_event.touch_id;
 
-        return touch_id == touch_id::mouse_left();
+        return touch_id == touch_id::mouse_left() || touch_id.kind == touch_kind::touch;
     });
 }
 
