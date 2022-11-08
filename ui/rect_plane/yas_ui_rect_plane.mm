@@ -75,9 +75,7 @@ void rect_plane_data::set_rect_position(region const &region, std::size_t const 
 }
 
 void rect_plane_data::set_rect_color(simd::float4 const &color, std::size_t const rect_idx) {
-    this->write_vertices([&rect_idx, &color](vertex2d_rect *vertex_rects) {
-        vertex_rects[rect_idx].set_color(color);
-    });
+    this->write_vertices([&rect_idx, &color](vertex2d_rect *vertex_rects) { vertex_rects[rect_idx].set_color(color); });
 }
 
 void rect_plane_data::set_rect_color(ui::color const &color, std::size_t const rect_idx) {
