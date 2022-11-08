@@ -44,6 +44,14 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 #endif
 }
 
+- (void)configure {
+#if TARGET_OS_IPHONE
+    UIHoverGestureRecognizer *gesture = [[UIHoverGestureRecognizer alloc] initWithTarget:self
+                                                                                  action:@selector(handleHover:)];
+    [self addGestureRecognizer:gesture];
+#endif
+}
+
 - (void)set_event_manager:(std::shared_ptr<ui::event_manager_for_view> const &)manager {
     self->_cpp.event_manager = manager;
 }
@@ -108,7 +116,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
     return CGSizeMake(std::round(view_size.width * scale), std::round(view_size.height * scale));
 }
 
-- (ui::point)_position:(UITouch *)touch {
+- (ui::point)_positionWithTouch:(UITouch *)touch {
     auto const locInView = [touch locationInView:self];
     ui::point const location{static_cast<float>(locInView.x), static_cast<float>(locInView.y)};
     return [self ui_position_from_view_location:location];
@@ -116,10 +124,10 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendTouchEvent:(UITouch *)touch phase:(ui::event_phase &&)phase {
     if (auto const event_manager = self->_cpp.event_manager.lock()) {
-        event_manager->input_touch_event(
-            std::move(phase),
-            ui::touch_event{
-                {.kind = touch_kind::touch, .identifier = uintptr_t(touch)}, [self _position:touch], touch.timestamp});
+        event_manager->input_touch_event(std::move(phase),
+                                         ui::touch_event{{.kind = touch_kind::touch, .identifier = uintptr_t(touch)},
+                                                         [self _positionWithTouch:touch],
+                                                         touch.timestamp});
     }
 }
 
@@ -138,12 +146,44 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in touches) {
         [self _sendTouchEvent:touch phase:ui::event_phase::changed];
+        [self _sendCursorEventWithPosition:[self _positionWithTouch:touch] phase:cursor_phase::changed];
     }
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in touches) {
         [self _sendTouchEvent:touch phase:ui::event_phase::canceled];
+    }
+}
+
+- (ui::point)_positionWithHover:(UIHoverGestureRecognizer *)gesture {
+    auto const locInView = [gesture locationInView:self];
+    ui::point const location{static_cast<float>(locInView.x), static_cast<float>(locInView.y)};
+    return [self ui_position_from_view_location:location];
+}
+
+- (void)_sendCursorEventWithPosition:(ui::point)position phase:(cursor_phase const)phase {
+    if (auto const event_manager = self->_cpp.event_manager.lock()) {
+        event_manager->input_cursor_event(phase, ui::cursor_event{position, 0.0});
+    }
+}
+
+- (void)handleHover:(UIHoverGestureRecognizer *)gesture {
+    ui::point const position = [self _positionWithHover:gesture];
+
+    switch (gesture.state) {
+        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateChanged:
+            [self _sendCursorEventWithPosition:position phase:cursor_phase::began];
+            break;
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+            [self _sendCursorEventWithPosition:position phase:cursor_phase::ended];
+            break;
+        case UIGestureRecognizerStatePossible:
+        default:
+            break;
     }
 }
 
@@ -165,7 +205,8 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendCursorEvent:(NSEvent *)event {
     if (auto const event_manager = self->_cpp.event_manager.lock()) {
-        event_manager->input_cursor_event(ui::cursor_event{[self _position:event], event.timestamp});
+        event_manager->input_cursor_event(cursor_phase::began,
+                                          ui::cursor_event{[self _position:event], event.timestamp});
     }
 }
 

@@ -14,15 +14,17 @@ observing::endable event_manager::observe(std::function<void(std::shared_ptr<eve
     return this->_notifier->observe(std::move(handler));
 }
 
-void event_manager::input_cursor_event(cursor_event const &value) {
+void event_manager::input_cursor_event(cursor_phase const cursor_phase, cursor_event const &value) {
     event_phase phase;
 
-    if (value.contains_in_window()) {
+    if (value.contains_in_window() && cursor_phase != cursor_phase::ended) {
         if (this->_cursor_event) {
             phase = event_phase::changed;
-        } else {
+        } else if (cursor_phase == cursor_phase::began) {
             phase = event_phase::began;
             this->_cursor_event = event::make_shared(cursor_tag);
+        } else {
+            phase = event_phase::ended;
         }
     } else {
         phase = event_phase::ended;
@@ -30,7 +32,12 @@ void event_manager::input_cursor_event(cursor_event const &value) {
 
     if (this->_cursor_event) {
         this->_cursor_event->set_phase(phase);
-        this->_cursor_event->set<cursor>(value);
+
+        if (phase == event_phase::ended) {
+            this->_cursor_event->set<cursor>({this->_cursor_event->get<cursor>().position, value.timestamp});
+        } else {
+            this->_cursor_event->set<cursor>(value);
+        }
 
         this->_notifier->notify(this->_cursor_event);
 
