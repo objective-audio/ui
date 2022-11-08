@@ -310,9 +310,44 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         called = true;
     });
 
-    manager_for_view->input_cursor_event(cursor_event{{0.25f, 0.125f}, 101.0});
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{0.25f, 0.125f}, 101.0});
 
     XCTAssertTrue(called);
+}
+
+- (void)test_input_cursor_event_changed {
+    auto manager = event_manager::make_shared();
+    manager_for_view_ptr const manager_for_view = manager;
+
+    int called_count = 0;
+
+    auto canceller = manager->observe([&called_count, self](std::shared_ptr<event> const &event) {
+        XCTAssertEqual(event->type(), event_type::cursor);
+
+        ++called_count;
+    });
+
+    // began〜endedの間のみchangedが受け入れられる
+
+    manager_for_view->input_cursor_event(cursor_phase::changed, cursor_event{{1.0f, 1.0f}, 101.0});
+
+    XCTAssertEqual(called_count, 0);
+
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{1.0f, 1.0f}, 101.0});
+
+    XCTAssertEqual(called_count, 1);
+
+    manager_for_view->input_cursor_event(cursor_phase::changed, cursor_event{{1.0f, 1.0f}, 101.0});
+
+    XCTAssertEqual(called_count, 2);
+
+    manager_for_view->input_cursor_event(cursor_phase::ended, cursor_event{{1.0f, 1.0f}, 101.0});
+
+    XCTAssertEqual(called_count, 3);
+
+    manager_for_view->input_cursor_event(cursor_phase::changed, cursor_event{{1.0f, 1.0f}, 101.0});
+
+    XCTAssertEqual(called_count, 3);
 }
 
 - (void)test_input_touch_event_began {
@@ -406,29 +441,29 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         }
     });
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -643,29 +678,29 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
         }
     });
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertTrue(began_called);
     began_called = false;
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});  // inside of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 0.0f}, 0.0});  // inside of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = -2.0f}, 0.0});  // outsize of view
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
@@ -874,7 +909,7 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto canceller =
         manager->observe([&called_events](std::shared_ptr<event> const &event) { called_events.push_back(event); });
 
-    manager_for_view->input_cursor_event(cursor_event{{.v = 0.0f}, 0.0});
+    manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 0.0f}, 0.0});
 
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::cursor);
