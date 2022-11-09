@@ -164,7 +164,7 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 
 - (void)_sendCursorEventWithPosition:(ui::point)position phase:(cursor_phase const)phase {
     if (auto const event_manager = self->_cpp.event_manager.lock()) {
-        event_manager->input_cursor_event(phase, ui::cursor_event{position, 0.0});
+        event_manager->input_cursor_event(phase, ui::cursor_event{position, [NSProcessInfo processInfo].systemUptime});
     }
 }
 
