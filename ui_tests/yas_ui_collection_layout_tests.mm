@@ -265,14 +265,18 @@ using namespace yas::ui;
     // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
+    // セルの並びを横にして縦横の制限が入れ替わる
+
     layout->set_direction(layout_direction::horizontal);
+    layout->preferred_layout_guide()->set_region({.size = {0.0f, 1.0f}});
 
-    // セルの並びを横にすれば高さの制限は受けない
+    // フレームの幅が0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout->actual_cell_count(), 8);
 
-    layout->preferred_layout_guide()->set_region({.size = {0.0f, 0.5f}});
+    layout->preferred_layout_guide()->set_region({.size = {0.5f, 0.0f}});
 
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    // フレームの幅が0より大きくてセルの幅よりも狭い場合は作れるセルがない
+    XCTAssertEqual(layout->actual_cell_count(), 0);
 }
 
 - (void)test_limiting_col {
@@ -286,17 +290,21 @@ using namespace yas::ui;
 
     layout->preferred_layout_guide()->set_region({.size = {0.5f, 0.0f}});
 
-    // フレームの幅が0より大きくてセルの幅よりも低い場合は作れるセルがない
+    // フレームの幅が0より大きくてセルの幅よりも狭い場合は作れるセルがない
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
+    // セルの並びを縦にして縦横の制限が入れ替わる
+    
     layout->set_direction(layout_direction::vertical);
+    layout->preferred_layout_guide()->set_region({.size = {1.0f, 0.0f}});
 
-    // セルの並びを縦にすれば高さの制限は受けない
+    // フレームの高さが0ならセルを作る範囲の制限をかけない
     XCTAssertEqual(layout->actual_cell_count(), 8);
 
-    layout->preferred_layout_guide()->set_region({.size = {0.5f, 0.0f}});
+    layout->preferred_layout_guide()->set_region({.size = {0.0f, 0.5f}});
 
-    XCTAssertEqual(layout->actual_cell_count(), 8);
+    // フレームの高さが0より大きくてセルの高さよりも低い場合は作れるセルがない
+    XCTAssertEqual(layout->actual_cell_count(), 0);
 }
 
 - (void)test_set_preferred_cell_count {

@@ -257,8 +257,10 @@ void collection_layout::_update_layout() {
     std::vector<region> actual_cell_regions;
 
     if (preferred_cell_count > 0) {
-        auto const is_col_limiting = frame_region.size.width != 0;
-        auto const is_row_limiting = frame_region.size.height != 0;
+        // 列の幅を制限するか
+        bool const is_col_limiting = frame_region.size.width != 0;
+        // 行の幅を制限するか
+        bool const is_row_limiting = frame_region.size.height != 0;
         std::vector<std::vector<region>> regions;
         float row_max_diff = 0.0f;
         point origin = {.v = 0.0f};
@@ -269,8 +271,16 @@ void collection_layout::_update_layout() {
             auto const &idx = yas_each_index(preferred_each);
             auto const cell_size = this->_transformed_cell_size(idx);
 
-            if ((is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width) ||
-                this->_is_head_of_new_line(idx)) {
+            // 列の幅が制限された範囲を超えているか
+            bool const is_col_over = is_col_limiting && fabsf(origin.x + cell_size.width) > border_abs_size.width;
+
+            // 列の幅が制限された範囲を超えていて、まだ1つもCellがなければ、表示できないので中断する
+            if (is_col_over && row_regions.empty()) {
+                break;
+            }
+
+            // 列の幅が制限された範囲を超えているか、改行後の行始めなら、次の行に移る
+            if (is_col_over || this->_is_head_of_new_line(idx)) {
                 regions.emplace_back(std::move(row_regions));
 
                 auto const row_new_line_diff = this->_transformed_row_new_line_diff(idx);
@@ -285,6 +295,7 @@ void collection_layout::_update_layout() {
                 row_max_diff = 0.0f;
             }
 
+            // 行の幅が制限された範囲を超えていたら、表示できないので中断する
             if (is_row_limiting && fabsf(origin.y + cell_size.height) > border_abs_size.height) {
                 break;
             }
