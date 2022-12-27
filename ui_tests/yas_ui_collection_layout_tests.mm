@@ -294,7 +294,7 @@ using namespace yas::ui;
     XCTAssertEqual(layout->actual_cell_count(), 0);
 
     // セルの並びを縦にして縦横の制限が入れ替わる
-    
+
     layout->set_direction(layout_direction::vertical);
     layout->preferred_layout_guide()->set_region({.size = {1.0f, 0.0f}});
 
