@@ -41,42 +41,45 @@ using namespace yas::ui;
 - (void)test_notify_caller {
     auto guide = layout_value_guide::make_shared();
 
-    float notified_new_value = 0.0f;
+    std::vector<float> notified;
 
-    auto clear_values = [&notified_new_value]() { notified_new_value = 0.0f; };
+    auto canceller = guide->observe([&notified](float const &value) { notified.push_back(value); }).end();
 
-    auto canceller = guide->observe([&notified_new_value](float const &value) { notified_new_value = value; }).end();
+    XCTAssertEqual(notified.size(), 0);
 
     guide->set_value(1.0f);
 
-    XCTAssertEqual(notified_new_value, 1.0f);
+    XCTAssertEqual(notified.size(), 1);
+    XCTAssertEqual(notified.at(0), 1.0f);
 
-    clear_values();
+    notified.clear();
 
     guide->push_notify_waiting();
     guide->set_value(2.0f);
 
-    XCTAssertEqual(notified_new_value, 0.0f);
+    XCTAssertEqual(notified.size(), 0);
 
     guide->push_notify_waiting();
     guide->set_value(3.0f);
 
-    XCTAssertEqual(notified_new_value, 0.0f);
+    XCTAssertEqual(notified.size(), 0);
 
     guide->pop_notify_waiting();
     guide->set_value(4.0f);
 
-    XCTAssertEqual(notified_new_value, 0.0f);
+    XCTAssertEqual(notified.size(), 0);
 
     guide->pop_notify_waiting();
 
-    XCTAssertEqual(notified_new_value, 4.0f);
+    XCTAssertEqual(notified.size(), 1);
+    XCTAssertEqual(notified.at(0), 4.0f);
 
-    clear_values();
+    notified.clear();
 
     guide->set_value(5.0f);
 
-    XCTAssertEqual(notified_new_value, 5.0f);
+    XCTAssertEqual(notified.size(), 1);
+    XCTAssertEqual(notified.at(0), 5.0f);
 }
 
 - (void)test_notify_caller_canceled {
