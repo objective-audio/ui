@@ -134,42 +134,58 @@ using namespace yas::ui;
 - (void)test_observe_point {
     auto guide_point = layout_point_guide::make_shared();
 
-    point notified;
+    std::vector<point> notified;
 
-    auto canceller = guide_point->observe([&notified](point const &point) { notified = point; }).end();
+    auto canceller = guide_point->observe([&notified](point const &point) { notified.push_back(point); }).end();
 
     guide_point->set_point({1.0f, 2.0f});
 
-    XCTAssertEqual(notified.x, 1.0f);
-    XCTAssertEqual(notified.y, 2.0f);
+    XCTAssertEqual(notified.size(), 1);
+    XCTAssertEqual(notified.at(0).x, 1.0f);
+    XCTAssertEqual(notified.at(0).y, 2.0f);
+
+    guide_point->x()->set_value(3.0f);
+
+    XCTAssertEqual(notified.size(), 2);
+    XCTAssertEqual(notified.at(1).x, 3.0f);
+    XCTAssertEqual(notified.at(1).y, 2.0f);
+
+    guide_point->y()->set_value(4.0f);
+
+    XCTAssertEqual(notified.size(), 3);
+    XCTAssertEqual(notified.at(2).x, 3.0f);
+    XCTAssertEqual(notified.at(2).y, 4.0f);
 }
 
 - (void)test_point_notify_caller {
     auto point = layout_point_guide::make_shared();
 
-    float notified_x;
-    float notified_y;
-    ui::point notified_point;
+    std::vector<float> notified_xs;
+    std::vector<float> notified_ys;
+    std::vector<ui::point> notified_points;
 
-    auto is_all_zero = [](ui::point const &origin) { return origin.x == 0 && origin.y == 0; };
-
-    auto clear_points = [&notified_x, &notified_y, &notified_point]() {
-        notified_x = notified_y = 0.0f;
-        notified_point.x = notified_point.y = 0.0f;
+    auto clear_points = [&notified_xs, &notified_ys, &notified_points]() {
+        notified_xs.clear();
+        notified_ys.clear();
+        notified_points.clear();
     };
 
-    auto x_observer = point->x()->observe([&notified_x](float const &value) { notified_x = value; }).end();
+    auto x_observer = point->x()->observe([&notified_xs](float const &value) { notified_xs.push_back(value); }).end();
 
-    auto y_observer = point->y()->observe([&notified_y](float const &value) { notified_y = value; }).end();
+    auto y_observer = point->y()->observe([&notified_ys](float const &value) { notified_ys.push_back(value); }).end();
 
-    auto point_observer = point->observe([&notified_point](ui::point const &point) { notified_point = point; }).end();
+    auto point_observer =
+        point->observe([&notified_points](ui::point const &point) { notified_points.push_back(point); }).end();
 
     point->set_point({1.0f, 2.0f});
 
-    XCTAssertEqual(notified_x, 1.0f);
-    XCTAssertEqual(notified_y, 2.0f);
-    XCTAssertEqual(notified_point.x, 1.0f);
-    XCTAssertEqual(notified_point.y, 2.0f);
+    XCTAssertEqual(notified_xs.size(), 1);
+    XCTAssertEqual(notified_xs.at(0), 1.0f);
+    XCTAssertEqual(notified_ys.size(), 1);
+    XCTAssertEqual(notified_ys.at(0), 2.0f);
+    XCTAssertEqual(notified_points.size(), 1);
+    XCTAssertEqual(notified_points.at(0).x, 1.0f);
+    XCTAssertEqual(notified_points.at(0).y, 2.0f);
 
     clear_points();
 
@@ -177,41 +193,47 @@ using namespace yas::ui;
 
     point->set_point({3.0f, 4.0f});
 
-    XCTAssertEqual(notified_x, 0.0f);
-    XCTAssertEqual(notified_y, 0.0f);
-    XCTAssertTrue(is_all_zero(notified_point));
+    XCTAssertEqual(notified_xs.size(), 0);
+    XCTAssertEqual(notified_ys.size(), 0);
+    XCTAssertEqual(notified_points.size(), 0);
 
     point->push_notify_waiting();
 
     point->set_point({5.0f, 6.0f});
 
-    XCTAssertEqual(notified_x, 0.0f);
-    XCTAssertEqual(notified_y, 0.0f);
-    XCTAssertTrue(is_all_zero(notified_point));
+    XCTAssertEqual(notified_xs.size(), 0);
+    XCTAssertEqual(notified_ys.size(), 0);
+    XCTAssertEqual(notified_points.size(), 0);
 
     point->pop_notify_waiting();
 
     point->set_point({7.0f, 8.0f});
 
-    XCTAssertEqual(notified_x, 0.0f);
-    XCTAssertEqual(notified_y, 0.0f);
-    XCTAssertTrue(is_all_zero(notified_point));
+    XCTAssertEqual(notified_xs.size(), 0);
+    XCTAssertEqual(notified_ys.size(), 0);
+    XCTAssertEqual(notified_points.size(), 0);
 
     point->pop_notify_waiting();
 
-    XCTAssertEqual(notified_x, 7.0f);
-    XCTAssertEqual(notified_y, 8.0f);
-    XCTAssertEqual(notified_point.x, 7.0f);
-    XCTAssertEqual(notified_point.y, 8.0f);
+    XCTAssertEqual(notified_xs.size(), 1);
+    XCTAssertEqual(notified_xs.at(0), 7.0f);
+    XCTAssertEqual(notified_ys.size(), 1);
+    XCTAssertEqual(notified_ys.at(0), 8.0f);
+    XCTAssertEqual(notified_points.size(), 1);
+    XCTAssertEqual(notified_points.at(0).x, 7.0f);
+    XCTAssertEqual(notified_points.at(0).y, 8.0f);
 
     clear_points();
 
     point->set_point({9.0f, 10.0f});
 
-    XCTAssertEqual(notified_x, 9.0f);
-    XCTAssertEqual(notified_y, 10.0f);
-    XCTAssertEqual(notified_point.x, 9.0f);
-    XCTAssertEqual(notified_point.y, 10.0f);
+    XCTAssertEqual(notified_xs.size(), 1);
+    XCTAssertEqual(notified_xs.at(0), 9.0f);
+    XCTAssertEqual(notified_ys.size(), 1);
+    XCTAssertEqual(notified_ys.at(0), 10.0f);
+    XCTAssertEqual(notified_points.size(), 1);
+    XCTAssertEqual(notified_points.at(0).x, 9.0f);
+    XCTAssertEqual(notified_points.at(0).y, 10.0f);
 }
 
 #pragma mark - layout_guide_range

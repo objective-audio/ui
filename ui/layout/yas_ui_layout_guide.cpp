@@ -113,6 +113,12 @@ point layout_point_guide::point() const {
 }
 
 void layout_point_guide::push_notify_waiting() {
+    if (this->_wait_count->value() == 0) {
+        this->_pushed_value = this->point();
+    }
+
+    this->_wait_count->set_value(this->_wait_count->value() + 1);
+
     this->_x_guide->push_notify_waiting();
     this->_y_guide->push_notify_waiting();
 }
@@ -120,12 +126,40 @@ void layout_point_guide::push_notify_waiting() {
 void layout_point_guide::pop_notify_waiting() {
     this->_x_guide->pop_notify_waiting();
     this->_y_guide->pop_notify_waiting();
+
+    this->_wait_count->set_value(this->_wait_count->value() - 1);
+
+    if (this->_wait_count == 0) {
+        this->_pushed_value = std::nullopt;
+    }
 }
 
 observing::syncable layout_point_guide::observe(std::function<void(ui::point const &)> &&handler) {
-    auto x_endable = this->_x_guide->observe([this, handler](float const &) { handler(this->point()); }).to_endable();
-    auto y_syncable = this->_y_guide->observe([this, handler](float const &) { handler(this->point()); });
+    auto x_endable = this->_x_guide
+                         ->observe([this, handler](float const &) {
+                             if (this->_wait_count->value() == 0) {
+                                 handler(this->point());
+                             }
+                         })
+                         .to_endable();
+    auto y_syncable = this->_y_guide->observe([this, handler](float const &) {
+        if (this->_wait_count->value() == 0) {
+            handler(this->point());
+        }
+    });
     y_syncable.merge(std::move(x_endable));
+
+    auto wait_count_endable = this->_wait_count->observe([handler, this](int32_t const &count) {
+        if (count == 0) {
+            if (this->_pushed_value.has_value() && this->_pushed_value.value() == this->point()) {
+                return;
+            }
+            handler(this->point());
+        }
+    });
+
+    y_syncable.merge(std::move(wait_count_endable));
+
     return y_syncable;
 }
 

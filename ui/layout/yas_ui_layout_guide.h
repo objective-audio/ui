@@ -57,6 +57,8 @@ struct layout_point_guide final : layout_point_target, layout_point_source {
    private:
     std::shared_ptr<layout_value_guide> _x_guide;
     std::shared_ptr<layout_value_guide> _y_guide;
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<ui::point> _pushed_value;
 
     explicit layout_point_guide(ui::point &&);
 
