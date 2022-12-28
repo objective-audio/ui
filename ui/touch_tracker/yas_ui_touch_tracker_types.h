@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <ostream>
 
 namespace yas::ui {
 class event;
