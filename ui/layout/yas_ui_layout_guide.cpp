@@ -393,6 +393,12 @@ region layout_region_guide::region() const {
 }
 
 void layout_region_guide::push_notify_waiting() {
+    if (this->_wait_count->value() == 0) {
+        this->_pushed_value = this->region();
+    }
+
+    this->_wait_count->set_value(this->_wait_count->value() + 1);
+
     this->_vertical_range->push_notify_waiting();
     this->_horizontal_range->push_notify_waiting();
 }
@@ -400,13 +406,41 @@ void layout_region_guide::push_notify_waiting() {
 void layout_region_guide::pop_notify_waiting() {
     this->_vertical_range->pop_notify_waiting();
     this->_horizontal_range->pop_notify_waiting();
+
+    this->_wait_count->set_value(this->_wait_count->value() - 1);
+
+    if (this->_wait_count == 0) {
+        this->_pushed_value = std::nullopt;
+    }
 }
 
 observing::syncable layout_region_guide::observe(std::function<void(ui::region const &)> &&handler) {
-    auto v_endable =
-        this->_vertical_range->observe([this, handler](range const &) { handler(this->region()); }).to_endable();
-    auto h_syncable = this->_horizontal_range->observe([this, handler](range const &) { handler(this->region()); });
+    auto v_endable = this->_vertical_range
+                         ->observe([this, handler](range const &) {
+                             if (this->_wait_count->value() == 0) {
+                                 handler(this->region());
+                             }
+                         })
+                         .to_endable();
+    auto h_syncable = this->_horizontal_range->observe([this, handler](range const &) {
+        if (this->_wait_count->value() == 0) {
+            handler(this->region());
+        }
+    });
     h_syncable.merge(std::move(v_endable));
+
+    auto wait_count_endable = this->_wait_count->observe([handler, this](int32_t const &count) {
+        if (count == 0) {
+            auto const region = this->region();
+            if (this->_pushed_value.has_value() && this->_pushed_value.value() == region) {
+                return;
+            }
+            handler(region);
+        }
+    });
+
+    h_syncable.merge(std::move(wait_count_endable));
+
     return h_syncable;
 }
 

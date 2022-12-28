@@ -146,6 +146,9 @@ struct layout_region_guide final : layout_region_target, layout_region_source {
     std::shared_ptr<layout_range_guide> _vertical_range;
     std::shared_ptr<layout_range_guide> _horizontal_range;
 
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<ui::region> _pushed_value;
+
     explicit layout_region_guide(region_ranges_args);
     explicit layout_region_guide(ui::region);
 
