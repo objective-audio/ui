@@ -558,8 +558,8 @@ using namespace yas::ui;
     std::vector<float> notified_heights;
     std::vector<ui::region> notified_regions;
 
-    auto clear_edges = [&notified_lefts, &notified_rights, &notified_bottoms, &notified_tops, &notified_widths,
-                        &notified_heights, &notified_regions]() {
+    auto const clear_notified = [&notified_lefts, &notified_rights, &notified_bottoms, &notified_tops, &notified_widths,
+                                 &notified_heights, &notified_regions]() {
         notified_lefts.clear();
         notified_rights.clear();
         notified_bottoms.clear();
@@ -604,7 +604,7 @@ using namespace yas::ui;
     XCTAssertEqual(notified_regions.at(0).size.width, 3.0f);
     XCTAssertEqual(notified_regions.at(0).size.height, 4.0f);
 
-    clear_edges();
+    clear_notified();
 
     guide->push_notify_waiting();
 
@@ -662,7 +662,7 @@ using namespace yas::ui;
     XCTAssertEqual(notified_regions.at(0).size.width, 15.0f);
     XCTAssertEqual(notified_regions.at(0).size.height, 16.0f);
 
-    clear_edges();
+    clear_notified();
 
     guide->set_region({.origin = {17.0f, 18.0f}, .size = {19.0f, 20.0f}});
 
