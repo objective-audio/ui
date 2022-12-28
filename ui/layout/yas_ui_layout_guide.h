@@ -17,7 +17,7 @@ struct layout_value_guide final : layout_value_target, layout_value_source {
     void push_notify_waiting();
     void pop_notify_waiting();
 
-    [[nodiscard]] observing::syncable observe(std::function<void(float const &)> &&);
+    [[nodiscard]] observing::syncable observe(std::function<void(float const &)> &&) const;
 
     [[nodiscard]] static std::shared_ptr<layout_value_guide> make_shared();
     [[nodiscard]] static std::shared_ptr<layout_value_guide> make_shared(float const);
@@ -57,6 +57,8 @@ struct layout_point_guide final : layout_point_target, layout_point_source {
    private:
     std::shared_ptr<layout_value_guide> _x_guide;
     std::shared_ptr<layout_value_guide> _y_guide;
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<ui::point> _pushed_value;
 
     explicit layout_point_guide(ui::point &&);
 
@@ -74,7 +76,7 @@ struct layout_point_guide final : layout_point_target, layout_point_source {
 struct layout_range_guide final : layout_range_target, layout_range_source {
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &min() const;
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &max() const;
-    [[nodiscard]] std::shared_ptr<layout_value_guide> const &length() const;
+    [[nodiscard]] std::shared_ptr<layout_value_guide const> length() const;
 
     void set_range(ui::range const &);
     [[nodiscard]] ui::range range() const;
@@ -93,6 +95,9 @@ struct layout_range_guide final : layout_range_target, layout_range_source {
     std::shared_ptr<layout_value_guide> _length_guide;
     observing::cancellable_ptr _min_canceller;
     observing::cancellable_ptr _max_canceller;
+
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<ui::range> _pushed_value;
 
     explicit layout_range_guide(ui::range &&);
 
@@ -116,8 +121,8 @@ struct layout_region_guide final : layout_region_target, layout_region_source {
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &right() const;
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &bottom() const;
     [[nodiscard]] std::shared_ptr<layout_value_guide> const &top() const;
-    [[nodiscard]] std::shared_ptr<layout_value_guide> const &width() const;
-    [[nodiscard]] std::shared_ptr<layout_value_guide> const &height() const;
+    [[nodiscard]] std::shared_ptr<layout_value_guide const> width() const;
+    [[nodiscard]] std::shared_ptr<layout_value_guide const> height() const;
 
     void set_horizontal_range(ui::range &&);
     void set_horizontal_range(ui::range const &);
@@ -140,6 +145,9 @@ struct layout_region_guide final : layout_region_target, layout_region_source {
    private:
     std::shared_ptr<layout_range_guide> _vertical_range;
     std::shared_ptr<layout_range_guide> _horizontal_range;
+
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<ui::region> _pushed_value;
 
     explicit layout_region_guide(region_ranges_args);
     explicit layout_region_guide(ui::region);
