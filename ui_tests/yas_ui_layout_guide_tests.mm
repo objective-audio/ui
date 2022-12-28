@@ -25,21 +25,21 @@ using namespace yas::ui;
 #pragma mark - layout_value_guide
 
 - (void)test_create_guide {
-    auto guide = layout_value_guide::make_shared();
+    auto const guide = layout_value_guide::make_shared();
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 0.0f);
 }
 
 - (void)test_create_guide_with_value {
-    auto guide = layout_value_guide::make_shared(1.0f);
+    auto const guide = layout_value_guide::make_shared(1.0f);
 
     XCTAssertTrue(guide);
     XCTAssertEqual(guide->value(), 1.0f);
 }
 
 - (void)test_notify_caller {
-    auto guide = layout_value_guide::make_shared();
+    auto const guide = layout_value_guide::make_shared();
 
     std::vector<float> notified;
 
@@ -83,7 +83,7 @@ using namespace yas::ui;
 }
 
 - (void)test_notify_caller_canceled {
-    auto guide = layout_value_guide::make_shared(1.0f);
+    auto const guide = layout_value_guide::make_shared(1.0f);
 
     bool called = false;
 
@@ -102,7 +102,7 @@ using namespace yas::ui;
 #pragma mark - layout_guide_point
 
 - (void)test_create_point {
-    auto point = layout_point_guide::make_shared();
+    auto const point = layout_point_guide::make_shared();
 
     XCTAssertTrue(point);
     XCTAssertTrue(point->x());
@@ -112,7 +112,7 @@ using namespace yas::ui;
 }
 
 - (void)test_create_point_with_args {
-    auto point = layout_point_guide::make_shared({1.0f, 2.0f});
+    auto const point = layout_point_guide::make_shared({1.0f, 2.0f});
 
     XCTAssertTrue(point);
     XCTAssertTrue(point->x());
@@ -122,7 +122,7 @@ using namespace yas::ui;
 }
 
 - (void)test_point_accessor {
-    auto point = layout_point_guide::make_shared();
+    auto const point = layout_point_guide::make_shared();
 
     XCTAssertTrue(point->point() == (ui::point{0.0f, 0.0f}));
 
@@ -132,7 +132,7 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_point {
-    auto guide_point = layout_point_guide::make_shared();
+    auto const guide_point = layout_point_guide::make_shared();
 
     std::vector<point> notified;
 
@@ -158,7 +158,7 @@ using namespace yas::ui;
 }
 
 - (void)test_point_notify_caller {
-    auto point = layout_point_guide::make_shared();
+    auto const point = layout_point_guide::make_shared();
 
     std::vector<float> notified_xs;
     std::vector<float> notified_ys;
@@ -239,7 +239,7 @@ using namespace yas::ui;
 #pragma mark - layout_guide_range
 
 - (void)test_create_range {
-    auto range = layout_range_guide::make_shared();
+    auto const range = layout_range_guide::make_shared();
 
     XCTAssertTrue(range);
     XCTAssertTrue(range->min());
@@ -250,24 +250,28 @@ using namespace yas::ui;
 }
 
 - (void)test_create_range_with_args {
-    auto range = layout_range_guide::make_shared({.location = 1.0f, .length = 2.0f});
+    {
+        auto const range = layout_range_guide::make_shared({.location = 1.0f, .length = 2.0f});
 
-    XCTAssertTrue(range);
-    XCTAssertTrue(range->min());
-    XCTAssertTrue(range->max());
-    XCTAssertEqual(range->min()->value(), 1.0f);
-    XCTAssertEqual(range->max()->value(), 3.0f);
-    XCTAssertEqual(range->length()->value(), 2.0f);
+        XCTAssertTrue(range);
+        XCTAssertTrue(range->min());
+        XCTAssertTrue(range->max());
+        XCTAssertEqual(range->min()->value(), 1.0f);
+        XCTAssertEqual(range->max()->value(), 3.0f);
+        XCTAssertEqual(range->length()->value(), 2.0f);
+    }
 
-    range = layout_range_guide::make_shared({.location = 4.0f, .length = -6.0f});
+    {
+        auto const range = layout_range_guide::make_shared({.location = 4.0f, .length = -6.0f});
 
-    XCTAssertEqual(range->min()->value(), -2.0f);
-    XCTAssertEqual(range->max()->value(), 4.0f);
-    XCTAssertEqual(range->length()->value(), -6.0f);
+        XCTAssertEqual(range->min()->value(), -2.0f);
+        XCTAssertEqual(range->max()->value(), 4.0f);
+        XCTAssertEqual(range->length()->value(), -6.0f);
+    }
 }
 
 - (void)test_range_accessor {
-    auto range = layout_range_guide::make_shared();
+    auto const range = layout_range_guide::make_shared();
 
     XCTAssertTrue(range->range() == (ui::range{.location = 0.0f, .length = 0.0f}));
 
@@ -277,7 +281,7 @@ using namespace yas::ui;
 }
 
 - (void)test_observe_range {
-    auto guide_range = layout_range_guide::make_shared();
+    auto const guide_range = layout_range_guide::make_shared();
 
     std::vector<range> notified;
 
@@ -303,7 +307,7 @@ using namespace yas::ui;
 }
 
 - (void)test_range_notify_caller {
-    auto range = layout_range_guide::make_shared();
+    auto const range = layout_range_guide::make_shared();
 
     std::vector<float> notified_mins;
     std::vector<float> notified_maxs;
