@@ -279,105 +279,120 @@ using namespace yas::ui;
 - (void)test_observe_range {
     auto guide_range = layout_range_guide::make_shared();
 
-    range notified;
+    std::vector<range> notified;
 
-    auto observer = guide_range->observe([&notified](range const &range) { notified = range; }).end();
+    auto observer = guide_range->observe([&notified](range const &range) { notified.push_back(range); }).end();
 
     guide_range->set_range({1.0f, 2.0f});
 
-    XCTAssertEqual(notified.location, 1.0f);
-    XCTAssertEqual(notified.length, 2.0f);
+    XCTAssertEqual(notified.size(), 1);
+    XCTAssertEqual(notified.at(0).location, 1.0f);
+    XCTAssertEqual(notified.at(0).length, 2.0f);
+
+    guide_range->min()->set_value(0.0f);
+
+    XCTAssertEqual(notified.size(), 2);
+    XCTAssertEqual(notified.at(1).location, 0.0f);
+    XCTAssertEqual(notified.at(1).length, 3.0f);
+
+    guide_range->max()->set_value(4.0f);
+
+    XCTAssertEqual(notified.size(), 3);
+    XCTAssertEqual(notified.at(2).location, 0.0f);
+    XCTAssertEqual(notified.at(2).length, 4.0f);
 }
 
 - (void)test_range_notify_caller {
     auto range = layout_range_guide::make_shared();
 
-    struct edge {
-        float min = 0.0f;
-        float max = 0.0f;
-        float length = 0.0f;
+    std::vector<float> notified_mins;
+    std::vector<float> notified_maxs;
+    std::vector<float> notified_lengths;
+    std::vector<ui::range> notified_ranges;
 
-        void clear() {
-            min = max = length = 0.0f;
-        }
-
-        bool is_all_zero() {
-            return min == 0.0f && max == 0.0f && length == 0.0f;
-        }
-    };
-
-    edge notified_new_edge;
-    ui::range notified_range;
-
-    auto clear_edges = [&notified_new_edge, &notified_range]() {
-        notified_new_edge.clear();
-        notified_range = range::zero();
+    auto clear_notified = [&notified_mins, &notified_maxs, &notified_lengths, &notified_ranges]() {
+        notified_mins.clear();
+        notified_maxs.clear();
+        notified_lengths.clear();
+        notified_ranges.clear();
     };
 
     auto min_observer =
-        range->min()
-            ->observe([&notified_new_min = notified_new_edge.min](float const &value) { notified_new_min = value; })
-            .end();
+        range->min()->observe([&notified_mins](float const &value) { notified_mins.push_back(value); }).end();
     auto max_observer =
-        range->max()
-            ->observe([&notified_new_max = notified_new_edge.max](float const &value) { notified_new_max = value; })
-            .end();
-    auto length_observer = range->length()
-                               ->observe([&notified_new_length = notified_new_edge.length](float const &value) {
-                                   notified_new_length = value;
-                               })
-                               .end();
+        range->max()->observe([&notified_maxs](float const &value) { notified_maxs.push_back(value); }).end();
+    auto length_observer =
+        range->length()->observe([&notified_lengths](float const &value) { notified_lengths.push_back(value); }).end();
 
-    auto observer = range->observe([&notified_range](ui::range const &range) { notified_range = range; }).end();
+    auto observer =
+        range->observe([&notified_ranges](ui::range const &range) { notified_ranges.push_back(range); }).end();
 
     range->set_range({1.0f, 2.0f});
 
-    XCTAssertEqual(notified_new_edge.min, 1.0f);
-    XCTAssertEqual(notified_new_edge.max, 3.0f);
-    XCTAssertEqual(notified_new_edge.length, 2.0f);
-    XCTAssertEqual(notified_range.location, 1.0f);
-    XCTAssertEqual(notified_range.length, 2.0f);
+    XCTAssertEqual(notified_mins.size(), 1);
+    XCTAssertEqual(notified_mins.at(0), 1.0f);
+    XCTAssertEqual(notified_maxs.size(), 1);
+    XCTAssertEqual(notified_maxs.at(0), 3.0f);
+    XCTAssertEqual(notified_lengths.size(), 1);
+    XCTAssertEqual(notified_lengths.at(0), 2.0f);
+    XCTAssertEqual(notified_ranges.size(), 1);
+    XCTAssertEqual(notified_ranges.at(0).location, 1.0f);
+    XCTAssertEqual(notified_ranges.at(0).length, 2.0f);
 
-    clear_edges();
+    clear_notified();
 
     range->push_notify_waiting();
 
     range->set_range({3.0f, 4.0f});
 
-    XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_range == range::zero());
+    XCTAssertEqual(notified_mins.size(), 0);
+    XCTAssertEqual(notified_maxs.size(), 0);
+    XCTAssertEqual(notified_lengths.size(), 0);
+    XCTAssertEqual(notified_ranges.size(), 0);
 
     range->push_notify_waiting();
 
     range->set_range({5.0f, 6.0f});
 
-    XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_range == range::zero());
+    XCTAssertEqual(notified_mins.size(), 0);
+    XCTAssertEqual(notified_maxs.size(), 0);
+    XCTAssertEqual(notified_lengths.size(), 0);
+    XCTAssertEqual(notified_ranges.size(), 0);
 
     range->pop_notify_waiting();
 
     range->set_range({7.0f, 8.0f});
 
-    XCTAssertTrue(notified_new_edge.is_all_zero());
-    XCTAssertTrue(notified_range == range::zero());
+    XCTAssertEqual(notified_mins.size(), 0);
+    XCTAssertEqual(notified_maxs.size(), 0);
+    XCTAssertEqual(notified_lengths.size(), 0);
+    XCTAssertEqual(notified_ranges.size(), 0);
 
     range->pop_notify_waiting();
 
-    XCTAssertEqual(notified_new_edge.min, 7.0f);
-    XCTAssertEqual(notified_new_edge.max, 15.0f);
-    XCTAssertEqual(notified_new_edge.length, 8.0f);
-    XCTAssertEqual(notified_range.location, 7.0f);
-    XCTAssertEqual(notified_range.length, 8.0f);
+    XCTAssertEqual(notified_mins.size(), 1);
+    XCTAssertEqual(notified_mins.at(0), 7.0f);
+    XCTAssertEqual(notified_maxs.size(), 1);
+    XCTAssertEqual(notified_maxs.at(0), 15.0f);
+    XCTAssertEqual(notified_lengths.size(), 1);
+    XCTAssertEqual(notified_lengths.at(0), 8.0f);
+    XCTAssertEqual(notified_ranges.size(), 1);
+    XCTAssertEqual(notified_ranges.at(0).location, 7.0f);
+    XCTAssertEqual(notified_ranges.at(0).length, 8.0f);
 
-    clear_edges();
+    clear_notified();
 
     range->set_range({9.0f, 10.0f});
 
-    XCTAssertEqual(notified_new_edge.min, 9.0f);
-    XCTAssertEqual(notified_new_edge.max, 19.0f);
-    XCTAssertEqual(notified_new_edge.length, 10.0f);
-    XCTAssertEqual(notified_range.location, 9.0f);
-    XCTAssertEqual(notified_range.length, 10.0f);
+    XCTAssertEqual(notified_mins.size(), 1);
+    XCTAssertEqual(notified_mins.at(0), 9.0f);
+    XCTAssertEqual(notified_maxs.size(), 1);
+    XCTAssertEqual(notified_maxs.at(0), 19.0f);
+    XCTAssertEqual(notified_lengths.size(), 1);
+    XCTAssertEqual(notified_lengths.at(0), 10.0f);
+    XCTAssertEqual(notified_ranges.size(), 1);
+    XCTAssertEqual(notified_ranges.at(0).location, 9.0f);
+    XCTAssertEqual(notified_ranges.at(0).length, 10.0f);
 }
 
 - (void)test_range_set_by_guide {

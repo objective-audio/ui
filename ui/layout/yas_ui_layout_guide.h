@@ -96,6 +96,9 @@ struct layout_range_guide final : layout_range_target, layout_range_source {
     observing::cancellable_ptr _min_canceller;
     observing::cancellable_ptr _max_canceller;
 
+    observing::value::holder_ptr<int32_t> const _wait_count = observing::value::holder<int32_t>::make_shared(0);
+    std::optional<ui::range> _pushed_value;
+
     explicit layout_range_guide(ui::range &&);
 
     layout_range_guide(layout_range_guide const &) = delete;

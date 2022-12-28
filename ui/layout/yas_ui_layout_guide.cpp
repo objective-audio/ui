@@ -232,6 +232,12 @@ range layout_range_guide::range() const {
 }
 
 void layout_range_guide::push_notify_waiting() {
+    if (this->_wait_count->value() == 0) {
+        this->_pushed_value = this->range();
+    }
+
+    this->_wait_count->set_value(this->_wait_count->value() + 1);
+
     this->_min_guide->push_notify_waiting();
     this->_max_guide->push_notify_waiting();
     this->_length_guide->push_notify_waiting();
@@ -241,13 +247,41 @@ void layout_range_guide::pop_notify_waiting() {
     this->_min_guide->pop_notify_waiting();
     this->_max_guide->pop_notify_waiting();
     this->_length_guide->pop_notify_waiting();
+
+    this->_wait_count->set_value(this->_wait_count->value() - 1);
+
+    if (this->_wait_count == 0) {
+        this->_pushed_value = std::nullopt;
+    }
 }
 
 observing::syncable layout_range_guide::observe(std::function<void(ui::range const &)> &&handler) {
-    auto min_endable =
-        this->_min_guide->observe([this, handler](float const &) { handler(this->range()); }).to_endable();
-    auto max_syncable = this->_max_guide->observe([this, handler](float const &) { handler(this->range()); });
+    auto min_endable = this->_min_guide
+                           ->observe([this, handler](float const &) {
+                               if (this->_wait_count->value() == 0) {
+                                   handler(this->range());
+                               }
+                           })
+                           .to_endable();
+    auto max_syncable = this->_max_guide->observe([this, handler](float const &) {
+        if (this->_wait_count->value() == 0) {
+            handler(this->range());
+        }
+    });
     max_syncable.merge(std::move(min_endable));
+
+    auto wait_count_endable = this->_wait_count->observe([handler, this](int32_t const &count) {
+        if (count == 0) {
+            auto const range = this->range();
+            if (this->_pushed_value.has_value() && this->_pushed_value.value() == range) {
+                return;
+            }
+            handler(range);
+        }
+    });
+
+    max_syncable.merge(std::move(wait_count_endable));
+
     return max_syncable;
 }
 
