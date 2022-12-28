@@ -39,7 +39,7 @@ void layout_value_guide::pop_notify_waiting() {
     }
 }
 
-observing::syncable layout_value_guide::observe(std::function<void(float const &)> &&handler) {
+observing::syncable layout_value_guide::observe(std::function<void(float const &)> &&handler) const {
     auto value_syncable = this->_value->observe([handler, this](float const &value) {
         if (this->_wait_count->value() == 0) {
             handler(value);
@@ -211,7 +211,7 @@ std::shared_ptr<layout_value_guide> const &layout_range_guide::max() const {
     return this->_max_guide;
 }
 
-std::shared_ptr<layout_value_guide> const &layout_range_guide::length() const {
+std::shared_ptr<layout_value_guide const> layout_range_guide::length() const {
     return this->_length_guide;
 }
 
@@ -314,11 +314,11 @@ std::shared_ptr<layout_value_guide> const &layout_region_guide::top() const {
     return this->vertical_range()->max();
 }
 
-std::shared_ptr<layout_value_guide> const &layout_region_guide::width() const {
+std::shared_ptr<layout_value_guide const> layout_region_guide::width() const {
     return this->horizontal_range()->length();
 }
 
-std::shared_ptr<layout_value_guide> const &layout_region_guide::height() const {
+std::shared_ptr<layout_value_guide const> layout_region_guide::height() const {
     return this->vertical_range()->length();
 }
 
