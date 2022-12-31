@@ -43,9 +43,6 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
       _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
       _words(std::move(args.words)),
       _texture(texture) {
-    this->_texture_changed_fetcher = observing::fetcher<std::shared_ptr<ui::texture>>::make_shared(
-        [this]() { return std::optional<std::shared_ptr<ui::texture>>{this->texture()}; });
-
     this->_update_word_infos();
     this->_texture_canceller = texture
                                    ->observe_metal_texture_changed([this](auto const &) {

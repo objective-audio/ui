@@ -40,7 +40,6 @@ struct font_atlas final {
     double const _descent;
     double const _leading;
     std::string const _words;
-    observing::fetcher_ptr<std::shared_ptr<ui::texture>> _texture_changed_fetcher = nullptr;
     observing::notifier_ptr<std::shared_ptr<ui::texture>> const _texture_updated_notifier =
         observing::notifier<std::shared_ptr<ui::texture>>::make_shared();
 

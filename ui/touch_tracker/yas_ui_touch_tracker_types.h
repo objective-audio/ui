@@ -5,8 +5,8 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <ostream>
+#include <string>
 
 namespace yas::ui {
 class event;
