@@ -44,11 +44,8 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
       _words(std::move(args.words)),
       _texture(texture) {
     this->_update_word_infos();
-    this->_texture_canceller = texture
-                                   ->observe_metal_texture_changed([this](auto const &) {
-                                       this->_texture_updated_notifier->notify(this->_texture);
-                                   })
-                                   .end();
+    this->_rects_canceller =
+        texture->observe_metal_texture_changed([this](auto const &) { this->_rects_updated_notifier->notify(); }).end();
 }
 
 std::string const &font_atlas::font_name() const {
@@ -115,9 +112,8 @@ size font_atlas::advance(std::string const &word) const {
     return {.width = static_cast<float>(advances[0].width), .height = static_cast<float>(advances[0].height)};
 }
 
-observing::endable font_atlas::observe_texture_updated(
-    std::function<void(std::shared_ptr<ui::texture> const &)> &&handler) {
-    return this->_texture_updated_notifier->observe(std::move(handler));
+observing::endable font_atlas::observe_rects_updated(std::function<void(std::nullptr_t const &)> &&handler) {
+    return this->_rects_updated_notifier->observe(std::move(handler));
 }
 
 void font_atlas::_update_word_infos() {

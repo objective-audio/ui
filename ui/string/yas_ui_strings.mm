@@ -109,7 +109,7 @@ observing::syncable strings::observe_actual_cell_regions(std::function<void(std:
 }
 
 void strings::_prepare_observings() {
-    this->_font_atlas->observe_texture_updated([this](auto const &) { this->_update_collection_layout(); })
+    this->_font_atlas->observe_rects_updated([this](auto const &) { this->_update_collection_layout(); })
         .end()
         ->add_to(this->_pool);
 

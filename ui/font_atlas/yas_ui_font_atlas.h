@@ -23,8 +23,7 @@ struct font_atlas final {
     [[nodiscard]] ui::vertex2d_rect const &rect(std::string const &word) const;
     [[nodiscard]] ui::size advance(std::string const &word) const;
 
-    [[nodiscard]] observing::endable observe_texture_updated(
-        std::function<void(std::shared_ptr<ui::texture> const &)> &&);
+    [[nodiscard]] observing::endable observe_rects_updated(std::function<void(std::nullptr_t const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<font_atlas> make_shared(font_atlas_args &&,
                                                                  std::shared_ptr<ui::texture> const &);
@@ -40,13 +39,13 @@ struct font_atlas final {
     double const _descent;
     double const _leading;
     std::string const _words;
-    observing::notifier_ptr<std::shared_ptr<ui::texture>> const _texture_updated_notifier =
-        observing::notifier<std::shared_ptr<ui::texture>>::make_shared();
+    observing::notifier_ptr<std::nullptr_t> const _rects_updated_notifier =
+        observing::notifier<std::nullptr_t>::make_shared();
 
     std::shared_ptr<ui::texture> const _texture;
     std::vector<ui::word_info> _word_infos;
     std::vector<observing::cancellable_ptr> _element_cancellers;
-    std::optional<observing::cancellable_ptr> _texture_canceller = std::nullopt;
+    std::optional<observing::cancellable_ptr> _rects_canceller = std::nullopt;
     observing::cancellable_ptr _texture_changed_canceller = nullptr;
 
     font_atlas(font_atlas_args &&, std::shared_ptr<ui::texture> const &);
