@@ -43,7 +43,7 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
       _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
       _words(std::move(args.words)),
       _texture(texture) {
-    this->_update_word_infos();
+    this->_setup();
     this->_rects_canceller =
         texture->observe_metal_texture_changed([this](auto const &) { this->_rects_updated_notifier->notify(); }).end();
 }
@@ -116,7 +116,7 @@ observing::endable font_atlas::observe_rects_updated(std::function<void(std::nul
     return this->_rects_updated_notifier->observe(std::move(handler));
 }
 
-void font_atlas::_update_word_infos() {
+void font_atlas::_setup() {
     this->_element_cancellers.clear();
 
     auto &texture = this->texture();
