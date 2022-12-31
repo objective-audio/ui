@@ -23,6 +23,7 @@ static vertex2d_rect constexpr _empty_rect{0.0f};
 struct word_info {
     vertex2d_rect rect;
     size advance;
+    std::weak_ptr<ui::texture_element> texture_element;
 };
 }
 
@@ -34,6 +35,11 @@ struct font_atlas::impl {
     }
 };
 
+std::shared_ptr<font_atlas> font_atlas::make_shared(font_atlas_args &&args,
+                                                    std::shared_ptr<ui::texture> const &texture) {
+    return std::shared_ptr<font_atlas>(new font_atlas{std::move(args), texture});
+}
+
 font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> const &texture)
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
@@ -44,8 +50,12 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
       _words(std::move(args.words)),
       _texture(texture) {
     this->_setup();
-    this->_rects_canceller =
-        texture->observe_metal_texture_changed([this](auto const &) { this->_rects_updated_notifier->notify(); }).end();
+    this->_rects_canceller = texture
+                                 ->observe_metal_texture_changed([this](auto const &) {
+                                     this->_update_tex_coords();
+                                     this->_rects_updated_notifier->notify();
+                                 })
+                                 .end();
 }
 
 std::string const &font_atlas::font_name() const {
@@ -117,8 +127,6 @@ observing::endable font_atlas::observe_rects_updated(std::function<void(std::nul
 }
 
 void font_atlas::_setup() {
-    this->_element_cancellers.clear();
-
     auto &texture = this->texture();
 
     if (!texture) {
@@ -152,7 +160,7 @@ void font_atlas::_setup() {
 
         this->_word_infos.at(idx).rect.set_position(image_region);
 
-        auto texture_element = texture->add_draw_handler(
+        auto const texture_element = texture->add_draw_handler(
             image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
                 CGContextSaveGState(ctx);
 
@@ -176,18 +184,18 @@ void font_atlas::_setup() {
                 CGContextRestoreGState(ctx);
             });
 
-        this->_element_cancellers.emplace_back(texture_element
-                                                   ->observe_tex_coords([this, idx](uint_region const &tex_coords) {
-                                                       this->_word_infos.at(idx).rect.set_tex_coord(tex_coords);
-                                                   })
-                                                   .sync());
-
         auto const &advance = advances[idx];
         this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
+        this->_word_infos.at(idx).texture_element = texture_element;
     }
+
+    this->_update_tex_coords();
 }
 
-std::shared_ptr<font_atlas> font_atlas::make_shared(font_atlas_args &&args,
-                                                    std::shared_ptr<ui::texture> const &texture) {
-    return std::shared_ptr<font_atlas>(new font_atlas{std::move(args), texture});
+void font_atlas::_update_tex_coords() {
+    for (auto &word_info : this->_word_infos) {
+        if (auto const texture_element = word_info.texture_element.lock()) {
+            word_info.rect.set_tex_coord(texture_element->tex_coords());
+        }
+    }
 }

@@ -44,7 +44,6 @@ struct font_atlas final {
 
     std::shared_ptr<ui::texture> const _texture;
     std::vector<ui::word_info> _word_infos;
-    std::vector<observing::cancellable_ptr> _element_cancellers;
     std::optional<observing::cancellable_ptr> _rects_canceller = std::nullopt;
 
     font_atlas(font_atlas_args &&, std::shared_ptr<ui::texture> const &);
@@ -55,5 +54,6 @@ struct font_atlas final {
     font_atlas &operator=(font_atlas &&) = delete;
 
     void _setup();
+    void _update_tex_coords();
 };
 }  // namespace yas::ui
