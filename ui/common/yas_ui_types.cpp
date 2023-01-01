@@ -606,19 +606,19 @@ std::string yas::to_string(simd::float4x4 const &matrix) {
 #pragma mark -
 
 bool yas::is_equal(simd::float2 const &lhs, simd::float2 const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y;
+    return simd_equal(lhs, rhs);
 }
 
 bool yas::is_equal(simd::float3 const &lhs, simd::float3 const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    return simd_equal(lhs, rhs);
 }
 
 bool yas::is_equal(simd::float4 const &lhs, simd::float4 const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+    return simd_equal(lhs, rhs);
 }
 
 bool yas::is_equal(simd::float4x4 const &lhs, simd::float4x4 const &rhs) {
-    return (&lhs == &rhs) || memcmp(&lhs, &rhs, sizeof(simd::float4x4)) == 0;
+    return simd_equal(lhs, rhs);
 }
 
 #pragma mark -
