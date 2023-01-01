@@ -45,3 +45,5 @@
 #include <ui/yas_ui_texture.h>
 #include <ui/yas_ui_touch_tracker.h>
 #include <ui/yas_ui_view_look.h>
+
+#include <ui/yas_ui_shared_type_operators.hpp>
