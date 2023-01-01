@@ -28,10 +28,10 @@ struct word_info {
 }
 
 struct font_atlas::impl {
-    cf_ref<CTFontRef> _ct_font_ref = nullptr;
+    cf_ref<CTFontRef> ct_font_ref = nullptr;
 
     impl(std::string const &font_name, double const font_size)
-        : _ct_font_ref(cf_ref_with_move_object(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))) {
+        : ct_font_ref(cf_ref_with_move_object(CTFontCreateWithName(to_cf_object(font_name), font_size, nullptr))) {
     }
 };
 
@@ -44,9 +44,9 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
     : _impl(std::make_unique<impl>(args.font_name, args.font_size)),
       _font_name(std::move(args.font_name)),
       _font_size(args.font_size),
-      _ascent(CTFontGetAscent(this->_impl->_ct_font_ref.object())),
-      _descent(CTFontGetDescent(this->_impl->_ct_font_ref.object())),
-      _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
+      _ascent(CTFontGetAscent(this->_impl->ct_font_ref.object())),
+      _descent(CTFontGetDescent(this->_impl->ct_font_ref.object())),
+      _leading(CTFontGetLeading(this->_impl->ct_font_ref.object())),
       _texture(texture) {
     this->_setup(args.words);
     this->_rects_canceller = texture
@@ -120,7 +120,7 @@ void font_atlas::_setup(std::string const &words) {
         return;
     }
 
-    auto ct_font_obj = this->_impl->_ct_font_ref.object();
+    auto ct_font_obj = this->_impl->ct_font_ref.object();
     auto const word_count = words.size();
 
     CGGlyph glyphs[word_count];
