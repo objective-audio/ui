@@ -470,6 +470,21 @@ void index2d_rect::set_all(uint32_t const first) {
     this->v[5] = first + 3;
 }
 
+bool index2d_rect::operator==(index2d_rect const &rhs) const {
+    auto each = make_fast_each(vector_count);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        if (this->v[idx] != rhs.v[idx]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool index2d_rect::operator!=(index2d_rect const &rhs) const {
+    return !(*this == rhs);
+}
+
 #pragma mark -
 
 point ui::to_point(uint_point const &uint_point) {

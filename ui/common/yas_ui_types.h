@@ -337,6 +337,9 @@ struct index2d_rect {
     index2d_t v[vector_count];
 
     void set_all(uint32_t const first);
+
+    bool operator==(index2d_rect const &) const;
+    bool operator!=(index2d_rect const &) const;
 };
 
 ui::point to_point(ui::uint_point const &);
