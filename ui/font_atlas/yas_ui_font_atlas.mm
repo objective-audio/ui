@@ -21,6 +21,7 @@ namespace yas::ui {
 static vertex2d_rect constexpr _empty_rect{0.0f};
 
 struct word_info {
+    std::string word;
     vertex2d_rect rect;
     size advance;
     std::weak_ptr<ui::texture_element> texture_element;
@@ -47,9 +48,8 @@ font_atlas::font_atlas(font_atlas_args &&args, std::shared_ptr<ui::texture> cons
       _ascent(CTFontGetAscent(this->_impl->_ct_font_ref.object())),
       _descent(CTFontGetDescent(this->_impl->_ct_font_ref.object())),
       _leading(CTFontGetLeading(this->_impl->_ct_font_ref.object())),
-      _words(std::move(args.words)),
       _texture(texture) {
-    this->_setup();
+    this->_setup(args.words);
     this->_rects_canceller = texture
                                  ->observe_metal_texture_changed([this](auto const &) {
                                      this->_update_tex_coords();
@@ -78,8 +78,8 @@ double const &font_atlas::leading() const {
     return this->_leading;
 }
 
-std::string const &font_atlas::words() const {
-    return this->_words;
+std::string font_atlas::words() const {
+    return yas::joined(this->_word_infos, "", [](auto const &info) { return info.word; });
 }
 
 std::shared_ptr<texture> const &font_atlas::texture() const {
@@ -87,11 +87,13 @@ std::shared_ptr<texture> const &font_atlas::texture() const {
 }
 
 vertex2d_rect const &font_atlas::rect(std::string const &word) const {
-    auto idx = this->_words.find_first_of(word);
-    if (idx == std::string::npos) {
+    auto const index = yas::index(this->_word_infos, [&word](auto const &info) { return info.word == word; });
+
+    if (index.has_value()) {
+        return this->_word_infos.at(index.value()).rect;
+    } else {
         return _empty_rect;
     }
-    return this->_word_infos.at(idx).rect;
 }
 
 size font_atlas::advance(std::string const &word) const {
@@ -126,7 +128,7 @@ observing::endable font_atlas::observe_rects_updated(std::function<void(std::nul
     return this->_rects_updated_notifier->observe(std::move(handler));
 }
 
-void font_atlas::_setup() {
+void font_atlas::_setup(std::string const &words) {
     auto &texture = this->texture();
 
     if (!texture) {
@@ -135,7 +137,7 @@ void font_atlas::_setup() {
     }
 
     auto ct_font_obj = this->_impl->_ct_font_ref.object();
-    auto const word_count = this->_words.size();
+    auto const word_count = words.size();
 
     this->_word_infos.resize(word_count);
 
@@ -143,7 +145,7 @@ void font_atlas::_setup() {
     UniChar characters[word_count];
     CGSize advances[word_count];
 
-    CFStringGetCharacters(to_cf_object(this->_words), CFRangeMake(0, word_count), characters);
+    CFStringGetCharacters(to_cf_object(words), CFRangeMake(0, word_count), characters);
     CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, word_count);
     CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, word_count);
 
@@ -153,12 +155,14 @@ void font_atlas::_setup() {
     double const scale_factor = texture->scale_factor();
 
     for (auto const &idx : each_index<std::size_t>(word_count)) {
+        auto &word_info = this->_word_infos.at(idx);
+        word_info.word = words[idx];
+
         uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)), uint32_t(std::ceilf(string_height))};
         region const image_region = {
             .origin = {0.0f, roundf(-descent, scale_factor)},
             .size = {static_cast<float>(image_size.width), static_cast<float>(image_size.height)}};
-
-        this->_word_infos.at(idx).rect.set_position(image_region);
+        word_info.rect.set_position(image_region);
 
         auto const texture_element = texture->add_draw_handler(
             image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
@@ -183,10 +187,10 @@ void font_atlas::_setup() {
 
                 CGContextRestoreGState(ctx);
             });
+        word_info.texture_element = texture_element;
 
         auto const &advance = advances[idx];
-        this->_word_infos.at(idx).advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
-        this->_word_infos.at(idx).texture_element = texture_element;
+        word_info.advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
     }
 
     this->_update_tex_coords();

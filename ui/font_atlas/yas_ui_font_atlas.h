@@ -17,7 +17,7 @@ struct font_atlas final {
     [[nodiscard]] double const &ascent() const;
     [[nodiscard]] double const &descent() const;
     [[nodiscard]] double const &leading() const;
-    [[nodiscard]] std::string const &words() const;
+    [[nodiscard]] std::string words() const;
     [[nodiscard]] std::shared_ptr<texture> const &texture() const;
 
     [[nodiscard]] ui::vertex2d_rect const &rect(std::string const &word) const;
@@ -38,7 +38,6 @@ struct font_atlas final {
     double const _ascent;
     double const _descent;
     double const _leading;
-    std::string const _words;
     observing::notifier_ptr<std::nullptr_t> const _rects_updated_notifier =
         observing::notifier<std::nullptr_t>::make_shared();
 
@@ -53,7 +52,7 @@ struct font_atlas final {
     font_atlas &operator=(font_atlas const &) = delete;
     font_atlas &operator=(font_atlas &&) = delete;
 
-    void _setup();
+    void _setup(std::string const &words);
     void _update_tex_coords();
 };
 }  // namespace yas::ui
