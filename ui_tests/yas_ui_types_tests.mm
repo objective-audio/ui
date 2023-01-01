@@ -814,4 +814,44 @@ using namespace yas::ui;
                   (region{.origin = {1, 2}, .size = {1, 2}}));
 }
 
+- (void)test_is_equal_vertex2d_rect {
+    vertex2d_rect rect1;
+    rect1.set_position(ui::region::zero());
+    rect1.set_tex_coord(ui::uint_region::zero());
+    rect1.set_color(to_color(ui::white_color(), 1.0f));
+
+    vertex2d_rect rect1b;
+    rect1b.set_position(ui::region::zero());
+    rect1b.set_tex_coord(ui::uint_region::zero());
+    rect1b.set_color(to_color(ui::white_color(), 1.0f));
+
+    vertex2d_rect rect2;
+    rect2.set_position(ui::region::zero());
+    rect2.set_tex_coord(ui::uint_region::zero());
+    rect2.set_color(to_color(ui::red_color(), 1.0f));
+
+    XCTAssertTrue(rect1 == rect1b);
+    XCTAssertFalse(rect1 == rect2);
+
+    XCTAssertFalse(rect1 != rect1b);
+    XCTAssertTrue(rect1 != rect2);
+}
+
+- (void)test_is_equal_index2d_rect {
+    index2d_rect rect1;
+    rect1.set_all(1);
+
+    index2d_rect rect1b;
+    rect1b.set_all(1);
+
+    index2d_rect rect2;
+    rect2.set_all(2);
+
+    XCTAssertTrue(rect1 == rect1b);
+    XCTAssertFalse(rect1 == rect2);
+
+    XCTAssertFalse(rect1 != rect1b);
+    XCTAssertTrue(rect1 != rect2);
+}
+
 @end
