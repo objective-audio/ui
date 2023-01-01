@@ -17,14 +17,13 @@ struct font_atlas final {
     [[nodiscard]] double const &ascent() const;
     [[nodiscard]] double const &descent() const;
     [[nodiscard]] double const &leading() const;
-    [[nodiscard]] std::string const &words() const;
+    [[nodiscard]] std::string words() const;
     [[nodiscard]] std::shared_ptr<texture> const &texture() const;
 
     [[nodiscard]] ui::vertex2d_rect const &rect(std::string const &word) const;
     [[nodiscard]] ui::size advance(std::string const &word) const;
 
-    [[nodiscard]] observing::endable observe_texture_updated(
-        std::function<void(std::shared_ptr<ui::texture> const &)> &&);
+    [[nodiscard]] observing::endable observe_rects_updated(std::function<void(std::nullptr_t const &)> &&);
 
     [[nodiscard]] static std::shared_ptr<font_atlas> make_shared(font_atlas_args &&,
                                                                  std::shared_ptr<ui::texture> const &);
@@ -39,15 +38,12 @@ struct font_atlas final {
     double const _ascent;
     double const _descent;
     double const _leading;
-    std::string const _words;
-    observing::notifier_ptr<std::shared_ptr<ui::texture>> const _texture_updated_notifier =
-        observing::notifier<std::shared_ptr<ui::texture>>::make_shared();
+    observing::notifier_ptr<std::nullptr_t> const _rects_updated_notifier =
+        observing::notifier<std::nullptr_t>::make_shared();
 
     std::shared_ptr<ui::texture> const _texture;
-    std::vector<ui::word_info> _word_infos;
-    std::vector<observing::cancellable_ptr> _element_cancellers;
-    std::optional<observing::cancellable_ptr> _texture_canceller = std::nullopt;
-    observing::cancellable_ptr _texture_changed_canceller = nullptr;
+    std::map<std::string, ui::word_info> _word_infos;
+    std::optional<observing::cancellable_ptr> _rects_canceller = std::nullopt;
 
     font_atlas(font_atlas_args &&, std::shared_ptr<ui::texture> const &);
 
@@ -56,6 +52,7 @@ struct font_atlas final {
     font_atlas &operator=(font_atlas const &) = delete;
     font_atlas &operator=(font_atlas &&) = delete;
 
-    void _update_word_infos();
+    void _setup(std::string const &words);
+    void _update_tex_coords();
 };
 }  // namespace yas::ui
