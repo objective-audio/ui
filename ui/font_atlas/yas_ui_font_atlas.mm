@@ -131,15 +131,13 @@ void font_atlas::_setup(std::string const &words) {
     CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, word_count);
     CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, word_count);
 
-    CGFloat const ascent = CTFontGetAscent(ct_font_obj);
-    CGFloat const descent = CTFontGetDescent(ct_font_obj);
-    CGFloat const string_height = descent + ascent;
+    CGFloat const string_height = this->_descent + this->_ascent;
     double const scale_factor = texture->scale_factor();
 
     for (auto const &idx : each_index<std::size_t>(word_count)) {
         uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)), uint32_t(std::ceilf(string_height))};
         region const image_region = {
-            .origin = {0.0f, roundf(-descent, scale_factor)},
+            .origin = {0.0f, roundf(-this->_descent, scale_factor)},
             .size = {static_cast<float>(image_size.width), static_cast<float>(image_size.height)}};
 
         auto const texture_element = texture->add_draw_handler(
