@@ -102,26 +102,16 @@ size font_atlas::advance(std::string const &word) const {
     }
 
     if (word == "\n" || word == "\r") {
-        return {0.0f, 0.0f};
+        return size::zero();
     }
 
-    CGGlyph glyphs[1];
-    UniChar characters[1];
-    CGSize advances[1];
+    auto const index = yas::index(this->_word_infos, [&word](auto const &info) { return info.word == word; });
 
-    auto ct_font_obj = this->_impl->_ct_font_ref.object();
-    auto cf_word = to_cf_object(word);
-
-    CFIndex const length = CFStringGetLength(cf_word);
-    if (length == 0) {
-        return {0.0f, 0.0f};
+    if (index.has_value()) {
+        return this->_word_infos.at(index.value()).advance;
+    } else {
+        return size::zero();
     }
-
-    CFStringGetCharacters(cf_word, CFRangeMake(0, 1), characters);
-    CTFontGetGlyphsForCharacters(ct_font_obj, characters, glyphs, 1);
-    CTFontGetAdvancesForGlyphs(ct_font_obj, kCTFontOrientationDefault, glyphs, advances, 1);
-
-    return {.width = static_cast<float>(advances[0].width), .height = static_cast<float>(advances[0].height)};
 }
 
 observing::endable font_atlas::observe_rects_updated(std::function<void(std::nullptr_t const &)> &&handler) {
