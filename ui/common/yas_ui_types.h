@@ -324,6 +324,9 @@ struct vertex2d_rect {
     void set_tex_coord(ui::uint_region const &);
     void set_color(simd::float4 const &);
     void set_color(ui::color const &);
+
+    bool operator==(vertex2d_rect const &) const;
+    bool operator!=(vertex2d_rect const &) const;
 };
 
 using index2d_t = uint32_t;
@@ -334,6 +337,9 @@ struct index2d_rect {
     index2d_t v[vector_count];
 
     void set_all(uint32_t const first);
+
+    bool operator==(index2d_rect const &) const;
+    bool operator!=(index2d_rect const &) const;
 };
 
 ui::point to_point(ui::uint_point const &);

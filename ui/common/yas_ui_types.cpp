@@ -6,6 +6,8 @@
 
 #include <cpp_utils/yas_fast_each.h>
 
+#include <ui/yas_ui_shared_type_operators.hpp>
+
 using namespace yas;
 using namespace yas::ui;
 
@@ -444,6 +446,21 @@ void vertex2d_rect::set_color(ui::color const &color) {
     this->set_color(color.v);
 }
 
+bool vertex2d_rect::operator==(vertex2d_rect const &rhs) const {
+    auto each = make_fast_each(vector_count);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        if (this->v[idx] != rhs.v[idx]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool vertex2d_rect::operator!=(vertex2d_rect const &rhs) const {
+    return !(*this == rhs);
+}
+
 #pragma mark - index2d_rect
 
 void index2d_rect::set_all(uint32_t const first) {
@@ -451,6 +468,21 @@ void index2d_rect::set_all(uint32_t const first) {
     this->v[1] = this->v[4] = first + 2;
     this->v[2] = this->v[3] = first + 1;
     this->v[5] = first + 3;
+}
+
+bool index2d_rect::operator==(index2d_rect const &rhs) const {
+    auto each = make_fast_each(vector_count);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        if (this->v[idx] != rhs.v[idx]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool index2d_rect::operator!=(index2d_rect const &rhs) const {
+    return !(*this == rhs);
 }
 
 #pragma mark -
@@ -574,19 +606,19 @@ std::string yas::to_string(simd::float4x4 const &matrix) {
 #pragma mark -
 
 bool yas::is_equal(simd::float2 const &lhs, simd::float2 const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y;
+    return simd_equal(lhs, rhs);
 }
 
 bool yas::is_equal(simd::float3 const &lhs, simd::float3 const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    return simd_equal(lhs, rhs);
 }
 
 bool yas::is_equal(simd::float4 const &lhs, simd::float4 const &rhs) {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+    return simd_equal(lhs, rhs);
 }
 
 bool yas::is_equal(simd::float4x4 const &lhs, simd::float4x4 const &rhs) {
-    return (&lhs == &rhs) || memcmp(&lhs, &rhs, sizeof(simd::float4x4)) == 0;
+    return simd_equal(lhs, rhs);
 }
 
 #pragma mark -
