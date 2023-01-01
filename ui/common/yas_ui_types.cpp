@@ -6,6 +6,8 @@
 
 #include <cpp_utils/yas_fast_each.h>
 
+#include <ui/yas_ui_shared_type_operators.hpp>
+
 using namespace yas;
 using namespace yas::ui;
 
@@ -442,6 +444,21 @@ void vertex2d_rect::set_color(simd::float4 const &color) {
 
 void vertex2d_rect::set_color(ui::color const &color) {
     this->set_color(color.v);
+}
+
+bool vertex2d_rect::operator==(vertex2d_rect const &rhs) const {
+    auto each = make_fast_each(vector_count);
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        if (this->v[idx] != rhs.v[idx]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool vertex2d_rect::operator!=(vertex2d_rect const &rhs) const {
+    return !(*this == rhs);
 }
 
 #pragma mark - index2d_rect
