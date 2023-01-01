@@ -21,7 +21,6 @@ namespace yas::ui {
 static vertex2d_rect constexpr _empty_rect{0.0f};
 
 struct word_info {
-    std::string word;
     vertex2d_rect rect;
     size advance;
     std::weak_ptr<ui::texture_element> texture_element;
@@ -79,7 +78,7 @@ double const &font_atlas::leading() const {
 }
 
 std::string font_atlas::words() const {
-    return yas::joined(this->_word_infos, "", [](auto const &info) { return info.word; });
+    return yas::joined(this->_word_infos, "", [](auto const &pair) { return pair.first; });
 }
 
 std::shared_ptr<texture> const &font_atlas::texture() const {
@@ -87,10 +86,8 @@ std::shared_ptr<texture> const &font_atlas::texture() const {
 }
 
 vertex2d_rect const &font_atlas::rect(std::string const &word) const {
-    auto const index = yas::index(this->_word_infos, [&word](auto const &info) { return info.word == word; });
-
-    if (index.has_value()) {
-        return this->_word_infos.at(index.value()).rect;
+    if (this->_word_infos.contains(word)) {
+        return this->_word_infos.at(word).rect;
     } else {
         return _empty_rect;
     }
@@ -105,10 +102,8 @@ size font_atlas::advance(std::string const &word) const {
         return size::zero();
     }
 
-    auto const index = yas::index(this->_word_infos, [&word](auto const &info) { return info.word == word; });
-
-    if (index.has_value()) {
-        return this->_word_infos.at(index.value()).advance;
+    if (this->_word_infos.contains(word)) {
+        return this->_word_infos.at(word).advance;
     } else {
         return size::zero();
     }
@@ -122,14 +117,11 @@ void font_atlas::_setup(std::string const &words) {
     auto &texture = this->texture();
 
     if (!texture) {
-        this->_word_infos.clear();
         return;
     }
 
     auto ct_font_obj = this->_impl->_ct_font_ref.object();
     auto const word_count = words.size();
-
-    this->_word_infos.resize(word_count);
 
     CGGlyph glyphs[word_count];
     UniChar characters[word_count];
@@ -145,14 +137,10 @@ void font_atlas::_setup(std::string const &words) {
     double const scale_factor = texture->scale_factor();
 
     for (auto const &idx : each_index<std::size_t>(word_count)) {
-        auto &word_info = this->_word_infos.at(idx);
-        word_info.word = words[idx];
-
         uint_size const image_size = {uint32_t(std::ceilf(advances[idx].width)), uint32_t(std::ceilf(string_height))};
         region const image_region = {
             .origin = {0.0f, roundf(-descent, scale_factor)},
             .size = {static_cast<float>(image_size.width), static_cast<float>(image_size.height)}};
-        word_info.rect.set_position(image_region);
 
         auto const texture_element = texture->add_draw_handler(
             image_size, [height = image_size.height, glyph = glyphs[idx], ct_font_obj](CGContextRef const ctx) {
@@ -177,19 +165,25 @@ void font_atlas::_setup(std::string const &words) {
 
                 CGContextRestoreGState(ctx);
             });
-        word_info.texture_element = texture_element;
 
         auto const &advance = advances[idx];
-        word_info.advance = {static_cast<float>(advance.width), static_cast<float>(advance.height)};
+
+        vertex2d_rect rect;
+        rect.set_position(image_region);
+
+        this->_word_infos.emplace(words.substr(idx, 1), ui::word_info{.rect = std::move(rect),
+                                                                      .advance = {static_cast<float>(advance.width),
+                                                                                  static_cast<float>(advance.height)},
+                                                                      .texture_element = texture_element});
     }
 
     this->_update_tex_coords();
 }
 
 void font_atlas::_update_tex_coords() {
-    for (auto &word_info : this->_word_infos) {
-        if (auto const texture_element = word_info.texture_element.lock()) {
-            word_info.rect.set_tex_coord(texture_element->tex_coords());
+    for (auto &pair : this->_word_infos) {
+        if (auto const texture_element = pair.second.texture_element.lock()) {
+            pair.second.rect.set_tex_coord(texture_element->tex_coords());
         }
     }
 }

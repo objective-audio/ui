@@ -42,7 +42,7 @@ struct font_atlas final {
         observing::notifier<std::nullptr_t>::make_shared();
 
     std::shared_ptr<ui::texture> const _texture;
-    std::vector<ui::word_info> _word_infos;
+    std::map<std::string, ui::word_info> _word_infos;
     std::optional<observing::cancellable_ptr> _rects_canceller = std::nullopt;
 
     font_atlas(font_atlas_args &&, std::shared_ptr<ui::texture> const &);

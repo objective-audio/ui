@@ -45,7 +45,7 @@ using namespace yas::ui;
 
     XCTAssertEqual(font_atlas->font_name(), "HelveticaNeue");
     XCTAssertEqual(font_atlas->font_size(), 14.0);
-    XCTAssertEqual(font_atlas->words(), "abcde12345");
+    XCTAssertEqual(font_atlas->words(), "12345abcde", @"内部的にmapを使っているので文字コード順になる");
     XCTAssertEqual(font_atlas->texture(), texture);
 
     auto ct_font_ref =
