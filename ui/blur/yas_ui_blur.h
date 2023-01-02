@@ -8,7 +8,7 @@
 #include <ui/yas_ui_effect.h>
 
 namespace yas::ui {
-struct blur {
+struct blur final {
     void set_sigma(double const);
     [[nodiscard]] double sigma() const;
 

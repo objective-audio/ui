@@ -24,7 +24,7 @@ enum class layout_alignment {
     max,
 };
 
-struct layout_borders {
+struct layout_borders final {
     float left = 0.0f;
     float right = 0.0f;
     float bottom = 0.0f;

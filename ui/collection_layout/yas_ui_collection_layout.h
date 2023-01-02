@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace yas::ui {
-struct collection_layout {
+struct collection_layout final {
     using line = collection_layout_line;
     using args = collection_layout_args;
 

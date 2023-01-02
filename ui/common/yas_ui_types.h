@@ -98,7 +98,7 @@ enum class texture_usage {
 
 using texture_usages_t = flagset<texture_usage>;
 
-struct uint_point {
+struct uint_point final {
     uint32_t x = 0;
     uint32_t y = 0;
 
@@ -108,7 +108,7 @@ struct uint_point {
     [[nodiscard]] static uint_point const &zero();
 };
 
-struct uint_size {
+struct uint_size final {
     uint32_t width = 1;
     uint32_t height = 1;
 
@@ -118,7 +118,7 @@ struct uint_size {
     [[nodiscard]] static uint_size const &zero();
 };
 
-struct uint_region {
+struct uint_region final {
     uint_point origin;
     uint_size size;
 
@@ -136,7 +136,7 @@ struct uint_region {
     [[nodiscard]] region_positions positions(simd::float4x4 const &matrix) const;
 };
 
-struct uint_range {
+struct uint_range final {
     uint32_t location;
     uint32_t length;
 
@@ -149,7 +149,7 @@ struct uint_range {
     [[nodiscard]] static uint_range const &zero();
 };
 
-struct point {
+struct point final {
     union {
         struct {
             float x;
@@ -170,7 +170,7 @@ struct point {
     [[nodiscard]] static point const &zero();
 };
 
-struct size {
+struct size final {
     union {
         struct {
             float width;
@@ -187,7 +187,7 @@ struct size {
     [[nodiscard]] static size const &zero();
 };
 
-struct range_insets {
+struct range_insets final {
     float min;
     float max;
 
@@ -199,7 +199,7 @@ struct range_insets {
     [[nodiscard]] static range_insets const &zero();
 };
 
-struct range {
+struct range final {
     union {
         struct {
             float location;
@@ -227,7 +227,7 @@ struct range {
     [[nodiscard]] static range const &zero();
 };
 
-struct region_insets {
+struct region_insets final {
     union {
         struct {
             float left;
@@ -246,7 +246,7 @@ struct region_insets {
     [[nodiscard]] static region_insets const &zero();
 };
 
-struct region {
+struct region final {
     union {
         struct {
             ui::point origin;
@@ -285,7 +285,7 @@ struct region {
     [[nodiscard]] region_positions positions(simd::float4x4 const &matrix) const;
 };
 
-struct region_positions {
+struct region_positions final {
     static std::size_t constexpr vector_count = 4;
 
     simd::float2 v[vector_count];
@@ -315,7 +315,7 @@ enum class primitive_type {
     triangle_strip,
 };
 
-struct vertex2d_rect {
+struct vertex2d_rect final {
     static std::size_t constexpr vector_count = 4;
 
     vertex2d_t v[vector_count];
@@ -331,7 +331,7 @@ struct vertex2d_rect {
 
 using index2d_t = uint32_t;
 
-struct index2d_rect {
+struct index2d_rect final {
     static std::size_t constexpr vector_count = 6;
 
     index2d_t v[vector_count];
