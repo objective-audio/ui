@@ -10,7 +10,7 @@
 #include <memory>
 
 namespace yas::ui {
-struct action_manager : action_manager_for_renderer {
+struct action_manager final : action_manager_for_renderer {
     [[nodiscard]] std::vector<std::shared_ptr<ui::action>> actions() const;
     void insert_action(std::shared_ptr<ui::action> const &);
     void erase_action(std::shared_ptr<ui::action> const &);
