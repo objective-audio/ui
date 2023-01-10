@@ -372,6 +372,7 @@ using dynamic_mesh_index_data = dynamic_mesh_data<index2d_t>;
 
 namespace yas {
 simd::float2 to_float2(CGPoint const &);
+simd::float2 to_float2(ui::uint_point const &);
 simd::float2 to_float2(simd::float4 const &);
 simd::float4 to_float4(simd::float2 const &);
 
