@@ -305,6 +305,14 @@ using namespace yas::ui;
     XCTAssertEqual(float2.y, 2.0f);
 }
 
+- (void)test_uint_point_to_float2 {
+    uint_point const point{1, 2};
+    auto const float2 = to_float2(point);
+
+    XCTAssertEqual(float2.x, 1.0f);
+    XCTAssertEqual(float2.y, 2.0f);
+}
+
 - (void)test_contains {
     region const region = {.origin = {0.0f, -1.0f}, .size = {1.0f, 2.0f}};
 
