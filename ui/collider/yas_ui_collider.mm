@@ -15,18 +15,32 @@ bool anywhere_shape::hit_test(point const &) const {
     return true;
 }
 
+bool anywhere_shape::hit_test(region const &) const {
+    return true;
+}
+
 bool circle_shape::hit_test(point const &pos) const {
     return std::powf(pos.x - this->center.x, 2.0f) + std::powf(pos.y - this->center.y, 2.0f) <
            std::powf(this->radius, 2.0f);
+}
+
+bool circle_shape::hit_test(region const &rect) const {
+#warning todo 円と矩形の衝突判定を実装する
+    return false;
 }
 
 bool rect_shape::hit_test(point const &pos) const {
     return contains(this->rect, pos);
 }
 
+bool rect_shape::hit_test(region const &rect) const {
+    return this->rect.intersected(rect).has_value();
+}
+
 struct shape::impl_base {
     virtual std::type_info const &type() const = 0;
     virtual bool hit_test(point const &) = 0;
+    virtual bool hit_test(region const &) = 0;
 };
 
 template <typename T>
@@ -42,6 +56,10 @@ struct shape::impl : impl_base {
 
     bool hit_test(point const &pos) override {
         return this->_value.hit_test(pos);
+    }
+
+    bool hit_test(region const &rect) override {
+        return this->_value.hit_test(rect);
     }
 };
 
@@ -60,6 +78,10 @@ std::type_info const &shape::type_info() const {
 
 bool shape::hit_test(point const &pos) const {
     return this->_impl->hit_test(pos);
+}
+
+bool shape::hit_test(ui::region const &rect) const {
+    return this->_impl->hit_test(rect);
 }
 
 std::shared_ptr<shape> shape::make_shared(anywhere::type type) {
@@ -99,8 +121,21 @@ bool collider::is_enabled() const {
 bool collider::hit_test(point const &loc) const {
     auto const &shape = this->_shape->value();
     if (shape && this->_enabled->value()) {
-        auto pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
-        return shape->hit_test({pos.x, pos.y});
+        auto const pos = simd::float4x4(matrix_invert(this->_matrix)) * to_float4(loc.v);
+        return shape->hit_test(ui::point{pos.x, pos.y});
+    }
+    return false;
+}
+
+bool collider::hit_test(ui::region const &region) const {
+    auto const &shape = this->_shape->value();
+    if (shape && this->_enabled->value()) {
+        auto const inverted_matrix = simd::float4x4(matrix_invert(this->_matrix));
+        auto const min_pos = inverted_matrix * to_float4(ui::point{.x = region.left(), .y = region.bottom()}.v);
+        auto const max_pos = inverted_matrix * to_float4(ui::point{.x = region.right(), .y = region.top()}.v);
+        auto const region = ui::region{.origin = {.x = min_pos.x, .y = min_pos.y},
+                                       .size = {.width = max_pos.x - min_pos.x, .height = max_pos.y - min_pos.y}};
+        return shape->hit_test(region);
     }
     return false;
 }

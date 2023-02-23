@@ -14,6 +14,7 @@
 namespace yas::ui {
 struct anywhere_shape final {
     bool hit_test(ui::point const &) const;
+    bool hit_test(ui::region const &) const;
 };
 
 struct circle_shape final {
@@ -21,12 +22,14 @@ struct circle_shape final {
     float radius = 0.5f;
 
     bool hit_test(ui::point const &) const;
+    bool hit_test(ui::region const &) const;
 };
 
 struct rect_shape final {
     ui::region rect = {.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}};
 
     bool hit_test(ui::point const &pos) const;
+    bool hit_test(ui::region const &) const;
 };
 
 struct shape final {
@@ -50,6 +53,7 @@ struct shape final {
     [[nodiscard]] std::type_info const &type_info() const;
 
     [[nodiscard]] bool hit_test(ui::point const &) const;
+    [[nodiscard]] bool hit_test(ui::region const &) const;
 
     [[nodiscard]] static std::shared_ptr<shape> make_shared(anywhere::type);
     [[nodiscard]] static std::shared_ptr<shape> make_shared(circle::type);
@@ -76,6 +80,7 @@ struct collider final : renderable_collider {
     [[nodiscard]] bool is_enabled() const;
 
     [[nodiscard]] bool hit_test(ui::point const &) const;
+    [[nodiscard]] bool hit_test(ui::region const &) const;
 
     [[nodiscard]] observing::syncable observe_shape(std::function<void(std::shared_ptr<ui::shape> const &)> &&);
     [[nodiscard]] observing::syncable observe_enabled(std::function<void(bool const &)> &&);
