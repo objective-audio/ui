@@ -55,44 +55,73 @@ using namespace yas::ui;
     XCTAssertFalse(collider->is_enabled());
 }
 
-- (void)test_hit_test_none {
+- (void)test_hit_test_point_none {
     auto collider = collider::make_shared();
 
-    XCTAssertFalse(collider->hit_test({.v = 0.0f}));
+    XCTAssertFalse(collider->hit_test(ui::point{.v = 0.0f}));
 }
 
-- (void)test_hit_test_anywhere {
+- (void)test_hit_test_region_none {
+    auto collider = collider::make_shared();
+
+    XCTAssertFalse(
+        collider->hit_test(ui::region{.origin = ui::point::zero(), .size = {.width = 1.0f, .height = 1.0f}}));
+}
+
+- (void)test_hit_test_point_anywhere {
     auto collider = collider::make_shared(shape::make_shared(anywhere_shape{}));
 
-    XCTAssertTrue(collider->hit_test({.v = 0.0f}));
-    XCTAssertTrue(collider->hit_test({.v = FLT_MAX}));
-    XCTAssertTrue(collider->hit_test({.v = FLT_MIN}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = FLT_MAX}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = FLT_MIN}));
 }
 
-- (void)test_hit_test_rect {
+- (void)test_hit_test_region_anywhere {
+    auto collider = collider::make_shared(shape::make_shared(anywhere_shape{}));
+
+    XCTAssertTrue(collider->hit_test(ui::region::zero()));
+    XCTAssertTrue(collider->hit_test(ui::region{.origin = ui::point::zero(), .size = {.width = 1.0f, .height = 1.0f}}));
+}
+
+- (void)test_hit_test_point_rect {
     auto collider = collider::make_shared(shape::make_shared({{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
 
-    XCTAssertTrue(collider->hit_test({.v = 0.0f}));
-    XCTAssertTrue(collider->hit_test({.v = -0.5f}));
-    XCTAssertTrue(collider->hit_test({.v = 0.49f}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = -0.49f}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = 0.49f}));
 
-    XCTAssertFalse(collider->hit_test({-0.51f, 0.0f}));
-    XCTAssertFalse(collider->hit_test({0.51f, 0.0f}));
-    XCTAssertFalse(collider->hit_test({0.0f, -0.51f}));
-    XCTAssertFalse(collider->hit_test({0.0f, 0.51f}));
+    XCTAssertFalse(collider->hit_test(ui::point{-0.51f, 0.0f}));
+    XCTAssertFalse(collider->hit_test(ui::point{0.51f, 0.0f}));
+    XCTAssertFalse(collider->hit_test(ui::point{0.0f, -0.51f}));
+    XCTAssertFalse(collider->hit_test(ui::point{0.0f, 0.51f}));
 }
 
-- (void)test_hit_test_circle {
+- (void)test_hit_test_region_rect {
+    auto collider = collider::make_shared(shape::make_shared({{.origin = {-0.5f, -0.5f}, .size = {1.0f, 1.0f}}}));
+
+    XCTAssertTrue(collider->hit_test(ui::region::zero()));
+    XCTAssertTrue(collider->hit_test(ui::region{.origin = {.x = -0.49f, .y = 0.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(collider->hit_test(ui::region{.origin = {.x = 0.49f, .y = 0.0f}, .size = ui::size::zero()}));
+    XCTAssertTrue(collider->hit_test(ui::region{.origin = {.x = 0.0f, .y = -0.49f}, .size = ui::size::zero()}));
+    XCTAssertTrue(collider->hit_test(ui::region{.origin = {.x = 0.0f, .y = 0.49f}, .size = ui::size::zero()}));
+
+    XCTAssertFalse(collider->hit_test(ui::region{.origin = {.x = -0.51f, .y = 0.0f}, .size = ui::size::zero()}));
+    XCTAssertFalse(collider->hit_test(ui::region{.origin = {.x = 0.51f, .y = 0.0f}, .size = ui::size::zero()}));
+    XCTAssertFalse(collider->hit_test(ui::region{.origin = {.x = 0.0f, .y = -0.51f}, .size = ui::size::zero()}));
+    XCTAssertFalse(collider->hit_test(ui::region{.origin = {.x = 0.0f, .y = 0.51f}, .size = ui::size::zero()}));
+}
+
+- (void)test_hit_test_point_circle {
     auto collider = collider::make_shared(shape::make_shared({.center = {.v = 0.0f}, .radius = 0.5f}));
 
-    XCTAssertTrue(collider->hit_test({.v = 0.0f}));
-    XCTAssertTrue(collider->hit_test({-0.49f, 0.0f}));
-    XCTAssertTrue(collider->hit_test({0.49f, 0.0f}));
-    XCTAssertTrue(collider->hit_test({0.0f, -0.49f}));
-    XCTAssertTrue(collider->hit_test({0.0f, 0.49f}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::point{-0.49f, 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::point{0.49f, 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::point{0.0f, -0.49f}));
+    XCTAssertTrue(collider->hit_test(ui::point{0.0f, 0.49f}));
 
-    XCTAssertFalse(collider->hit_test({.v = -0.4f}));
-    XCTAssertFalse(collider->hit_test({.v = 0.4f}));
+    XCTAssertFalse(collider->hit_test(ui::point{.v = -0.4f}));
+    XCTAssertFalse(collider->hit_test(ui::point{.v = 0.4f}));
 }
 
 - (void)test_renderable_variables {
@@ -113,11 +142,14 @@ using namespace yas::ui;
 
     collider->set_enabled(true);
 
-    XCTAssertTrue(collider->hit_test({.v = 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::point{.v = 0.0f}));
+    XCTAssertTrue(collider->hit_test(ui::region{.origin = ui::point::zero(), .size = {.width = 1.0f, .height = 1.0f}}));
 
     collider->set_enabled(false);
 
-    XCTAssertFalse(collider->hit_test({.v = 0.0f}));
+    XCTAssertFalse(collider->hit_test(ui::point{.v = 0.0f}));
+    XCTAssertFalse(
+        collider->hit_test(ui::region{.origin = ui::point::zero(), .size = {.width = 1.0f, .height = 1.0f}}));
 }
 
 - (void)test_observe_shape {
