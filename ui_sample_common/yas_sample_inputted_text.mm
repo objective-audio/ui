@@ -16,7 +16,7 @@ sample::inputted_text::inputted_text(std::shared_ptr<font_atlas> const &font_atl
            .max_word_count = 512,
            .alignment = layout_alignment::min},
           font_atlas)) {
-    this->_strings->rect_plane()->node()->mesh()->set_use_mesh_color(true);
+    this->_strings->rect_plane()->node()->meshes().at(0)->set_use_mesh_color(true);
 
     event_manager
         ->observe([this](std::shared_ptr<event> const &event) {

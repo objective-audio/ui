@@ -62,9 +62,14 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     [[nodiscard]] simd::float4x4 const &matrix() const;
     [[nodiscard]] simd::float4x4 const &local_matrix() const;
 
-    void set_mesh(std::shared_ptr<mesh> const &);
-    [[nodiscard]] std::shared_ptr<mesh> const &mesh() const;
-    [[nodiscard]] observing::syncable observe_mesh(std::function<void(std::shared_ptr<ui::mesh> const &)> &&);
+    void set_meshes(std::vector<std::shared_ptr<mesh>> const &);
+    void push_back_mesh(std::shared_ptr<mesh> const &);
+    void insert_mesh_at(std::shared_ptr<mesh> const &, std::size_t const);
+    void erase_mesh_at(std::size_t const);
+    [[nodiscard]] std::vector<std::shared_ptr<mesh>> const &meshes() const;
+
+    using meshes_event = observing::vector::holder<std::shared_ptr<ui::mesh>>::event;
+    [[nodiscard]] observing::syncable observe_meshes(std::function<void(meshes_event const &)> &&);
 
     void set_colliders(std::vector<std::shared_ptr<ui::collider>> const &);
     void push_back_collider(std::shared_ptr<ui::collider> const &);
@@ -118,7 +123,7 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
     observing::value::holder_ptr<ui::size> const _scale;
     observing::value::holder_ptr<ui::rgb_color> const _rgb_color;
     observing::value::holder_ptr<float> const _alpha;
-    observing::value::holder_ptr<std::shared_ptr<ui::mesh>> const _mesh;
+    observing::vector::holder_ptr<std::shared_ptr<ui::mesh>> const _meshes;
     observing::vector::holder_ptr<std::shared_ptr<ui::collider>> const _colliders;
     observing::value::holder_ptr<std::shared_ptr<ui::batch>> const _batch;
     observing::value::holder_ptr<std::shared_ptr<ui::render_target>> const _render_target;

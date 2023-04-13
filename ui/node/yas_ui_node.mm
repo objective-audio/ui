@@ -26,7 +26,7 @@ node::node()
       _angle(observing::value::holder<ui::angle>::make_shared({0.0f})),
       _rgb_color(observing::value::holder<ui::rgb_color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)),
-      _mesh(observing::value::holder<std::shared_ptr<ui::mesh>>::make_shared(nullptr)),
+      _meshes(observing::vector::holder<std::shared_ptr<ui::mesh>>::make_shared()),
       _colliders(observing::vector::holder<std::shared_ptr<ui::collider>>::make_shared()),
       _batch(observing::value::holder<std::shared_ptr<ui::batch>>::make_shared(std::shared_ptr<ui::batch>{nullptr})),
       _render_target(observing::value::holder<std::shared_ptr<ui::render_target>>::make_shared(nullptr)),
@@ -51,7 +51,7 @@ node::node()
 
     // mesh and mesh_color
 
-    this->_mesh
+    this->_meshes
         ->observe([this](auto const &) {
             this->_update_mesh_color();
             this->_set_updated(node_update_reason::mesh);
@@ -222,16 +222,28 @@ simd::float4x4 const &node::local_matrix() const {
     return this->_local_matrix;
 }
 
-void node::set_mesh(std::shared_ptr<ui::mesh> const &mesh) {
-    this->_mesh->set_value(mesh);
+void node::set_meshes(std::vector<std::shared_ptr<mesh>> const &meshes) {
+    this->_meshes->replace(meshes);
 }
 
-std::shared_ptr<mesh> const &node::mesh() const {
-    return this->_mesh->value();
+void node::push_back_mesh(std::shared_ptr<mesh> const &mesh) {
+    this->_meshes->push_back(mesh);
 }
 
-observing::syncable node::observe_mesh(std::function<void(std::shared_ptr<ui::mesh> const &)> &&handler) {
-    return this->_mesh->observe(std::move(handler));
+void node::insert_mesh_at(std::shared_ptr<mesh> const &mesh, std::size_t const idx) {
+    this->_meshes->insert(mesh, idx);
+}
+
+void node::erase_mesh_at(std::size_t const idx) {
+    this->_meshes->erase(idx);
+}
+
+std::vector<std::shared_ptr<mesh>> const &node::meshes() const {
+    return this->_meshes->value();
+}
+
+observing::syncable node::observe_meshes(std::function<void(meshes_event const &)> &&handler) {
+    return this->_meshes->observe(std::move(handler));
 }
 
 void node::set_colliders(std::vector<std::shared_ptr<ui::collider>> const &colliders) {
@@ -378,7 +390,7 @@ void node::attach_position_layout_guides(layout_point_guide &guide_point) {
 }
 
 setup_metal_result node::metal_setup(std::shared_ptr<metal_system> const &metal_system) {
-    if (auto const &mesh = this->_mesh->value()) {
+    for (auto const &mesh : this->_meshes->value()) {
         if (auto ul = unless(mesh->metal_setup(metal_system))) {
             return std::move(ul.value);
         }
@@ -423,7 +435,7 @@ void node::fetch_updates(tree_updates &tree_updates) {
     if (this->_enabled->value()) {
         tree_updates.node_updates.flags |= this->_updates.flags;
 
-        if (auto const &mesh = this->_mesh->value()) {
+        for (auto const &mesh : this->_meshes->value()) {
             tree_updates.mesh_updates.flags |= renderable_mesh::cast(mesh)->updates().flags;
 
             if (auto const &vertex_data = mesh->vertex_data()) {
@@ -487,7 +499,7 @@ void node::build_render_info(render_info &render_info) {
         }
 
         if (auto const &render_encodable = render_info.render_encodable) {
-            if (auto const &mesh = this->_mesh->value()) {
+            for (auto const &mesh : this->_meshes->value()) {
                 renderable_mesh::cast(mesh)->set_matrix(mesh_matrix);
                 render_encodable->append_mesh(mesh);
             }
@@ -603,8 +615,10 @@ bool node::is_rendering_color_exists() {
         }
     }
 
-    if (auto const &mesh = this->_mesh->value()) {
-        return renderable_mesh::cast(mesh)->is_rendering_color_exists();
+    for (auto const &mesh : this->_meshes->value()) {
+        if (renderable_mesh::cast(mesh)->is_rendering_color_exists()) {
+            return true;
+        }
     }
 
     return false;
@@ -614,7 +628,7 @@ void node::clear_updates() {
     if (this->_enabled->value()) {
         this->_updates.flags.reset();
 
-        if (auto const &mesh = this->_mesh->value()) {
+        for (auto const &mesh : this->_meshes->value()) {
             renderable_mesh::cast(mesh)->clear_updates();
         }
 
@@ -665,7 +679,7 @@ void node::_remove_sub_nodes_on_destructor() {
 }
 
 void node::_update_mesh_color() {
-    if (auto const &mesh = this->_mesh->value()) {
+    for (auto const &mesh : this->_meshes->value()) {
         mesh->set_color(this->color());
     }
 }

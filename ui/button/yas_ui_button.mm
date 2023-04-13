@@ -56,11 +56,11 @@ button::button(region const &region, std::shared_ptr<ui::event_observable> const
 }
 
 void button::set_texture(std::shared_ptr<ui::texture> const &texture) {
-    this->rect_plane()->node()->mesh()->set_texture(texture);
+    this->rect_plane()->node()->meshes().at(0)->set_texture(texture);
 }
 
 std::shared_ptr<texture> const &button::texture() const {
-    return this->_rect_plane->node()->mesh()->texture();
+    return this->_rect_plane->node()->meshes().at(0)->texture();
 }
 
 std::size_t button::state_count() const {

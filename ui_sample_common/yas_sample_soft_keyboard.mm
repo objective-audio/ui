@@ -69,7 +69,7 @@ struct soft_key {
         : _button(button::make_shared({.size = {width, width}}, event_manager, detector, renderer)),
           _strings(strings::make_shared({.max_word_count = 1}, atlas)),
           _weak_action_manager(action_manager) {
-        this->_button->rect_plane()->node()->mesh()->set_use_mesh_color(true);
+        this->_button->rect_plane()->node()->meshes().at(0)->set_use_mesh_color(true);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.5f, 0.5f, 0.5f, 1.0f}, 0);
         this->_button->rect_plane()->data()->set_rect_color(simd::float4{0.2f, 0.2f, 0.2f, 1.0f}, 1);
 

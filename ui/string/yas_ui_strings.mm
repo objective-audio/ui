@@ -25,7 +25,7 @@ strings::strings(strings_args &&args, std::shared_ptr<ui::font_atlas> const &atl
       _font_atlas(atlas),
       _line_height(observing::value::holder<std::optional<float>>::make_shared(args.line_height)),
       _max_word_count(args.max_word_count) {
-    this->rect_plane()->node()->mesh()->set_texture(atlas->texture());
+    this->rect_plane()->node()->meshes().at(0)->set_texture(atlas->texture());
 
     this->_prepare_observings();
     this->_update_collection_layout();
