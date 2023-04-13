@@ -157,14 +157,14 @@ struct renderer_observer_stub final : renderer_observable, renderer_for_view {
         button::make_shared({.origin = {0.0f, 1.0f}, .size = {2.0f, 3.0f}}, ui::event_manager::make_shared(),
                             ui::detector::make_shared(), std::make_shared<test::renderer_observer_stub>());
 
-    XCTAssertFalse(button->rect_plane()->node()->mesh()->texture());
+    XCTAssertFalse(button->rect_plane()->node()->meshes().at(0)->texture());
 
     auto const view_look = view_look_scale_factor_stub::make_shared(1.0);
     auto const texture = texture::make_shared({.point_size = {8, 8}}, view_look);
 
     button->set_texture(texture);
 
-    XCTAssertTrue(button->rect_plane()->node()->mesh()->texture());
+    XCTAssertTrue(button->rect_plane()->node()->meshes().at(0)->texture());
     XCTAssertEqual(button->texture(), texture);
 }
 

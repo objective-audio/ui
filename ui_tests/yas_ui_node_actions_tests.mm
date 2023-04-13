@@ -154,7 +154,7 @@ using namespace yas::ui;
                                .begin_time = time});
 
     auto mesh = mesh::make_shared();
-    target->set_mesh(mesh);
+    target->set_meshes({mesh});
 
     action->update(time);
 
@@ -182,7 +182,7 @@ using namespace yas::ui;
         make_action({.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .duration = 1.0, .begin_time = time});
 
     auto mesh = mesh::make_shared();
-    target->set_mesh(mesh);
+    target->set_meshes({mesh});
 
     action->update(time);
 

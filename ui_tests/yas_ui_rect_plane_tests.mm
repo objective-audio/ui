@@ -29,7 +29,7 @@ using namespace yas::ui;
     XCTAssertTrue(plane);
     XCTAssertTrue(plane->data()->dynamic_vertex_data());
     XCTAssertTrue(plane->data()->dynamic_index_data());
-    XCTAssertTrue(plane->node()->mesh());
+    XCTAssertEqual(plane->node()->meshes().size(), 1);
 
     XCTAssertEqual(plane->data()->dynamic_vertex_data()->count(), 2 * 4);
     XCTAssertEqual(plane->data()->dynamic_index_data()->count(), 2 * 6);

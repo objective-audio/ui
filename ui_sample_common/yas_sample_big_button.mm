@@ -46,7 +46,7 @@ void sample::big_button::set_texture(std::shared_ptr<texture> const &texture) {
     auto const &data = this->_button->rect_plane()->data();
     data->clear_observers();
 
-    this->_button->rect_plane()->node()->mesh()->set_texture(texture);
+    this->_button->rect_plane()->node()->meshes().at(0)->set_texture(texture);
 
     if (!texture) {
         return;
