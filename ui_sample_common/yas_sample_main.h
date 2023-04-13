@@ -35,7 +35,7 @@ struct main {
     std::shared_ptr<ui::font_atlas> const _font_atlas =
         ui::font_atlas::make_shared({.font_name = "TrebuchetMS-Bold",
                                      .font_size = 26.0f,
-                                     .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-"},
+                                     .words = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+-:"},
                                     _texture);
 
     sample::touch_holder_ptr const _touch_holder =
