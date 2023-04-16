@@ -41,6 +41,11 @@ uint_size const &uint_size::zero() {
     return _zero;
 }
 
+uint_size const &uint_size::one() {
+    static uint_size const _one{.width = 1, .height = 1};
+    return _one;
+}
+
 #pragma mark - uint_region
 
 bool uint_region::operator==(uint_region const &rhs) const {
@@ -165,6 +170,11 @@ size::operator bool() const {
 size const &size::zero() {
     static size const _zero{.width = 0.0f, .height = 0.0f};
     return _zero;
+}
+
+size const &size::one() {
+    static size const _one{.width = 1.0f, .height = 1.0f};
+    return _one;
 }
 
 #pragma mark - range_insets

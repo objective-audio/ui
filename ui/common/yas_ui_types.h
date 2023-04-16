@@ -116,6 +116,7 @@ struct uint_size final {
     bool operator!=(uint_size const &rhs) const;
 
     [[nodiscard]] static uint_size const &zero();
+    [[nodiscard]] static uint_size const &one();
 };
 
 struct uint_region final {
@@ -185,6 +186,7 @@ struct size final {
     explicit operator bool() const;
 
     [[nodiscard]] static size const &zero();
+    [[nodiscard]] static size const &one();
 };
 
 struct range_insets final {
