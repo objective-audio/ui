@@ -27,4 +27,4 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run tests
       run:
-        xcodebuild -workspace ui_mac.xcworkspace -scheme ui_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
+        xcodebuild -workspace ui_mac.xcworkspace -scheme ui_mac_tests -configuration Debug OBJROOT=build -testPlan ui_mac_tests_for_ci -sdk macosx clean test
