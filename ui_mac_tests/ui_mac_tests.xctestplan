@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "354119F7-8A27-4103-AEFB-9AC4443E201C",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ui_mac_tests.xcodeproj",
+      "identifier" : "B6DE34E821E633CF00E49BCB",
+      "name" : "ui_mac_tests"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:ui_mac_tests.xcodeproj",
+        "identifier" : "B6DE34E821E633CF00E49BCB",
+        "name" : "ui_mac_tests"
+      }
+    }
+  ],
+  "version" : 1
+}
