@@ -45,7 +45,9 @@ metal_encoder::encode_result_t metal_encoder::encode(std::shared_ptr<system_for_
         }
 
         for (auto &pair : metal_encode_info->textures()) {
-            [renderEncoder useResource:pair.second->metal_texture()->texture() usage:MTLResourceUsageSample];
+            [renderEncoder useResource:pair.second->metal_texture()->texture()
+                                 usage:MTLResourceUsageRead
+                                stages:MTLRenderStageVertex];
         }
 
         [renderEncoder endEncoding];
