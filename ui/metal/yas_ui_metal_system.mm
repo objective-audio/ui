@@ -80,7 +80,7 @@ metal_system::metal_system(id<MTLDevice> const device, YASUIMetalView *const met
 
     auto pipeline_state_desc = objc_ptr_with_move_object([MTLRenderPipelineDescriptor new]);
     auto pipelineStateDesc = pipeline_state_desc.object();
-    pipelineStateDesc.sampleCount = this->_sample_count;
+    pipelineStateDesc.rasterSampleCount = this->_sample_count;
     pipelineStateDesc.vertexFunction = vertexProgram;
     pipelineStateDesc.fragmentFunction = fragmentProgramWithTexture;
     [pipelineStateDesc.colorAttachments setObject:colorDesc atIndexedSubscript:0];
@@ -95,7 +95,7 @@ metal_system::metal_system(id<MTLDevice> const device, YASUIMetalView *const met
     this->_multi_sample_pipeline_state_without_texture.move_object(
         [device newRenderPipelineStateWithDescriptor:pipelineStateDesc error:nil]);
 
-    pipelineStateDesc.sampleCount = 1;
+    pipelineStateDesc.rasterSampleCount = 1;
 
     this->_pipeline_state_without_texture.move_object([device newRenderPipelineStateWithDescriptor:pipelineStateDesc
                                                                                              error:nil]);
