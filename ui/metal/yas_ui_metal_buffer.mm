@@ -30,6 +30,6 @@ void metal_buffer::write(std::vector<index2d_t> const &data, std::size_t const d
 
 std::shared_ptr<metal_buffer> metal_buffer::make_shared(id<MTLDevice> const device, std::size_t const length) {
     auto raw_buffer = objc_ptr_with_move_object([device newBufferWithLength:length
-                                                                    options:MTLResourceOptionCPUCacheModeDefault]);
+                                                                    options:MTLResourceCPUCacheModeDefaultCache]);
     return std::shared_ptr<metal_buffer>(new metal_buffer{std::move(raw_buffer)});
 }
