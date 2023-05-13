@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/ui.h>
+#import <ui/yas_ui_umbrella.h>
 #import <iostream>
 #import "yas_ui_view_look_stubs.h"
 

@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_objc_ptr.h>
-#import <ui/ui.h>
+#import <ui/yas_ui_umbrella.h>
 #import <iostream>
 
 using namespace yas;
