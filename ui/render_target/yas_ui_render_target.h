@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_effect.h>
 #include <ui/yas_ui_layout_guide.h>
@@ -13,6 +12,8 @@
 #include <ui/yas_ui_render_target_types.h>
 #include <ui/yas_ui_renderer_dependency.h>
 #include <ui/yas_ui_types.h>
+
+#include <observing/yas_observing_umbrella.hpp>
 
 namespace yas::ui {
 struct render_target final {

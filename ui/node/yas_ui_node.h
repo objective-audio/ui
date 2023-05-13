@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_action_dependency.h>
 #include <ui/yas_ui_collider.h>
 #include <ui/yas_ui_layout_dependency.h>
@@ -14,6 +13,7 @@
 #include <ui/yas_ui_renderer.h>
 #include <ui/yas_ui_renderer_dependency.h>
 
+#include <observing/yas_observing_umbrella.hpp>
 #include <vector>
 
 namespace yas::ui {

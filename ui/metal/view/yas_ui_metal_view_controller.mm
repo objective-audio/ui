@@ -4,7 +4,6 @@
 
 #include "yas_ui_metal_view_controller.h"
 #include <objc_utils/yas_objc_unowned.h>
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_background.h>
 #include <ui/yas_ui_metal_system.h>
 #include <ui/yas_ui_metal_view_controller_dependency.h>
@@ -12,6 +11,7 @@
 #include <ui/yas_ui_metal_view_utils.h>
 #include <ui/yas_ui_rgb_color.h>
 #include <ui/yas_ui_view_look.h>
+#include <observing/yas_observing_umbrella.hpp>
 
 NS_ASSUME_NONNULL_BEGIN
 

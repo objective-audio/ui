@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_color.h>
+
+#include <observing/yas_observing_umbrella.hpp>
 
 namespace yas::ui {
 struct background final {
