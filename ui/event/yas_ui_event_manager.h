@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_common_dependency.h>
 #include <ui/yas_ui_event.h>
 #include <ui/yas_ui_metal_view_dependency.h>
+
+#include <observing/yas_observing_umbrella.hpp>
 
 namespace yas::ui {
 struct event_manager final : event_manager_for_view, event_observable {

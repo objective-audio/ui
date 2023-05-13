@@ -5,10 +5,10 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_collection_layout_types.h>
 #include <ui/yas_ui_layout_guide.h>
 
+#include <observing/yas_observing_umbrella.hpp>
 #include <vector>
 
 namespace yas::ui {

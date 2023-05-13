@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.h>
 #include <ui/yas_ui_types.h>
+
+#include <observing/yas_observing_umbrella.hpp>
 
 namespace yas::ui {
 struct layout_value_source {

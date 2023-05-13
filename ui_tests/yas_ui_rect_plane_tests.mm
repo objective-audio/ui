@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_each_index.h>
-#import <ui/ui.h>
+#import <ui/yas_ui_umbrella.h>
 
 using namespace yas;
 using namespace yas::ui;

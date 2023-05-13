@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/ui.h>
+#import <ui/yas_ui_umbrella.h>
 
 using namespace yas;
 using namespace yas::ui;
