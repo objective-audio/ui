@@ -52,17 +52,19 @@ using namespace yas::ui;
         ended_called = false;
     };
 
-    auto canceller = event_manager->observe([&self, &began_called, &changed_called, &ended_called](auto const &event) {
-        XCTAssertEqual(event->type(), event_type::cursor);
+    auto canceller = event_manager
+                         ->observe([&self, &began_called, &changed_called, &ended_called](auto const &event) {
+                             XCTAssertEqual(event->type(), event_type::cursor);
 
-        if (event->phase() == event_phase::began) {
-            began_called = true;
-        } else if (event->phase() == event_phase::ended) {
-            ended_called = true;
-        } else if (event->phase() == event_phase::changed) {
-            changed_called = true;
-        }
-    });
+                             if (event->phase() == event_phase::began) {
+                                 began_called = true;
+                             } else if (event->phase() == event_phase::ended) {
+                                 ended_called = true;
+                             } else if (event->phase() == event_phase::changed) {
+                                 changed_called = true;
+                             }
+                         })
+                         .end();
 
     [view mouseEntered:[self _enterExitEventWithType:NSEventTypeMouseEntered location:NSMakePoint(1, 1)]];
 
@@ -87,6 +89,8 @@ using namespace yas::ui;
     XCTAssertTrue(ended_called);
 
     reset_flags();
+
+    canceller->cancel();
 }
 
 - (void)test_touch_event {
@@ -109,21 +113,23 @@ using namespace yas::ui;
 
     observed_values values;
 
-    auto canceller = event_manager->observe([&self, &values](auto const &event) {
-        if (event->type() == event_type::cursor) {
-            return;
-        }
+    auto canceller = event_manager
+                         ->observe([&self, &values](auto const &event) {
+                             if (event->type() == event_type::cursor) {
+                                 return;
+                             }
 
-        XCTAssertEqual(event->type(), event_type::touch);
+                             XCTAssertEqual(event->type(), event_type::touch);
 
-        if (event->phase() == event_phase::began) {
-            values.began_called = true;
-        } else if (event->phase() == event_phase::ended) {
-            values.ended_called = true;
-        } else if (event->phase() == event_phase::changed) {
-            values.changed_called = true;
-        }
-    });
+                             if (event->phase() == event_phase::began) {
+                                 values.began_called = true;
+                             } else if (event->phase() == event_phase::ended) {
+                                 values.ended_called = true;
+                             } else if (event->phase() == event_phase::changed) {
+                                 values.changed_called = true;
+                             }
+                         })
+                         .end();
 
     [view mouseDown:[self _mouseEventWithType:NSEventTypeLeftMouseDown location:NSMakePoint(100, 100)]];
 
@@ -194,6 +200,8 @@ using namespace yas::ui;
     XCTAssertFalse(values.began_called);
     XCTAssertFalse(values.changed_called);
     XCTAssertTrue(values.ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_key_event {
@@ -222,22 +230,24 @@ using namespace yas::ui;
 
     observed_values values;
 
-    auto canceller = event_manager->observe([&self, &values](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::key);
+    auto canceller = event_manager
+                         ->observe([&self, &values](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::key);
 
-        if (event->phase() == event_phase::began) {
-            values.began_called = true;
-        } else if (event->phase() == event_phase::ended) {
-            values.ended_called = true;
-        } else if (event->phase() == event_phase::changed) {
-            values.changed_called = true;
-        }
+                             if (event->phase() == event_phase::began) {
+                                 values.began_called = true;
+                             } else if (event->phase() == event_phase::ended) {
+                                 values.ended_called = true;
+                             } else if (event->phase() == event_phase::changed) {
+                                 values.changed_called = true;
+                             }
 
-        auto const &key_event = event->get<key>();
-        values.key_code = key_event.key_code;
-        values.characters = key_event.characters;
-        values.raw_characters = key_event.raw_characters;
-    });
+                             auto const &key_event = event->get<key>();
+                             values.key_code = key_event.key_code;
+                             values.characters = key_event.characters;
+                             values.raw_characters = key_event.raw_characters;
+                         })
+                         .end();
 
     [view keyDown:[self _keyEventWithType:NSEventTypeKeyDown
                                           keyCode:1
@@ -281,6 +291,8 @@ using namespace yas::ui;
     XCTAssertEqual(values.key_code, 1);
     XCTAssertEqual(values.characters, "a");
     XCTAssertEqual(values.raw_characters, "b");
+
+    canceller->cancel();
 }
 
 #pragma mark -

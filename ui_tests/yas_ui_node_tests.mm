@@ -309,7 +309,7 @@ struct test_render_encoder : render_encodable {
     auto sub_node = node::make_shared();
     std::vector<node::method> called;
 
-    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); });
+    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); }).end();
 
     parent_node->add_sub_node(sub_node);
 
@@ -320,6 +320,8 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertEqual(called.at(1), node::method::removed_from_super);
+
+    canceller->cancel();
 }
 
 - (void)test_observe_on_super_destructor {
@@ -327,7 +329,7 @@ struct test_render_encoder : render_encodable {
 
     std::vector<node::method> called;
 
-    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); });
+    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); }).end();
 
     {
         auto parent_node = node::make_shared();
@@ -340,6 +342,8 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertEqual(called.at(1), node::method::removed_from_super);
+
+    canceller->cancel();
 }
 
 - (void)test_fetch_updates {
