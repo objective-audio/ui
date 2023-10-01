@@ -149,6 +149,14 @@ void node::set_scale(size const &scale) {
     this->_scale->set_value(scale);
 }
 
+void node::set_width(float const width) {
+    this->_scale->set_value({.width = width, .height = this->_scale->value().height});
+}
+
+void node::set_height(float const height) {
+    this->_scale->set_value({.width = this->_scale->value().width, .height = height});
+}
+
 size const &node::scale() const {
     return this->_scale->value();
 }

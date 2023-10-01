@@ -39,6 +39,8 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
 
     void set_scale(ui::size &&);
     void set_scale(ui::size const &);
+    void set_width(float const);
+    void set_height(float const);
     [[nodiscard]] ui::size const &scale() const;
     [[nodiscard]] observing::syncable observe_scale(std::function<void(ui::size const &)> &&);
 
