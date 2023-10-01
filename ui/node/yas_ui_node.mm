@@ -109,6 +109,14 @@ void node::set_position(point const &position) {
     this->_position->set_value(position);
 }
 
+void node::set_x(float const x) {
+    this->set_position({.x = x, .y = this->_position->value().y});
+}
+
+void node::set_y(float const y) {
+    this->set_position({.x = this->_position->value().x, .y = y});
+}
+
 point const &node::position() const {
     return this->_position->value();
 }

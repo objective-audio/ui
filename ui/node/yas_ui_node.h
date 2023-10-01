@@ -27,6 +27,8 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
 
     void set_position(ui::point &&);
     void set_position(ui::point const &);
+    void set_x(float const);
+    void set_y(float const);
     [[nodiscard]] ui::point const &position() const;
     [[nodiscard]] observing::syncable observe_position(std::function<void(ui::point const &)> &&);
 
