@@ -101,6 +101,22 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(node->rgb_color().blue, 0.3f);
     XCTAssertEqual(node->alpha(), 0.4f);
 
+    node->set_x(10.0f);
+    XCTAssertEqual(node->position().x, 10.0f);
+    XCTAssertEqual(node->position().y, 2.0f);
+
+    node->set_y(11.0f);
+    XCTAssertEqual(node->position().x, 10.0f);
+    XCTAssertEqual(node->position().y, 11.0f);
+
+    node->set_width(12.0f);
+    XCTAssertEqual(node->scale().width, 12.0f);
+    XCTAssertEqual(node->scale().height, 5.0f);
+
+    node->set_height(13.0f);
+    XCTAssertEqual(node->scale().width, 12.0f);
+    XCTAssertEqual(node->scale().height, 13.0f);
+
     node->set_meshes({mesh});
     XCTAssertEqual(node->meshes().size(), 1);
     XCTAssertEqual(node->meshes().at(0), mesh);
