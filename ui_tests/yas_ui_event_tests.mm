@@ -299,20 +299,24 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     bool called = false;
 
-    auto canceller = manager->observe([&called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::cursor);
+    auto canceller = manager
+                         ->observe([&called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::cursor);
 
-        auto const &value = event->get<cursor>();
-        XCTAssertEqual(value.position.x, 0.25f);
-        XCTAssertEqual(value.position.y, 0.125f);
-        XCTAssertEqual(value.timestamp, 101.0);
+                             auto const &value = event->get<cursor>();
+                             XCTAssertEqual(value.position.x, 0.25f);
+                             XCTAssertEqual(value.position.y, 0.125f);
+                             XCTAssertEqual(value.timestamp, 101.0);
 
-        called = true;
-    });
+                             called = true;
+                         })
+                         .end();
 
     manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{0.25f, 0.125f}, 101.0});
 
     XCTAssertTrue(called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_cursor_event_changed {
@@ -321,11 +325,13 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     int called_count = 0;
 
-    auto canceller = manager->observe([&called_count, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::cursor);
+    auto canceller = manager
+                         ->observe([&called_count, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::cursor);
 
-        ++called_count;
-    });
+                             ++called_count;
+                         })
+                         .end();
 
     // began〜endedの間のみchangedが受け入れられる
 
@@ -348,6 +354,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     manager_for_view->input_cursor_event(cursor_phase::changed, cursor_event{{1.0f, 1.0f}, 101.0});
 
     XCTAssertEqual(called_count, 3);
+
+    canceller->cancel();
 }
 
 - (void)test_input_touch_event_began {
@@ -356,22 +364,26 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     bool called = false;
 
-    auto canceller = manager->observe([&called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::touch);
+    auto canceller = manager
+                         ->observe([&called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::touch);
 
-        auto const &value = event->get<touch>();
-        XCTAssertEqual(value.touch_id, (touch_id{.kind = touch_kind::touch, .identifier = 100}));
-        XCTAssertEqual(value.position.x, 256.0f);
-        XCTAssertEqual(value.position.y, 512.0f);
-        XCTAssertEqual(value.timestamp, 201.0);
+                             auto const &value = event->get<touch>();
+                             XCTAssertEqual(value.touch_id, (touch_id{.kind = touch_kind::touch, .identifier = 100}));
+                             XCTAssertEqual(value.position.x, 256.0f);
+                             XCTAssertEqual(value.position.y, 512.0f);
+                             XCTAssertEqual(value.timestamp, 201.0);
 
-        called = true;
-    });
+                             called = true;
+                         })
+                         .end();
 
     manager_for_view->input_touch_event(
         event_phase::began, touch_event{{.kind = touch_kind::touch, .identifier = 100}, {256.0f, 512.0f}, 201.0});
 
     XCTAssertTrue(called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_key_event_began {
@@ -380,21 +392,25 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     bool called = false;
 
-    auto canceller = manager->observe([&called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::key);
+    auto canceller = manager
+                         ->observe([&called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::key);
 
-        auto const &value = event->get<key>();
-        XCTAssertEqual(value.key_code, 200);
-        XCTAssertEqual(value.characters, "xyz");
-        XCTAssertEqual(value.raw_characters, "uvw");
-        XCTAssertEqual(value.timestamp, 301.0);
+                             auto const &value = event->get<key>();
+                             XCTAssertEqual(value.key_code, 200);
+                             XCTAssertEqual(value.characters, "xyz");
+                             XCTAssertEqual(value.raw_characters, "uvw");
+                             XCTAssertEqual(value.timestamp, 301.0);
 
-        called = true;
-    });
+                             called = true;
+                         })
+                         .end();
 
     manager_for_view->input_key_event(event_phase::began, key_event{200, "xyz", "uvw", 301.0});
 
     XCTAssertTrue(called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_modifier_event_began {
@@ -404,24 +420,28 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool alt_called = false;
     bool func_called = false;
 
-    auto canceller = manager->observe([&alt_called, &func_called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::modifier);
+    auto canceller = manager
+                         ->observe([&alt_called, &func_called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::modifier);
 
-        auto const &value = event->get<modifier>();
+                             auto const &value = event->get<modifier>();
 
-        if (value.flag == modifier_flags::alternate) {
-            alt_called = true;
-        }
+                             if (value.flag == modifier_flags::alternate) {
+                                 alt_called = true;
+                             }
 
-        if (value.flag == modifier_flags::function) {
-            func_called = true;
-        }
-    });
+                             if (value.flag == modifier_flags::function) {
+                                 func_called = true;
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_modifier_event(modifier_flags(modifier_flags::alternate | modifier_flags::function), 0.0);
 
     XCTAssertTrue(alt_called);
     XCTAssertTrue(func_called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_cursor_events {
@@ -431,15 +451,17 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::cursor);
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::cursor);
 
-        if (event->phase() == event_phase::began) {
-            began_called = true;
-        } else if (event->phase() == event_phase::ended) {
-            ended_called = true;
-        }
-    });
+                             if (event->phase() == event_phase::began) {
+                                 began_called = true;
+                             } else if (event->phase() == event_phase::ended) {
+                                 ended_called = true;
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
@@ -467,6 +489,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_touch_events {
@@ -476,17 +500,19 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::touch);
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::touch);
 
-        if (event->get<touch>().touch_id == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
-            if (event->phase() == event_phase::began) {
-                began_called = true;
-            } else if (event->phase() == event_phase::ended) {
-                ended_called = true;
-            }
-        }
-    });
+                             if (event->get<touch>().touch_id == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
+                                 if (event->phase() == event_phase::began) {
+                                     began_called = true;
+                                 } else if (event->phase() == event_phase::ended) {
+                                     ended_called = true;
+                                 }
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_touch_event(event_phase::ended,
                                         touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
@@ -531,6 +557,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_key_events {
@@ -540,17 +568,19 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::key);
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::key);
 
-        if (event->get<key>().key_code == 1) {
-            if (event->phase() == event_phase::began) {
-                began_called = true;
-            } else if (event->phase() == event_phase::ended) {
-                ended_called = true;
-            }
-        }
-    });
+                             if (event->get<key>().key_code == 1) {
+                                 if (event->phase() == event_phase::began) {
+                                     began_called = true;
+                                 } else if (event->phase() == event_phase::ended) {
+                                     ended_called = true;
+                                 }
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
@@ -590,6 +620,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_input_modifier_events {
@@ -599,17 +631,19 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        XCTAssertEqual(event->type(), event_type::modifier);
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             XCTAssertEqual(event->type(), event_type::modifier);
 
-        if (event->get<modifier>().flag == modifier_flags::alpha_shift) {
-            if (event->phase() == event_phase::began) {
-                began_called = true;
-            } else if (event->phase() == event_phase::ended) {
-                ended_called = true;
-            }
-        }
-    });
+                             if (event->get<modifier>().flag == modifier_flags::alpha_shift) {
+                                 if (event->phase() == event_phase::began) {
+                                     began_called = true;
+                                 } else if (event->phase() == event_phase::ended) {
+                                     ended_called = true;
+                                 }
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
@@ -659,6 +693,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
+
+    canceller->cancel();
 }
 
 - (void)test_observe_input_cursor_events {
@@ -668,15 +704,17 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        if (event->type() == event_type::cursor) {
-            if (event->phase() == event_phase::began) {
-                began_called = true;
-            } else if (event->phase() == event_phase::ended) {
-                ended_called = true;
-            }
-        }
-    });
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             if (event->type() == event_type::cursor) {
+                                 if (event->phase() == event_phase::began) {
+                                     began_called = true;
+                                 } else if (event->phase() == event_phase::ended) {
+                                     ended_called = true;
+                                 }
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 2.0f}, 0.0});  // outsize of view
 
@@ -704,6 +742,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_observe_input_touch_events {
@@ -713,17 +753,20 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        if (event->type() == event_type::touch) {
-            if (event->get<touch>().touch_id == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
-                if (event->phase() == event_phase::began) {
-                    began_called = true;
-                } else if (event->phase() == event_phase::ended) {
-                    ended_called = true;
+    auto canceller =
+        manager
+            ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                if (event->type() == event_type::touch) {
+                    if (event->get<touch>().touch_id == touch_id{.kind = touch_kind::touch, .identifier = 1}) {
+                        if (event->phase() == event_phase::began) {
+                            began_called = true;
+                        } else if (event->phase() == event_phase::ended) {
+                            ended_called = true;
+                        }
+                    }
                 }
-            }
-        }
-    });
+            })
+            .end();
 
     manager_for_view->input_touch_event(event_phase::ended,
                                         touch_event{{.kind = touch_kind::touch, .identifier = 1}, {.v = 0.0f}, 0.0});
@@ -768,6 +811,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_observe_input_key_events {
@@ -777,17 +822,19 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        if (event->type() == event_type::key) {
-            if (event->get<key>().key_code == 1) {
-                if (event->phase() == event_phase::began) {
-                    began_called = true;
-                } else if (event->phase() == event_phase::ended) {
-                    ended_called = true;
-                }
-            }
-        }
-    });
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             if (event->type() == event_type::key) {
+                                 if (event->get<key>().key_code == 1) {
+                                     if (event->phase() == event_phase::began) {
+                                         began_called = true;
+                                     } else if (event->phase() == event_phase::ended) {
+                                         ended_called = true;
+                                     }
+                                 }
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_key_event(event_phase::ended, key_event{1, "", "", 0.0});
 
@@ -827,6 +874,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
 
     XCTAssertFalse(began_called);
     XCTAssertFalse(ended_called);
+
+    canceller->cancel();
 }
 
 - (void)test_observe_input_modifier_events {
@@ -836,17 +885,19 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     bool began_called = false;
     bool ended_called = false;
 
-    auto canceller = manager->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
-        if (event->type() == event_type::modifier) {
-            if (event->get<modifier>().flag == modifier_flags::alpha_shift) {
-                if (event->phase() == event_phase::began) {
-                    began_called = true;
-                } else if (event->phase() == event_phase::ended) {
-                    ended_called = true;
-                }
-            }
-        }
-    });
+    auto canceller = manager
+                         ->observe([&began_called, &ended_called, self](std::shared_ptr<event> const &event) {
+                             if (event->type() == event_type::modifier) {
+                                 if (event->get<modifier>().flag == modifier_flags::alpha_shift) {
+                                     if (event->phase() == event_phase::began) {
+                                         began_called = true;
+                                     } else if (event->phase() == event_phase::ended) {
+                                         ended_called = true;
+                                     }
+                                 }
+                             }
+                         })
+                         .end();
 
     manager_for_view->input_modifier_event(modifier_flags(0), 0.0);
 
@@ -896,6 +947,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     XCTAssertFalse(began_called);
     XCTAssertTrue(ended_called);
     ended_called = false;
+
+    canceller->cancel();
 }
 
 - (void)test_observe {
@@ -907,7 +960,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     auto clear = [&called_events]() { called_events.clear(); };
 
     auto canceller =
-        manager->observe([&called_events](std::shared_ptr<event> const &event) { called_events.push_back(event); });
+        manager->observe([&called_events](std::shared_ptr<event> const &event) { called_events.push_back(event); })
+            .end();
 
     manager_for_view->input_cursor_event(cursor_phase::began, cursor_event{{.v = 0.0f}, 0.0});
 
@@ -939,6 +993,8 @@ using manager_for_view_ptr = std::shared_ptr<event_manager_for_view>;
     XCTAssertEqual(called_events.size(), 1);
     XCTAssertEqual(called_events.at(0)->type(), event_type::modifier);
     XCTAssertTrue(called_events.at(0)->type_info() == typeid(modifier));
+
+    canceller->cancel();
 }
 
 - (void)test_is_equal_touch_id {

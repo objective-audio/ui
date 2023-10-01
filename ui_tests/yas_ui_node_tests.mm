@@ -101,6 +101,22 @@ struct test_render_encoder : render_encodable {
     XCTAssertEqual(node->rgb_color().blue, 0.3f);
     XCTAssertEqual(node->alpha(), 0.4f);
 
+    node->set_x(10.0f);
+    XCTAssertEqual(node->position().x, 10.0f);
+    XCTAssertEqual(node->position().y, 2.0f);
+
+    node->set_y(11.0f);
+    XCTAssertEqual(node->position().x, 10.0f);
+    XCTAssertEqual(node->position().y, 11.0f);
+
+    node->set_width(12.0f);
+    XCTAssertEqual(node->scale().width, 12.0f);
+    XCTAssertEqual(node->scale().height, 5.0f);
+
+    node->set_height(13.0f);
+    XCTAssertEqual(node->scale().width, 12.0f);
+    XCTAssertEqual(node->scale().height, 13.0f);
+
     node->set_meshes({mesh});
     XCTAssertEqual(node->meshes().size(), 1);
     XCTAssertEqual(node->meshes().at(0), mesh);
@@ -309,7 +325,7 @@ struct test_render_encoder : render_encodable {
     auto sub_node = node::make_shared();
     std::vector<node::method> called;
 
-    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); });
+    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); }).end();
 
     parent_node->add_sub_node(sub_node);
 
@@ -320,6 +336,8 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertEqual(called.at(1), node::method::removed_from_super);
+
+    canceller->cancel();
 }
 
 - (void)test_observe_on_super_destructor {
@@ -327,7 +345,7 @@ struct test_render_encoder : render_encodable {
 
     std::vector<node::method> called;
 
-    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); });
+    auto canceller = sub_node->observe([&called](node::method const &method) { called.emplace_back(method); }).end();
 
     {
         auto parent_node = node::make_shared();
@@ -340,6 +358,8 @@ struct test_render_encoder : render_encodable {
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertEqual(called.at(1), node::method::removed_from_super);
+
+    canceller->cancel();
 }
 
 - (void)test_fetch_updates {

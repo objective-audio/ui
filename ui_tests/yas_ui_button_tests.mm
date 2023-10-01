@@ -109,7 +109,7 @@ struct renderer_observer_stub final : renderer_observable, renderer_for_view {
     std::vector<button::phase> observed_methods;
 
     auto canceller =
-        button->observe([&observed_methods](auto const &context) { observed_methods.push_back(context.phase); });
+        button->observe([&observed_methods](auto const &context) { observed_methods.push_back(context.phase); }).end();
 
     [self waitForExpectationsWithTimeout:1.0 handler:NULL];
 
@@ -150,6 +150,8 @@ struct renderer_observer_stub final : renderer_observable, renderer_for_view {
 
     XCTAssertEqual(observed_methods.size(), 7);
     XCTAssertEqual(observed_methods.back(), button::phase::ended);
+
+    canceller->cancel();
 }
 
 - (void)test_set_texture {

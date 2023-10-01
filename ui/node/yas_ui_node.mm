@@ -109,6 +109,14 @@ void node::set_position(point const &position) {
     this->_position->set_value(position);
 }
 
+void node::set_x(float const x) {
+    this->set_position({.x = x, .y = this->_position->value().y});
+}
+
+void node::set_y(float const y) {
+    this->set_position({.x = this->_position->value().x, .y = y});
+}
+
 point const &node::position() const {
     return this->_position->value();
 }
@@ -139,6 +147,14 @@ void node::set_scale(size &&scale) {
 
 void node::set_scale(size const &scale) {
     this->_scale->set_value(scale);
+}
+
+void node::set_width(float const width) {
+    this->_scale->set_value({.width = width, .height = this->_scale->value().height});
+}
+
+void node::set_height(float const height) {
+    this->_scale->set_value({.width = this->_scale->value().width, .height = height});
 }
 
 size const &node::scale() const {

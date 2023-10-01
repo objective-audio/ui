@@ -206,11 +206,13 @@ using namespace yas::ui;
 
     std::size_t received = 0;
 
-    auto canceller = texture->observe_metal_texture_changed([&received](auto const &) { received += 1; });
+    auto canceller = texture->observe_metal_texture_changed([&received](auto const &) { received += 1; }).end();
 
     texture->metal_setup(metal_system);
 
     XCTAssertEqual(received, 1);
+
+    canceller->cancel();
 }
 
 - (void)test_observe_size_updated {
@@ -220,11 +222,13 @@ using namespace yas::ui;
 
     std::size_t received = 0;
 
-    auto canceller = texture->observe_size_updated([&received](auto const &) { received += 1; });
+    auto canceller = texture->observe_size_updated([&received](auto const &) { received += 1; }).end();
 
     texture->set_point_size({16, 16});
 
     XCTAssertEqual(received, 1);
+
+    canceller->cancel();
 }
 
 @end
