@@ -9,6 +9,7 @@
 #include <simd/simd.h>
 #include <ui/yas_ui_color.h>
 #include <ui/yas_ui_shared_types.h>
+#include <functional>
 #include <optional>
 #include <ostream>
 #include <string>
