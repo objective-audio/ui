@@ -330,14 +330,14 @@ void node::remove_sub_node(std::size_t const idx) {
 }
 
 void node::remove_all_sub_nodes() {
-    if (this->_sub_nodes.size() == 0) {
+    if (this->_sub_nodes.empty()) {
         return;
     }
 
-    std::weak_ptr<node> weak_node = std::shared_ptr<node>{nullptr};
+    std::weak_ptr<node> const weak_null_node = std::shared_ptr<node>{nullptr};
 
     for (auto const &sub_node : this->_sub_nodes) {
-        sub_node->_parent->set_value(std::move(weak_node));
+        sub_node->_parent->set_value(weak_null_node);
         sub_node->_weak_parent.reset();
     }
 
