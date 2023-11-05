@@ -147,6 +147,7 @@ void strings::_update_collection_layout() {
         if (word == "\n" || word == "\r") {
             lines.emplace_back(
                 collection_layout::line{.cell_sizes = std::move(cell_sizes), .new_line_min_offset = cell_height});
+            cell_sizes.clear();
         } else {
             auto const advance = font_atlas->advance(word);
             cell_sizes.emplace_back(size{.width = advance.width, .height = cell_height});
