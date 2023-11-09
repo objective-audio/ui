@@ -113,6 +113,11 @@ observing::endable font_atlas::observe_rects_updated(std::function<void(std::nul
     return this->_rects_updated_notifier->observe(std::move(handler));
 }
 
+observing::endable font_atlas::observe_rects_updated(std::size_t const order,
+                                                     std::function<void(std::nullptr_t const &)> &&handler) {
+    return this->_rects_updated_notifier->observe(order, std::move(handler));
+}
+
 void font_atlas::_setup(std::string const &words) {
     auto &texture = this->texture();
 
