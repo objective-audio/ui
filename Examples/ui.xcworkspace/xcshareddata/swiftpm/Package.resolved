@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "cpp_utils",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/objective-audio/cpp_utils.git",
+      "state" : {
+        "branch" : "swift-package",
+        "revision" : "990eb7f3252f41130847b3a20bfcfa5243a4be16"
+      }
+    },
+    {
+      "identity" : "objc_utils",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/objective-audio/objc_utils.git",
+      "state" : {
+        "branch" : "swift-package",
+        "revision" : "ac7fda1958db599f99963dc93ca4e50cb79690dd"
+      }
+    },
+    {
+      "identity" : "observing",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/objective-audio/observing.git",
+      "state" : {
+        "branch" : "swift-package",
+        "revision" : "fc6ef4723967cac7b1ca1d6a70ebaef0c9a701ea"
+      }
+    }
+  ],
+  "version" : 2
+}
