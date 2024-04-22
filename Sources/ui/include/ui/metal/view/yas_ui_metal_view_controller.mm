@@ -113,9 +113,18 @@ struct metal_view_cpp {
 #endif
 
 #if TARGET_OS_IPHONE
+- (ui::appearance)uiAppearance {
+    switch (self.traitCollection.userInterfaceStyle) {
+        case UIUserInterfaceStyleDark:
+            return ui::appearance::dark;
+        default:
+            return ui::appearance::normal;
+    }
+}
+
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
     if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle) {
-        [self appearanceDidChange:self.metalView.uiAppearance];
+        [self appearanceDidChange:self.uiAppearance];
     }
 }
 #endif
