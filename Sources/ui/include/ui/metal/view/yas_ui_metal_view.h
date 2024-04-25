@@ -1,7 +1,6 @@
 #pragma once
 
-#import "yas_ui_metal_view_objc.h"
-
+#include <ui/metal/view/yas_ui_metal_view_objc.h>
 #include <ui/metal/view/yas_ui_metal_view_dependency.h>
 
 @protocol YASUIMetalViewDelegate;
