@@ -1,16 +1,12 @@
-//
-//  yas_ui_metal_view.h
-//
-
 #pragma once
 
-#include <MetalKit/MetalKit.h>
-#include <ui/common/yas_ui_objc.h>
+#import "yas_ui_metal_view_objc.h"
+
 #include <ui/metal/view/yas_ui_metal_view_dependency.h>
 
 @protocol YASUIMetalViewDelegate;
 
-@interface YASUIMetalView : MTKView
+@interface YASUIMetalView (objc)
 
 @property (nonatomic, yas_weak_for_property) id<YASUIMetalViewDelegate> uiDelegate;
 
