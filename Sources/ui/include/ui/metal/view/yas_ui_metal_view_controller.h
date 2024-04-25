@@ -1,27 +1,10 @@
-//
-//  yas_ui_metal_view_controller.h
-//
-
 #pragma once
 
 #include <cpp-utils/yas_objc_ptr.h>
-#include <ui/metal/view/yas_ui_metal_view.h>
-#if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
-#elif TARGET_OS_MAC
-#import <AppKit/AppKit.h>
-#endif
+#include "yas_ui_metal_view.h"
+#include "yas_ui_metal_view_controller_objc.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
-@class YASUIMetalView;
-
-@interface YASUIMetalViewController : yas_objc_view_controller
-
-@property (nonatomic, strong, readonly) YASUIMetalView *metalView;
-@property (nonatomic, assign, getter=isPaused) BOOL paused;
-
-- (void)initCommon NS_REQUIRES_SUPER;
+@interface YASUIMetalViewController ()
 
 - (std::shared_ptr<yas::ui::view_look> const &)view_look;
 
@@ -32,5 +15,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (std::shared_ptr<yas::ui::renderer_for_view> const &)renderer;
 
 @end
-
-NS_ASSUME_NONNULL_END

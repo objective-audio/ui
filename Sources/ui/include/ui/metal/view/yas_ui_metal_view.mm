@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_metal_view.h"
-
 #include <cpp-utils/yas_cf_utils.h>
 #include <cpp-utils/yas_objc_ptr.h>
 
@@ -37,6 +36,12 @@ ui::event_phase to_phase(NSEventPhase const phase) {
 }
 }  // namespace yas
 #endif
+
+@interface YASUIMetalView ()
+
+@property (nonatomic, yas_weak_for_property) id<YASUIMetalViewDelegate> uiDelegate;
+
+@end
 
 @implementation YASUIMetalView {
     ui::metal_view::cpp _cpp;

@@ -3,6 +3,7 @@
 //
 
 #include "yas_ui_metal_view_controller.h"
+#include "yas_ui_metal_view.h"
 #include "yas_ui_metal_view_controller_dependency.h"
 #include "yas_ui_metal_view_controller_dependency_objc.h"
 

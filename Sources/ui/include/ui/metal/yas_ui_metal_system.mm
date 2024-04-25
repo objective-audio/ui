@@ -9,7 +9,7 @@
 #include <cpp-utils/yas_unless.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/mesh_data/yas_ui_mesh_data.h>
-#include <ui/metal/view/yas_ui_metal_view.h>
+#include <ui/metal/view/yas_ui_metal_view_objc.h>
 #include <ui/metal/yas_ui_metal_buffer.h>
 #include <ui/metal/yas_ui_metal_encode_info.h>
 #include <ui/metal/yas_ui_metal_encoder.h>
