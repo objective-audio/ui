@@ -25,10 +25,20 @@ let package = Package(
             dependencies: ["ui-swift-bundle"]
         ),
         .target(
+            name: "ui-objc"
+        ),
+        .target(
+            name: "ui-view-objc",
+            dependencies: [
+                "ui-objc"
+            ]
+        ),
+        .target(
             name: "ui",
             dependencies: [
                 .product(name: "observing", package: "observing"),
-                "ui-bundle"
+                "ui-bundle",
+                "ui-view-objc"
             ],
             cSettings: [
                 .unsafeFlags(["-fmodules"]),
