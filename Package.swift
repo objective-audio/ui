@@ -13,7 +13,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/objective-audio/observing.git", branch: "main"),
+        .package(url: "https://github.com/objective-audio/cpp_utils.git", branch: "master"),
     ],
     targets: [
         .target(
@@ -36,7 +36,7 @@ let package = Package(
         .target(
             name: "ui",
             dependencies: [
-                .product(name: "observing", package: "observing"),
+                .product(name: "cpp-utils", package: "cpp_utils"),
                 "ui-bundle",
                 "ui-view-objc"
             ],
