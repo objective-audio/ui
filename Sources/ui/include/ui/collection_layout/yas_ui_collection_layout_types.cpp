@@ -4,7 +4,7 @@
 
 #include "yas_ui_collection_layout_types.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 
 using namespace yas;
 using namespace yas::ui;

@@ -4,8 +4,8 @@
 
 #include "yas_ui_metal_encode_info.h"
 
-#include <cpp-utils/yas_objc_ptr.h>
-#include <cpp-utils/yas_stl_utils.h>
+#include <cpp-utils/objc_ptr.h>
+#include <cpp-utils/stl_utils.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/texture/yas_ui_texture.h>
 #include <unordered_map>

@@ -4,7 +4,7 @@
 
 #include "yas_ui_layout_actions.h"
 
-#include <cpp-utils/yas_each_index.h>
+#include <cpp-utils/each_index.h>
 #include <ui/action/yas_ui_action_manager.h>
 
 using namespace yas;

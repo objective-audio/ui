@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_timer.h>
+#include <cpp-utils/timer.h>
 #include <ui/yas_ui_umbrella.h>
 
 #include "yas_sample_ptr.h"

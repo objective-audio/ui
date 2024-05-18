@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/objc_ptr.h>
 #include "yas_ui_metal_view.h"
 #include <ui/metal/view/yas_ui_metal_view_controller_objc.h>
 

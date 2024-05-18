@@ -8,7 +8,7 @@
 #include <ui/common/yas_ui_types.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 #include <string>
 
 namespace yas::ui {

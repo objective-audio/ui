@@ -13,7 +13,7 @@
 #include <ui/render_target/yas_ui_render_target_types.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct render_target final {

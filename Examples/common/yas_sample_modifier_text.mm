@@ -3,7 +3,7 @@
 //
 
 #include "yas_sample_modifier_text.h"
-#include <cpp-utils/yas_stl_utils.h>
+#include <cpp-utils/stl_utils.h>
 
 using namespace yas;
 using namespace yas::ui;

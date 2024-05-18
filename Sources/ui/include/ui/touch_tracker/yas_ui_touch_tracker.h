@@ -9,7 +9,7 @@
 #include <ui/standard/yas_ui_standard.h>
 #include <ui/touch_tracker/yas_ui_touch_tracker_types.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct touch_tracker final {

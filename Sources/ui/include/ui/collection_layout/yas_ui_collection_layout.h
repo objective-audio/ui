@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <cpp-utils/yas_result.h>
+#include <cpp-utils/result.h>
 #include <ui/collection_layout/yas_ui_collection_layout_types.h>
 #include <ui/layout/yas_ui_layout_guide.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 #include <vector>
 
 namespace yas::ui {

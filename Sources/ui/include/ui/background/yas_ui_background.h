@@ -6,7 +6,7 @@
 
 #include <ui/color/yas_ui_color.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct background final {

@@ -13,7 +13,7 @@
 #include <ui/renderer/yas_ui_renderer.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 #include <vector>
 
 namespace yas::ui {

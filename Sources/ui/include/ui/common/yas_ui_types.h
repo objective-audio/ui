@@ -5,7 +5,7 @@
 #pragma once
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <cpp-utils/yas_flagset.h>
+#include <cpp-utils/flagset.h>
 #include <simd/simd.h>
 #include <ui/color/yas_ui_color.h>
 #include <ui/common/yas_ui_shared_types.h>

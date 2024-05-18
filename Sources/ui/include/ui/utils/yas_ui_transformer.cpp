@@ -4,7 +4,7 @@
 
 #include "yas_ui_transformer.h"
 
-#include <cpp-utils/yas_each_index.h>
+#include <cpp-utils/each_index.h>
 #include <math.h>
 
 using namespace yas;

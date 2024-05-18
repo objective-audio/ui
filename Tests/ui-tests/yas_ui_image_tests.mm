@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp-utils/yas_each_index.h>
+#import <cpp-utils/each_index.h>
 #import <ui/yas_ui_umbrella.h>
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)

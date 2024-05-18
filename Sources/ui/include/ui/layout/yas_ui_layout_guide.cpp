@@ -4,7 +4,7 @@
 
 #include "yas_ui_layout_guide.h"
 
-#include <cpp-utils/yas_delaying_caller.h>
+#include <cpp-utils/delaying_caller.h>
 
 using namespace yas;
 using namespace yas::ui;

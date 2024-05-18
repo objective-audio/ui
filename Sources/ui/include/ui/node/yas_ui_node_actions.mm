@@ -4,7 +4,7 @@
 
 #include "yas_ui_node_actions.h"
 
-#include <cpp-utils/yas_stl_utils.h>
+#include <cpp-utils/stl_utils.h>
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/common/yas_ui_types.h>
 

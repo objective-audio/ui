@@ -4,7 +4,7 @@
 
 #include "yas_ui_strings.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <ui/collection_layout/yas_ui_collection_layout.h>
 #include <ui/layout/yas_ui_layout_guide.h>
 #include <ui/layout/yas_ui_layout_types.h>

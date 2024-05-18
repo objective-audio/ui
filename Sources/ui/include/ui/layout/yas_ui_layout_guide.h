@@ -8,7 +8,7 @@
 #include <ui/common/yas_ui_types.h>
 #include <ui/layout/yas_ui_layout_dependency.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct layout_value_guide final : layout_value_target, layout_value_source {

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <objc-utils/yas_objc_macros.h>
+#include <objc-utils/macros.h>
 
 #if TARGET_OS_IPHONE
 

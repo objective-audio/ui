@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/objc_ptr.h>
 
 #include <vector>
 

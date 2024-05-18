@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp-utils/yas_objc_ptr.h>
-#import <objc-utils/yas_objc_macros.h>
+#import <cpp-utils/objc_ptr.h>
+#import <objc-utils/macros.h>
 #import <ui/yas_ui_umbrella.h>
 #import <iostream>
 #import <sstream>

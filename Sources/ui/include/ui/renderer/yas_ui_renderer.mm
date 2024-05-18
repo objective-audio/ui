@@ -4,7 +4,7 @@
 
 #include "yas_ui_renderer.h"
 
-#include <cpp-utils/yas_to_bool.h>
+#include <cpp-utils/to_bool.h>
 #include <ui/node/yas_ui_node.h>
 
 using namespace yas;

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_result.h>
+#include <cpp-utils/result.h>
 #include <ui/common/yas_ui_types.h>
 
 #include <ostream>

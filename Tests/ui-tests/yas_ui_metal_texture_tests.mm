@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp-utils/yas_objc_ptr.h>
+#import <cpp-utils/objc_ptr.h>
 #import <ui/yas_ui_umbrella.h>
 #import <iostream>
 

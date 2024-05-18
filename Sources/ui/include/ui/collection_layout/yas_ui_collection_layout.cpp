@@ -4,8 +4,8 @@
 
 #include "yas_ui_collection_layout.h"
 
-#include <cpp-utils/yas_delaying_caller.h>
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/delaying_caller.h>
+#include <cpp-utils/fast_each.h>
 
 using namespace yas;
 using namespace yas::ui;

@@ -6,8 +6,8 @@
 
 #include <Metal/Metal.h>
 #include <MetalPerformanceShaders/MetalPerformanceShaders.h>
-#include <cpp-utils/yas_objc_ptr.h>
-#include <objc-utils/yas_objc_macros.h>
+#include <cpp-utils/objc_ptr.h>
+#include <objc-utils/macros.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/metal/yas_ui_metal_encode_info.h>
 #include <ui/render_info/yas_ui_render_info_dependency.h>
