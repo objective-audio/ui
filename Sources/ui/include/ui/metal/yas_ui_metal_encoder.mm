@@ -7,7 +7,7 @@
 #include "yas_ui_metal_encoder_dependency.h"
 #include "yas_ui_metal_texture.h"
 
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/objc_ptr.h>
 #include <ui/effect/yas_ui_effect.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/renderer/yas_ui_renderer.h>

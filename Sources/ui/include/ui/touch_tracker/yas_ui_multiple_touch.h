@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <cpp-utils/yas_system_time_provider.h>
+#include <cpp-utils/system_time_provider.h>
 #include <ui/touch_tracker/yas_ui_touch_tracker_types.h>
 
 #include <chrono>
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct multiple_touch final {

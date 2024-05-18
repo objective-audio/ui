@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 
 #include <functional>
 #include <numeric>

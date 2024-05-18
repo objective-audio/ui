@@ -4,7 +4,7 @@
 
 #include "yas_ui_collider.h"
 
-#include <cpp-utils/yas_to_bool.h>
+#include <cpp-utils/to_bool.h>
 
 using namespace yas;
 using namespace yas::ui;

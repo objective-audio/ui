@@ -5,8 +5,8 @@
 #include "yas_ui_metal_system.h"
 #include "yas_ui_shaders.h"
 
-#include <cpp-utils/yas_each_index.h>
-#include <cpp-utils/yas_unless.h>
+#include <cpp-utils/each_index.h>
+#include <cpp-utils/unless.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/mesh_data/yas_ui_mesh_data.h>
 #include <ui/metal/view/yas_ui_metal_view_objc.h>

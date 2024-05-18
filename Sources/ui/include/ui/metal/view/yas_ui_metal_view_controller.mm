@@ -7,13 +7,13 @@
 #include "yas_ui_metal_view_controller_dependency.h"
 #include "yas_ui_metal_view_controller_dependency_objc.h"
 
-#include <objc-utils/yas_objc_unowned.h>
+#include <objc-utils/unowned.h>
 #include <ui/background/yas_ui_background.h>
 #include <ui/color/yas_ui_rgb_color.h>
 #include <ui/metal/view/yas_ui_metal_view_utils.h>
 #include <ui/metal/yas_ui_metal_system.h>
 #include <ui/view_look/yas_ui_view_look.h>
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 NS_ASSUME_NONNULL_BEGIN
 

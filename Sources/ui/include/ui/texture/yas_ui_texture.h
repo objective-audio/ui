@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include <cpp-utils/yas_result.h>
+#include <cpp-utils/result.h>
 #include <ui/common/yas_ui_common_dependency.h>
 #include <ui/common/yas_ui_types.h>
 #include <ui/metal/yas_ui_metal_setup_types.h>
 #include <ui/metal/yas_ui_metal_system.h>
 #include <ui/texture/yas_ui_texture_types.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 enum class draw_image_error;

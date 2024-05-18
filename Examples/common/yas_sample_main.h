@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/objc_ptr.h>
 #include <ui/yas_ui_umbrella.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 #include "yas_sample_bg.h"
 #include "yas_sample_big_button.h"

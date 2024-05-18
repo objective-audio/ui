@@ -4,10 +4,10 @@
 
 #import <CoreText/CoreText.h>
 #import <XCTest/XCTest.h>
-#import <cpp-utils/yas_cf_ref.h>
-#import <cpp-utils/yas_cf_utils.h>
-#import <cpp-utils/yas_each_index.h>
-#import <cpp-utils/yas_objc_ptr.h>
+#import <cpp-utils/cf_ref.h>
+#import <cpp-utils/cf_utils.h>
+#import <cpp-utils/each_index.h>
+#import <cpp-utils/objc_ptr.h>
 #import <ui/yas_ui_umbrella.h>
 #import <iostream>
 #import "yas_ui_view_look_stubs.h"

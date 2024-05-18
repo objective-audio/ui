@@ -4,7 +4,7 @@
 
 #include "yas_ui_button.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/collider/yas_ui_collider.h>
 #include <ui/detector/yas_ui_detector.h>

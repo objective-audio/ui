@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_flagset.h>
+#include <cpp-utils/flagset.h>
 #include <ui/common/yas_ui_common_dependency.h>
 #include <ui/common/yas_ui_types.h>
 #include <ui/event/yas_ui_event_types.h>
@@ -12,7 +12,7 @@
 #include <ui/rect_plane/yas_ui_rect_plane.h>
 #include <ui/touch_tracker/yas_ui_touch_tracker_types.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 class standard;

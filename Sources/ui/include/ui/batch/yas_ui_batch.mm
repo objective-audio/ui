@@ -5,9 +5,9 @@
 #include "yas_ui_batch.h"
 #include "yas_ui_batch_render_mesh_info.h"
 
-#include <cpp-utils/yas_stl_utils.h>
-#include <cpp-utils/yas_to_bool.h>
-#include <cpp-utils/yas_unless.h>
+#include <cpp-utils/stl_utils.h>
+#include <cpp-utils/to_bool.h>
+#include <cpp-utils/unless.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/mesh_data/yas_ui_dynamic_mesh_data.h>
 #include <ui/node/yas_ui_node.h>

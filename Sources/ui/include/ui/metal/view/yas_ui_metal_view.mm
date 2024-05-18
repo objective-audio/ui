@@ -3,8 +3,8 @@
 //
 
 #include "yas_ui_metal_view.h"
-#include <cpp-utils/yas_cf_utils.h>
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/cf_utils.h>
+#include <cpp-utils/objc_ptr.h>
 
 using namespace yas;
 using namespace yas::ui;

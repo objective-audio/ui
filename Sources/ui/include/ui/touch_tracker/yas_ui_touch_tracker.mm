@@ -4,7 +4,7 @@
 
 #include "yas_ui_touch_tracker.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <ui/detector/yas_ui_detector.h>
 #include <ui/event/yas_ui_event_manager.h>
 

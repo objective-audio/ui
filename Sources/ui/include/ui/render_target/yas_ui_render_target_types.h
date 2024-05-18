@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_flagset.h>
+#include <cpp-utils/flagset.h>
 
 namespace yas::ui {
 enum class render_target_update_reason : std::size_t {

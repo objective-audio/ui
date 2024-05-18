@@ -4,7 +4,7 @@
 
 #include "yas_ui_action.h"
 
-#include <cpp-utils/yas_stl_utils.h>
+#include <cpp-utils/stl_utils.h>
 #include <ui/node/yas_ui_node.h>
 
 using namespace yas;

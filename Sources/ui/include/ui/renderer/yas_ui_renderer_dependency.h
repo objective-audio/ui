@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_flagset.h>
+#include <cpp-utils/flagset.h>
 #include <simd/simd.h>
 #include <ui/action/yas_ui_action_types.h>
 #include <ui/render_info/yas_ui_render_info_dependency.h>

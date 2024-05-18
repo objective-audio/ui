@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Metal/Metal.h>
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/objc_ptr.h>
 #include <ui/metal/yas_ui_metal_setup_types.h>
 
 namespace yas::ui {

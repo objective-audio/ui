@@ -8,7 +8,7 @@
 #include <ui/metal/view/yas_ui_metal_view_controller_dependency.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct renderer final : renderer_for_view, renderer_observable {

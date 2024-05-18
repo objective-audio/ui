@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_index_range.h>
+#include <cpp-utils/index_range.h>
 #include <ui/color/yas_ui_color.h>
 #include <ui/common/yas_ui_types.h>
 #include <ui/layout/yas_ui_layout_types.h>

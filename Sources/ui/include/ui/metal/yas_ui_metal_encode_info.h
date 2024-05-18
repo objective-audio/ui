@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_objc_ptr.h>
+#include <cpp-utils/objc_ptr.h>
 #include <ui/effect/yas_ui_effect.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/metal/yas_ui_metal_encode_info_types.h>

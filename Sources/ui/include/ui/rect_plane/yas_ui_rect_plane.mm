@@ -2,7 +2,7 @@
 //  yas_ui_rect_plane.mm
 //
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <ui/color/yas_ui_rgb_color.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/mesh_data/yas_ui_dynamic_mesh_data.h>

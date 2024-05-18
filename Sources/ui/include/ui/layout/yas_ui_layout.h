@@ -6,7 +6,7 @@
 
 #include <ui/common/yas_ui_types.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 [[nodiscard]] observing::syncable layout(std::shared_ptr<layout_value_source> const &src_guide,

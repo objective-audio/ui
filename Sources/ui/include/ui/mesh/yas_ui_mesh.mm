@@ -4,9 +4,9 @@
 
 #include "yas_ui_mesh.h"
 
-#include <cpp-utils/yas_fast_each.h>
-#include <cpp-utils/yas_objc_ptr.h>
-#include <cpp-utils/yas_unless.h>
+#include <cpp-utils/fast_each.h>
+#include <cpp-utils/objc_ptr.h>
+#include <cpp-utils/unless.h>
 #include <ui/batch/yas_ui_batch_render_mesh_info.h>
 #include <ui/mesh_data/yas_ui_dynamic_mesh_data.h>
 #include <ui/metal/yas_ui_metal_encode_info.h>

@@ -3,8 +3,8 @@
 //
 
 #include "yas_sample_soft_keyboard.h"
-#include <cpp-utils/yas_fast_each.h>
-#include <cpp-utils/yas_stl_utils.h>
+#include <cpp-utils/fast_each.h>
+#include <cpp-utils/stl_utils.h>
 #include <limits>
 
 using namespace yas;

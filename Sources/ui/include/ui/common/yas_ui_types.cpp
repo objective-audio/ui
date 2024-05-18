@@ -4,7 +4,7 @@
 
 #include "yas_ui_types.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 
 #include <ui/common/yas_ui_shared_type_operators.hpp>
 

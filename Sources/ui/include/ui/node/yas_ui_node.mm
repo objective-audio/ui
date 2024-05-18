@@ -4,8 +4,8 @@
 
 #include "yas_ui_node.h"
 
-#include <cpp-utils/yas_to_bool.h>
-#include <cpp-utils/yas_unless.h>
+#include <cpp-utils/to_bool.h>
+#include <cpp-utils/unless.h>
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/batch/yas_ui_batch.h>
 #include <ui/color/yas_ui_rgb_color.h>

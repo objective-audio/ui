@@ -8,7 +8,7 @@
 #include <ui/event/yas_ui_event.h>
 #include <ui/metal/view/yas_ui_metal_view_dependency.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::ui {
 struct event_manager final : event_manager_for_view, event_observable {

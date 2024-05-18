@@ -6,9 +6,9 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreText/CoreText.h>
-#include <cpp-utils/yas_cf_ref.h>
-#include <cpp-utils/yas_cf_utils.h>
-#include <cpp-utils/yas_each_index.h>
+#include <cpp-utils/cf_ref.h>
+#include <cpp-utils/cf_utils.h>
+#include <cpp-utils/each_index.h>
 #include <ui/image/yas_ui_image.h>
 #include <ui/texture/yas_ui_texture_element.h>
 #include <ui/utils/yas_ui_math.h>
