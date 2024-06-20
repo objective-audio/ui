@@ -10,6 +10,7 @@
 
 #include <observing/umbrella.hpp>
 #include <string>
+#include <typeinfo>
 
 namespace yas::ui {
 struct anywhere_shape final {
