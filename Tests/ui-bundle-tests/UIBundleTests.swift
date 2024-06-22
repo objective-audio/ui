@@ -1,10 +1,10 @@
 import XCTest
 import Metal
-@testable import ui_swift_bundle
+@testable import ui_bundle
 
 final class UIBundleTests: XCTestCase {
-    func testSwiftBundle() throws {
+    func testBundle() throws {
         let device = try XCTUnwrap(MTLCreateSystemDefaultDevice())
-        XCTAssertNotNil(UISwiftBundle.defaultMetalLibrary(device: device))
+        XCTAssertNotNil(UIBundle.defaultMetalLibrary(with: device))
     }
 }

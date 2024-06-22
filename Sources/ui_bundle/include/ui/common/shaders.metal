@@ -4,22 +4,7 @@
 
 #include <simd/simd.h>
 #include <metal_stdlib>
-
-namespace yas {
-namespace ui {
-    struct vertex2d_t final {
-        simd::float2 position = 0.0f;
-        simd::float2 tex_coord = 0.0f;
-        simd::float4 color = 1.0f;
-    };
-
-    struct uniforms2d_t final {
-        simd::float4x4 matrix;
-        simd::float4 color = 1.0f;
-        bool use_mesh_color = false;
-    };
-}  // namespace ui
-}  // namespace yas
+#include "yas_ui_shared_types.h"
 
 using namespace metal;
 using namespace yas;
