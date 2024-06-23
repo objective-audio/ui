@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "cpp_utils",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/objective-audio/cpp_utils.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "386510b9f3ab41c1abfae773f5cf60da68a22e21"
+      }
+    }
+  ],
+  "version" : 2
+}

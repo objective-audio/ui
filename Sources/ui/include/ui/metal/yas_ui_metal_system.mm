@@ -3,7 +3,6 @@
 //
 
 #include "yas_ui_metal_system.h"
-#include "yas_ui_shaders.h"
 
 #include <cpp-utils/each_index.h>
 #include <cpp-utils/unless.h>

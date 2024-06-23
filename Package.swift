@@ -17,12 +17,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "ui-swift-bundle",
-            resources: [.process("Resources")]
-        ),
-        .target(
-            name: "ui-bundle",
-            dependencies: ["ui-swift-bundle"]
+            name: "ui_bundle"
         ),
         .target(
             name: "ui-objc"
@@ -37,7 +32,7 @@ let package = Package(
             name: "ui",
             dependencies: [
                 .product(name: "cpp-utils", package: "cpp_utils"),
-                "ui-bundle",
+                "ui_bundle",
                 "ui-view-objc"
             ],
             cSettings: [
@@ -64,7 +59,10 @@ let package = Package(
         .testTarget(
             name: "ui-bundle-tests",
             dependencies: [
-                "ui-swift-bundle"
+                "ui_bundle"
+            ],
+            swiftSettings: [
+                .interoperabilityMode(.Cxx)
             ]
         )
     ],

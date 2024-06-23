@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:">
+   </FileRef>
+   <FileRef
+      location = "group:Examples/ui_mac_sample/ui_mac_sample.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Examples/ui_ios_sample/ui_ios_sample.xcodeproj">
+   </FileRef>
+</Workspace>
