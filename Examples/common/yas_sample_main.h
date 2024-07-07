@@ -51,8 +51,7 @@ struct main {
         _font_atlas, standard->event_manager(), standard->view_look()->safe_area_layout_guide(),
         _draw_call_text->strings()->preferred_layout_guide()->top());
     sample::bg_ptr const _bg = sample::bg::make_shared(standard->view_look()->safe_area_layout_guide());
-    sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(
-        standard->event_manager(), standard->action_manager(), standard->detector());
+    sample::cursor_over_planes_ptr const _cursor_over_planes = sample::cursor_over_planes::make_shared(standard);
     sample::big_button_ptr const _big_button =
         sample::big_button::make_shared(standard->event_manager(), standard->detector(), standard->renderer());
     sample::big_button_text_ptr const _big_button_text = sample::big_button_text::make_shared(_font_atlas);
