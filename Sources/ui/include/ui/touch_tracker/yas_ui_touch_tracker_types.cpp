@@ -24,7 +24,7 @@ std::string yas::to_string(touch_tracker_phase const &phase) {
     }
 }
 
-std::ostream &operator<<(std::ostream &os, yas::ui::touch_tracker_phase const &method) {
-    os << to_string(method);
+std::ostream &operator<<(std::ostream &os, yas::ui::touch_tracker_phase const &phase) {
+    os << to_string(phase);
     return os;
 }

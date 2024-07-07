@@ -47,3 +47,4 @@
 #include <ui/view_look/yas_ui_view_look.h>
 
 #include <ui/common/yas_ui_shared_type_operators.hpp>
+#include <ui/cursor_tracker/yas_ui_cursor_tracker.hpp>

@@ -9,62 +9,43 @@
 using namespace yas;
 using namespace yas::ui;
 
-namespace yas::sample::cursor_over_planes_utils {
-static observing::cancellable_ptr _observe_events(std::vector<std::shared_ptr<node>> const &nodes,
-                                                  std::shared_ptr<ui::event_manager> const &event_manager,
-                                                  std::shared_ptr<ui::action_manager> const &action_manager,
-                                                  std::shared_ptr<ui::detector> const &detector) {
-    auto pool = observing::canceller_pool::make_shared();
+sample::cursor_over_planes::cursor_over_planes(std::shared_ptr<ui::standard> const &standard) {
+    this->_setup_nodes();
 
-    for (auto &node : nodes) {
+    for (auto const &node : this->_nodes) {
         auto const group = action_group::make_shared();
+        auto const cursor_tracker = ui::cursor_tracker::make_shared(standard, node);
+        this->_trackers.emplace_back(cursor_tracker);
 
-        event_manager
-            ->observe([group, weak_node = to_weak(node), weak_action_manager = to_weak(action_manager),
-                       weak_detector = to_weak(detector),
-                       prev_detected = std::make_shared<bool>(false)](std::shared_ptr<event> const &event) {
-                if (event->type() == event_type::cursor) {
-                    auto const &cursor_event = event->get<ui::cursor>();
+        cursor_tracker
+            ->observe([group, weak_node = to_weak(node),
+                       weak_action_manager = to_weak(standard->action_manager())](auto const &context) {
+                auto const action_manager = weak_action_manager.lock();
+                auto const node = weak_node.lock();
 
-                    auto const node = weak_node.lock();
-                    auto const action_manager = weak_action_manager.lock();
-                    auto const detector = weak_detector.lock();
-                    if (node && action_manager && detector) {
-                        auto is_detected = detector->detect(cursor_event.position, node->colliders().at(0));
+                if (action_manager && node) {
+                    auto make_color_action = [&group](std::shared_ptr<ui::node> const &node, rgb_color const &color) {
+                        return make_action(
+                            {.group = group, .target = node, .begin_color = node->rgb_color(), .end_color = color});
+                    };
 
-                        auto make_color_action = [&group](std::shared_ptr<ui::node> const &node,
-                                                          rgb_color const &color) {
-                            return make_action(
-                                {.group = group, .target = node, .begin_color = node->rgb_color(), .end_color = color});
-                        };
-
-                        if (is_detected && !*prev_detected) {
+                    switch (context.phase) {
+                        case cursor_tracker_phase::entered: {
                             action_manager->erase_action(group);
                             action_manager->insert_action(make_color_action(node, {1.0f, 0.6f, 0.0f}));
-                        } else if (!is_detected && *prev_detected) {
+                        } break;
+                        case cursor_tracker_phase::leaved: {
                             action_manager->erase_action(group);
                             action_manager->insert_action(make_color_action(node, {0.3f, 0.3f, 0.3f}));
-                        }
-
-                        *prev_detected = is_detected;
+                        } break;
+                        case cursor_tracker_phase::moved:
+                            break;
                     }
                 }
             })
             .end()
-            ->add_to(*pool);
+            ->add_to(this->_pool);
     }
-
-    return pool;
-}
-}  // namespace yas::sample::cursor_over_planes_utils
-
-sample::cursor_over_planes::cursor_over_planes(std::shared_ptr<ui::event_manager> const &event_manager,
-                                               std::shared_ptr<ui::action_manager> const &action_manager,
-                                               std::shared_ptr<ui::detector> const &detector) {
-    this->_setup_nodes();
-
-    cursor_over_planes_utils::_observe_events(this->_nodes, event_manager, action_manager, detector)
-        ->set_to(this->_event_canceller);
 }
 
 std::shared_ptr<node> const &sample::cursor_over_planes::node() {
@@ -97,8 +78,6 @@ void sample::cursor_over_planes::_setup_nodes() {
     }
 }
 
-sample::cursor_over_planes_ptr sample::cursor_over_planes::make_shared(
-    std::shared_ptr<ui::event_manager> const &event_manager, std::shared_ptr<ui::action_manager> const &action_manager,
-    std::shared_ptr<ui::detector> const &detector) {
-    return std::shared_ptr<cursor_over_planes>(new cursor_over_planes{event_manager, action_manager, detector});
+sample::cursor_over_planes_ptr sample::cursor_over_planes::make_shared(std::shared_ptr<ui::standard> const &standard) {
+    return std::shared_ptr<cursor_over_planes>(new cursor_over_planes{standard});
 }
