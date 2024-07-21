@@ -9,15 +9,23 @@
 #include <ui/layout/yas_ui_layout_dependency.h>
 #include <ui/mesh/yas_ui_mesh.h>
 #include <ui/metal/yas_ui_metal_setup_types.h>
+#include <ui/node/yas_ui_node_action_dependency.h>
 #include <ui/node/yas_ui_node_dependency.h>
 #include <ui/renderer/yas_ui_renderer.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
-#include <ui/node/yas_ui_node_action_dependency.h>
+
 #include <observing/umbrella.hpp>
 #include <vector>
 
 namespace yas::ui {
-struct node final : renderable_node, layout_point_target, parent_for_node, translate_action_target, rotate_action_target, scale_action_target, color_action_target, alpha_action_target {
+struct node final : renderable_node,
+                    layout_point_target,
+                    parent_for_node,
+                    translate_action_target,
+                    rotate_action_target,
+                    scale_action_target,
+                    color_action_target,
+                    alpha_action_target {
     enum class method {
         added_to_super,
         removed_from_super,
