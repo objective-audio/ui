@@ -10,7 +10,9 @@
 #include <observing/umbrella.hpp>
 
 namespace yas::ui {
-struct background final {
+struct background final : renderable_background {
+    [[nodiscard]] static std::shared_ptr<background> make_shared();
+
     void set_rgb_color(ui::rgb_color const &);
     void set_rgb_color(ui::rgb_color &&);
     [[nodiscard]] ui::rgb_color const &rgb_color() const;
@@ -22,9 +24,7 @@ struct background final {
 
     void set_color(ui::color const &);
     void set_color(ui::color &&);
-    [[nodiscard]] ui::color color() const;
-
-    [[nodiscard]] static std::shared_ptr<background> make_shared();
+    [[nodiscard]] ui::color color() const override;
 
    private:
     observing::value::holder_ptr<ui::rgb_color> _rgb_color;
@@ -40,5 +40,8 @@ struct background final {
     background(background &&) = delete;
     background &operator=(background const &) = delete;
     background &operator=(background &&) = delete;
+
+    void fetch_updates(ui::tree_updates &) override;
+    void clear_updates() override;
 };
 }  // namespace yas::ui

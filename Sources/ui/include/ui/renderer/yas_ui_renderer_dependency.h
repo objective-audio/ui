@@ -84,6 +84,7 @@ enum class batch_building_type {
 
 struct tree_updates {
     node_updates_t node_updates;
+    background_updates_t background_updates;
     mesh_updates_t mesh_updates;
     mesh_data_updates_t vertex_data_updates;
     mesh_data_updates_t index_data_updates;
@@ -105,6 +106,19 @@ struct renderable_node {
     virtual void clear_updates() = 0;
 
     [[nodiscard]] static std::shared_ptr<renderable_node> cast(std::shared_ptr<renderable_node> const &node) {
+        return node;
+    }
+};
+
+struct renderable_background {
+    virtual ~renderable_background() = default;
+
+    virtual void fetch_updates(ui::tree_updates &) = 0;
+    virtual void clear_updates() = 0;
+    [[nodiscard]] virtual ui::color color() const = 0;
+
+    [[nodiscard]] static std::shared_ptr<renderable_background> cast(
+        std::shared_ptr<renderable_background> const &node) {
         return node;
     }
 };
@@ -186,6 +200,7 @@ struct view_look_for_renderer {
     virtual ~view_look_for_renderer() = default;
 
     [[nodiscard]] virtual simd::float4x4 const &projection_matrix() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<ui::background> background() const = 0;
 };
 
 struct system_for_renderer {

@@ -7,6 +7,10 @@
 using namespace yas;
 using namespace yas::ui;
 
+std::shared_ptr<background> background::make_shared() {
+    return std::shared_ptr<background>(new background{});
+}
+
 background::background()
     : _rgb_color(observing::value::holder<ui::rgb_color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
@@ -62,6 +66,10 @@ ui::color background::color() const {
     return {rgb.red, rgb.green, rgb.blue, this->alpha()};
 }
 
-std::shared_ptr<background> background::make_shared() {
-    return std::shared_ptr<background>(new background{});
+void background::fetch_updates(ui::tree_updates &tree_updates) {
+    tree_updates.background_updates.flags |= this->_updates.flags;
+}
+
+void background::clear_updates() {
+    this->_updates.flags.reset();
 }

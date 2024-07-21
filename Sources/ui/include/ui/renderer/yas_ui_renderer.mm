@@ -5,6 +5,7 @@
 #include "yas_ui_renderer.h"
 
 #include <cpp-utils/to_bool.h>
+#include <ui/background/yas_ui_background.h>
 #include <ui/node/yas_ui_node.h>
 
 using namespace yas;
@@ -63,6 +64,7 @@ renderer::pre_render_result renderer::_pre_render() {
 
     tree_updates tree_updates;
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
+    renderable_background::cast(this->_view_look->background())->fetch_updates(tree_updates);
 
     if (tree_updates.is_collider_updated()) {
         this->_detector->begin_update();
@@ -77,6 +79,7 @@ renderer::pre_render_result renderer::_pre_render() {
 
 void renderer::_post_render() {
     renderable_node::cast(this->_root_node)->clear_updates();
+    renderable_background::cast(this->_view_look->background())->clear_updates();
     this->_detector->end_update();
     this->_updates.flags.reset();
 }

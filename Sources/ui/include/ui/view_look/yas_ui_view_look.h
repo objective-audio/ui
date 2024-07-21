@@ -27,7 +27,7 @@ struct view_look final : parent_for_node, view_look_for_renderer, scale_factor_o
     [[nodiscard]] std::shared_ptr<layout_region_guide> const &safe_area_layout_guide() const;
 
     [[nodiscard]] ui::appearance appearance() const override;
-    [[nodiscard]] std::shared_ptr<ui::background> background() const;
+    [[nodiscard]] std::shared_ptr<ui::background> background() const override;
 
     [[nodiscard]] observing::syncable observe_scale_factor(std::function<void(double const &)> &&) override;
     [[nodiscard]] observing::syncable observe_appearance(std::function<void(ui::appearance const &)> &&) override;
