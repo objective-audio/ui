@@ -84,16 +84,6 @@ struct metal_view_cpp {
 
     [self updateViewLookSizesWithDrawableSize:self.metalView.drawableSize];
     self->_cpp.view_look->set_appearance(self.metalView.uiAppearance);
-
-    self->_cpp.view_look->background()
-        ->observe_rgb_color([self](ui::rgb_color const &) { [self updateBackgroundColor]; })
-        .end()
-        ->add_to(self->_cpp.bg_pool);
-
-    self->_cpp.view_look->background()
-        ->observe_alpha([self](float const &) { [self updateBackgroundColor]; })
-        .sync()
-        ->add_to(self->_cpp.bg_pool);
 }
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
@@ -155,6 +145,13 @@ struct metal_view_cpp {
 
     self->_cpp.renderer = renderer;
 
+    renderer
+        ->observe_background_color([self](ui::color const &color) {
+            self.metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, color.alpha);
+        })
+        .end()
+        ->add_to(self->_cpp.bg_pool);
+
     [self.metalView configure];
     [self.metalView set_event_manager:event_manager];
 }
@@ -197,11 +194,6 @@ struct metal_view_cpp {
     self->_cpp.view_look->set_view_sizes(metal_view_utils::to_uint_size(self.view.bounds.size),
                                          metal_view_utils::to_uint_size(drawable_size),
                                          self.metalView.uiSafeAreaInsets);
-}
-
-- (void)updateBackgroundColor {
-    auto const &color = self->_cpp.view_look->background()->color();
-    self.metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, color.alpha);
 }
 
 @end

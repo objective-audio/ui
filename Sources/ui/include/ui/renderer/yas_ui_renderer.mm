@@ -49,6 +49,10 @@ void renderer::view_render() {
     }
 
     if (to_bool(this->_pre_render())) {
+        if (this->_background_color_notifier) {
+            this->_background_color_notifier->notify(this->_view_look->background()->color());
+        }
+
         this->_system->view_render(this->_detector, this->_view_look->projection_matrix(), this->_root_node);
     }
 
@@ -57,6 +61,13 @@ void renderer::view_render() {
     if (this->_did_render_notifier) {
         this->_did_render_notifier->notify(nullptr);
     }
+}
+
+observing::endable renderer::observe_background_color(std::function<void(ui::color const &)> &&handler) {
+    if (!this->_background_color_notifier) {
+        this->_background_color_notifier = observing::notifier<ui::color>::make_shared();
+    }
+    return this->_background_color_notifier->observe(std::move(handler));
 }
 
 renderer::pre_render_result renderer::_pre_render() {
