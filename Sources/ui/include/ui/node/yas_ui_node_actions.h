@@ -8,6 +8,7 @@
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/color/yas_ui_rgb_color.h>
 #include <ui/node/yas_ui_node.h>
+#include <ui/node/yas_ui_node_action_dependency.h>
 
 namespace yas::ui {
 struct translate_action_args final {
