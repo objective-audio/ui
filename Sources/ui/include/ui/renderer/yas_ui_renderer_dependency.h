@@ -74,6 +74,8 @@ enum class background_update_reason : std::size_t {
     count,
 };
 
+using background_updates_t = flagset<background_update_reason>;
+
 enum class batch_building_type {
     none,
     rebuild,

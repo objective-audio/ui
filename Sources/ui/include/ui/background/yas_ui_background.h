@@ -5,6 +5,7 @@
 #pragma once
 
 #include <ui/color/yas_ui_color.h>
+#include <ui/renderer/yas_ui_renderer_dependency.h>
 
 #include <observing/umbrella.hpp>
 
@@ -28,6 +29,10 @@ struct background final {
    private:
     observing::value::holder_ptr<ui::rgb_color> _rgb_color;
     observing::value::holder_ptr<float> _alpha;
+
+    background_updates_t _updates;
+
+    observing::canceller_pool _pool;
 
     background();
 

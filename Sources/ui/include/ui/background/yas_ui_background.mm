@@ -10,6 +10,13 @@ using namespace yas::ui;
 background::background()
     : _rgb_color(observing::value::holder<ui::rgb_color>::make_shared({.v = 1.0f})),
       _alpha(observing::value::holder<float>::make_shared(1.0f)) {
+    this->_rgb_color
+        ->observe([this](ui::rgb_color const &) { this->_updates.set(ui::background_update_reason::color); })
+        .sync()
+        ->add_to(this->_pool);
+    this->_alpha->observe([this](float const &) { this->_updates.set(ui::background_update_reason::alpha); })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 void background::set_rgb_color(ui::rgb_color const &color) {
