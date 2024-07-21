@@ -200,10 +200,8 @@ struct metal_view_cpp {
 }
 
 - (void)updateBackgroundColor {
-    auto const &background = self->_cpp.view_look->background();
-    auto const &color = background->rgb_color();
-    auto const &alpha = background->alpha();
-    self.metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, alpha);
+    auto const &color = self->_cpp.view_look->background()->color();
+    self.metalView.clearColor = MTLClearColorMake(color.red, color.green, color.blue, color.alpha);
 }
 
 @end
