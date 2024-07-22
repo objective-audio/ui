@@ -24,6 +24,7 @@ namespace yas::ui {
 struct metal_view_cpp {
     std::shared_ptr<view_look> const view_look = ui::view_look::make_shared();
     std::shared_ptr<renderer_for_view> renderer{nullptr};
+    int appearance_updating_delay = 0;
     observing::canceller_pool bg_pool;
 };
 }  // namespace yas::ui
@@ -121,7 +122,7 @@ struct metal_view_cpp {
 #endif
 
 - (void)appearanceDidChange:(yas::ui::appearance)appearance {
-    self->_cpp.view_look->set_appearance(appearance);
+    self->_cpp.appearance_updating_delay = 3;
 }
 
 - (YASUIMetalView *)metalView {
@@ -179,6 +180,14 @@ struct metal_view_cpp {
 - (void)drawInMTKView:(YASUIMetalView *)view {
     if (self->_cpp.renderer) {
         self->_cpp.renderer->view_render();
+    }
+
+    if (self->_cpp.appearance_updating_delay > 0) {
+        self->_cpp.appearance_updating_delay--;
+
+        if (self->_cpp.appearance_updating_delay == 0) {
+            self->_cpp.view_look->set_appearance(self.uiAppearance);
+        }
     }
 }
 
