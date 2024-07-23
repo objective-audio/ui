@@ -1,14 +1,14 @@
 //
-//  yas_ui_node_actions.h
+//  yas_ui_action_factory.h
 //
 
 #pragma once
 
 #include <ui/action/yas_ui_action.h>
+#include <ui/action/yas_ui_action_factory_dependency.h>
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/color/yas_ui_rgb_color.h>
 #include <ui/node/yas_ui_node.h>
-#include <ui/node/yas_ui_node_action_dependency.h>
 
 namespace yas::ui {
 struct translate_action_args final {

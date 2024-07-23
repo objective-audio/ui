@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <ui/action/yas_ui_action_factory_dependency.h>
 #include <ui/color/yas_ui_color.h>
-#include <ui/node/yas_ui_node_action_dependency.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
 
 #include <observing/umbrella.hpp>

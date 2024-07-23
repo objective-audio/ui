@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <ui/action/yas_ui_action_factory.h>
 #include <ui/action/yas_ui_action_manager.h>
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/background/yas_ui_background.h>
@@ -32,7 +33,6 @@
 #include <ui/metal/yas_ui_metal_texture.h>
 #include <ui/metal/yas_ui_metal_types.h>
 #include <ui/node/yas_ui_node.h>
-#include <ui/node/yas_ui_node_actions.h>
 #include <ui/rect_plane/yas_ui_rect_plane.h>
 #include <ui/render_info/yas_ui_render_info.h>
 #include <ui/render_target/yas_ui_render_target.h>

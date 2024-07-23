@@ -1,9 +1,9 @@
 //
-//  yas_ui_node_actions_tests.mm
+//  yas_ui_action_factory_tests.mm
 //
 
 #import <XCTest/XCTest.h>
-#import <ui/node/yas_ui_node_actions.h>
+#import <ui/action/yas_ui_action_factory.h>
 #import <ui/yas_ui_umbrella.h>
 #import <unordered_set>
 
@@ -11,11 +11,11 @@ using namespace std::chrono_literals;
 using namespace yas;
 using namespace yas::ui;
 
-@interface yas_ui_node_actions_tests : XCTestCase
+@interface yas_ui_action_factory_tests : XCTestCase
 
 @end
 
-@implementation yas_ui_node_actions_tests
+@implementation yas_ui_action_factory_tests
 
 - (void)setUp {
     [super setUp];
