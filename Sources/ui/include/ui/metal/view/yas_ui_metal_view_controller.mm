@@ -30,7 +30,9 @@ struct metal_view_cpp {
 }  // namespace yas::ui
 
 @interface YASUIMetalViewController () <MTKViewDelegate, YASUIMetalViewDelegate>
-
+#if TARGET_OS_IPHONE
+@property (nonatomic) id<UITraitChangeRegistration> userInterfaceStyleChangeRegistration;
+#endif
 @end
 
 @implementation YASUIMetalViewController {
@@ -60,6 +62,12 @@ struct metal_view_cpp {
 - (void)initCommon {
 }
 
+#if TARGET_OS_IPHONE
+- (void)dealloc {
+    [self.view unregisterForTraitChanges:self.userInterfaceStyleChangeRegistration];
+}
+#endif
+
 - (void)loadView {
     if (self.nibName || self.nibBundle) {
         [super loadView];
@@ -85,6 +93,15 @@ struct metal_view_cpp {
 
     [self updateViewLookSizesWithDrawableSize:self.metalView.drawableSize];
     self->_cpp.view_look->set_appearance(self.metalView.uiAppearance);
+
+#if TARGET_OS_IPHONE
+    self.userInterfaceStyleChangeRegistration =
+        [self.view registerForTraitChanges:@[UITraitUserInterfaceStyle.self]
+                               withHandler:[self](id<UITraitEnvironment> traitEnvironment,
+                                                  UITraitCollection *previousCollection) {
+                                   [self appearanceDidChange:self.uiAppearance];
+                               }];
+#endif
 }
 
 #if (!TARGET_OS_IPHONE && TARGET_OS_MAC)
@@ -117,16 +134,10 @@ struct metal_view_cpp {
             return ui::appearance::normal;
     }
 }
-
-- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle) {
-        [self appearanceDidChange:self.uiAppearance];
-    }
-}
 #endif
 
 - (void)appearanceDidChange:(yas::ui::appearance)appearance {
-    self->_cpp.appearance_updating_delay = 3;
+    self->_cpp.appearance_updating_delay = 2;
 }
 
 - (YASUIMetalView *)metalView {
