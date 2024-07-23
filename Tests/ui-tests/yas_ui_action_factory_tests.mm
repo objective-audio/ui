@@ -144,7 +144,7 @@ using namespace yas::ui;
     XCTAssertEqual(target->scale().height, 1.0f);
 }
 
-- (void)test_update_color_action {
+- (void)test_update_color_action_with_node {
     auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
     auto action = make_action({.target = target,
@@ -175,7 +175,35 @@ using namespace yas::ui;
     XCTAssertEqual(target->rgb_color().blue, 0.5f);
 }
 
-- (void)test_update_alpha_action {
+- (void)test_update_color_action_with_background {
+    auto target = background::make_shared();
+    auto time = std::chrono::system_clock::now();
+    auto action = make_action({.target = target,
+                               .begin_color = {0.0f, 0.25f, 0.5f},
+                               .end_color = {1.0f, 0.75f, 0.5f},
+                               .duration = 1.0,
+                               .begin_time = time});
+
+    action->update(time);
+
+    XCTAssertEqual(target->rgb_color().red, 0.0f);
+    XCTAssertEqual(target->rgb_color().green, 0.25f);
+    XCTAssertEqual(target->rgb_color().blue, 0.5f);
+
+    action->update(time + 500ms);
+
+    XCTAssertEqual(target->rgb_color().red, 0.5f);
+    XCTAssertEqual(target->rgb_color().green, 0.5f);
+    XCTAssertEqual(target->rgb_color().blue, 0.5f);
+
+    action->update(time + 1s);
+
+    XCTAssertEqual(target->rgb_color().red, 1.0f);
+    XCTAssertEqual(target->rgb_color().green, 0.75f);
+    XCTAssertEqual(target->rgb_color().blue, 0.5f);
+}
+
+- (void)test_update_alpha_action_with_node {
     auto target = node::make_shared();
     auto time = std::chrono::system_clock::now();
     auto action =
@@ -183,6 +211,25 @@ using namespace yas::ui;
 
     auto mesh = mesh::make_shared();
     target->set_meshes({mesh});
+
+    action->update(time);
+
+    XCTAssertEqual(target->alpha(), 1.0f);
+
+    action->update(time + 500ms);
+
+    XCTAssertEqual(target->alpha(), 0.5f);
+
+    action->update(time + 1s);
+
+    XCTAssertEqual(target->alpha(), 0.0f);
+}
+
+- (void)test_update_alpha_action_with_background {
+    auto target = background::make_shared();
+    auto time = std::chrono::system_clock::now();
+    auto action =
+        make_action({.target = target, .begin_alpha = 1.0f, .end_alpha = 0.0f, .duration = 1.0, .begin_time = time});
 
     action->update(time);
 
