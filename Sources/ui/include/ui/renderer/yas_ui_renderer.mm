@@ -5,6 +5,7 @@
 #include "yas_ui_renderer.h"
 
 #include <cpp-utils/to_bool.h>
+#include <ui/background/yas_ui_background.h>
 #include <ui/node/yas_ui_node.h>
 
 using namespace yas;
@@ -48,6 +49,10 @@ void renderer::view_render() {
     }
 
     if (to_bool(this->_pre_render())) {
+        if (this->_background_color_notifier) {
+            this->_background_color_notifier->notify(this->_view_look->background()->color());
+        }
+
         this->_system->view_render(this->_detector, this->_view_look->projection_matrix(), this->_root_node);
     }
 
@@ -58,11 +63,19 @@ void renderer::view_render() {
     }
 }
 
+observing::endable renderer::observe_background_color(std::function<void(ui::color const &)> &&handler) {
+    if (!this->_background_color_notifier) {
+        this->_background_color_notifier = observing::notifier<ui::color>::make_shared();
+    }
+    return this->_background_color_notifier->observe(std::move(handler));
+}
+
 renderer::pre_render_result renderer::_pre_render() {
     this->_action_manager->update(std::chrono::system_clock::now());
 
     tree_updates tree_updates;
     renderable_node::cast(this->_root_node)->fetch_updates(tree_updates);
+    renderable_background::cast(this->_view_look->background())->fetch_updates(tree_updates);
 
     if (tree_updates.is_collider_updated()) {
         this->_detector->begin_update();
@@ -77,6 +90,7 @@ renderer::pre_render_result renderer::_pre_render() {
 
 void renderer::_post_render() {
     renderable_node::cast(this->_root_node)->clear_updates();
+    renderable_background::cast(this->_view_look->background())->clear_updates();
     this->_detector->end_update();
     this->_updates.flags.reset();
 }

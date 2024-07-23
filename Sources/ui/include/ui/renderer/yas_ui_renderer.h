@@ -42,6 +42,7 @@ struct renderer final : renderer_for_view, renderer_observable {
 
     observing::notifier_ptr<std::nullptr_t> _will_render_notifier;
     observing::notifier_ptr<std::nullptr_t> _did_render_notifier;
+    observing::notifier_ptr<ui::color> _background_color_notifier;
 
     renderer(std::shared_ptr<ui::system_for_renderer> const &, std::shared_ptr<ui::view_look_for_renderer> const &,
              std::shared_ptr<ui::node> const &root_node, std::shared_ptr<ui::detector_for_renderer> const &,
@@ -53,6 +54,7 @@ struct renderer final : renderer_for_view, renderer_observable {
     renderer &operator=(renderer &&) = delete;
 
     void view_render() override;
+    [[nodiscard]] observing::endable observe_background_color(std::function<void(ui::color const &)> &&) override;
 
     pre_render_result _pre_render();
     void _post_render();

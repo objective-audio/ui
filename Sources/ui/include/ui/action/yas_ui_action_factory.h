@@ -1,10 +1,11 @@
 //
-//  yas_ui_node_actions.h
+//  yas_ui_action_factory.h
 //
 
 #pragma once
 
 #include <ui/action/yas_ui_action.h>
+#include <ui/action/yas_ui_action_factory_dependency.h>
 #include <ui/angle/yas_ui_angle.h>
 #include <ui/color/yas_ui_rgb_color.h>
 #include <ui/node/yas_ui_node.h>
@@ -12,7 +13,7 @@
 namespace yas::ui {
 struct translate_action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<node> target;
+    std::weak_ptr<translate_action_target> target;
     ui::point begin_position = {.v = 0.0f};
     ui::point end_position = {.v = 0.0f};
 
@@ -27,7 +28,7 @@ struct translate_action_args final {
 
 struct rotate_action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<node> target;
+    std::weak_ptr<rotate_action_target> target;
     ui::angle begin_angle = {0.0f};
     ui::angle end_angle = {0.0f};
     bool is_shortest = false;
@@ -43,7 +44,7 @@ struct rotate_action_args final {
 
 struct scale_action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<node> target;
+    std::weak_ptr<scale_action_target> target;
     ui::size begin_scale = {.v = 1.0f};
     ui::size end_scale = {.v = 1.0f};
 
@@ -58,7 +59,7 @@ struct scale_action_args final {
 
 struct color_action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<node> target;
+    std::weak_ptr<color_action_target> target;
     ui::rgb_color begin_color = {.v = 1.0f};
     ui::rgb_color end_color = {.v = 1.0f};
 
@@ -73,7 +74,7 @@ struct color_action_args final {
 
 struct alpha_action_args final {
     std::shared_ptr<action_group> group = nullptr;
-    std::weak_ptr<node> target;
+    std::weak_ptr<alpha_action_target> target;
     float begin_alpha = 1.0f;
     float end_alpha = 1.0f;
 

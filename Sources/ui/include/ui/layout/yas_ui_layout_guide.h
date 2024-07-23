@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <ui/action/yas_ui_action_dependency.h>
 #include <ui/common/yas_ui_types.h>
 #include <ui/layout/yas_ui_layout_dependency.h>
 

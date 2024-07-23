@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <ui/action/yas_ui_action_dependency.h>
+#include <ui/action/yas_ui_action_factory_dependency.h>
 #include <ui/collider/yas_ui_collider.h>
 #include <ui/layout/yas_ui_layout_dependency.h>
 #include <ui/mesh/yas_ui_mesh.h>
@@ -17,7 +17,14 @@
 #include <vector>
 
 namespace yas::ui {
-struct node final : renderable_node, layout_point_target, parent_for_node {
+struct node final : renderable_node,
+                    layout_point_target,
+                    parent_for_node,
+                    translate_action_target,
+                    rotate_action_target,
+                    scale_action_target,
+                    color_action_target,
+                    alpha_action_target {
     enum class method {
         added_to_super,
         removed_from_super,
@@ -25,31 +32,31 @@ struct node final : renderable_node, layout_point_target, parent_for_node {
 
     virtual ~node();
 
-    void set_position(ui::point &&);
+    void set_position(ui::point &&) override;
     void set_position(ui::point const &);
     void set_x(float const);
     void set_y(float const);
     [[nodiscard]] ui::point const &position() const;
     [[nodiscard]] observing::syncable observe_position(std::function<void(ui::point const &)> &&);
 
-    void set_angle(ui::angle &&);
+    void set_angle(ui::angle &&) override;
     void set_angle(ui::angle const &);
     [[nodiscard]] ui::angle const &angle() const;
     [[nodiscard]] observing::syncable observe_angle(std::function<void(ui::angle const &)> &&);
 
-    void set_scale(ui::size &&);
+    void set_scale(ui::size &&) override;
     void set_scale(ui::size const &);
     void set_width(float const);
     void set_height(float const);
     [[nodiscard]] ui::size const &scale() const;
     [[nodiscard]] observing::syncable observe_scale(std::function<void(ui::size const &)> &&);
 
-    void set_rgb_color(ui::rgb_color &&);
+    void set_rgb_color(ui::rgb_color &&) override;
     void set_rgb_color(ui::rgb_color const &);
     [[nodiscard]] ui::rgb_color const &rgb_color() const;
     [[nodiscard]] observing::syncable observe_rgb_color(std::function<void(ui::rgb_color const &)> &&);
 
-    void set_alpha(float &&);
+    void set_alpha(float &&) override;
     void set_alpha(float const &);
     [[nodiscard]] float const &alpha() const;
     [[nodiscard]] observing::syncable observe_alpha(std::function<void(float const &)> &&);

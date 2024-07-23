@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "yas_ui_action_dependency.h"
 #include "yas_ui_action_types.h"
 
 namespace yas::ui {

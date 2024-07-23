@@ -106,6 +106,20 @@ void sample::main::setup() {
                                .duration = 3.0,
                                .loop_count = 0});
     this->standard->action_manager()->insert_action(action);
+
+    this->standard->view_look()
+        ->observe_appearance([background = this->standard->view_look()->background()](auto const &appearance) {
+            switch (appearance) {
+                case ui::appearance::normal: {
+                    background->set_rgb_color(ui::white_color());
+                } break;
+                case ui::appearance::dark: {
+                    background->set_rgb_color(ui::black_color());
+                } break;
+            }
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 std::shared_ptr<sample::main> sample::main::make_shared(std::shared_ptr<ui::view_look> const &view_look,

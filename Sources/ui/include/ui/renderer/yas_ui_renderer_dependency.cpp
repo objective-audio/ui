@@ -11,9 +11,9 @@ using namespace yas;
 using namespace yas::ui;
 
 bool tree_updates::is_any_updated() const {
-    return this->node_updates.flags.any() || this->mesh_updates.flags.any() || this->vertex_data_updates.flags.any() ||
-           this->index_data_updates.flags.any() || this->render_target_updates.flags.any() ||
-           this->effect_updates.flags.any();
+    return this->node_updates.flags.any() || this->background_updates.flags.any() || this->mesh_updates.flags.any() ||
+           this->vertex_data_updates.flags.any() || this->index_data_updates.flags.any() ||
+           this->render_target_updates.flags.any() || this->effect_updates.flags.any();
 }
 
 bool tree_updates::is_collider_updated() const {
