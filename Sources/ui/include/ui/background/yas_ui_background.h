@@ -5,20 +5,22 @@
 #pragma once
 
 #include <ui/color/yas_ui_color.h>
+#include <ui/node/yas_ui_node_action_dependency.h>
 #include <ui/renderer/yas_ui_renderer_dependency.h>
 
 #include <observing/umbrella.hpp>
 
 namespace yas::ui {
-struct background final : renderable_background {
+struct background final : renderable_background, color_action_target, alpha_action_target {
     [[nodiscard]] static std::shared_ptr<background> make_shared();
 
     void set_rgb_color(ui::rgb_color const &);
-    void set_rgb_color(ui::rgb_color &&);
+    void set_rgb_color(ui::rgb_color &&) override;
     [[nodiscard]] ui::rgb_color const &rgb_color() const;
     [[nodiscard]] observing::syncable observe_rgb_color(std::function<void(ui::rgb_color const &)> &&);
 
     void set_alpha(float const &);
+    void set_alpha(float &&) override;
     [[nodiscard]] float const &alpha() const;
     [[nodiscard]] observing::syncable observe_alpha(std::function<void(float const &)> &&);
 

@@ -43,6 +43,10 @@ void background::set_alpha(float const &alpha) {
     this->_alpha->set_value(alpha);
 }
 
+void background::set_alpha(float &&alpha) {
+    this->_alpha->set_value(std::move(alpha));
+}
+
 float const &background::alpha() const {
     return this->_alpha->value();
 }
