@@ -102,6 +102,10 @@ struct metal_view_cpp {
         [self appearanceDidChange:self.metalView.uiAppearance];
     }
 }
+
+- (ui::appearance)uiAppearance {
+    return self.metalView.uiAppearance;
+}
 #endif
 
 #if TARGET_OS_IPHONE
